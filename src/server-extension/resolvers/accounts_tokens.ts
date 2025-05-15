@@ -187,10 +187,10 @@ export class AccountsTokensResolver {
                 'token_account.token = token.id AND token_account.account IN (:...accountIds)',
                 { accountIds }
             )
+            .groupBy('token.id')
             .orderBy(orderBy, order, 'NULLS LAST')
             .skip(offset)
             .limit(limit)
-            .select('DISTINCT token.id', 'id')
 
         // Apply collection filter if provided
         if (collectionId) {
@@ -203,33 +203,22 @@ export class AccountsTokensResolver {
             })
         }
 
-        // Get the token IDs from the query
-        const tokenIds = (await builder.getRawMany()).map((t) => t.id)
+        const [tokens, count] = (await builder.getManyAndCount()) as any[]
 
-        if (tokenIds.length === 0) {
-            return { data: [], count: 0 }
+        // If no tokens found, return early
+        if (tokens.length === 0) {
+            return { data: [], count }
         }
 
-        // Now get the full token data with collection and listing information
-        const tokensQuery = manager
-            .getRepository(Token)
-            .createQueryBuilder('token')
-            .innerJoinAndMapOne('token.collection', Collection, 'collection', 'token.collection = collection.id')
-            .leftJoinAndMapOne('token.bestListing', Listing, 'listing', 'listing.makeAssetId = token.id')
-            .where('token.id IN (:...tokenIds)', { tokenIds })
-            .orderBy(orderBy, order, 'NULLS LAST')
-
-        const tokens = await tokensQuery.getMany()
+        const tokenIds = tokens.map((token: { id: string }) => token.id)
 
         // Get all token accounts for these tokens from the specified accounts
-        const tokenAccountsQuery = manager
+        const tokenAccounts = await manager
             .getRepository(TokenAccount)
             .createQueryBuilder('token_account')
             .where('token_account.token IN (:...tokenIds)', { tokenIds })
-            .andWhere('token_account.account IN (:...accountIds)', { accountIds })
-            .leftJoinAndSelect('token_account.account', 'account')
-
-        const tokenAccounts = await tokenAccountsQuery.getMany()
+            .innerJoinAndSelect('token_account.account', 'account', 'account.id IN (:...accountIds)', { accountIds })
+            .getMany()
 
         // Group token accounts by token ID
         const tokenAccountsByToken = tokenAccounts.reduce(
@@ -245,7 +234,7 @@ export class AccountsTokensResolver {
         )
 
         // Map the results to the expected format
-        const data = tokens.map((token) => {
+        const data = tokens.map((token: { id: string }) => {
             const tokenObj = token as any
             const accounts = tokenAccountsByToken[token.id] || []
 
@@ -254,44 +243,11 @@ export class AccountsTokensResolver {
                 id: ta.id,
                 balance: ta.balance,
                 isFrozen: ta.isFrozen,
-                accountId: ta.account?.id || '',
+                accountId: ta.account.id,
             }))
 
             return tokenObj
         })
-
-        // Get the total count
-        const countQuery = manager
-            .getRepository(Token)
-            .createQueryBuilder('token')
-            .innerJoin(
-                TokenAccount,
-                'token_account',
-                'token_account.token = token.id AND token_account.account IN (:...accountIds)',
-                { accountIds }
-            )
-
-        if (collectionId) {
-            countQuery.innerJoin(
-                Collection,
-                'collection',
-                'token.collection = collection.id AND collection.collectionId = :collectionId',
-                { collectionId }
-            )
-        } else {
-            countQuery.innerJoin(Collection, 'collection', 'token.collection = collection.id')
-        }
-
-        if (query) {
-            countQuery.andWhere("collection.metadata->>'name' ILIKE :query OR token.metadata->>'name' ILIKE :query", {
-                query: `%${query}%`,
-            })
-        }
-
-        const count = await countQuery
-            .select('COUNT(DISTINCT token.id)', 'count')
-            .getRawOne()
-            .then((result) => Number(result?.count || 0))
 
         return { data, count }
     }
