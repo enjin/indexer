@@ -148,6 +148,7 @@ export async function computeMetadata(job: Job) {
                     metadata = metadataParser(metadata, a, null)
                 })
 
+            resource.name = metadata.name
             resource.metadata = metadata
 
             await em.save(resource)

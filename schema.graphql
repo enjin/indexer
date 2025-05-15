@@ -568,6 +568,7 @@ type Collection @entity {
   rarity: [TokenRarity] @derivedFrom(field: "collection")
 
   # Extras
+  name: String @index
   metadata: Metadata
   createdAt: DateTime!
   flags: CollectionFlags!
@@ -585,7 +586,7 @@ type CollectionApproval {
   expiration: Int
 }
 
-type CollectionAccount @entity {
+type CollectionAccount @entity @index(fields: ["account", "collection"], unique: true) {
   id: ID!
 
   # Storage defaults
@@ -690,6 +691,7 @@ type Token @entity {
   lastSale: ListingSale
 
   # Extras
+  name: String @index
   nonFungible: Boolean!
   metadata: Metadata
   updatedAt: DateTime
@@ -720,7 +722,7 @@ type TokenLock {
   amount: BigInt!
 }
 
-type TokenAccount @entity @index(fields: ["account", "token"]) {
+type TokenAccount @entity @index(fields: ["account", "token"], unique: true) {
   id: ID!
 
   # Storage defaults

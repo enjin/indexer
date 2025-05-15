@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, BigIntColumn as BigIntColumn_, BooleanColumn as BooleanColumn_, ManyToOne as ManyToOne_, Index as Index_, DateTimeColumn as DateTimeColumn_} from "@subsquid/typeorm-store"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, Index as Index_, BigIntColumn as BigIntColumn_, BooleanColumn as BooleanColumn_, ManyToOne as ManyToOne_, DateTimeColumn as DateTimeColumn_} from "@subsquid/typeorm-store"
 import * as marshal from "./marshal"
 import {TokenNamedReserve} from "./_tokenNamedReserve"
 import {TokenLock} from "./_tokenLock"
@@ -7,6 +7,7 @@ import {Account} from "./account.model"
 import {Collection} from "./collection.model"
 import {Token} from "./token.model"
 
+@Index_(["account", "token"], {unique: true})
 @Entity_()
 export class TokenAccount {
     constructor(props?: Partial<TokenAccount>) {
@@ -40,7 +41,6 @@ export class TokenAccount {
     @BooleanColumn_({nullable: false})
     isFrozen!: boolean
 
-    @Index_()
     @ManyToOne_(() => Account, {nullable: true})
     account!: Account
 
