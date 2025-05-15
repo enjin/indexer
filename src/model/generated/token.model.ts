@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, BigIntColumn as BigIntColumn_, Index as Index_, BooleanColumn as BooleanColumn_, IntColumn as IntColumn_, ManyToOne as ManyToOne_, OneToMany as OneToMany_, OneToOne as OneToOne_, DateTimeColumn as DateTimeColumn_} from "@subsquid/typeorm-store"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, BigIntColumn as BigIntColumn_, Index as Index_, BooleanColumn as BooleanColumn_, IntColumn as IntColumn_, ManyToOne as ManyToOne_, OneToMany as OneToMany_, OneToOne as OneToOne_, StringColumn as StringColumn_, DateTimeColumn as DateTimeColumn_} from "@subsquid/typeorm-store"
 import * as marshal from "./marshal"
 import {FreezeState} from "./_freezeState"
 import {TokenCap, fromJsonTokenCap} from "./_tokenCap"
@@ -101,6 +101,10 @@ export class Token {
     @Index_()
     @ManyToOne_(() => ListingSale, {nullable: true})
     lastSale!: ListingSale | undefined | null
+
+    @Index_()
+    @StringColumn_({nullable: true})
+    name!: string | undefined | null
 
     @BooleanColumn_({nullable: false})
     nonFungible!: boolean

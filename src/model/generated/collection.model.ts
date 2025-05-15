@@ -75,6 +75,10 @@ export class Collection {
     @OneToMany_(() => TokenRarity, e => e.collection)
     rarity!: TokenRarity[]
 
+    @Index_()
+    @StringColumn_({nullable: true})
+    name!: string | undefined | null
+
     @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new Metadata(undefined, obj)}, nullable: true})
     metadata!: Metadata | undefined | null
 
