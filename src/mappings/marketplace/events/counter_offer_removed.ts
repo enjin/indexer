@@ -81,7 +81,7 @@ export async function counterOfferRemoved(
         counterOfferCount: listing.state.counterOfferCount - 1,
     })
 
-    const offer = await ctx.store.findOneByOrFail(CounterOffer, { id: `${listing.id}-${account.id}` })
+    const offer = await ctx.store.findOneBy(CounterOffer, { id: `${listing.id}-${account.id}` })
 
     if (item.extrinsic) {
         await Sns.getInstance().send({
@@ -109,7 +109,11 @@ export async function counterOfferRemoved(
         })
     }
 
-    await Promise.all([ctx.store.remove(offer), ctx.store.save(listing)])
+    if (offer) {
+        await ctx.store.remove(offer)
+    }
+
+    await ctx.store.save(listing)
 
     return getEvent(item, data, listing, account)
 }
