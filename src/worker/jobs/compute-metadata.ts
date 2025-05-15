@@ -37,7 +37,7 @@ async function* tokensInBatch(em: EntityManager, collectionId: string) {
 export async function computeMetadata(job: Job) {
     const con = await connectionManager()
 
-    await con.transaction('READ UNCOMMITTED', async (em) => {
+    await con.transaction('REPEATABLE READ', async (em) => {
         try {
             const jobData = job.data
             await job.log(job.data)
