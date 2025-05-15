@@ -10,93 +10,93 @@ function processBalancesEventItem(event: EventItem) {
     const ids: string[] = []
     switch (event.name) {
         case balances.burned.name: {
-            const account = mappings.balances.events.burned(event)
-            ids.push(account.who)
+            const data = mappings.balances.events.burned(event)
+            ids.push(data.who)
             break
         }
         case balances.frozen.name: {
-            const account = mappings.balances.events.frozen(event)
-            ids.push(account.who)
+            const data = mappings.balances.events.frozen(event)
+            ids.push(data.who)
             break
         }
         case balances.locked.name: {
-            const account = mappings.balances.events.locked(event)
-            ids.push(account.who)
+            const data = mappings.balances.events.locked(event)
+            ids.push(data.who)
             break
         }
         case balances.minted.name: {
-            const account = mappings.balances.events.minted(event)
-            ids.push(account.who)
+            const data = mappings.balances.events.minted(event)
+            ids.push(data.who)
             break
         }
         case balances.restored.name: {
-            const account = mappings.balances.events.restored(event)
-            ids.push(account.who)
+            const data = mappings.balances.events.restored(event)
+            ids.push(data.who)
             break
         }
         case balances.suspended.name: {
-            const account = mappings.balances.events.suspended(event)
-            ids.push(account.who)
+            const data = mappings.balances.events.suspended(event)
+            ids.push(data.who)
             break
         }
         case balances.thawed.name: {
-            const account = mappings.balances.events.thawed(event)
-            ids.push(account.who)
+            const data = mappings.balances.events.thawed(event)
+            ids.push(data.who)
             break
         }
         case balances.unlocked.name: {
-            const account = mappings.balances.events.unlocked(event)
-            ids.push(account.who)
+            const data = mappings.balances.events.unlocked(event)
+            ids.push(data.who)
             break
         }
         case balances.dustLost.name: {
-            const account = mappings.balances.events.dustLost(event)
-            ids.push(account.account)
+            const data = mappings.balances.events.dustLost(event)
+            ids.push(data.account)
             break
         }
         case balances.balanceSet.name: {
-            const account = mappings.balances.events.balanceSet(event)
-            ids.push(account.who)
+            const data = mappings.balances.events.balanceSet(event)
+            ids.push(data.who)
             break
         }
         case balances.transfer.name: {
-            const accounts = mappings.balances.events.transfer(event)
-            ids.push(...[accounts.from, accounts.to])
+            const data = mappings.balances.events.transfer(event)
+            ids.push(...[data.from, data.to])
             break
         }
         case balances.endowed.name: {
-            const account = mappings.balances.events.endowed(event)
-            ids.push(account.account)
+            const data = mappings.balances.events.endowed(event)
+            ids.push(data.account)
             break
         }
         case balances.deposit.name: {
-            const account = mappings.balances.events.deposit(event)
-            ids.push(account.who)
+            const data = mappings.balances.events.deposit(event)
+            ids.push(data.who)
             break
         }
         case balances.reserved.name: {
-            const account = mappings.balances.events.reserved(event)
-            ids.push(account.who)
+            const data = mappings.balances.events.reserved(event)
+            ids.push(data.who)
             break
         }
         case balances.unreserved.name: {
-            const account = mappings.balances.events.unreserved(event)
-            ids.push(account.who)
+            const data = mappings.balances.events.unreserved(event)
+            ids.push(data.who)
             break
         }
         case balances.withdraw.name: {
-            const account = mappings.balances.events.withdraw(event)
-            ids.push(account.who)
+            const data = mappings.balances.events.withdraw(event)
+            ids.push(data.who)
             break
         }
         case balances.slashed.name: {
-            const account = mappings.balances.events.slashed(event)
-            ids.push(account.who)
+            const data = mappings.balances.events.slashed(event)
+            ids.push(data.who)
             break
         }
         case balances.reserveRepatriated.name: {
-            const accounts = mappings.balances.events.reserveRepatriated(event)
-            ids.push(...[accounts.from, accounts.to])
+            const data = mappings.balances.events.reserveRepatriated(event)
+            ids.push(...[data.from, data.to])
             break
         }
 

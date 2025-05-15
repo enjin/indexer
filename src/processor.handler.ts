@@ -91,6 +91,7 @@ export async function eventHandler(
                 balances.dustLost.name,
                 balances.endowed.name,
                 balances.frozen.name,
+                balances.issued.name,
                 balances.locked.name,
                 balances.minted.name,
                 balances.reserveRepatriated.name,
