@@ -95,6 +95,15 @@ class AccountsTokensOwner {
 
     @Field(() => String)
     accountId!: string
+
+    @Field(() => BigInteger)
+    reservedBalance!: typeof BigInteger
+
+    @Field()
+    updatedAt!: Date
+
+    @Field()
+    createdAt!: Date
 }
 
 @ObjectType()
@@ -242,8 +251,11 @@ export class AccountsTokensResolver {
             tokenObj.owners = accounts.map((ta) => ({
                 id: ta.id,
                 balance: ta.balance,
+                reservedBalance: ta.reservedBalance,
                 isFrozen: ta.isFrozen,
                 accountId: ta.account.id,
+                updatedAt: ta.updatedAt,
+                createdAt: ta.createdAt,
             }))
 
             return tokenObj
