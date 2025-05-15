@@ -1,6 +1,6 @@
 services:
-  indexer_db:
-    container_name: indexer_db
+  indexer_db_2:
+    container_name: indexer_db_2
     image: postgres:16
     restart: unless-stopped
     environment:
@@ -8,9 +8,9 @@ services:
       POSTGRES_PASSWORD: ${DB_PASS}
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-      - indexer_db:/var/lib/postgresql/data
+      - indexer_db_2:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "5433:5432"
     command: [
       "postgres",
       "-c", "max_connections=200"
@@ -38,7 +38,7 @@ services:
     volumes:
       - .env:/squid/.env
     depends_on:
-      - indexer_db
+      - indexer_db_2
       - indexer_worker
 
   indexer_graphql:
@@ -55,7 +55,7 @@ services:
     volumes:
       - .env:/squid/.env
     depends_on:
-      - indexer_db
+      - indexer_db_2
       - indexer_processor
 
   indexer_worker:
@@ -71,10 +71,10 @@ services:
     volumes:
       - .env:/squid/.env
     depends_on:
-      - indexer_db
+      - indexer_db_2
       - indexer_redis
 
 volumes:
-  indexer_db:
+  indexer_db_2:
   redis_db:
   

@@ -167,6 +167,7 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
                     metadata = metadataParser(metadata, a, null)
                 })
 
+            resource.name = metadata.name
             resource.metadata = metadata
 
             await em.save(resource)
