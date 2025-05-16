@@ -2,8 +2,20 @@ import { EntityManager, IsNull } from 'typeorm'
 import Queue from 'bull'
 import connection from '../connection'
 import { JobData, processMetadata } from '../jobs/process-metadata'
-import { Attribute, Collection, Metadata, MetadataOriginType, Token } from '../model'
+import {
+    Attribute,
+    Collection,
+    MarketPolicy,
+    Metadata,
+    MetadataOriginType,
+    Royalty,
+    RoyaltyBeneficiary,
+    Token,
+    TokenBehaviorHasRoyalty,
+} from '../model'
 import { fetchMetadata, metadataParser, parseMedia } from '../mappings/util/metadata'
+import { EpMultiTokensCollection, EpMultiTokensToken } from '@polkadot/types/lookup'
+import Rpc from '../common/rpc'
 
 type MetadataType = {
     id: string
@@ -42,7 +54,7 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
     }
 
     const jobData = job.data
-    connection.manager.transaction('READ UNCOMMITTED', async (em) => {
+    connection.manager.transaction('REPEATABLE READ', async (em) => {
         let resource: Collection | Token | null
         let attributes: Attribute[] = []
         let collectionUriAttribute: Attribute | null = null
@@ -169,6 +181,53 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
 
             resource.name = metadata.name
             resource.metadata = metadata
+
+            const { api } = await Rpc.getInstance()
+            if ('marketPolicy' in resource) {
+                const storage = await api.query.multiTokens.collections(resource.id)
+                const data: EpMultiTokensCollection = storage.unwrap()
+                const royaltyPolicy = data.policy.market.royalty
+                if (royaltyPolicy.isSome) {
+                    const beneficiaries = royaltyPolicy.unwrap().beneficiaries
+
+                    resource.marketPolicy = new MarketPolicy({
+                        royalty: new Royalty({
+                            beneficiary: beneficiaries[0].beneficiary.toHex(),
+                            percentage: beneficiaries[0].percentage.toNumber(),
+                        }),
+                        beneficiaries: beneficiaries.map(
+                            (b) =>
+                                new RoyaltyBeneficiary({
+                                    accountId: b.beneficiary.toHex(),
+                                    percentage: b.percentage.toNumber(),
+                                })
+                        ),
+                    })
+                }
+            }
+            if ('behavior' in resource) {
+                const storage = await api.query.multiTokens.tokens(resource.collection.id, resource.tokenId)
+                const data: EpMultiTokensToken = storage.unwrap()
+                const marketBehavior = data.marketBehavior
+                if (marketBehavior.isSome && marketBehavior.unwrap().isHasRoyalty) {
+                    const hasRoyalty = marketBehavior.unwrap().asHasRoyalty
+                    const beneficiaries = hasRoyalty.beneficiaries
+
+                    resource.behavior = new TokenBehaviorHasRoyalty({
+                        royalty: new Royalty({
+                            beneficiary: beneficiaries[0].beneficiary.toHex(),
+                            percentage: beneficiaries[0].percentage.toNumber(),
+                        }),
+                        beneficiaries: beneficiaries.map(
+                            (b) =>
+                                new RoyaltyBeneficiary({
+                                    accountId: b.beneficiary.toHex(),
+                                    percentage: b.percentage.toNumber(),
+                                })
+                        ),
+                    })
+                }
+            }
 
             await em.save(resource)
 
