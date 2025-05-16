@@ -1,6 +1,6 @@
 import * as ss58 from '@subsquid/ss58'
 import { decode } from '@subsquid/ss58'
-import { stringToHex } from '@polkadot/util'
+import { isHex, stringToHex } from '@polkadot/util'
 import { HexString } from '@polkadot/util/types'
 import config from './config'
 
@@ -14,9 +14,7 @@ export function isRelay(): boolean {
 
 export function isValidAddress(address: string): boolean {
     try {
-        const decoded = ss58.decode(address)
-        ss58.encode(decoded)
-
+        encodeAddress(isHex(address) ? address : decodeAddress(address))
         return true
     } catch {
         return false
