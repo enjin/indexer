@@ -135,6 +135,9 @@ export async function eventHandler(
             .with(fuelTanks.accountRuleDataRemoved.name, () =>
                 p.fuelTanks.processors.accountRuleDataRemoved(ctx, block, item)
             )
+            .with(fuelTanks.mutateFreezeStateScheduled.name, () =>
+                p.fuelTanks.processors.mutateFreezeStateScheduled(ctx, block, item)
+            )
             .with(fuelTanks.freezeStateMutated.name, () => p.fuelTanks.processors.freezeStateMutated(ctx, block, item))
             .with(fuelTanks.fuelTankCreated.name, () => p.fuelTanks.processors.fuelTankCreated(ctx, block, item))
             .with(fuelTanks.fuelTankDestroyed.name, () => p.fuelTanks.processors.fuelTankDestroyed(ctx, block, item))

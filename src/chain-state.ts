@@ -4,6 +4,12 @@ import { ChainInfo, Marketplace } from './model'
 import processorConfig from './util/config'
 import { CommonContext } from './contexts'
 import Rpc from './util/rpc'
+import { Compact } from '@polkadot/types'
+import { Perbill } from '@polkadot/types/interfaces'
+
+type PalletMarketplaceMarketPlaceInfo = {
+    protocolFee: Compact<Perbill>
+}
 
 export async function chainState(
     ctx: CommonContext,
@@ -11,6 +17,7 @@ export async function chainState(
 ) {
     try {
         const { api } = await Rpc.getInstance()
+        const apiAt = await api.at(block.hash)
         const [
             { transactionVersion },
             existentialDeposit,
@@ -19,15 +26,22 @@ export async function chainState(
             maxRoundingError,
             maxSaltLength,
             minimumBidIncreasePercentage,
+            marketplaceInfo,
         ] = await Promise.all([
-            api.consts.system.version,
-            api.consts.balances.existentialDeposit,
-            api.consts.marketplace.listingActiveDelay,
-            api.consts.marketplace.listingDeposit,
-            api.consts.marketplace.maxRoundingError,
-            api.consts.marketplace.maxSaltLength,
-            api.consts.marketplace.minimumBidIncreasePercentage,
+            apiAt.consts.system.version,
+            apiAt.consts.balances.existentialDeposit,
+            apiAt.consts.marketplace.listingActiveDelay,
+            apiAt.consts.marketplace.listingDeposit,
+            apiAt.consts.marketplace.maxRoundingError,
+            apiAt.consts.marketplace.maxSaltLength,
+            apiAt.consts.marketplace.minimumBidIncreasePercentage,
+            apiAt.query.marketplace.info(),
         ])
+
+        const marketplace = api.createType(
+            'PalletMarketplaceMarketPlaceInfo',
+            marketplaceInfo
+        ) as unknown as PalletMarketplaceMarketPlaceInfo
 
         const state = new ChainInfo({
             id: block.hash,
@@ -40,7 +54,7 @@ export async function chainState(
             timestamp: new Date(block.timestamp ?? 0),
             validator: block.validator ?? null,
             marketplace: new Marketplace({
-                protocolFee: 25_000000,
+                protocolFee: marketplace.protocolFee.toNumber(),
                 listingActiveDelay: Number(listingActiveDelay.toString()),
                 listingDeposit: BigInt(listingDeposit.toString()),
                 maxRoundingError: BigInt(maxRoundingError.toString()),

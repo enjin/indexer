@@ -16,6 +16,9 @@ class Rpc {
             const api = await ApiPromise.create({
                 provider: new WsProvider(config.dataSource.chain, 1000),
                 types: {
+                    PalletMarketplaceMarketPlaceInfo: {
+                        protocolFee: 'Compact<Perbill>',
+                    },
                     FrameSystemAccountInfo: {
                         nonce: 'u32',
                         consumers: 'u32',
