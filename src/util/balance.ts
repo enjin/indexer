@@ -18,9 +18,6 @@ export async function fetchAllBalances(): Promise<SystemAccount[]> {
     const balances = await api.query.system.account.entries()
     for (const [key, value] of balances) {
         const balance = api.createType('FrameSystemAccountInfo', value)
-        if (!balance) {
-            continue
-        }
 
         accounts.push({
             address: key.args[0].toString(),

@@ -23,7 +23,7 @@ export async function accountRuleDataRemoved(
         )
     } else {
         const ruleKind = kind.charAt(0).toLowerCase() + kind.slice(1)
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+
         // @ts-expect-error
         ruleSet[ruleKind] = undefined
     }

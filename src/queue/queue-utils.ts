@@ -46,7 +46,7 @@ export function dispatchComputeCollections() {
     })
 }
 
-export function dispatchComputeStats(id: string, traceId?: string) {
+export function dispatchComputeStats(id: string) {
     CollectionsQueue.add(
         JobsEnum.COMPUTE_STATS,
         { id },
