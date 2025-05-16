@@ -9,7 +9,7 @@ export async function computeCollections() {
     })
 
     for (const collection of collections) {
-        QueueUtils.dispatchComputeStats(collection.id, 'compute-collections')
+        QueueUtils.dispatchComputeStats(collection.id)
         QueueUtils.dispatchComputeTraits(collection.id)
     }
 }
