@@ -63,8 +63,8 @@ class AccountsTokensArgs {
     @Field(() => String, { nullable: true })
     query?: string
 
-    @Field(() => BigInteger, { nullable: true })
-    collectionId?: typeof BigInteger
+    @Field(() => String, { nullable: true })
+    collectionId?: string
 }
 
 @ObjectType()
