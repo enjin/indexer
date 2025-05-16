@@ -2,7 +2,18 @@ import { multiTokens } from '../../../type/events'
 import { EventItem } from '../../../contexts'
 import { UnsupportedEventError } from '../../../util/errors'
 import { match } from 'ts-pattern'
-import { Account, AccountTokenEvent, Event as EventModel, Extrinsic, MultiTokensInfused, Token } from '../../../model'
+import {
+    Account,
+    AccountTokenEvent,
+    AccountTokenEventMeta,
+    AccountTokenEventMetaCollection,
+    AccountTokenEventMetaToken,
+    Collection,
+    Event as EventModel,
+    Extrinsic,
+    MultiTokensInfused,
+    Token,
+} from '../../../model'
 import { Infused } from './types/infused'
 import { unwrapAccount } from '../../../util/entities'
 
@@ -33,6 +44,7 @@ export function infused(event: EventItem): Infused {
 export function infusedEventModel(
     item: EventItem,
     data: Infused,
+    collection?: Collection,
     token?: Token
 ): [EventModel, AccountTokenEvent] | EventModel | undefined {
     const event = new EventModel({
@@ -53,10 +65,25 @@ export function infusedEventModel(
         event,
         new AccountTokenEvent({
             id: item.id,
-            collectionId: data.collectionId.toString(),
-            tokenId: data.tokenId.toString(),
             from: new Account({ id: unwrapAccount(data.accountId) }),
             event,
+            collectionId: data.collectionId.toString(),
+            tokenId: data.tokenId.toString(),
+            meta: new AccountTokenEventMeta({
+                collection: !collection
+                    ? undefined
+                    : new AccountTokenEventMetaCollection({
+                          metadata: collection.metadata,
+                          createdAt: collection.createdAt,
+                      }),
+                token: !token
+                    ? undefined
+                    : new AccountTokenEventMetaToken({
+                          nonFungible: token.nonFungible,
+                          metadata: token.metadata,
+                          createdAt: token.createdAt,
+                      }),
+            }),
         }),
     ]
 }

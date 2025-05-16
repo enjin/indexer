@@ -18,7 +18,7 @@ import { Block, CommonContext, EventItem } from '../../../contexts'
 import { getOrCreateAccount } from '../../../util/entities'
 import { Sns } from '../../../util/sns'
 import * as mappings from '../../index'
-// import { syncCollectionStats } from '../../jobs/collection-stats'
+import { QueueUtils } from '../../../queue'
 
 export async function listingCreated(
     ctx: CommonContext,
@@ -140,9 +140,11 @@ export async function listingCreated(
         makeAssetId.recentListing = listing
     }
 
-    await Promise.all([ctx.store.insert(listing), ctx.store.insert(listingStatus), ctx.store.save(makeAssetId)])
+    await ctx.store.insert(listing)
+    await ctx.store.insert(listingStatus)
+    // await ctx.store.save(makeAssetId)
 
-    // syncCollectionStats(event.listing.makeAssetId.collectionId.toString())
+    QueueUtils.dispatchComputeStats(event.listing.makeAssetId.collectionId.toString())
 
     if (item.extrinsic) {
         await Sns.getInstance().send({
@@ -169,5 +171,10 @@ export async function listingCreated(
         })
     }
 
-    return mappings.marketplace.events.listingCreatedEventModel(item, event)
+    return mappings.marketplace.events.listingCreatedEventModel(
+        item,
+        event,
+        listing.makeAssetId.collection,
+        listing.makeAssetId
+    )
 }

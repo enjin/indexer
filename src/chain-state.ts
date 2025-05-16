@@ -4,7 +4,6 @@ import { ChainInfo, Marketplace } from './model'
 import processorConfig from './util/config'
 import { CommonContext } from './contexts'
 import Rpc from './util/rpc'
-import { DataService } from './util/data'
 
 export async function chainState(
     ctx: CommonContext,

@@ -1,6 +1,5 @@
 import Big from 'big.js'
 import * as Sentry from '@sentry/node'
-import { groupBy } from 'lodash'
 import {
     BonusCycle,
     CommissionPayment,
@@ -24,10 +23,10 @@ async function getMembersBalance(block: Block, poolId: number): Promise<Record<s
 
     const accountMap: Record<string, bigint> = {}
 
-    // Check if result exists and is an array or iterable
-    if (result && typeof result[Symbol.iterator] === 'function') {
+    // Check if a result exists and is an array or iterable
+    if (typeof result[Symbol.iterator] === 'function') {
         for (const pair of result) {
-            if (Array.isArray(pair) && pair.length >= 2 && pair[0] && pair[0][2]) {
+            if (Array.isArray(pair) && pair[0][2]) {
                 const key = pair[0]
                 const value = pair[1]
                 accountMap[key[2]] = value?.balance ?? 0n

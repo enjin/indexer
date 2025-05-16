@@ -19,11 +19,12 @@ export async function burned(
 
     const token = await ctx.store.findOne(Token, {
         where: { id: `${data.collectionId}-${data.tokenId}` },
+        relations: { collection: true },
     })
 
     if (skipSave) {
         await getOrCreateAccount(ctx, data.accountId)
-        return mappings.multiTokens.events.burnedEventModel(item, data, token)
+        return mappings.multiTokens.events.burnedEventModel(item, data, token?.collection, token)
     }
 
     const tokenAccount = await ctx.store.findOne(TokenAccount, {
@@ -47,7 +48,6 @@ export async function burned(
         }
         await ctx.store.save(token)
 
-        // console.log('Dispatching from burned')
         QueueUtils.dispatchComputeStats(data.collectionId.toString())
         QueueUtils.dispatchComputeTraits(data.collectionId.toString())
     } else {
@@ -69,5 +69,5 @@ export async function burned(
         })
     }
 
-    return mappings.multiTokens.events.burnedEventModel(item, data, token)
+    return mappings.multiTokens.events.burnedEventModel(item, data, token?.collection, token)
 }

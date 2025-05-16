@@ -1,6 +1,5 @@
 import { throwFatalError } from '../../../util/errors'
 import {
-    AccountTokenEvent,
     Attribute,
     Event as EventModel,
     Listing,
@@ -144,7 +143,6 @@ export async function tokenDestroyed(
 
     await ctx.store.remove(token)
 
-    // console.log('Dispatching from token destroyed')
     QueueUtils.dispatchComputeStats(data.collectionId.toString())
     QueueUtils.dispatchComputeTraits(data.collectionId.toString())
 

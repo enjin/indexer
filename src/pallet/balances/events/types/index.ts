@@ -1,6 +1,7 @@
 export * from './balance-set'
 export * from './burned'
 export * from './deposit'
+export * from './issued'
 export * from './dust-lost'
 export * from './endowed'
 export * from './frozen'

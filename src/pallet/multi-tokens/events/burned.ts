@@ -2,7 +2,18 @@ import { multiTokens } from '../../../type/events'
 import { EventItem } from '../../../contexts'
 import { UnsupportedEventError } from '../../../util/errors'
 import { match } from 'ts-pattern'
-import { Account, AccountTokenEvent, Event as EventModel, Extrinsic, MultiTokensBurned, Token } from '../../../model'
+import {
+    Account,
+    AccountTokenEvent,
+    AccountTokenEventMeta,
+    AccountTokenEventMetaCollection,
+    AccountTokenEventMetaToken,
+    Collection,
+    Event as EventModel,
+    Extrinsic,
+    MultiTokensBurned,
+    Token,
+} from '../../../model'
 import { Burned } from './types'
 
 export function burned(event: EventItem): Burned {
@@ -20,6 +31,7 @@ export function burned(event: EventItem): Burned {
 export function burnedEventModel(
     item: EventItem,
     data: Burned,
+    collection?: Collection,
     token?: Token
 ): [EventModel, AccountTokenEvent] | undefined | EventModel {
     const event = new EventModel({
@@ -41,10 +53,25 @@ export function burnedEventModel(
         event,
         new AccountTokenEvent({
             id: item.id,
-            collectionId: data.collectionId.toString(),
-            tokenId: data.tokenId.toString(),
             from: new Account({ id: data.accountId }),
             event,
+            collectionId: data.collectionId.toString(),
+            tokenId: data.tokenId.toString(),
+            meta: new AccountTokenEventMeta({
+                collection: !collection
+                    ? undefined
+                    : new AccountTokenEventMetaCollection({
+                          metadata: collection.metadata,
+                          createdAt: collection.createdAt,
+                      }),
+                token: !token
+                    ? undefined
+                    : new AccountTokenEventMetaToken({
+                          nonFungible: token.nonFungible,
+                          metadata: token.metadata,
+                          createdAt: token.createdAt,
+                      }),
+            }),
         }),
     ]
 }

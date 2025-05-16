@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
+      APOLLO_VCS_BRANCH: ${{ github.head_ref }}
       APOLLO_VCS_COMMIT: ${{ github.event.pull_request.head.sha }}
     services:
       postgres:
@@ -58,32 +59,13 @@ jobs:
           curl -sSL https://rover.apollo.dev/nix/v0.29.1 | sh
           echo "$HOME/.rover/bin" >> $GITHUB_PATH
 
-      - name: Introspect schema from client
+      - name: Introspect, lint, check schema
         run: |
           rover graph introspect -o apollo.graphql http://localhost:4000/graphql 
+          rover graph lint --schema apollo.graphql enjin-indexer@current
+          rover graph check --schema apollo.graphql enjin-indexer@current 
 
-      - uses: apollographql-gh-actions/rover-subgraph-check@v1
-        with:
-          apollo-key: ${{ secrets.APOLLO_KEY }}
-          graph-ref: enjin-indexer@current
-          name: enjin-indexer
-          schema: ./apollo.graphql
-
-      - uses: apollographql-gh-actions/rover-subgraph-lint@v1
-        with:
-          apollo-key: ${{ secrets.APOLLO_KEY }}
-          graph-ref: enjin-indexer@current
-          name: enjin-indexer
-          schema: ./apollo.graphql
-
-      - name: Run check against prod
-        run: |
-          rover graph check enjin-indexer@current --schema ./apollo.graphql
-
-      - uses: apollographql-gh-actions/rover-subgraph-publish@v1
+      - name: Publishes Apollo Schema
         if: github.event_name == 'release'
-        with:
-          apollo-key: ${{ secrets.APOLLO_KEY }}
-          graph-ref: enjin-indexer@current
-          name: enjin-indexer
-          schema: ./apollo.graphql
+        run: |
+          rover graph publish --schema apollo.graphql enjin-indexer@current

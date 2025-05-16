@@ -76,6 +76,22 @@ type Event @entity {
   tokenId: String @index
 }
 
+type AccountTokenEventMetaToken {
+  nonFungible: Boolean!
+  metadata: Metadata
+  createdAt: DateTime!
+}
+
+type AccountTokenEventMetaCollection {
+  metadata: Metadata
+  createdAt: DateTime!
+}
+
+type AccountTokenEventMeta {
+  collection: AccountTokenEventMetaCollection
+  token: AccountTokenEventMetaToken
+}
+
 type AccountTokenEvent @entity {
   id: ID!
   from: Account! @index
@@ -83,6 +99,7 @@ type AccountTokenEvent @entity {
   event: Event!
   collectionId: String! @index
   tokenId: String! @index
+  meta: AccountTokenEventMeta
 }
 
 type BalancesTransfer {
@@ -551,6 +568,7 @@ type Collection @entity {
   rarity: [TokenRarity] @derivedFrom(field: "collection")
 
   # Extras
+  name: String @index
   metadata: Metadata
   createdAt: DateTime!
   flags: CollectionFlags!
@@ -568,7 +586,7 @@ type CollectionApproval {
   expiration: Int
 }
 
-type CollectionAccount @entity {
+type CollectionAccount @entity @index(fields: ["account", "collection"], unique: true) {
   id: ID!
 
   # Storage defaults
@@ -673,6 +691,7 @@ type Token @entity {
   lastSale: ListingSale
 
   # Extras
+  name: String @index
   nonFungible: Boolean!
   metadata: Metadata
   updatedAt: DateTime
@@ -703,7 +722,7 @@ type TokenLock {
   amount: BigInt!
 }
 
-type TokenAccount @entity {
+type TokenAccount @entity @index(fields: ["account", "token"], unique: true) {
   id: ID!
 
   # Storage defaults

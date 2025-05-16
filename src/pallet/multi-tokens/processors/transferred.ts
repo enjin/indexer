@@ -16,17 +16,18 @@ export async function transferred(
 
     const token = await ctx.store.findOne<Token>(Token, {
         where: { id: `${data.collectionId}-${data.tokenId}` },
+        relations: { collection: true },
     })
 
     if (skipSave) {
         await Promise.all([getOrCreateAccount(ctx, data.from), getOrCreateAccount(ctx, data.to)])
 
-        return mappings.multiTokens.events.transferredEventModel(item, data, token)
+        return mappings.multiTokens.events.transferredEventModel(item, data, token?.collection, token)
     }
 
     if (!token) {
         throwFatalError(`[Transferred] We have not found token ${data.collectionId}-${data.tokenId}.`)
-        return mappings.multiTokens.events.transferredEventModel(item, data, token)
+        return mappings.multiTokens.events.transferredEventModel(item, data, undefined, undefined)
     }
 
     const fromAddress = data.from
@@ -63,7 +64,6 @@ export async function transferred(
         )
     }
 
-    // console.log('Dispatching from transferred')
     QueueUtils.dispatchComputeStats(data.collectionId.toString())
 
     if (item.extrinsic) {
@@ -83,5 +83,5 @@ export async function transferred(
         })
     }
 
-    return mappings.multiTokens.events.transferredEventModel(item, data, token)
+    return mappings.multiTokens.events.transferredEventModel(item, data, token.collection, token)
 }
