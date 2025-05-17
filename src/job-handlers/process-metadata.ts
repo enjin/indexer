@@ -184,7 +184,8 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
 
             const { api } = await Rpc.getInstance()
             if ('marketPolicy' in resource) {
-                const storage = await api.query.multiTokens.collections(resource.id)
+                const collectionId = jobData.resourceId
+                const storage = await api.query.multiTokens.collections(collectionId)
                 const data: EpMultiTokensCollection = storage.unwrap()
                 const royaltyPolicy = data.policy.market.royalty
                 if (royaltyPolicy.isSome) {
@@ -206,7 +207,9 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
                 }
             }
             if ('behavior' in resource) {
-                const storage = await api.query.multiTokens.tokens(resource.collection.id, resource.tokenId)
+                const collectionId = jobData.resourceId.split('-')[0]
+                const tokenId = jobData.resourceId.split('-')[1]
+                const storage = await api.query.multiTokens.tokens(collectionId, tokenId)
                 const data: EpMultiTokensToken = storage.unwrap()
                 const marketBehavior = data.marketBehavior
                 if (marketBehavior.isSome && marketBehavior.unwrap().isHasRoyalty) {
@@ -231,7 +234,7 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
 
             await em.save(resource)
 
-            if (jobData.type === 'collection' && jobData.allTokens === true) {
+            if (jobData.type === 'collection' && jobData.allTokens) {
                 // eslint-disable-next-line no-console
                 console.log('Processing all tokens in collection', jobData.resourceId)
 
