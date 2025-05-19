@@ -3,6 +3,8 @@ services:
     container_name: indexer_db
     image: postgres:16
     restart: unless-stopped
+    env_file:
+      - .env
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_PASSWORD: ${DB_PASS}
@@ -10,8 +12,8 @@ services:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
       - indexer_db:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
-    shm_size: 10gb
+      - "${DB_PORT}:5432"
+    shm_size: 1gb
     command: [
       "postgres",
       "-c", "max_connections=200",
@@ -26,11 +28,13 @@ services:
   indexer_redis:
     container_name: indexer_redis
     restart: unless-stopped
+    env_file:
+      - .env
     image: redis:7
     ulimits:
       memlock: -1
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT}:6379"
     volumes:
       - redis_db:/data
     command:
@@ -49,6 +53,8 @@ services:
     container_name: indexer_processor
     restart: unless-stopped
     image: ghcr.io/enjin/indexer:${VERSION:-latest}
+    env_file:
+      - .env
     environment:
       CONTAINER_ROLE: processor
       TRUNCATE_DATABASE: ${TRUNCATE_DATABASE}
@@ -74,7 +80,7 @@ services:
       HASURA_GRAPHQL_DEV_MODE: true
       HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup,http-log,webhook-log,websocket-log,query-log
     ports:
-      - "8085:8080"
+      - "${HASURA_PORT}:8080"
     depends_on:
       - indexer_db
 
@@ -87,8 +93,8 @@ services:
     build:
       context: .
     ports:
-      - "4000:4000"
-      - "8080:8080"
+      - "${GQL_PORT}:4000"
+      - "${GQL_METRICS_PORT}:8080"
     volumes:
       - .env:/app/.env
     depends_on:
@@ -103,7 +109,7 @@ services:
     build:
       context: .
     ports:
-      - "9090:9090"
+      - "${WORKER_PORT}:9090"
     volumes:
       - .env:/app/.env
     depends_on:
