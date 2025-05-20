@@ -104,10 +104,13 @@ class AccountsTokensOwner {
 
     @Field()
     createdAt!: Date
+
+    @Field(() => [AccountsTokensListing], { nullable: true })
+    listings!: AccountsTokensListing[]
 }
 
 @ObjectType()
-class AccountsTokensBestListing {
+class AccountsTokensListing {
     @Field(() => ID)
     id!: string
 
@@ -119,6 +122,9 @@ class AccountsTokensBestListing {
 
     @Field(() => Json)
     data!: typeof Json
+
+    @Field(() => Json)
+    makeAssetId!: typeof Json
 }
 
 @ObjectType()
@@ -149,9 +155,6 @@ export class AccountsTokensToken {
 
     @Field(() => AccountsTokensCollection)
     collection!: AccountsTokensCollection
-
-    @Field(() => AccountsTokensBestListing, { nullable: true })
-    bestListing!: AccountsTokensBestListing
 
     @Field(() => [AccountsTokensOwner], { nullable: false })
     owners!: AccountsTokensOwner[]
@@ -184,24 +187,21 @@ export class AccountsTokensResolver {
     ): Promise<AccountsTokensResponse> {
         const manager = await this.tx()
 
-        // First, get the tokens owned by any of the specified accounts
         const builder = manager
             .getRepository(Token)
             .createQueryBuilder('token')
             .innerJoinAndMapOne('token.collection', Collection, 'collection', 'token.collection = collection.id')
-            .leftJoinAndMapOne('token.bestListing', Listing, 'listing', 'listing.makeAssetId = token.id')
             .innerJoin(
                 TokenAccount,
                 'token_account',
                 'token_account.token = token.id AND token_account.account IN (:...accountIds)',
                 { accountIds }
             )
-            .groupBy('token.id, collection.id, listing.id')
+            .groupBy('token.id, collection.id')
             .orderBy(orderBy, order, 'NULLS LAST')
             .skip(offset)
             .limit(limit)
 
-        // Apply collection filter if provided
         if (collectionId) {
             builder.andWhere('collection.collectionId = :collectionId', { collectionId })
         }
@@ -221,7 +221,6 @@ export class AccountsTokensResolver {
 
         const tokenIds = tokens.map((token: { id: string }) => token.id)
 
-        // Get all token accounts for these tokens from the specified accounts
         const tokenAccounts = await manager
             .getRepository(TokenAccount)
             .createQueryBuilder('token_account')
@@ -229,7 +228,18 @@ export class AccountsTokensResolver {
             .innerJoinAndSelect('token_account.account', 'account', 'account.id IN (:...accountIds)', { accountIds })
             .getMany()
 
-        // Group token accounts by token ID
+        const listings = await manager
+            .getRepository(Listing)
+            .createQueryBuilder('listing')
+            .leftJoinAndSelect('listing.makeAssetId', 'makeAsset')
+            .leftJoinAndSelect('listing.seller', 'seller')
+            .where('listing.makeAssetId.id IN (:...tokenIds) AND seller.id IN (:...accountIds)', {
+                tokenIds,
+                accountIds,
+            })
+            .andWhere('listing.is_active = true')
+            .getMany()
+
         const tokenAccountsByToken = tokenAccounts.reduce(
             (acc, ta) => {
                 const tokenId = ta.token.id as unknown as string
@@ -242,21 +252,48 @@ export class AccountsTokensResolver {
             {} as Record<string, any[]>
         )
 
-        // Map the results to the expected format
+        const listingsByTokenAndAccount = listings.reduce(
+            (acc, listing) => {
+                const tokenId = listing.makeAssetId.id
+                const accountId = listing.seller.id
+
+                const key = `${tokenId}-${accountId}`
+                if (!acc[key]) {
+                    acc[key] = []
+                }
+                acc[key].push(listing)
+                return acc
+            },
+            {} as Record<string, any[]>
+        )
+
         const data = tokens.map((token: { id: string }) => {
             const tokenObj = token as any
             const accounts = tokenAccountsByToken[token.id] || []
 
-            // Create owner objects for each account
-            tokenObj.owners = accounts.map((ta) => ({
-                id: ta.id,
-                balance: ta.balance,
-                reservedBalance: ta.reservedBalance,
-                isFrozen: ta.isFrozen,
-                accountId: ta.account.id,
-                updatedAt: ta.updatedAt,
-                createdAt: ta.createdAt,
-            }))
+            // Create owner objects for each account (with their listings)
+            tokenObj.owners = accounts.map((ta) => {
+                const accountId = ta.account.id
+                const key = `${token.id}-${accountId}`
+                const ownerListings = listingsByTokenAndAccount[key] || []
+
+                return {
+                    id: ta.id,
+                    balance: ta.balance,
+                    reservedBalance: ta.reservedBalance,
+                    isFrozen: ta.isFrozen,
+                    accountId: accountId,
+                    updatedAt: ta.updatedAt,
+                    createdAt: ta.createdAt,
+                    listings: ownerListings.map((listing) => ({
+                        id: listing.id,
+                        highestPrice: listing.highestPrice,
+                        state: listing.state,
+                        data: listing.data,
+                        makeAssetId: listing.makeAssetId,
+                    })),
+                }
+            })
 
             return tokenObj
         })
