@@ -12,8 +12,8 @@ services:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
       - indexer_db:/var/lib/postgresql/data
     ports:
-      - "${DB_PORT}:5432"
-    shm_size: 1gb
+      - "${DB_EXPOSED_PORT}:5432"
+    shm_size: 10gb
     command: [
       "postgres",
       "-c", "max_connections=200",
@@ -34,7 +34,7 @@ services:
     ulimits:
       memlock: -1
     ports:
-      - "${REDIS_PORT}:6379"
+      - "${REDIS_EXPOSED_PORT}:6379"
     volumes:
       - redis_db:/data
     command:
@@ -80,7 +80,7 @@ services:
       HASURA_GRAPHQL_DEV_MODE: true
       HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup,http-log,webhook-log,websocket-log,query-log
     ports:
-      - "${HASURA_PORT}:8080"
+      - "${HASURA_EXPOSED_PORT}:8080"
     depends_on:
       - indexer_db
 
@@ -93,8 +93,8 @@ services:
     build:
       context: .
     ports:
-      - "${GQL_PORT}:4000"
-      - "${GQL_METRICS_PORT}:8080"
+      - "${GQL_EXPOSED_PORT}:4000"
+      - "${GQL_METRICS_EXPOSED_PORT}:8080"
     volumes:
       - .env:/app/.env
     depends_on:
@@ -109,7 +109,7 @@ services:
     build:
       context: .
     ports:
-      - "${WORKER_PORT}:9090"
+      - "${WORKER_EXPOSED_PORT}:9090"
     volumes:
       - .env:/app/.env
     depends_on:
