@@ -209,17 +209,18 @@ export class AccountsTokensResolver {
         }
 
         // Get the total count with the same filters
-        const count = await baseQuery.getCount()
+        const count = await baseQuery.select('token.id').distinct(true).getCount()
 
         // First get the paginated token IDs
         const tokenIds = await baseQuery
-            .select('token.id')
+            .select(`token.id, ${orderBy}`)
+            .distinctOn(['token.id', orderBy])
             .orderBy(orderBy, order, 'NULLS LAST')
-            .groupBy('token.id')
+            .addOrderBy('token.id', order, 'NULLS LAST')
             .offset(offset)
             .limit(limit)
-            .getMany()
-            .then((ids) => ids.map((id) => id.id))
+            .getRawMany()
+            .then((results) => results.map((row) => row.id))
 
         if (tokenIds.length === 0) {
             return new AccountsTokensResponse({ data: [], count })
