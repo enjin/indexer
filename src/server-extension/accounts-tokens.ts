@@ -7,9 +7,8 @@ import { Collection, FreezeState, Listing, Token, TokenAccount } from '../model'
 import { isValidAddress } from '../util/tools'
 
 enum OrderBy {
-    COLLECTION_NAME = "collection.metadata->>'name'",
-    TOKEN_NAME = "token.metadata->>'name'",
-    FLOOR_PRICE = 'listing.highestPrice',
+    COLLECTION_NAME = 'collection.name',
+    TOKEN_NAME = 'token.name',
     DATE = 'token.createdAt',
 }
 
@@ -187,7 +186,8 @@ export class AccountsTokensResolver {
     ): Promise<AccountsTokensResponse> {
         const manager = await this.tx()
 
-        const builder = manager
+        // Build the base query with all conditions
+        const baseQuery = manager
             .getRepository(Token)
             .createQueryBuilder('token')
             .innerJoinAndMapOne('token.collection', Collection, 'collection', 'token.collection = collection.id')
@@ -197,29 +197,42 @@ export class AccountsTokensResolver {
                 'token_account.token = token.id AND token_account.account IN (:...accountIds)',
                 { accountIds }
             )
-            .groupBy('token.id, collection.id')
-            .orderBy(orderBy, order, 'NULLS LAST')
-            .skip(offset)
-            .limit(limit)
 
         if (collectionId) {
-            builder.andWhere('collection.collectionId = :collectionId', { collectionId })
+            baseQuery.andWhere('collection.collectionId = :collectionId', { collectionId })
         }
 
         if (query) {
-            builder.andWhere("collection.metadata->>'name' ILIKE :query OR token.metadata->>'name' ILIKE :query", {
+            baseQuery.andWhere('collection.name ILIKE :query OR token.name ILIKE :query', {
                 query: `%${query}%`,
             })
         }
 
-        const [tokens, count] = (await builder.getManyAndCount()) as any[]
+        // Get the total count with the same filters
+        const count = await baseQuery.getCount()
 
-        // If no tokens found, return early
-        if (tokens.length === 0) {
-            return { data: [], count }
+        // First get the paginated token IDs
+        const tokenIds = await baseQuery
+            .select('token.id')
+            .orderBy(orderBy, order, 'NULLS LAST')
+            .groupBy('token.id')
+            .offset(offset)
+            .limit(limit)
+            .getMany()
+            .then((ids) => ids.map((id) => id.id))
+
+        if (tokenIds.length === 0) {
+            return new AccountsTokensResponse({ data: [], count })
         }
 
-        const tokenIds = tokens.map((token: { id: string }) => token.id)
+        const tokens = await manager
+            .getRepository(Token)
+            .createQueryBuilder('token')
+            .innerJoinAndMapOne('token.collection', Collection, 'collection', 'token.collection = collection.id')
+            .where('token.id IN (:...tokenIds)', { tokenIds: tokenIds })
+            .orderBy(orderBy, order, 'NULLS LAST')
+            .addOrderBy('token.id', order, 'NULLS LAST')
+            .getMany()
 
         const tokenAccounts = await manager
             .getRepository(TokenAccount)
@@ -298,6 +311,6 @@ export class AccountsTokensResolver {
             return tokenObj
         })
 
-        return { data, count }
+        return new AccountsTokensResponse({ data, count })
     }
 }
