@@ -54,7 +54,7 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
     }
 
     const jobData = job.data
-    connection.manager.transaction('REPEATABLE READ', async (em) => {
+    await connection.manager.transaction('READ COMMITTED', async (em) => {
         let resource: Collection | Token | null
         let attributes: Attribute[] = []
         let collectionUriAttribute: Attribute | null = null
@@ -94,7 +94,10 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
             let metadataOriginUrl = null
 
             if (collectionUriAttribute && collectionUriAttribute.value.includes('{id}')) {
-                uriAttribute = { ...collectionUriAttribute, value: collectionUriAttribute.value.replace('{id}', resource.id) }
+                uriAttribute = {
+                    ...collectionUriAttribute,
+                    value: collectionUriAttribute.value.replace('{id}', resource.id),
+                }
             }
 
             if (attributes.some((a) => a.key === 'uri')) {
