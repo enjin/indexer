@@ -150,8 +150,8 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
                     typeof response[0].metadata === 'object' &&
                     !jobData.force
                 ) {
-                    job.log(`Metadata for ${jobData.resourceId} already exists`)
-                    job.log(JSON.stringify(response[0].metadata))
+                    await job.log(`Metadata for ${jobData.resourceId} already exists`)
+                    await job.log(JSON.stringify(response[0].metadata))
                     externalMetadata = response[0].metadata
                 } else {
                     const externalResponse = await fetchMetadata(uriAttribute.value, job)
@@ -186,6 +186,8 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
             resource.metadata = metadata
 
             const { api } = await Rpc.getInstance()
+            await api.isReady
+
             if ('marketPolicy' in resource) {
                 const collectionId = jobData.resourceId
                 const storage = await api.query.multiTokens.collections(collectionId)
