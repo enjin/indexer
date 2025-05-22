@@ -1,5 +1,5 @@
 import { Field, ObjectType, Query, Resolver, Arg, registerEnumType, ID, Int } from 'type-graphql'
-import { Json } from '@subsquid/graphql-server'
+import { BigInteger, Json } from '@subsquid/graphql-server'
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
 import { Collection, Listing, ListingSale, ListingStatus, Token } from '../../model'
@@ -53,9 +53,27 @@ registerEnumType(Order, {
 })
 
 @ObjectType()
+class CollectionAttribute {
+    @Field(() => ID)
+    id!: string
+
+    @Field({ nullable: false })
+    key!: string
+
+    @Field({ nullable: false })
+    value!: string
+
+    @Field(() => BigInteger)
+    deposit!: typeof BigInteger
+}
+
+@ObjectType()
 export class CollectionRow {
     @Field(() => ID, { nullable: false })
     id!: string
+
+    @Field(() => [CollectionAttribute], { nullable: true })
+    attributes!: CollectionAttribute[]
 
     @Field(() => Json, { nullable: true })
     metadata!: typeof Json
@@ -152,7 +170,11 @@ export class TopCollectionResolver {
                     .addSelect(
                         'MAX(CASE WHEN previous_avg_sale != 0 THEN ROUND((last_avg_sale - previous_avg_sale) * 100 / previous_avg_sale, 2) ELSE null END) OVER() AS max_avg_sale_change'
                     )
-
+                    .addSelect(
+                        `(SELECT json_agg(json_build_object('id', attr.id, 'key', attr.key, 'value', attr.value, 'deposit', attr.deposit)) 
+                                  FROM attribute attr 
+                                  WHERE attr.collection_id = l.collectionId AND attr.token_id IS NULL) AS attributes`
+                    )
                     .from((qb) => {
                         const inBuilder = qb
                             .select('collection.id AS collectionId')
@@ -219,6 +241,14 @@ export class TopCollectionResolver {
             .limit(limit)
             .offset(offset)
 
-        return builder.getRawMany()
+        const collections = await builder.getRawMany()
+
+        // Parse the attributes JSON if it's a string
+        return collections.map((collection) => {
+            if (typeof collection.attributes === 'string') {
+                collection.attributes = JSON.parse(collection.attributes)
+            }
+            return new CollectionRow(collection)
+        })
     }
 }
