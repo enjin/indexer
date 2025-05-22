@@ -12,6 +12,7 @@ import {
     RoyaltyBeneficiary,
     Token,
     TokenBehaviorHasRoyalty,
+    TokenBehaviorType,
 } from '../model'
 import { fetchMetadata, metadataParser, parseMedia } from '../mappings/util/metadata'
 import { EpMultiTokensCollection, EpMultiTokensToken } from '@polkadot/types/lookup'
@@ -221,18 +222,27 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
                     const hasRoyalty = marketBehavior.unwrap().asHasRoyalty
                     const beneficiaries = hasRoyalty.beneficiaries
 
+                    const beneficiary = beneficiaries[0]
+                    const percentage = beneficiary.percentage.toNumber()
+                    const accountId = beneficiary.beneficiary.toHex()
+
+                    const royaltyData = new Royalty({
+                        beneficiary: accountId,
+                        percentage: percentage,
+                    })
+
+                    const beneficiariesData = beneficiaries.map(
+                        (b) =>
+                            new RoyaltyBeneficiary({
+                                accountId: b.beneficiary.toHex(),
+                                percentage: b.percentage.toNumber(),
+                            })
+                    )
+
                     resource.behavior = new TokenBehaviorHasRoyalty({
-                        royalty: new Royalty({
-                            beneficiary: beneficiaries[0].beneficiary.toHex(),
-                            percentage: beneficiaries[0].percentage.toNumber(),
-                        }),
-                        beneficiaries: beneficiaries.map(
-                            (b) =>
-                                new RoyaltyBeneficiary({
-                                    accountId: b.beneficiary.toHex(),
-                                    percentage: b.percentage.toNumber(),
-                                })
-                        ),
+                        type: TokenBehaviorType.HasRoyalty,
+                        royalty: royaltyData,
+                        beneficiaries: beneficiariesData,
                     })
                 }
             }
