@@ -1,8 +1,10 @@
-import { Field, ObjectType, Query, Resolver, Arg, registerEnumType, ID, Int } from 'type-graphql'
+import { Field, ObjectType, Query, Resolver, Arg, registerEnumType, ID, Int, Root, FieldResolver, InputType } from 'type-graphql'
 import { BigInteger, Json } from '@subsquid/graphql-server'
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
 import { Collection, Listing, ListingSale, ListingStatus, Token } from '../../model'
+import { DateTimeColumn as DateTimeColumn_ } from '@subsquid/typeorm-store/lib/decorators/columns/DateTimeColumn'
+import { OneToMany as OneToMany_ } from '@subsquid/typeorm-store/lib/decorators/relations/OneToMany'
 
 enum Timeframe {
     HOUR = 'HOUR',
@@ -53,26 +55,11 @@ registerEnumType(Order, {
 })
 
 @ObjectType()
-class CollectionAttribute {
-    @Field(() => ID)
-    id!: string
-
-    @Field({ nullable: false })
-    key!: string
-
-    @Field({ nullable: false })
-    value!: string
-
-    @Field(() => BigInteger)
-    deposit!: typeof BigInteger
-}
-
-@ObjectType()
-export class CollectionRow {
+export class TopCollection {
     @Field(() => ID, { nullable: false })
     id!: string
 
-    @Field(() => [CollectionAttribute], { nullable: true })
+    @Field(() => [CollectionAttribute])
     attributes!: CollectionAttribute[]
 
     @Field(() => Json, { nullable: true })
@@ -114,16 +101,56 @@ export class CollectionRow {
     @Field({ nullable: true })
     max_sales!: string
 
-    constructor(props: Partial<CollectionRow>) {
+    constructor(props: Partial<TopCollection>) {
         Object.assign(this, props)
     }
 }
 
-@Resolver()
+@ObjectType()
+class CollectionAttribute {
+    @Field(() => ID)
+    id!: string
+
+    @Field({ nullable: false })
+    key!: string
+
+    @Field({ nullable: false })
+    value!: string
+
+    @Field(() => BigInteger)
+    deposit!: typeof BigInteger
+
+    @Field(() => TopCollection)
+    collection!: TopCollection
+
+    @DateTimeColumn_({ nullable: false })
+    createdAt!: Date
+
+    @DateTimeColumn_({ nullable: false })
+    updatedAt!: Date
+}
+
+@InputType()
+class FilterCondition {
+    @Field(() => Boolean, { nullable: true })
+    token_isNull?: boolean
+
+    @Field(() => String, { nullable: true })
+    key_eq?: string
+}
+
+@InputType()
+class CollectionAttributeWhereInput {
+    @Field(() => [FilterCondition], { nullable: true })
+    AND?: FilterCondition[]
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+@Resolver((of) => TopCollection)
 export class TopCollectionResolver {
     constructor(private tx: () => Promise<EntityManager>) {}
 
-    @Query(() => [CollectionRow])
+    @Query(() => [TopCollection])
     async topCollection(
         @Arg('timeFrame', () => Timeframe) timeFrame: Timeframe,
         @Arg('orderBy', () => TopCollectionOrderBy) orderBy: TopCollectionOrderBy,
@@ -132,7 +159,7 @@ export class TopCollectionResolver {
         @Arg('order', () => Order) order: Order,
         @Arg('offset', () => Int) offset: number = 0,
         @Arg('limit', () => Int) limit: number = 10
-    ): Promise<CollectionRow[]> {
+    ): Promise<TopCollection[]> {
         const manager = await this.tx()
 
         const builder = manager
@@ -248,7 +275,15 @@ export class TopCollectionResolver {
             if (typeof collection.attributes === 'string') {
                 collection.attributes = JSON.parse(collection.attributes)
             }
-            return new CollectionRow(collection)
+            return new TopCollection(collection)
         })
+    }
+
+    @FieldResolver(() => [CollectionAttribute])
+    attributes(
+        @Root() topCollection: TopCollection,
+        @Arg('where', () => CollectionAttributeWhereInput, { nullable: true }) where?: CollectionAttributeWhereInput
+    ): CollectionAttribute[] {
+        return topCollection.attributes
     }
 }
