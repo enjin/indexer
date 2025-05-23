@@ -5,6 +5,7 @@ import type { EntityManager } from 'typeorm'
 import { Collection, Listing, ListingSale, ListingStatus, Token } from '../../model'
 import { DateTimeColumn as DateTimeColumn_ } from '@subsquid/typeorm-store/lib/decorators/columns/DateTimeColumn'
 import { OneToMany as OneToMany_ } from '@subsquid/typeorm-store/lib/decorators/relations/OneToMany'
+import { attributes } from '../../types/generated/multi-tokens/storage'
 
 enum Timeframe {
     HOUR = 'HOUR',
@@ -284,6 +285,17 @@ export class TopCollectionResolver {
         @Root() topCollection: TopCollection,
         @Arg('where', () => CollectionAttributeWhereInput, { nullable: true }) where?: CollectionAttributeWhereInput
     ): CollectionAttribute[] {
-        return topCollection.attributes
+        if (!where || !where.AND || where.AND.length === 0) {
+            return topCollection.attributes
+        }
+
+        const keyEq = where.AND.find((cond) => cond.key_eq)
+        if (!keyEq || !keyEq.key_eq) {
+            return topCollection.attributes
+        }
+
+        return topCollection.attributes.filter((attr) => {
+            return attr.key === keyEq?.key_eq
+        })
     }
 }
