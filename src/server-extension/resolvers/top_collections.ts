@@ -4,8 +4,6 @@ import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
 import { Collection, Listing, ListingSale, ListingStatus, Token } from '../../model'
 import { DateTimeColumn as DateTimeColumn_ } from '@subsquid/typeorm-store/lib/decorators/columns/DateTimeColumn'
-import { OneToMany as OneToMany_ } from '@subsquid/typeorm-store/lib/decorators/relations/OneToMany'
-import { attributes } from '../../types/generated/multi-tokens/storage'
 
 enum Timeframe {
     HOUR = 'HOUR',
@@ -299,11 +297,15 @@ export class TopCollectionResolver {
         }
 
         return topCollection.attributes.filter((attr) => {
-            if (keyEq) {
-                return attr.key === keyEq?.key_eq
+            if (keyEq?.key_eq) {
+                return attr.key === keyEq.key_eq
             }
 
-            return keyIn?.key_in?.includes(attr.key) ?? false
+            if (keyIn?.key_in && keyIn?.key_in.length > 0) {
+                return keyIn?.key_in?.includes(attr.key)
+            }
+
+            return false
         })
     }
 }
