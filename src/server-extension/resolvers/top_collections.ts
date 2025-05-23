@@ -138,6 +138,9 @@ class FilterCondition {
 
     @Field(() => String, { nullable: true })
     key_eq?: string
+
+    @Field(() => [String], { nullable: true })
+    key_in?: string[]
 }
 
 @InputType()
@@ -290,12 +293,17 @@ export class TopCollectionResolver {
         }
 
         const keyEq = where.AND.find((cond) => cond.key_eq)
-        if (!keyEq || !keyEq.key_eq) {
+        const keyIn = where.AND.find((cond) => cond.key_in)
+        if ((!keyEq && !keyIn) || (keyEq && !keyIn && !keyEq.key_eq) || (keyIn && !keyEq && !keyIn.key_in)) {
             return topCollection.attributes
         }
 
         return topCollection.attributes.filter((attr) => {
-            return attr.key === keyEq?.key_eq
+            if (keyEq) {
+                return attr.key === keyEq?.key_eq
+            }
+
+            return keyIn?.key_in?.includes(attr.key) ?? false
         })
     }
 }
