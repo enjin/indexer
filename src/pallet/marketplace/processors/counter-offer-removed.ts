@@ -32,7 +32,13 @@ export async function counterOfferRemoved(
         counterOfferCount: listing.state.counterOfferCount - 1,
     })
 
-    const offer = await ctx.store.findOneByOrFail<CounterOffer>(CounterOffer, { id: `${listing.id}-${creator.id}` })
+    const offer = await ctx.store.findOneBy<CounterOffer>(CounterOffer, { id: `${listing.id}-${creator.id}` })
+
+    if (offer) {
+        await ctx.store.remove(offer)
+    }
+
+    await ctx.store.save(listing)
 
     if (item.extrinsic) {
         await Sns.getInstance().send({
@@ -58,8 +64,6 @@ export async function counterOfferRemoved(
             },
         })
     }
-
-    await Promise.all([ctx.store.remove(offer), ctx.store.save(listing)])
 
     return mappings.marketplace.events.counterOfferRemovedEventModel(
         item,
