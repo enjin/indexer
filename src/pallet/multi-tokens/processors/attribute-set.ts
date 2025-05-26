@@ -114,7 +114,7 @@ export async function attributeSet(
             key,
             value,
             deposit: 0n, // TODO: Change fixed for now
-            collection,
+            collection: token ? undefined : collection,
             token,
             createdAt: new Date(block.timestamp ?? 0),
             updatedAt: new Date(block.timestamp ?? 0),
