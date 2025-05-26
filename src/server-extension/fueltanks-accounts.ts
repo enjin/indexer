@@ -66,6 +66,7 @@ export class FuelTanksAccountsResolver {
         account: string
     ): Promise<FuelTanksAccountsResult | null> {
         const { api } = await Rpc.getInstance()
+        api.registerTypes(customTypes)
 
         const res = await api.query.fuelTanks.accounts(fuelTank, account)
 
