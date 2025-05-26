@@ -1,8 +1,21 @@
-import { Field, ObjectType, Query, Resolver, Arg, registerEnumType, ID, Int } from 'type-graphql'
-import { Json } from '@subsquid/graphql-server'
+import {
+    Field,
+    ObjectType,
+    Query,
+    Resolver,
+    Arg,
+    registerEnumType,
+    ID,
+    Int,
+    Root,
+    FieldResolver,
+    InputType,
+} from 'type-graphql'
+import { BigInteger, Json } from '@subsquid/graphql-server'
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
 import { Collection, Listing, ListingSale, ListingStatus, Token } from '../model'
+import { DateTimeColumn as DateTimeColumn_ } from '@subsquid/typeorm-store/lib/decorators/columns/DateTimeColumn'
 
 enum Timeframe {
     HOUR = 'HOUR',
@@ -53,9 +66,12 @@ registerEnumType(Order, {
 })
 
 @ObjectType()
-export class CollectionRow {
+export class TopCollection {
     @Field(() => ID, { nullable: false })
     id!: string
+
+    @Field(() => [CollectionAttribute])
+    attributes!: CollectionAttribute[]
 
     @Field(() => Json, { nullable: true })
     metadata!: typeof Json
@@ -96,16 +112,59 @@ export class CollectionRow {
     @Field({ nullable: true })
     max_sales!: string
 
-    constructor(props: Partial<CollectionRow>) {
+    constructor(props: Partial<TopCollection>) {
         Object.assign(this, props)
     }
 }
 
-@Resolver()
+@ObjectType()
+class CollectionAttribute {
+    @Field(() => ID)
+    id!: string
+
+    @Field({ nullable: false })
+    key!: string
+
+    @Field({ nullable: false })
+    value!: string
+
+    @Field(() => BigInteger)
+    deposit!: typeof BigInteger
+
+    @Field(() => TopCollection)
+    collection!: TopCollection
+
+    @DateTimeColumn_({ nullable: false })
+    createdAt!: Date
+
+    @DateTimeColumn_({ nullable: false })
+    updatedAt!: Date
+}
+
+@InputType()
+class FilterCondition {
+    @Field(() => Boolean, { nullable: true })
+    token_isNull?: boolean
+
+    @Field(() => String, { nullable: true })
+    key_eq?: string
+
+    @Field(() => [String], { nullable: true })
+    key_in?: string[]
+}
+
+@InputType()
+class CollectionAttributeWhereInput {
+    @Field(() => [FilterCondition], { nullable: true })
+    AND?: FilterCondition[]
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+@Resolver((of) => TopCollection)
 export class TopCollectionResolver {
     constructor(private tx: () => Promise<EntityManager>) {}
 
-    @Query(() => [CollectionRow])
+    @Query(() => [TopCollection])
     async topCollection(
         @Arg('timeFrame', () => Timeframe) timeFrame: Timeframe,
         @Arg('orderBy', () => TopCollectionOrderBy) orderBy: TopCollectionOrderBy,
@@ -114,7 +173,7 @@ export class TopCollectionResolver {
         @Arg('order', () => Order) order: Order,
         @Arg('offset', () => Int) offset: number = 0,
         @Arg('limit', () => Int) limit: number = 10
-    ): Promise<CollectionRow[]> {
+    ): Promise<TopCollection[]> {
         const manager = await this.tx()
 
         const builder = manager
@@ -152,7 +211,11 @@ export class TopCollectionResolver {
                     .addSelect(
                         'MAX(CASE WHEN previous_avg_sale != 0 THEN ROUND((last_avg_sale - previous_avg_sale) * 100 / previous_avg_sale, 2) ELSE null END) OVER() AS max_avg_sale_change'
                     )
-
+                    .addSelect(
+                        `(SELECT json_agg(json_build_object('id', attr.id, 'key', attr.key, 'value', attr.value, 'deposit', attr.deposit)) 
+                                  FROM attribute attr 
+                                  WHERE attr.collection_id = l.collectionId AND attr.token_id IS NULL) AS attributes`
+                    )
                     .from((qb) => {
                         const inBuilder = qb
                             .select('collection.id AS collectionId')
@@ -223,6 +286,42 @@ export class TopCollectionResolver {
             .limit(limit)
             .offset(offset)
 
-        return builder.getRawMany()
+        const collections = await builder.getRawMany()
+
+        // Parse the attributes JSON if it's a string
+        return collections.map((collection) => {
+            if (typeof collection.attributes === 'string') {
+                collection.attributes = JSON.parse(collection.attributes)
+            }
+            return new TopCollection(collection)
+        })
+    }
+
+    @FieldResolver(() => [CollectionAttribute])
+    attributes(
+        @Root() topCollection: TopCollection,
+        @Arg('where', () => CollectionAttributeWhereInput, { nullable: true }) where?: CollectionAttributeWhereInput
+    ): CollectionAttribute[] {
+        if (!where || !where.AND || where.AND.length === 0) {
+            return topCollection.attributes
+        }
+
+        const keyEq = where.AND.find((cond) => cond.key_eq)
+        const keyIn = where.AND.find((cond) => cond.key_in)
+        if ((!keyEq && !keyIn) || (keyEq && !keyIn && !keyEq.key_eq) || (keyIn && !keyEq && !keyIn.key_in)) {
+            return topCollection.attributes
+        }
+
+        return topCollection.attributes.filter((attr) => {
+            if (keyEq?.key_eq) {
+                return attr.key === keyEq.key_eq
+            }
+
+            if (keyIn?.key_in && keyIn?.key_in.length > 0) {
+                return keyIn?.key_in?.includes(attr.key)
+            }
+
+            return false
+        })
     }
 }
