@@ -787,7 +787,7 @@ type Attribute @entity {
   deposit: BigInt!
 
   # Relations
-  collection: Collection! @index
+  collection: Collection @index
   token: Token @index
 
   # Extras
