@@ -89,7 +89,7 @@ export class TopCollection {
     stats!: typeof JSON
 
     @Field({ nullable: true })
-    volume_change!: string
+    volumeChange!: string
 
     @Field({ nullable: false })
     volume!: string
@@ -101,16 +101,16 @@ export class TopCollection {
     users!: number
 
     @Field({ nullable: true })
-    trending_score!: string
+    trendingScore!: string
 
     @Field({ nullable: true })
-    top_score!: string
+    topScore!: string
 
     @Field({ nullable: true })
-    max_volume!: string
+    maxVolume!: string
 
     @Field({ nullable: true })
-    max_sales!: string
+    maxSales!: string
 
     constructor(props: Partial<TopCollection>) {
         Object.assign(this, props)
