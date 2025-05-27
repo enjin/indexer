@@ -80,10 +80,10 @@ export class TopCollection {
     category!: string
 
     @Field({ nullable: true })
-    verified_at!: string
+    verifiedAt!: string
 
     @Field({ nullable: false })
-    created_at!: string
+    createdAt!: string
 
     @Field(() => Json, { nullable: true })
     stats!: typeof JSON
