@@ -1,27 +1,27 @@
 import assert from "assert"
 import * as marshal from "./marshal"
-import {ListingType} from "./_listingType"
+import {MarketplaceListingData} from "./_marketplaceListingData"
 import {Bid} from "./bid.model"
 
 export class AuctionState {
     public readonly isTypeOf = 'AuctionState'
-    private _listingType!: ListingType
+    private _listingType!: MarketplaceListingData
     private _highBid!: string | undefined | null
 
     constructor(props?: Partial<Omit<AuctionState, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
         if (json != null) {
-            this._listingType = marshal.enumFromJson(json.listingType, ListingType)
+            this._listingType = marshal.enumFromJson(json.listingType, MarketplaceListingData)
             this._highBid = json.highBid == null ? undefined : marshal.string.fromJSON(json.highBid)
         }
     }
 
-    get listingType(): ListingType {
+    get listingType(): MarketplaceListingData {
         assert(this._listingType != null, 'uninitialized access')
         return this._listingType
     }
 
-    set listingType(value: ListingType) {
+    set listingType(value: MarketplaceListingData) {
         this._listingType = value
     }
 

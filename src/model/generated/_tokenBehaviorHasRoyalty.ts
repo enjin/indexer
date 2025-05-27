@@ -1,30 +1,30 @@
 import assert from "assert"
 import * as marshal from "./marshal"
-import {TokenBehaviorType} from "./_tokenBehaviorType"
+import {TokenMarketBehavior} from "./_tokenMarketBehavior"
 import {Royalty} from "./_royalty"
 import {RoyaltyBeneficiary} from "./_royaltyBeneficiary"
 
 export class TokenBehaviorHasRoyalty {
     public readonly isTypeOf = 'TokenBehaviorHasRoyalty'
-    private _type!: TokenBehaviorType
+    private _type!: TokenMarketBehavior
     private _royalty!: Royalty | undefined | null
     private _beneficiaries!: (RoyaltyBeneficiary | undefined | null)[] | undefined | null
 
     constructor(props?: Partial<Omit<TokenBehaviorHasRoyalty, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
         if (json != null) {
-            this._type = marshal.enumFromJson(json.type, TokenBehaviorType)
+            this._type = marshal.enumFromJson(json.type, TokenMarketBehavior)
             this._royalty = json.royalty == null ? undefined : new Royalty(undefined, json.royalty)
             this._beneficiaries = json.beneficiaries == null ? undefined : marshal.fromList(json.beneficiaries, val => val == null ? undefined : new RoyaltyBeneficiary(undefined, val))
         }
     }
 
-    get type(): TokenBehaviorType {
+    get type(): TokenMarketBehavior {
         assert(this._type != null, 'uninitialized access')
         return this._type
     }
 
-    set type(value: TokenBehaviorType) {
+    set type(value: TokenMarketBehavior) {
         this._type = value
     }
 

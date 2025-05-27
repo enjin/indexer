@@ -11,8 +11,8 @@ import {
     Event as EventModel,
     Extrinsic,
     Listing,
-    ListingType,
     MarketplaceListingCancelled,
+    MarketplaceListingData,
     MarketplaceOfferCancelled,
     Token,
 } from '../../../model'
@@ -47,7 +47,7 @@ export function listingCancelledEventModel(
         }),
     })
 
-    if (listing.type === ListingType.Offer) {
+    if (listing.data.listingType === MarketplaceListingData.Offer) {
         event = new EventModel({
             id: item.id,
             name: MarketplaceOfferCancelled.name,

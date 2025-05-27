@@ -1,4 +1,4 @@
-import { AccountClaimType, ClaimDetails, ClaimRequest, Event as EventModel } from '../../../model'
+import { AccountClaim, ClaimDetails, ClaimRequest, Event as EventModel } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import * as mappings from '../../index'
 import { unwrapAccount } from '../../../util/entities'
@@ -9,7 +9,7 @@ export async function claimMinted(ctx: CommonContext, block: Block, item: EventI
     const claim = new ClaimRequest({
         id: `${event.who}-${block.height}-minted`,
         who,
-        acountType: AccountClaimType.EVM,
+        acountType: AccountClaim.EVM,
         amountClaimable: event.amount,
         amountBurned: 0n,
         hash: null,

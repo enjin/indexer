@@ -1,9 +1,9 @@
 import { EntityManager } from 'typeorm'
-import { Era, Identity, JudgementType, Registration, ScoreGrade, Validator } from '../../model'
+import { Era, Identity, IdentityJudgement, Registration, ScoreGrade, Validator } from '../../model'
 import { connectionManager } from '../../contexts'
 
-function getJudgement(identity: Identity | null | undefined): JudgementType {
-    if (identity === undefined || identity === null) return JudgementType.Unknown
+function getJudgement(identity: Identity | null | undefined): IdentityJudgement {
+    if (identity === undefined || identity === null) return IdentityJudgement.Unknown
 
     return identity.info.currentJudgement
 }
@@ -255,14 +255,14 @@ function calculateSlashPenalty(slashesArray: boolean[]): {
 
 // identity : enum (NO_IDENTITY, UNKNOWN_IDENTITY, POSITIVE_IDENTITY, NEGATIVE_IDENTITY)
 // note when implementing you can use the true identity enum and just handle it appropriately
-function calculateIdentityAdjustment(identity: JudgementType): number {
+function calculateIdentityAdjustment(identity: IdentityJudgement): number {
     switch (identity) {
-        case JudgementType.Unknown:
+        case IdentityJudgement.Unknown:
             return 1
-        case JudgementType.KnownGood:
-        case JudgementType.Reasonable:
+        case IdentityJudgement.KnownGood:
+        case IdentityJudgement.Reasonable:
             return 2
-        case JudgementType.Erroneous:
+        case IdentityJudgement.Erroneous:
             return -3
         default:
             return 0
@@ -324,7 +324,7 @@ function computeValidatorScore(params: {
     numberOfNominations: number
     averagePeerNumberOfNominations: number
     slashesArray: boolean[]
-    identity: JudgementType
+    identity: IdentityJudgement
 }): 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | null {
     const daysHistory = params.nodeCountArray.length
 

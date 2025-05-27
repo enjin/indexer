@@ -1,4 +1,4 @@
-import { AccountClaimType, ClaimRequest, ClaimsClaimRequested, Event as EventModel, Extrinsic } from '../../../model'
+import { AccountClaim, ClaimRequest, ClaimsClaimRequested, Event as EventModel, Extrinsic } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import { Sns } from '../../../util/sns'
 import * as mappings from '../../index'
@@ -17,7 +17,7 @@ export async function claimRequested(
     const claim = new ClaimRequest({
         id: `${who}-${event.transactionHash}`,
         who: who,
-        acountType: AccountClaimType.EVM,
+        acountType: AccountClaim.EVM,
         amountClaimable: event.amountClaimable,
         amountBurned: event.amountBurned,
         hash: event.transactionHash.toString(),
@@ -36,7 +36,7 @@ export async function claimRequested(
         name: item.name,
         body: {
             who: who,
-            accountType: AccountClaimType.EVM,
+            accountType: AccountClaim.EVM,
             amountClaimable: event.amountClaimable,
             amountBurned: event.amountBurned,
             hash: event.transactionHash.toString(),
@@ -51,7 +51,7 @@ export async function claimRequested(
         extrinsic: item.extrinsic.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new ClaimsClaimRequested({
             who,
-            accountType: AccountClaimType.EVM,
+            accountType: AccountClaim.EVM,
             amountClaimable: event.amountClaimable,
             amountBurned: event.amountBurned,
             hash: event.transactionHash.toString(),

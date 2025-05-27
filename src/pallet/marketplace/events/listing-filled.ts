@@ -12,7 +12,7 @@ import {
     Event as EventModel,
     Extrinsic,
     Listing,
-    ListingType,
+    MarketplaceListingData,
     MarketplaceListingFilled,
     MarketplaceOfferSettled,
     Token,
@@ -85,7 +85,7 @@ export function listingFilledEventModel(
         }),
     })
 
-    if (listing.data.listingType === ListingType.Offer) {
+    if (listing.data.listingType === MarketplaceListingData.Offer) {
         event = new EventModel({
             id: item.id,
             name: MarketplaceOfferSettled.name,

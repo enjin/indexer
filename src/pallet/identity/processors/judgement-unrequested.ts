@@ -1,4 +1,4 @@
-import { Event as EventModel, JudgementType, Registration } from '../../../model'
+import { Event as EventModel, IdentityJudgement, Registration } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import { getOrCreateAccount } from '../../../util/entities'
 import * as mappings from '../../index'
@@ -19,7 +19,7 @@ export async function judgementUnrequested(
         registration.judgements = judgements
         registration.currentJudgement = judgements[judgements.length - 1].value
     } else {
-        registration.currentJudgement = JudgementType.Unknown
+        registration.currentJudgement = IdentityJudgement.Unknown
     }
 
     await ctx.store.save(registration)

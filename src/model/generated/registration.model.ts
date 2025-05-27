@@ -2,7 +2,7 @@ import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, B
 import * as marshal from "./marshal"
 import {Account} from "./account.model"
 import {Judgement} from "./_judgement"
-import {JudgementType} from "./_judgementType"
+import {IdentityJudgement} from "./_identityJudgement"
 
 @Entity_()
 export class Registration {
@@ -24,7 +24,7 @@ export class Registration {
     judgements!: (Judgement)[] | undefined | null
 
     @Column_("varchar", {length: 10, nullable: false})
-    currentJudgement!: JudgementType
+    currentJudgement!: IdentityJudgement
 
     @JSONColumn_({nullable: true})
     additional!: unknown | undefined | null

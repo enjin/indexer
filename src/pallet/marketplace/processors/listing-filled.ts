@@ -6,8 +6,8 @@ import {
     Listing,
     ListingSale,
     ListingStatus,
-    ListingStatusType,
-    ListingType,
+    MarketplaceListingData,
+    Status,
 } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import { getBestListing } from '../../../util/entities'
@@ -39,9 +39,9 @@ export async function listingFilled(
 
     if (!listing) return undefined
 
-    if (listing.state.listingType === ListingType.FixedPrice) {
+    if (listing.state.listingType === MarketplaceListingData.FixedPrice) {
         listing.state = new FixedPriceState({
-            listingType: ListingType.FixedPrice,
+            listingType: MarketplaceListingData.FixedPrice,
             amountFilled: listing.amount - event.amountRemaining,
         })
     }
@@ -49,7 +49,7 @@ export async function listingFilled(
     if (event.amountRemaining === 0n) {
         const listingStatus = new ListingStatus({
             id: `${listingId}-${block.height}`,
-            type: ListingStatusType.Finalized,
+            type: Status.Finalized,
             listing,
             height: block.height,
             createdAt: new Date(block.timestamp ?? 0),
@@ -69,7 +69,7 @@ export async function listingFilled(
         createdAt: new Date(block.timestamp ?? 0),
     })
 
-    if (listing.state.listingType === ListingType.Offer) {
+    if (listing.state.listingType === MarketplaceListingData.Offer) {
         listing.takeAssetId.lastSale = sale
     } else {
         listing.makeAssetId.lastSale = sale
@@ -77,7 +77,7 @@ export async function listingFilled(
 
     await Promise.all([ctx.store.save(listing), ctx.store.save(sale)])
 
-    if (listing.data.listingType === ListingType.Offer) {
+    if (listing.data.listingType === MarketplaceListingData.Offer) {
         await ctx.store.save(listing.takeAssetId)
         QueueUtils.dispatchComputeStats(listing.takeAssetId.collection.id)
     } else {
@@ -105,11 +105,13 @@ export async function listingFilled(
                     seller: {
                         id: listing.seller.id,
                     },
-                    type: listing.type.toString(),
                     data: listing.data.toJSON(),
                     state: listing.state.toJSON(),
                 },
-                token: listing.type === ListingType.Offer ? listing.takeAssetId.id : listing.makeAssetId.id,
+                token:
+                    listing.data.listingType === MarketplaceListingData.Offer
+                        ? listing.takeAssetId.id
+                        : listing.makeAssetId.id,
                 buyer: { id: event.buyer },
                 amountFilled: event.amountFilled,
                 price: 'price' in event ? (event.price as bigint) : listing.highestPrice,

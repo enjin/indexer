@@ -4,7 +4,7 @@ import { Listing, Token, TokenAccount, Account } from '../model'
 import 'reflect-metadata'
 import { EntityManager } from 'typeorm'
 
-enum ListingType {
+enum MarketplaceListingData {
     FixedPrice = 'FixedPrice',
     Auction = 'Auction',
     Offer = 'Offer',
@@ -20,8 +20,8 @@ enum ListingOrderByInput {
     PRICE = 'price',
 }
 
-registerEnumType(ListingType, {
-    name: 'ListingType',
+registerEnumType(MarketplaceListingData, {
+    name: 'MarketplaceListingData',
 })
 
 registerEnumType(ListingOrderInput, {
@@ -46,14 +46,14 @@ export class Seller {
 
 @ObjectType()
 export class FixedPriceData {
-    @Field(() => ListingType)
-    listingType!: ListingType.FixedPrice
+    @Field(() => MarketplaceListingData)
+    listingType!: MarketplaceListingData.FixedPrice
 }
 
 @ObjectType()
 export class AuctionData {
-    @Field(() => ListingType)
-    listingType!: ListingType.Auction
+    @Field(() => MarketplaceListingData)
+    listingType!: MarketplaceListingData.Auction
     @Field(() => Int)
     startHeight!: number
     @Field(() => Int)
@@ -62,8 +62,8 @@ export class AuctionData {
 
 @ObjectType()
 export class OfferData {
-    @Field(() => ListingType)
-    listingType!: ListingType.Offer
+    @Field(() => MarketplaceListingData)
+    listingType!: MarketplaceListingData.Offer
     @Field(() => Int, { nullable: true })
     expiration?: number
 }
@@ -81,8 +81,8 @@ const ListingData = createUnionType({
 
 @ObjectType()
 export class FixedPriceState {
-    @Field(() => ListingType)
-    listingType!: ListingType.FixedPrice
+    @Field(() => MarketplaceListingData)
+    listingType!: MarketplaceListingData.FixedPrice
 
     @Field(() => BigInteger)
     amountFilled!: typeof BigInteger
@@ -90,14 +90,14 @@ export class FixedPriceState {
 
 @ObjectType()
 export class AuctionState {
-    @Field(() => ListingType)
-    listingType!: ListingType.Auction
+    @Field(() => MarketplaceListingData)
+    listingType!: MarketplaceListingData.Auction
 }
 
 @ObjectType()
 export class OfferState {
-    @Field(() => ListingType)
-    listingType!: ListingType.Offer
+    @Field(() => MarketplaceListingData)
+    listingType!: MarketplaceListingData.Offer
 
     @Field(() => Int)
     counterOfferCount!: number
@@ -134,8 +134,8 @@ export class TokenListing {
     @Field(() => Seller)
     seller!: Seller
 
-    @Field(() => ListingType)
-    type!: ListingType
+    @Field(() => MarketplaceListingData)
+    type!: MarketplaceListingData
 
     @Field(() => ListingData)
     data!: typeof ListingData
@@ -201,7 +201,7 @@ export class TokenListingsResolver {
             .leftJoinAndMapOne('listing.seller', Account, 'account', 'account.id = listing.seller_id')
             .where('listing.make_asset_id_id = :assetId', { assetId })
             .andWhere('listing.is_active = true')
-            .andWhere('listing.type != :type', { type: ListingType.Offer })
+            .andWhere('listing.type != :type', { type: MarketplaceListingData.Offer })
             .andWhere('token_account.is_frozen = false')
 
         if (hiddenListingId) {

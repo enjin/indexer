@@ -1,5 +1,5 @@
 import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, StringColumn as StringColumn_, Index as Index_, BigIntColumn as BigIntColumn_, BooleanColumn as BooleanColumn_, IntColumn as IntColumn_, DateTimeColumn as DateTimeColumn_} from "@subsquid/typeorm-store"
-import {AccountClaimType} from "./_accountClaimType"
+import {AccountClaim} from "./_accountClaim"
 
 @Entity_()
 export class ClaimRequest {
@@ -14,7 +14,7 @@ export class ClaimRequest {
     who!: string
 
     @Column_("varchar", {length: 9, nullable: false})
-    acountType!: AccountClaimType
+    acountType!: AccountClaim
 
     @Index_({unique: true})
     @StringColumn_({nullable: true})

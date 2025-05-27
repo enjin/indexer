@@ -9,16 +9,16 @@ import {
     AccountTokenEventMetaCollection,
     AccountTokenEventMetaToken,
     Collection,
-    CounterOfferResponse,
-    CounterOfferResponseAccept,
-    CounterOfferResponseCounter,
-    CounterOfferResponseReject,
-    CounterOfferResponseType,
+    Response,
     Event as EventModel,
     Extrinsic,
     Listing,
+    CounterOfferResponse,
     MarketplaceCounterOfferAnswered,
     Token,
+    CounterOfferResponseAccept,
+    CounterOfferResponseCounter,
+    CounterOfferResponseReject,
 } from '../../../model'
 import { CounterOfferAnswered } from './types'
 
@@ -62,16 +62,16 @@ export function counterOfferAnsweredEventModel(
 
     switch (data.response?.__kind) {
         case 'Accept':
-            response = new CounterOfferResponseAccept({ kind: CounterOfferResponseType.Accept })
+            response = new CounterOfferResponseAccept({ kind: Response.Accept })
             break
         case 'Counter':
             response = new CounterOfferResponseCounter({
-                kind: CounterOfferResponseType.Counter,
+                kind: Response.Counter,
                 value: data.response.value,
             })
             break
         case 'Reject':
-            response = new CounterOfferResponseReject({ kind: CounterOfferResponseType.Reject })
+            response = new CounterOfferResponseReject({ kind: Response.Reject })
             break
         default:
             throw new Error('Unknown offer response type')

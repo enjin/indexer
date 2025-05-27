@@ -1,5 +1,5 @@
 import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, IntColumn as IntColumn_, DateTimeColumn as DateTimeColumn_} from "@subsquid/typeorm-store"
-import {ListingStatusType} from "./_listingStatusType"
+import {Status} from "./_status"
 import {Listing} from "./listing.model"
 
 @Entity_()
@@ -12,7 +12,7 @@ export class ListingStatus {
     id!: string
 
     @Column_("varchar", {length: 9, nullable: false})
-    type!: ListingStatusType
+    type!: Status
 
     @Index_()
     @ManyToOne_(() => Listing, {nullable: true})

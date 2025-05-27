@@ -1,5 +1,5 @@
-import { FreezeState as FreezeStateType, TokenCap } from '../pallet/common/types'
-import { Account, Balance, CapType, FreezeState, TokenCapSingleMint, TokenCapSupply } from '../model'
+import { FreezeState as FreezeStateType, TokenCap as TokenCapType } from '../pallet/common/types'
+import { Account, Balance, FreezeState, TokenCapSingleMint, TokenCapSupply } from '../model'
 import { CommonContext } from '../contexts'
 import { In } from 'typeorm'
 import { encodeAddress } from '../util/tools'
@@ -10,16 +10,14 @@ export function isNotNull<T>(input: null | undefined | T): input is T {
     return input !== undefined && input != null
 }
 
-export function getCapType(cap: TokenCap) {
+export function getCapType(cap: TokenCapType) {
     if (cap.__kind === 'Supply') {
         return new TokenCapSupply({
-            type: CapType.Supply,
             supply: cap.value,
         })
     }
 
     return new TokenCapSingleMint({
-        type: CapType.SingleMint,
         supply: cap.__kind === 'CollapsingSupply' ? cap.value : 0n,
     })
 }

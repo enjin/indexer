@@ -8,10 +8,10 @@ import {
     FixedPriceState,
     Listing,
     ListingStatus,
-    ListingStatusType,
-    ListingType,
+    MarketplaceListingData,
     OfferData,
     OfferState,
+    Status,
     Token,
 } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
@@ -48,7 +48,7 @@ export async function listingCreated(
 
     switch (event.listing.data.__kind) {
         case 'FixedPrice':
-            listingData = new FixedPriceData({ listingType: ListingType.FixedPrice })
+            listingData = new FixedPriceData({ listingType: MarketplaceListingData.FixedPrice })
             break
         case 'Auction': {
             let endBlock = 0
@@ -61,7 +61,7 @@ export async function listingCreated(
             startBlock = ('startBlock' in event.listing.data.value ? event.listing.data.value.startBlock : 0) ?? 0
 
             listingData = new AuctionData({
-                listingType: ListingType.Auction,
+                listingType: MarketplaceListingData.Auction,
                 startHeight: startBlock,
                 endHeight: endBlock,
             })
@@ -74,7 +74,7 @@ export async function listingCreated(
             }
 
             listingData = new OfferData({
-                listingType: ListingType.Offer,
+                listingType: MarketplaceListingData.Offer,
                 expiration: expiration,
             })
             break
@@ -85,13 +85,13 @@ export async function listingCreated(
 
     switch (event.listing.state.__kind) {
         case 'FixedPrice':
-            listingState = new FixedPriceState({ listingType: ListingType.FixedPrice, amountFilled: 0n })
+            listingState = new FixedPriceState({ listingType: MarketplaceListingData.FixedPrice, amountFilled: 0n })
             break
         case 'Auction':
-            listingState = new AuctionState({ listingType: ListingType.Auction })
+            listingState = new AuctionState({ listingType: MarketplaceListingData.Auction })
             break
         case 'Offer':
-            listingState = new OfferState({ listingType: ListingType.Offer, counterOfferCount: 0 })
+            listingState = new OfferState({ listingType: MarketplaceListingData.Offer, counterOfferCount: 0 })
             break
         default:
             throw new Error('Unknown listing type')
@@ -115,7 +115,6 @@ export async function listingCreated(
         data: listingData,
         state: listingState,
         isActive: true,
-        type: listingData.listingType,
         usesWhitelist,
         creationBlock: block.height,
         createdAt: new Date(block.timestamp ?? 0),
@@ -124,7 +123,7 @@ export async function listingCreated(
 
     const listingStatus = new ListingStatus({
         id: `${listingId}-${block.height}`,
-        type: ListingStatusType.Active,
+        type: Status.Active,
         listing,
         height: block.height,
         createdAt: new Date(block.timestamp ?? 0),
@@ -161,11 +160,13 @@ export async function listingCreated(
                     },
                     data: listing.data.toJSON(),
                     state: listing.state.toJSON(),
-                    type: listing.type.toString(),
                     makeAssetId: makeAssetId.id,
                     takeAssetId: takeAssetId.id,
                 },
-                token: listing.type === ListingType.Offer ? listing.takeAssetId.id : listing.makeAssetId.id,
+                token:
+                    listing.data.listingType === MarketplaceListingData.Offer
+                        ? listing.takeAssetId.id
+                        : listing.makeAssetId.id,
                 extrinsic: item.extrinsic.id,
             },
         })

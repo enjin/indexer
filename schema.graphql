@@ -1,6 +1,5 @@
 type Config @entity {
   id: ID!
-
   stateBlock: Int!
 }
 
@@ -157,23 +156,23 @@ type MarketplaceCounterOfferPlaced {
   depositAmount: BigInt!
 }
 
-enum CounterOfferResponseType {
+enum Response {
   Accept
   Counter
   Reject
 }
 
 type CounterOfferResponseAccept {
-  kind: CounterOfferResponseType!
+  kind: Response!
 }
 
-type CounterOfferResponseCounter{
-  kind: CounterOfferResponseType!
+type CounterOfferResponseCounter {
+  kind: Response!
   value: BigInt!
 }
 
 type CounterOfferResponseReject {
-  kind: CounterOfferResponseType!
+  kind: Response!
 }
 
 union CounterOfferResponse = CounterOfferResponseAccept | CounterOfferResponseCounter | CounterOfferResponseReject
@@ -336,7 +335,7 @@ type MultiTokensInfused {
 
 type ClaimsClaimRequested {
   who: String!,
-  accountType: AccountClaimType!
+  accountType: AccountClaim!
   hash: String
   amountClaimable: BigInt!
   amountBurned: BigInt!
@@ -387,7 +386,7 @@ type Balance {
   feeFrozen: BigInt! @deprecated
 }
 
-enum JudgementType {
+enum IdentityJudgement {
   Unknown
   FeePaid
   Reasonable
@@ -399,7 +398,7 @@ enum JudgementType {
 
 type Judgement {
   index: Int!
-  value: JudgementType!
+  value: IdentityJudgement!
 
   # Extras
   createdAt: DateTime!
@@ -410,7 +409,7 @@ type Registration @entity {
   deposit: BigInt!
   account: Account!
   judgements: [Judgement!]
-  currentJudgement: JudgementType!
+  currentJudgement: IdentityJudgement!
 
   #info
   additional: JSON
@@ -603,24 +602,17 @@ type CollectionAccount @entity @index(fields: ["account", "collection"], unique:
   updatedAt: DateTime!
 }
 
-enum CapType {
-  SingleMint
-  Supply
-}
-
 union TokenCap = TokenCapSingleMint | TokenCapSupply
 
 type TokenCapSingleMint {
-  type: CapType!
   supply: BigInt!
 }
 
 type TokenCapSupply {
-  type: CapType!
   supply: BigInt!
 }
 
-enum TokenBehaviorType {
+enum TokenMarketBehavior {
   HasRoyalty
   IsCurrency
 }
@@ -633,13 +625,13 @@ type Royalty {
 }
 
 type TokenBehaviorHasRoyalty {
-  type: TokenBehaviorType!
+  type: TokenMarketBehavior!
   royalty: Royalty @deprecated
   beneficiaries: [RoyaltyBeneficiary]
 }
 
 type TokenBehaviorIsCurrency {
-  type: TokenBehaviorType!
+  type: TokenMarketBehavior!
 }
 
 enum FreezeState {
@@ -757,7 +749,7 @@ type MetadataMedia {
   type: String
 }
 
-enum MetadataOriginType {
+enum MetadataOrigin {
   Onchain
   Offchain
   Ipfs
@@ -773,7 +765,7 @@ type Metadata {
   media: [MetadataMedia]
   meta: MetadataMeta
   originUrl: String
-  originType: MetadataOriginType
+  originType: MetadataOrigin
   lastUpdated: DateTime
   attributes: JSON
 }
@@ -801,41 +793,41 @@ enum FeeSide {
   Take
 }
 
-enum ListingType {
+enum MarketplaceListingData {
   FixedPrice
   Auction
   Offer
 }
 
 type FixedPriceData {
-  listingType: ListingType!
+  listingType: MarketplaceListingData!
 }
 
 type AuctionData {
-  listingType: ListingType!
+  listingType: MarketplaceListingData!
   startHeight: Int! @deprecated
   endHeight: Int!
 }
 
 type OfferData {
-  listingType: ListingType!
+  listingType: MarketplaceListingData!
   expiration: Int
 }
 
 union ListingData = FixedPriceData | AuctionData | OfferData
 
 type FixedPriceState {
-  listingType: ListingType!
+  listingType: MarketplaceListingData!
   amountFilled: BigInt!
 }
 
 type AuctionState {
-  listingType: ListingType!
+  listingType: MarketplaceListingData!
   highBid: Bid
 }
 
 type OfferState {
-  listingType: ListingType!
+  listingType: MarketplaceListingData!
   counterOfferCount: Int!
 }
 
@@ -856,7 +848,7 @@ type Bid @entity {
   createdAt: DateTime!
 }
 
-enum ListingStatusType {
+enum Status {
   Active
   Cancelled
   Finalized
@@ -864,7 +856,7 @@ enum ListingStatusType {
 
 type ListingStatus @entity {
   id: ID!
-  type: ListingStatusType!
+  type: Status!
   listing: Listing!
   height: Int!
   createdAt: DateTime!
@@ -926,7 +918,7 @@ type Listing @entity {
   highestPrice: BigInt! @index
   deadListing: Boolean
   isActive: Boolean! @index
-  type: ListingType! @index
+  type: MarketplaceListingData! @index
   hasRoyaltyIncreased: Boolean @index
 
   createdAt: DateTime! @index
@@ -955,7 +947,7 @@ type WhitelistedAccount @entity {
   updatedAt: DateTime!
 }
 
-enum AccountClaimType {
+enum AccountClaim {
   Substrate
   EVM
 }
@@ -964,7 +956,7 @@ type ClaimRequest @entity {
   id: ID!
 
   who: String!
-  acountType: AccountClaimType!
+  acountType: AccountClaim!
   hash: String @unique
   amountClaimable: BigInt!
   amountBurned: BigInt!
@@ -1245,7 +1237,7 @@ type NominationPoolsEarlyBirdBonusPaid {
   totalAccounts: Int!
 }
 
-enum StakeExchangeTokenFilterType {
+enum TokenFilter {
   Whitelist
   BlockList
   All
@@ -1253,7 +1245,7 @@ enum StakeExchangeTokenFilterType {
 
 type StakeExchangeTokenFilter @entity {
   value: [String]
-  type: StakeExchangeTokenFilterType!
+  type: TokenFilter!
   account: Account @unique
   offer: StakeExchangeOffer @unique
 }

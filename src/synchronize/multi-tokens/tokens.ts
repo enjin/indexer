@@ -6,9 +6,10 @@ import {
     Royalty,
     RoyaltyBeneficiary,
     Token,
+    TokenBehavior,
     TokenBehaviorHasRoyalty,
     TokenBehaviorIsCurrency,
-    TokenBehaviorType,
+    TokenMarketBehavior,
 } from '../../model'
 import { isNonFungible } from '../../util/helpers'
 import { BATCH_SIZE, getCapType, getFreezeState, isTokenFrozen } from '../common'
@@ -28,16 +29,16 @@ export async function tokens(ctx: CommonContext, block: Block) {
             const tokenId = key[1].toString()
             const collection = await ctx.store.findOneOrFail(Collection, { where: { id: collectionId.toString() } })
 
-            let behavior: TokenBehaviorIsCurrency | TokenBehaviorHasRoyalty | null = null
+            let behavior: TokenBehavior | null = null
             if ('marketBehavior' in data && data.marketBehavior) {
-                if (data.marketBehavior.__kind === TokenBehaviorType.IsCurrency) {
+                if (data.marketBehavior.__kind === TokenMarketBehavior.IsCurrency) {
                     behavior = new TokenBehaviorIsCurrency({
-                        type: TokenBehaviorType.IsCurrency,
+                        type: TokenMarketBehavior.IsCurrency,
                     })
                 } else {
                     if ('beneficiaries' in data.marketBehavior.value) {
                         behavior = new TokenBehaviorHasRoyalty({
-                            type: TokenBehaviorType.HasRoyalty,
+                            type: TokenMarketBehavior.HasRoyalty,
                             royalty: new Royalty({
                                 beneficiary: data.marketBehavior.value.beneficiaries[0].beneficiary,
                                 percentage: data.marketBehavior.value.beneficiaries[0].percentage,

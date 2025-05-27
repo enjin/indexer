@@ -1,4 +1,4 @@
-import { Event as EventModel, Judgement, JudgementType, Registration } from '../../../model'
+import { Event as EventModel, IdentityJudgement, Judgement, Registration } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import { getOrCreateAccount } from '../../../util/entities'
 import * as mappings from '../../index'
@@ -13,15 +13,15 @@ export async function judgementRequested(
 
     const registration = await ctx.store.findOneByOrFail<Registration>(Registration, { id: who.id })
 
-    registration.currentJudgement = JudgementType.FeePaid
+    registration.currentJudgement = IdentityJudgement.FeePaid
     const existing = registration.judgements?.find((i) => i.index === event.registrarIndex)
     if (existing) {
-        existing.value = JudgementType.FeePaid
+        existing.value = IdentityJudgement.FeePaid
     } else {
         registration.judgements?.push(
             new Judgement({
                 index: event.registrarIndex,
-                value: JudgementType.FeePaid,
+                value: IdentityJudgement.FeePaid,
                 createdAt: new Date(block.timestamp ?? 0),
             })
         )
