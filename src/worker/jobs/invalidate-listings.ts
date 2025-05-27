@@ -1,5 +1,5 @@
 import { connectionManager } from '../../contexts'
-import { Listing, ListingType } from '../../model'
+import { Listing, MarketplaceListingData } from '../../model'
 import { Brackets } from 'typeorm'
 
 export async function invalidateListings() {
@@ -18,14 +18,16 @@ export async function invalidateListings() {
             .update()
             .set({ isActive: false })
             .where('listing.is_active = true')
-            .andWhere('listing.type IN (:...types)', { types: [ListingType.Auction, ListingType.Offer] })
+            .andWhere('listing.type IN (:...types)', {
+                types: [MarketplaceListingData.Auction, MarketplaceListingData.Offer],
+            })
             .andWhere(
                 new Brackets((qb) => {
                     qb.where("listing.type = :auctionType AND (listing.data->>'endHeight')::int < :height", {
-                        auctionType: ListingType.Auction,
+                        auctionType: MarketplaceListingData.Auction,
                         height,
                     }).orWhere("listing.type = :offerType AND (listing.data->>'expiration')::int < :height", {
-                        offerType: ListingType.Offer,
+                        offerType: MarketplaceListingData.Offer,
                         height,
                     })
                 })

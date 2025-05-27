@@ -11,27 +11,27 @@ const customTypes = {
 }
 
 @ObjectType()
-class UserFuelBudgetAmountType {
+class TankAccountUserFuelBudgetAmount {
     @Field({ nullable: false })
     amount!: string
 
     @Field({ nullable: false })
     resetPeriod!: number
 
-    constructor(props: Partial<UserFuelBudgetAmountType>) {
+    constructor(props: Partial<TankAccountUserFuelBudgetAmount>) {
         Object.assign(this, props)
     }
 }
 
 @ObjectType()
-class UserFuelBudgetType {
+class TankAccountUserFuelBudget {
     @Field({ nullable: false })
-    amount!: UserFuelBudgetAmountType
+    amount!: TankAccountUserFuelBudgetAmount
 
     @Field({ nullable: false })
     userCount!: number
 
-    constructor(props: Partial<UserFuelBudgetType>) {
+    constructor(props: Partial<TankAccountUserFuelBudget>) {
         Object.assign(this, props)
     }
 }
@@ -45,7 +45,7 @@ class FuelTanksAccountsResult {
     userDeposit!: number
 
     @Field({ nullable: true })
-    userFuelBudget?: UserFuelBudgetType
+    userFuelBudget?: TankAccountUserFuelBudget
 
     constructor(props: Partial<FuelTanksAccountsResult>) {
         Object.assign(this, props)
@@ -76,7 +76,7 @@ export class FuelTanksAccountsResolver {
             return null
         }
 
-        let userFuelBudget: undefined | UserFuelBudgetType
+        let userFuelBudget: undefined | TankAccountUserFuelBudget
 
         if (resJson && resJson.ruleDataSets && resJson.ruleDataSets[0] && resJson.ruleDataSets[0].UserFuelBudget) {
             userFuelBudget = res.registry

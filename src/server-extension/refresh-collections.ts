@@ -1,16 +1,22 @@
-import { Query, Resolver, Arg } from 'type-graphql'
+import { Query, Resolver, Arg, ArgsType, Field, Args } from 'type-graphql'
 import 'reflect-metadata'
 import { QueueUtils } from '../queue'
+
+@ArgsType()
+export class RefreshCollectionsArgs {
+    @Field(() => [String])
+    ids!: string[]
+}
 
 @Resolver()
 export class RefreshCollectionsResolver {
     @Query(() => Boolean, { nullable: false })
-    refreshCollections(@Arg('ids', () => [String], { defaultValue: [] }) ids: string[]): boolean {
-        if (ids.length > 100) {
+    refreshCollections(@Args() args: RefreshCollectionsArgs): boolean {
+        if (args.ids.length > 100) {
             throw new Error('Too many collections to refresh, limit is 100')
         }
 
-        QueueUtils.dispatchFetchCollectionExtra(ids)
+        QueueUtils.dispatchFetchCollectionExtra(args.ids)
 
         return true
     }

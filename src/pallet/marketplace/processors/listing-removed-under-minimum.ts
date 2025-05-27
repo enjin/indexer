@@ -3,8 +3,8 @@ import {
     Event as EventModel,
     Listing,
     ListingStatus,
-    ListingStatusType,
-    ListingType,
+    MarketplaceListingData,
+    Status,
 } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import { getBestListing } from '../../../util/entities'
@@ -40,7 +40,7 @@ export async function listingRemovedUnderMinimum(
 
     const listingStatus = new ListingStatus({
         id: `${listingId}-${block.height}`,
-        type: ListingStatusType.Cancelled,
+        type: Status.Cancelled,
         listing,
         height: block.height,
         createdAt: new Date(block.timestamp ?? 0),
@@ -48,7 +48,10 @@ export async function listingRemovedUnderMinimum(
 
     await Promise.all([ctx.store.insert(listingStatus), ctx.store.save(listing)])
 
-    if (listing.makeAssetId.bestListing?.id === listing.id && listing.type !== ListingType.Offer) {
+    if (
+        listing.makeAssetId.bestListing?.id === listing.id &&
+        listing.data.listingType !== MarketplaceListingData.Offer
+    ) {
         const bestListing = await getBestListing(ctx, listing.makeAssetId.id)
         listing.makeAssetId.bestListing = null
         if (bestListing) {
@@ -72,11 +75,13 @@ export async function listingRemovedUnderMinimum(
                     seller: {
                         id: listing.seller.id,
                     },
-                    type: listing.type.toString(),
                     data: listing.data.toJSON(),
                     state: listing.state.toJSON(),
                 },
-                token: listing.type === ListingType.Offer ? listing.takeAssetId.id : listing.makeAssetId.id,
+                token:
+                    listing.data.listingType === MarketplaceListingData.Offer
+                        ? listing.takeAssetId.id
+                        : listing.makeAssetId.id,
                 extrinsic: item.extrinsic.id,
             },
         })

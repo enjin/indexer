@@ -228,23 +228,20 @@ export type Bid = {
     price: bigint
 }
 
-type CounterOfferResponse_Accept = {
+type Response_Accept = {
     __kind: 'Accept'
 }
 
-type CounterOfferResponse_Counter = {
+type Response_Counter = {
     __kind: 'Counter'
     value: bigint
 }
 
-type CounterOfferResponse_Reject = {
+type Response_Reject = {
     __kind: 'Reject'
 }
 
-export type CounterOfferResponse =
-    | CounterOfferResponse_Accept
-    | CounterOfferResponse_Counter
-    | CounterOfferResponse_Reject
+export type Response = Response_Accept | Response_Counter | Response_Reject
 
 export type Deposit = {
     depositor: AccountId32

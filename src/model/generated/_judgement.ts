@@ -1,17 +1,17 @@
 import assert from "assert"
 import * as marshal from "./marshal"
-import {JudgementType} from "./_judgementType"
+import {IdentityJudgement} from "./_identityJudgement"
 
 export class Judgement {
     private _index!: number
-    private _value!: JudgementType
+    private _value!: IdentityJudgement
     private _createdAt!: Date
 
     constructor(props?: Partial<Omit<Judgement, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
         if (json != null) {
             this._index = marshal.int.fromJSON(json.index)
-            this._value = marshal.enumFromJson(json.value, JudgementType)
+            this._value = marshal.enumFromJson(json.value, IdentityJudgement)
             this._createdAt = marshal.datetime.fromJSON(json.createdAt)
         }
     }
@@ -25,12 +25,12 @@ export class Judgement {
         this._index = value
     }
 
-    get value(): JudgementType {
+    get value(): IdentityJudgement {
         assert(this._value != null, 'uninitialized access')
         return this._value
     }
 
-    set value(value: JudgementType) {
+    set value(value: IdentityJudgement) {
         this._value = value
     }
 

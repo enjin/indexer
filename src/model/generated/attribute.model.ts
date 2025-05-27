@@ -23,7 +23,7 @@ export class Attribute {
 
     @Index_()
     @ManyToOne_(() => Collection, {nullable: true})
-    collection!: Collection
+    collection!: Collection | undefined | null
 
     @Index_()
     @ManyToOne_(() => Token, {nullable: true})

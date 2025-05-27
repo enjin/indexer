@@ -1,27 +1,15 @@
 import assert from "assert"
 import * as marshal from "./marshal"
-import {CapType} from "./_capType"
 
 export class TokenCapSingleMint {
     public readonly isTypeOf = 'TokenCapSingleMint'
-    private _type!: CapType
     private _supply!: bigint
 
     constructor(props?: Partial<Omit<TokenCapSingleMint, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
         if (json != null) {
-            this._type = marshal.enumFromJson(json.type, CapType)
             this._supply = marshal.bigint.fromJSON(json.supply)
         }
-    }
-
-    get type(): CapType {
-        assert(this._type != null, 'uninitialized access')
-        return this._type
-    }
-
-    set type(value: CapType) {
-        this._type = value
     }
 
     get supply(): bigint {
@@ -36,7 +24,6 @@ export class TokenCapSingleMint {
     toJSON(): object {
         return {
             isTypeOf: this.isTypeOf,
-            type: this.type,
             supply: marshal.bigint.toJSON(this.supply),
         }
     }

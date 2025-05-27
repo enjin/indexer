@@ -4,31 +4,31 @@ import {
     Extrinsic,
     StakeExchangeLiquidityConfigUpdated,
     StakeExchangeTokenFilter,
-    StakeExchangeTokenFilterType,
+    TokenFilter,
 } from '../../../model'
 import { getOrCreateAccount } from '../../../util/entities'
 import { Sns } from '../../../util/sns'
 import * as mappings from '../../index'
-import { TokenFilter } from '../../common/types'
+import { TokenFilter as TokenFilterType } from '../../common/types'
 
-export function getFilterFromType(tokenFilter: TokenFilter) {
+export function getFilterFromType(tokenFilter: TokenFilterType) {
     let entity: StakeExchangeTokenFilter | null = null
 
     switch (tokenFilter.__kind) {
         case 'All':
             entity = new StakeExchangeTokenFilter({
-                type: StakeExchangeTokenFilterType.All,
+                type: TokenFilter.All,
             })
             break
         case 'Whitelist':
             entity = new StakeExchangeTokenFilter({
-                type: StakeExchangeTokenFilterType.Whitelist,
+                type: TokenFilter.Whitelist,
                 value: tokenFilter.value.map((v) => v.toString()),
             })
             break
         case 'BlockList':
             entity = new StakeExchangeTokenFilter({
-                type: StakeExchangeTokenFilterType.BlockList,
+                type: TokenFilter.BlockList,
                 value: tokenFilter.value.map((v) => v.toString()),
             })
             break
@@ -70,7 +70,7 @@ export async function liquidityConfigUpdated(
         extrinsic: item.extrinsic.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new StakeExchangeLiquidityConfigUpdated({
             account: account.id,
-            tokenFilter: tokenFilter.id,
+            tokenFilter: tokenFilter.type,
         }),
     })
 }

@@ -1,5 +1,5 @@
 import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, StringColumn as StringColumn_, OneToOne as OneToOne_, Index as Index_, JoinColumn as JoinColumn_} from "@subsquid/typeorm-store"
-import {StakeExchangeTokenFilterType} from "./_stakeExchangeTokenFilterType"
+import {TokenFilter} from "./_tokenFilter"
 import {Account} from "./account.model"
 import {StakeExchangeOffer} from "./stakeExchangeOffer.model"
 
@@ -16,7 +16,7 @@ export class StakeExchangeTokenFilter {
     value!: (string | undefined | null)[] | undefined | null
 
     @Column_("varchar", {length: 9, nullable: false})
-    type!: StakeExchangeTokenFilterType
+    type!: TokenFilter
 
     @Index_({unique: true})
     @OneToOne_(() => Account, {nullable: true})

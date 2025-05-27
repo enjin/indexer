@@ -1,24 +1,24 @@
 import assert from "assert"
 import * as marshal from "./marshal"
-import {CounterOfferResponseType} from "./_counterOfferResponseType"
+import {Response} from "./_response"
 
 export class CounterOfferResponseReject {
     public readonly isTypeOf = 'CounterOfferResponseReject'
-    private _kind!: CounterOfferResponseType
+    private _kind!: Response
 
     constructor(props?: Partial<Omit<CounterOfferResponseReject, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
         if (json != null) {
-            this._kind = marshal.enumFromJson(json.kind, CounterOfferResponseType)
+            this._kind = marshal.enumFromJson(json.kind, Response)
         }
     }
 
-    get kind(): CounterOfferResponseType {
+    get kind(): Response {
         assert(this._kind != null, 'uninitialized access')
         return this._kind
     }
 
-    set kind(value: CounterOfferResponseType) {
+    set kind(value: Response) {
         this._kind = value
     }
 

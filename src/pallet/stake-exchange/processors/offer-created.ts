@@ -4,31 +4,31 @@ import {
     StakeExchangeOffer,
     StakeExchangeOfferState,
     StakeExchangeTokenFilter,
-    StakeExchangeTokenFilterType,
+    TokenFilter,
 } from '../../../model'
 import { getOrCreateAccount } from '../../../util/entities'
 import { Sns } from '../../../util/sns'
 import * as mappings from '../../index'
-import { TokenFilter } from '../../common/types'
+import { TokenFilter as TokenFilterType } from '../../common/types'
 
-function getFilterFromType(tokenFilter: TokenFilter | undefined) {
+function getFilterFromType(tokenFilter: TokenFilterType | undefined) {
     let entity: StakeExchangeTokenFilter | null = null
 
     switch (tokenFilter?.__kind) {
         case 'All':
             entity = new StakeExchangeTokenFilter({
-                type: StakeExchangeTokenFilterType.All,
+                type: TokenFilter.All,
             })
             break
         case 'Whitelist':
             entity = new StakeExchangeTokenFilter({
-                type: StakeExchangeTokenFilterType.Whitelist,
+                type: TokenFilter.Whitelist,
                 value: tokenFilter.value.map((v) => v.toString()),
             })
             break
         case 'BlockList':
             entity = new StakeExchangeTokenFilter({
-                type: StakeExchangeTokenFilterType.BlockList,
+                type: TokenFilter.BlockList,
                 value: tokenFilter.value.map((v) => v.toString()),
             })
             break

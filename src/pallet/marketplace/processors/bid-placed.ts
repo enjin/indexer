@@ -1,4 +1,11 @@
-import { AccountTokenEvent, AuctionState, Bid, Event as EventModel, Listing, ListingType } from '../../../model'
+import {
+    AccountTokenEvent,
+    AuctionState,
+    Bid,
+    Event as EventModel,
+    Listing,
+    MarketplaceListingData,
+} from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import { Sns } from '../../../util/sns'
 import * as mappings from '../../index'
@@ -45,7 +52,7 @@ export async function bidPlaced(
 
     listing.highestPrice = event.bid.price
     listing.state = new AuctionState({
-        listingType: ListingType.Auction,
+        listingType: MarketplaceListingData.Auction,
         highBid: bid.id,
     })
     listing.updatedAt = new Date(block.timestamp ?? 0)

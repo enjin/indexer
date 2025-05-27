@@ -5,7 +5,7 @@ import {
     Listing,
     ListingSale,
     ListingStatus,
-    ListingStatusType,
+    Status,
 } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import { getBestListing } from '../../../util/entities'
@@ -51,7 +51,7 @@ export async function auctionFinalized(
 
     const listingStatus = new ListingStatus({
         id: `${listingId}-${block.height}`,
-        type: ListingStatusType.Finalized,
+        type: Status.Finalized,
         listing,
         height: block.height,
         createdAt: new Date(block.timestamp ?? 0),

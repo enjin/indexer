@@ -19,6 +19,7 @@ export default tseslint.config(
             'src/model/',
             'src/worker/jobs/',
             'eslint.config.mjs',
+            'prettier.config.mjs',
             'src/server-extension/',
         ],
     },

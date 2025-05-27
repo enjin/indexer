@@ -1,11 +1,11 @@
 import assert from "assert"
 import * as marshal from "./marshal"
-import {AccountClaimType} from "./_accountClaimType"
+import {AccountClaim} from "./_accountClaim"
 
 export class ClaimsClaimRequested {
     public readonly isTypeOf = 'ClaimsClaimRequested'
     private _who!: string
-    private _accountType!: AccountClaimType
+    private _accountType!: AccountClaim
     private _hash!: string | undefined | null
     private _amountClaimable!: bigint
     private _amountBurned!: bigint
@@ -15,7 +15,7 @@ export class ClaimsClaimRequested {
         Object.assign(this, props)
         if (json != null) {
             this._who = marshal.string.fromJSON(json.who)
-            this._accountType = marshal.enumFromJson(json.accountType, AccountClaimType)
+            this._accountType = marshal.enumFromJson(json.accountType, AccountClaim)
             this._hash = json.hash == null ? undefined : marshal.string.fromJSON(json.hash)
             this._amountClaimable = marshal.bigint.fromJSON(json.amountClaimable)
             this._amountBurned = marshal.bigint.fromJSON(json.amountBurned)
@@ -32,12 +32,12 @@ export class ClaimsClaimRequested {
         this._who = value
     }
 
-    get accountType(): AccountClaimType {
+    get accountType(): AccountClaim {
         assert(this._accountType != null, 'uninitialized access')
         return this._accountType
     }
 
-    set accountType(value: AccountClaimType) {
+    set accountType(value: AccountClaim) {
         this._accountType = value
     }
 

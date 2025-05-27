@@ -1,4 +1,4 @@
-import { Query, Resolver, Arg, ObjectType, Field } from 'type-graphql'
+import { Query, Resolver, Arg, ObjectType, Field, ArgsType, Args } from 'type-graphql'
 import 'reflect-metadata'
 import { isAddress } from 'web3-validator'
 import Rpc from '../util/rpc'
@@ -16,27 +16,28 @@ export class ClaimableCollectionsResult {
     }
 }
 
+@ArgsType()
+export class ClaimableCollectionsArgs {
+    @Field(() => [String])
+    addresses!: string[]
+}
+
 @Resolver()
 export class ClaimableCollectionsResolver {
     @Query(() => [ClaimableCollectionsResult])
-    async claimableCollectionIds(
-        @Arg('addresses', () => [String], {
-            description: 'ethereum addresses',
-        })
-        addresses: string[]
-    ): Promise<ClaimableCollectionsResult[]> {
-        if (!addresses.length) {
+    async claimableCollectionIds(@Args() args: ClaimableCollectionsArgs): Promise<ClaimableCollectionsResult[]> {
+        if (!args.addresses.length) {
             return []
         }
 
-        if (!addresses.every((address) => isAddress(address))) {
+        if (!args.addresses.every((address) => isAddress(address))) {
             throw new Error('Invalid address')
         }
 
         const { api } = await Rpc.getInstance()
-        const res = await api.query.multiTokens.claimableCollectionIds.multi(addresses)
+        const res = await api.query.multiTokens.claimableCollectionIds.multi(args.addresses)
 
-        return addresses.map((address, index) => {
+        return args.addresses.map((address, index) => {
             return {
                 address,
                 ids: res[index].toJSON() ? (res[index].toJSON() as string[]) : [],

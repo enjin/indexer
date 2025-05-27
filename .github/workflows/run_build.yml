@@ -1,14 +1,14 @@
-name: Node CI
+name: Node
 on:
   push:
 
 jobs:
   build:
-    name: Check application builds
+    name: Build Application
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [20.x]
+        node-version: [20.x, 22.x]
 
     steps:
       - uses: actions/checkout@v4

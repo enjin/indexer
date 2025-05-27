@@ -1,5 +1,5 @@
 import assert from 'assert'
-import { AccountTokenEvent, CounterOffer, Event as EventModel, Listing, ListingType } from '../../../model'
+import { AccountTokenEvent, CounterOffer, Event as EventModel, Listing, MarketplaceListingData } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import { Sns } from '../../../util/sns'
 import * as mappings from '../../index'
@@ -26,7 +26,7 @@ export async function counterOfferAnswered(
         },
     })
 
-    assert(listing.state.listingType === ListingType.Offer, 'Listing is not an offer')
+    assert(listing.state.listingType === MarketplaceListingData.Offer, 'Listing is not an offer')
 
     const creator = await getOrCreateAccount(ctx, event.creator)
     const signer = await getOrCreateAccount(ctx, unwrapSigner(item.extrinsic))
@@ -64,7 +64,6 @@ export async function counterOfferAnswered(
                 },
                 data: listing.data.toJSON(),
                 state: listing.state.toJSON(),
-                type: listing.type.toString(),
                 takeAssetId: listing.takeAssetId.id,
             },
             lastAction: counterOffer.lastAction,

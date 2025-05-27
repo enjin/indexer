@@ -64,7 +64,6 @@ export async function counterOfferPlaced(
                     },
                     data: listing.data.toJSON(),
                     state: listing.state.toJSON(),
-                    type: listing.type.toString(),
                     takeAssetId: listing.takeAssetId.id,
                 },
                 buyerPrice: buyerPrice?.toString(),

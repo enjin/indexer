@@ -1,26 +1,26 @@
 import assert from "assert"
 import * as marshal from "./marshal"
-import {ListingType} from "./_listingType"
+import {MarketplaceListingData} from "./_marketplaceListingData"
 
 export class OfferData {
     public readonly isTypeOf = 'OfferData'
-    private _listingType!: ListingType
+    private _listingType!: MarketplaceListingData
     private _expiration!: number | undefined | null
 
     constructor(props?: Partial<Omit<OfferData, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
         if (json != null) {
-            this._listingType = marshal.enumFromJson(json.listingType, ListingType)
+            this._listingType = marshal.enumFromJson(json.listingType, MarketplaceListingData)
             this._expiration = json.expiration == null ? undefined : marshal.int.fromJSON(json.expiration)
         }
     }
 
-    get listingType(): ListingType {
+    get listingType(): MarketplaceListingData {
         assert(this._listingType != null, 'uninitialized access')
         return this._listingType
     }
 
-    set listingType(value: ListingType) {
+    set listingType(value: MarketplaceListingData) {
         this._listingType = value
     }
 

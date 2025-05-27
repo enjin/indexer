@@ -55,7 +55,6 @@ export async function counterOfferRemoved(
                     },
                     data: listing.data.toJSON(),
                     state: listing.state.toJSON(),
-                    type: listing.type.toString(),
                     takeAssetId: listing.takeAssetId.id,
                 },
                 account: { id: creator.id },

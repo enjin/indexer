@@ -9,11 +9,6 @@ export interface BaseConfigType {
     telemetry?: Telemetry
 }
 
-export interface WorkerConfigType extends BaseConfigType {
-    isSandboxed?: boolean
-    concurrency?: number
-}
-
 export interface QueueConfigType extends BaseConfigType {
     defaultJobOptions?: DefaultJobOptions
     telemetry?: Telemetry

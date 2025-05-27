@@ -1,6 +1,6 @@
 import { hexToString } from '@polkadot/util'
 import { CallNotDefinedError } from '../../../util/errors'
-import { Event as EventModel, Identity, JudgementType, Registration } from '../../../model'
+import { Event as EventModel, Identity, IdentityJudgement, Registration } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import { getOrCreateAccount } from '../../../util/entities'
 import * as mappings from '../../index'
@@ -44,7 +44,7 @@ export async function identitySet(ctx: CommonContext, block: Block, item: EventI
         twitter: dataToValue(call.info.twitter),
         image: dataToValue(call.info.image),
         pgpFingerprint: call.info.pgpFingerprint,
-        currentJudgement: JudgementType.Unknown,
+        currentJudgement: IdentityJudgement.Unknown,
         judgements: [],
         deposit: 0n,
         createdAt: new Date(block.timestamp ?? 0),
