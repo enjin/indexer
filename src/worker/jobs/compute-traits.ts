@@ -2,6 +2,7 @@ import { connectionManager } from '../../contexts'
 import { Collection, Token, Trait, TraitToken } from '../../model'
 import { isPlainObject } from 'lodash'
 import { createHash } from 'crypto'
+import { QueueUtils } from '../../queue'
 
 type TraitValueMap = Map<string, bigint>
 
@@ -116,6 +117,6 @@ export async function computeTraits(collectionId: string) {
         await em.save(TraitToken, traitTokensToSave, { chunk: 1000 })
     }
 
-    // computeRarityRank(collectionId)
+    QueueUtils.dispatchComputeRarity(collectionId)
     // done(null, { timeElapsed: new Date().getTime() - start.getTime() })
 }
