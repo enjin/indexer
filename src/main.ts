@@ -28,7 +28,6 @@ async function bootstrap() {
 
     const dataService = DataService.getInstance()
     await dataService.initialize()
-    await dataService.createMetadataSchema()
 
     const log = createLogger('sqd:processor')
     log.info(`Last block on config: ${dataService.lastBlockNumber}`)
