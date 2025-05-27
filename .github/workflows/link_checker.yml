@@ -1,14 +1,13 @@
-name: Link Checker
+name: Markdown
+permissions: read-all
 on:
   push:
 
-# Declare default permissions as read only.
-permissions: read-all
-
 jobs:
   check:
-    name: Markdown link checks
+    name: Link Checker
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

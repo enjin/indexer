@@ -1,4 +1,4 @@
-name: Publish Schema
+name: Apollo
 on:
   workflow_dispatch:
   push:
@@ -7,12 +7,14 @@ on:
 
 jobs:
   build:
-    name: Apollo
+    name: Schema Standard
     runs-on: ubuntu-latest
+
     env:
       APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
       APOLLO_VCS_BRANCH: ${{ github.head_ref }}
       APOLLO_VCS_COMMIT: ${{ github.event.pull_request.head.sha }}
+
     services:
       postgres:
         image: postgres
@@ -21,6 +23,7 @@ jobs:
         ports:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
       redis:
         image: redis:7
         ports:
