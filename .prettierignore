@@ -16,7 +16,7 @@ src/type/generated
 **/.env
 **/.env.*
 **/.dockerignore
-.prettierrc
+prettier.config.mjs
 .prettierignore
 .gitignore
 LICENSE
