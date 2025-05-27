@@ -6,28 +6,28 @@ import { Validate, ValidatorConstraint, ValidatorConstraintInterface } from 'cla
 import { Collection, FreezeState, Listing, Token, TokenAccount } from '../model'
 import { isValidAddress } from '../util/tools'
 
-enum OrderBy {
+enum MyTokensOrderByInput {
     COLLECTION_NAME = "collection.metadata->>'name'",
     TOKEN_NAME = "token.metadata->>'name'",
     FLOOR_PRICE = 'listing.highestPrice',
     DATE = 'token.createdAt',
 }
 
-enum Order {
+enum MyTokensOrderInput {
     ASC = 'ASC',
     DESC = 'DESC',
 }
 
-registerEnumType(OrderBy, {
-    name: 'MyTokensOrderBy',
+registerEnumType(MyTokensOrderByInput, {
+    name: 'MyTokensOrderByInput',
 })
 
-registerEnumType(Order, {
-    name: 'MyTokensOrder',
+registerEnumType(MyTokensOrderInput, {
+    name: 'MyTokensOrderInput',
 })
 
 registerEnumType(FreezeState, {
-    name: 'MyTokensFreezeState',
+    name: 'MyTokensFreezeStateInput',
 })
 
 @ValidatorConstraint({ name: 'PublicKey', async: false })
@@ -47,11 +47,11 @@ class MyTokenArgs {
     @Validate(IsPublicKey)
     accountId!: string
 
-    @Field(() => OrderBy)
-    orderBy!: OrderBy
+    @Field(() => MyTokensOrderByInput)
+    orderBy!: MyTokensOrderByInput
 
-    @Field(() => Order)
-    order!: Order
+    @Field(() => MyTokensOrderInput)
+    order!: MyTokensOrderInput
 
     @Field(() => Int, { defaultValue: 0 })
     offset: number = 0

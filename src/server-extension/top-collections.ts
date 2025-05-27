@@ -17,7 +17,7 @@ import type { EntityManager } from 'typeorm'
 import { Collection, Listing, ListingSale, ListingStatus, Token } from '../model'
 import { DateTimeColumn as DateTimeColumn_ } from '@subsquid/typeorm-store/lib/decorators/columns/DateTimeColumn'
 
-enum Timeframe {
+enum TimeframeInput {
     HOUR = 'HOUR',
     HOUR_6 = 'HOUR_6',
     HOUR_24 = 'HOUR_24',
@@ -37,7 +37,7 @@ const timeFrameMap = {
     ALL: { c: '0', p: '0' },
 }
 
-enum TopCollectionOrderBy {
+enum TopCollectionOrderByInput {
     CREATED_AT = 'created_at',
     VOLUME = 'volume',
     SALES = 'sales',
@@ -53,11 +53,11 @@ enum Order {
     DESC = 'DESC',
 }
 
-registerEnumType(Timeframe, {
+registerEnumType(TimeframeInput, {
     name: 'Timeframe',
 })
 
-registerEnumType(TopCollectionOrderBy, {
+registerEnumType(TopCollectionOrderByInput, {
     name: 'TopCollectionOrderBy',
 })
 
@@ -166,8 +166,8 @@ export class TopCollectionResolver {
 
     @Query(() => [TopCollection])
     async topCollection(
-        @Arg('timeFrame', () => Timeframe) timeFrame: Timeframe,
-        @Arg('orderBy', () => TopCollectionOrderBy) orderBy: TopCollectionOrderBy,
+        @Arg('timeFrame', () => TimeframeInput) timeFrame: TimeframeInput,
+        @Arg('orderBy', () => TopCollectionOrderByInput) orderBy: TopCollectionOrderByInput,
         @Arg('category', () => [String], { nullable: true, defaultValue: [] }) category: string[],
         @Arg('query', { nullable: true, description: 'Search by collection name' }) query: string,
         @Arg('order', () => Order) order: Order,
@@ -191,7 +191,7 @@ export class TopCollectionResolver {
             .addFrom((mqb) => {
                 mqb.addSelect('collectionId AS id')
                     .addSelect(
-                        `(SELECT COUNT(*)::int FROM collection_account a WHERE a.collection_id = l.collectionId ${timeFrame !== Timeframe.ALL ? `AND created_at >= NOW() - INTERVAL '${timeFrameMap[timeFrame].c}'` : ''} ) AS users`
+                        `(SELECT COUNT(*)::int FROM collection_account a WHERE a.collection_id = l.collectionId ${timeFrame !== TimeframeInput.ALL ? `AND created_at >= NOW() - INTERVAL '${timeFrameMap[timeFrame].c}'` : ''} ) AS users`
                     )
                     .addSelect('metadata AS metadata')
                     .addSelect('stats AS stats')
@@ -224,7 +224,7 @@ export class TopCollectionResolver {
                             .addSelect('collection.verified_at AS verified_at')
                             .addSelect('collection.created_at AS created_at')
                             .addSelect('collection.category AS category')
-                        if (timeFrame === Timeframe.ALL) {
+                        if (timeFrame === TimeframeInput.ALL) {
                             inBuilder
                                 .addSelect(`SUM(sale.amount * sale.price) AS volume_last_duration`)
                                 .addSelect(`COUNT(sale.id)::int AS sales_last_duration`)
