@@ -5,11 +5,10 @@ import xxhash from 'xxhash-wasm'
  */
 class XXHasher {
     private static instance: XXHasher
-    private hasher: any = null
+    private hasher: ((input: string, seed?: number) => string) | undefined
     private initializing: Promise<void> | null = null
 
     private constructor() {
-        // Initialize the hasher when first instantiated
         this.initializing = this.initialize()
     }
 
@@ -20,6 +19,7 @@ class XXHasher {
         if (!XXHasher.instance) {
             XXHasher.instance = new XXHasher()
         }
+
         return XXHasher.instance
     }
 
@@ -28,7 +28,8 @@ class XXHasher {
      */
     private async initialize(): Promise<void> {
         try {
-            this.hasher = await xxhash()
+            const { h32ToString } = await xxhash()
+            this.hasher = h32ToString
             this.initializing = null
         } catch (error) {
             console.error('Failed to initialize XXHash:', error)
@@ -43,9 +44,6 @@ class XXHasher {
         if (this.initializing) {
             await this.initializing
         }
-        if (!this.hasher) {
-            throw new Error('XXHash hasher is not initialized')
-        }
     }
 
     /**
@@ -55,6 +53,11 @@ class XXHasher {
      */
     public async hash(input: string): Promise<string> {
         await this.ensureInitialized()
+
+        if (!this.hasher) {
+            throw new Error('XXHash hasher is not initialized')
+        }
+
         return this.hasher(input)
     }
 
@@ -66,6 +69,7 @@ class XXHasher {
     public async createId(ids: string[]): Promise<string> {
         const sortedIds = [...ids].sort()
         const concatenated = sortedIds.join(',')
+
         return this.hash(concatenated)
     }
 }
