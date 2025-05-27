@@ -13,6 +13,9 @@ import { xxhasher } from '../util/hasher'
 import { match } from 'ts-pattern'
 import { type Queue } from 'bullmq'
 import { QueueType } from './types'
+import { logger } from '../util/helpers'
+
+const log = logger('sqd:worker')
 
 export async function pauseQueue(type: QueueType): Promise<void> {
     const queue = getQueueByType(type)
@@ -50,62 +53,77 @@ export function dispatchFetchAllBalances(): void {
             },
         }
     ).catch(() => {
-        console.log('Failed to dispatch a job on balances queue')
+        log.error('Failed to dispatch a job on balances queue')
     })
 }
 
 export function dispatchFetchBalances(ids: string[]): void {
-    xxhasher.createId(ids).then((hashedIds) => {
-        BalancesQueue.add(
-            JobsEnum.FETCH_BALANCES,
-            { ids: hashedIds },
-            {
-                delay: 6000,
-                jobId: `balances:${hashedIds}`,
-                deduplication: {
-                    id: `balances:${hashedIds}`,
-                },
-            }
-        ).catch(() => {
-            console.log('Failed to dispatch a job on balances queue')
+    xxhasher
+        .createId(ids)
+        .then((hashedIds) => {
+            BalancesQueue.add(
+                JobsEnum.FETCH_BALANCES,
+                { ids: hashedIds },
+                {
+                    delay: 6000,
+                    jobId: `balances:${hashedIds}`,
+                    deduplication: {
+                        id: `balances:${hashedIds}`,
+                    },
+                }
+            ).catch(() => {
+                log.error('Failed to dispatch a job on balances queue')
+            })
         })
-    })
+        .catch(() => {
+            log.error('Failed to hash ids')
+        })
 }
 
 export function dispatchFetchAccounts(ids: string[]): void {
-    xxhasher.createId(ids).then((hashedIds) => {
-        AccountsQueue.add(
-            JobsEnum.FETCH_ACCOUNTS,
-            { ids },
-            {
-                delay: 6000,
-                jobId: `accounts:${hashedIds}`,
-                deduplication: {
-                    id: `accounts:${hashedIds}`,
-                },
-            }
-        ).catch(() => {
-            console.log('Failed to dispatch a job on accounts queue')
+    xxhasher
+        .createId(ids)
+        .then((hashedIds) => {
+            AccountsQueue.add(
+                JobsEnum.FETCH_ACCOUNTS,
+                { ids },
+                {
+                    delay: 6000,
+                    jobId: `accounts:${hashedIds}`,
+                    deduplication: {
+                        id: `accounts:${hashedIds}`,
+                    },
+                }
+            ).catch(() => {
+                log.error('Failed to dispatch a job on accounts queue')
+            })
         })
-    })
+        .catch(() => {
+            log.error('Failed to hash ids')
+        })
 }
 
 export function dispatchFetchCollectionExtra(ids: string[]): void {
-    xxhasher.createId(ids).then((hashedIds) => {
-        CollectionsQueue.add(
-            JobsEnum.FETCH_COLLECTIONS,
-            { ids },
-            {
-                delay: 6000,
-                jobId: `collection-extra:${hashedIds}`,
-                deduplication: {
-                    id: `collection-extra:${hashedIds}`,
-                },
-            }
-        ).catch(() => {
-            console.log('Failed to dispatch a job on collections queue')
+    xxhasher
+        .createId(ids)
+        .then((hashedIds) => {
+            CollectionsQueue.add(
+                JobsEnum.FETCH_COLLECTIONS,
+                { ids },
+                {
+                    delay: 6000,
+                    jobId: `collection-extra:${hashedIds}`,
+                    deduplication: {
+                        id: `collection-extra:${hashedIds}`,
+                    },
+                }
+            ).catch(() => {
+                log.error('Failed to dispatch a job on collections queue')
+            })
         })
-    })
+        .catch(() => {
+            log.error('Failed to hash ids')
+        })
 }
 
 export function dispatchComputeCollections(): void {
@@ -122,7 +140,7 @@ export function dispatchComputeCollections(): void {
             },
         }
     ).catch(() => {
-        console.log('Failed to dispatch a job on collections queue')
+        log.error('Failed to dispatch a job on collections queue')
     })
 }
 
@@ -138,7 +156,7 @@ export function dispatchComputeStats(id: string): void {
             },
         }
     ).catch(() => {
-        console.log('Failed to dispatch a job on collections queue')
+        log.error('Failed to dispatch a job on collections queue')
     })
 }
 
@@ -154,7 +172,7 @@ export function dispatchComputeRarity(id: string): void {
             },
         }
     ).catch(() => {
-        console.log('Failed to dispatch a job on tokens queue')
+        log.error('Failed to dispatch a job on tokens queue')
     })
 }
 
@@ -170,7 +188,7 @@ export function dispatchComputeTraits(id: string): void {
             },
         }
     ).catch(() => {
-        console.log('Failed to dispatch a job on traits queue')
+        log.error('Failed to dispatch a job on traits queue')
     })
 }
 
@@ -191,6 +209,6 @@ export function dispatchComputeMetadata(
             },
         }
     ).catch(() => {
-        console.log('Failed to dispatch a job on metadata queue')
+        log.error('Failed to dispatch a job on metadata queue')
     })
 }

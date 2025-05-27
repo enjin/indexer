@@ -4,7 +4,7 @@ import xxhash from 'xxhash-wasm'
  * A singleton hasher for creating deterministic identifiers
  */
 class XXHasher {
-    private static instance: XXHasher
+    private static instance: XXHasher | undefined
     private hasher: ((input: string, seed?: number) => string) | undefined
     private initializing: Promise<void> | null = null
 
@@ -32,7 +32,6 @@ class XXHasher {
             this.hasher = h32ToString
             this.initializing = null
         } catch (error) {
-            console.error('Failed to initialize XXHash:', error)
             throw error
         }
     }
@@ -74,5 +73,4 @@ class XXHasher {
     }
 }
 
-// Export a singleton instance
 export const xxhasher = XXHasher.getInstance()

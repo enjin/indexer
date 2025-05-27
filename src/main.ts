@@ -19,6 +19,7 @@ import { calls, events } from './type'
 import { createLogger } from '@subsquid/logger'
 import { QueueUtils } from './queue'
 import { QueuesEnum } from './queue/constants'
+import { logger } from './util/helpers'
 
 async function bootstrap() {
     Sentry.init({
@@ -29,7 +30,7 @@ async function bootstrap() {
     const dataService = DataService.getInstance()
     await dataService.initialize()
 
-    const log = createLogger('sqd:processor')
+    const log = logger('sqd:processor')
     log.info(`Last block on config: ${dataService.lastBlockNumber}`)
 
     processorConfig.run(
