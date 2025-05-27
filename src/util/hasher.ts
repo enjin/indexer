@@ -27,13 +27,9 @@ class XXHasher {
      * Initialize the XXHash hasher
      */
     private async initialize(): Promise<void> {
-        try {
-            const { h32ToString } = await xxhash()
-            this.hasher = h32ToString
-            this.initializing = null
-        } catch (error) {
-            throw error
-        }
+        const { h32ToString } = await xxhash()
+        this.hasher = h32ToString
+        this.initializing = null
     }
 
     /**
