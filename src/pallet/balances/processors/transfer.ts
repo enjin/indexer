@@ -6,8 +6,6 @@ import * as mappings from '../../index'
 export async function transfer(item: EventItem): Promise<EventModel | undefined> {
     const data = mappings.balances.events.transfer(item)
 
-    if (!data) return undefined
-
     if (item.extrinsic) {
         await Sns.getInstance().send({
             id: item.id,
