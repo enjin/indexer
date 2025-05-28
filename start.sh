@@ -11,7 +11,7 @@ if [ "$ROLE" = "processor" ]; then
         echo "Starting processor..."
         pnpm run processor
     else
-        pnpm run db:clear || exit
+        pnpm run db:wipe || exit
     fi
 elif [ "$ROLE" = "graphql" ]; then
     pnpm run metrics &

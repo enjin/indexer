@@ -24,7 +24,6 @@ import {
     ValidatorsWorker,
 } from './processors'
 
-// We have 11 workers, so setting to 15 gives us some headroom
 // Increase max listeners to avoid warnings
 EventEmitter.defaultMaxListeners = 30
 
@@ -43,8 +42,6 @@ const WorkerMap = new Map([
  * Initialize workers by binding an event listener to it
  */
 function initializeJobs() {
-    console.log('Initializing jobs!!!')
-
     WorkerMap.forEach((worker) => {
         worker.on('error', (err) => {
             console.error(err)
@@ -52,7 +49,7 @@ function initializeJobs() {
     })
 }
 
-const index: Application = express()
+const server: Application = express()
 const serverAdapter = new ExpressAdapter()
 
 serverAdapter.setBasePath('/')
@@ -81,9 +78,8 @@ createBullBoard({
     },
 })
 
-index.use('/', serverAdapter.getRouter())
-
-index.listen(9090, () => {
+server.use('/', serverAdapter.getRouter())
+server.listen(9090, () => {
     initializeJobs()
     console.log(`Server running at port 9090`)
 })

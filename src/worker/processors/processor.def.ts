@@ -1,8 +1,7 @@
 import { Job } from 'bullmq'
 
 export interface ProcessorDef {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    handle: (job: Job) => Promise<any>
+    handle: (job: Job) => Promise<void>
     completed?: (job: Job) => Promise<void>
-    failed?: (job?: Job) => Promise<void>
+    failed?: (job: Job | undefined, error: Error | undefined) => Promise<void>
 }

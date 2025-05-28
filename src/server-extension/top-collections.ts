@@ -10,22 +10,14 @@ import {
     Root,
     FieldResolver,
     InputType,
+    ArgsType,
+    Args,
 } from 'type-graphql'
 import { BigInteger, Json } from '@subsquid/graphql-server'
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
 import { Collection, Listing, ListingSale, ListingStatus, Token } from '../model'
 import { DateTimeColumn as DateTimeColumn_ } from '@subsquid/typeorm-store/lib/decorators/columns/DateTimeColumn'
-
-enum Timeframe {
-    HOUR = 'HOUR',
-    HOUR_6 = 'HOUR_6',
-    HOUR_24 = 'HOUR_24',
-    WEEK = 'WEEK',
-    MONTH = 'MONTH',
-    YEAR = 'YEAR',
-    ALL = 'ALL',
-}
 
 const timeFrameMap = {
     HOUR: { c: '1 hour', p: '2 hours' },
@@ -37,32 +29,42 @@ const timeFrameMap = {
     ALL: { c: '0', p: '0' },
 }
 
-enum TopCollectionOrderBy {
-    CREATED_AT = 'created_at',
-    VOLUME = 'volume',
-    SALES = 'sales',
-    VOLUME_CHANGE = 'volume_change',
-    USERS = 'users',
-    CATEGORY = 'category',
-    TRENDING = 'trending_score',
-    TOP = 'top_score',
+enum TopCollectionTimeframeInput {
+    HOUR = 'HOUR',
+    HOUR_6 = 'HOUR_6',
+    HOUR_24 = 'HOUR_24',
+    WEEK = 'WEEK',
+    MONTH = 'MONTH',
+    YEAR = 'YEAR',
+    ALL = 'ALL',
 }
 
-enum Order {
+enum TopCollectionOrderByInput {
+    CREATED_AT = '"createdAt"',
+    VOLUME = 'volume',
+    SALES = 'sales',
+    VOLUME_CHANGE = '"volumeChange"',
+    USERS = 'users',
+    CATEGORY = 'category',
+    TRENDING = '"trendingScore"',
+    TOP = '"topScore"',
+}
+
+enum TopCollectionOrderInput {
     ASC = 'ASC',
     DESC = 'DESC',
 }
 
-registerEnumType(Timeframe, {
-    name: 'Timeframe',
+registerEnumType(TopCollectionTimeframeInput, {
+    name: 'TopCollectionTimeframeInput',
 })
 
-registerEnumType(TopCollectionOrderBy, {
-    name: 'TopCollectionOrderBy',
+registerEnumType(TopCollectionOrderByInput, {
+    name: 'TopCollectionOrderByInput',
 })
 
-registerEnumType(Order, {
-    name: 'TopCollectionOrder',
+registerEnumType(TopCollectionOrderInput, {
+    name: 'TopCollectionOrderInput',
 })
 
 @ObjectType()
@@ -80,16 +82,16 @@ export class TopCollection {
     category!: string
 
     @Field({ nullable: true })
-    verified_at!: string
+    verifiedAt!: string
 
     @Field({ nullable: false })
-    created_at!: string
+    createdAt!: string
 
     @Field(() => Json, { nullable: true })
     stats!: typeof JSON
 
     @Field({ nullable: true })
-    volume_change!: string
+    volumeChange!: string
 
     @Field({ nullable: false })
     volume!: string
@@ -101,16 +103,16 @@ export class TopCollection {
     users!: number
 
     @Field({ nullable: true })
-    trending_score!: string
+    trendingScore!: string
 
     @Field({ nullable: true })
-    top_score!: string
+    topScore!: string
 
     @Field({ nullable: true })
-    max_volume!: string
+    maxVolume!: string
 
     @Field({ nullable: true })
-    max_sales!: string
+    maxSales!: string
 
     constructor(props: Partial<TopCollection>) {
         Object.assign(this, props)
@@ -159,51 +161,68 @@ class CollectionAttributeWhereInput {
     AND?: FilterCondition[]
 }
 
+@ArgsType()
+export class TopCollectionArgs {
+    @Field(() => TopCollectionTimeframeInput)
+    timeFrame!: TopCollectionTimeframeInput
+
+    @Field(() => TopCollectionOrderByInput)
+    orderBy!: TopCollectionOrderByInput
+
+    @Field(() => [String], { nullable: true, defaultValue: [] })
+    category!: string[]
+
+    @Field(() => String, { nullable: true, description: 'Search by collection name' })
+    query!: string
+
+    @Field(() => TopCollectionOrderInput)
+    order!: TopCollectionOrderInput
+
+    @Field(() => Int)
+    offset: number = 0
+
+    @Field(() => Int)
+    limit: number = 10
+}
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 @Resolver((of) => TopCollection)
 export class TopCollectionResolver {
     constructor(private tx: () => Promise<EntityManager>) {}
 
     @Query(() => [TopCollection])
-    async topCollection(
-        @Arg('timeFrame', () => Timeframe) timeFrame: Timeframe,
-        @Arg('orderBy', () => TopCollectionOrderBy) orderBy: TopCollectionOrderBy,
-        @Arg('category', () => [String], { nullable: true, defaultValue: [] }) category: string[],
-        @Arg('query', { nullable: true, description: 'Search by collection name' }) query: string,
-        @Arg('order', () => Order) order: Order,
-        @Arg('offset', () => Int) offset: number = 0,
-        @Arg('limit', () => Int) limit: number = 10
-    ): Promise<TopCollection[]> {
+    async topCollection(@Args() args: TopCollectionArgs): Promise<TopCollection[]> {
+        const { timeFrame, orderBy, category, query, order, offset, limit } = args
         const manager = await this.tx()
 
         const builder = manager
             .createQueryBuilder()
             .select('*')
             .addSelect(
-                '(COALESCE(0.35 * (volume::numeric / max_volume::numeric),0) + ' +
-                    'COALESCE(0.35 * (sales::numeric / max_sales::numeric), 0) +' +
+                '(COALESCE(0.35 * (volume::numeric / "maxVolume"::numeric),0) + ' +
+                    'COALESCE(0.35 * (sales::numeric / "maxSales"::numeric), 0) +' +
                     'COALESCE(0.20 * (avg_sale_change::numeric / NULLIF(MAX(avg_sale_change) OVER(), 0)::numeric),0) +' +
-                    'COALESCE(0.10 * (users::numeric / NULLIF(MAX(users) OVER(), 0)::numeric), 0)) AS trending_score'
+                    'COALESCE(0.10 * (users::numeric / NULLIF(MAX(users) OVER(), 0)::numeric), 0)) AS "trendingScore"'
             )
             .addSelect(
-                `(0.80 * COALESCE(volume::numeric / max_volume::numeric, 0) + 0.20 * COALESCE(sales::numeric / max_sales::numeric)) AS top_score`
+                `(0.80 * COALESCE(volume::numeric / "maxVolume"::numeric, 0) + 0.20 * COALESCE(sales::numeric / "maxSales"::numeric)) AS "topScore"`
             )
             .addFrom((mqb) => {
                 mqb.addSelect('collectionId AS id')
                     .addSelect(
-                        `(SELECT COUNT(*)::int FROM collection_account a WHERE a.collection_id = l.collectionId ${timeFrame !== Timeframe.ALL ? `AND created_at >= NOW() - INTERVAL '${timeFrameMap[timeFrame].c}'` : ''} ) AS users`
+                        `(SELECT COUNT(*)::int FROM collection_account a WHERE a.collection_id = l.collectionId ${timeFrame !== TopCollectionTimeframeInput.ALL ? `AND "createdAt" >= NOW() - INTERVAL '${timeFrameMap[timeFrame].c}'` : ''} ) AS users`
                     )
                     .addSelect('metadata AS metadata')
                     .addSelect('stats AS stats')
                     .addSelect('volume_last_duration AS volume')
-                    .addSelect('NULLIF(MAX(volume_last_duration) OVER(), 0) AS max_volume')
-                    .addSelect('NULLIF(MAX(sales_last_duration) OVER(), 0) AS max_sales')
+                    .addSelect('NULLIF(MAX(volume_last_duration) OVER(), 0) AS "maxVolume"')
+                    .addSelect('NULLIF(MAX(sales_last_duration) OVER(), 0) AS "maxSales"')
                     .addSelect('sales_last_duration AS sales')
-                    .addSelect('verified_at::text AS "verified_at"')
-                    .addSelect('created_at::text AS "created_at"')
+                    .addSelect('"verifiedAt"::text AS "verifiedAt"')
+                    .addSelect('"createdAt"::text AS "createdAt"')
                     .addSelect('category AS category')
                     .addSelect(
-                        'CASE WHEN volume_previous_duration != 0 THEN ROUND((volume_last_duration - volume_previous_duration) * 100 / volume_previous_duration, 2) ELSE null END AS volume_change'
+                        'CASE WHEN volume_previous_duration != 0 THEN ROUND((volume_last_duration - volume_previous_duration) * 100 / volume_previous_duration, 2) ELSE null END AS "volumeChange"'
                     )
                     .addSelect(
                         'CASE WHEN previous_avg_sale != 0 THEN ROUND((last_avg_sale - previous_avg_sale) * 100 / previous_avg_sale, 2) ELSE null END AS avg_sale_change'
@@ -221,10 +240,10 @@ export class TopCollectionResolver {
                             .select('collection.id AS collectionId')
                             .addSelect('collection.metadata AS metadata')
                             .addSelect('collection.stats AS stats')
-                            .addSelect('collection.verified_at AS verified_at')
-                            .addSelect('collection.created_at AS created_at')
+                            .addSelect('collection.verified_at AS "verifiedAt"')
+                            .addSelect('collection.created_at AS "createdAt"')
                             .addSelect('collection.category AS category')
-                        if (timeFrame === Timeframe.ALL) {
+                        if (timeFrame === TopCollectionTimeframeInput.ALL) {
                             inBuilder
                                 .addSelect(`SUM(sale.amount * sale.price) AS volume_last_duration`)
                                 .addSelect(`COUNT(sale.id)::int AS sales_last_duration`)
@@ -293,6 +312,11 @@ export class TopCollectionResolver {
             if (typeof collection.attributes === 'string') {
                 collection.attributes = JSON.parse(collection.attributes)
             }
+
+            if (!collection.attributes) {
+                collection.attributes = []
+            }
+
             return new TopCollection(collection)
         })
     }
@@ -300,7 +324,7 @@ export class TopCollectionResolver {
     @FieldResolver(() => [CollectionAttribute])
     attributes(
         @Root() topCollection: TopCollection,
-        @Arg('where', () => CollectionAttributeWhereInput, { nullable: true }) where?: CollectionAttributeWhereInput
+        @Arg('where', () => CollectionAttributeWhereInput, { defaultValue: [] }) where?: CollectionAttributeWhereInput
     ): CollectionAttribute[] {
         if (!where || !where.AND || where.AND.length === 0) {
             return topCollection.attributes
@@ -312,16 +336,18 @@ export class TopCollectionResolver {
             return topCollection.attributes
         }
 
-        return topCollection.attributes.filter((attr) => {
-            if (keyEq?.key_eq) {
-                return attr.key === keyEq.key_eq
-            }
+        return (
+            topCollection.attributes.filter((attr) => {
+                if (keyEq?.key_eq) {
+                    return attr.key === keyEq.key_eq
+                }
 
-            if (keyIn?.key_in && keyIn?.key_in.length > 0) {
-                return keyIn?.key_in?.includes(attr.key)
-            }
+                if (keyIn?.key_in && keyIn?.key_in.length > 0) {
+                    return keyIn?.key_in?.includes(attr.key)
+                }
 
-            return false
-        })
+                return false
+            }) ?? []
+        )
     }
 }

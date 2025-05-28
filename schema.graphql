@@ -550,7 +550,7 @@ type Collection @entity {
 
   # Storage defaults
   owner: Account!
-  mintPolicy: MintPolicy!
+  mintPolicy: MintPolicy
   marketPolicy: MarketPolicy
   explicitRoyaltyCurrencies: [RoyaltyCurrency] @derivedFrom(field: "collection")
   burnPolicy: String
@@ -578,7 +578,7 @@ type Collection @entity {
   hidden: Boolean! @index
 
   # Marketplace analytics
-  stats: CollectionStats!
+  stats: CollectionStats
 }
 
 type CollectionApproval {

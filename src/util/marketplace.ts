@@ -53,74 +53,73 @@ type CollectionExtra = {
 }
 
 export async function fetchAccountsDetail(ids: string[]) {
-    try {
-        const { data } = await axios.post<{ data: { result: AddressVerification[] } } | { errors: string }>(
-            `${processorConfig.marketplaceUrl}/graphql/internal`,
-            {
-                query: addressesQuery,
-                variables: {
-                    ids,
-                },
+    const response = await axios.post<{ data: { result: AddressVerification[] } } | { errors: string }>(
+        `${processorConfig.marketplaceUrl}/graphql/internal`,
+        {
+            query: addressesQuery,
+            variables: {
+                ids,
             },
-            {
-                headers: {
-                    Accept: 'application/json',
-                    'X-Network': isMainnet() ? 'enjin' : 'canary',
-                    'CF-Access-Client-Id': process.env.CF_ACCESS_CLIENT_ID,
-                    'CF-Access-Client-Secret': process.env.CF_ACCESS_CLIENT_SECRET,
-                },
-            }
-        )
+        },
+        {
+            headers: {
+                Accept: 'application/json',
+                'X-Network': isMainnet() ? 'enjin' : 'canary',
+                'CF-Access-Client-Id': process.env.CF_ACCESS_CLIENT_ID,
+                'CF-Access-Client-Secret': process.env.CF_ACCESS_CLIENT_SECRET,
+            },
+        }
+    )
 
-        if ('errors' in data) throw new Error(JSON.stringify(data.errors[0]))
-        // if (data.data.result === undefined) {
-        //     console.error('No data returned', data)
-        // throw new Error('No data returned')
-        // }
-
-        return ids.map((id) => {
-            const account = data.data.result.find((i) => i.publicKey === id)
-            if (!account) return null
-            return {
-                publicKey: id,
-                username: account.username || null,
-                image: account.image || null,
-                verifiedAt: account.verified ? new Date(account.verifiedDate) : null,
-            }
-        })
-    } catch (error) {
-        console.error('Error: Fetching account details', ids, error)
-        return ids.map(() => null)
+    if ('errors' in response.data) {
+        throw new Error(JSON.stringify(response.data.errors[0]))
     }
+
+    if (response.data.data.result.length === 0) {
+        throw new Error('No data returned')
+    }
+
+    const accounts = response.data.data
+
+    return ids.map((id) => {
+        const account = accounts.result.find((i) => i.publicKey === id)
+        if (!account) return null
+
+        return {
+            publicKey: id,
+            username: account.username || null,
+            image: account.image || null,
+            verifiedAt: account.verified ? new Date(account.verifiedDate) : null,
+        }
+    })
 }
 
 export async function fetchCollectionsExtra(ids: string[]) {
-    try {
-        const { data } = await axios.post<{ data: { result: CollectionExtra[] } } | { errors: string }>(
-            `${processorConfig.marketplaceUrl}/graphql/internal`,
-            {
-                query: collectionsQuery,
-                variables: {
-                    ids,
-                },
+    const response = await axios.post<{ data: { result: CollectionExtra[] } } | { errors: string }>(
+        `${processorConfig.marketplaceUrl}/graphql/internal`,
+        {
+            query: collectionsQuery,
+            variables: {
+                ids,
             },
-            {
-                headers: {
-                    Accept: 'application/json',
-                    'X-Network': isMainnet() ? 'enjin' : 'canary',
-                    'CF-Access-Client-Id': process.env.CF_ACCESS_CLIENT_ID,
-                    'CF-Access-Client-Secret': process.env.CF_ACCESS_CLIENT_SECRET,
-                },
-            }
-        )
+        },
+        {
+            headers: {
+                Accept: 'application/json',
+                'X-Network': isMainnet() ? 'enjin' : 'canary',
+                'CF-Access-Client-Id': process.env.CF_ACCESS_CLIENT_ID,
+                'CF-Access-Client-Secret': process.env.CF_ACCESS_CLIENT_SECRET,
+            },
+        }
+    )
 
-        if ('errors' in data) throw new Error(JSON.stringify(data.errors[0]))
-        // if (data.data === undefined) {
-        //     throw new Error('No data returned')
-        // }
-
-        return data.data.result
-    } catch (error) {
-        throw new Error(`Error: Fetching collection details ${error}`)
+    if ('errors' in response.data) {
+        throw new Error(JSON.stringify(response.data.errors[0]))
     }
+
+    if (response.data.data.result.length === 0) {
+        throw new Error('No data returned')
+    }
+
+    return response.data.data.result
 }

@@ -12,8 +12,8 @@ const worker = new Worker(queueName, processor, {
     concurrency: 5,
 })
 
-worker.on('failed', (job?: Job) => {
-    void instance.failed(job)
+worker.on('failed', (job: Job | undefined, error?: Error): void => {
+    void instance.failed(job, error)
 })
 
 worker.on('completed', (job) => {

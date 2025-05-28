@@ -2,6 +2,7 @@ import { connectionManager } from '../../contexts'
 import { Collection, Token, Trait, TraitToken } from '../../model'
 import { isPlainObject } from 'lodash'
 import { createHash } from 'crypto'
+import { Job } from 'bullmq'
 
 type TraitValueMap = Map<string, bigint>
 
@@ -9,13 +10,11 @@ const hash = (str: string) => {
     return createHash('sha1').update(str).digest('hex')
 }
 
-export async function computeTraits(collectionId: string) {
+export async function computeTraits(job: Job, collectionId: string) {
     const em = await connectionManager()
 
     const traitTypeMap = new Map<string, TraitValueMap>()
     const tokenTraitMap = new Map<string, string[]>()
-
-    // const start = new Date()
 
     const tokens = await em
         .getRepository(Token)
@@ -71,13 +70,11 @@ export async function computeTraits(collectionId: string) {
     })
 
     if (!traitTypeMap.size) {
-        // await job.log(`No traits found for collection ${collectionId}`)
-        // done()
-
+        await job.log(`No traits found for collection ${collectionId}`)
         return
     }
 
-    // await job.log(`Found ${traitTypeMap.size} trait types`)
+    await job.log(`Found ${traitTypeMap.size} trait types`)
     const traitsToSave: Trait[] = []
 
     traitTypeMap.forEach((traitValueMap, traitType) => {
@@ -94,7 +91,7 @@ export async function computeTraits(collectionId: string) {
         })
     })
 
-    // await job.log(`Saving ${traitsToSave.length} traits`)
+    await job.log(`Saving ${traitsToSave.length} traits`)
     await em.save(Trait, traitsToSave, { chunk: 1000 })
     const traitTokensToSave: TraitToken[] = []
 
@@ -112,10 +109,7 @@ export async function computeTraits(collectionId: string) {
     })
 
     if (traitTokensToSave.length) {
-        // await job.log(`Saving ${traitsToSave.length} token traits`)
+        await job.log(`Saving ${traitsToSave.length} token traits`)
         await em.save(TraitToken, traitTokensToSave, { chunk: 1000 })
     }
-
-    // computeRarityRank(collectionId)
-    // done(null, { timeElapsed: new Date().getTime() - start.getTime() })
 }

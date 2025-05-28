@@ -1,14 +1,15 @@
 import { connectionManager } from '../../contexts'
 import { Listing, ListingType } from '../../model'
 import { Brackets } from 'typeorm'
+import { Job } from 'bullmq'
 
-export async function invalidateListings() {
+export async function invalidateListings(_job: Job) {
     const con = await connectionManager()
 
     await con.transaction('READ COMMITTED', async (em) => {
         const status: { height: number }[] = await em.query(`SELECT height FROM squid_processor.status WHERE id = 0`)
         if (status.length === 0) {
-            // done(null, null)
+            return
         }
 
         const { height } = status[0]
@@ -32,7 +33,5 @@ export async function invalidateListings() {
             )
             .returning('id')
             .execute()
-
-        // done(null, { at: height, affected: q.affected, raw: q.raw })
     })
 }

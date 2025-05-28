@@ -1,6 +1,7 @@
 import { EntityManager } from 'typeorm'
 import { Era, Identity, JudgementType, Registration, ScoreGrade, Validator } from '../../model'
 import { connectionManager } from '../../contexts'
+import { Job } from 'bullmq'
 
 function getJudgement(identity: Identity | null | undefined): JudgementType {
     if (identity === undefined || identity === null) return JudgementType.Unknown
@@ -8,8 +9,7 @@ function getJudgement(identity: Identity | null | undefined): JudgementType {
     return identity.info.currentJudgement
 }
 
-export async function computeValidators() {
-    // const start = new Date()
+export async function computeValidators(job: Job) {
     const em = await connectionManager()
 
     const validators = await em
@@ -20,7 +20,7 @@ export async function computeValidators() {
         .getMany()
 
     if (validators.length === 0) {
-        // done(null)
+        return
     }
 
     const validatorDetails = await getValidatorDetails(
@@ -54,13 +54,11 @@ export async function computeValidators() {
                       otherValidators.reduce((sum, v) => sum + v.nominatorsCount, 0) / otherValidators.length
                     : 0
 
-            validator.commission28d = [...(validator.commission28d ?? []), validator.commission ?? 0].slice(-28)
-            validator.blockProduction28d = [...(validator.blockProduction28d ?? []), details.producedBlocks24h].slice(
-                -28
-            )
-            validator.slashes84d = [...(validator.slashes84d ?? []), details.slashedBlocks84h ?? false].slice(-84)
-            validator.nodeCount28d = [...(validator.nodeCount28d ?? []), nodeCount].slice(-28)
-            validator.peerCommission28d = [...(validator.peerCommission28d ?? []), peerCommission].slice(-28)
+            validator.commission28d = [...validator.commission28d, validator.commission ?? 0].slice(-28)
+            validator.blockProduction28d = [...validator.blockProduction28d, details.producedBlocks24h].slice(-28)
+            validator.slashes84d = [...validator.slashes84d, details.slashedBlocks84h ?? false].slice(-84)
+            validator.nodeCount28d = [...validator.nodeCount28d, nodeCount].slice(-28)
+            validator.peerCommission28d = [...validator.peerCommission28d, peerCommission].slice(-28)
 
             const score = computeValidatorScore({
                 nodeUptimePercentage: details.uptime30d,
@@ -75,18 +73,14 @@ export async function computeValidators() {
             })
 
             validator.grade = score != null ? ScoreGrade[score] : null
-
-            // await job.log(JSON.stringify(validator))
-            // await job.log(`Validator ${validator.id} score: ${score}`)
+            await job.log(JSON.stringify(validator))
+            await job.log(`Validator ${validator.id} score: ${score}`)
 
             await em.save<Validator>(validator)
         } catch (error) {
-            console.log(`Error saving validator ${validator.id}: ${error}`)
-            // await job.log(`Error saving validator ${validator.id}: ${error}`)
+            await job.log(`Error saving validator ${validator.id}: ${error}`)
         }
     }
-
-    // done(null, { timeElapsed: new Date().getTime() - start.getTime() })
 }
 
 // eslint-disable-next-line
