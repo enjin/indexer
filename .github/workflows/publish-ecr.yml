@@ -1,4 +1,4 @@
-name: Elastic Container Registry
+name: Amazon ECR
 on:
   workflow_dispatch:
   push:
