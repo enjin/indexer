@@ -44,7 +44,7 @@
     "dev:processor": "pnpm exec ts-node -r dotenv/config src/main.ts",
     "dev:worker": "pnpm exec ts-node -r dotenv/config src/worker/index.ts",
     "ci:lint": "eslint . --config eslint.config.mjs",
-    "ci:format": "prettier . --check --config prettier.config.mjs",
+    "ci:prettier": "prettier . --check --config prettier.config.mjs",
     "ci:build": "tsc && pnpm run ci:sourcemaps",
     "ci:sourcemaps": "sentry-cli sourcemaps inject --org enjin --project enjin-indexer ./lib && sentry-cli sourcemaps upload --org enjin --project enjin-indexer ./lib"
   },
