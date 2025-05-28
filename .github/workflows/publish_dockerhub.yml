@@ -1,4 +1,4 @@
-name: Dockerhub
+name: DockerHub
 on:
   workflow_dispatch:
   release:

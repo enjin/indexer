@@ -1,11 +1,11 @@
-name: PR Agent
+name: Qodo Merge
 on:
   push:
   issue_comment:
 
 jobs:
   agent:
-    name: Automated Review
+    name: Agent Review
     runs-on: ubuntu-latest
 
     permissions:

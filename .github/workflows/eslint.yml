@@ -4,7 +4,7 @@ on:
 
 jobs:
   lint:
-    name: Code Standard & Format
+    name: Code Lint & Format
     runs-on: ubuntu-latest
 
     steps:

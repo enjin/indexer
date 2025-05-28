@@ -1,4 +1,4 @@
-name: Docker
+name: Elastic Container Registry
 on:
   workflow_dispatch:
   push:
