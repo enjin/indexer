@@ -84,6 +84,10 @@ export async function eventHandler(
             .with(multiTokens.claimTokensCompleted.name, () =>
                 p.multiTokens.processors.claimTokensCompleted(ctx, block, item)
             )
+            .with(balances.transfer.name, () => {
+                p.balances.processors.save(item)
+                return p.balances.processors.transfer(item)
+            })
             .with(
                 balances.balanceSet.name,
                 balances.burned.name,
@@ -99,11 +103,10 @@ export async function eventHandler(
                 balances.restored.name,
                 balances.slashed.name,
                 balances.suspended.name,
+                balances.withdraw.name,
                 balances.thawed.name,
                 balances.unlocked.name,
                 balances.unreserved.name,
-                balances.transfer.name,
-                balances.withdraw.name,
                 () => p.balances.processors.save(item)
             )
             .with(claims.claimRequested.name, () => p.claims.processors.claimRequested(ctx, block, item))
