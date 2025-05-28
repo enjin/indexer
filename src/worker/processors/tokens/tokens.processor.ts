@@ -7,7 +7,7 @@ export class TokensProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {
         switch (job.name as JobsEnum) {
             case JobsEnum.COMPUTE_RARITY:
-                await computeRarity(job.data.collectionId)
+                await computeRarity(job, job.data.collectionId)
                 break
             default:
                 throw new Error(`${job.name} is not a valid job for this processor`)

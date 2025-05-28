@@ -7,7 +7,7 @@ export class ValidatorsProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {
         switch (job.name as JobsEnum) {
             case JobsEnum.COMPUTE_VALIDATORS:
-                await computeValidators()
+                await computeValidators(job)
                 break
             default:
                 throw new Error(`${job.name} is not a valid job for this processor`)

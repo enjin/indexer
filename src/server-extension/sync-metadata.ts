@@ -3,10 +3,10 @@ import 'reflect-metadata'
 import { QueueUtils } from '../queue'
 
 @Resolver()
-export class SyncCollectionsResolver {
+export class SyncMetadataResolver {
     @Query(() => Boolean)
-    async syncCollections(): Promise<boolean> {
-        QueueUtils.dispatchComputeCollections()
+    async syncMetadata(): Promise<boolean> {
+        QueueUtils.dispatchSyncAllMetadata()
 
         return true
     }

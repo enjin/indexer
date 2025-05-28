@@ -1,6 +1,7 @@
 import { EntityManager } from 'typeorm'
 import { Era, Identity, JudgementType, Registration, ScoreGrade, Validator } from '../../model'
 import { connectionManager } from '../../contexts'
+import { Job } from 'bullmq'
 
 function getJudgement(identity: Identity | null | undefined): JudgementType {
     if (identity === undefined || identity === null) return JudgementType.Unknown
@@ -8,8 +9,7 @@ function getJudgement(identity: Identity | null | undefined): JudgementType {
     return identity.info.currentJudgement
 }
 
-export async function computeValidators() {
-    // const start = new Date()
+export async function computeValidators(job: Job) {
     const em = await connectionManager()
 
     const validators = await em
@@ -20,7 +20,7 @@ export async function computeValidators() {
         .getMany()
 
     if (validators.length === 0) {
-        // done(null)
+        return
     }
 
     const validatorDetails = await getValidatorDetails(
@@ -76,17 +76,14 @@ export async function computeValidators() {
 
             validator.grade = score != null ? ScoreGrade[score] : null
 
-            // await job.log(JSON.stringify(validator))
-            // await job.log(`Validator ${validator.id} score: ${score}`)
+            await job.log(JSON.stringify(validator))
+            await job.log(`Validator ${validator.id} score: ${score}`)
 
             await em.save<Validator>(validator)
         } catch (error) {
-            console.log(`Error saving validator ${validator.id}: ${error}`)
-            // await job.log(`Error saving validator ${validator.id}: ${error}`)
+            await job.log(`Error saving validator ${validator.id}: ${error}`)
         }
     }
-
-    // done(null, { timeElapsed: new Date().getTime() - start.getTime() })
 }
 
 // eslint-disable-next-line

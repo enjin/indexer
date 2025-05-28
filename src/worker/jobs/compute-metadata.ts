@@ -37,7 +37,7 @@ async function* tokensInBatch(em: EntityManager, collectionId: string) {
 export async function computeMetadata(job: Job) {
     const con = await connectionManager()
 
-    await con.transaction('REPEATABLE READ', async (em) => {
+    await con.transaction('READ COMMITTED', async (em) => {
         try {
             const jobData = job.data
             await job.log(job.data)
@@ -116,8 +116,6 @@ export async function computeMetadata(job: Job) {
                     typeof response[0].metadata === 'object' &&
                     !jobData.force
                 ) {
-                    // await job.log(`Metadata for ${jobData.resourceId} already exists`)
-                    // await job.log(JSON.stringify(response[0].metadata))
                     externalMetadata = response[0].metadata
                 } else {
                     const externalResponse = await fetchMetadata(uriAttribute.value, job)
@@ -154,8 +152,6 @@ export async function computeMetadata(job: Job) {
             await em.save(resource)
 
             if (jobData.type === 'collection' && jobData.allTokens) {
-                // console.log('Processing all tokens in collection', jobData.resourceId)
-
                 const batch = tokensInBatch(em, jobData.resourceId)
 
                 for await (const tokens of batch) {
@@ -164,7 +160,6 @@ export async function computeMetadata(job: Job) {
                     })
                 }
             }
-            // done(null, { id: jobData.resourceId })
         } catch (e: any) {
             await job.log(`An error happened while computing the metadata: ${e}`)
         }

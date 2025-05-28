@@ -1,6 +1,7 @@
 import { connectionManager } from '../../contexts'
 import { Collection, Token, TokenRarity, Trait } from '../../model'
 import * as mathjs from 'mathjs'
+import { Job } from 'bullmq'
 
 export const informationContentScoring = {
     scoreToken(totalSupply: bigint, entropy: number, token: Token) {
@@ -36,10 +37,8 @@ export const informationContentScoring = {
     },
 }
 
-export async function computeRarity(collectionId: string) {
+export async function computeRarity(job: Job, collectionId: string) {
     const em = await connectionManager()
-
-    console.time('rarity-ranker')
 
     const [collection, tokens] = await Promise.all([
         em.findOneOrFail(Collection, {
@@ -62,15 +61,12 @@ export async function computeRarity(collectionId: string) {
 
     // check if total supply is greater than 0
     if (!totalSupply || totalSupply <= 0) {
-        // return done()
         return
     }
 
     try {
         const entropy = informationContentScoring.collectionEntropy(totalSupply, collection.traits)
-
         if (!entropy || collection.traits.length === 0) {
-            // return done()
             return
         }
 
@@ -103,13 +99,7 @@ export async function computeRarity(collectionId: string) {
 
         // save new token rarities
         await em.save(tokenRanks, { chunk: 1000 })
-
-        console.timeEnd('rarity-ranker')
-
-        // return done()
     } catch (error) {
-        console.log('Error in rarity ranker', collectionId, (error as Error).message)
-        console.error(error)
-        // return done(error as Error)
+        await job.log(`Error in rarity ranker ${collectionId}: ${(error as Error).message}`)
     }
 }

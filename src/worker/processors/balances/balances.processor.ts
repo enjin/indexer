@@ -7,7 +7,7 @@ export class BalancesProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {
         switch (job.name as JobsEnum) {
             case JobsEnum.FETCH_BALANCES:
-                await fetchBalances(job.data.ids)
+                await fetchBalances(job, job.data.ids)
                 break
             default:
                 throw new Error(`${job.name} is not a valid job for this processor`)

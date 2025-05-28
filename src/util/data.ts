@@ -1,5 +1,6 @@
 import { connectionManager } from '../contexts'
 import { Config, ChainInfo } from '../model'
+import { createLogger } from '@subsquid/logger'
 
 export class DataService {
     private static instance: DataService | undefined
@@ -19,10 +20,18 @@ export class DataService {
     async initialize(): Promise<void> {
         if (this._isInitialized) return
 
+        await this.createMetadataSchema()
+
+        this._stateBlock = await this.getStateBlock()
+        this._isInitialized = true
+    }
+
+    async getStateBlock(): Promise<number> {
         const em = await connectionManager()
         try {
             const config = await em.getRepository(Config).createQueryBuilder('config').where({ id: '0' }).getOne()
-            this._stateBlock = config?.stateBlock ?? 0
+
+            return config?.stateBlock ?? 0
         } catch {
             const chainInfo = await em
                 .getRepository(ChainInfo)
@@ -32,13 +41,11 @@ export class DataService {
                 .catch(() => null)
 
             if (chainInfo) {
-                this._stateBlock = chainInfo.blockNumber
+                return chainInfo.blockNumber
             }
-
-            this._stateBlock = 0
         }
 
-        this._isInitialized = true
+        return 0
     }
 
     async createMetadataSchema(): Promise<void> {
@@ -51,37 +58,35 @@ export class DataService {
     }
 
     async dropAllTables(): Promise<void> {
+        const log = createLogger('sqd:processor')
+
         const con = await connectionManager()
 
-        // Get all tables from all schemas (excluding system schemas)
         const tablesQuery = `
             SELECT schemaname, tablename 
             FROM pg_tables 
-            WHERE schemaname NOT IN ('pg_catalog', 'information_schema', 'pg_toast')
+            WHERE schemaname NOT IN ('pg_catalog', 'information_schema', 'pg_toast', 'metadata')
             ORDER BY schemaname, tablename
         `
 
         const tables = await con.query(tablesQuery)
 
         if (tables.length === 0) {
-            console.log('No tables found to drop')
+            log.warn('No tables found to drop')
             return
         }
 
-        // Disable foreign key checks temporarily
         await con.query('SET session_replication_role = replica;')
 
         try {
-            // Create and execute DROP TABLE statements
             for (const table of tables) {
                 const dropStatement = `DROP TABLE IF EXISTS "${table.schemaname}"."${table.tablename}" CASCADE`
                 await con.query(dropStatement)
-                console.log(`Dropped table: ${table.schemaname}.${table.tablename}`)
+                log.warn(`Dropped table: ${table.schemaname}.${table.tablename}`)
             }
 
-            console.log(`Successfully dropped ${tables.length} tables`)
+            log.warn(`Successfully dropped ${tables.length} tables`)
         } finally {
-            // Re-enable foreign key checks
             await con.query('SET session_replication_role = DEFAULT;')
         }
     }

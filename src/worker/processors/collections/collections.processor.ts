@@ -2,20 +2,20 @@ import { Job } from 'bullmq'
 import { ProcessorDef } from '../processor.def'
 import { JobsEnum } from '../../constants'
 import { computeCollections } from '../../jobs/compute-collections'
-import { fetchCollections } from '../../jobs/fetch-collections'
+import { fetchExtra } from '../../jobs/fetch-extra'
 import { computeStats } from '../../jobs/compute-stats'
 
 export class CollectionsProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {
         switch (job.name as JobsEnum) {
             case JobsEnum.COMPUTE_COLLECTIONS:
-                await computeCollections()
+                await computeCollections(job)
                 break
             case JobsEnum.FETCH_COLLECTIONS:
-                await fetchCollections(job.data.ids)
+                await fetchExtra(job, job.data.ids)
                 break
             case JobsEnum.COMPUTE_STATS:
-                await computeStats(job.data.id)
+                await computeStats(job, job.data.id)
                 break
             default:
                 throw new Error(`${job.name} is not a valid job for this processor`)

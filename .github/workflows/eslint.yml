@@ -4,8 +4,9 @@ on:
 
 jobs:
   lint:
-    name: Code Standard & Format
+    name: Code Lint & Format
     runs-on: ubuntu-latest
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -24,8 +25,11 @@ jobs:
 
     - name: Install packages
       run: |
-        pnpm add -g eslint
+        pnpm add -g eslint prettier
         pnpm install
 
     - name: Run ESLint
       run: pnpm run ci:lint
+
+    - name: Run Prettier
+      run: pnpm run ci:prettier

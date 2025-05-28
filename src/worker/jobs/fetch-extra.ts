@@ -1,12 +1,13 @@
 import { dataHandlerContext } from '../../contexts'
 import { fetchCollectionsExtra } from '../../util/marketplace'
 import { Collection, CollectionFlags, CollectionSocials } from '../../model'
+import { Job } from 'bullmq'
 
 function isNotNull<T>(input: null | T): input is T {
     return input != null
 }
 
-export async function fetchCollections(ids: string[]) {
+export async function fetchExtra(_job: Job, ids: string[]) {
     const ctx = await dataHandlerContext()
     const data = await fetchCollectionsExtra(ids)
 
@@ -29,8 +30,6 @@ export async function fetchCollections(ids: string[]) {
             website: _c.website,
         })
 
-        // syncCollectionStats(_c.collectionId)
-        // computeTraits(_c.collectionId)
         return ctx.store.save<Collection>(collection)
     })
 

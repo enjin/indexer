@@ -2,7 +2,6 @@ import { Field, ObjectType, Query, Resolver, Arg, registerEnumType } from 'type-
 import 'reflect-metadata'
 import { type EntityManager } from 'typeorm'
 import NodeCache from 'node-cache'
-import { BigInteger } from '@subsquid/graphql-server'
 import { Collection, Token } from '../model'
 import { QueueUtils } from '../queue'
 

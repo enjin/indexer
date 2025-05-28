@@ -1,17 +1,23 @@
-import { Query, Resolver, Arg } from 'type-graphql'
+import { Query, Resolver, Arg, ArgsType, Field, Args } from 'type-graphql'
 import 'reflect-metadata'
 import { QueueUtils } from '../queue'
 import { decodeAddress } from '../util/tools'
 
+@ArgsType()
+export class RefreshAccountsArgs {
+    @Field(() => [String])
+    ids!: string[]
+}
+
 @Resolver()
 export class RefreshAccountsResolver {
     @Query(() => Boolean)
-    refreshAccounts(@Arg('ids', () => [String]) ids: string[]): boolean {
-        if (ids.length > 100) {
+    refreshAccounts(@Args() args: RefreshAccountsArgs): boolean {
+        if (args.ids.length > 100) {
             throw new Error('Too many accounts to refresh, limit is 100')
         }
 
-        const publicKeys = ids.map((id) => {
+        const publicKeys = args.ids.map((id) => {
             return decodeAddress(id)
         })
 
