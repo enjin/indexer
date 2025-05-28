@@ -10,12 +10,12 @@ enum ListingType {
     Offer = 'Offer',
 }
 
-enum Order {
+enum ListingOrderInput {
     ASC = 'ASC',
     DESC = 'DESC',
 }
 
-enum OrderBy {
+enum ListingOrderByInput {
     AMOUNT = 'amount',
     PRICE = 'price',
 }
@@ -24,12 +24,12 @@ registerEnumType(ListingType, {
     name: 'ListingType',
 })
 
-registerEnumType(Order, {
-    name: 'ListingOrder',
+registerEnumType(ListingOrderInput, {
+    name: 'ListingOrderInput',
 })
 
-registerEnumType(OrderBy, {
-    name: 'ListingOrderBy',
+registerEnumType(ListingOrderByInput, {
+    name: 'ListingOrderByInput',
 })
 
 @ObjectType()
@@ -179,8 +179,10 @@ export class TokenListingsResolver {
     async tokenListings(
         @Arg('assetId', () => String) assetId: string,
         @Arg('hiddenListingId', () => String, { nullable: true }) hiddenListingId: string,
-        @Arg('orderBy', () => OrderBy, { nullable: true, defaultValue: OrderBy.PRICE }) orderBy: OrderBy,
-        @Arg('order', () => Order, { nullable: true, defaultValue: Order.ASC }) order: Order,
+        @Arg('orderBy', () => ListingOrderByInput, { nullable: true, defaultValue: ListingOrderByInput.PRICE })
+        orderBy: ListingOrderByInput,
+        @Arg('order', () => ListingOrderInput, { nullable: true, defaultValue: ListingOrderInput.ASC })
+        order: ListingOrderInput,
         @Arg('limit', () => Int, { nullable: true, defaultValue: 10 }) limit: number,
         @Arg('offset', () => Int, { nullable: true, defaultValue: 0 }) offset: number
     ): Promise<TokenListings> {
@@ -207,10 +209,10 @@ export class TokenListingsResolver {
         }
 
         switch (orderBy) {
-            case OrderBy.AMOUNT:
+            case ListingOrderByInput.AMOUNT:
                 builder = builder.orderBy('listing.amount', order).addOrderBy('listing.id', 'ASC')
                 break
-            case OrderBy.PRICE:
+            case ListingOrderByInput.PRICE:
                 builder = builder.orderBy('listing.highestPrice', order).addOrderBy('listing.id', 'ASC')
                 break
         }

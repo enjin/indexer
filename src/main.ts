@@ -16,7 +16,9 @@ import { syncState } from './synchronize'
 import { callHandler, eventHandler } from './processor.handler'
 import { DataService } from './util/data'
 import { calls, events } from './type'
-import { createLogger } from '@subsquid/logger'
+import { QueueUtils } from './queue'
+import { QueuesEnum } from './queue/constants'
+import { logger } from './util/helpers'
 
 async function bootstrap() {
     Sentry.init({
@@ -26,14 +28,13 @@ async function bootstrap() {
 
     const dataService = DataService.getInstance()
     await dataService.initialize()
-    await dataService.createMetadataSchema()
 
-    const log = createLogger('sqd:processor')
+    const log = logger('sqd:processor')
     log.info(`Last block on config: ${dataService.lastBlockNumber}`)
 
     processorConfig.run(
         new TypeormDatabase({
-            isolationLevel: 'REPEATABLE READ',
+            isolationLevel: 'READ COMMITTED',
             supportHotBlocks: true,
         }),
         async (ctx) => {
@@ -58,18 +59,16 @@ async function bootstrap() {
                             await updateClaimDetails(ctx, block.header)
                         }
 
-                        // await metadataQueue.pause().catch(() => {})
+                        await QueueUtils.pauseQueue(QueuesEnum.METADATA)
                         await syncState(ctx as unknown as CommonContext)
                     }
 
-                    // if (block.header.height === dataService.lastBlockNumber) {
-                    //     ctx.log.error('WE HAVE REACHED THIS NOW WE WILL START TO SAVE SHIT!')
-                    //
-                    //     // await syncAllBalances(ctx, block.header)
-                    //     // metadataQueue.resume().catch(() => {})
-                    //     ctx.log.warn('WE ARE CALLING DISPATCH COMPUTE COLLECTIONS')
-                    //     QueueUtils.dispatchComputeCollections()
-                    // }
+                    if (block.header.height === dataService.lastBlockNumber) {
+                        QueueUtils.dispatchComputeCollections()
+                        QueueUtils.dispatchFetchAllBalances()
+
+                        await QueueUtils.resumeQueue(QueuesEnum.METADATA)
+                    }
 
                     ctx.log.info(
                         `Processing block ${block.header.height}, ${block.events.length} events, ${block.calls.length} calls to process`
@@ -141,7 +140,6 @@ async function bootstrap() {
                             pallet: callName[0],
                             method: callName[1],
                             args: call.args,
-                            // signature: extrinsicSignature,
                             signer,
                             nonce: signer.nonce,
                             tip,
@@ -179,12 +177,6 @@ async function bootstrap() {
 
                         signers.add(signer.id)
                         extrinsics.push(extrinsicM)
-                        // if (block.header.height > config.lastBlockHeight) {
-                        //     processors.balances.addAccountsToSet([signer.id])
-                        //     await processors.balances.saveAccounts(ctx as unknown as CommonContext, block.header)
-                        // }
-                        //
-                        // await ctx.store.insert(extrinsicM)
                     }
 
                     for (const call of block.calls) {
@@ -202,11 +194,8 @@ async function bootstrap() {
                             if (Array.isArray(event)) {
                                 eventsCollection.push(event[0])
                                 accountTokenEvents.push(event[1])
-                                // await ctx.store.insert(event[0])
-                                // await ctx.store.insert(event[1])
                             } else {
                                 eventsCollection.push(event)
-                                // await ctx.store.insert(event)
                             }
                         }
                     }
@@ -229,10 +218,11 @@ async function bootstrap() {
 
                 const lastBlock = ctx.blocks[ctx.blocks.length - 1].header
                 if (lastBlock.height > dataService.lastBlockNumber) {
-                    await chainState(ctx as unknown as CommonContext, lastBlock)
+                    await chainState(ctx, lastBlock)
                 }
             } catch (error) {
-                // await metadataQueue.resume()
+                await QueueUtils.resumeQueue(QueuesEnum.METADATA)
+
                 Sentry.captureException(error)
                 throw error
             }

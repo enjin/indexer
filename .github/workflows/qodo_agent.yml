@@ -1,16 +1,18 @@
-name: PR Agent
+name: Qodo Merge
 on:
   push:
   issue_comment:
 
 jobs:
-  pr_agent_job:
+  agent:
+    name: Agent Review
     runs-on: ubuntu-latest
-    name: Run agent
+
     permissions:
       issues: write
       pull-requests: write
       contents: write
+
     steps:
       - name: PR Agent action step
         id: pragent

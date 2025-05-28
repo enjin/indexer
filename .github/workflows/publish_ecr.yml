@@ -1,5 +1,4 @@
-name: Publish docker image
-
+name: Elastic Container Registry
 on:
   workflow_dispatch:
   push:
@@ -8,7 +7,9 @@ on:
 
 jobs:
   push:
+    name: Publish Image
     runs-on: ubuntu-latest
+
     permissions:
       id-token: write
       packages: write
