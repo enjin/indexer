@@ -26,9 +26,7 @@ export async function auctionFinalized(
     if (!listing) return undefined
 
     const makeAssetId = await ctx.store.findOne<Token>(Token, {
-        where: {
-            id: listing.makeAssetId.id,
-        },
+        where: { id: listing.makeAssetId.id },
         relations: {
             collection: true,
         },

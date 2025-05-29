@@ -139,7 +139,8 @@ export async function listingCreated(
     await ctx.store.save(listing)
     await ctx.store.save(listingStatus)
 
-    if (event.listing.data.__kind !== 'Offer') {
+    const isOffer = listing.type === ListingType.Offer
+    if (!isOffer) {
         if (
             (makeAssetId.bestListing && makeAssetId.bestListing.highestPrice >= listing.price) ||
             !makeAssetId.bestListing
@@ -169,7 +170,7 @@ export async function listingCreated(
                     makeAssetId: makeAssetId.id,
                     takeAssetId: takeAssetId.id,
                 },
-                token: listing.type === ListingType.Offer ? listing.takeAssetId.id : listing.makeAssetId.id,
+                token: isOffer ? listing.takeAssetId.id : listing.makeAssetId.id,
                 extrinsic: item.extrinsic.id,
             },
         })
@@ -179,7 +180,7 @@ export async function listingCreated(
 
     // TODO: Check this
     let toAccount: Account | undefined
-    if (listing.data.listingType === 'Offer' && takeAssetId.nonFungible) {
+    if (isOffer && takeAssetId.nonFungible) {
         const tokenOwner = await ctx.store.findOne<TokenAccount>(TokenAccount, {
             where: { token: { id: takeAssetId.id } },
         })
