@@ -33,8 +33,8 @@ export class Collection {
     @ManyToOne_(() => Account, {nullable: true})
     owner!: Account
 
-    @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => obj == null ? undefined : new MintPolicy(undefined, obj)}, nullable: false})
-    mintPolicy!: MintPolicy
+    @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new MintPolicy(undefined, obj)}, nullable: true})
+    mintPolicy!: MintPolicy | undefined | null
 
     @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new MarketPolicy(undefined, obj)}, nullable: true})
     marketPolicy!: MarketPolicy | undefined | null
@@ -101,6 +101,6 @@ export class Collection {
     @BooleanColumn_({nullable: false})
     hidden!: boolean
 
-    @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => obj == null ? undefined : new CollectionStats(undefined, obj)}, nullable: false})
-    stats!: CollectionStats
+    @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new CollectionStats(undefined, obj)}, nullable: true})
+    stats!: CollectionStats | undefined | null
 }

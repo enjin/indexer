@@ -34,15 +34,15 @@ export function counterOfferRemovedEventModel(
     data: CounterOfferRemoved,
     listing: Listing,
     account: Account,
-    collection?: Collection,
-    token?: Token
+    collection: Collection,
+    token: Token
 ): [EventModel, AccountTokenEvent] | undefined {
     const event = new EventModel({
         id: item.id,
         name: MarketplaceCounterOfferRemoved.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-        collectionId: listing.takeAssetId.collection.id,
-        tokenId: listing.takeAssetId.id,
+        collectionId: collection.id,
+        tokenId: token.id,
         data: new MarketplaceCounterOfferRemoved({
             listing: listing.id,
             creator: data.creator,
@@ -55,22 +55,18 @@ export function counterOfferRemovedEventModel(
             id: item.id,
             from: account,
             event,
-            collectionId: listing.takeAssetId.collection.id,
-            tokenId: listing.takeAssetId.id,
+            collectionId: collection.id,
+            tokenId: token.id,
             meta: new AccountTokenEventMeta({
-                collection: !collection
-                    ? undefined
-                    : new AccountTokenEventMetaCollection({
-                          metadata: collection.metadata,
-                          createdAt: collection.createdAt,
-                      }),
-                token: !token
-                    ? undefined
-                    : new AccountTokenEventMetaToken({
-                          nonFungible: token.nonFungible,
-                          metadata: token.metadata,
-                          createdAt: token.createdAt,
-                      }),
+                collection: new AccountTokenEventMetaCollection({
+                    metadata: collection.metadata,
+                    createdAt: collection.createdAt,
+                }),
+                token: new AccountTokenEventMetaToken({
+                    nonFungible: token.nonFungible,
+                    metadata: token.metadata,
+                    createdAt: token.createdAt,
+                }),
             }),
         }),
     ]

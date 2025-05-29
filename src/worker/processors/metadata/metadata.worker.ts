@@ -9,11 +9,11 @@ const processor = isSandboxed ? `${__dirname}/metadata.slave.js` : instance.hand
 const worker = new Worker(queueName, processor, {
     connection,
     useWorkerThreads: true,
-    concurrency: 5,
+    concurrency: 20,
 })
 
-worker.on('failed', (job?: Job) => {
-    void instance.failed(job)
+worker.on('failed', (job: Job | undefined, error?: Error): void => {
+    void instance.failed(job, error)
 })
 
 worker.on('completed', (job) => {

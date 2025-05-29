@@ -10,6 +10,8 @@ import {
     Root,
     FieldResolver,
     InputType,
+    ArgsType,
+    Args,
 } from 'type-graphql'
 import { BigInteger, Json } from '@subsquid/graphql-server'
 import 'reflect-metadata'
@@ -159,21 +161,38 @@ class CollectionAttributeWhereInput {
     AND?: FilterCondition[]
 }
 
+@ArgsType()
+export class TopCollectionArgs {
+    @Field(() => TopCollectionTimeframeInput)
+    timeFrame!: TopCollectionTimeframeInput
+
+    @Field(() => TopCollectionOrderByInput)
+    orderBy!: TopCollectionOrderByInput
+
+    @Field(() => [String], { nullable: true, defaultValue: [] })
+    category!: string[]
+
+    @Field(() => String, { nullable: true, description: 'Search by collection name' })
+    query!: string
+
+    @Field(() => TopCollectionOrderInput)
+    order!: TopCollectionOrderInput
+
+    @Field(() => Int)
+    offset: number = 0
+
+    @Field(() => Int)
+    limit: number = 10
+}
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 @Resolver((of) => TopCollection)
 export class TopCollectionResolver {
     constructor(private tx: () => Promise<EntityManager>) {}
 
     @Query(() => [TopCollection])
-    async topCollection(
-        @Arg('timeFrame', () => TopCollectionTimeframeInput) timeFrame: TopCollectionTimeframeInput,
-        @Arg('orderBy', () => TopCollectionOrderByInput) orderBy: TopCollectionOrderByInput,
-        @Arg('category', () => [String], { nullable: true, defaultValue: [] }) category: string[],
-        @Arg('query', { nullable: true, description: 'Search by collection name' }) query: string,
-        @Arg('order', () => TopCollectionOrderInput) order: TopCollectionOrderInput,
-        @Arg('offset', () => Int) offset: number = 0,
-        @Arg('limit', () => Int) limit: number = 10
-    ): Promise<TopCollection[]> {
+    async topCollection(@Args() args: TopCollectionArgs): Promise<TopCollection[]> {
+        const { timeFrame, orderBy, category, query, order, offset, limit } = args
         const manager = await this.tx()
 
         const builder = manager

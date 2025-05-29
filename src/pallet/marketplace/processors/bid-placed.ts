@@ -1,4 +1,4 @@
-import { AccountTokenEvent, AuctionState, Bid, Event as EventModel, Listing, ListingType } from '../../../model'
+import { AccountTokenEvent, AuctionState, Bid, Event as EventModel, Listing, ListingType, Token } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import { Sns } from '../../../util/sns'
 import * as mappings from '../../index'
@@ -12,30 +12,30 @@ export async function bidPlaced(
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
     const event = mappings.marketplace.events.bidPlaced(item)
     const listingId = event.listingId.substring(2)
-    const [listing, bidder, lastBid] = await Promise.all([
-        ctx.store.findOneOrFail<Listing>(Listing, {
-            where: { id: listingId },
-            relations: {
-                seller: true,
-                makeAssetId: {
-                    collection: true,
-                    bestListing: true,
-                },
-            },
-        }),
-        getOrCreateAccount(ctx, event.bid.bidder),
-        ctx.store.findOne<Bid>(Bid, {
-            where: { listing: { id: listingId } },
-            relations: {
-                bidder: true,
-            },
-            order: { createdAt: 'DESC' },
-        }),
-    ])
+
+    const listing = await ctx.store.findOne<Listing>(Listing, {
+        where: { id: listingId },
+    })
+    if (!listing) return undefined
+
+    const makeAssetId = await ctx.store.findOne<Token>(Token, {
+        where: { id: listing.makeAssetId.id },
+        relations: {
+            collection: true,
+            bestListing: true,
+        },
+    })
+    if (!makeAssetId) return undefined
+
+    const currentBidder = await getOrCreateAccount(ctx, event.bid.bidder)
+    const previousBid = await ctx.store.findOne<Bid>(Bid, {
+        where: { listing: { id: listingId } },
+        order: { createdAt: 'DESC' },
+    })
 
     const bid = new Bid({
         id: `${listingId}-${event.bid.bidder}-${event.bid.price}`,
-        bidder: bidder,
+        bidder: currentBidder,
         price: event.bid.price,
         listing,
         height: block.height,
@@ -44,23 +44,22 @@ export async function bidPlaced(
     })
 
     listing.highestPrice = event.bid.price
+    listing.updatedAt = new Date(block.timestamp ?? 0)
     listing.state = new AuctionState({
         listingType: ListingType.Auction,
         highBid: bid.id,
     })
-    listing.updatedAt = new Date(block.timestamp ?? 0)
 
-    await Promise.all([ctx.store.save(bid), ctx.store.save(listing)])
+    await ctx.store.save(bid)
+    await ctx.store.save(listing)
 
-    if (listing.makeAssetId.bestListing?.id === listing.id) {
-        const bestListing = await getBestListing(ctx, listing.makeAssetId.id)
+    if (makeAssetId.bestListing?.id === listing.id) {
+        const bestListing = await getBestListing(ctx, makeAssetId.id)
         if (bestListing?.id !== listing.id) {
-            listing.makeAssetId.bestListing = bestListing
-            await ctx.store.save(listing.makeAssetId)
+            makeAssetId.bestListing = bestListing
+            await ctx.store.save(makeAssetId)
         }
     }
-
-    QueueUtils.dispatchComputeStats(listing.makeAssetId.collection.id)
 
     if (item.extrinsic) {
         await Sns.getInstance().send({
@@ -77,12 +76,12 @@ export async function bidPlaced(
                     price: listing.price.toString(),
                     data: listing.data.toJSON(),
                 },
-                lastBid: lastBid
+                lastBid: previousBid
                     ? {
-                          id: lastBid.id,
-                          price: lastBid.price.toString(),
+                          id: previousBid.id,
+                          price: previousBid.price.toString(),
                           bidder: {
-                              id: lastBid.bidder.id,
+                              id: previousBid.bidder.id,
                           },
                       }
                     : null,
@@ -99,12 +98,14 @@ export async function bidPlaced(
         })
     }
 
+    QueueUtils.dispatchComputeStats(listing.makeAssetId.collection.id)
+
     return mappings.marketplace.events.bidPlacedEventModel(
         item,
         event,
         listing,
-        bidder,
-        listing.makeAssetId.collection,
-        listing.makeAssetId
+        currentBidder,
+        makeAssetId.collection,
+        makeAssetId
     )
 }

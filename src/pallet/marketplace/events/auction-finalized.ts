@@ -33,8 +33,8 @@ export function auctionFinalizedEventModel(
     item: EventItem,
     data: AuctionFinalized,
     listing: Listing,
-    collection?: Collection,
-    token?: Token
+    collection: Collection,
+    token: Token
 ): [EventModel, AccountTokenEvent] | undefined {
     const event = new EventModel({
         id: item.id,
@@ -60,19 +60,15 @@ export function auctionFinalizedEventModel(
             collectionId: listing.makeAssetId.collection.id,
             tokenId: listing.makeAssetId.id,
             meta: new AccountTokenEventMeta({
-                collection: !collection
-                    ? undefined
-                    : new AccountTokenEventMetaCollection({
-                          metadata: collection.metadata,
-                          createdAt: collection.createdAt,
-                      }),
-                token: !token
-                    ? undefined
-                    : new AccountTokenEventMetaToken({
-                          nonFungible: token.nonFungible,
-                          metadata: token.metadata,
-                          createdAt: token.createdAt,
-                      }),
+                collection: new AccountTokenEventMetaCollection({
+                    metadata: collection.metadata,
+                    createdAt: collection.createdAt,
+                }),
+                token: new AccountTokenEventMetaToken({
+                    nonFungible: token.nonFungible,
+                    metadata: token.metadata,
+                    createdAt: token.createdAt,
+                }),
             }),
         }),
     ]

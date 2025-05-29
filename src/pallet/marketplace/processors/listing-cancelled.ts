@@ -5,9 +5,10 @@ import {
     ListingStatus,
     ListingStatusType,
     ListingType,
+    Token,
 } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
-import { getBestListing } from '../../../util/entities'
+import { getBestListing, getOrCreateAccount } from '../../../util/entities'
 import { Sns } from '../../../util/sns'
 import * as mappings from '../../index'
 import { QueueUtils } from '../../../queue'
@@ -19,24 +20,22 @@ export async function listingCancelled(
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
     const event = mappings.marketplace.events.listingCancelled(item)
     const listingId = event.listingId.substring(2)
+
     const listing = await ctx.store.findOne<Listing>(Listing, {
         where: { id: listingId },
-        relations: {
-            seller: true,
-            makeAssetId: {
-                collection: true,
-                bestListing: true,
-            },
-            takeAssetId: {
-                collection: true,
-            },
-        },
     })
-
     if (!listing) return undefined
 
-    listing.isActive = false
-    listing.updatedAt = new Date(block.timestamp ?? 0)
+    const makeAssetId = await ctx.store.findOne<Token>(Token, {
+        where: { id: listing.makeAssetId.id },
+        relations: {
+            collection: true,
+            bestListing: true,
+        },
+    })
+    if (!makeAssetId) return undefined
+
+    const seller = await getOrCreateAccount(ctx, listing.seller.id)
 
     const listingStatus = new ListingStatus({
         id: `${listingId}-${block.height}`,
@@ -46,18 +45,20 @@ export async function listingCancelled(
         createdAt: new Date(block.timestamp ?? 0),
     })
 
-    await Promise.all([ctx.store.insert(listingStatus), ctx.store.save(listing)])
+    listing.isActive = false
+    listing.updatedAt = new Date(block.timestamp ?? 0)
 
-    if (listing.makeAssetId.bestListing?.id === listing.id && listing.type !== ListingType.Offer) {
+    await ctx.store.save(listingStatus)
+    await ctx.store.save(listing)
+
+    if (makeAssetId.bestListing?.id === listing.id && listing.type !== ListingType.Offer) {
         const bestListing = await getBestListing(ctx, listing.makeAssetId.id)
-        listing.makeAssetId.bestListing = null
+        makeAssetId.bestListing = null
         if (bestListing) {
-            listing.makeAssetId.bestListing = bestListing
+            makeAssetId.bestListing = bestListing
         }
-        await ctx.store.save(listing.makeAssetId)
+        await ctx.store.save(makeAssetId)
     }
-
-    QueueUtils.dispatchComputeStats(listing.makeAssetId.collection.id)
 
     if (item.extrinsic) {
         await Sns.getInstance().send({
@@ -70,7 +71,7 @@ export async function listingCancelled(
                     amount: listing.amount.toString(),
                     highestPrice: listing.highestPrice.toString(),
                     seller: {
-                        id: listing.seller.id,
+                        id: seller.id,
                     },
                     type: listing.type.toString(),
                     data: listing.data.toJSON(),
@@ -82,10 +83,13 @@ export async function listingCancelled(
         })
     }
 
+    QueueUtils.dispatchComputeStats(makeAssetId.collection.id)
+
     return mappings.marketplace.events.listingCancelledEventModel(
         item,
         listing,
-        listing.makeAssetId.collection,
-        listing.makeAssetId
+        seller,
+        makeAssetId.collection,
+        makeAssetId
     )
 }

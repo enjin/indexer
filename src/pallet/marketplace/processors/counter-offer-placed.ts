@@ -1,5 +1,4 @@
-import assert from 'assert'
-import { AccountTokenEvent, CounterOffer, Event as EventModel, Listing, OfferState } from '../../../model'
+import { AccountTokenEvent, CounterOffer, Event as EventModel, Listing, OfferState, Token } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import { Sns } from '../../../util/sns'
 import * as mappings from '../../index'
@@ -12,31 +11,26 @@ export async function counterOfferPlaced(
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
     const event = mappings.marketplace.events.counterOfferPlaced(item)
     const listingId = event.listingId.substring(2)
-    const listing = await ctx.store.findOneOrFail<Listing>(Listing, {
+
+    const listing = await ctx.store.findOne<Listing>(Listing, {
         where: { id: listingId },
+    })
+    if (!listing || listing.state.isTypeOf !== 'OfferState') return undefined
+
+    const takeAssetId = await ctx.store.findOne<Token>(Token, {
+        where: { id: listing.takeAssetId.id },
         relations: {
-            seller: true,
-            takeAssetId: {
-                collection: true,
-                bestListing: true,
-            },
+            collection: true,
         },
     })
+    if (!takeAssetId) return undefined
 
     const accountId =
         event.counterOffer.deposit != undefined ? event.counterOffer.deposit.depositor : event.counterOffer.accountId
     const buyerPrice = event.counterOffer.price != undefined ? event.counterOffer.price : event.counterOffer.buyerPrice
     const depositAmount = event.counterOffer.deposit != undefined ? event.counterOffer.deposit.amount : 1n
     const sellerPrice = event.counterOffer.sellerPrice != undefined ? event.counterOffer.sellerPrice : 1n
-
-    listing.updatedAt = new Date(block.timestamp ?? 0)
     const account = await getOrCreateAccount(ctx, accountId)
-    assert(listing.state.isTypeOf === 'OfferState', 'Listing is not an offer')
-
-    listing.state = new OfferState({
-        listingType: listing.state.listingType,
-        counterOfferCount: listing.state.counterOfferCount + 1,
-    })
 
     const offer = new CounterOffer({
         id: `${listing.id}-${account.id}`,
@@ -48,6 +42,15 @@ export async function counterOfferPlaced(
         createdAt: new Date(block.timestamp ?? 0),
         lastAction: account,
     })
+
+    listing.updatedAt = new Date(block.timestamp ?? 0)
+    listing.state = new OfferState({
+        listingType: listing.state.listingType,
+        counterOfferCount: listing.state.counterOfferCount + 1,
+    })
+
+    await ctx.store.save(offer)
+    await ctx.store.save(listing)
 
     if (item.extrinsic) {
         await Sns.getInstance().send({
@@ -77,14 +80,12 @@ export async function counterOfferPlaced(
         })
     }
 
-    await Promise.all([ctx.store.save(offer), ctx.store.save(listing)])
-
     return mappings.marketplace.events.counterOfferPlacedEventModel(
         item,
         event,
         listing,
         account,
-        listing.takeAssetId.collection,
-        listing.takeAssetId
+        takeAssetId.collection,
+        takeAssetId
     )
 }

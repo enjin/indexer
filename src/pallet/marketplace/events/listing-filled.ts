@@ -63,8 +63,9 @@ export function listingFilledEventModel(
     item: EventItem,
     data: ListingFilled,
     listing: Listing,
-    collection?: Collection,
-    token?: Token
+    account: Account,
+    collection: Collection,
+    token: Token
 ): [EventModel, AccountTokenEvent] | undefined {
     let event: EventModel
 
@@ -72,8 +73,8 @@ export function listingFilledEventModel(
         id: item.id,
         name: MarketplaceListingFilled.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-        collectionId: listing.makeAssetId.collection.id,
-        tokenId: listing.makeAssetId.id,
+        collectionId: collection.id,
+        tokenId: token.id,
         data: new MarketplaceListingFilled({
             listing: listing.id,
             buyer: data.buyer,
@@ -90,8 +91,8 @@ export function listingFilledEventModel(
             id: item.id,
             name: MarketplaceOfferSettled.name,
             extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-            collectionId: listing.takeAssetId.collection.id,
-            tokenId: listing.takeAssetId.id,
+            collectionId: collection.id,
+            tokenId: token.id,
             data: new MarketplaceOfferSettled({
                 listing: listing.id,
                 buyer: data.buyer,
@@ -105,25 +106,21 @@ export function listingFilledEventModel(
         event,
         new AccountTokenEvent({
             id: item.id,
-            from: listing.seller,
+            from: account,
             to: new Account({ id: data.buyer }),
             event,
-            collectionId: listing.makeAssetId.collection.id,
-            tokenId: listing.makeAssetId.id,
+            collectionId: collection.id,
+            tokenId: token.id,
             meta: new AccountTokenEventMeta({
-                collection: !collection
-                    ? undefined
-                    : new AccountTokenEventMetaCollection({
-                          metadata: collection.metadata,
-                          createdAt: collection.createdAt,
-                      }),
-                token: !token
-                    ? undefined
-                    : new AccountTokenEventMetaToken({
-                          nonFungible: token.nonFungible,
-                          metadata: token.metadata,
-                          createdAt: token.createdAt,
-                      }),
+                collection: new AccountTokenEventMetaCollection({
+                    metadata: collection.metadata,
+                    createdAt: collection.createdAt,
+                }),
+                token: new AccountTokenEventMetaToken({
+                    nonFungible: token.nonFungible,
+                    metadata: token.metadata,
+                    createdAt: token.createdAt,
+                }),
             }),
         }),
     ]
