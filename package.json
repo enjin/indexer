@@ -113,9 +113,6 @@
     "reflect-metadata": "^0.2.2",
     "typeorm": "^0.3.11"
   },
-  "lint-staged": {
-    "**/*": "prettier --write --ignore-unknown"
-  },
   "pnpm": {
     "onlyBuiltDependencies": [
       "@apollo/protobufjs",
