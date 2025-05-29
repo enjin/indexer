@@ -103,12 +103,12 @@ export function dispatchFetchAccounts(ids: string[]): void {
         })
 }
 
-export function dispatchFetchCollectionExtra(ids: string[]): void {
+export function dispatchFetchExtra(ids: string[]): void {
     xxhasher
         .createId(ids)
         .then((hashedIds) => {
             CollectionsQueue.add(
-                JobsEnum.FETCH_COLLECTIONS,
+                JobsEnum.FETCH_EXTRA,
                 { ids },
                 {
                     delay: 6000,

@@ -3,14 +3,14 @@ import { Collection } from '../../model'
 import { connectionManager } from '../../contexts'
 import { Job } from 'bullmq'
 
-export async function computeCollections(job: Job) {
+export async function computeCollections(_job: Job) {
     const em = await connectionManager()
     const collections = await em.find(Collection, {
         select: ['id'],
     })
 
     for (const collection of collections) {
-        QueueUtils.dispatchFetchCollectionExtra([collection.id])
+        QueueUtils.dispatchFetchExtra([collection.id])
         QueueUtils.dispatchComputeStats(collection.id)
         QueueUtils.dispatchComputeTraits(collection.id)
     }

@@ -14,12 +14,12 @@ export class MetadataProcessor implements ProcessorDef {
         }
     }
 
-    async failed(job?: Job) {
-        if (!job) {
+    async failed(job: Job | undefined, error: Error | undefined): Promise<void> {
+        if (job === undefined || error === undefined) {
             return
         }
 
-        await job.log('Failed to compute metadata')
+        await job.log(`Failed: ${error.message}`)
     }
 
     async completed(job: Job) {

@@ -16,6 +16,7 @@ export async function fetchAccounts(_job: Job, ids: string[]): Promise<void> {
     const accounts = await Promise.all(
         data.filter(isNotNull).map(async (_d) => {
             const account = await getOrCreateAccount(ctx, decode(_d.publicKey).bytes)
+
             account.username = _d.username
             account.image = _d.image
             account.verifiedAt = _d.verifiedAt

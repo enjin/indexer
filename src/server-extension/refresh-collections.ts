@@ -16,7 +16,7 @@ export class RefreshCollectionsResolver {
             throw new Error('Too many collections to refresh, limit is 100')
         }
 
-        QueueUtils.dispatchFetchCollectionExtra(args.ids)
+        QueueUtils.dispatchFetchExtra(args.ids)
 
         return true
     }

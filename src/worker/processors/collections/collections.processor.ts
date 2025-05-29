@@ -11,7 +11,7 @@ export class CollectionsProcessor implements ProcessorDef {
             case JobsEnum.COMPUTE_COLLECTIONS:
                 await computeCollections(job)
                 break
-            case JobsEnum.FETCH_COLLECTIONS:
+            case JobsEnum.FETCH_EXTRA:
                 await fetchExtra(job, job.data.ids)
                 break
             case JobsEnum.COMPUTE_STATS:
@@ -22,12 +22,12 @@ export class CollectionsProcessor implements ProcessorDef {
         }
     }
 
-    async failed(job?: Job) {
-        if (!job) {
+    async failed(job: Job | undefined, error: Error | undefined): Promise<void> {
+        if (job === undefined || error === undefined) {
             return
         }
 
-        await job.log('Failed to compute collections')
+        await job.log(`Failed: ${error.message}`)
     }
 
     async completed(job: Job) {

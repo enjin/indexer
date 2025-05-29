@@ -54,13 +54,11 @@ export async function computeValidators(job: Job) {
                       otherValidators.reduce((sum, v) => sum + v.nominatorsCount, 0) / otherValidators.length
                     : 0
 
-            validator.commission28d = [...(validator.commission28d ?? []), validator.commission ?? 0].slice(-28)
-            validator.blockProduction28d = [...(validator.blockProduction28d ?? []), details.producedBlocks24h].slice(
-                -28
-            )
-            validator.slashes84d = [...(validator.slashes84d ?? []), details.slashedBlocks84h ?? false].slice(-84)
-            validator.nodeCount28d = [...(validator.nodeCount28d ?? []), nodeCount].slice(-28)
-            validator.peerCommission28d = [...(validator.peerCommission28d ?? []), peerCommission].slice(-28)
+            validator.commission28d = [...validator.commission28d, validator.commission ?? 0].slice(-28)
+            validator.blockProduction28d = [...validator.blockProduction28d, details.producedBlocks24h].slice(-28)
+            validator.slashes84d = [...validator.slashes84d, details.slashedBlocks84h ?? false].slice(-84)
+            validator.nodeCount28d = [...validator.nodeCount28d, nodeCount].slice(-28)
+            validator.peerCommission28d = [...validator.peerCommission28d, peerCommission].slice(-28)
 
             const score = computeValidatorScore({
                 nodeUptimePercentage: details.uptime30d,
@@ -75,7 +73,6 @@ export async function computeValidators(job: Job) {
             })
 
             validator.grade = score != null ? ScoreGrade[score] : null
-
             await job.log(JSON.stringify(validator))
             await job.log(`Validator ${validator.id} score: ${score}`)
 

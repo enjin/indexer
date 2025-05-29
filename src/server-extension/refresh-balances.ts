@@ -1,4 +1,4 @@
-import { Args, ArgsType, Field, Query, Resolver } from 'type-graphql'
+import { Arg, Args, ArgsType, Field, Query, Resolver } from 'type-graphql'
 import { QueueUtils } from '../queue'
 import { decodeAddress } from '../util/tools'
 
