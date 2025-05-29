@@ -1,5 +1,5 @@
-module.exports = class Data1748439587085 {
-    name = 'Data1748439587085'
+module.exports = class Data1748555242071 {
+    name = 'Data1748555242071'
 
     async up(db) {
         await db.query(`CREATE TABLE "config" ("id" character varying NOT NULL, "state_block" integer NOT NULL, CONSTRAINT "PK_d0ee79a681413d50b0a4f98cf7b" PRIMARY KEY ("id"))`)
@@ -82,7 +82,7 @@ module.exports = class Data1748439587085 {
         await db.query(`CREATE INDEX "IDX_a0ca7fffb7ae953536712abef2" ON "collection_account" ("collection_id") `)
         await db.query(`CREATE INDEX "IDX_f2e5cb46b3f9ea88431a618acb" ON "collection_account" ("created_at") `)
         await db.query(`CREATE UNIQUE INDEX "IDX_346b8bae8b4955200cfd03f178" ON "collection_account" ("account_id", "collection_id") `)
-        await db.query(`CREATE TABLE "collection" ("id" character varying NOT NULL, "collection_id" numeric NOT NULL, "mint_policy" jsonb NOT NULL, "market_policy" jsonb, "burn_policy" text, "transfer_policy" jsonb, "attribute_policy" text, "attribute_count" integer NOT NULL, "total_deposit" numeric NOT NULL, "name" text, "metadata" jsonb, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "flags" jsonb NOT NULL, "socials" jsonb NOT NULL, "category" text, "verified_at" TIMESTAMP WITH TIME ZONE, "hidden" boolean NOT NULL, "stats" jsonb NOT NULL, "owner_id" character varying, CONSTRAINT "PK_ad3f485bbc99d875491f44d7c85" PRIMARY KEY ("id"))`)
+        await db.query(`CREATE TABLE "collection" ("id" character varying NOT NULL, "collection_id" numeric NOT NULL, "mint_policy" jsonb, "market_policy" jsonb, "burn_policy" text, "transfer_policy" jsonb, "attribute_policy" text, "attribute_count" integer NOT NULL, "total_deposit" numeric NOT NULL, "name" text, "metadata" jsonb, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "flags" jsonb NOT NULL, "socials" jsonb NOT NULL, "category" text, "verified_at" TIMESTAMP WITH TIME ZONE, "hidden" boolean NOT NULL, "stats" jsonb, "owner_id" character varying, CONSTRAINT "PK_ad3f485bbc99d875491f44d7c85" PRIMARY KEY ("id"))`)
         await db.query(`CREATE INDEX "IDX_f7f39206eb394d7d788699c600" ON "collection" ("collection_id") `)
         await db.query(`CREATE INDEX "IDX_01d689ecc7eba32eaf962ad9d9" ON "collection" ("owner_id") `)
         await db.query(`CREATE INDEX "IDX_926e7bdc3f52cd582078a379f1" ON "collection" ("name") `)
