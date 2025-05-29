@@ -7,7 +7,6 @@ import {
     ListingStatus,
     ListingStatusType,
     ListingType,
-    Token,
 } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import { getBestListing, getOrCreateAccount } from '../../../util/entities'
@@ -25,24 +24,21 @@ export async function listingFilled(
 
     const listing = await ctx.store.findOne<Listing>(Listing, {
         where: { id: listingId },
+        relations: {
+            seller: true,
+            makeAssetId: {
+                bestListing: true,
+                collection: true,
+            },
+            takeAssetId: {
+                collection: true,
+            },
+        },
     })
     if (!listing) return undefined
 
-    const makeAssetId = await ctx.store.findOne<Token>(Token, {
-        where: { id: listing.makeAssetId.id },
-        relations: {
-            bestListing: true,
-            collection: true,
-        },
-    })
-    const takeAssetId = await ctx.store.findOne<Token>(Token, {
-        where: { id: listing.takeAssetId.id },
-        relations: {
-            collection: true,
-        },
-    })
-    if (!takeAssetId || !makeAssetId) return undefined
-
+    const makeAssetId = listing.makeAssetId
+    const takeAssetId = listing.takeAssetId
     const buyer = await getOrCreateAccount(ctx, event.buyer)
     const seller = await getOrCreateAccount(ctx, listing.seller.id)
     const isOffer = listing.type === ListingType.Offer
@@ -62,7 +58,7 @@ export async function listingFilled(
         await ctx.store.save(takeAssetId)
     } else {
         if (makeAssetId.bestListing?.id === listing.id && event.amountRemaining === 0n) {
-            const bestListing = await getBestListing(ctx, listing.makeAssetId.id)
+            const bestListing = await getBestListing(ctx, makeAssetId.id)
             makeAssetId.bestListing = null
             if (bestListing) {
                 makeAssetId.bestListing = bestListing
@@ -127,7 +123,7 @@ export async function listingFilled(
         })
     }
 
-    QueueUtils.dispatchComputeStats(isOffer ? listing.takeAssetId.collection.id : makeAssetId.collection.id)
+    QueueUtils.dispatchComputeStats(isOffer ? takeAssetId.collection.id : makeAssetId.collection.id)
 
     return mappings.marketplace.events.listingFilledEventModel(
         item,

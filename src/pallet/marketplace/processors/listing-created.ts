@@ -37,12 +37,10 @@ export async function listingCreated(
             bestListing: true,
         },
     })
-    if (!makeAssetId) return undefined
-
     const takeAssetId = await ctx.store.findOne<Token>(Token, {
         where: { id: `${event.listing.takeAssetId.collectionId}-${event.listing.takeAssetId.tokenId}` },
     })
-    if (!takeAssetId) return undefined
+    if (!makeAssetId || !takeAssetId) return undefined
 
     const fromAccount = await getOrCreateAccount(
         ctx,
@@ -170,7 +168,7 @@ export async function listingCreated(
                     makeAssetId: makeAssetId.id,
                     takeAssetId: takeAssetId.id,
                 },
-                token: isOffer ? listing.takeAssetId.id : listing.makeAssetId.id,
+                token: isOffer ? takeAssetId.id : makeAssetId.id,
                 extrinsic: item.extrinsic.id,
             },
         })

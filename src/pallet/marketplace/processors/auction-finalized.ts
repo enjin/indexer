@@ -6,7 +6,6 @@ import {
     ListingSale,
     ListingStatus,
     ListingStatusType,
-    Token,
 } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import { getBestListing } from '../../../util/entities'
@@ -22,17 +21,18 @@ export async function auctionFinalized(
     const data = mappings.marketplace.events.auctionFinalized(item)
     const listingId = data.listingId.substring(2)
 
-    const listing = await ctx.store.findOneBy<Listing>(Listing, { id: listingId })
-    if (!listing) return undefined
-
-    const makeAssetId = await ctx.store.findOne<Token>(Token, {
-        where: { id: listing.makeAssetId.id },
+    const listing = await ctx.store.findOne<Listing>(Listing, {
+        where: { id: listingId },
         relations: {
-            collection: true,
+            seller: true,
+            makeAssetId: {
+                collection: true,
+            },
         },
     })
-    if (!makeAssetId) return undefined
+    if (!listing) return undefined
 
+    const makeAssetId = listing.makeAssetId
     const status = new ListingStatus({
         id: `${listingId}-${block.height}`,
         type: ListingStatusType.Finalized,
@@ -58,9 +58,9 @@ export async function auctionFinalized(
 
     if (makeAssetId.bestListing?.id === listing.id) {
         const bestListing = await getBestListing(ctx, makeAssetId.id)
-        listing.makeAssetId.bestListing = null
+        makeAssetId.bestListing = null
         if (bestListing) {
-            listing.makeAssetId.bestListing = bestListing
+            makeAssetId.bestListing = bestListing
         }
     }
 

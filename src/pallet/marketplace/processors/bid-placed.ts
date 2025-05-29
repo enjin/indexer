@@ -1,4 +1,4 @@
-import { AccountTokenEvent, AuctionState, Bid, Event as EventModel, Listing, ListingType, Token } from '../../../model'
+import { AccountTokenEvent, AuctionState, Bid, Event as EventModel, Listing, ListingType } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import { Sns } from '../../../util/sns'
 import * as mappings from '../../index'
@@ -15,21 +15,21 @@ export async function bidPlaced(
 
     const listing = await ctx.store.findOne<Listing>(Listing, {
         where: { id: listingId },
+        relations: {
+            seller: true,
+            makeAssetId: {
+                collection: true,
+                bestListing: true,
+            },
+        },
     })
     if (!listing) return undefined
 
-    const makeAssetId = await ctx.store.findOne<Token>(Token, {
-        where: { id: listing.makeAssetId.id },
-        relations: {
-            collection: true,
-            bestListing: true,
-        },
-    })
-    if (!makeAssetId) return undefined
-
+    const makeAssetId = listing.makeAssetId
     const currentBidder = await getOrCreateAccount(ctx, event.bid.bidder)
     const previousBid = await ctx.store.findOne<Bid>(Bid, {
         where: { listing: { id: listingId } },
+        relations: { bidder: true },
         order: { createdAt: 'DESC' },
     })
 
@@ -92,13 +92,13 @@ export async function bidPlaced(
                         id: bid.bidder.id,
                     },
                 },
-                token: listing.makeAssetId.id,
+                token: makeAssetId.id,
                 extrinsic: item.extrinsic.id,
             },
         })
     }
 
-    QueueUtils.dispatchComputeStats(listing.makeAssetId.collection.id)
+    QueueUtils.dispatchComputeStats(makeAssetId.collection.id)
 
     return mappings.marketplace.events.bidPlacedEventModel(
         item,
