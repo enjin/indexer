@@ -5,7 +5,7 @@ import { QueueUtils } from '../queue'
 @Resolver()
 export class SyncMetadataResolver {
     @Query(() => Boolean)
-    async syncMetadata(): Promise<boolean> {
+    syncMetadata(): boolean {
         QueueUtils.dispatchSyncAllMetadata()
 
         return true

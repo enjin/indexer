@@ -3,7 +3,7 @@ import { Collection } from '../../model'
 import { connectionManager } from '../../contexts'
 import { Job } from 'bullmq'
 
-export async function computeCollections(_job: Job) {
+export async function computeCollections(job: Job) {
     const em = await connectionManager()
     const collections = await em.find(Collection, {
         select: ['id'],

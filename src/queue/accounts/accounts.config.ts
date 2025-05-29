@@ -12,12 +12,12 @@ const config: QueueConfigType = {
     telemetry: new BullMQOtel('enjin'),
     queueName: QueuesEnum.ACCOUNTS,
     defaultJobOptions: {
-        attempts: 5,
+        attempts: 8,
         backoff: {
             type: 'exponential',
-            delay: 3000,
+            delay: 2000,
         },
-        removeOnComplete: 50,
+        removeOnComplete: 300,
     },
 }
 
