@@ -1,5 +1,4 @@
-import assert from 'assert'
-import { AccountTokenEvent, CounterOffer, Event as EventModel, Listing, ListingType } from '../../../model'
+import { AccountTokenEvent, CounterOffer, Event as EventModel, Listing, Token } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import { Sns } from '../../../util/sns'
 import * as mappings from '../../index'
@@ -10,36 +9,32 @@ export async function counterOfferAnswered(
     block: Block,
     item: EventItem
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
-    assert(item.extrinsic, 'Extrinsic is required')
-
     const event = mappings.marketplace.events.counterOfferAnswered(item)
-
     const listingId = event.listingId.substring(2)
-    const listing = await ctx.store.findOneOrFail<Listing>(Listing, {
-        where: { id: listingId },
-        relations: {
-            seller: true,
-            takeAssetId: {
-                collection: true,
-                bestListing: true,
-            },
-        },
-    })
 
-    assert(listing.state.listingType === ListingType.Offer, 'Listing is not an offer')
+    const listing = await ctx.store.findOne<Listing>(Listing, {
+        where: { id: listingId },
+    })
+    if (!listing || !item.extrinsic) return undefined
 
     const creator = await getOrCreateAccount(ctx, event.creator)
     const signer = await getOrCreateAccount(ctx, unwrapSigner(item.extrinsic))
 
-    listing.updatedAt = new Date(block.timestamp ?? 0)
+    const takeAssetId = await ctx.store.findOne<Token>(Token, {
+        where: { id: listing.takeAssetId.id },
+        relations: {
+            collection: true,
+        },
+    })
+    if (!takeAssetId) return undefined
 
-    const counterOffer = await ctx.store.findOneByOrFail<CounterOffer>(CounterOffer, {
+    const counterOffer = await ctx.store.findOneBy<CounterOffer>(CounterOffer, {
         id: `${listing.id}-${creator.id}`,
     })
+    if (!counterOffer) return undefined
 
     if (event.response != undefined && event.response.__kind === 'Counter') {
         if (signer.id !== creator.id) {
-            assert(signer.id === listing.seller.id, 'Only the seller can counter offer')
             counterOffer.lastAction = signer
             counterOffer.buyerPrice = event.response.value
         } else {
@@ -49,6 +44,9 @@ export async function counterOfferAnswered(
 
         await ctx.store.save(counterOffer)
     }
+
+    listing.updatedAt = new Date(block.timestamp ?? 0)
+    await ctx.store.save(listing)
 
     await Sns.getInstance().send({
         id: item.id,
@@ -60,12 +58,12 @@ export async function counterOfferAnswered(
                 amount: listing.amount.toString(),
                 highestPrice: listing.highestPrice.toString(),
                 seller: {
-                    id: listing.seller.id,
+                    id: creator.id,
                 },
                 data: listing.data.toJSON(),
                 state: listing.state.toJSON(),
                 type: listing.type.toString(),
-                takeAssetId: listing.takeAssetId.id,
+                takeAssetId: takeAssetId.id,
             },
             lastAction: counterOffer.lastAction,
             buyerPrice: counterOffer.buyerPrice?.toString(),
@@ -73,18 +71,16 @@ export async function counterOfferAnswered(
             response: event.response != undefined ? event.response.__kind : null,
             account: { id: creator.id },
             extrinsic: item.extrinsic.id,
-            token: listing.takeAssetId.id,
+            token: takeAssetId.id,
         },
     })
-
-    await Promise.all([ctx.store.save(listing)])
 
     return mappings.marketplace.events.counterOfferAnsweredEventModel(
         item,
         event,
         listing,
         creator,
-        listing.takeAssetId.collection,
-        listing.takeAssetId
+        takeAssetId.collection,
+        takeAssetId
     )
 }

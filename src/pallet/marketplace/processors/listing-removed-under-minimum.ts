@@ -5,9 +5,10 @@ import {
     ListingStatus,
     ListingStatusType,
     ListingType,
+    Token,
 } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
-import { getBestListing } from '../../../util/entities'
+import { getBestListing, getOrCreateAccount } from '../../../util/entities'
 import { Sns } from '../../../util/sns'
 import * as mappings from '../../index'
 import { QueueUtils } from '../../../queue'
@@ -19,24 +20,40 @@ export async function listingRemovedUnderMinimum(
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
     const event = mappings.marketplace.events.listingRemovedUnderMinimum(item)
     const listingId = event.listingId.substring(2)
+
     const listing = await ctx.store.findOne<Listing>(Listing, {
         where: { id: listingId },
-        relations: {
-            seller: true,
-            makeAssetId: {
-                collection: true,
-                bestListing: true,
-            },
-            takeAssetId: {
-                collection: true,
-            },
-        },
     })
-
     if (!listing) return undefined
 
-    listing.isActive = false
-    listing.updatedAt = new Date(block.timestamp ?? 0)
+    const takeAssetId = await ctx.store.findOne<Token>(Token, {
+        where: { id: listing.takeAssetId.id },
+        relations: {
+            collection: true,
+        },
+    })
+    if (!takeAssetId) return undefined
+
+    const makeAssetId = await ctx.store.findOne<Token>(Token, {
+        where: { id: listing.makeAssetId.id },
+        relations: {
+            collection: true,
+            bestListing: true,
+        },
+    })
+    if (!makeAssetId) return undefined
+
+    const isOffer = listing.type === ListingType.Offer
+    const seller = await getOrCreateAccount(ctx, listing.seller.id)
+
+    if (makeAssetId.bestListing?.id === listing.id && listing.type !== ListingType.Offer) {
+        const bestListing = await getBestListing(ctx, makeAssetId.id)
+        makeAssetId.bestListing = null
+        if (bestListing) {
+            makeAssetId.bestListing = bestListing
+        }
+        await ctx.store.save(makeAssetId)
+    }
 
     const listingStatus = new ListingStatus({
         id: `${listingId}-${block.height}`,
@@ -46,18 +63,11 @@ export async function listingRemovedUnderMinimum(
         createdAt: new Date(block.timestamp ?? 0),
     })
 
-    await Promise.all([ctx.store.insert(listingStatus), ctx.store.save(listing)])
+    listing.isActive = false
+    listing.updatedAt = new Date(block.timestamp ?? 0)
 
-    if (listing.makeAssetId.bestListing?.id === listing.id && listing.type !== ListingType.Offer) {
-        const bestListing = await getBestListing(ctx, listing.makeAssetId.id)
-        listing.makeAssetId.bestListing = null
-        if (bestListing) {
-            listing.makeAssetId.bestListing = bestListing
-        }
-        await ctx.store.save(listing.makeAssetId)
-    }
-
-    QueueUtils.dispatchComputeStats(listing.makeAssetId.collection.id)
+    await ctx.store.insert(listingStatus)
+    await ctx.store.save(listing)
 
     if (item.extrinsic) {
         await Sns.getInstance().send({
@@ -70,22 +80,25 @@ export async function listingRemovedUnderMinimum(
                     amount: listing.amount.toString(),
                     highestPrice: listing.highestPrice.toString(),
                     seller: {
-                        id: listing.seller.id,
+                        id: seller.id,
                     },
                     type: listing.type.toString(),
                     data: listing.data.toJSON(),
                     state: listing.state.toJSON(),
                 },
-                token: listing.type === ListingType.Offer ? listing.takeAssetId.id : listing.makeAssetId.id,
+                token: isOffer ? takeAssetId.id : makeAssetId.id,
                 extrinsic: item.extrinsic.id,
             },
         })
     }
 
+    QueueUtils.dispatchComputeStats(makeAssetId.collection.id)
+
     return mappings.marketplace.events.listingRemovedUnderMinimumEventModel(
         item,
         listing,
-        listing.makeAssetId.collection,
-        listing.makeAssetId
+        seller,
+        isOffer ? takeAssetId.collection : makeAssetId.collection,
+        isOffer ? takeAssetId : makeAssetId
     )
 }

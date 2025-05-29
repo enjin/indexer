@@ -54,9 +54,9 @@ export function counterOfferAnsweredEventModel(
     item: EventItem,
     data: CounterOfferAnswered,
     listing: Listing,
-    account: Account,
-    collection?: Collection,
-    token?: Token
+    creator: Account,
+    collection: Collection,
+    token: Token
 ): [EventModel, AccountTokenEvent] | undefined {
     let response: CounterOfferResponse
 
@@ -81,11 +81,11 @@ export function counterOfferAnsweredEventModel(
         id: item.id,
         name: MarketplaceCounterOfferAnswered.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-        collectionId: listing.takeAssetId.collection.id,
-        tokenId: listing.takeAssetId.id,
+        collectionId: collection.id,
+        tokenId: token.id,
         data: new MarketplaceCounterOfferAnswered({
             listing: listing.id,
-            creator: account.id,
+            creator: creator.id,
             response,
         }),
     })
@@ -94,24 +94,20 @@ export function counterOfferAnsweredEventModel(
         event,
         new AccountTokenEvent({
             id: item.id,
-            from: account,
+            from: creator,
             event,
-            collectionId: listing.takeAssetId.collection.id,
-            tokenId: listing.takeAssetId.id,
+            collectionId: collection.id,
+            tokenId: token.id,
             meta: new AccountTokenEventMeta({
-                collection: !collection
-                    ? undefined
-                    : new AccountTokenEventMetaCollection({
-                          metadata: collection.metadata,
-                          createdAt: collection.createdAt,
-                      }),
-                token: !token
-                    ? undefined
-                    : new AccountTokenEventMetaToken({
-                          nonFungible: token.nonFungible,
-                          metadata: token.metadata,
-                          createdAt: token.createdAt,
-                      }),
+                collection: new AccountTokenEventMetaCollection({
+                    metadata: collection.metadata,
+                    createdAt: collection.createdAt,
+                }),
+                token: new AccountTokenEventMetaToken({
+                    nonFungible: token.nonFungible,
+                    metadata: token.metadata,
+                    createdAt: token.createdAt,
+                }),
             }),
         }),
     ]

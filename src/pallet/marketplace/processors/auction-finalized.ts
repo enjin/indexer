@@ -6,6 +6,7 @@ import {
     ListingSale,
     ListingStatus,
     ListingStatusType,
+    Token,
 } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import { getBestListing } from '../../../util/entities'
@@ -18,57 +19,58 @@ export async function auctionFinalized(
     block: Block,
     item: EventItem
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
-    const event = mappings.marketplace.events.auctionFinalized(item)
-    const listingId = event.listingId.substring(2)
-    const listing = await ctx.store.findOne<Listing>(Listing, {
-        where: { id: listingId },
-        relations: {
-            seller: true,
-            makeAssetId: {
-                collection: true,
-                bestListing: true,
-            },
-        },
-    })
+    const data = mappings.marketplace.events.auctionFinalized(item)
+    const listingId = data.listingId.substring(2)
 
+    const listing = await ctx.store.findOneBy<Listing>(Listing, { id: listingId })
     if (!listing) return undefined
 
-    if (event.winningBid) {
-        const sale = new ListingSale({
-            id: `${listingId}-${item.id}`,
-            amount: listing.amount,
-            price: event.winningBid.price,
-            buyer: new Account({ id: event.winningBid.bidder }),
-            listing,
-            createdAt: new Date(block.timestamp ?? 0),
-        })
-        listing.makeAssetId.lastSale = sale
-        await ctx.store.save(sale)
-    }
+    const makeAssetId = await ctx.store.findOne<Token>(Token, {
+        where: {
+            id: listing.makeAssetId.id,
+        },
+        relations: {
+            collection: true,
+        },
+    })
+    if (!makeAssetId) return undefined
 
-    listing.isActive = false
-    listing.updatedAt = new Date(block.timestamp ?? 0)
-
-    const listingStatus = new ListingStatus({
+    const status = new ListingStatus({
         id: `${listingId}-${block.height}`,
         type: ListingStatusType.Finalized,
         listing,
         height: block.height,
         createdAt: new Date(block.timestamp ?? 0),
     })
+    await ctx.store.save(status)
 
-    await Promise.all([ctx.store.insert(listingStatus), ctx.store.save(listing)])
+    if (data.winningBid) {
+        const sale = new ListingSale({
+            id: `${listingId}-${item.id}`,
+            amount: listing.amount,
+            price: data.winningBid.price,
+            buyer: new Account({ id: data.winningBid.bidder }),
+            listing,
+            createdAt: new Date(block.timestamp ?? 0),
+        })
 
-    if (listing.makeAssetId.bestListing?.id === listing.id) {
-        const bestListing = await getBestListing(ctx, listing.makeAssetId.id)
+        await ctx.store.save(sale)
+        makeAssetId.lastSale = sale
+    }
+
+    if (makeAssetId.bestListing?.id === listing.id) {
+        const bestListing = await getBestListing(ctx, makeAssetId.id)
         listing.makeAssetId.bestListing = null
         if (bestListing) {
             listing.makeAssetId.bestListing = bestListing
         }
     }
-    await ctx.store.save(listing.makeAssetId)
 
-    QueueUtils.dispatchComputeStats(listing.makeAssetId.collection.id)
+    listing.isActive = false
+    listing.updatedAt = new Date(block.timestamp ?? 0)
+
+    await ctx.store.save(listing)
+    await ctx.store.save(makeAssetId)
 
     if (item.extrinsic) {
         await Sns.getInstance().send({
@@ -85,27 +87,29 @@ export async function auctionFinalized(
                     price: listing.price.toString(),
                     data: listing.data.toJSON(),
                 },
-                winningBid: event.winningBid
+                winningBid: data.winningBid
                     ? {
                           bidder: {
-                              id: event.winningBid.bidder,
+                              id: data.winningBid.bidder,
                           },
-                          price: event.winningBid.price.toString(),
+                          price: data.winningBid.price.toString(),
                       }
                     : null,
-                protocolFee: event.protocolFee,
-                royalty: event.royalty,
+                protocolFee: data.protocolFee,
+                royalty: data.royalty,
                 token: listing.makeAssetId.id,
                 extrinsic: item.extrinsic.id,
             },
         })
     }
 
+    QueueUtils.dispatchComputeStats(makeAssetId.collection.id)
+
     return mappings.marketplace.events.auctionFinalizedEventModel(
         item,
-        event,
+        data,
         listing,
-        listing.makeAssetId.collection,
-        listing.makeAssetId
+        makeAssetId.collection,
+        makeAssetId
     )
 }

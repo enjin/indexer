@@ -39,7 +39,7 @@ setInterval(() => {
 
 const server: Application = express()
 
-server.get('/_metrics', async (_req, res) => {
+server.get('/_metrics', (_req, res) => {
     try {
         res.set('Content-Type', register.contentType)
         res.end(cachedMetrics)

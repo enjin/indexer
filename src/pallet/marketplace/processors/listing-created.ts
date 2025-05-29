@@ -1,4 +1,5 @@
 import {
+    Account,
     AccountTokenEvent,
     AuctionData,
     AuctionState,
@@ -13,6 +14,7 @@ import {
     OfferData,
     OfferState,
     Token,
+    TokenAccount,
 } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import { getOrCreateAccount } from '../../../util/entities'
@@ -27,20 +29,24 @@ export async function listingCreated(
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
     const event = mappings.marketplace.events.listingCreated(item)
     const listingId = event.listingId.substring(2)
-    const [makeAssetId, takeAssetId, creatorOrSeller] = await Promise.all([
-        ctx.store.findOne<Token>(Token, {
-            where: { id: `${event.listing.makeAssetId.collectionId}-${event.listing.makeAssetId.tokenId}` },
-            relations: {
-                bestListing: true,
-            },
-        }),
-        ctx.store.findOne<Token>(Token, {
-            where: { id: `${event.listing.takeAssetId.collectionId}-${event.listing.takeAssetId.tokenId}` },
-        }),
-        getOrCreateAccount(ctx, 'creator' in event.listing ? event.listing.creator : event.listing.seller),
-    ])
 
-    if (!makeAssetId || !takeAssetId) return undefined
+    const makeAssetId = await ctx.store.findOne<Token>(Token, {
+        where: { id: `${event.listing.makeAssetId.collectionId}-${event.listing.makeAssetId.tokenId}` },
+        relations: {
+            bestListing: true,
+        },
+    })
+    if (!makeAssetId) return undefined
+
+    const takeAssetId = await ctx.store.findOne<Token>(Token, {
+        where: { id: `${event.listing.takeAssetId.collectionId}-${event.listing.takeAssetId.tokenId}` },
+    })
+    if (!takeAssetId) return undefined
+
+    const creatorOrSeller = await getOrCreateAccount(
+        ctx,
+        'creator' in event.listing ? event.listing.creator : event.listing.seller
+    )
 
     const feeSide = event.listing.feeSide.__kind as FeeSide
     let listingData
@@ -98,7 +104,6 @@ export async function listingCreated(
     }
 
     const usesWhitelist = typeof event.listing.whitelistedAccountCount === 'number'
-
     const listing = new Listing({
         id: listingId,
         seller: creatorOrSeller,
@@ -130,6 +135,9 @@ export async function listingCreated(
         createdAt: new Date(block.timestamp ?? 0),
     })
 
+    await ctx.store.save(listing)
+    await ctx.store.save(listingStatus)
+
     if (event.listing.data.__kind !== 'Offer') {
         if (
             (makeAssetId.bestListing && makeAssetId.bestListing.highestPrice >= listing.price) ||
@@ -139,12 +147,7 @@ export async function listingCreated(
         }
         makeAssetId.recentListing = listing
     }
-
-    await ctx.store.insert(listing)
-    await ctx.store.insert(listingStatus)
-    // await ctx.store.save(makeAssetId)
-
-    QueueUtils.dispatchComputeStats(event.listing.makeAssetId.collectionId.toString())
+    await ctx.store.save(makeAssetId)
 
     if (item.extrinsic) {
         await Sns.getInstance().send({
@@ -171,10 +174,26 @@ export async function listingCreated(
         })
     }
 
+    QueueUtils.dispatchComputeStats(event.listing.makeAssetId.collectionId.toString())
+
+    // TODO: Check this
+    let to: Account | undefined
+    if (listing.data.listingType === 'Offer' && listing.takeAssetId.nonFungible) {
+        const tokenOwner = await ctx.store.findOne<TokenAccount>(TokenAccount, {
+            where: { token: { id: takeAssetId.id } },
+        })
+        if (tokenOwner) {
+            to = tokenOwner.account
+        }
+    }
+
     return mappings.marketplace.events.listingCreatedEventModel(
         item,
         event,
-        listing.makeAssetId.collection,
-        listing.makeAssetId
+        listing,
+        creatorOrSeller,
+        makeAssetId.collection,
+        makeAssetId,
+        to
     )
 }
