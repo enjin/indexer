@@ -65,10 +65,15 @@ jobs:
       - name: Introspect, lint, check schema
         run: |
           rover graph introspect -o apollo.graphql http://localhost:4000/graphql 
-          rover graph lint --schema apollo.graphql enjin-indexer@current
-          rover graph check --schema apollo.graphql enjin-indexer@current 
+          rover graph lint --schema apollo.graphql enjin-indexer@master
+          rover graph check --schema apollo.graphql enjin-indexer@master 
 
-      - name: Publishes Apollo Schema
+      - name: Publishes Apollo Schema to Master
+        if: github.ref_name == 'master'
+        run: |
+          rover graph publish --schema apollo.graphql enjin-indexer@master
+
+      - name: Publishes Apollo Schema to Current
         if: github.event_name == 'release'
         run: |
           rover graph publish --schema apollo.graphql enjin-indexer@current
