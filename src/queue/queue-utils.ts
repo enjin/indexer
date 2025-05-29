@@ -47,10 +47,7 @@ export function dispatchFetchAllBalances(): void {
         { ids: null },
         {
             delay: 6000,
-            jobId: 'all-balances',
-            deduplication: {
-                id: 'all-balances',
-            },
+            jobId: 'balances.all',
         }
     ).catch(() => {
         log.error('Failed to dispatch a job on balances queue')
@@ -63,13 +60,10 @@ export function dispatchFetchBalances(ids: string[]): void {
         .then((hashedIds) => {
             BalancesQueue.add(
                 JobsEnum.FETCH_BALANCES,
-                { ids: hashedIds },
+                { ids },
                 {
                     delay: 6000,
-                    jobId: `balances:${hashedIds}`,
-                    deduplication: {
-                        id: `balances:${hashedIds}`,
-                    },
+                    jobId: `balances.${hashedIds}`,
                 }
             ).catch(() => {
                 log.error('Failed to dispatch a job on balances queue')
@@ -89,10 +83,7 @@ export function dispatchFetchAccounts(ids: string[]): void {
                 { ids },
                 {
                     delay: 6000,
-                    jobId: `accounts:${hashedIds}`,
-                    deduplication: {
-                        id: `accounts:${hashedIds}`,
-                    },
+                    jobId: `accounts.${hashedIds}`,
                 }
             ).catch(() => {
                 log.error('Failed to dispatch a job on accounts queue')
@@ -112,10 +103,7 @@ export function dispatchFetchExtra(ids: string[]): void {
                 { ids },
                 {
                     delay: 6000,
-                    jobId: `collection:extra:${hashedIds}`,
-                    deduplication: {
-                        id: `collection:extra:${hashedIds}`,
-                    },
+                    jobId: `collections.extra.${hashedIds}`,
                 }
             ).catch(() => {
                 log.error('Failed to dispatch a job on collections queue')
@@ -134,10 +122,7 @@ export function dispatchComputeCollections(): void {
         {},
         {
             delay: 6000,
-            jobId: 'collections',
-            deduplication: {
-                id: 'collections',
-            },
+            jobId: 'collections.all',
         }
     ).catch(() => {
         log.error('Failed to dispatch a job on collections queue')
@@ -150,10 +135,7 @@ export function dispatchComputeStats(id: string): void {
         { id },
         {
             delay: 6000,
-            jobId: `collection:stats:${id}`,
-            deduplication: {
-                id: `collection:stats:${id}`,
-            },
+            jobId: `collections.stats.${id}`,
         }
     ).catch(() => {
         log.error('Failed to dispatch a job on collections queue')
@@ -166,10 +148,7 @@ export function dispatchComputeRarity(id: string): void {
         { id },
         {
             delay: 6000,
-            jobId: `token:rarity:${id}`,
-            deduplication: {
-                id: `token:rarity:${id}`,
-            },
+            jobId: `tokens.rarity.${id}`,
         }
     ).catch(() => {
         log.error('Failed to dispatch a job on tokens queue')
@@ -182,10 +161,7 @@ export function dispatchComputeTraits(id: string): void {
         { id },
         {
             delay: 6000,
-            jobId: `traits:${id}`,
-            deduplication: {
-                id: `traits:${id}`,
-            },
+            jobId: `traits.${id}`,
         }
     ).catch(() => {
         log.error('Failed to dispatch a job on traits queue')
@@ -203,12 +179,22 @@ export function dispatchComputeMetadata(
         { resourceId, type, force, allTokens },
         {
             delay: 6000,
-            jobId: `metadata:${resourceId}`,
-            deduplication: {
-                id: `metadata:${resourceId}`,
-            },
+            jobId: `metadata.${resourceId}`,
         }
     ).catch(() => {
         log.error('Failed to dispatch a job on metadata queue')
+    })
+}
+
+export function dispatchSyncAllMetadata(): void {
+    MetadataQueue.add(
+        JobsEnum.FETCH_COLLECTIONS,
+        {},
+        {
+            delay: 6000,
+            jobId: 'metadata.all',
+        }
+    ).catch(() => {
+        log.error('Failed to dispatch sync all metadata')
     })
 }
