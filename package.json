@@ -23,7 +23,7 @@
     "dev:processor": "pnpm exec ts-node -r dotenv/config src/main.ts",
     "dev:worker": "pnpm exec ts-node -r dotenv/config src/worker/index.ts",
     "dev:metris": "pnpm exec ts-node -r dotenv/config src/prom-metrics/index.ts",
-    "lint": "eslint . --fix",
+    "lint": "eslint . --fix --config eslint.config.mjs",
     "prettier": "prettier . --write --config prettier.config.mjs",
     "build": "rm -rf lib && tsc",
     "ci:lint": "eslint . --config eslint.config.mjs",

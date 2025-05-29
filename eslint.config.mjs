@@ -19,6 +19,7 @@ export default tseslint.config(
             'src/model/',
             'eslint.config.mjs',
             'prettier.config.mjs',
+            'lint-staged.config.mjs',
             'src/server-extension/',
         ],
     },
