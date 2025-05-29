@@ -33,6 +33,7 @@ export async function listingCreated(
     const makeAssetId = await ctx.store.findOne<Token>(Token, {
         where: { id: `${event.listing.makeAssetId.collectionId}-${event.listing.makeAssetId.tokenId}` },
         relations: {
+            collection: true,
             bestListing: true,
         },
     })
@@ -43,7 +44,7 @@ export async function listingCreated(
     })
     if (!takeAssetId) return undefined
 
-    const creatorOrSeller = await getOrCreateAccount(
+    const fromAccount = await getOrCreateAccount(
         ctx,
         'creator' in event.listing ? event.listing.creator : event.listing.seller
     )
@@ -106,7 +107,7 @@ export async function listingCreated(
     const usesWhitelist = typeof event.listing.whitelistedAccountCount === 'number'
     const listing = new Listing({
         id: listingId,
-        seller: creatorOrSeller,
+        seller: fromAccount,
         makeAssetId,
         takeAssetId,
         amount: event.listing.amount,
@@ -160,7 +161,7 @@ export async function listingCreated(
                     amount: listing.amount.toString(),
                     highestPrice: listing.highestPrice.toString(),
                     seller: {
-                        id: listing.seller.id,
+                        id: fromAccount.id,
                     },
                     data: listing.data.toJSON(),
                     state: listing.state.toJSON(),
@@ -174,16 +175,16 @@ export async function listingCreated(
         })
     }
 
-    QueueUtils.dispatchComputeStats(event.listing.makeAssetId.collectionId.toString())
+    QueueUtils.dispatchComputeStats(makeAssetId.collection.id)
 
     // TODO: Check this
-    let to: Account | undefined
-    if (listing.data.listingType === 'Offer' && listing.takeAssetId.nonFungible) {
+    let toAccount: Account | undefined
+    if (listing.data.listingType === 'Offer' && takeAssetId.nonFungible) {
         const tokenOwner = await ctx.store.findOne<TokenAccount>(TokenAccount, {
             where: { token: { id: takeAssetId.id } },
         })
         if (tokenOwner) {
-            to = tokenOwner.account
+            toAccount = tokenOwner.account
         }
     }
 
@@ -191,9 +192,9 @@ export async function listingCreated(
         item,
         event,
         listing,
-        creatorOrSeller,
+        fromAccount,
         makeAssetId.collection,
         makeAssetId,
-        to
+        toAccount
     )
 }

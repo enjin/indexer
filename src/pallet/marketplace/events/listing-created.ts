@@ -86,10 +86,10 @@ export function listingCreatedEventModel(
     item: EventItem,
     data: ListingCreated,
     listing: Listing,
-    from: Account,
+    fromAccount: Account,
     collection: Collection,
     token: Token,
-    to?: Account
+    toAccount?: Account
 ): [EventModel, AccountTokenEvent] | undefined {
     let event: EventModel
 
@@ -121,8 +121,8 @@ export function listingCreatedEventModel(
         event,
         new AccountTokenEvent({
             id: item.id,
-            from,
-            to,
+            from: fromAccount,
+            to: toAccount,
             event,
             collectionId: collection.id,
             tokenId: token.id,

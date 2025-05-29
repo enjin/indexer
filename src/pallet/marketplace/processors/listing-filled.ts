@@ -30,9 +30,16 @@ export async function listingFilled(
 
     const makeAssetId = await ctx.store.findOne<Token>(Token, {
         where: { id: listing.makeAssetId.id },
+        relations: {
+            bestListing: true,
+            collection: true,
+        },
     })
     const takeAssetId = await ctx.store.findOne<Token>(Token, {
         where: { id: listing.takeAssetId.id },
+        relations: {
+            collection: true,
+        },
     })
     if (!takeAssetId || !makeAssetId) return undefined
 
