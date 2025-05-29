@@ -38,8 +38,8 @@ server.get('/_metrics', async (_req, res) => {
         res.set('Content-Type', register.contentType)
         res.end(await register.metrics())
     } catch (e) {
-        log.error('Error occurred while fetching metrics:', e);
-        res.status(500).end('An internal server error occurred');
+        log.error(`Error occurred while fetching metrics: ${e}`)
+        res.status(500).end('An internal server error occurred')
     }
 })
 
