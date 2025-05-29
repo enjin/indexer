@@ -1,7 +1,7 @@
 import { connectionManager } from '../../contexts'
 import { Collection } from '../../model'
 import { Job } from 'bullmq'
-import { QueueUtils } from 'src/queue'
+import { QueueUtils } from '../../queue'
 
 export async function fetchCollections(job: Job) {
     const em = await connectionManager()

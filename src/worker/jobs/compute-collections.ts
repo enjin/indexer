@@ -15,5 +15,5 @@ export async function computeCollections(job: Job) {
         QueueUtils.dispatchComputeTraits(collection.id)
     }
 
-    await job.log(`Dispatched computeStats and computeTraits for ${collections.length} collections`)
+    await job.log(`Dispatched fetchExtra, computeStats, computeTraits for ${collections.length} collections`)
 }
