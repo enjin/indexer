@@ -24,7 +24,7 @@ import {
     ValidatorsWorker,
 } from './processors'
 import { createClient } from 'redis'
-import { config } from '../util/config'
+import config from '../util/config'
 
 // Increase max listeners to avoid warnings
 EventEmitter.defaultMaxListeners = 30
