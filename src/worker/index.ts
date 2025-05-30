@@ -83,7 +83,7 @@ createBullBoard({
 server.use('/', serverAdapter.getRouter())
 server.listen(9090, async () => {
     const client = createClient({
-        url: config.redis.host,
+        url: process.env.REDIS_URL,
     })
     await client.flushall('ASYNC', () => console.log('Flushed all'))
 
