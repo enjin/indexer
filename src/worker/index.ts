@@ -24,7 +24,6 @@ import {
     ValidatorsWorker,
 } from './processors'
 import { createClient } from 'redis'
-import config from '../util/config'
 
 // Increase max listeners to avoid warnings
 EventEmitter.defaultMaxListeners = 30
@@ -43,7 +42,18 @@ const WorkerMap = new Map([
 /**
  * Initialize workers by binding an event listener to it
  */
-function initializeJobs() {
+async function initializeJobs() {
+    const client = createClient({
+        url: process.env.REDIS_URL,
+    })
+
+    console.log('Connecting to Redis...')
+
+    while (!client.isReady) {
+        await client.flushAll()
+    }
+    console.log('Redis client is ready')
+
     WorkerMap.forEach((worker) => {
         worker.on('error', (err) => {
             console.error(err)
@@ -81,12 +91,7 @@ createBullBoard({
 })
 
 server.use('/', serverAdapter.getRouter())
-server.listen(9090, async () => {
-    const client = createClient({
-        url: process.env.REDIS_URL,
-    })
-    await client.flushAll()
-
-    // client.initializeJobs()
+server.listen(9090, () => {
+    void initializeJobs()
     console.log(`Server running at port 9090`)
 })
