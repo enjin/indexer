@@ -23,6 +23,8 @@ import {
     TraitsWorker,
     ValidatorsWorker,
 } from './processors'
+import { createClient } from 'redis'
+import { config } from '../util/config'
 
 // Increase max listeners to avoid warnings
 EventEmitter.defaultMaxListeners = 30
@@ -79,7 +81,12 @@ createBullBoard({
 })
 
 server.use('/', serverAdapter.getRouter())
-server.listen(9090, () => {
-    initializeJobs()
+server.listen(9090, async () => {
+    const client = createClient({
+        url: config.redis.host,
+    })
+    await client.flushall('ASYNC', () => console.log('Flushed all'))
+
+    // client.initializeJobs()
     console.log(`Server running at port 9090`)
 })
