@@ -18,6 +18,7 @@ src/model/generated
 **/.env.*
 .prettierignore
 .gitignore
+.dockerignore
 LICENSE
 Dockerfile
 lint-staged.config.mjs
