@@ -27,7 +27,7 @@ export class CollectionsProcessor implements ProcessorDef {
             return
         }
 
-        await job.log(`Failed: ${error.message}`)
+        await job.log(`Failed: ${error}`)
     }
 
     async completed(job: Job) {
