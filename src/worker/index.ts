@@ -41,7 +41,7 @@ const WorkerMap = new Map([
 /**
  * Initialize workers by binding an event listener to it
  */
-async function initializeJobs() {
+function initializeJobs() {
     WorkerMap.forEach((worker) => {
         worker.on('error', (err) => {
             console.error(err)
@@ -80,6 +80,6 @@ createBullBoard({
 
 server.use('/', serverAdapter.getRouter())
 server.listen(9090, () => {
-    void initializeJobs()
+    initializeJobs()
     console.log(`Server running at port 9090`)
 })
