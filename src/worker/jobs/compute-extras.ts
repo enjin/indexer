@@ -2,12 +2,9 @@ import { dataHandlerContext } from '../../contexts'
 import { fetchCollectionsExtra } from '../../util/marketplace'
 import { Collection, CollectionFlags, CollectionSocials } from '../../model'
 import { Job } from 'bullmq'
+import { isNotNull } from '../utils'
 
-function isNotNull<T>(input: null | T): input is T {
-    return input != null
-}
-
-export async function fetchExtra(_job: Job, ids: string[]): Promise<void> {
+export async function computeExtras(_job: Job, ids: string[]): Promise<void> {
     const ctx = await dataHandlerContext()
     const data = await fetchCollectionsExtra(ids)
 

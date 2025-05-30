@@ -1,4 +1,4 @@
-import { AccountTokenEvent, CounterOffer, Event as EventModel, Listing, Token } from '../../../model'
+import { AccountTokenEvent, CounterOffer, Event as EventModel, Listing } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import { Sns } from '../../../util/sns'
 import * as mappings from '../../index'
@@ -14,20 +14,18 @@ export async function counterOfferAnswered(
 
     const listing = await ctx.store.findOne<Listing>(Listing, {
         where: { id: listingId },
+        relations: {
+            takeAssetId: {
+                collection: true,
+            },
+        },
     })
     if (!listing || !item.extrinsic) return undefined
 
     const creator = await getOrCreateAccount(ctx, event.creator)
     const signer = await getOrCreateAccount(ctx, unwrapSigner(item.extrinsic))
 
-    const takeAssetId = await ctx.store.findOne<Token>(Token, {
-        where: { id: listing.takeAssetId.id },
-        relations: {
-            collection: true,
-        },
-    })
-    if (!takeAssetId) return undefined
-
+    const takeAssetId = listing.takeAssetId
     const counterOffer = await ctx.store.findOneBy<CounterOffer>(CounterOffer, {
         id: `${listing.id}-${creator.id}`,
     })

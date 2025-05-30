@@ -11,6 +11,8 @@ export default tseslint.config(
             '.github/',
             '.vscode/',
             '.idea/',
+            '.husky/',
+            '.nx/',
             'node_modules/',
             'lib/',
             'db/',

@@ -114,7 +114,7 @@ export async function fetchCollectionsExtra(ids: string[]) {
     )
 
     if ('errors' in response.data) {
-        throw new Error(JSON.stringify(response.data.errors[0]))
+        throw new Error(response.data.errors)
     }
 
     if (response.data.data.result.length === 0) {

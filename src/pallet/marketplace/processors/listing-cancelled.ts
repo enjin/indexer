@@ -5,7 +5,6 @@ import {
     ListingStatus,
     ListingStatusType,
     ListingType,
-    Token,
 } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import { getBestListing, getOrCreateAccount } from '../../../util/entities'
@@ -23,18 +22,21 @@ export async function listingCancelled(
 
     const listing = await ctx.store.findOne<Listing>(Listing, {
         where: { id: listingId },
+        relations: {
+            seller: true,
+            makeAssetId: {
+                collection: true,
+                bestListing: true,
+            },
+            takeAssetId: {
+                collection: true,
+            },
+        },
     })
     if (!listing) return undefined
 
-    const makeAssetId = await ctx.store.findOne<Token>(Token, {
-        where: { id: listing.makeAssetId.id },
-        relations: {
-            collection: true,
-            bestListing: true,
-        },
-    })
-    if (!makeAssetId) return undefined
-
+    const makeAssetId = listing.makeAssetId
+    const takeAssetId = listing.takeAssetId
     const seller = await getOrCreateAccount(ctx, listing.seller.id)
 
     const listingStatus = new ListingStatus({
@@ -52,7 +54,7 @@ export async function listingCancelled(
     await ctx.store.save(listing)
 
     if (makeAssetId.bestListing?.id === listing.id && listing.type !== ListingType.Offer) {
-        const bestListing = await getBestListing(ctx, listing.makeAssetId.id)
+        const bestListing = await getBestListing(ctx, makeAssetId.id)
         makeAssetId.bestListing = null
         if (bestListing) {
             makeAssetId.bestListing = bestListing
@@ -77,7 +79,7 @@ export async function listingCancelled(
                     data: listing.data.toJSON(),
                     state: listing.state.toJSON(),
                 },
-                token: listing.type === ListingType.Offer ? listing.takeAssetId.id : listing.makeAssetId.id,
+                token: listing.type === ListingType.Offer ? takeAssetId.id : makeAssetId.id,
                 extrinsic: item.extrinsic.id,
             },
         })

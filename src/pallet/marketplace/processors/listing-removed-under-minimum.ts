@@ -5,7 +5,6 @@ import {
     ListingStatus,
     ListingStatusType,
     ListingType,
-    Token,
 } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import { getBestListing, getOrCreateAccount } from '../../../util/entities'
@@ -23,28 +22,23 @@ export async function listingRemovedUnderMinimum(
 
     const listing = await ctx.store.findOne<Listing>(Listing, {
         where: { id: listingId },
+        relations: {
+            seller: true,
+            takeAssetId: {
+                collection: true,
+            },
+            makeAssetId: {
+                collection: true,
+                bestListing: true,
+            },
+        },
     })
     if (!listing) return undefined
 
-    const takeAssetId = await ctx.store.findOne<Token>(Token, {
-        where: { id: listing.takeAssetId.id },
-        relations: {
-            collection: true,
-        },
-    })
-    if (!takeAssetId) return undefined
-
-    const makeAssetId = await ctx.store.findOne<Token>(Token, {
-        where: { id: listing.makeAssetId.id },
-        relations: {
-            collection: true,
-            bestListing: true,
-        },
-    })
-    if (!makeAssetId) return undefined
-
-    const isOffer = listing.type === ListingType.Offer
+    const takeAssetId = listing.takeAssetId
+    const makeAssetId = listing.makeAssetId
     const seller = await getOrCreateAccount(ctx, listing.seller.id)
+    const isOffer = listing.type === ListingType.Offer
 
     if (makeAssetId.bestListing?.id === listing.id && listing.type !== ListingType.Offer) {
         const bestListing = await getBestListing(ctx, makeAssetId.id)

@@ -1,14 +1,10 @@
 import { connectionManager } from '../../contexts'
 import { Collection, Token, Trait, TraitToken } from '../../model'
 import { isPlainObject } from 'lodash'
-import { createHash } from 'crypto'
 import { Job } from 'bullmq'
+import { hash } from '../utils'
 
 type TraitValueMap = Map<string, bigint>
-
-const hash = (str: string) => {
-    return createHash('sha1').update(str).digest('hex')
-}
 
 export async function computeTraits(job: Job, collectionId: string) {
     const em = await connectionManager()

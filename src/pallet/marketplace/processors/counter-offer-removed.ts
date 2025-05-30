@@ -1,4 +1,4 @@
-import { AccountTokenEvent, CounterOffer, Event as EventModel, Listing, OfferState, Token } from '../../../model'
+import { AccountTokenEvent, CounterOffer, Event as EventModel, Listing, OfferState } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import { Sns } from '../../../util/sns'
 import * as mappings from '../../index'
@@ -14,17 +14,16 @@ export async function counterOfferRemoved(
 
     const listing = await ctx.store.findOne<Listing>(Listing, {
         where: { id: listingId },
+        relations: {
+            seller: true,
+            takeAssetId: {
+                collection: true,
+            },
+        },
     })
     if (!listing || listing.state.isTypeOf !== 'OfferState') return undefined
 
-    const takeAssetId = await ctx.store.findOne<Token>(Token, {
-        where: { id: listing.takeAssetId.id },
-        relations: {
-            collection: true,
-        },
-    })
-    if (!takeAssetId) return undefined
-
+    const takeAssetId = listing.takeAssetId
     const creator = await getOrCreateAccount(ctx, event.creator)
     const offer = await ctx.store.findOneBy<CounterOffer>(CounterOffer, { id: `${listing.id}-${creator.id}` })
 

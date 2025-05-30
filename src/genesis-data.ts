@@ -89,7 +89,7 @@ async function createEnjinCollection(ctx: CommonContext, block: Block) {
         createdAt: new Date(block.timestamp ?? 0),
     })
 
-    await ctx.store.insert(enjinCollection)
+    await ctx.store.save(enjinCollection)
 }
 
 async function createEnjinToken(ctx: CommonContext, block: Block) {
@@ -112,7 +112,7 @@ async function createEnjinToken(ctx: CommonContext, block: Block) {
         createdAt: new Date(block.timestamp ?? 0),
     })
 
-    await ctx.store.insert(enjinCoinToken)
+    await ctx.store.save(enjinCoinToken)
 }
 
 async function generateRelayData(ctx: CommonContext, block: Block) {
@@ -217,8 +217,8 @@ async function generateRelayData(ctx: CommonContext, block: Block) {
             createdAt: new Date(block.timestamp ?? 0),
         })
 
-        await ctx.store.insert(stakedEnjinCollection)
-        await ctx.store.insert(degenCollection)
+        await ctx.store.save(stakedEnjinCollection)
+        await ctx.store.save(degenCollection)
     }
 
     const genesisEra = new Era({
@@ -231,5 +231,5 @@ async function generateRelayData(ctx: CommonContext, block: Block) {
         nodeCount: 0, // TODO: Check this
     })
 
-    await ctx.store.insert(genesisEra)
+    await ctx.store.save(genesisEra)
 }
