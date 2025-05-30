@@ -85,7 +85,7 @@ server.listen(9090, async () => {
     const client = createClient({
         url: process.env.REDIS_URL,
     })
-    await client.flushall('ASYNC', () => console.log('Flushed all'))
+    await client.flushAll()
 
     // client.initializeJobs()
     console.log(`Server running at port 9090`)
