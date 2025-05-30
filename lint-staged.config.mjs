@@ -2,6 +2,10 @@
  * @type {import('lint-staged').Configuration}
  */
 export default {
-    '!(*.ts)': 'prettier . --write --config prettier.config.mjs',
-    '*.ts': ['eslint . --fix --config eslint.config.mjs', 'prettier . --write --config prettier.config.mjs'],
+    '*': (files) => [
+        files.length > 10
+            ? 'eslint . --fix --config eslint.config.mjs'
+            : `eslint ${files.join(' ')} --fix --config eslint.config.mjs`,
+        `prettier --ignore-unknown --config prettier.config.mjs --write ${files.join(' ')}`,
+    ],
 }

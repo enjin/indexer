@@ -1,11 +1,11 @@
 .github
 .husky
 .idea
-db
 lib
 node_modules
+db/migrations
+src/type
 src/model/generated
-src/type/generated
 **/*.sh
 **/*.json
 **/*.jsonl
@@ -16,9 +16,10 @@ src/type/generated
 **/.env
 **/.env.*
 **/.dockerignore
-prettier.config.mjs
 .prettierignore
 .gitignore
 LICENSE
 Dockerfile
+lint-staged.config.mjs
 eslint.config.mjs
+prettier.config.mjs

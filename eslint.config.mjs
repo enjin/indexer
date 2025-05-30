@@ -16,7 +16,7 @@ export default tseslint.config(
             'db/',
             'typegen/',
             'src/type/',
-            'src/model/',
+            'src/model/generated/',
             'src/worker/jobs',
             'eslint.config.mjs',
             'prettier.config.mjs',
