@@ -30,7 +30,6 @@ export async function attributes(ctx: CommonContext, block: Block) {
                     key,
                     value,
                     deposit: data.deposit,
-                    collection: new Collection({ id: collectionId.toString() }),
                     createdAt: new Date(block.timestamp ?? 0),
                     updatedAt: new Date(block.timestamp ?? 0),
                 })

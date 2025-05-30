@@ -1,6 +1,7 @@
 .github
 .husky
 .idea
+.nx
 lib
 node_modules
 db/migrations
@@ -15,7 +16,6 @@ src/model/generated
 **/*.graphql
 **/.env
 **/.env.*
-**/.dockerignore
 .prettierignore
 .gitignore
 LICENSE

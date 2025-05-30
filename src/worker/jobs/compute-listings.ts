@@ -3,7 +3,7 @@ import { Listing, ListingType } from '../../model'
 import { Brackets } from 'typeorm'
 import { Job } from 'bullmq'
 
-export async function invalidateListings(_job: Job) {
+export async function computeListings(_job: Job) {
     const con = await connectionManager()
 
     await con.transaction('READ COMMITTED', async (em) => {

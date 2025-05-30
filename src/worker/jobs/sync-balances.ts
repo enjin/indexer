@@ -6,7 +6,7 @@ import { decode } from '@subsquid/ss58'
 import { fetchAllBalances } from '../../util/balance'
 import { Job } from 'bullmq'
 
-export async function fetchBalances(_job: Job, ids: string[] | null) {
+export async function syncBalances(_job: Job, ids: string[] | null) {
     const ctx = await dataHandlerContext()
 
     if (ids == null) {

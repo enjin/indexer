@@ -1,18 +1,18 @@
 import { Job } from 'bullmq'
 import { ProcessorDef } from '../processor.def'
 import { JobsEnum } from '../../constants'
-import { computeCollections } from '../../jobs/compute-collections'
-import { fetchExtra } from '../../jobs/fetch-extra'
+import { syncCollections } from '../../jobs/sync-collections'
+import { computeExtras } from '../../jobs/compute-extras'
 import { computeStats } from '../../jobs/compute-stats'
 
 export class CollectionsProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {
         switch (job.name as JobsEnum) {
             case JobsEnum.COMPUTE_COLLECTIONS:
-                await computeCollections(job)
+                await syncCollections(job, null)
                 break
             case JobsEnum.FETCH_EXTRA:
-                await fetchExtra(job, job.data.ids)
+                await computeExtras(job, job.data.ids)
                 break
             case JobsEnum.COMPUTE_STATS:
                 await computeStats(job, job.data.id)
