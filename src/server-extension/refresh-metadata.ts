@@ -3,7 +3,7 @@ import 'reflect-metadata'
 import { type EntityManager } from 'typeorm'
 import NodeCache from 'node-cache'
 import { Collection, Token } from '../model'
-import { QueueUtils } from '../queue'
+import { QueueUtils } from '../queues'
 
 enum RefreshMetadataResponseStatus {
     SUCCESS = 'SUCCESS',

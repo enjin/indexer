@@ -5,8 +5,8 @@
 lib
 node_modules
 db
-src/type
-src/model/generated
+src/types
+src/model
 **/*.sh
 **/*.json
 **/*.jsonl

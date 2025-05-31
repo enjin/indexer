@@ -1,0 +1,27 @@
+import { dataHandlerContext } from '../../contexts'
+import { fetchAccountsDetail } from '../../utils/marketplace'
+import { getOrCreateAccount } from '../../utils/entities'
+import { decode } from '@subsquid/ss58'
+import { Account } from '../../model'
+import { Job } from 'bullmq'
+import { isNotNull } from '../utils'
+
+export async function syncAccounts(_job: Job, ids: string[] | null): Promise<void> {
+    const ctx = await dataHandlerContext()
+    const data = await fetchAccountsDetail(ids!)
+
+    const accounts = await Promise.all(
+        data.filter(isNotNull).map(async (_d) => {
+            const account = await getOrCreateAccount(ctx, decode(_d.publicKey).bytes)
+
+            account.username = _d.username
+            account.image = _d.image
+            account.verifiedAt = _d.verifiedAt
+            account.verified = !!_d.verifiedAt
+
+            return account
+        })
+    )
+
+    await ctx.store.save<Account>(accounts)
+}

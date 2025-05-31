@@ -1,9 +1,9 @@
 import { BlockHeader } from '@subsquid/substrate-processor'
 import * as Sentry from '@sentry/node'
 import { ChainInfo, Marketplace } from './model'
-import processorConfig from './util/config'
+import processorConfig from './utils/config'
 import { CommonContext } from './contexts'
-import Rpc from './util/rpc'
+import Rpc from './utils/rpc'
 
 export async function chainState(
     ctx: CommonContext,
