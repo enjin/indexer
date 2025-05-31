@@ -4,7 +4,7 @@
 <img src="https://raw.githubusercontent.com/enjin/indexer/master/.github/assets/enjin.svg" width="70%" alt="Enjin Logo"/>
 </p>
 
-<p align="center">
+<div align="center">
 
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/enjin/indexer/run_build.yml?style=flat)
 ![GitHub package.json dynamic](https://img.shields.io/github/package-json/version/enjin/indexer?style=flat)
@@ -13,7 +13,7 @@
 [![YouTube](https://img.shields.io/youtube/channel/subscribers/UC7F0a-BLue6W5E0Qcg-r5kw?style=flat&logo=youtube)](https://youtube.com/c/EnjinTV)
 [![Enjin Blog](https://img.shields.io/badge/Visit-enjin.io-blue.svg?style=flat)](https://enjin.io) <!-- markdown-link-check-disable-line -->
 
-</p>
+</div>
 
 ---
 
