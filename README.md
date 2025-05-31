@@ -14,7 +14,6 @@
 [![Enjin Blog](https://img.shields.io/badge/Visit-enjin.io-blue.svg?style=flat)](https://enjin.io) <!-- markdown-link-check-disable-line -->
 
 </div>
-
 ---
 
 ## Introduction
