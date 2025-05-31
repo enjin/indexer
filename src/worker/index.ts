@@ -80,6 +80,6 @@ createBullBoard({
 
 server.use('/', serverAdapter.getRouter())
 server.listen(9090, () => {
-    initializeJobs()
+    // initializeJobs()
     console.log(`Server running at port 9090`)
 })
