@@ -1,6 +1,6 @@
 import { Query, Resolver } from 'type-graphql'
 import 'reflect-metadata'
-import { QueueUtils } from '../queue'
+import { QueueUtils } from '../queues'
 
 @Resolver()
 export class SyncBalancesResolver {

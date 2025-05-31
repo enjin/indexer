@@ -1,5 +1,5 @@
 import client from 'prom-client'
-import processorConfig from '../util/config'
+import processorConfig from '../utils/config'
 
 const registry = new client.Registry()
 
