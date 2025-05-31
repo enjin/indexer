@@ -9,7 +9,7 @@
 
 <p align="center">
 
-<img src="https://raw.githubusercontent.com/enjin/indexer/master/.github/assets/logo.svg" width="80%" alt="Enjin Logo"/>
+<img src="https://raw.githubusercontent.com/enjin/indexer/master/.github/assets/enjin.svg" width="80%" alt="Enjin Logo"/>
 
 </p>
 
