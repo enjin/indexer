@@ -13,7 +13,7 @@ import { processorConfig } from './processor.config'
 import { Json } from '@subsquid/substrate-processor'
 import { hexStripPrefix } from '@polkadot/util'
 import { syncState } from './warp-sync'
-import { callHandler, eventHandler } from './processor.handler'
+import { callHandler, eventHandler, initProcessors } from './processors'
 import { DataService } from './utils/data'
 import { calls, events } from './types'
 import { QueueUtils } from './queues'
@@ -25,6 +25,8 @@ async function bootstrap() {
         dsn: config.sentryDsn,
         tracesSampleRate: 1.0,
     })
+
+    initProcessors()
 
     const dataService = DataService.getInstance()
     await dataService.initialize()

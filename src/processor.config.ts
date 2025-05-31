@@ -16,10 +16,10 @@ const relayEvents: string[] = [
 ]
 
 const commonEvents: string[] = [
-    ...getEventNames(events.balances),
-    ...getEventNames(events.fuelTanks),
-    ...getEventNames(events.identity),
-    ...getEventNames(events.marketplace),
+    // ...getEventNames(events.balances),
+    // ...getEventNames(events.fuelTanks),
+    // ...getEventNames(events.identity),
+    // ...getEventNames(events.marketplace),
     ...getEventNames(events.multiTokens),
 ]
 

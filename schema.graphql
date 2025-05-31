@@ -49,7 +49,6 @@ type Extrinsic @entity {
   pallet: String!
   method: String!
   args: JSON
-#  signature: JSON!
   signer: Account! @index
   nonce: Int!
   tip: BigInt

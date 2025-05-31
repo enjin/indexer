@@ -2,6 +2,7 @@ import { MessageAttributeValue, PublishCommand, SNSClient } from '@aws-sdk/clien
 import config from './config'
 import { safeJsonString } from './tools'
 import { DataService } from './data'
+import { EventItem } from '../contexts'
 
 export class Sns {
     private static instance: Sns | undefined = undefined
@@ -88,4 +89,35 @@ export class Sns {
             console.error('Error sending SNS message', error)
         }
     }
+
+    public async sendEvent(event: EventItem, data: any): Promise<void> {
+        if (!event.extrinsic) {
+            return
+        }
+
+        await Sns.getInstance().send({
+            id: event.id,
+            name: event.name,
+            body: {
+                ...data,
+                extrinsic: event.extrinsic.id,
+            },
+        })
+    }
+
+    //   if (item.extrinsic) {
+    //         await Sns.getInstance().send({
+    //             id: item.id,
+    //             name: item.name,
+    //             body: {
+    //                 kind: data.tokenId !== undefined ? 'token' : 'collection',
+    //                 address,
+    //                 operator: data.operator,
+    //                 collectionId: data.collectionId.toString(),
+    //                 tokenId: data.tokenId ?? null,
+    //                 token: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
+    //                 extrinsic: item.extrinsic.id,
+    //             },
+    //         })
+    //     }
 }
