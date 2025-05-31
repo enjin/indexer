@@ -6,8 +6,6 @@ import {
     Account,
     AccountTokenEvent,
     AccountTokenEventMeta,
-    AccountTokenEventMetaCollection,
-    AccountTokenEventMetaToken,
     Collection,
     Event as EventModel,
     Extrinsic,
@@ -16,6 +14,7 @@ import {
 } from '../../../model'
 import { Infused } from './types/infused'
 import { unwrapAccount } from '../../../util/entities'
+import { generateAccountTokenEventToken, generateAccountTokenEventCollection } from '../../../util/event'
 
 export function infused(event: EventItem): Infused {
     return match(event)
@@ -44,15 +43,15 @@ export function infused(event: EventItem): Infused {
 export function infusedEventModel(
     item: EventItem,
     data: Infused,
-    collection?: Collection,
-    token?: Token
+    collection: Collection,
+    token: Token
 ): [EventModel, AccountTokenEvent] | EventModel | undefined {
     const event = new EventModel({
         id: item.id,
         name: MultiTokensInfused.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-        collectionId: data.collectionId.toString(),
-        tokenId: `${data.collectionId}-${data.tokenId}`,
+        collectionId: collection.id,
+        tokenId: token.id,
         data: new MultiTokensInfused({
             collectionId: data.collectionId,
             tokenId: data.tokenId,
@@ -67,22 +66,11 @@ export function infusedEventModel(
             id: item.id,
             from: new Account({ id: unwrapAccount(data.accountId) }),
             event,
-            collectionId: data.collectionId.toString(),
-            tokenId: data.tokenId.toString(),
+            collectionId: collection.id,
+            tokenId: token.id,
             meta: new AccountTokenEventMeta({
-                collection: !collection
-                    ? undefined
-                    : new AccountTokenEventMetaCollection({
-                          metadata: collection.metadata,
-                          createdAt: collection.createdAt,
-                      }),
-                token: !token
-                    ? undefined
-                    : new AccountTokenEventMetaToken({
-                          nonFungible: token.nonFungible,
-                          metadata: token.metadata,
-                          createdAt: token.createdAt,
-                      }),
+                collection: generateAccountTokenEventCollection(collection),
+                token: generateAccountTokenEventToken(token),
             }),
         }),
     ]

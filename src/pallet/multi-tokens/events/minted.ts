@@ -6,8 +6,6 @@ import {
     Account,
     AccountTokenEvent,
     AccountTokenEventMeta,
-    AccountTokenEventMetaCollection,
-    AccountTokenEventMetaToken,
     Collection,
     Event as EventModel,
     Extrinsic,
@@ -16,6 +14,7 @@ import {
 } from '../../../model'
 import { Minted } from './types'
 import { unwrapAccount } from '../../../util/entities'
+import { generateAccountTokenEventToken, generateAccountTokenEventCollection } from '../../../util/event'
 
 export function minted(event: EventItem): Minted {
     return match(event)
@@ -59,21 +58,10 @@ export function mintedEventModel(
             to: new Account({ id: data.recipient }),
             event,
             collectionId: data.collectionId.toString(),
-            tokenId: data.tokenId.toString(),
+            tokenId: `${data.collectionId}-${data.tokenId}`,
             meta: new AccountTokenEventMeta({
-                collection: !collection
-                    ? undefined
-                    : new AccountTokenEventMetaCollection({
-                          metadata: collection.metadata,
-                          createdAt: collection.createdAt,
-                      }),
-                token: !token
-                    ? undefined
-                    : new AccountTokenEventMetaToken({
-                          nonFungible: token.nonFungible,
-                          metadata: token.metadata,
-                          createdAt: token.createdAt,
-                      }),
+                collection: !collection ? undefined : generateAccountTokenEventCollection(collection),
+                token: !token ? undefined : generateAccountTokenEventToken(token),
             }),
         }),
     ]

@@ -23,21 +23,21 @@ export async function minted(
             collection: true,
         },
     })
-
-    if (data.amount === 0n) {
-        return undefined
-    }
-
-    await Promise.all([getOrCreateAccount(ctx, data.recipient), getOrCreateAccount(ctx, data.issuer)])
-
     if (skipSave) {
         return mappings.multiTokens.events.mintedEventModel(item, data, token?.collection, token)
     }
 
     if (!token) {
         throwFatalError(`[Minted] We have not found token ${data.collectionId}-${data.tokenId}.`)
-        return mappings.multiTokens.events.mintedEventModel(item, data, undefined, undefined)
+        return undefined
     }
+
+    if (data.amount === 0n) {
+        return undefined
+    }
+
+    const recipient = await getOrCreateAccount(ctx, data.recipient)
+    const issuer = await getOrCreateAccount(ctx, data.issuer)
 
     token.supply += data.amount
     token.nonFungible = isNonFungible(token)
@@ -86,9 +86,9 @@ export async function minted(
             body: {
                 collectionId: data.collectionId,
                 tokenId: data.tokenId,
-                token: `${data.collectionId}-${data.tokenId}`,
-                issuer: data.issuer,
-                recipient: data.recipient,
+                token: token.id,
+                issuer: issuer.id,
+                recipient: recipient.id,
                 amount: data.amount,
                 extrinsic: item.extrinsic.id,
             },

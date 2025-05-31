@@ -6,8 +6,6 @@ import {
     Account,
     AccountTokenEvent,
     AccountTokenEventMeta,
-    AccountTokenEventMetaCollection,
-    AccountTokenEventMetaToken,
     Collection,
     Event as EventModel,
     Extrinsic,
@@ -18,6 +16,7 @@ import {
     Token,
 } from '../../../model'
 import { ListingCancelled } from './types'
+import { generateAccountTokenEventToken, generateAccountTokenEventCollection } from '../../../util/event'
 
 export function listingCancelled(event: EventItem): ListingCancelled {
     return match(event)
@@ -71,15 +70,8 @@ export function listingCancelledEventModel(
             collectionId: collection.id,
             tokenId: token.id,
             meta: new AccountTokenEventMeta({
-                collection: new AccountTokenEventMetaCollection({
-                    metadata: collection.metadata,
-                    createdAt: collection.createdAt,
-                }),
-                token: new AccountTokenEventMetaToken({
-                    nonFungible: token.nonFungible,
-                    metadata: token.metadata,
-                    createdAt: token.createdAt,
-                }),
+                collection: generateAccountTokenEventCollection(collection),
+                token: generateAccountTokenEventToken(token),
             }),
         }),
     ]

@@ -61,14 +61,12 @@ export function burnedEventModel(
                 collection: !collection
                     ? undefined
                     : new AccountTokenEventMetaCollection({
-                          metadata: collection.metadata,
                           createdAt: collection.createdAt,
                       }),
                 token: !token
                     ? undefined
                     : new AccountTokenEventMetaToken({
                           nonFungible: token.nonFungible,
-                          metadata: token.metadata,
                           createdAt: token.createdAt,
                       }),
             }),
