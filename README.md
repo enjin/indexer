@@ -11,7 +11,7 @@
 
 ![Enjin Logo](https://raw.githubusercontent.com/enjin/indexer/master/.github/assets/enjin.svg)
 
-</div>
+</p>
 
 ---
 
