@@ -6,8 +6,6 @@ import {
     Account,
     AccountTokenEvent,
     AccountTokenEventMeta,
-    AccountTokenEventMetaCollection,
-    AccountTokenEventMetaToken,
     Collection,
     Event as EventModel,
     Extrinsic,
@@ -16,6 +14,7 @@ import {
     Token,
 } from '../../../model'
 import { AuctionFinalized } from './types'
+import { generateAccountTokenEventCollection, generateAccountTokenEventToken } from '../../../util/event'
 
 export function auctionFinalized(event: EventItem): AuctionFinalized {
     return match(event)
@@ -60,15 +59,8 @@ export function auctionFinalizedEventModel(
             collectionId: listing.makeAssetId.collection.id,
             tokenId: listing.makeAssetId.id,
             meta: new AccountTokenEventMeta({
-                collection: new AccountTokenEventMetaCollection({
-                    metadata: collection.metadata,
-                    createdAt: collection.createdAt,
-                }),
-                token: new AccountTokenEventMetaToken({
-                    nonFungible: token.nonFungible,
-                    metadata: token.metadata,
-                    createdAt: token.createdAt,
-                }),
+                collection: generateAccountTokenEventCollection(collection),
+                token: generateAccountTokenEventToken(token),
             }),
         }),
     ]

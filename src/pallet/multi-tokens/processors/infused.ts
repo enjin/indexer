@@ -7,8 +7,11 @@ export async function infused(ctx: CommonContext, block: Block, item: EventItem,
     const data = mappings.multiTokens.events.infused(item)
     if (skipSave) return undefined
 
-    const token = await ctx.store.findOneByOrFail<Token>(Token, {
-        id: `${data.collectionId}-${data.tokenId}`,
+    const token = await ctx.store.findOneOrFail<Token>(Token, {
+        where: { id: `${data.collectionId}-${data.tokenId}` },
+        relations: {
+            collection: true,
+        },
     })
 
     // This is far from ideal as it will query the node for the storage which will slow down our processor,

@@ -6,8 +6,6 @@ import {
     Account,
     AccountTokenEvent,
     AccountTokenEventMeta,
-    AccountTokenEventMetaCollection,
-    AccountTokenEventMetaToken,
     Collection,
     Event as EventModel,
     Extrinsic,
@@ -15,6 +13,7 @@ import {
     Token,
 } from '../../../model'
 import { Transferred } from './types'
+import { generateAccountTokenEventToken, generateAccountTokenEventCollection } from '../../../util/event'
 
 export function transferred(event: EventItem): Transferred {
     return match(event)
@@ -58,21 +57,10 @@ export function transferredEventModel(
             to: new Account({ id: data.to }),
             event,
             collectionId: data.collectionId.toString(),
-            tokenId: data.tokenId.toString(),
+            tokenId: `${data.collectionId}-${data.tokenId}`,
             meta: new AccountTokenEventMeta({
-                collection: !collection
-                    ? undefined
-                    : new AccountTokenEventMetaCollection({
-                          metadata: collection.metadata,
-                          createdAt: collection.createdAt,
-                      }),
-                token: !token
-                    ? undefined
-                    : new AccountTokenEventMetaToken({
-                          nonFungible: token.nonFungible,
-                          metadata: token.metadata,
-                          createdAt: token.createdAt,
-                      }),
+                collection: !collection ? undefined : generateAccountTokenEventCollection(collection),
+                token: !token ? undefined : generateAccountTokenEventToken(token),
             }),
         }),
     ]
