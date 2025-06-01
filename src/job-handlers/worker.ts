@@ -27,17 +27,17 @@ async function main() {
     traitsQueue.process(3, `${__dirname}/compute-traits.js`)
     rarityQueue.process(3, `${__dirname}/rarity-ranker.js`)
     metadataQueue.process(
-        process.env.MAX_WORKER_CONCURRENCY ? parseInt(process.env.MAX_WORKER_CONCURRENCY, 10) : 50,
+        process.env.MAX_WORKER_CONCURRENCY ? parseInt(process.env.MAX_WORKER_CONCURRENCY, 10) : 10,
         `${__dirname}/process-metadata.js`
     )
     collectionStatsQueue.process(3, `${__dirname}/collection-stats.js`)
 
-    fetchAccountQueue.process(5, `${__dirname}/fetch-account.js`)
+    fetchAccountQueue.process(3, `${__dirname}/fetch-account.js`)
     fetchInfusionQueue.process(1, `${__dirname}/fetch-infusion.js`)
-    fetchBalanceQueue.process(5, `${__dirname}/fetch-balance.js`)
-    fetchCollectionExtraQueue.process(5, `${__dirname}/fetch-collection-extra.js`)
-    // invalidateExpiredListings.process(1, `${__dirname}/invalidate-expired-listings.js`)
-    //
+    fetchBalanceQueue.process(3, `${__dirname}/fetch-balance.js`)
+    fetchCollectionExtraQueue.process(3, `${__dirname}/fetch-collection-extra.js`)
+    invalidateExpiredListings.process(1, `${__dirname}/invalidate-expired-listings.js`)
+
     traitsQueue.on('global:failed', (job, err) => {
         console.log(`traitsQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
     })
@@ -107,7 +107,6 @@ async function main() {
     app.use('/', serverAdapter.getRouter())
 
     // other configurations of your server
-
     app.listen(9090, () => {
         // eslint-disable-next-line no-console
         console.log('Running on 9090...')
