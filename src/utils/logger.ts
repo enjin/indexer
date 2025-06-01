@@ -1,8 +1,8 @@
 import { Logtail } from '@logtail/node'
-import { createLogger, Logger as SqdLogger, LogLevel } from '@subsquid/logger'
+import { createLogger, Logger as SqdLogger } from '@subsquid/logger'
 import config from './config'
 
-// Create a custom logger that implements only the needed methods
+// Create a custom logger that implements only the necessary methods
 export class Logger {
     private sqdLogger: SqdLogger
     private readonly logtail?: Logtail
@@ -12,7 +12,7 @@ export class Logger {
         this.sqdLogger = createLogger(namespace)
 
         // Initialize Logtail if configured
-        if (config.logtail && config.logtail.host && config.logtail.token) {
+        if (config.logtail.host && config.logtail.token) {
             console.log(config.logtail)
             this.logtail = new Logtail(config.logtail.token, {
                 endpoint: config.logtail.host,

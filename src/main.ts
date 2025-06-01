@@ -40,9 +40,10 @@ async function bootstrap() {
             supportHotBlocks: true,
         }),
         async (ctx) => {
-            try {
-                ctx.log = logger as any
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            ctx.log = logger as any
 
+            try {
                 ctx.log.info(
                     `Processing batch of blocks from ${ctx.blocks[0].header.height} to ${ctx.blocks[ctx.blocks.length - 1].header.height}`
                 )
