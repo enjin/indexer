@@ -1,49 +1,67 @@
-/* eslint-disable no-console */
-import http from 'http'
 import client from 'prom-client'
-import trottle from 'lodash/throttle'
 import updateMultiTokenMetrics from './definitions/multiToken'
-import updateTransactionMetrics from './definitions/transaction'
 import updateFuelTankMetrics from './definitions/fuelTank'
+import updateTransactionMetrics from './definitions/transaction'
 import updateInfoMetrics from './definitions/info'
 import updateMigrationMetrics from './definitions/migration'
 import updateMarketplaceMetrics from './definitions/marketplace'
 import updateIdentityMetrics from './definitions/identity'
+
 import register from './registry'
+import express, { Application } from 'express'
+import { createLogger } from '@subsquid/logger'
+
+const log = createLogger('sqd:metrics')
+let cachedMetrics: string = ''
+let metricsUpdatedAt: number = 0
 
 client.collectDefaultMetrics({ register })
 
 const updateMetrics = async () => {
-    console.log('Updating metrics')
-
     await Promise.all([
         updateMultiTokenMetrics(),
-        updateMigrationMetrics(),
         updateFuelTankMetrics(),
+        updateMigrationMetrics(),
         updateTransactionMetrics(),
         updateInfoMetrics(),
         updateIdentityMetrics(),
         updateMarketplaceMetrics(),
     ])
+
+    cachedMetrics = await register.metrics()
+    metricsUpdatedAt = Date.now()
+
+    log.info('Metrics updated')
 }
 
-const throttledUpdateMetrics = trottle(updateMetrics, 10_000)
+setInterval(() => {
+    updateMetrics().catch(log.error)
+}, 300_000) // Update metrics every 5 min
 
-const server = http.createServer(async (req, res) => {
-    if (!req.url) throw new Error('No url')
+const server: Application = express()
 
-    if (req.url === '/_metrics') {
-        await throttledUpdateMetrics()
-        res.setHeader('Content-Type', register.contentType)
-        res.end(await register.metrics())
-    } else if (req.url === '/health') {
-        res.setHeader('Content-Type', 'application/json')
-        res.end(JSON.stringify({ status: 'ok' }))
-    } else {
-        res.writeHead(404)
-        res.end()
+server.get('/_metrics', (_req, res) => {
+    try {
+        res.set('Content-Type', register.contentType)
+        res.end(cachedMetrics)
+    } catch (e) {
+        log.error(`Error occurred while fetching metrics: ${e}`)
+        res.status(500).end('An internal server error occurred')
     }
 })
 
-server.listen(process.env.PROM_PORT || 8080)
-console.log(`Prometheus metrics server started on port ${process.env.PROM_PORT || 8080}`)
+server.get('/health', (_req, res) => {
+    res.status(200).json({
+        status: 'ok',
+        updated_at: metricsUpdatedAt,
+    })
+})
+
+server.get('/', (_req, res) => {
+    res.status(404).end()
+})
+
+server.listen(process.env.PROM_PORT || 8080, () => {
+    log.info(`Prometheus metrics server started on port ${process.env.PROM_PORT || 8080}`)
+    void updateMetrics()
+})
