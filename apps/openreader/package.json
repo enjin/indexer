@@ -1,0 +1,32 @@
+{
+  "name": "@enjin/indexer-openreader",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bin": {
+    "squid-graphql-server": "bin/run.js"
+  },
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "rm -rf lib && tsc && cp ../../schema.graphql schema.graphql",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@subsquid/logger": "^1.4.0",
+    "@subsquid/graphql-server": "^4.10.0",
+    "@subsquid/openreader": "^5.3.0",
+    "@subsquid/util-internal": "^3.2.0",
+    "@subsquid/util-internal-commander": "^1.4.0",
+    "@subsquid/util-internal-http-server": "^2.0.0",
+    "@subsquid/util-internal-ts-node": "^0.0.0",
+    "commander": "^11.1.0",
+    "dotenv": "^16.3.1"
+  },
+  "packageManager": "pnpm@10.11.0",
+  "devDependencies": {
+    "@types/node": "^22.15.29",
+    "typescript": "^5.8.3"
+  }
+}

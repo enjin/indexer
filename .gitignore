@@ -1,10 +1,8 @@
-/.nx
-/.idea
-/.vscode
-/node_modules
-/config
-/lib
-.env
-.sentryclirc
+.idea
+.vscode
+**/lib
+**/node_modules
+**.env
+**.sentryclirc
 apollo.graphql
-
+config

@@ -1,0 +1,29 @@
+{
+  "name": "@enjin/indexer-utils",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "scripts": {
+    "build": "rm -rf lib && tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "exports": {
+    "."
+    "./package.json":
+  },
+  "main": "./lib/index",
+  "files": [
+    "lib"
+  ],
+  "packageManager": "pnpm@10.11.0",
+  "dependencies": {
+    "@logtail/node": "^0.5.5",
+    "@subsquid/logger": "^1.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.29",
+    "typescript": "^5.8.3"
+  }
+}

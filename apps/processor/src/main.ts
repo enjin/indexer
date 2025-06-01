@@ -18,7 +18,7 @@ import { DataService } from './utils/data'
 import { calls, events } from './types'
 import { QueueUtils } from './queues'
 import { QueuesEnum } from './queues/constants'
-import { Logger } from './utils/logger'
+import { Logger } from '@enjin/indexer-utils'
 
 async function bootstrap() {
     Sentry.init({
