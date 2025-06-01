@@ -15,7 +15,7 @@ export class EventMapBuilder<T, R = any> {
     /**
      * Set the decoder function that extracts typed data from an event item
      */
-    withDecoder(fn: (event: EventItem) => T): EventMapBuilder<T, R> {
+    withDecoder(fn: (event: EventItem) => T): this {
         this._decode = fn
         return this
     }
@@ -23,7 +23,7 @@ export class EventMapBuilder<T, R = any> {
     /**
      * Set the notification function that creates the notification payload
      */
-    withNotification(fn: (item: EventItem, data: T, result: R) => any): EventMapBuilder<T, R> {
+    withNotification(fn: (item: EventItem, data: T, result: R) => any): this {
         this._notification = fn
         return this
     }
@@ -31,7 +31,7 @@ export class EventMapBuilder<T, R = any> {
     /**
      * Set the event model function that creates the event model
      */
-    withEventModel(fn: (item: EventItem, data: T, result: R) => EventResult): EventMapBuilder<T, R> {
+    withEventModel(fn: (item: EventItem, data: T, result: R) => EventResult): this {
         this._eventModel = fn
         return this
     }

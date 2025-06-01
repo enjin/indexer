@@ -90,7 +90,7 @@ export class Sns {
         }
     }
 
-    public async sendEvent(event: EventItem, data: any): Promise<void> {
+    public async sendEvent(event: EventItem, data: Record<string, unknown>): Promise<void> {
         if (!event.extrinsic) {
             return
         }
@@ -104,20 +104,4 @@ export class Sns {
             },
         })
     }
-
-    //   if (item.extrinsic) {
-    //         await Sns.getInstance().send({
-    //             id: item.id,
-    //             name: item.name,
-    //             body: {
-    //                 kind: data.tokenId !== undefined ? 'token' : 'collection',
-    //                 address,
-    //                 operator: data.operator,
-    //                 collectionId: data.collectionId.toString(),
-    //                 tokenId: data.tokenId ?? null,
-    //                 token: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
-    //                 extrinsic: item.extrinsic.id,
-    //             },
-    //         })
-    //     }
 }
