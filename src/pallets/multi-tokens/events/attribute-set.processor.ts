@@ -6,24 +6,20 @@ import {
     CollectionFlags,
     CollectionSocials,
     CollectionStats,
-    Event as EventModel,
-    Extrinsic,
     Metadata,
     MintPolicy,
-    MultiTokensAttributeSet,
     Token,
 } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import { getOrCreateAccount } from '../../../utils/entities'
-import * as mappings from '../../index'
 import { QueueUtils } from '../../../queues'
 import { safeString } from '../../../utils/tools'
-import { EventProcessor, EventResult } from '../../event-processor.def'
+import { EventProcessor } from '../../event-processor.def'
 import { AttributeSet } from './attribute-set.type'
 import { multiTokens } from '../../../types/events'
-import { attributeSet } from './attribute-set.map'
+import { attributeSetMap } from './attribute-set.map'
 
-interface AttributeSetProcessData {
+export interface AttributeSetProcessData {
     attribute?: Attribute
     collection: Collection
     token?: Token
@@ -34,11 +30,11 @@ interface AttributeSetProcessData {
 
 export class AttributeSetProcessor extends EventProcessor<AttributeSet> {
     constructor() {
-        super(multiTokens.attributeSet.name)
+        super(multiTokens.attributeSet.name, attributeSetMap)
     }
 
     protected decodeEventItem(item: EventItem): AttributeSet {
-        return attributeSet(item)
+        return attributeSetMap.decode(item)
     }
 
     protected async prepareSkipSaveData(ctx: CommonContext, data: AttributeSet): Promise<any> {
@@ -189,31 +185,5 @@ export class AttributeSetProcessor extends EventProcessor<AttributeSet> {
         } else {
             QueueUtils.dispatchComputeMetadata(result.collection.id, 'collection', false, true)
         }
-    }
-
-    protected getNotificationBody(item: EventItem, data: AttributeSet, result: AttributeSetProcessData): any {
-        return {
-            collectionId: data.collectionId.toString(),
-            tokenId: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
-            key: result.key,
-            value: result.value,
-            extrinsic: item.extrinsic?.id,
-        }
-    }
-
-    protected getEventModel(item: EventItem, data: AttributeSet, result?: AttributeSetProcessData): EventResult {
-        return new EventModel({
-            id: item.id,
-            name: MultiTokensAttributeSet.name,
-            extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-            collectionId: data.collectionId.toString(),
-            tokenId: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
-            data: new MultiTokensAttributeSet({
-                collectionId: data.collectionId,
-                tokenId: data.tokenId,
-                key: safeString(data.key),
-                value: safeString(hexToString(data.value)),
-            }),
-        })
     }
 }

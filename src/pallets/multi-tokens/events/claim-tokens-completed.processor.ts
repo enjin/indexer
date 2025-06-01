@@ -1,21 +1,20 @@
-import { Event as EventModel, Extrinsic, MultiTokensClaims, MultiTokensClaimTokensCompleted } from '../../../model'
+import { MultiTokensClaims } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
-import { EventProcessor, EventResult } from '../../event-processor.def'
+import { EventProcessor } from '../../event-processor.def'
 import { ClaimTokensCompleted } from './claim-tokens-completed.type'
 import { multiTokens } from '../../../types/events'
-import { claimTokensCompleted } from './claim-tokens-completed.map'
+import { claimTokensCompletedMap, ClaimTokensCompletedProcessData } from './claim-tokens-completed.map'
 
-interface ClaimTokensCompletedProcessData {
-    claim: MultiTokensClaims
-}
-
-export class ClaimTokensCompletedProcessor extends EventProcessor<ClaimTokensCompleted> {
+export class ClaimTokensCompletedProcessor extends EventProcessor<
+    ClaimTokensCompleted,
+    ClaimTokensCompletedProcessData
+> {
     constructor() {
-        super(multiTokens.claimTokensCompleted.name)
+        super(multiTokens.claimTokensCompleted.name, claimTokensCompletedMap)
     }
 
     protected decodeEventItem(item: EventItem): ClaimTokensCompleted {
-        return claimTokensCompleted(item)
+        return claimTokensCompletedMap.decode(item)
     }
 
     protected async prepareSkipSaveData(ctx: CommonContext, data: ClaimTokensCompleted): Promise<any> {
@@ -55,33 +54,5 @@ export class ClaimTokensCompletedProcessor extends EventProcessor<ClaimTokensCom
         result: ClaimTokensCompletedProcessData
     ): Promise<void> {
         // No tasks to dispatch
-    }
-
-    protected getNotificationBody(
-        item: EventItem,
-        data: ClaimTokensCompleted,
-        result: ClaimTokensCompletedProcessData
-    ): any {
-        return {
-            account: data.destination,
-            ethAccount: data.ethereumAddress,
-            extrinsic: item.extrinsic?.id,
-        }
-    }
-
-    protected getEventModel(
-        item: EventItem,
-        data: ClaimTokensCompleted,
-        result?: ClaimTokensCompletedProcessData
-    ): EventResult {
-        return new EventModel({
-            id: item.id,
-            name: MultiTokensClaimTokensCompleted.name,
-            extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-            data: new MultiTokensClaimTokensCompleted({
-                account: data.destination,
-                ethAccount: data.ethereumAddress,
-            }),
-        })
     }
 }

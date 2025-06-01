@@ -4,23 +4,18 @@ import { Block, CommonContext, EventItem } from '../../../contexts'
 import { QueueUtils } from '../../../queues'
 import { throwFatalError } from '../../../utils/errors'
 import { match, P } from 'ts-pattern'
-import { EventProcessor, EventResult } from '../../event-processor.def'
+import { EventProcessor } from '../../event-processor.def'
 import { Reserved } from './reserved.type'
 import { multiTokens } from '../../../types/events'
-import { reserved } from './reserved.map'
+import { reservedMap, ReservedProcessData } from './reserved.map'
 
-interface ReservedProcessData {
-    tokenAccount: TokenAccount
-    reserveId: string
-}
-
-export class ReservedProcessor extends EventProcessor<Reserved> {
+export class ReservedProcessor extends EventProcessor<Reserved, ReservedProcessData> {
     constructor() {
-        super(multiTokens.reserved.name)
+        super(multiTokens.reserved.name, reservedMap)
     }
 
     protected decodeEventItem(item: EventItem): Reserved {
-        return reserved(item)
+        return reservedMap.decode(item)
     }
 
     protected async prepareSkipSaveData(ctx: CommonContext, data: Reserved): Promise<any> {
@@ -83,21 +78,5 @@ export class ReservedProcessor extends EventProcessor<Reserved> {
 
     protected async dispatchTasks(ctx: CommonContext, data: Reserved, result: ReservedProcessData): Promise<void> {
         QueueUtils.dispatchComputeStats(data.collectionId.toString())
-    }
-
-    protected getNotificationBody(item: EventItem, data: Reserved, result: ReservedProcessData): any {
-        return {
-            collectionId: data.collectionId,
-            tokenId: data.tokenId,
-            token: `${data.collectionId}-${data.tokenId}`,
-            account: data.accountId,
-            amount: data.amount,
-            reserveId: result.reserveId,
-            extrinsic: item.extrinsic?.id,
-        }
-    }
-
-    protected getEventModel(item: EventItem, data: Reserved, result?: ReservedProcessData): EventResult {
-        return undefined
     }
 }

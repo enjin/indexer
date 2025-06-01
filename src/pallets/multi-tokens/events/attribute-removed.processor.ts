@@ -1,12 +1,5 @@
 import { throwFatalError } from '../../../utils/errors'
-import {
-    Attribute,
-    Collection,
-    Event as EventModel,
-    Extrinsic,
-    MultiTokensAttributeRemoved,
-    Token,
-} from '../../../model'
+import { Attribute, Collection, Token } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import { QueueUtils } from '../../../queues'
 import { EventProcessor } from '../../event-processor.def'

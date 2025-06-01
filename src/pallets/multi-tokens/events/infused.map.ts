@@ -6,19 +6,26 @@ import {
     Account,
     AccountTokenEvent,
     AccountTokenEventMeta,
-    Collection,
     Event as EventModel,
     Extrinsic,
     MultiTokensInfused,
-    Token,
 } from '../../../model'
-import { Infused } from '../types'
+import { Infused } from './infused.type'
 import { unwrapAccount } from '../../../utils/entities'
 import { generateAccountTokenEventToken, generateAccountTokenEventCollection } from '../../../utils/event'
+import { EventMapBuilder } from '../../event-map.builder'
 
-export function infused(event: EventItem): InfusedType {
+export interface InfusedProcessData {
+    token: any
+    infuser: Account
+}
+
+/**
+ * Decode the Infused event from the EventItem
+ */
+function decode(event: EventItem): Infused {
     return match(event)
-        .returnType<InfusedType>()
+        .returnType<Infused>()
         .when(
             () => multiTokens.infused.matrixEnjinV1022.is(event),
             () => multiTokens.infused.matrixEnjinV1022.decode(event)
@@ -39,3 +46,59 @@ export function infused(event: EventItem): InfusedType {
             throw new UnsupportedEventError(event)
         })
 }
+
+/**
+ * Create the notification body for the Infused event
+ */
+function notificationBody(item: EventItem, data: Infused, result: InfusedProcessData): any {
+    return {
+        collectionId: result.token.collection.id,
+        tokenId: result.token.id,
+        amount: data.amount,
+        accountId: result.infuser.id,
+        extrinsic: item.extrinsic?.id,
+    }
+}
+
+/**
+ * Create the event model for the Infused event
+ */
+function eventModel(item: EventItem, data: Infused, result?: InfusedProcessData): [EventModel, AccountTokenEvent] | undefined {
+    if (!result) return undefined
+
+    const { token, infuser } = result
+
+    const event = new EventModel({
+        id: item.id,
+        name: MultiTokensInfused.name,
+        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
+        collectionId: token.collection.id,
+        tokenId: token.id,
+        data: new MultiTokensInfused({
+            collectionId: data.collectionId,
+            tokenId: data.tokenId,
+            amount: data.amount,
+            accountId: unwrapAccount(data.accountId),
+        }),
+    })
+
+    const accountEvent = new AccountTokenEvent({
+        id: item.id,
+        from: infuser,
+        event,
+        collectionId: token.collection.id,
+        tokenId: token.id,
+        meta: new AccountTokenEventMeta({
+            collection: generateAccountTokenEventCollection(token.collection),
+            token: generateAccountTokenEventToken(token),
+        }),
+    })
+
+    return [event, accountEvent]
+}
+
+export const infusedMap = EventMapBuilder.create<Infused, InfusedProcessData>()
+    .withDecoder(decode)
+    .withNotification(notificationBody)
+    .withEventModel(eventModel)
+    .build()

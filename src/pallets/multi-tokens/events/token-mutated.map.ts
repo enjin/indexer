@@ -3,11 +3,16 @@ import { EventItem } from '../../../contexts'
 import { UnsupportedEventError } from '../../../utils/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, MultiTokensTokenMutated } from '../../../model'
-import { TokenMutated } from '../types'
+import { TokenMutated } from './token-mutated.type'
+import { EventMapBuilder } from '../../event-map.builder'
+import { TokenMutatedProcessData } from './token-mutated.processor'
 
-export function tokenMutated(event: EventItem): TokenMutatedType {
+/**
+ * Decode the TokenMutated event from the EventItem
+ */
+function decode(event: EventItem): TokenMutated {
     return match(event)
-        .returnType<TokenMutatedType>()
+        .returnType<TokenMutated>()
         .when(
             () => multiTokens.tokenMutated.matrixEnjinV1022.is(event),
             () => multiTokens.tokenMutated.matrixEnjinV1022.decode(event)
@@ -57,7 +62,23 @@ export function tokenMutated(event: EventItem): TokenMutatedType {
         })
 }
 
-export function tokenMutatedEventModel(item: EventItem, data: TokenMutatedType): EventModel | undefined {
+/**
+ * Create the notification body for the TokenMutated event
+ */
+function notificationBody(item: EventItem, data: TokenMutated, result: TokenMutatedProcessData): any {
+    return {
+        collectionId: data.collectionId,
+        tokenId: data.tokenId,
+        token: `${data.collectionId}-${data.tokenId}`,
+        mutation: data.mutation,
+        extrinsic: item.extrinsic?.id,
+    }
+}
+
+/**
+ * Create the event model for the TokenMutated event
+ */
+function eventModel(item: EventItem, data: TokenMutated): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: MultiTokensTokenMutated.name,
@@ -67,3 +88,9 @@ export function tokenMutatedEventModel(item: EventItem, data: TokenMutatedType):
         data: new MultiTokensTokenMutated(),
     })
 }
+
+export const tokenMutatedMap = EventMapBuilder.create<TokenMutated, TokenMutatedProcessData>()
+    .withDecoder(decode)
+    .withNotification(notificationBody)
+    .withEventModel(eventModel)
+    .build()

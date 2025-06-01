@@ -5,9 +5,9 @@ import { encodeAddress } from '../../../utils/tools'
 import { EventProcessor, EventResult } from '../../event-processor.def'
 import { Unapproved } from './unapproved.type'
 import { multiTokens } from '../../../types/events'
-import { unapproved } from './unapproved.map'
+import { unapprovedMap } from './unapproved.map'
 
-interface UnapprovedProcessData {
+export interface UnapprovedProcessData {
     tokenAccount?: TokenAccount
     collectionAccount?: CollectionAccount
     address: string
@@ -16,11 +16,11 @@ interface UnapprovedProcessData {
 
 export class UnapprovedProcessor extends EventProcessor<Unapproved> {
     constructor() {
-        super(multiTokens.unapproved.name)
+        super(multiTokens.unapproved.name, unapprovedMap)
     }
 
     protected decodeEventItem(item: EventItem): Unapproved {
-        return unapproved(item)
+        return unapprovedMap.decode(item)
     }
 
     protected async prepareSkipSaveData(ctx: CommonContext, data: Unapproved): Promise<any> {
@@ -91,30 +91,10 @@ export class UnapprovedProcessor extends EventProcessor<Unapproved> {
     }
 
     protected getNotificationBody(item: EventItem, data: Unapproved, result: UnapprovedProcessData): any {
-        return {
-            kind: result.kind,
-            address: result.address,
-            operator: data.operator,
-            collectionId: data.collectionId.toString(),
-            tokenId: data.tokenId ?? null,
-            token: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
-            extrinsic: item.extrinsic?.id,
-        }
+        return unapprovedMap.notification(item, data, result)
     }
 
     protected getEventModel(item: EventItem, data: Unapproved, result?: UnapprovedProcessData): EventResult {
-        return new EventModel({
-            id: item.id,
-            name: MultiTokensUnapproved.name,
-            extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-            collectionId: data.collectionId.toString(),
-            tokenId: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
-            data: new MultiTokensUnapproved({
-                collectionId: data.collectionId,
-                tokenId: data.tokenId,
-                owner: data.owner,
-                operator: data.operator,
-            }),
-        })
+        return unapprovedMap.event(item, data, result)
     }
 }

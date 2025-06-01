@@ -19,6 +19,10 @@ export interface Config {
     }
     marketplaceUrl: string
     sentryDsn?: string
+    logtail: {
+        token?: string
+        host?: string
+    }
     amazonSns: {
         topicArn: string
         region: string
@@ -61,6 +65,10 @@ const config: Config = {
     },
     marketplaceUrl: process.env.MARKETPLACE_URL || 'https://nft.io',
     sentryDsn: process.env.SENTRY_DSN,
+    logtail: {
+        token: process.env.LOGTAIL_TOKEN,
+        host: process.env.LOGTAIL_HOST,
+    },
     amazonSns: {
         topicArn: process.env.AWS_SNS_TOPIC_ARN || process.env.SNS_TOPIC_ARN || '',
         region: process.env.AWS_DEFAULT_REGION || process.env.SQS_REGION || '',

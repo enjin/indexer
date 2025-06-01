@@ -4,8 +4,13 @@ import { UnsupportedEventError } from '../../../utils/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, MultiTokensCollectionAccountDestroyed } from '../../../model'
 import { CollectionAccountDestroyed } from './collection-account-destroyed.type'
+import { EventMapBuilder } from '../../event-map.builder'
+import { CollectionAccountDestroyedProcessData } from './collection-account-destroyed.processor'
 
-export function collectionAccountDestroyed(event: EventItem): CollectionAccountDestroyed {
+/**
+ * Decode the CollectionAccountDestroyed event from the EventItem
+ */
+function decode(event: EventItem): CollectionAccountDestroyed {
     return match(event)
         .returnType<CollectionAccountDestroyed>()
         .when(
@@ -17,7 +22,21 @@ export function collectionAccountDestroyed(event: EventItem): CollectionAccountD
         })
 }
 
-export function collectionAccountDestroyedEventModel(item: EventItem, data: CollectionAccountDestroyed) {
+/**
+ * Create the notification body for the CollectionAccountDestroyed event
+ */
+function notificationBody(item: EventItem, data: CollectionAccountDestroyed, result: CollectionAccountDestroyedProcessData): any {
+    return {
+        collectionId: data.collectionId.toString(),
+        account: data.accountId,
+        extrinsic: item.extrinsic?.id,
+    }
+}
+
+/**
+ * Create the event model for the CollectionAccountDestroyed event
+ */
+function eventModel(item: EventItem, data: CollectionAccountDestroyed, result?: CollectionAccountDestroyedProcessData): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: MultiTokensCollectionAccountDestroyed.name,
@@ -28,3 +47,9 @@ export function collectionAccountDestroyedEventModel(item: EventItem, data: Coll
         }),
     })
 }
+
+export const collectionAccountDestroyedMap = EventMapBuilder.create<CollectionAccountDestroyed, CollectionAccountDestroyedProcessData>()
+    .withDecoder(decode)
+    .withNotification(notificationBody)
+    .withEventModel(eventModel)
+    .build()

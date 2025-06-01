@@ -3,11 +3,16 @@ import { EventItem } from '../../../contexts'
 import { UnsupportedEventError } from '../../../utils/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, MultiTokensCollectionAccountCreated } from '../../../model'
-import { CollectionAccountCreated } from '../types'
+import { CollectionAccountCreated } from './collection-account-created.type'
+import { EventMapBuilder } from '../../event-map.builder'
+import { CollectionAccountCreatedProcessData } from './collection-account-created.processor'
 
-export function collectionAccountCreated(event: EventItem): CollectionAccountCreatedType {
+/**
+ * Decode the CollectionAccountCreated event from the EventItem
+ */
+function decode(event: EventItem): CollectionAccountCreated {
     return match(event)
-        .returnType<CollectionAccountCreatedType>()
+        .returnType<CollectionAccountCreated>()
         .when(
             () => multiTokens.collectionAccountCreated.matrixEnjinV603.is(event),
             () => multiTokens.collectionAccountCreated.matrixEnjinV603.decode(event)
@@ -17,7 +22,21 @@ export function collectionAccountCreated(event: EventItem): CollectionAccountCre
         })
 }
 
-export function collectionAccountCreatedEventModel(item: EventItem, data: CollectionAccountCreatedType) {
+/**
+ * Create the notification body for the CollectionAccountCreated event
+ */
+function notificationBody(item: EventItem, data: CollectionAccountCreated, result: CollectionAccountCreatedProcessData): any {
+    return {
+        collectionId: data.collectionId.toString(),
+        account: data.accountId,
+        extrinsic: item.extrinsic?.id,
+    }
+}
+
+/**
+ * Create the event model for the CollectionAccountCreated event
+ */
+function eventModel(item: EventItem, data: CollectionAccountCreated, result?: CollectionAccountCreatedProcessData): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: MultiTokensCollectionAccountCreated.name,
@@ -28,3 +47,9 @@ export function collectionAccountCreatedEventModel(item: EventItem, data: Collec
         }),
     })
 }
+
+export const collectionAccountCreatedMap = EventMapBuilder.create<CollectionAccountCreated, CollectionAccountCreatedProcessData>()
+    .withDecoder(decode)
+    .withNotification(notificationBody)
+    .withEventModel(eventModel)
+    .build()

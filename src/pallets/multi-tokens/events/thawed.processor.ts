@@ -2,9 +2,6 @@ import { throwFatalError } from '../../../utils/errors'
 import {
     Collection,
     CollectionAccount,
-    Event as EventModel,
-    Extrinsic,
-    MultiTokensThawed,
     Token,
     TokenAccount,
     TransferPolicy,
@@ -12,27 +9,18 @@ import {
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import { match } from 'ts-pattern'
 import { QueueUtils } from '../../../queues'
-import { EventProcessor, EventResult } from '../../event-processor.def'
+import { EventProcessor } from '../../event-processor.def'
 import { Frozen } from './frozen.type'
 import { multiTokens } from '../../../types/events'
-import { thawed } from './thawed.map'
+import { thawedMap, ThawedProcessData } from './thawed.map'
 
-interface ThawedProcessData {
-    tokenAccount?: TokenAccount
-    collectionAccount?: CollectionAccount
-    token?: Token
-    collection?: Collection
-    address?: string | null
-    tokenId?: bigint | null
-}
-
-export class ThawedProcessor extends EventProcessor<Frozen> {
+export class ThawedProcessor extends EventProcessor<Frozen, ThawedProcessData> {
     constructor() {
-        super(multiTokens.thawed.name)
+        super(multiTokens.thawed.name, thawedMap)
     }
 
     protected decodeEventItem(item: EventItem): Frozen {
-        return thawed(item)
+        return thawedMap.decode(item)
     }
 
     protected async prepareSkipSaveData(ctx: CommonContext, data: Frozen): Promise<any> {
@@ -143,32 +131,4 @@ export class ThawedProcessor extends EventProcessor<Frozen> {
         QueueUtils.dispatchComputeStats(data.collectionId.toString())
     }
 
-    protected getNotificationBody(item: EventItem, data: Frozen, result: ThawedProcessData): any {
-        return {
-            kind: data.freezeType,
-            address: result.address,
-            collectionId: data.collectionId.toString(),
-            tokenId: result.tokenId,
-            token: result.tokenId ? `${data.collectionId}-${result.tokenId}` : null,
-            extrinsic: item.extrinsic?.id,
-        }
-    }
-
-    protected getEventModel(item: EventItem, data: Frozen, result?: ThawedProcessData): EventResult {
-        if (result === undefined && !item.extrinsic?.id) return undefined
-
-        let tokenId: null | string = null
-        if (data.freezeType.__kind !== 'Collection' && data.freezeType.__kind !== 'CollectionAccount') {
-            tokenId = `${data.collectionId}-${data.freezeType.tokenId}`
-        }
-
-        return new EventModel({
-            id: item.id,
-            name: MultiTokensThawed.name,
-            extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-            collectionId: data.collectionId.toString(),
-            tokenId: tokenId,
-            data: new MultiTokensThawed(),
-        })
-    }
 }

@@ -1,32 +1,24 @@
-import {
-    Attribute,
-    Collection,
-    Event as EventModel,
-    Extrinsic,
-    MultiTokensCollectionDestroyed,
-    RoyaltyCurrency,
-    Trait,
-} from '../../../model'
+import { Attribute, Collection, RoyaltyCurrency, Trait } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
-import { EventProcessor, EventResult } from '../../event-processor.def'
+import { EventProcessor } from '../../event-processor.def'
 import { CollectionDestroyed } from './collection-destroyed.type'
 import { multiTokens } from '../../../types/events'
-import { collectionDestroyed } from './collection-destroyed.map'
+import { collectionDestroyedMap } from './collection-destroyed.map'
 
-interface CollectionDestroyedProcessData {
+export interface CollectionDestroyedProcessData {
     collection: Collection
     traits: Trait[]
     royaltyCurrencies: RoyaltyCurrency[]
     attributes: Attribute[]
 }
 
-export class CollectionDestroyedProcessor extends EventProcessor<CollectionDestroyed> {
+export class CollectionDestroyedProcessor extends EventProcessor<CollectionDestroyed, CollectionDestroyedProcessData> {
     constructor() {
-        super(multiTokens.collectionDestroyed.name)
+        super(multiTokens.collectionDestroyed.name, collectionDestroyedMap)
     }
 
     protected decodeEventItem(item: EventItem): CollectionDestroyed {
-        return collectionDestroyed(item)
+        return collectionDestroyedMap.decode(item)
     }
 
     protected async prepareSkipSaveData(ctx: CommonContext, data: CollectionDestroyed): Promise<any> {
@@ -72,33 +64,5 @@ export class CollectionDestroyedProcessor extends EventProcessor<CollectionDestr
         result: CollectionDestroyedProcessData
     ): Promise<void> {
         // No tasks to dispatch
-    }
-
-    protected getNotificationBody(
-        item: EventItem,
-        data: CollectionDestroyed,
-        result: CollectionDestroyedProcessData
-    ): any {
-        return {
-            collectionId: data.collectionId,
-            caller: data.caller,
-            extrinsic: item.extrinsic?.id,
-        }
-    }
-
-    protected getEventModel(
-        item: EventItem,
-        data: CollectionDestroyed,
-        result?: CollectionDestroyedProcessData
-    ): EventResult {
-        return new EventModel({
-            id: item.id,
-            name: MultiTokensCollectionDestroyed.name,
-            extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-            data: new MultiTokensCollectionDestroyed({
-                collectionId: data.collectionId,
-                caller: data.caller,
-            }),
-        })
     }
 }

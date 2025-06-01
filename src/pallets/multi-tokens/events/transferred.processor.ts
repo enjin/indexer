@@ -16,9 +16,9 @@ import { EventProcessor, EventResult } from '../../event-processor.def'
 import { Transferred } from './transferred.type'
 import { multiTokens } from '../../../types/events'
 import { generateAccountTokenEventCollection, generateAccountTokenEventToken } from '../../../utils/event'
-import { transferred } from './transferred.map'
+import { transferredMap } from './transferred.map'
 
-interface TransferredProcessData {
+export interface TransferredProcessData {
     token: Token
     fromTokenAccount?: TokenAccount
     toTokenAccount?: TokenAccount
@@ -28,11 +28,11 @@ interface TransferredProcessData {
 
 export class TransferredProcessor extends EventProcessor<Transferred> {
     constructor() {
-        super(multiTokens.transferred.name)
+        super(multiTokens.transferred.name, transferredMap)
     }
 
     protected decodeEventItem(item: EventItem): Transferred {
-        return transferred(item)
+        return transferredMap.decode(item)
     }
 
     protected async prepareSkipSaveData(ctx: CommonContext, data: Transferred): Promise<any> {
@@ -133,16 +133,7 @@ export class TransferredProcessor extends EventProcessor<Transferred> {
     }
 
     protected getNotificationBody(item: EventItem, data: Transferred, result: TransferredProcessData): any {
-        return {
-            collectionId: data.collectionId,
-            tokenId: data.tokenId,
-            token: `${data.collectionId}-${data.tokenId}`,
-            operator: data.operator,
-            from: data.from,
-            to: data.to,
-            amount: data.amount,
-            extrinsic: item.extrinsic?.id,
-        }
+        return transferredMap.notification(item, data, result)
     }
 
     protected getEventModel(

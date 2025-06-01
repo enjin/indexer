@@ -1,41 +1,21 @@
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import { Minted } from './minted.type'
-import { EventProcessor, EventResult } from '../../event-processor.def'
-import {
-    Account,
-    AccountTokenEvent,
-    AccountTokenEventMeta,
-    Event as EventModel,
-    Extrinsic,
-    MultiTokensMinted,
-    PoolMember,
-    Token,
-    TokenAccount,
-} from '../../../model'
-import { getOrCreateAccount, unwrapAccount } from '../../../utils/entities'
-import { generateAccountTokenEventCollection, generateAccountTokenEventToken } from '../../../utils/event'
+import { EventProcessor } from '../../event-processor.def'
+import { Account, PoolMember, Token, TokenAccount } from '../../../model'
+import { getOrCreateAccount } from '../../../utils/entities'
 import { QueueUtils } from '../../../queues'
 import { isNonFungible } from '../../../utils/helpers'
 import { multiTokens } from '../../../types/events'
 import { throwFatalError } from '../../../utils/errors'
-import { minted, mintedEventModel } from './minted.map'
+import { mintedMap, MintedProcessData } from './minted.map'
 
-interface MintedProcessData {
-    token: Token
-    recipient: Account
-    issuer: Account
-    tokenAccount: TokenAccount
-    poolMember?: PoolMember
-    promises: Promise<void>[]
-}
-
-export class MintedProcessor extends EventProcessor<Minted> {
+export class MintedProcessor extends EventProcessor<Minted, MintedProcessData> {
     constructor() {
-        super(multiTokens.minted.name)
+        super(multiTokens.minted.name, mintedMap)
     }
 
     protected decodeEventItem(item: EventItem): Minted {
-        return minted(item)
+        return mintedMap.decode(item)
     }
 
     protected async prepareSkipSaveData(ctx: CommonContext, data: Minted): Promise<any> {
@@ -130,64 +110,5 @@ export class MintedProcessor extends EventProcessor<Minted> {
         QueueUtils.dispatchComputeMetadata(result.token.id, 'token')
         QueueUtils.dispatchComputeTraits(data.collectionId.toString())
         QueueUtils.dispatchComputeStats(data.collectionId.toString())
-    }
-
-    protected getNotificationBody(item: EventItem, data: Minted, result: MintedProcessData): any {
-        return {
-            collectionId: data.collectionId,
-            tokenId: data.tokenId,
-            token: result.token.id,
-            issuer: result.issuer.id,
-            recipient: result.recipient.id,
-            amount: data.amount,
-            extrinsic: item.extrinsic?.id,
-        }
-    }
-
-    protected getEventModel(
-        item: EventItem,
-        data: Minted,
-        result?: MintedProcessData | { token?: Token }
-    ): EventResult {
-        if (!result?.token) return undefined
-
-        // Handle skipSave case
-        if ('token' in result && !('recipient' in result)) {
-            return mintedEventModel(item, data, result.token?.collection, result.token)
-        }
-
-        const processData = result as MintedProcessData
-        const { token, recipient, issuer } = processData
-
-        const event = new EventModel({
-            id: item.id,
-            name: MultiTokensMinted.name,
-            extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-            collectionId: data.collectionId.toString(),
-            tokenId: `${data.collectionId}-${data.tokenId}`,
-            data: new MultiTokensMinted({
-                collectionId: data.collectionId,
-                tokenId: data.tokenId,
-                token: `${data.collectionId}-${data.tokenId}`,
-                issuer: unwrapAccount(data.issuer),
-                recipient: data.recipient,
-                amount: data.amount,
-            }),
-        })
-
-        const accountEvent = new AccountTokenEvent({
-            id: item.id,
-            from: issuer,
-            to: recipient,
-            event,
-            collectionId: data.collectionId.toString(),
-            tokenId: `${data.collectionId}-${data.tokenId}`,
-            meta: new AccountTokenEventMeta({
-                collection: token.collection ? generateAccountTokenEventCollection(token.collection) : undefined,
-                token: generateAccountTokenEventToken(token),
-            }),
-        })
-
-        return [event, accountEvent]
     }
 }

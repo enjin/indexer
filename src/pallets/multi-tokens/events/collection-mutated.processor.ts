@@ -1,19 +1,11 @@
 import { throwFatalError } from '../../../utils/errors'
-import {
-    Collection,
-    Event as EventModel,
-    Extrinsic,
-    Listing,
-    MultiTokensCollectionMutated,
-    RoyaltyCurrency,
-    Token,
-} from '../../../model'
+import { Collection, Listing, RoyaltyCurrency, Token } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import { getOrCreateAccount } from '../../../utils/entities'
-import { EventProcessor, EventResult } from '../../event-processor.def'
+import { EventProcessor } from '../../event-processor.def'
 import { CollectionMutated } from './collection-mutated.type'
 import { multiTokens } from '../../../types/events'
-import { collectionMutated } from './collection-mutated.map'
+import { collectionMutatedMap, CollectionMutatedProcessData } from './collection-mutated.map'
 
 // async function getMarket(ctx: CommonContext, royalty: DefaultRoyalty): Promise<MarketPolicy> {
 //     const account = await getOrCreateAccount(ctx, royalty.beneficiary)
@@ -25,21 +17,13 @@ import { collectionMutated } from './collection-mutated.map'
 //     })
 // }
 
-interface CollectionMutatedProcessData {
-    collection: Collection
-    listings?: Listing[]
-    royaltyCurrencies?: RoyaltyCurrency[]
-    previousPercentage?: number
-    currentPercentage?: number
-}
-
-export class CollectionMutatedProcessor extends EventProcessor<CollectionMutated> {
+export class CollectionMutatedProcessor extends EventProcessor<CollectionMutated, CollectionMutatedProcessData> {
     constructor() {
-        super(multiTokens.collectionMutated.name)
+        super(multiTokens.collectionMutated.name, collectionMutatedMap)
     }
 
     protected decodeEventItem(item: EventItem): CollectionMutated {
-        return collectionMutated(item)
+        return collectionMutatedMap.decode(item)
     }
 
     protected async prepareSkipSaveData(ctx: CommonContext, data: CollectionMutated): Promise<any> {
@@ -162,39 +146,5 @@ export class CollectionMutatedProcessor extends EventProcessor<CollectionMutated
         result: CollectionMutatedProcessData
     ): Promise<void> {
         // No tasks to dispatch
-    }
-
-    protected getNotificationBody(item: EventItem, data: CollectionMutated, result: CollectionMutatedProcessData): any {
-        const notificationBody: any = {
-            collectionId: data.collectionId,
-            extrinsic: item.extrinsic?.id,
-        }
-
-        // Add royalty increase notification data if applicable
-        if (result.listings && result.previousPercentage !== undefined && result.currentPercentage !== undefined) {
-            notificationBody.previousRoyalty = result.previousPercentage
-            notificationBody.newRoyalty = result.currentPercentage
-            notificationBody.sellers = result.listings.map((listing) => listing.seller.address)
-            notificationBody.listings = result.listings.map((listing) => listing.id)
-        }
-
-        return notificationBody
-    }
-
-    protected getEventModel(
-        item: EventItem,
-        data: CollectionMutated,
-        result?: CollectionMutatedProcessData
-    ): EventResult {
-        return new EventModel({
-            id: item.id,
-            name: MultiTokensCollectionMutated.name,
-            extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-            collectionId: data.collectionId.toString(),
-            tokenId: null,
-            data: new MultiTokensCollectionMutated({
-                collectionId: data.collectionId,
-            }),
-        })
     }
 }

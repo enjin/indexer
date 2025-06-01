@@ -4,10 +4,23 @@ import { UnsupportedEventError } from '../../../utils/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, MultiTokensFrozen } from '../../../model'
 import { Frozen } from './frozen.type'
+import { EventMapBuilder } from '../../event-map.builder'
 
-export function frozen(event: EventItem): Freeze {
+export interface FrozenProcessData {
+    tokenAccount?: any
+    collectionAccount?: any
+    token?: any
+    collection?: any
+    address?: string | null
+    tokenId?: bigint | null
+}
+
+/**
+ * Decode the Frozen event from the EventItem
+ */
+function decode(event: EventItem): Frozen {
     return match(event)
-        .returnType<Freeze>()
+        .returnType<Frozen>()
         .when(
             () => multiTokens.frozen.matrixEnjinV603.is(event),
             () => multiTokens.frozen.matrixEnjinV603.decode(event)
@@ -17,7 +30,24 @@ export function frozen(event: EventItem): Freeze {
         })
 }
 
-export function frozenEventModel(item: EventItem, data: Freeze): EventModel {
+/**
+ * Create the notification body for the Frozen event
+ */
+function notificationBody(item: EventItem, data: Frozen, result: FrozenProcessData): any {
+    return {
+        kind: data.freezeType,
+        address: result.address,
+        collectionId: data.collectionId.toString(),
+        tokenId: result.tokenId,
+        token: result.tokenId ? `${data.collectionId}-${result.tokenId}` : null,
+        extrinsic: item.extrinsic?.id,
+    }
+}
+
+/**
+ * Create the event model for the Frozen event
+ */
+function eventModel(item: EventItem, data: Frozen, result?: FrozenProcessData): EventModel | undefined {
     let tokenId: null | string = null
 
     if (data.freezeType.__kind !== 'Collection' && data.freezeType.__kind !== 'CollectionAccount') {
@@ -33,3 +63,9 @@ export function frozenEventModel(item: EventItem, data: Freeze): EventModel {
         data: new MultiTokensFrozen(),
     })
 }
+
+export const frozenMap = EventMapBuilder.create<Frozen, FrozenProcessData>()
+    .withDecoder(decode)
+    .withNotification(notificationBody)
+    .withEventModel(eventModel)
+    .build()

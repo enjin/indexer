@@ -12,11 +12,17 @@ import {
     MultiTokensTransferred,
     Token,
 } from '../../../model'
-import { Transferred } from '../types'
+import { Transferred } from './transferred.type'
 import { generateAccountTokenEventToken, generateAccountTokenEventCollection } from '../../../utils/event'
+import { EventMapBuilder } from '../../event-map.builder'
+import { TransferredProcessData } from './transferred.processor'
 
-export function transferred(event: EventItem): TransferredType {
+/**
+ * Decode the Transferred event from the EventItem
+ */
+function decode(event: EventItem): Transferred {
     return match(event)
+        .returnType<Transferred>()
         .when(
             () => multiTokens.transferred.matrixEnjinV603.is(event),
             () => multiTokens.transferred.matrixEnjinV603.decode(event)
@@ -26,11 +32,29 @@ export function transferred(event: EventItem): TransferredType {
         })
 }
 
-export function transferredEventModel(
+/**
+ * Create the notification body for the Transferred event
+ */
+function notificationBody(item: EventItem, data: Transferred, result: TransferredProcessData): any {
+    return {
+        collectionId: data.collectionId.toString(),
+        tokenId: `${data.collectionId}-${data.tokenId}`,
+        token: `${data.collectionId}-${data.tokenId}`,
+        operator: data.operator,
+        from: data.from,
+        to: data.to,
+        amount: data.amount,
+        extrinsic: item.extrinsic?.id,
+    }
+}
+
+/**
+ * Create the event model for the Transferred event
+ */
+function eventModel(
     item: EventItem,
-    data: TransferredType,
-    collection?: Collection,
-    token?: Token
+    data: Transferred,
+    result?: TransferredProcessData
 ): [EventModel, AccountTokenEvent] | EventModel | undefined {
     const event = new EventModel({
         id: item.id,
@@ -49,6 +73,8 @@ export function transferredEventModel(
         }),
     })
 
+    if (!result) return event
+
     return [
         event,
         new AccountTokenEvent({
@@ -59,9 +85,15 @@ export function transferredEventModel(
             collectionId: data.collectionId.toString(),
             tokenId: `${data.collectionId}-${data.tokenId}`,
             meta: new AccountTokenEventMeta({
-                collection: !collection ? undefined : generateAccountTokenEventCollection(collection),
-                token: !token ? undefined : generateAccountTokenEventToken(token),
+                collection: !result.token.collection ? undefined : generateAccountTokenEventCollection(result.token.collection),
+                token: !result.token ? undefined : generateAccountTokenEventToken(result.token),
             }),
         }),
     ]
 }
+
+export const transferredMap = EventMapBuilder.create<Transferred, TransferredProcessData>()
+    .withDecoder(decode)
+    .withNotification(notificationBody)
+    .withEventModel(eventModel)
+    .build()

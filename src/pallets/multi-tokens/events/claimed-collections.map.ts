@@ -2,9 +2,19 @@ import { multiTokens } from '../../../types/events'
 import { EventItem } from '../../../contexts'
 import { UnsupportedEventError } from '../../../utils/errors'
 import { match } from 'ts-pattern'
+import { Event as EventModel, Extrinsic, MultiTokensClaimedCollections } from '../../../model'
 import { ClaimedCollections } from './claimed-collections.type'
+import { EventMapBuilder } from '../../event-map.builder'
 
-export function claimedCollections(event: EventItem): ClaimedCollections {
+export interface ClaimedCollectionsProcessData {
+    account: any
+    collections: any[]
+}
+
+/**
+ * Decode the ClaimedCollections event from the EventItem
+ */
+function decode(event: EventItem): ClaimedCollections {
     return match(event)
         .returnType<ClaimedCollections>()
         .when(
@@ -43,3 +53,38 @@ export function claimedCollections(event: EventItem): ClaimedCollections {
             throw new UnsupportedEventError(event)
         })
 }
+
+/**
+ * Create the notification body for the ClaimedCollections event
+ */
+function notificationBody(item: EventItem, data: ClaimedCollections, result: ClaimedCollectionsProcessData): any {
+    return {
+        account: data.accountId,
+        ethAccount: data.ethereumAddress,
+        extrinsic: item.extrinsic?.id,
+    }
+}
+
+/**
+ * Create the event model for the ClaimedCollections event
+ */
+function eventModel(item: EventItem, data: ClaimedCollections, result?: ClaimedCollectionsProcessData): EventModel | undefined {
+    return new EventModel({
+        id: item.id,
+        name: MultiTokensClaimedCollections.name,
+        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
+        data: new MultiTokensClaimedCollections({
+            account: data.accountId,
+            ethAccount: data.ethereumAddress,
+            collectionIds: data.collectionIds.map((id) => {
+                return typeof id == 'bigint' ? id : id.native
+            }),
+        }),
+    })
+}
+
+export const claimedCollectionsMap = EventMapBuilder.create<ClaimedCollections, ClaimedCollectionsProcessData>()
+    .withDecoder(decode)
+    .withNotification(notificationBody)
+    .withEventModel(eventModel)
+    .build()

@@ -1,21 +1,13 @@
 import { throwFatalError } from '../../../utils/errors'
-import {
-    CollectionAccount,
-    CollectionApproval,
-    Event as EventModel,
-    Extrinsic,
-    MultiTokensApproved,
-    TokenAccount,
-    TokenApproval,
-} from '../../../model'
+import { CollectionAccount, CollectionApproval, TokenAccount, TokenApproval } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import { encodeAddress } from '../../../utils/tools'
 import { EventProcessor } from '../../event-processor.def'
 import { multiTokens } from '../../../types/events'
 import { Approved } from './approved.type'
-import { approved, eventModel, notificationBody } from './approved.map'
+import { approvedMap } from './approved.map'
 
-interface ApprovedProcessData {
+export interface ApprovedProcessData {
     tokenAccount?: TokenAccount
     collectionAccount?: CollectionAccount
     address: string
@@ -24,15 +16,11 @@ interface ApprovedProcessData {
 
 export class ApprovedProcessor extends EventProcessor<Approved, ApprovedProcessData> {
     constructor() {
-        super(
-            multiTokens.approved.name,
-            (item, data, result) => notificationBody(item, data),
-            (item, data, result) => eventModel(item, data)
-        )
+        super(multiTokens.approved.name, approvedMap)
     }
 
     protected decodeEventItem(item: EventItem): Approved {
-        return approved(item)
+        return approvedMap.decode(item)
     }
 
     protected async prepareSkipSaveData(ctx: CommonContext, data: Approved): Promise<any> {

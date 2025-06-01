@@ -3,12 +3,17 @@ import { EventItem } from '../../../contexts'
 import { UnsupportedEventError } from '../../../utils/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, MultiTokensTokenCreated } from '../../../model'
-import { TokenCreated } from '../types'
+import { TokenCreated } from './token-created.type'
 import { unwrapAccount } from '../../../utils/entities'
+import { EventMapBuilder } from '../../event-map.builder'
+import { TokenCreatedProcessData } from './token-created.processor'
 
-export function tokenCreated(event: EventItem): TokenCreatedType {
+/**
+ * Decode the TokenCreated event from the EventItem
+ */
+function decode(event: EventItem): TokenCreated {
     return match(event)
-        .returnType<TokenCreatedType>()
+        .returnType<TokenCreated>()
         .when(
             () => multiTokens.tokenCreated.matrixEnjinV603.is(event),
             () => multiTokens.tokenCreated.matrixEnjinV603.decode(event)
@@ -18,7 +23,24 @@ export function tokenCreated(event: EventItem): TokenCreatedType {
         })
 }
 
-export function tokenCreatedEventModel(item: EventItem, data: TokenCreatedType): EventModel | undefined {
+/**
+ * Create the notification body for the TokenCreated event
+ */
+function notificationBody(item: EventItem, data: TokenCreated, result: TokenCreatedProcessData): any {
+    return {
+        collectionId: data.collectionId,
+        tokenId: data.tokenId,
+        token: `${data.collectionId}-${data.tokenId}`,
+        issuer: unwrapAccount(data.issuer),
+        initialSupply: data.initialSupply,
+        extrinsic: item.extrinsic?.id,
+    }
+}
+
+/**
+ * Create the event model for the TokenCreated event
+ */
+function eventModel(item: EventItem, data: TokenCreated, result?: TokenCreatedProcessData): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: MultiTokensTokenCreated.name,
@@ -33,3 +55,9 @@ export function tokenCreatedEventModel(item: EventItem, data: TokenCreatedType):
         }),
     })
 }
+
+export const tokenCreatedMap = EventMapBuilder.create<TokenCreated, TokenCreatedProcessData>()
+    .withDecoder(decode)
+    .withNotification(notificationBody)
+    .withEventModel(eventModel)
+    .build()

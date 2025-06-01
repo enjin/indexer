@@ -4,8 +4,20 @@ import { UnsupportedEventError } from '../../../utils/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, MultiTokensCollectionMutated } from '../../../model'
 import { CollectionMutated } from './collection-mutated.type'
+import { EventMapBuilder } from '../../event-map.builder'
 
-export function collectionMutated(event: EventItem): CollectionMutated {
+export interface CollectionMutatedProcessData {
+    collection: any
+    listings?: any[]
+    royaltyCurrencies?: any[]
+    previousPercentage?: number
+    currentPercentage?: number
+}
+
+/**
+ * Decode the CollectionMutated event from the EventItem
+ */
+function decode(event: EventItem): CollectionMutated {
     return match(event)
         .returnType<CollectionMutated>()
         .when(
@@ -29,7 +41,30 @@ export function collectionMutated(event: EventItem): CollectionMutated {
         })
 }
 
-export function collectionMutatedEventModel(item: EventItem, data: CollectionMutated): EventModel | undefined {
+/**
+ * Create the notification body for the CollectionMutated event
+ */
+function notificationBody(item: EventItem, data: CollectionMutated, result: CollectionMutatedProcessData): any {
+    const notificationBody: any = {
+        collectionId: data.collectionId,
+        extrinsic: item.extrinsic?.id,
+    }
+
+    // Add royalty increase notification data if applicable
+    if (result.listings && result.previousPercentage !== undefined && result.currentPercentage !== undefined) {
+        notificationBody.previousRoyalty = result.previousPercentage
+        notificationBody.newRoyalty = result.currentPercentage
+        notificationBody.sellers = result.listings.map((listing) => listing.seller.address)
+        notificationBody.listings = result.listings.map((listing) => listing.id)
+    }
+
+    return notificationBody
+}
+
+/**
+ * Create the event model for the CollectionMutated event
+ */
+function eventModel(item: EventItem, data: CollectionMutated, result?: CollectionMutatedProcessData): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: MultiTokensCollectionMutated.name,
@@ -41,3 +76,9 @@ export function collectionMutatedEventModel(item: EventItem, data: CollectionMut
         }),
     })
 }
+
+export const collectionMutatedMap = EventMapBuilder.create<CollectionMutated, CollectionMutatedProcessData>()
+    .withDecoder(decode)
+    .withNotification(notificationBody)
+    .withEventModel(eventModel)
+    .build()

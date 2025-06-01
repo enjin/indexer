@@ -1,28 +1,25 @@
-import {
-    Collection,
-    CollectionAccount,
-    Event as EventModel,
-    Extrinsic,
-    MultiTokensCollectionAccountCreated,
-} from '../../../model'
+import { Collection, CollectionAccount } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import { getOrCreateAccount } from '../../../utils/entities'
-import { EventProcessor, EventResult } from '../../event-processor.def'
+import { EventProcessor } from '../../event-processor.def'
 import { CollectionAccountCreated } from './collection-account-created.type'
 import { multiTokens } from '../../../types/events'
-import { collectionAccountCreated } from './collection-account-created.map'
+import { collectionAccountCreatedMap } from './collection-account-created.map'
 
-interface CollectionAccountCreatedProcessData {
+export interface CollectionAccountCreatedProcessData {
     collectionAccount?: CollectionAccount
 }
 
-export class CollectionAccountCreatedProcessor extends EventProcessor<CollectionAccountCreated> {
+export class CollectionAccountCreatedProcessor extends EventProcessor<
+    CollectionAccountCreated,
+    CollectionAccountCreatedProcessData
+> {
     constructor() {
-        super(multiTokens.collectionAccountCreated.name)
+        super(multiTokens.collectionAccountCreated.name, collectionAccountCreatedMap)
     }
 
     protected decodeEventItem(item: EventItem): CollectionAccountCreated {
-        return collectionAccountCreated(item)
+        return collectionAccountCreatedMap.decode(item)
     }
 
     protected async prepareSkipSaveData(ctx: CommonContext, data: CollectionAccountCreated): Promise<any> {
@@ -76,33 +73,5 @@ export class CollectionAccountCreatedProcessor extends EventProcessor<Collection
         result: CollectionAccountCreatedProcessData
     ): Promise<void> {
         // No tasks to dispatch
-    }
-
-    protected getNotificationBody(
-        item: EventItem,
-        data: CollectionAccountCreated,
-        result: CollectionAccountCreatedProcessData
-    ): any {
-        return {
-            collectionId: data.collectionId.toString(),
-            account: data.accountId,
-            extrinsic: item.extrinsic?.id,
-        }
-    }
-
-    protected getEventModel(
-        item: EventItem,
-        data: CollectionAccountCreated,
-        result?: CollectionAccountCreatedProcessData
-    ): EventResult {
-        return new EventModel({
-            id: item.id,
-            name: MultiTokensCollectionAccountCreated.name,
-            extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-            data: new MultiTokensCollectionAccountCreated({
-                collectionId: data.collectionId,
-                account: data.accountId,
-            }),
-        })
     }
 }

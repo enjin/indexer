@@ -1,34 +1,26 @@
 import { throwFatalError } from '../../../utils/errors'
-import {
-    Collection,
-    Event as EventModel,
-    Extrinsic,
-    MultiTokensTokenCreated,
-    NativeTokenMetadata,
-    Token,
-} from '../../../model'
+import { Collection, NativeTokenMetadata, Token } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import * as mappings from '../../index'
 import { CreatePool } from '../../nomination-pools/calls'
 import { ForceMint, Mint } from '../calls'
 import { TokenCreated } from './token-created.type'
-import { EventProcessor, EventResult } from '../../event-processor.def'
+import { EventProcessor } from '../../event-processor.def'
 import { multiTokens } from '../../../types/events'
-import { unwrapAccount } from '../../../utils/entities'
-import { tokenCreated } from './token-created.map'
+import { tokenCreatedMap } from './token-created.map'
 
-interface TokenCreatedProcessData {
+export interface TokenCreatedProcessData {
     token?: Token
     call?: Mint | ForceMint | CreatePool
 }
 
-export class TokenCreatedProcessor extends EventProcessor<TokenCreated> {
+export class TokenCreatedProcessor extends EventProcessor<TokenCreated, TokenCreatedProcessData> {
     constructor() {
-        super(multiTokens.tokenCreated.name)
+        super(multiTokens.tokenCreated.name, tokenCreatedMap)
     }
 
     protected decodeEventItem(item: EventItem): TokenCreated {
-        return tokenCreated(item)
+        return tokenCreatedMap.decode(item)
     }
 
     protected async prepareSkipSaveData(ctx: CommonContext, data: TokenCreated): Promise<any> {
@@ -171,32 +163,5 @@ export class TokenCreatedProcessor extends EventProcessor<TokenCreated> {
         result: TokenCreatedProcessData
     ): Promise<void> {
         // No tasks to dispatch
-    }
-
-    protected getNotificationBody(item: EventItem, data: TokenCreated, result: TokenCreatedProcessData): any {
-        return {
-            collectionId: data.collectionId,
-            tokenId: data.tokenId,
-            token: `${data.collectionId}-${data.tokenId}`,
-            issuer: unwrapAccount(data.issuer),
-            initialSupply: data.initialSupply,
-            extrinsic: item.extrinsic?.id,
-        }
-    }
-
-    protected getEventModel(item: EventItem, data: TokenCreated, result?: TokenCreatedProcessData): EventResult {
-        return new EventModel({
-            id: item.id,
-            name: MultiTokensTokenCreated.name,
-            extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-            collectionId: data.collectionId.toString(),
-            tokenId: `${data.collectionId}-${data.tokenId}`,
-            data: new MultiTokensTokenCreated({
-                collectionId: data.collectionId,
-                tokenId: data.tokenId,
-                issuer: unwrapAccount(data.issuer),
-                initialSupply: data.initialSupply,
-            }),
-        })
     }
 }

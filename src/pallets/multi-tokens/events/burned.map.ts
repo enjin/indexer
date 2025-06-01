@@ -8,15 +8,18 @@ import {
     AccountTokenEventMeta,
     AccountTokenEventMetaCollection,
     AccountTokenEventMetaToken,
-    Collection,
     Event as EventModel,
     Extrinsic,
     MultiTokensBurned,
-    Token,
 } from '../../../model'
 import { Burned } from './burned.type'
+import { EventMapBuilder } from '../../event-map.builder'
+import { BurnedProcessData } from './burned.processor'
 
-export function burned(event: EventItem): Burned {
+/**
+ * Decode the Burned event from the EventItem
+ */
+function decode(event: EventItem): Burned {
     return match(event)
         .returnType<Burned>()
         .when(
@@ -28,12 +31,28 @@ export function burned(event: EventItem): Burned {
         })
 }
 
-export function burnedEventModel(
-    item: EventItem,
-    data: Burned,
-    collection?: Collection,
-    token?: Token
-): [EventModel, AccountTokenEvent] | undefined | EventModel {
+/**
+ * Create the notification body for the Burned event
+ */
+function notificationBody(item: EventItem, data: Burned, result: BurnedProcessData): any {
+    return {
+        collectionId: data.collectionId,
+        tokenId: data.tokenId,
+        token: `${data.collectionId}-${data.tokenId}`,
+        account: data.accountId,
+        amount: data.amount,
+        extrinsic: item.extrinsic?.id,
+    }
+}
+
+/**
+ * Create the event model for the Burned event
+ */
+function eventModel(item: EventItem, data: Burned, result?: BurnedProcessData): [EventModel, AccountTokenEvent] | undefined {
+    if (!result?.token) return undefined
+
+    const { token } = result
+
     const event = new EventModel({
         id: item.id,
         name: MultiTokensBurned.name,
@@ -58,18 +77,22 @@ export function burnedEventModel(
             collectionId: data.collectionId.toString(),
             tokenId: data.tokenId.toString(),
             meta: new AccountTokenEventMeta({
-                collection: !collection
+                collection: !token.collection
                     ? undefined
                     : new AccountTokenEventMetaCollection({
-                          createdAt: collection.createdAt,
+                          createdAt: token.collection.createdAt,
                       }),
-                token: !token
-                    ? undefined
-                    : new AccountTokenEventMetaToken({
-                          nonFungible: token.nonFungible,
-                          createdAt: token.createdAt,
-                      }),
+                token: new AccountTokenEventMetaToken({
+                    nonFungible: token.nonFungible,
+                    createdAt: token.createdAt,
+                }),
             }),
         }),
     ]
 }
+
+export const burnedMap = EventMapBuilder.create<Burned, BurnedProcessData>()
+    .withDecoder(decode)
+    .withNotification(notificationBody)
+    .withEventModel(eventModel)
+    .build()

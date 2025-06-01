@@ -4,8 +4,13 @@ import { UnsupportedEventError } from '../../../utils/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, MultiTokensApproved } from '../../../model'
 import { Approved } from './approved.type'
+import { EventMapBuilder } from '../../event-map.builder'
+import { ApprovedProcessData } from './approved.processor'
 
-export function approved(event: EventItem): Approved {
+/**
+ * Decode the Approved event from the EventItem
+ */
+function decode(event: EventItem): Approved {
     return match(event)
         .returnType<Approved>()
         .when(
@@ -17,7 +22,10 @@ export function approved(event: EventItem): Approved {
         })
 }
 
-export function notificationBody(item: EventItem, data: Approved, result?: any): any {
+/**
+ * Create the notification body for the Approved event
+ */
+function notificationBody(item: EventItem, data: Approved, result: ApprovedProcessData): any {
     return {
         kind: result.kind,
         address: result.address,
@@ -29,7 +37,10 @@ export function notificationBody(item: EventItem, data: Approved, result?: any):
     }
 }
 
-export function eventModel(item: EventItem, data: Approved, result?: any): EventModel | undefined {
+/**
+ * Create the event model for the Approved event
+ */
+function eventModel(item: EventItem, data: Approved, result?: ApprovedProcessData): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: MultiTokensApproved.name,
@@ -46,3 +57,9 @@ export function eventModel(item: EventItem, data: Approved, result?: any): Event
         }),
     })
 }
+
+export const approvedMap = EventMapBuilder.create<Approved, ApprovedProcessData>()
+    .withDecoder(decode)
+    .withNotification(notificationBody)
+    .withEventModel(eventModel)
+    .build()

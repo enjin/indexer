@@ -2,11 +2,21 @@ import { multiTokens } from '../../../types/events'
 import { EventItem } from '../../../contexts'
 import { UnsupportedEventError } from '../../../utils/errors'
 import { match } from 'ts-pattern'
-import { Reserved } from '../types'
+import { Event as EventModel } from '../../../model'
+import { Reserved } from './reserved.type'
+import { EventMapBuilder } from '../../event-map.builder'
 
-export function reserved(event: EventItem): ReservedType {
+export interface ReservedProcessData {
+    tokenAccount: any
+    reserveId: string
+}
+
+/**
+ * Decode the Reserved event from the EventItem
+ */
+function decode(event: EventItem): Reserved {
     return match(event)
-        .returnType<ReservedType>()
+        .returnType<Reserved>()
         .when(
             () => multiTokens.reserved.matrixEnjinV1022.is(event),
             () => multiTokens.reserved.matrixEnjinV1022.decode(event)
@@ -31,3 +41,31 @@ export function reserved(event: EventItem): ReservedType {
             throw new UnsupportedEventError(event)
         })
 }
+
+/**
+ * Create the notification body for the Reserved event
+ */
+function notificationBody(item: EventItem, data: Reserved, result: ReservedProcessData): any {
+    return {
+        collectionId: data.collectionId,
+        tokenId: data.tokenId,
+        token: `${data.collectionId}-${data.tokenId}`,
+        account: data.accountId,
+        amount: data.amount,
+        reserveId: result.reserveId,
+        extrinsic: item.extrinsic?.id,
+    }
+}
+
+/**
+ * Create the event model for the Reserved event
+ */
+function eventModel(item: EventItem, data: Reserved, result?: ReservedProcessData): EventModel | undefined {
+    return undefined
+}
+
+export const reservedMap = EventMapBuilder.create<Reserved, ReservedProcessData>()
+    .withDecoder(decode)
+    .withNotification(notificationBody)
+    .withEventModel(eventModel)
+    .build()

@@ -1,23 +1,18 @@
-import { Collection, Event as EventModel, Extrinsic, MultiTokensClaimedCollections } from '../../../model'
+import { Collection } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import { getOrCreateAccount } from '../../../utils/entities'
-import { EventProcessor, EventResult } from '../../event-processor.def'
+import { EventProcessor } from '../../event-processor.def'
 import { ClaimedCollections } from './claimed-collections.type'
 import { multiTokens } from '../../../types/events'
-import { claimedCollections } from './claimed-collections.map'
+import { claimedCollectionsMap, ClaimedCollectionsProcessData } from './claimed-collections.map'
 
-interface ClaimedCollectionsProcessData {
-    account: any
-    collections: Collection[]
-}
-
-export class ClaimedCollectionsProcessor extends EventProcessor<ClaimedCollections> {
+export class ClaimedCollectionsProcessor extends EventProcessor<ClaimedCollections, ClaimedCollectionsProcessData> {
     constructor() {
-        super(multiTokens.claimedCollections.name)
+        super(multiTokens.claimedCollections.name, claimedCollectionsMap)
     }
 
     protected decodeEventItem(item: EventItem): ClaimedCollections {
-        return claimedCollections(item)
+        return claimedCollectionsMap.decode(item)
     }
 
     protected async prepareSkipSaveData(ctx: CommonContext, data: ClaimedCollections): Promise<any> {
@@ -66,36 +61,5 @@ export class ClaimedCollectionsProcessor extends EventProcessor<ClaimedCollectio
         result: ClaimedCollectionsProcessData
     ): Promise<void> {
         // No tasks to dispatch
-    }
-
-    protected getNotificationBody(
-        item: EventItem,
-        data: ClaimedCollections,
-        result: ClaimedCollectionsProcessData
-    ): any {
-        return {
-            account: data.accountId,
-            ethAccount: data.ethereumAddress,
-            extrinsic: item.extrinsic?.id,
-        }
-    }
-
-    protected getEventModel(
-        item: EventItem,
-        data: ClaimedCollections,
-        result?: ClaimedCollectionsProcessData
-    ): EventResult {
-        return new EventModel({
-            id: item.id,
-            name: MultiTokensClaimedCollections.name,
-            extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-            data: new MultiTokensClaimedCollections({
-                account: data.accountId,
-                ethAccount: data.ethereumAddress,
-                collectionIds: data.collectionIds.map((id) => {
-                    return typeof id == 'bigint' ? id : id.native
-                }),
-            }),
-        })
     }
 }

@@ -1,39 +1,20 @@
 import { throwFatalError } from '../../../utils/errors'
-import {
-    Collection,
-    CollectionAccount,
-    Event as EventModel,
-    Extrinsic,
-    FreezeState,
-    MultiTokensFrozen,
-    Token,
-    TokenAccount,
-    TransferPolicy,
-} from '../../../model'
+import { Collection, CollectionAccount, FreezeState, Token, TokenAccount, TransferPolicy } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import { match } from 'ts-pattern'
 import { QueueUtils } from '../../../queues'
-import { EventProcessor, EventResult } from '../../event-processor.def'
+import { EventProcessor } from '../../event-processor.def'
 import { Frozen } from './frozen.type'
 import { multiTokens } from '../../../types/events'
-import { frozen } from './frozen.map'
+import { frozenMap, FrozenProcessData } from './frozen.map'
 
-interface FrozenProcessData {
-    tokenAccount?: TokenAccount
-    collectionAccount?: CollectionAccount
-    token?: Token
-    collection?: Collection
-    address?: string | null
-    tokenId?: bigint | null
-}
-
-export class FrozenProcessor extends EventProcessor<Frozen> {
+export class FrozenProcessor extends EventProcessor<Frozen, FrozenProcessData> {
     constructor() {
-        super(multiTokens.frozen.name)
+        super(multiTokens.frozen.name, frozenMap)
     }
 
     protected decodeEventItem(item: EventItem): Frozen {
-        return frozen(item)
+        return frozenMap.decode(item)
     }
 
     protected async prepareSkipSaveData(ctx: CommonContext, data: Frozen): Promise<any> {
@@ -159,33 +140,5 @@ export class FrozenProcessor extends EventProcessor<Frozen> {
 
     protected async dispatchTasks(ctx: CommonContext, data: Frozen, result: FrozenProcessData): Promise<void> {
         QueueUtils.dispatchComputeStats(data.collectionId.toString())
-    }
-
-    protected getNotificationBody(item: EventItem, data: Frozen, result: FrozenProcessData): any {
-        return {
-            kind: data.freezeType,
-            address: result.address,
-            collectionId: data.collectionId.toString(),
-            tokenId: result.tokenId,
-            token: result.tokenId ? `${data.collectionId}-${result.tokenId}` : null,
-            extrinsic: item.extrinsic?.id,
-        }
-    }
-
-    protected getEventModel(item: EventItem, data: Frozen, result?: FrozenProcessData): EventResult {
-        let tokenId: null | string = null
-
-        if (data.freezeType.__kind !== 'Collection' && data.freezeType.__kind !== 'CollectionAccount') {
-            tokenId = `${data.collectionId}-${data.freezeType.tokenId}`
-        }
-
-        return new EventModel({
-            id: item.id,
-            name: MultiTokensFrozen.name,
-            extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-            collectionId: data.collectionId.toString(),
-            tokenId: tokenId,
-            data: new MultiTokensFrozen(),
-        })
     }
 }

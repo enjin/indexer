@@ -1,5 +1,4 @@
 import {
-    Event as EventModel,
     Collection,
     MintPolicy,
     TransferPolicy,
@@ -8,17 +7,15 @@ import {
     CollectionSocials,
     CollectionFlags,
     CollectionStats,
-    Extrinsic,
-    MultiTokensCollectionCreated,
 } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import { getOrCreateAccount } from '../../../utils/entities'
 import * as mappings from '../../index'
 import { matrixUtility } from '../../../types/calls'
-import { EventProcessor, EventResult } from '../../event-processor.def'
+import { EventProcessor } from '../../event-processor.def'
 import { CollectionCreated } from './collection-created.type'
 import { multiTokens } from '../../../types/events'
-import { collectionCreated } from './collection-created.map'
+import { collectionCreatedMap } from './collection-created.map'
 
 // async function getMarket(ctx: CommonContext, royalty: DefaultRoyalty) {
 //     const account = await getOrCreateAccount(ctx, royalty.beneficiary)
@@ -30,19 +27,19 @@ import { collectionCreated } from './collection-created.map'
 //     })
 // }
 
-interface CollectionCreatedProcessData {
+export interface CollectionCreatedProcessData {
     collection?: Collection
     callData?: any
     account?: any
 }
 
-export class CollectionCreatedProcessor extends EventProcessor<CollectionCreated> {
+export class CollectionCreatedProcessor extends EventProcessor<CollectionCreated, CollectionCreatedProcessData> {
     constructor() {
-        super(multiTokens.collectionCreated.name)
+        super(multiTokens.collectionCreated.name, collectionCreatedMap)
     }
 
     protected decodeEventItem(item: EventItem): CollectionCreated {
-        return collectionCreated(item)
+        return collectionCreatedMap.decode(item)
     }
 
     protected async prepareSkipSaveData(ctx: CommonContext, data: CollectionCreated): Promise<any> {
@@ -166,29 +163,5 @@ export class CollectionCreatedProcessor extends EventProcessor<CollectionCreated
         result: CollectionCreatedProcessData
     ): Promise<void> {
         // No tasks to dispatch
-    }
-
-    protected getNotificationBody(item: EventItem, data: CollectionCreated, result: CollectionCreatedProcessData): any {
-        return {
-            collectionId: data.collectionId,
-            owner: data.owner,
-            extrinsic: item.extrinsic?.id,
-        }
-    }
-
-    protected getEventModel(
-        item: EventItem,
-        data: CollectionCreated,
-        result?: CollectionCreatedProcessData
-    ): EventResult {
-        return new EventModel({
-            id: item.id,
-            name: MultiTokensCollectionCreated.name,
-            extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-            data: new MultiTokensCollectionCreated({
-                collectionId: data.collectionId,
-                owner: data.owner,
-            }),
-        })
     }
 }

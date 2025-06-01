@@ -1,12 +1,9 @@
 import { throwFatalError } from '../../../utils/errors'
 import {
     Attribute,
-    Event as EventModel,
-    Extrinsic,
     Listing,
     ListingSale,
     ListingStatus,
-    MultiTokensTokenDestroyed,
     RoyaltyCurrency,
     Token,
     TokenRarity,
@@ -14,12 +11,12 @@ import {
 } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import { QueueUtils } from '../../../queues'
-import { EventProcessor, EventResult } from '../../event-processor.def'
+import { EventProcessor } from '../../event-processor.def'
 import { TokenDestroyed } from './token-destroyed.type'
 import { multiTokens } from '../../../types/events'
-import { tokenDestroyed } from './token-destroyed.map'
+import { tokenDestroyedMap } from './token-destroyed.map'
 
-interface TokenDestroyedProcessData {
+export interface TokenDestroyedProcessData {
     token: Token
     listingSales: ListingSale[]
     listingStatus: ListingStatus[]
@@ -31,13 +28,13 @@ interface TokenDestroyedProcessData {
     attributes: Attribute[]
 }
 
-export class TokenDestroyedProcessor extends EventProcessor<TokenDestroyed> {
+export class TokenDestroyedProcessor extends EventProcessor<TokenDestroyed, TokenDestroyedProcessData> {
     constructor() {
-        super(multiTokens.tokenDestroyed.name)
+        super(multiTokens.tokenDestroyed.name, tokenDestroyedMap)
     }
 
     protected decodeEventItem(item: EventItem): TokenDestroyed {
-        return tokenDestroyed(item)
+        return tokenDestroyedMap.decode(item)
     }
 
     protected async prepareSkipSaveData(ctx: CommonContext, data: TokenDestroyed): Promise<any> {
@@ -209,30 +206,5 @@ export class TokenDestroyedProcessor extends EventProcessor<TokenDestroyed> {
     ): Promise<void> {
         QueueUtils.dispatchComputeStats(data.collectionId.toString())
         QueueUtils.dispatchComputeTraits(data.collectionId.toString())
-    }
-
-    protected getNotificationBody(item: EventItem, data: TokenDestroyed, result: TokenDestroyedProcessData): any {
-        return {
-            collectionId: data.collectionId,
-            tokenId: data.tokenId,
-            token: `${data.collectionId}-${data.tokenId}`,
-            caller: data.caller,
-            extrinsic: item.extrinsic?.id,
-        }
-    }
-
-    protected getEventModel(item: EventItem, data: TokenDestroyed, result?: TokenDestroyedProcessData): EventResult {
-        return new EventModel({
-            id: item.id,
-            name: MultiTokensTokenDestroyed.name,
-            extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-            collectionId: data.collectionId.toString(),
-            tokenId: `${data.collectionId}-${data.tokenId}`,
-            data: new MultiTokensTokenDestroyed({
-                collectionId: data.collectionId,
-                tokenId: data.tokenId,
-                caller: data.caller,
-            }),
-        })
     }
 }

@@ -6,20 +6,20 @@ import { match, P } from 'ts-pattern'
 import { EventProcessor, EventResult } from '../../event-processor.def'
 import { Unreserved } from './unreserved.type'
 import { multiTokens } from '../../../types/events'
-import { unreserved } from './unreserved.map'
+import { unreservedMap } from './unreserved.map'
 
-interface UnreservedProcessData {
+export interface UnreservedProcessData {
     tokenAccount: TokenAccount
     reserveId: string
 }
 
 export class UnreservedProcessor extends EventProcessor<Unreserved> {
     constructor() {
-        super(multiTokens.unreserved.name)
+        super(multiTokens.unreserved.name, unreservedMap)
     }
 
     protected decodeEventItem(item: EventItem): Unreserved {
-        return unreserved(item)
+        return unreservedMap.decode(item)
     }
 
     protected async prepareSkipSaveData(ctx: CommonContext, data: Unreserved): Promise<any> {
@@ -85,18 +85,10 @@ export class UnreservedProcessor extends EventProcessor<Unreserved> {
     }
 
     protected getNotificationBody(item: EventItem, data: Unreserved, result: UnreservedProcessData): any {
-        return {
-            collectionId: data.collectionId,
-            tokenId: data.tokenId,
-            token: `${data.collectionId}-${data.tokenId}`,
-            account: data.accountId,
-            amount: data.amount,
-            reserveId: result.reserveId,
-            extrinsic: item.extrinsic?.id,
-        }
+        return unreservedMap.notification(item, data, result)
     }
 
     protected getEventModel(item: EventItem, data: Unreserved, result?: UnreservedProcessData): EventResult {
-        return undefined
+        return unreservedMap.event(item, data, result)
     }
 }

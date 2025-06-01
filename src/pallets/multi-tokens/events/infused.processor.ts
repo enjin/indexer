@@ -1,34 +1,20 @@
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import { Infused } from './infused.type'
-import { EventProcessor, EventResult } from '../../event-processor.def'
+import { EventProcessor } from '../../event-processor.def'
 import * as mappings from '../../index'
-import {
-    Account,
-    AccountTokenEvent,
-    AccountTokenEventMeta,
-    Event as EventModel,
-    Extrinsic,
-    MultiTokensInfused,
-    Token,
-} from '../../../model'
-import { getOrCreateAccount, unwrapAccount } from '../../../utils/entities'
-import { generateAccountTokenEventCollection, generateAccountTokenEventToken } from '../../../utils/event'
+import { Account, Token } from '../../../model'
+import { getOrCreateAccount } from '../../../utils/entities'
 import { QueueUtils } from '../../../queues'
 import { multiTokens } from '../../../types/events'
-import { infused } from './infused.map'
+import { infusedMap, InfusedProcessData } from './infused.map'
 
-interface InfusedProcessData {
-    token: Token
-    infuser: Account
-}
-
-export class InfusedProcessor extends EventProcessor<Infused> {
+export class InfusedProcessor extends EventProcessor<Infused, InfusedProcessData> {
     constructor() {
-        super(multiTokens.infused.name)
+        super(multiTokens.infused.name, infusedMap)
     }
 
     protected decodeEventItem(item: EventItem): Infused {
-        return infused(item)
+        return infusedMap.decode(item)
     }
 
     protected async loadRequiredData(
@@ -73,49 +59,5 @@ export class InfusedProcessor extends EventProcessor<Infused> {
 
     protected async dispatchTasks(ctx: CommonContext, data: Infused, result: InfusedProcessData): Promise<void> {
         QueueUtils.dispatchComputeStats(result.token.collection.id)
-    }
-
-    protected getNotificationBody(item: EventItem, data: Infused, result: InfusedProcessData): any {
-        return {
-            collectionId: result.token.collection.id,
-            tokenId: result.token.id,
-            amount: data.amount,
-            accountId: result.infuser.id,
-            extrinsic: item.extrinsic?.id,
-        }
-    }
-
-    protected getEventModel(item: EventItem, data: Infused, result?: InfusedProcessData): EventResult {
-        if (!result) return undefined
-
-        const { token, infuser } = result
-
-        const event = new EventModel({
-            id: item.id,
-            name: MultiTokensInfused.name,
-            extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-            collectionId: token.collection.id,
-            tokenId: token.id,
-            data: new MultiTokensInfused({
-                collectionId: data.collectionId,
-                tokenId: data.tokenId,
-                amount: data.amount,
-                accountId: unwrapAccount(data.accountId),
-            }),
-        })
-
-        const accountEvent = new AccountTokenEvent({
-            id: item.id,
-            from: infuser,
-            event,
-            collectionId: token.collection.id,
-            tokenId: token.id,
-            meta: new AccountTokenEventMeta({
-                collection: generateAccountTokenEventCollection(token.collection),
-                token: generateAccountTokenEventToken(token),
-            }),
-        })
-
-        return [event, accountEvent]
     }
 }

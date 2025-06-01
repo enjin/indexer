@@ -1,25 +1,24 @@
 import { throwFatalError } from '../../../utils/errors'
-import { Event as EventModel, Extrinsic, MultiTokensTokenMutated, NativeTokenMetadata, Token } from '../../../model'
+import { NativeTokenMetadata, Token } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
-import * as mappings from '../../index'
 import { isNonFungible } from '../../../utils/helpers'
 import { QueueUtils } from '../../../queues'
 import { EventProcessor, EventResult } from '../../event-processor.def'
 import { TokenMutated } from './token-mutated.type'
 import { multiTokens } from '../../../types/events'
-import { tokenMutated } from './token-mutated.map'
+import { tokenMutatedMap } from './token-mutated.map'
 
-interface TokenMutatedProcessData {
+export interface TokenMutatedProcessData {
     token: Token
 }
 
 export class TokenMutatedProcessor extends EventProcessor<TokenMutated> {
     constructor() {
-        super(multiTokens.tokenMutated.name)
+        super(multiTokens.tokenMutated.name, tokenMutatedMap)
     }
 
     protected decodeEventItem(item: EventItem): TokenMutated {
-        return tokenMutated(item)
+        return tokenMutatedMap.decode(item)
     }
 
     protected async prepareSkipSaveData(ctx: CommonContext, data: TokenMutated): Promise<any> {
@@ -92,23 +91,10 @@ export class TokenMutatedProcessor extends EventProcessor<TokenMutated> {
     }
 
     protected getNotificationBody(item: EventItem, data: TokenMutated, result: TokenMutatedProcessData): any {
-        return {
-            collectionId: data.collectionId,
-            tokenId: data.tokenId,
-            token: `${data.collectionId}-${data.tokenId}`,
-            mutation: data.mutation,
-            extrinsic: item.extrinsic?.id,
-        }
+        return tokenMutatedMap.notification(item, data, result)
     }
 
     protected getEventModel(item: EventItem, data: TokenMutated, result?: TokenMutatedProcessData): EventResult {
-        return new EventModel({
-            id: item.id,
-            name: MultiTokensTokenMutated.name,
-            extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-            collectionId: data.collectionId.toString(),
-            tokenId: `${data.collectionId}-${data.tokenId}`,
-            data: new MultiTokensTokenMutated(),
-        })
+        return tokenMutatedMap.event(item, data, result)
     }
 }
