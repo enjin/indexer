@@ -25,64 +25,64 @@ async function main() {
     // eslint-disable-next-line no-console
     console.info('handling jobs...')
 
-    traitsQueue.process(3, `${__dirname}/compute-traits.js`)
-    rarityQueue.process(3, `${__dirname}/rarity-ranker.js`)
-    metadataQueue.process(
-        process.env.MAX_WORKER_CONCURRENCY ? parseInt(process.env.MAX_WORKER_CONCURRENCY, 10) : 50,
-        `${__dirname}/process-metadata.js`
-    )
-    collectionStatsQueue.process(3, `${__dirname}/collection-stats.js`)
-
-    fetchAccountQueue.process(5, `${__dirname}/fetch-account.js`)
-    fetchInfusionQueue.process(1, `${__dirname}/fetch-infusion.js`)
-    fetchBalanceQueue.process(5, `${__dirname}/fetch-balance.js`)
-    fetchCollectionExtraQueue.process(5, `${__dirname}/fetch-collection-extra.js`)
-    invalidateExpiredListings.process(1, `${__dirname}/invalidate-expired-listings.js`)
-
-    traitsQueue.on('global:failed', (job, err) => {
-        console.log(`traitsQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
-        throwError(`traitsQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
-    })
-
-    metadataQueue.on('global:failed', (job, err) => {
-        console.log(`metadataQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
-        throwError(`metadataQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
-    })
-
-    rarityQueue.on('global:failed', (job, err) => {
-        console.log(`rarityQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
-        throwError(`rarityQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
-    })
-
-    collectionStatsQueue.on('global:failed', (job, err) => {
-        console.log(`collectionStatsQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
-        throwError(`collectionStatsQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
-    })
-
-    fetchAccountQueue.on('global:failed', (job, err) => {
-        console.log(`fetchAccountQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
-        throwError(`fetchAccountQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
-    })
-
-    fetchInfusionQueue.on('global:failed', (job, err) => {
-        console.log(`fetchInfusionQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
-        throwError(`fetchInfusionQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
-    })
-
-    fetchBalanceQueue.on('global:failed', (job, err) => {
-        console.log(`fetchBalanceQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
-        throwError(`fetchBalanceQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
-    })
-
-    fetchCollectionExtraQueue.on('global:failed', (job, err) => {
-        console.log(`fetchCollectionExtraQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
-        throwError(`fetchCollectionExtraQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
-    })
-
-    invalidateExpiredListings.on('global:failed', (job, err) => {
-        console.log(`invalidateExpiredListings:Job ${job.id} failed with error: ${err.message}`, 'warning')
-        throwError(`invalidateExpiredListings:Job ${job.id} failed with error: ${err.message}`, 'warning')
-    })
+    // traitsQueue.process(3, `${__dirname}/compute-traits.js`)
+    // rarityQueue.process(3, `${__dirname}/rarity-ranker.js`)
+    // metadataQueue.process(
+    //     process.env.MAX_WORKER_CONCURRENCY ? parseInt(process.env.MAX_WORKER_CONCURRENCY, 10) : 50,
+    //     `${__dirname}/process-metadata.js`
+    // )
+    // collectionStatsQueue.process(3, `${__dirname}/collection-stats.js`)
+    //
+    // fetchAccountQueue.process(5, `${__dirname}/fetch-account.js`)
+    // fetchInfusionQueue.process(1, `${__dirname}/fetch-infusion.js`)
+    // fetchBalanceQueue.process(5, `${__dirname}/fetch-balance.js`)
+    // fetchCollectionExtraQueue.process(5, `${__dirname}/fetch-collection-extra.js`)
+    // invalidateExpiredListings.process(1, `${__dirname}/invalidate-expired-listings.js`)
+    //
+    // traitsQueue.on('global:failed', (job, err) => {
+    //     console.log(`traitsQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
+    //     throwError(`traitsQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
+    // })
+    //
+    // metadataQueue.on('global:failed', (job, err) => {
+    //     console.log(`metadataQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
+    //     throwError(`metadataQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
+    // })
+    //
+    // rarityQueue.on('global:failed', (job, err) => {
+    //     console.log(`rarityQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
+    //     throwError(`rarityQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
+    // })
+    //
+    // collectionStatsQueue.on('global:failed', (job, err) => {
+    //     console.log(`collectionStatsQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
+    //     throwError(`collectionStatsQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
+    // })
+    //
+    // fetchAccountQueue.on('global:failed', (job, err) => {
+    //     console.log(`fetchAccountQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
+    //     throwError(`fetchAccountQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
+    // })
+    //
+    // fetchInfusionQueue.on('global:failed', (job, err) => {
+    //     console.log(`fetchInfusionQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
+    //     throwError(`fetchInfusionQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
+    // })
+    //
+    // fetchBalanceQueue.on('global:failed', (job, err) => {
+    //     console.log(`fetchBalanceQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
+    //     throwError(`fetchBalanceQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
+    // })
+    //
+    // fetchCollectionExtraQueue.on('global:failed', (job, err) => {
+    //     console.log(`fetchCollectionExtraQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
+    //     throwError(`fetchCollectionExtraQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
+    // })
+    //
+    // invalidateExpiredListings.on('global:failed', (job, err) => {
+    //     console.log(`invalidateExpiredListings:Job ${job.id} failed with error: ${err.message}`, 'warning')
+    //     throwError(`invalidateExpiredListings:Job ${job.id} failed with error: ${err.message}`, 'warning')
+    // })
 
     const serverAdapter = new ExpressAdapter()
     serverAdapter.setBasePath('/')
