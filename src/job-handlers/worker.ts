@@ -11,7 +11,7 @@ import { fetchInfusionQueue } from '../jobs/fetch-infusion'
 import { fetchBalanceQueue } from '../jobs/fetch-balance'
 import { traitsQueue } from '../jobs/compute-traits'
 import { fetchCollectionExtraQueue } from '../jobs/fetch-collection-extra'
-import { invalidateExpiredListings } from '../jobs/invalidate-expired-listings'
+// import { invalidateExpiredListings } from '../jobs/invalidate-expired-listings'
 import { rarityQueue } from '../jobs/rarity-ranker'
 import process from 'process'
 
@@ -97,7 +97,7 @@ async function main() {
             new BullAdapter(traitsQueue),
             new BullAdapter(rarityQueue),
             new BullAdapter(fetchCollectionExtraQueue),
-            new BullAdapter(invalidateExpiredListings),
+            // new BullAdapter(invalidateExpiredListings),
         ],
         serverAdapter,
         options: {

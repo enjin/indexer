@@ -9,7 +9,7 @@ if [ "$role" = "processor" ]; then
 elif [ "$role" = "graphql" ]; then
     npm run prom:start &
     P1=$!
-    npx squid-graphql-server --subscriptions --dumb-cache redis --dumb-cache-max-age 3000 --max-root-fields 10 --sql-statement-timeout 15000 &
+    npx squid-graphql-server --dumb-cache redis --dumb-cache-max-age 3000 --max-root-fields 10 --sql-statement-timeout 15000 &
     P2=$!
     wait $P1 $P2
 elif [ "$role" = "worker" ]; then
