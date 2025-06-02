@@ -14,7 +14,7 @@ import {
     Token,
 } from '../../../model'
 import { CounterOfferRemoved } from './types'
-import { generateAccountTokenEventToken, generateAccountTokenEventCollection } from '../../../util/event'
+import { generateAccountTokenEventToken, generateAccountTokenEventCollection, generateAccountTokenEventAttributes } from '../../../util/event'
 
 export function counterOfferRemoved(event: EventItem): CounterOfferRemoved {
     return match(event)
@@ -56,6 +56,7 @@ export function counterOfferRemovedEventModel(
             event,
             collectionId: collection.id,
             tokenId: token.id,
+            attributes: generateAccountTokenEventAttributes(token.attributes),
             meta: new AccountTokenEventMeta({
                 collection: generateAccountTokenEventCollection(collection),
                 token: generateAccountTokenEventToken(token),

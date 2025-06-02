@@ -30,6 +30,7 @@ export async function listingRemovedUnderMinimum(
             makeAssetId: {
                 collection: true,
                 bestListing: true,
+                attributes: true,
             },
         },
     })

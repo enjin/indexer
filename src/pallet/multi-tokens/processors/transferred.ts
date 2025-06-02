@@ -16,7 +16,7 @@ export async function transferred(
 
     const token = await ctx.store.findOne<Token>(Token, {
         where: { id: `${data.collectionId}-${data.tokenId}` },
-        relations: { collection: true },
+        relations: { collection: true, attributes: true },
     })
 
     if (skipSave) {

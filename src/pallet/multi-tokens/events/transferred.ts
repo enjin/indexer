@@ -13,7 +13,11 @@ import {
     Token,
 } from '../../../model'
 import { Transferred } from './types'
-import { generateAccountTokenEventToken, generateAccountTokenEventCollection } from '../../../util/event'
+import {
+    generateAccountTokenEventToken,
+    generateAccountTokenEventCollection,
+    generateAccountTokenEventAttributes,
+} from '../../../util/event'
 
 export function transferred(event: EventItem): Transferred {
     return match(event)
@@ -58,6 +62,7 @@ export function transferredEventModel(
             event,
             collectionId: data.collectionId.toString(),
             tokenId: `${data.collectionId}-${data.tokenId}`,
+            attributes: generateAccountTokenEventAttributes(token?.attributes),
             meta: new AccountTokenEventMeta({
                 collection: !collection ? undefined : generateAccountTokenEventCollection(collection),
                 token: !token ? undefined : generateAccountTokenEventToken(token),

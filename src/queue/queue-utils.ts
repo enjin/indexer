@@ -7,6 +7,7 @@ import {
     TokensQueue,
     ListingsQueue,
     ValidatorsQueue,
+    AttributesQueue,
 } from './index'
 import { JobsEnum } from './constants'
 import { xxhasher } from '../util/hasher'
@@ -38,6 +39,7 @@ function getQueueByType(queue: QueueType): Queue {
         .with('TOKENS', () => TokensQueue)
         .with('LISTINGS', () => ListingsQueue)
         .with('VALIDATORS', () => ValidatorsQueue)
+        .with('ATTRIBUTES', () => AttributesQueue)
         .exhaustive()
 }
 
@@ -165,6 +167,16 @@ export function dispatchComputeTraits(id: string): void {
         }
     ).catch(() => {
         log.error('Failed to dispatch a job on traits queue')
+    })
+}
+
+export function dispatchSyncAttributes(id: string): void {
+    TokensQueue.add(
+        JobsEnum.SYNC_ATTRIBUTES,
+        { id },
+        { delay: 6000, jobId: `attributes.${id}` }
+    ).catch(() => {
+        log.error('Failed to dispatch a job on attributes queue')
     })
 }
 

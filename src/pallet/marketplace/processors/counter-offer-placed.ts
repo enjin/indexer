@@ -18,6 +18,7 @@ export async function counterOfferPlaced(
             seller: true,
             takeAssetId: {
                 collection: true,
+                attributes: true,
             },
         },
     })

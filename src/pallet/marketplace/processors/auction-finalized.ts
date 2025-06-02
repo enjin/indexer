@@ -27,6 +27,7 @@ export async function auctionFinalized(
             seller: true,
             makeAssetId: {
                 collection: true,
+                attributes: true,
             },
         },
     })
