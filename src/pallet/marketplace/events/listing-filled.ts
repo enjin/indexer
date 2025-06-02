@@ -16,7 +16,11 @@ import {
     Token,
 } from '../../../model'
 import { ListingFilled } from './types'
-import { generateAccountTokenEventToken, generateAccountTokenEventCollection, generateAccountTokenEventAttributes } from '../../../util/event'
+import {
+    generateAccountTokenEventToken,
+    generateAccountTokenEventCollection,
+    generateAccountTokenEventAttributes,
+} from '../../../util/event'
 
 export function listingFilled(event: EventItem): ListingFilled {
     return match(event)

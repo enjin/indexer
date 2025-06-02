@@ -14,7 +14,11 @@ import {
     Token,
 } from '../../../model'
 import { AuctionFinalized } from './types'
-import { generateAccountTokenEventAttributes, generateAccountTokenEventCollection, generateAccountTokenEventToken } from '../../../util/event'
+import {
+    generateAccountTokenEventAttributes,
+    generateAccountTokenEventCollection,
+    generateAccountTokenEventToken,
+} from '../../../util/event'
 
 export function auctionFinalized(event: EventItem): AuctionFinalized {
     return match(event)

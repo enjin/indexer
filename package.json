@@ -23,11 +23,11 @@
     "dev:processor": "pnpm exec ts-node -r dotenv/config src/main.ts",
     "dev:worker": "pnpm exec ts-node -r dotenv/config src/worker/index.ts",
     "dev:metris": "pnpm exec ts-node -r dotenv/config src/prom-metrics/index.ts",
-    "lint": "eslint . --fix --config eslint.config.mjs",
-    "prettier": "prettier . --write --config prettier.config.mjs",
+    "lint": "eslint --fix --config eslint.config.mjs",
+    "prettier": "prettier --write --config prettier.config.mjs .",
     "build": "rm -rf lib && tsc",
-    "ci:lint": "eslint . --config eslint.config.mjs",
-    "ci:prettier": "prettier . --check --config prettier.config.mjs",
+    "ci:lint": "eslint --config eslint.config.mjs",
+    "ci:prettier": "prettier --check --config prettier.config.mjs .",
     "ci:build": "tsc && pnpm run ci:sourcemaps",
     "ci:sourcemaps": "sentry-cli sourcemaps inject --org enjin --project enjin-indexer ./lib && sentry-cli sourcemaps upload --org enjin --project enjin-indexer ./lib",
     "db:wipe": "TRUNCATE_DATABASE=true node -r dotenv/config lib/synchronize/clear.js",
@@ -104,29 +104,14 @@
     "eslint-plugin-prettier": "^5.4.1",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.0",
-    "nx": "21.1.2",
     "prettier": "^3.5.3",
     "typescript": "^5.8.3",
-    "typescript-eslint": "^8.33.0"
+    "typescript-eslint": "^8.33.1"
   },
   "peerDependencies": {
     "@subsquid/typeorm-config": "4.1.1",
     "@subsquid/util-internal-hex": "1.2.2",
     "reflect-metadata": "^0.2.2",
     "typeorm": "^0.3.11"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "@apollo/protobufjs",
-      "@sentry/cli",
-      "bufferutil",
-      "es5-ext",
-      "esbuild",
-      "msgpackr-extract",
-      "nx",
-      "type-graphql",
-      "utf-8-validate"
-    ]
-  },
-  "nx": {}
+  }
 }

@@ -14,7 +14,11 @@ import {
     Token,
 } from '../../../model'
 import { BidPlaced } from './types'
-import { generateAccountTokenEventToken, generateAccountTokenEventCollection, generateAccountTokenEventAttributes } from '../../../util/event'
+import {
+    generateAccountTokenEventToken,
+    generateAccountTokenEventCollection,
+    generateAccountTokenEventAttributes,
+} from '../../../util/event'
 
 export function bidPlaced(event: EventItem): BidPlaced {
     return match(event)

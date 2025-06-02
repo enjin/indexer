@@ -25,7 +25,7 @@ export async function syncAttributes(_job: Job, tokenId: string) {
 
     await _job.log(`Found ${events.length} events for token ${tokenId}`)
     await _job.log(`Found ${token?.attributes?.length} attributes for token ${tokenId}`)
-    
+
     if (!token) {
         return
     }

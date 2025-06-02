@@ -19,7 +19,11 @@ import {
     Token,
 } from '../../../model'
 import { CounterOfferAnswered } from './types'
-import { generateAccountTokenEventToken, generateAccountTokenEventCollection, generateAccountTokenEventAttributes } from '../../../util/event'
+import {
+    generateAccountTokenEventToken,
+    generateAccountTokenEventCollection,
+    generateAccountTokenEventAttributes,
+} from '../../../util/event'
 
 export function counterOfferAnswered(event: EventItem): CounterOfferAnswered {
     return match(event)

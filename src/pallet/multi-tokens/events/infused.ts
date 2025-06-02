@@ -14,7 +14,11 @@ import {
 } from '../../../model'
 import { Infused } from './types/infused'
 import { unwrapAccount } from '../../../util/entities'
-import { generateAccountTokenEventToken, generateAccountTokenEventCollection, generateAccountTokenEventAttributes } from '../../../util/event'
+import {
+    generateAccountTokenEventToken,
+    generateAccountTokenEventCollection,
+    generateAccountTokenEventAttributes,
+} from '../../../util/event'
 
 export function infused(event: EventItem): Infused {
     return match(event)

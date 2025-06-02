@@ -14,7 +14,11 @@ import {
 } from '../../../model'
 import { Minted } from './types'
 import { unwrapAccount } from '../../../util/entities'
-import { generateAccountTokenEventToken, generateAccountTokenEventCollection, generateAccountTokenEventAttributes } from '../../../util/event'
+import {
+    generateAccountTokenEventToken,
+    generateAccountTokenEventCollection,
+    generateAccountTokenEventAttributes,
+} from '../../../util/event'
 
 export function minted(event: EventItem): Minted {
     return match(event)
