@@ -29,6 +29,7 @@ export async function listingFilled(
             makeAssetId: {
                 bestListing: true,
                 collection: true,
+                attributes: true,
             },
             takeAssetId: {
                 collection: true,

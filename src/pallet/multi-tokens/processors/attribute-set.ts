@@ -90,7 +90,6 @@ export async function attributeSet(
             return mappings.multiTokens.events.attributeSetEventModel(item, data)
         }
     }
-
     if (attribute) {
         attribute.value = value
         attribute.updatedAt = new Date(block.timestamp ?? 0)
@@ -100,6 +99,7 @@ export async function attributeSet(
             }
             await ctx.store.save(token)
             QueueUtils.dispatchComputeMetadata(token.id, 'token')
+            QueueUtils.dispatchSyncAttributes(token.id)
         } else {
             if (!collection.metadata) {
                 collection.metadata = new Metadata()

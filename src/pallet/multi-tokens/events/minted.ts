@@ -14,7 +14,11 @@ import {
 } from '../../../model'
 import { Minted } from './types'
 import { unwrapAccount } from '../../../util/entities'
-import { generateAccountTokenEventToken, generateAccountTokenEventCollection } from '../../../util/event'
+import {
+    generateAccountTokenEventToken,
+    generateAccountTokenEventCollection,
+    generateAccountTokenEventAttributes,
+} from '../../../util/event'
 
 export function minted(event: EventItem): Minted {
     return match(event)
@@ -59,6 +63,7 @@ export function mintedEventModel(
             event,
             collectionId: data.collectionId.toString(),
             tokenId: `${data.collectionId}-${data.tokenId}`,
+            attributes: generateAccountTokenEventAttributes(token?.attributes),
             meta: new AccountTokenEventMeta({
                 collection: !collection ? undefined : generateAccountTokenEventCollection(collection),
                 token: !token ? undefined : generateAccountTokenEventToken(token),

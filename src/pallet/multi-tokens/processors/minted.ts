@@ -21,6 +21,7 @@ export async function minted(
         where: { id: `${data.collectionId}-${data.tokenId}` },
         relations: {
             collection: true,
+            attributes: true,
         },
     })
     if (skipSave) {

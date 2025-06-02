@@ -54,7 +54,7 @@ type CollectionExtra = {
 
 export async function fetchAccountsDetail(ids: string[]) {
     const response = await axios.post<{ data: { result: AddressVerification[] } } | { errors: string }>(
-        `${processorConfig.marketplaceUrl}/graphql/internal`,
+        isMainnet() ? processorConfig.marketplace.prod : processorConfig.marketplace.stg,
         {
             query: addressesQuery,
             variables: {
@@ -96,7 +96,7 @@ export async function fetchAccountsDetail(ids: string[]) {
 
 export async function fetchCollectionsExtra(ids: string[]) {
     const response = await axios.post<{ data: { result: CollectionExtra[] } } | { errors: string }>(
-        `${processorConfig.marketplaceUrl}/graphql/internal`,
+        isMainnet() ? processorConfig.marketplace.prod : processorConfig.marketplace.stg,
         {
             query: collectionsQuery,
             variables: {
@@ -115,10 +115,6 @@ export async function fetchCollectionsExtra(ids: string[]) {
 
     if ('errors' in response.data) {
         throw new Error(response.data.errors)
-    }
-
-    if (response.data.data.result.length === 0) {
-        throw new Error('No data returned')
     }
 
     return response.data.data.result

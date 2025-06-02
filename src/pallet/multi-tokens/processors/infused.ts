@@ -11,6 +11,7 @@ export async function infused(ctx: CommonContext, block: Block, item: EventItem,
         where: { id: `${data.collectionId}-${data.tokenId}` },
         relations: {
             collection: true,
+            attributes: true,
         },
     })
 

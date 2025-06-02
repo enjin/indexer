@@ -17,6 +17,7 @@ export async function counterOfferAnswered(
         relations: {
             takeAssetId: {
                 collection: true,
+                attributes: true,
             },
         },
     })

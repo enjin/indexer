@@ -1,4 +1,11 @@
-import { AccountTokenEventMetaCollection, AccountTokenEventMetaToken, Collection, Token } from '../model'
+import {
+    AccountTokenEventAttribute,
+    AccountTokenEventMetaCollection,
+    AccountTokenEventMetaToken,
+    Attribute,
+    Collection,
+    Token,
+} from '../model'
 
 export function generateAccountTokenEventCollection(collection: Collection) {
     return new AccountTokenEventMetaCollection({
@@ -12,5 +19,15 @@ export function generateAccountTokenEventToken(token: Token) {
         metadata: token.metadata,
         nonFungible: token.nonFungible,
         createdAt: token.createdAt,
+    })
+}
+
+export function generateAccountTokenEventAttributes(attributes: Attribute[] | undefined) {
+    return attributes?.map((attribute) => {
+        return new AccountTokenEventAttribute({
+            id: attribute.id,
+            key: attribute.key,
+            value: attribute.value,
+        })
     })
 }

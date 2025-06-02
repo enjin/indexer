@@ -17,7 +17,10 @@ export interface Config {
         port: number
         tls: boolean
     }
-    marketplaceUrl: string
+    marketplace: {
+        prod: string
+        stg: string
+    }
     sentryDsn?: string
     amazonSns: {
         topicArn: string
@@ -59,7 +62,10 @@ const config: Config = {
               : 6379,
         tls: process.env.REDIS_SUPPORTS_TLS === 'true',
     },
-    marketplaceUrl: process.env.MARKETPLACE_URL || 'https://nft.io',
+    marketplace: {
+        prod: process.env.MARKETPLACE_API_PROD_URL || '',
+        stg: process.env.MARKETPLACE_API_STG_URL || '',
+    },
     sentryDsn: process.env.SENTRY_DSN,
     amazonSns: {
         topicArn: process.env.AWS_SNS_TOPIC_ARN || process.env.SNS_TOPIC_ARN || '',

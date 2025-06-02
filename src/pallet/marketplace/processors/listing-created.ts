@@ -35,6 +35,7 @@ export async function listingCreated(
         relations: {
             collection: true,
             bestListing: true,
+            attributes: true,
         },
     })
     const takeAssetId = await ctx.store.findOne<Token>(Token, {

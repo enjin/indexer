@@ -10,11 +10,13 @@ import {
     TraitsQueue,
     ValidatorsQueue,
     ListingsQueue,
+    AttributesQueue,
 } from '../queue'
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter'
 import { EventEmitter } from 'events'
 import {
     AccountsWorker,
+    AttributesWorker,
     BalancesWorker,
     CollectionsWorker,
     ListingsWorker,
@@ -36,6 +38,7 @@ const WorkerMap = new Map([
     ['Tokens', TokensWorker],
     ['Traits', TraitsWorker],
     ['Validators', ValidatorsWorker],
+    ['Attributes', AttributesWorker],
 ])
 
 /**
@@ -64,6 +67,7 @@ createBullBoard({
         new BullMQAdapter(TokensQueue),
         new BullMQAdapter(TraitsQueue),
         new BullMQAdapter(ValidatorsQueue),
+        new BullMQAdapter(AttributesQueue),
     ],
     serverAdapter,
     options: {

@@ -99,7 +99,14 @@ type AccountTokenEvent @entity {
   event: Event!
   collectionId: String! @index
   tokenId: String! @index
+  attributes: [AccountTokenEventAttribute]
   meta: AccountTokenEventMeta
+}
+
+type AccountTokenEventAttribute {
+  id: String!
+  key: String!
+  value: String!
 }
 
 type BalancesTransfer {

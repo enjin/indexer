@@ -1,0 +1,8 @@
+onlyBuiltDependencies:
+  - '@apollo/protobufjs'
+  - '@sentry/cli'
+  - bufferutil
+  - es5-ext
+  - msgpackr-extract
+  - type-graphql
+  - utf-8-validate

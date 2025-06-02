@@ -18,6 +18,7 @@ export async function counterOfferRemoved(
             seller: true,
             takeAssetId: {
                 collection: true,
+                attributes: true,
             },
         },
     })

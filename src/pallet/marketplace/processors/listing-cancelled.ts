@@ -27,6 +27,7 @@ export async function listingCancelled(
             makeAssetId: {
                 collection: true,
                 bestListing: true,
+                attributes: true,
             },
             takeAssetId: {
                 collection: true,

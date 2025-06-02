@@ -15,7 +15,11 @@ import {
     Token,
 } from '../../../model'
 import { ListingCreated } from './types'
-import { generateAccountTokenEventToken, generateAccountTokenEventCollection } from '../../../util/event'
+import {
+    generateAccountTokenEventToken,
+    generateAccountTokenEventCollection,
+    generateAccountTokenEventAttributes,
+} from '../../../util/event'
 
 export function listingCreated(event: EventItem): ListingCreated {
     return match(event)
@@ -125,6 +129,7 @@ export function listingCreatedEventModel(
             event,
             collectionId: collection.id,
             tokenId: token.id,
+            attributes: generateAccountTokenEventAttributes(token.attributes),
             meta: new AccountTokenEventMeta({
                 collection: generateAccountTokenEventCollection(collection),
                 token: generateAccountTokenEventToken(token),
