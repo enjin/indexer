@@ -4,14 +4,14 @@ import { getOrCreateAccount } from '../../util/entities'
 import { decode } from '@subsquid/ss58'
 import { Account } from '../../model'
 import { Job } from 'bullmq'
-import { isNotNull } from '../utils'
+import { isNotNullOrEmpty } from '../utils'
 
 export async function syncAccounts(_job: Job, ids: string[] | null): Promise<void> {
     const ctx = await dataHandlerContext()
     const data = await fetchAccountsDetail(ids!)
 
     const accounts = await Promise.all(
-        data.filter(isNotNull).map(async (_d) => {
+        data.filter(isNotNullOrEmpty).map(async (_d) => {
             const account = await getOrCreateAccount(ctx, decode(_d.publicKey).bytes)
 
             account.username = _d.username

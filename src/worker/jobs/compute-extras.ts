@@ -2,14 +2,14 @@ import { dataHandlerContext } from '../../contexts'
 import { fetchCollectionsExtra } from '../../util/marketplace'
 import { Collection, CollectionFlags, CollectionSocials } from '../../model'
 import { Job } from 'bullmq'
-import { isNotNull } from '../utils'
+import { isNotNullOrEmpty } from '../utils'
 
 export async function computeExtras(_job: Job, ids: string[]): Promise<void> {
     const ctx = await dataHandlerContext()
     const data = await fetchCollectionsExtra(ids)
 
     const collections = await Promise.all(
-        data.filter(isNotNull).map(async (_c) => {
+        data.filter(isNotNullOrEmpty).map(async (_c) => {
             const collection = await ctx.store.findOneByOrFail<Collection>(Collection, { id: _c.collectionId })
 
             collection.hidden = _c.hidden

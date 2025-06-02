@@ -1,6 +1,10 @@
 import { createHash } from 'crypto'
 
-export function isNotNull<T>(input: null | T): input is T {
+export function isNotNullOrEmpty<T>(input: null | T): input is T {
+    if (Array.isArray(input)) {
+        return input.length > 0
+    }
+
     return input != null
 }
 
