@@ -1,5 +1,5 @@
-module.exports = class Data1748555242071 {
-    name = 'Data1748555242071'
+module.exports = class Data1748903687214 {
+    name = 'Data1748903687214'
 
     async up(db) {
         await db.query(`CREATE TABLE "config" ("id" character varying NOT NULL, "state_block" integer NOT NULL, CONSTRAINT "PK_d0ee79a681413d50b0a4f98cf7b" PRIMARY KEY ("id"))`)
@@ -92,7 +92,7 @@ module.exports = class Data1748555242071 {
         await db.query(`CREATE INDEX "IDX_b535fbe8ec6d832dde22065ebd" ON "event" ("name") `)
         await db.query(`CREATE INDEX "IDX_d70aaf185af2624511a80ff879" ON "event" ("collection_id") `)
         await db.query(`CREATE INDEX "IDX_d201bf824cd72132b9e72785c9" ON "event" ("token_id") `)
-        await db.query(`CREATE TABLE "account_token_event" ("id" character varying NOT NULL, "collection_id" text NOT NULL, "token_id" text NOT NULL, "meta" jsonb, "from_id" character varying, "to_id" character varying, "event_id" character varying, CONSTRAINT "PK_c37a7fda674246b4860508b876d" PRIMARY KEY ("id"))`)
+        await db.query(`CREATE TABLE "account_token_event" ("id" character varying NOT NULL, "collection_id" text NOT NULL, "token_id" text NOT NULL, "attributes" jsonb, "meta" jsonb, "from_id" character varying, "to_id" character varying, "event_id" character varying, CONSTRAINT "PK_c37a7fda674246b4860508b876d" PRIMARY KEY ("id"))`)
         await db.query(`CREATE INDEX "IDX_98871cac0c6c4e3d02e9dba219" ON "account_token_event" ("from_id") `)
         await db.query(`CREATE INDEX "IDX_3fdcf5dfb12f3dd04d468cb6ca" ON "account_token_event" ("to_id") `)
         await db.query(`CREATE INDEX "IDX_aaa1cf924ed392764b0bace1ad" ON "account_token_event" ("event_id") `)
