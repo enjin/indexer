@@ -90,7 +90,6 @@ export async function attributeSet(
             return mappings.multiTokens.events.attributeSetEventModel(item, data)
         }
     }
-
     if (attribute) {
         attribute.value = value
         attribute.updatedAt = new Date(block.timestamp ?? 0)
