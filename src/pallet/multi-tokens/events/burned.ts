@@ -15,7 +15,7 @@ import {
     Token,
 } from '../../../model'
 import { Burned } from './types'
-import { generateAccountTokenEventAttributes } from 'src/util/event'
+import { generateAccountTokenEventAttributes } from '../../../util/event'
 
 export function burned(event: EventItem): Burned {
     return match(event)
