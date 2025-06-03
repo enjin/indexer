@@ -19,7 +19,7 @@ export async function burned(
 
     const token = await ctx.store.findOne(Token, {
         where: { id: `${data.collectionId}-${data.tokenId}` },
-        relations: { collection: true },
+        relations: { collection: true, attributes: true },
     })
 
     if (skipSave) {

@@ -15,6 +15,7 @@ import {
     Token,
 } from '../../../model'
 import { Burned } from './types'
+import { generateAccountTokenEventAttributes } from 'src/util/event'
 
 export function burned(event: EventItem): Burned {
     return match(event)
@@ -56,7 +57,8 @@ export function burnedEventModel(
             from: new Account({ id: data.accountId }),
             event,
             collectionId: data.collectionId.toString(),
-            tokenId: data.tokenId.toString(),
+            tokenId: `${data.collectionId}-${data.tokenId}`,
+            attributes: generateAccountTokenEventAttributes(token?.attributes),
             meta: new AccountTokenEventMeta({
                 collection: !collection
                     ? undefined
