@@ -138,6 +138,9 @@ importers:
       '@eslint/js':
         specifier: ^9.28.0
         version: 9.28.0
+      '@logtail/types':
+        specifier: ^0.5.3
+        version: 0.5.3
       '@sentry/cli':
         specifier: ^2.46.0
         version: 2.46.0

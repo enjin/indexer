@@ -1,10 +1,12 @@
 import { Logtail } from '@logtail/node'
+import { Context } from '@logtail/types'
 import { createLogger, Logger as SqdLogger } from '@subsquid/logger'
 import config from './config'
 
 export class Logger {
     private readonly sqdLogger: SqdLogger
     private readonly logtail?: Logtail
+    private readonly context?: Context
     private static instances: Map<string, Logger> = new Map()
     private static defaultNamespace = 'sqd:default'
 
@@ -12,6 +14,11 @@ export class Logger {
         this.sqdLogger = createLogger(namespace)
 
         if (config.logtail.host && config.logtail.token) {
+            this.context = {
+                environment: config.environment,
+                network: config.chainName,
+            }
+
             this.logtail = new Logtail(config.logtail.token, {
                 endpoint: config.logtail.host,
             })
@@ -55,7 +62,7 @@ export class Logger {
         this.sqdLogger.info(msg)
 
         if (this.logtail) {
-            void this.logtail.info(msg)
+            void this.logtail.info(msg, this.context)
         }
     }
 
@@ -63,7 +70,7 @@ export class Logger {
         this.sqdLogger.debug(msg)
 
         if (this.logtail) {
-            void this.logtail.debug(msg)
+            void this.logtail.debug(msg, this.context)
         }
     }
 
@@ -71,7 +78,7 @@ export class Logger {
         this.sqdLogger.warn(msg)
 
         if (this.logtail) {
-            void this.logtail.warn(msg)
+            void this.logtail.warn(msg, this.context)
         }
     }
 
@@ -79,7 +86,7 @@ export class Logger {
         this.sqdLogger.error(msg)
 
         if (this.logtail) {
-            void this.logtail.error(msg)
+            void this.logtail.error(msg, this.context)
         }
     }
 
@@ -89,7 +96,7 @@ export class Logger {
         }
 
         if (this.logtail) {
-            void this.logtail.debug(msg)
+            void this.logtail.debug(msg, this.context)
         }
     }
 
@@ -99,7 +106,7 @@ export class Logger {
         }
 
         if (this.logtail) {
-            void this.logtail.error(msg)
+            void this.logtail.error(msg, this.context)
         }
     }
 }

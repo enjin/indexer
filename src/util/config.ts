@@ -5,6 +5,7 @@ interface DataSource {
 }
 
 export interface Config {
+    environment: string
     chainName: string
     prefix: number | string
     genesisHash: string
@@ -40,6 +41,7 @@ export interface Config {
 }
 
 const config: Config = {
+    environment: process.env.NODE_ENV || 'local',
     chainName: process.env.CHAIN_NAME || 'enjin-matrixchain',
     prefix: process.env.CHAIN_PREFIX ? parseInt(process.env.CHAIN_PREFIX, 10) : 1110,
     genesisHash: process.env.GENESIS_HASH || '0x3af4ff48ec76d2efc8476730f423ac07e25ad48f5f4c9dc39c778b164d808615',

@@ -92,6 +92,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.28.0",
+    "@logtail/types": "^0.5.3",
     "@sentry/cli": "^2.46.0",
     "@subsquid/substrate-metadata-explorer": "^3.2.0",
     "@subsquid/substrate-typegen": "^8.1.0",
