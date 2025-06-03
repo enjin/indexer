@@ -3,18 +3,52 @@ import { createLogger, Logger as SqdLogger } from '@subsquid/logger'
 import config from './config'
 
 export class Logger {
-    private sqdLogger: SqdLogger
+    private readonly sqdLogger: SqdLogger
     private readonly logtail?: Logtail
+    private static instances: Map<string, Logger> = new Map()
+    private static defaultNamespace = 'sqd:default'
 
     constructor(namespace: string) {
         this.sqdLogger = createLogger(namespace)
 
         if (config.logtail.host && config.logtail.token) {
-            console.log(config.logtail)
             this.logtail = new Logtail(config.logtail.token, {
                 endpoint: config.logtail.host,
             })
         }
+    }
+
+    private static getInstance(namespace: string = Logger.defaultNamespace): Logger {
+        if (!Logger.instances.has(namespace)) {
+            Logger.instances.set(namespace, new Logger(namespace))
+        }
+
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        return Logger.instances.get(namespace)!
+    }
+
+    static info(msg: string, namespace?: string): void {
+        Logger.getInstance(namespace).info(msg)
+    }
+
+    static debug(msg: string, namespace?: string): void {
+        Logger.getInstance(namespace).debug(msg)
+    }
+
+    static warn(msg: string, namespace?: string): void {
+        Logger.getInstance(namespace).warn(msg)
+    }
+
+    static error(msg: string, namespace?: string): void {
+        Logger.getInstance(namespace).error(msg)
+    }
+
+    static trace(msg: string, namespace?: string): void {
+        Logger.getInstance(namespace).trace(msg)
+    }
+
+    static fatal(msg: string, namespace?: string): void {
+        Logger.getInstance(namespace).fatal(msg)
     }
 
     info(msg: string): void {

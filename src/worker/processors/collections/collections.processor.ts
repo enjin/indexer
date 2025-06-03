@@ -4,6 +4,7 @@ import { JobsEnum } from '../../constants'
 import { syncCollections } from '../../jobs/sync-collections'
 import { computeExtras } from '../../jobs/compute-extras'
 import { computeStats } from '../../jobs/compute-stats'
+import { logDebug, logError } from '../../utils'
 
 export class CollectionsProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {
@@ -22,16 +23,15 @@ export class CollectionsProcessor implements ProcessorDef {
         }
     }
 
-    async failed(job: Job | undefined, error: Error | undefined): Promise<void> {
-        if (job === undefined || error === undefined) {
+    failed(job: Job | undefined, error: Error | undefined): void {
+        if (error === undefined) {
             return
         }
-
-        await job.log(`Failed: ${error}`)
+        logError(error, job)
     }
 
-    async completed(job: Job) {
-        await job.log('Finished computing collections')
+    completed(job: Job): void {
+        logDebug('Finished computing collections', job)
     }
 }
 

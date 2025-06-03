@@ -3,6 +3,7 @@ import { ProcessorDef } from '../processor.def'
 import { JobsEnum } from '../../constants'
 import { computeMetadata } from '../../jobs/compute-metadata'
 import { syncMetadata } from '../../jobs/sync-metadata'
+import { logDebug, logError } from '../../utils'
 
 export class MetadataProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {
@@ -18,16 +19,15 @@ export class MetadataProcessor implements ProcessorDef {
         }
     }
 
-    async failed(job: Job | undefined, error: Error | undefined): Promise<void> {
-        if (job === undefined || error === undefined) {
+    failed(job: Job | undefined, error: Error | undefined): void {
+        if (error === undefined) {
             return
         }
-
-        await job.log(`Failed: ${error.message}`)
+        logError(error, job)
     }
 
-    async completed(job: Job) {
-        await job.log('Finished computing metadata')
+    completed(job: Job): void {
+        logDebug('Finished computing metadata', job)
     }
 }
 
