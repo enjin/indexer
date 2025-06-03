@@ -42,7 +42,7 @@ async function bootstrap() {
             try {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 ctx.log = logger as any
-                ctx.log.info(
+                ctx.log.debug(
                     `Processing batch of blocks from ${ctx.blocks[0].header.height} to ${ctx.blocks[ctx.blocks.length - 1].header.height}`
                 )
 
@@ -74,7 +74,7 @@ async function bootstrap() {
                         await QueueUtils.resumeQueue(QueuesEnum.COLLECTIONS)
                     }
 
-                    ctx.log.info(
+                    ctx.log.debug(
                         `Processing block ${block.header.height}, ${block.events.length} events, ${block.calls.length} calls to process`
                     )
 

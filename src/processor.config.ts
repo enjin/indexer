@@ -31,6 +31,8 @@ const ignoreEvents: string[] = [
     events.staking.stakersElected.name,
     events.staking.withdrawn.name,
     events.staking.stakingElectionFailed.name,
+    events.xcmPallet.versionNotifyRequested.name,
+    events.xcmPallet.supportedVersionChanged.name,
     events.imOnline.allGood.name,
     events.imOnline.heartbeatReceived.name,
     events.claims.ethereumBlocksProcessed.name,
