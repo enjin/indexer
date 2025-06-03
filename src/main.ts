@@ -39,6 +39,8 @@ async function bootstrap() {
         }),
         async (ctx) => {
             try {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                ctx.log = logger as any
                 ctx.log.info(
                     `Processing batch of blocks from ${ctx.blocks[0].header.height} to ${ctx.blocks[ctx.blocks.length - 1].header.height}`
                 )
@@ -59,6 +61,7 @@ async function bootstrap() {
                             await updateClaimDetails(ctx, block.header)
                         }
 
+                        await QueueUtils.pauseQueue(QueuesEnum.COLLECTIONS)
                         await QueueUtils.pauseQueue(QueuesEnum.METADATA)
                         await syncState(ctx as unknown as CommonContext)
                     }
@@ -66,8 +69,8 @@ async function bootstrap() {
                     if (block.header.height === dataService.lastBlockNumber) {
                         QueueUtils.dispatchComputeCollections()
                         QueueUtils.dispatchFetchAllBalances()
-
                         await QueueUtils.resumeQueue(QueuesEnum.METADATA)
+                        await QueueUtils.resumeQueue(QueuesEnum.COLLECTIONS)
                     }
 
                     ctx.log.info(
