@@ -3,15 +3,26 @@ import { Context } from '@logtail/types'
 import { createLogger, Logger as SqdLogger } from '@subsquid/logger'
 import config from './config'
 
+enum LogLevel {
+    TRACE = 0,
+    DEBUG = 1,
+    INFO = 2,
+    WARN = 3,
+    ERROR = 4,
+    FATAL = 5,
+}
+
 export class Logger {
     private readonly sqdLogger: SqdLogger
     private readonly logtail?: Logtail
     private readonly context?: Context
+    private readonly level: LogLevel
     private static instances: Map<string, Logger> = new Map()
     private static defaultNamespace = 'sqd:default'
 
-    constructor(namespace: string) {
+    constructor(namespace: string, level: LogLevel = LogLevel.INFO) {
         this.sqdLogger = createLogger(namespace)
+        this.level = level
 
         if (config.logtail.host && config.logtail.token) {
             this.context = {
@@ -62,7 +73,7 @@ export class Logger {
     info(msg: string): void {
         this.sqdLogger.info(msg)
 
-        if (this.logtail) {
+        if (this.logtail && this.level <= LogLevel.INFO) {
             void this.logtail.info(msg, this.context)
         }
     }
@@ -70,7 +81,7 @@ export class Logger {
     debug(msg: string): void {
         this.sqdLogger.debug(msg)
 
-        if (this.logtail) {
+        if (this.logtail && this.level <= LogLevel.DEBUG) {
             void this.logtail.debug(msg, this.context)
         }
     }
@@ -78,7 +89,7 @@ export class Logger {
     warn(msg: string): void {
         this.sqdLogger.warn(msg)
 
-        if (this.logtail) {
+        if (this.logtail && this.level <= LogLevel.WARN) {
             void this.logtail.warn(msg, this.context)
         }
     }
@@ -86,7 +97,7 @@ export class Logger {
     error(msg: unknown): void {
         this.sqdLogger.error(this.formatSqdMessage(msg))
 
-        if (this.logtail) {
+        if (this.logtail && this.level <= LogLevel.ERROR) {
             void this.logtail.error(this.formatLogtailMessage(msg), this.context)
         }
     }
@@ -94,7 +105,7 @@ export class Logger {
     trace(msg: string): void {
         this.sqdLogger.trace(msg)
 
-        if (this.logtail) {
+        if (this.logtail && this.level <= LogLevel.TRACE) {
             void this.logtail.debug(msg, this.context)
         }
     }
@@ -102,7 +113,7 @@ export class Logger {
     fatal(msg: unknown): void {
         this.sqdLogger.fatal(this.formatSqdMessage(msg))
 
-        if (this.logtail) {
+        if (this.logtail && this.level <= LogLevel.FATAL) {
             void this.logtail.error(this.formatLogtailMessage(msg), this.context)
         }
     }
