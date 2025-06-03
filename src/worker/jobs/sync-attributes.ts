@@ -1,5 +1,6 @@
+import { generateAccountTokenEventAttributes } from '../../util/event'
 import { connectionManager } from '../../contexts'
-import { AccountTokenEvent, AccountTokenEventAttribute, Attribute, Token } from '../../model'
+import { AccountTokenEvent, Attribute } from '../../model'
 import { Job } from 'bullmq'
 
 export async function syncAttributes(_job: Job, tokenId: string) {
@@ -17,23 +18,16 @@ export async function syncAttributes(_job: Job, tokenId: string) {
     const events = await em
         .getRepository(AccountTokenEvent)
         .createQueryBuilder('event')
-        .select('event.token_id')
+        .select('event.id')
+        .addSelect('event.token_id')
         .addSelect('event.attributes')
         .where('event.token_id = :tokenId', { tokenId })
         .getMany()
 
-    await _job.log(`Found ${events.length} events for token ${tokenId}`)
-    await _job.log(`Found ${attributes?.length} attributes for token ${tokenId}`)
-
+    const tokenAttributes = generateAccountTokenEventAttributes(attributes)
     events.forEach((event) => {
         if (attributes?.length) {
-            event.attributes = attributes.map((attribute) => {
-                return new AccountTokenEventAttribute({
-                    id: attribute.id,
-                    key: attribute.key,
-                    value: attribute.value,
-                })
-            })
+            event.attributes = tokenAttributes
         } else {
             event.attributes = []
         }
