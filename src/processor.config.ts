@@ -51,6 +51,8 @@ const ignoreEvents: string[] = [
     events.xcmPallet.sent.name,
     events.xcmPallet.feesPaid.name,
     events.xcmPallet.assetsTrapped.name,
+    events.balances.rescinded.name,
+    events.multiTokens.tokenUpgraded.name,
 ]
 
 const eventItems: string[] = [
