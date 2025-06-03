@@ -18,7 +18,7 @@ import { DataService } from './util/data'
 import { calls, events } from './type'
 import { QueueUtils } from './queue'
 import { QueuesEnum } from './queue/constants'
-import { logger } from './util/helpers'
+import { Logger } from './util/logger'
 
 async function bootstrap() {
     Sentry.init({
@@ -29,8 +29,8 @@ async function bootstrap() {
     const dataService = DataService.getInstance()
     await dataService.initialize()
 
-    const log = logger('sqd:processor')
-    log.info(`Last block on config: ${dataService.lastBlockNumber}`)
+    const logger = new Logger('sqd:processor')
+    logger.info(`Last block on config: ${dataService.lastBlockNumber}`)
 
     processorConfig.run(
         new TypeormDatabase({
