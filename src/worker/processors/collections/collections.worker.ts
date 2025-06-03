@@ -9,7 +9,7 @@ const processor = isSandboxed ? `${__dirname}/collections.slave.js` : instance.h
 const worker = new Worker(queueName, processor, {
     connection,
     useWorkerThreads: true,
-    concurrency: 2,
+    concurrency: 4,
 })
 
 worker.on('failed', (job: Job | undefined, error?: Error): void => {
