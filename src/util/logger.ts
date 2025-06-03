@@ -46,7 +46,7 @@ export class Logger {
         Logger.getInstance(namespace).warn(msg)
     }
 
-    static error(msg: string, namespace?: string): void {
+    static error(msg: unknown, namespace?: string): void {
         Logger.getInstance(namespace).error(msg)
     }
 
@@ -54,7 +54,7 @@ export class Logger {
         Logger.getInstance(namespace).trace(msg)
     }
 
-    static fatal(msg: string, namespace?: string): void {
+    static fatal(msg: unknown, namespace?: string): void {
         Logger.getInstance(namespace).fatal(msg)
     }
 
@@ -82,11 +82,11 @@ export class Logger {
         }
     }
 
-    error(msg: string): void {
-        this.sqdLogger.error(msg)
+    error(msg: unknown): void {
+        this.sqdLogger.error(this.formatSqdMessage(msg))
 
         if (this.logtail) {
-            void this.logtail.error(msg, this.context)
+            void this.logtail.error(this.formatLogtailMessage(msg), this.context)
         }
     }
 
@@ -100,13 +100,41 @@ export class Logger {
         }
     }
 
-    fatal(msg: string): void {
+    fatal(msg: unknown): void {
         if (typeof this.sqdLogger.fatal === 'function') {
-            this.sqdLogger.fatal(msg)
+            this.sqdLogger.fatal(this.formatSqdMessage(msg))
         }
 
         if (this.logtail) {
-            void this.logtail.error(msg, this.context)
+            void this.logtail.error(this.formatLogtailMessage(msg), this.context)
+        }
+    }
+
+    private formatLogtailMessage(msg: unknown): string | Error {
+        switch (typeof msg) {
+            case 'string':
+                return msg
+            case 'object':
+                if (msg instanceof Error) {
+                    return msg
+                }
+                return JSON.stringify(msg)
+            default:
+                return 'unknown'
+        }
+    }
+
+    private formatSqdMessage(msg: unknown): string {
+        switch (typeof msg) {
+            case 'string':
+                return msg
+            case 'object':
+                if (msg instanceof Error) {
+                    return `${msg.name}: ${msg.message}\n\nStack:\n${msg.stack}`
+                }
+                return JSON.stringify(msg)
+            default:
+                return 'unknown'
         }
     }
 }

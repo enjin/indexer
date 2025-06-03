@@ -20,6 +20,8 @@ import { QueueUtils } from './queue'
 import { QueuesEnum } from './queue/constants'
 import { Logger } from './util/logger'
 
+const logger = new Logger('sqd:processor')
+
 async function bootstrap() {
     Sentry.init({
         dsn: config.sentryDsn,
@@ -29,7 +31,6 @@ async function bootstrap() {
     const dataService = DataService.getInstance()
     await dataService.initialize()
 
-    const logger = new Logger('sqd:processor')
     logger.info(`Last block on config: ${dataService.lastBlockNumber}`)
 
     processorConfig.run(
@@ -256,6 +257,6 @@ function getParticipants(args: Json, _events: EventItem[], signer: string): stri
 }
 
 bootstrap().catch((error: unknown) => {
+    logger.fatal(error)
     Sentry.captureException(error)
-    console.error(error)
 })
