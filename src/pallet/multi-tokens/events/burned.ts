@@ -5,9 +5,6 @@ import { match } from 'ts-pattern'
 import {
     Account,
     AccountTokenEvent,
-    AccountTokenEventMeta,
-    AccountTokenEventMetaCollection,
-    AccountTokenEventMetaToken,
     Collection,
     Event as EventModel,
     Extrinsic,
@@ -15,7 +12,7 @@ import {
     Token,
 } from '../../../model'
 import { Burned } from './types'
-import { generateAccountTokenEventAttributes } from '../../../util/event'
+import { generateAccountTokenEventAttributes, generateAccountTokenEventMeta } from '../../../util/event'
 
 export function burned(event: EventItem): Burned {
     return match(event)
@@ -32,19 +29,23 @@ export function burned(event: EventItem): Burned {
 export function burnedEventModel(
     item: EventItem,
     data: Burned,
-    collection?: Collection,
-    token?: Token
+    account: Account,
+    collection: Collection | null,
+    token: Token | null
 ): [EventModel, AccountTokenEvent] | undefined | EventModel {
+    const collectionId = collection ? collection.id : data.collectionId.toString()
+    const tokenId = token ? token.id : `${collectionId}-${data.tokenId}`
+
     const event = new EventModel({
         id: item.id,
         name: MultiTokensBurned.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-        collectionId: data.collectionId.toString(),
-        tokenId: `${data.collectionId}-${data.tokenId}`,
+        collectionId: collectionId,
+        tokenId: tokenId,
         data: new MultiTokensBurned({
             collectionId: data.collectionId,
             tokenId: data.tokenId,
-            token: `${data.collectionId}-${data.tokenId}`,
+            token: tokenId,
             account: data.accountId,
             amount: data.amount,
         }),
@@ -54,24 +55,12 @@ export function burnedEventModel(
         event,
         new AccountTokenEvent({
             id: item.id,
-            from: new Account({ id: data.accountId }),
+            from: account,
             event,
-            collectionId: data.collectionId.toString(),
-            tokenId: `${data.collectionId}-${data.tokenId}`,
+            collectionId: collectionId,
+            tokenId: tokenId,
             attributes: generateAccountTokenEventAttributes(token?.attributes),
-            meta: new AccountTokenEventMeta({
-                collection: !collection
-                    ? undefined
-                    : new AccountTokenEventMetaCollection({
-                          createdAt: collection.createdAt,
-                      }),
-                token: !token
-                    ? undefined
-                    : new AccountTokenEventMetaToken({
-                          nonFungible: token.nonFungible,
-                          createdAt: token.createdAt,
-                      }),
-            }),
+            meta: generateAccountTokenEventMeta(collection, token),
         }),
     ]
 }

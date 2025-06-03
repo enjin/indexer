@@ -182,6 +182,9 @@ export async function listingCreated(
     if (isOffer && takeAssetId.nonFungible) {
         const tokenOwner = await ctx.store.findOne<TokenAccount>(TokenAccount, {
             where: { token: { id: takeAssetId.id } },
+            relations: {
+                account: true,
+            },
         })
         if (tokenOwner) {
             toAccount = tokenOwner.account

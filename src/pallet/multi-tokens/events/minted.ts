@@ -5,7 +5,6 @@ import { match } from 'ts-pattern'
 import {
     Account,
     AccountTokenEvent,
-    AccountTokenEventMeta,
     Collection,
     Event as EventModel,
     Extrinsic,
@@ -14,11 +13,7 @@ import {
 } from '../../../model'
 import { Minted } from './types'
 import { unwrapAccount } from '../../../util/entities'
-import {
-    generateAccountTokenEventToken,
-    generateAccountTokenEventCollection,
-    generateAccountTokenEventAttributes,
-} from '../../../util/event'
+import { generateAccountTokenEventAttributes, generateAccountTokenEventMeta } from '../../../util/event'
 
 export function minted(event: EventItem): Minted {
     return match(event)
@@ -35,19 +30,24 @@ export function minted(event: EventItem): Minted {
 export function mintedEventModel(
     item: EventItem,
     data: Minted,
-    collection?: Collection,
-    token?: Token
+    creator: Account,
+    recipient: Account,
+    collection: Collection | null,
+    token: Token | null
 ): [EventModel, AccountTokenEvent] | EventModel | undefined {
+    const collectionId = collection ? collection.id : data.collectionId.toString()
+    const tokenId = token ? token.id : `${collectionId}-${data.tokenId}`
+
     const event = new EventModel({
         id: item.id,
         name: MultiTokensMinted.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-        collectionId: data.collectionId.toString(),
-        tokenId: `${data.collectionId}-${data.tokenId}`,
+        collectionId: collectionId,
+        tokenId: tokenId,
         data: new MultiTokensMinted({
             collectionId: data.collectionId,
             tokenId: data.tokenId,
-            token: `${data.collectionId}-${data.tokenId}`,
+            token: tokenId,
             issuer: unwrapAccount(data.issuer),
             recipient: data.recipient,
             amount: data.amount,
@@ -58,16 +58,13 @@ export function mintedEventModel(
         event,
         new AccountTokenEvent({
             id: item.id,
-            from: new Account({ id: unwrapAccount(data.issuer) }),
-            to: new Account({ id: data.recipient }),
+            from: creator,
+            to: recipient,
             event,
-            collectionId: data.collectionId.toString(),
-            tokenId: `${data.collectionId}-${data.tokenId}`,
+            collectionId: collectionId,
+            tokenId: tokenId,
             attributes: generateAccountTokenEventAttributes(token?.attributes),
-            meta: new AccountTokenEventMeta({
-                collection: !collection ? undefined : generateAccountTokenEventCollection(collection),
-                token: !token ? undefined : generateAccountTokenEventToken(token),
-            }),
+            meta: generateAccountTokenEventMeta(collection, token),
         }),
     ]
 }

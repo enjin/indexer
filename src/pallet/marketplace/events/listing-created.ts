@@ -5,7 +5,6 @@ import { match } from 'ts-pattern'
 import {
     Account,
     AccountTokenEvent,
-    AccountTokenEventMeta,
     Collection,
     Event as EventModel,
     Extrinsic,
@@ -15,11 +14,7 @@ import {
     Token,
 } from '../../../model'
 import { ListingCreated } from './types'
-import {
-    generateAccountTokenEventToken,
-    generateAccountTokenEventCollection,
-    generateAccountTokenEventAttributes,
-} from '../../../util/event'
+import { generateAccountTokenEventAttributes, generateAccountTokenEventMeta } from '../../../util/event'
 
 export function listingCreated(event: EventItem): ListingCreated {
     return match(event)
@@ -130,10 +125,7 @@ export function listingCreatedEventModel(
             collectionId: collection.id,
             tokenId: token.id,
             attributes: generateAccountTokenEventAttributes(token.attributes),
-            meta: new AccountTokenEventMeta({
-                collection: generateAccountTokenEventCollection(collection),
-                token: generateAccountTokenEventToken(token),
-            }),
+            meta: generateAccountTokenEventMeta(collection, token),
         }),
     ]
 }
