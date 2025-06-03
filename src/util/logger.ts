@@ -17,6 +17,7 @@ export class Logger {
             this.context = {
                 environment: config.environment,
                 network: config.chainName,
+                namespace: namespace,
             }
 
             this.logtail = new Logtail(config.logtail.token, {
@@ -91,9 +92,7 @@ export class Logger {
     }
 
     trace(msg: string): void {
-        if (typeof this.sqdLogger.trace === 'function') {
-            this.sqdLogger.trace(msg)
-        }
+        this.sqdLogger.trace(msg)
 
         if (this.logtail) {
             void this.logtail.debug(msg, this.context)
@@ -101,9 +100,7 @@ export class Logger {
     }
 
     fatal(msg: unknown): void {
-        if (typeof this.sqdLogger.fatal === 'function') {
-            this.sqdLogger.fatal(this.formatSqdMessage(msg))
-        }
+        this.sqdLogger.fatal(this.formatSqdMessage(msg))
 
         if (this.logtail) {
             void this.logtail.error(this.formatLogtailMessage(msg), this.context)
