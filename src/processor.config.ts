@@ -37,6 +37,7 @@ const ignoreEvents: string[] = [
     events.fuelTanks.callDispatched.name,
     events.fuelTanks.dispatchFailed.name,
     events.fuelTanks.migrationStep.name,
+    events.fuelTanks.mutateFreezeStateScheduled.name,
     events.marketplace.migrationStep.name,
     events.multiTokens.nextCollectionIdUpdated.name,
     events.multiTokens.migrationStep.name,
