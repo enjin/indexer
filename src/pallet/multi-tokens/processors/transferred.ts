@@ -13,32 +13,30 @@ export async function transferred(
     skipSave: boolean
 ): Promise<[EventModel, AccountTokenEvent] | EventModel | undefined> {
     const data = mappings.multiTokens.events.transferred(item)
+    const from = await getOrCreateAccount(ctx, data.from)
+    const to = await getOrCreateAccount(ctx, data.to)
 
     const token = await ctx.store.findOne<Token>(Token, {
         where: { id: `${data.collectionId}-${data.tokenId}` },
         relations: { collection: true, attributes: true },
     })
-
-    if (skipSave) {
-        await Promise.all([getOrCreateAccount(ctx, data.from), getOrCreateAccount(ctx, data.to)])
-
-        return mappings.multiTokens.events.transferredEventModel(item, data, token?.collection, token)
+    if (skipSave || !token) {
+        return mappings.multiTokens.events.transferredEventModel(
+            item,
+            data,
+            from,
+            to,
+            token?.collection ?? null,
+            token ?? null
+        )
     }
-
-    if (!token) {
-        throwFatalError(`[Transferred] We have not found token ${data.collectionId}-${data.tokenId}.`)
-        return mappings.multiTokens.events.transferredEventModel(item, data, undefined, undefined)
-    }
-
-    const fromAddress = data.from
-    const toAddress = data.to
 
     const [fromTokenAccount, toTokenAccount] = await Promise.all([
         ctx.store.findOne<TokenAccount>(TokenAccount, {
-            where: { id: `${fromAddress}-${data.collectionId}-${data.tokenId}` },
+            where: { id: `${from.id}-${data.collectionId}-${data.tokenId}` },
         }),
         ctx.store.findOne<TokenAccount>(TokenAccount, {
-            where: { id: `${toAddress}-${data.collectionId}-${data.tokenId}` },
+            where: { id: `${to.id}-${data.collectionId}-${data.tokenId}` },
         }),
     ])
 
@@ -49,7 +47,7 @@ export async function transferred(
         await ctx.store.save(fromTokenAccount)
     } else {
         throwFatalError(
-            `[Transferred] We have not found token account ${fromAddress}-${data.collectionId}-${data.tokenId}.`
+            `[Transferred] We have not found token account ${from.id}-${data.collectionId}-${data.tokenId}.`
         )
     }
 
@@ -59,12 +57,8 @@ export async function transferred(
         toTokenAccount.updatedAt = new Date(block.timestamp ?? 0)
         await ctx.store.save(toTokenAccount)
     } else {
-        throwFatalError(
-            `[Transferred] We have not found token account ${toAddress}-${data.collectionId}-${data.tokenId}.`
-        )
+        throwFatalError(`[Transferred] We have not found token account ${to.id}-${data.collectionId}-${data.tokenId}.`)
     }
-
-    QueueUtils.dispatchComputeStats(data.collectionId.toString())
 
     if (item.extrinsic) {
         await Sns.getInstance().send({
@@ -83,5 +77,7 @@ export async function transferred(
         })
     }
 
-    return mappings.multiTokens.events.transferredEventModel(item, data, token.collection, token)
+    QueueUtils.dispatchComputeStats(data.collectionId.toString())
+
+    return mappings.multiTokens.events.transferredEventModel(item, data, from, to, token.collection, token)
 }

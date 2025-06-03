@@ -17,7 +17,14 @@ const config: QueueConfigType = {
             type: 'exponential',
             delay: 2000,
         },
-        removeOnComplete: 300,
+        removeOnComplete: {
+            age: 172800, // 2 days
+            count: 100,
+        },
+        removeOnFail: {
+            age: 345600, // 4 days
+            count: 200,
+        },
     },
 }
 

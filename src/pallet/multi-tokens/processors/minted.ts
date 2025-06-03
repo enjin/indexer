@@ -14,8 +14,8 @@ export async function minted(
     skipSave: boolean
 ): Promise<[EventModel, AccountTokenEvent] | EventModel | undefined> {
     const data = mappings.multiTokens.events.minted(item)
-
-    const promises: Promise<void>[] = []
+    const issuer = await getOrCreateAccount(ctx, data.issuer)
+    const recipient = await getOrCreateAccount(ctx, data.recipient)
 
     const token = await ctx.store.findOne(Token, {
         where: { id: `${data.collectionId}-${data.tokenId}` },
@@ -24,25 +24,20 @@ export async function minted(
             attributes: true,
         },
     })
-    if (skipSave) {
-        return mappings.multiTokens.events.mintedEventModel(item, data, token?.collection, token)
+    if (skipSave || !token || data.amount === 0n) {
+        return mappings.multiTokens.events.mintedEventModel(
+            item,
+            data,
+            issuer,
+            recipient,
+            token?.collection ?? null,
+            token ?? null
+        )
     }
-
-    if (!token) {
-        throwFatalError(`[Minted] We have not found token ${data.collectionId}-${data.tokenId}.`)
-        return undefined
-    }
-
-    if (data.amount === 0n) {
-        return undefined
-    }
-
-    const recipient = await getOrCreateAccount(ctx, data.recipient)
-    const issuer = await getOrCreateAccount(ctx, data.issuer)
 
     token.supply += data.amount
     token.nonFungible = isNonFungible(token)
-    promises.push(ctx.store.save(token))
+    await ctx.store.save(token)
 
     const tokenAccount = await ctx.store.findOne<TokenAccount>(TokenAccount, {
         where: { id: `${data.recipient}-${data.collectionId}-${data.tokenId}` },
@@ -52,15 +47,13 @@ export async function minted(
         throwFatalError(
             `[Minted] We have not found token account ${data.recipient}-${data.collectionId}-${data.tokenId}.`
         )
-
-        await Promise.all(promises)
-        return mappings.multiTokens.events.mintedEventModel(item, data, token.collection, token)
+        return mappings.multiTokens.events.mintedEventModel(item, data, issuer, recipient, token.collection, token)
     }
 
     tokenAccount.balance += data.amount
     tokenAccount.totalBalance += data.amount
     tokenAccount.updatedAt = new Date(block.timestamp ?? 0)
-    promises.push(ctx.store.save(tokenAccount))
+    await ctx.store.save(tokenAccount)
 
     if (data.collectionId === 1n) {
         // This means the user got sENJ in that case we should associate the tokenAccount to PoolMember again if it is not
@@ -73,12 +66,6 @@ export async function minted(
             await ctx.store.save(poolMember)
         }
     }
-
-    await Promise.all(promises)
-
-    QueueUtils.dispatchComputeMetadata(token.id, 'token')
-    QueueUtils.dispatchComputeTraits(data.collectionId.toString())
-    QueueUtils.dispatchComputeStats(data.collectionId.toString())
 
     if (item.extrinsic) {
         await Sns.getInstance().send({
@@ -96,5 +83,9 @@ export async function minted(
         })
     }
 
-    return mappings.multiTokens.events.mintedEventModel(item, data, token.collection, token)
+    QueueUtils.dispatchComputeMetadata(token.id, 'token')
+    QueueUtils.dispatchComputeTraits(data.collectionId.toString())
+    QueueUtils.dispatchComputeStats(data.collectionId.toString())
+
+    return mappings.multiTokens.events.mintedEventModel(item, data, issuer, recipient, token.collection, token)
 }

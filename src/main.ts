@@ -18,7 +18,9 @@ import { DataService } from './util/data'
 import { calls, events } from './type'
 import { QueueUtils } from './queue'
 import { QueuesEnum } from './queue/constants'
-import { logger } from './util/helpers'
+import { Logger } from './util/logger'
+
+const logger = new Logger('sqd:processor')
 
 async function bootstrap() {
     Sentry.init({
@@ -29,8 +31,7 @@ async function bootstrap() {
     const dataService = DataService.getInstance()
     await dataService.initialize()
 
-    const log = logger('sqd:processor')
-    log.info(`Last block on config: ${dataService.lastBlockNumber}`)
+    logger.info(`Last block on config: ${dataService.lastBlockNumber}`)
 
     processorConfig.run(
         new TypeormDatabase({
@@ -39,6 +40,8 @@ async function bootstrap() {
         }),
         async (ctx) => {
             try {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                ctx.log = logger as any
                 ctx.log.info(
                     `Processing batch of blocks from ${ctx.blocks[0].header.height} to ${ctx.blocks[ctx.blocks.length - 1].header.height}`
                 )
@@ -59,6 +62,7 @@ async function bootstrap() {
                             await updateClaimDetails(ctx, block.header)
                         }
 
+                        await QueueUtils.pauseQueue(QueuesEnum.COLLECTIONS)
                         await QueueUtils.pauseQueue(QueuesEnum.METADATA)
                         await syncState(ctx as unknown as CommonContext)
                     }
@@ -66,8 +70,8 @@ async function bootstrap() {
                     if (block.header.height === dataService.lastBlockNumber) {
                         QueueUtils.dispatchComputeCollections()
                         QueueUtils.dispatchFetchAllBalances()
-
                         await QueueUtils.resumeQueue(QueuesEnum.METADATA)
+                        await QueueUtils.resumeQueue(QueuesEnum.COLLECTIONS)
                     }
 
                     ctx.log.info(
@@ -253,6 +257,6 @@ function getParticipants(args: Json, _events: EventItem[], signer: string): stri
 }
 
 bootstrap().catch((error: unknown) => {
+    logger.fatal(error)
     Sentry.captureException(error)
-    console.error(error)
 })

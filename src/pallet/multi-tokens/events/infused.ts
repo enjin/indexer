@@ -5,7 +5,6 @@ import { match } from 'ts-pattern'
 import {
     Account,
     AccountTokenEvent,
-    AccountTokenEventMeta,
     Collection,
     Event as EventModel,
     Extrinsic,
@@ -13,12 +12,7 @@ import {
     Token,
 } from '../../../model'
 import { Infused } from './types/infused'
-import { unwrapAccount } from '../../../util/entities'
-import {
-    generateAccountTokenEventToken,
-    generateAccountTokenEventCollection,
-    generateAccountTokenEventAttributes,
-} from '../../../util/event'
+import { generateAccountTokenEventAttributes, generateAccountTokenEventMeta } from '../../../util/event'
 
 export function infused(event: EventItem): Infused {
     return match(event)
@@ -47,20 +41,24 @@ export function infused(event: EventItem): Infused {
 export function infusedEventModel(
     item: EventItem,
     data: Infused,
-    collection: Collection,
-    token: Token
+    account: Account,
+    collection: Collection | null,
+    token: Token | null
 ): [EventModel, AccountTokenEvent] | EventModel | undefined {
+    const collectionId = collection ? collection.id : data.collectionId.toString()
+    const tokenId = token ? token.id : `${collectionId}-${data.tokenId}`
+
     const event = new EventModel({
         id: item.id,
         name: MultiTokensInfused.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-        collectionId: collection.id,
-        tokenId: token.id,
+        collectionId: collectionId,
+        tokenId: tokenId,
         data: new MultiTokensInfused({
             collectionId: data.collectionId,
             tokenId: data.tokenId,
             amount: data.amount,
-            accountId: unwrapAccount(data.accountId),
+            accountId: account.id,
         }),
     })
 
@@ -68,15 +66,12 @@ export function infusedEventModel(
         event,
         new AccountTokenEvent({
             id: item.id,
-            from: new Account({ id: unwrapAccount(data.accountId) }),
+            from: account,
             event,
-            collectionId: collection.id,
-            tokenId: token.id,
-            attributes: generateAccountTokenEventAttributes(token.attributes),
-            meta: new AccountTokenEventMeta({
-                collection: generateAccountTokenEventCollection(collection),
-                token: generateAccountTokenEventToken(token),
-            }),
+            collectionId: collectionId,
+            tokenId: tokenId,
+            attributes: generateAccountTokenEventAttributes(token?.attributes),
+            meta: generateAccountTokenEventMeta(collection, token),
         }),
     ]
 }

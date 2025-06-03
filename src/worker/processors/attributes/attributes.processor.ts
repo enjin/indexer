@@ -2,6 +2,7 @@ import { Job } from 'bullmq'
 import { ProcessorDef } from '../processor.def'
 import { JobsEnum } from '../../constants'
 import { syncAttributes } from '../../jobs/sync-attributes'
+import { logDebug, logError } from '../../utils'
 
 export class MetadataProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {
@@ -14,16 +15,15 @@ export class MetadataProcessor implements ProcessorDef {
         }
     }
 
-    async failed(job: Job | undefined, error: Error | undefined): Promise<void> {
-        if (job === undefined || error === undefined) {
+    failed(job: Job | undefined, error: Error | undefined): void {
+        if (error === undefined) {
             return
         }
-
-        await job.log(`Failed: ${error.message}`)
+        logError(error, job)
     }
 
-    async completed(job: Job) {
-        await job.log('Finished syncing attributes')
+    completed(job: Job): void {
+        logDebug('Finished syncing attributes', job)
     }
 }
 

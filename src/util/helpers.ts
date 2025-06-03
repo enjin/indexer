@@ -1,7 +1,4 @@
 import { CapType, Token, TokenBehaviorType, TokenCapSupply } from '../model'
-import { createLogger } from '@subsquid/logger'
-
-export const logger = (namespace: string) => createLogger(namespace)
 
 export function isNonFungible(token: Token): boolean {
     if (token.behavior?.type === TokenBehaviorType.IsCurrency) {

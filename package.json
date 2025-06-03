@@ -54,6 +54,7 @@
     "@aws-sdk/client-sns": "^3.821.0",
     "@bull-board/api": "^6.9.6",
     "@bull-board/express": "^6.9.6",
+    "@logtail/node": "^0.5.5",
     "@polkadot/api": "^16.1.1",
     "@polkadot/api-augment": "^16.1.1",
     "@polkadot/util": "^13.5.1",
@@ -91,6 +92,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.28.0",
+    "@logtail/types": "^0.5.3",
     "@sentry/cli": "^2.46.0",
     "@subsquid/substrate-metadata-explorer": "^3.2.0",
     "@subsquid/substrate-typegen": "^8.1.0",

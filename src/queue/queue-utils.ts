@@ -14,9 +14,9 @@ import { xxhasher } from '../util/hasher'
 import { match } from 'ts-pattern'
 import { type Queue } from 'bullmq'
 import { QueueType } from './types'
-import { logger } from '../util/helpers'
+import { Logger } from '../util/logger'
 
-const log = logger('sqd:worker')
+const LOGGER_NAMESPACE = 'sqd:queue'
 
 export async function pauseQueue(type: QueueType): Promise<void> {
     const queue = getQueueByType(type)
@@ -52,7 +52,7 @@ export function dispatchFetchAllBalances(): void {
             jobId: 'balances.all',
         }
     ).catch(() => {
-        log.error('Failed to dispatch a job on balances queue')
+        Logger.error('Failed to dispatch a job on balances queue', LOGGER_NAMESPACE)
     })
 }
 
@@ -68,11 +68,11 @@ export function dispatchFetchBalances(ids: string[]): void {
                     jobId: `balances.${hashedIds}`,
                 }
             ).catch(() => {
-                log.error('Failed to dispatch a job on balances queue')
+                Logger.error('Failed to dispatch a job on balances queue', LOGGER_NAMESPACE)
             })
         })
         .catch(() => {
-            log.error('Failed to hash ids')
+            Logger.error('Failed to hash ids', LOGGER_NAMESPACE)
         })
 }
 
@@ -88,11 +88,11 @@ export function dispatchFetchAccounts(ids: string[]): void {
                     jobId: `accounts.${hashedIds}`,
                 }
             ).catch(() => {
-                log.error('Failed to dispatch a job on accounts queue')
+                Logger.error('Failed to dispatch a job on accounts queue', LOGGER_NAMESPACE)
             })
         })
         .catch(() => {
-            log.error('Failed to hash ids')
+            Logger.error('Failed to hash ids', LOGGER_NAMESPACE)
         })
 }
 
@@ -108,11 +108,11 @@ export function dispatchFetchExtra(ids: string[]): void {
                     jobId: `collections.extra.${hashedIds}`,
                 }
             ).catch(() => {
-                log.error('Failed to dispatch a job on collections queue')
+                Logger.error('Failed to dispatch a job on collections queue', LOGGER_NAMESPACE)
             })
         })
         .catch(() => {
-            log.error('Failed to hash ids')
+            Logger.error('Failed to hash ids', LOGGER_NAMESPACE)
         })
 }
 
@@ -127,7 +127,7 @@ export function dispatchComputeCollections(): void {
             jobId: 'collections.all',
         }
     ).catch(() => {
-        log.error('Failed to dispatch a job on collections queue')
+        Logger.error('Failed to dispatch a job on collections queue', LOGGER_NAMESPACE)
     })
 }
 
@@ -140,7 +140,7 @@ export function dispatchComputeStats(id: string): void {
             jobId: `collections.stats.${id}`,
         }
     ).catch(() => {
-        log.error('Failed to dispatch a job on collections queue')
+        Logger.error('Failed to dispatch a job on collections queue', LOGGER_NAMESPACE)
     })
 }
 
@@ -153,7 +153,7 @@ export function dispatchComputeRarity(id: string): void {
             jobId: `tokens.rarity.${id}`,
         }
     ).catch(() => {
-        log.error('Failed to dispatch a job on tokens queue')
+        Logger.error('Failed to dispatch a job on tokens queue', LOGGER_NAMESPACE)
     })
 }
 
@@ -166,13 +166,13 @@ export function dispatchComputeTraits(id: string): void {
             jobId: `traits.${id}`,
         }
     ).catch(() => {
-        log.error('Failed to dispatch a job on traits queue')
+        Logger.error('Failed to dispatch a job on traits queue', LOGGER_NAMESPACE)
     })
 }
 
 export function dispatchSyncAttributes(id: string): void {
     AttributesQueue.add(JobsEnum.SYNC_ATTRIBUTES, { id }, { delay: 6000, jobId: `attributes.${id}` }).catch(() => {
-        log.error('Failed to dispatch a job on attributes queue')
+        Logger.error('Failed to dispatch a job on attributes queue', LOGGER_NAMESPACE)
     })
 }
 
@@ -190,7 +190,7 @@ export function dispatchComputeMetadata(
             jobId: `metadata.${resourceId}`,
         }
     ).catch(() => {
-        log.error('Failed to dispatch a job on metadata queue')
+        Logger.error('Failed to dispatch a job on metadata queue', LOGGER_NAMESPACE)
     })
 }
 
@@ -203,6 +203,6 @@ export function dispatchSyncAllMetadata(): void {
             jobId: 'metadata.all',
         }
     ).catch(() => {
-        log.error('Failed to dispatch sync all metadata')
+        Logger.error('Failed to dispatch sync all metadata', LOGGER_NAMESPACE)
     })
 }

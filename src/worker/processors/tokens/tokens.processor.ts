@@ -2,6 +2,7 @@ import { Job } from 'bullmq'
 import { ProcessorDef } from '../processor.def'
 import { JobsEnum } from '../../constants'
 import { computeRarity } from '../../jobs/compute-rarity'
+import { logDebug, logError } from '../../utils'
 
 export class TokensProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {
@@ -14,16 +15,15 @@ export class TokensProcessor implements ProcessorDef {
         }
     }
 
-    async failed(job: Job | undefined, error: Error | undefined): Promise<void> {
-        if (job === undefined || error === undefined) {
+    failed(job: Job | undefined, error: Error | undefined): void {
+        if (error === undefined) {
             return
         }
-
-        await job.log(`Failed: ${error.message}`)
+        logError(error, job)
     }
 
-    async completed(job: Job) {
-        await job.log('Finished computing collections')
+    completed(job: Job) {
+        logDebug('Finished computing tokens', job)
     }
 }
 

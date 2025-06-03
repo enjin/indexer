@@ -25,6 +25,7 @@ import {
     TraitsWorker,
     ValidatorsWorker,
 } from './processors'
+import { logError } from './utils'
 
 // Increase max listeners to avoid warnings
 EventEmitter.defaultMaxListeners = 30
@@ -47,7 +48,7 @@ const WorkerMap = new Map([
 function initializeJobs() {
     WorkerMap.forEach((worker) => {
         worker.on('error', (err) => {
-            console.error(err)
+            logError(err)
         })
     })
 }

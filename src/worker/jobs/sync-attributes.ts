@@ -5,34 +5,29 @@ import { Job } from 'bullmq'
 export async function syncAttributes(_job: Job, tokenId: string) {
     const em = await connectionManager()
 
-    const token = await em
-        .getRepository(Token)
-        .createQueryBuilder('token')
-        .select('token.id')
-        .innerJoin(Attribute, 'attribute', 'attribute.token_id = token.id')
+    const attributes = await em
+        .getRepository(Attribute)
+        .createQueryBuilder('attribute')
         .addSelect('attribute.id')
         .addSelect('attribute.key')
         .addSelect('attribute.value')
-        .where('token.id = :tokenId', { tokenId })
-        .getOne()
+        .where('attribute.token_id = :tokenId', { tokenId })
+        .getMany()
 
     const events = await em
         .getRepository(AccountTokenEvent)
         .createQueryBuilder('event')
         .select('event.token_id')
+        .addSelect('event.attributes')
         .where('event.token_id = :tokenId', { tokenId })
         .getMany()
 
     await _job.log(`Found ${events.length} events for token ${tokenId}`)
-    await _job.log(`Found ${token?.attributes?.length} attributes for token ${tokenId}`)
-
-    if (!token) {
-        return
-    }
+    await _job.log(`Found ${attributes?.length} attributes for token ${tokenId}`)
 
     events.forEach((event) => {
-        if (token.attributes?.length) {
-            event.attributes = token.attributes.map((attribute) => {
+        if (attributes?.length) {
+            event.attributes = attributes.map((attribute) => {
                 return new AccountTokenEventAttribute({
                     id: attribute.id,
                     key: attribute.key,

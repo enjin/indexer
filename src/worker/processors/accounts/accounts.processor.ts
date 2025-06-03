@@ -2,6 +2,7 @@ import { Job } from 'bullmq'
 import { ProcessorDef } from '../processor.def'
 import { syncAccounts } from '../../jobs/sync-accounts'
 import { JobsEnum } from '../../constants'
+import { logDebug, logError } from '../../utils'
 
 export class AccountsProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {
@@ -14,16 +15,15 @@ export class AccountsProcessor implements ProcessorDef {
         }
     }
 
-    async failed(job: Job | undefined, error: Error | undefined): Promise<void> {
-        if (job === undefined || error === undefined) {
+    failed(job: Job | undefined, error: Error | undefined): void {
+        if (error === undefined) {
             return
         }
-
-        await job.log(`Failed: ${error.message}`)
+        logError(error, job)
     }
 
-    async completed(job: Job) {
-        await job.log('Finished fetching accounts')
+    completed(job: Job): void {
+        logDebug('Finished fetching accounts', job)
     }
 }
 

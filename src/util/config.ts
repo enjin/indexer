@@ -5,6 +5,7 @@ interface DataSource {
 }
 
 export interface Config {
+    environment: string
     chainName: string
     prefix: number | string
     genesisHash: string
@@ -22,6 +23,10 @@ export interface Config {
         stg: string
     }
     sentryDsn?: string
+    logtail: {
+        token?: string
+        host?: string
+    }
     amazonSns: {
         topicArn: string
         region: string
@@ -36,6 +41,7 @@ export interface Config {
 }
 
 const config: Config = {
+    environment: process.env.NODE_ENV || 'local',
     chainName: process.env.CHAIN_NAME || 'enjin-matrixchain',
     prefix: process.env.CHAIN_PREFIX ? parseInt(process.env.CHAIN_PREFIX, 10) : 1110,
     genesisHash: process.env.GENESIS_HASH || '0x3af4ff48ec76d2efc8476730f423ac07e25ad48f5f4c9dc39c778b164d808615',
@@ -67,6 +73,10 @@ const config: Config = {
         stg: process.env.MARKETPLACE_API_STG_URL || '',
     },
     sentryDsn: process.env.SENTRY_DSN,
+    logtail: {
+        token: process.env.LOGTAIL_TOKEN,
+        host: process.env.LOGTAIL_HOST,
+    },
     amazonSns: {
         topicArn: process.env.AWS_SNS_TOPIC_ARN || process.env.SNS_TOPIC_ARN || '',
         region: process.env.AWS_DEFAULT_REGION || process.env.SQS_REGION || '',

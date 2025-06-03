@@ -5,7 +5,6 @@ import { match } from 'ts-pattern'
 import {
     Account,
     AccountTokenEvent,
-    AccountTokenEventMeta,
     Collection,
     Event as EventModel,
     Extrinsic,
@@ -14,11 +13,7 @@ import {
     Token,
 } from '../../../model'
 import { CounterOfferPlaced } from './types'
-import {
-    generateAccountTokenEventToken,
-    generateAccountTokenEventCollection,
-    generateAccountTokenEventAttributes,
-} from '../../../util/event'
+import { generateAccountTokenEventAttributes, generateAccountTokenEventMeta } from '../../../util/event'
 
 export function counterOfferPlaced(event: EventItem): CounterOfferPlaced {
     return match(event)
@@ -83,10 +78,7 @@ export function counterOfferPlacedEventModel(
             collectionId: collection.id,
             tokenId: token.id,
             attributes: generateAccountTokenEventAttributes(token.attributes),
-            meta: new AccountTokenEventMeta({
-                collection: generateAccountTokenEventCollection(collection),
-                token: generateAccountTokenEventToken(token),
-            }),
+            meta: generateAccountTokenEventMeta(collection, token),
         }),
     ]
 }

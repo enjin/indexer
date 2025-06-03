@@ -5,7 +5,6 @@ import { match } from 'ts-pattern'
 import {
     Account,
     AccountTokenEvent,
-    AccountTokenEventMeta,
     Collection,
     Event as EventModel,
     Extrinsic,
@@ -13,11 +12,7 @@ import {
     Token,
 } from '../../../model'
 import { Transferred } from './types'
-import {
-    generateAccountTokenEventToken,
-    generateAccountTokenEventCollection,
-    generateAccountTokenEventAttributes,
-} from '../../../util/event'
+import { generateAccountTokenEventAttributes, generateAccountTokenEventMeta } from '../../../util/event'
 
 export function transferred(event: EventItem): Transferred {
     return match(event)
@@ -33,22 +28,27 @@ export function transferred(event: EventItem): Transferred {
 export function transferredEventModel(
     item: EventItem,
     data: Transferred,
-    collection?: Collection,
-    token?: Token
+    from: Account,
+    to: Account,
+    collection: Collection | null,
+    token: Token | null
 ): [EventModel, AccountTokenEvent] | EventModel | undefined {
+    const collectionId = collection ? collection.id : data.collectionId.toString()
+    const tokenId = token ? token.id : `${collectionId}-${data.tokenId}`
+
     const event = new EventModel({
         id: item.id,
         name: MultiTokensTransferred.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-        collectionId: data.collectionId.toString(),
-        tokenId: `${data.collectionId}-${data.tokenId}`,
+        collectionId: collectionId,
+        tokenId: tokenId,
         data: new MultiTokensTransferred({
             collectionId: data.collectionId,
             tokenId: data.tokenId,
-            token: `${data.collectionId}-${data.tokenId}`,
+            token: tokenId,
             operator: data.operator,
-            from: data.from,
-            to: data.to,
+            from: from.id,
+            to: to.id,
             amount: data.amount,
         }),
     })
@@ -57,16 +57,13 @@ export function transferredEventModel(
         event,
         new AccountTokenEvent({
             id: item.id,
-            from: new Account({ id: data.from }),
-            to: new Account({ id: data.to }),
+            from,
+            to,
             event,
-            collectionId: data.collectionId.toString(),
-            tokenId: `${data.collectionId}-${data.tokenId}`,
+            collectionId: collectionId,
+            tokenId: tokenId,
             attributes: generateAccountTokenEventAttributes(token?.attributes),
-            meta: new AccountTokenEventMeta({
-                collection: !collection ? undefined : generateAccountTokenEventCollection(collection),
-                token: !token ? undefined : generateAccountTokenEventToken(token),
-            }),
+            meta: generateAccountTokenEventMeta(collection, token),
         }),
     ]
 }

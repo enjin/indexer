@@ -13,11 +13,11 @@ const worker = new Worker(queueName, processor, {
 })
 
 worker.on('failed', (job: Job | undefined, error?: Error): void => {
-    void instance.failed(job, error)
+    instance.failed(job, error)
 })
 
-worker.on('completed', (job) => {
-    void instance.completed(job)
+worker.on('completed', (job): void => {
+    instance.completed(job)
 })
 
 export default worker

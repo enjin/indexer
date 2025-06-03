@@ -13,22 +13,24 @@ export async function burned(
     skipSave: boolean
 ): Promise<[EventModel, AccountTokenEvent] | undefined | EventModel> {
     const data = mappings.multiTokens.events.burned(item)
-    if (data.amount === 0n) return undefined
-
-    const address = data.accountId
+    const account = await getOrCreateAccount(ctx, data.accountId)
 
     const token = await ctx.store.findOne(Token, {
         where: { id: `${data.collectionId}-${data.tokenId}` },
-        relations: { collection: true },
+        relations: { collection: true, attributes: true },
     })
-
-    if (skipSave) {
-        await getOrCreateAccount(ctx, data.accountId)
-        return mappings.multiTokens.events.burnedEventModel(item, data, token?.collection, token)
+    if (skipSave || !token || data.amount === 0n) {
+        return mappings.multiTokens.events.burnedEventModel(
+            item,
+            data,
+            account,
+            token?.collection ?? null,
+            token ?? null
+        )
     }
 
     const tokenAccount = await ctx.store.findOne(TokenAccount, {
-        where: { id: `${address}-${data.collectionId}-${data.tokenId}` },
+        where: { id: `${account.id}-${data.collectionId}-${data.tokenId}` },
         relations: { account: true },
     })
 
@@ -38,21 +40,14 @@ export async function burned(
         tokenAccount.updatedAt = new Date(block.timestamp ?? 0)
         await ctx.store.save(tokenAccount)
     } else {
-        throwFatalError(`[Burned] We have not found token account ${address}-${data.collectionId}-${data.tokenId}.`)
+        throwFatalError(`[Burned] We have not found token account ${account.id}-${data.collectionId}-${data.tokenId}.`)
     }
 
-    if (token) {
-        token.supply -= data.amount
-        if (token.supply < 1n) {
-            token.infusion = 0n
-        }
-        await ctx.store.save(token)
-
-        QueueUtils.dispatchComputeStats(data.collectionId.toString())
-        QueueUtils.dispatchComputeTraits(data.collectionId.toString())
-    } else {
-        throwFatalError(`[Burned] We have not found token ${data.collectionId}-${data.tokenId}.`)
+    token.supply -= data.amount
+    if (token.supply < 1n) {
+        token.infusion = 0n
     }
+    await ctx.store.save(token)
 
     if (item.extrinsic) {
         await Sns.getInstance().send({
@@ -69,5 +64,8 @@ export async function burned(
         })
     }
 
-    return mappings.multiTokens.events.burnedEventModel(item, data, token?.collection, token)
+    QueueUtils.dispatchComputeStats(data.collectionId.toString())
+    QueueUtils.dispatchComputeTraits(data.collectionId.toString())
+
+    return mappings.multiTokens.events.burnedEventModel(item, data, account, token.collection, token)
 }
