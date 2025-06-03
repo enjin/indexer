@@ -50,6 +50,7 @@ const ignoreEvents: string[] = [
     // TODO: Check if we don't need these
     events.xcmPallet.sent.name,
     events.xcmPallet.feesPaid.name,
+    events.xcmPallet.assetsTrapped.name,
 ]
 
 const eventItems: string[] = [
