@@ -7,50 +7,49 @@ import * as mappings from '../../index'
 export async function poolMutated(ctx: CommonContext, block: Block, item: EventItem) {
     if (!item.extrinsic) return undefined
 
-    const eventData = mappings.nominationPools.events.poolMutated(item)
-
+    const data = mappings.nominationPools.events.poolMutated(item)
     const mutation: Record<string, number | string | Record<string, number>> = {}
 
-    const pool = await ctx.store.findOneByOrFail<NominationPool>(NominationPool, { id: eventData.poolId.toString() })
+    const pool = await ctx.store.findOneByOrFail<NominationPool>(NominationPool, { id: data.poolId.toString() })
 
-    if (eventData.mutation.duration !== undefined) {
-        pool.bonusCycle.pendingDuration = eventData.mutation.duration
-        mutation.duration = eventData.mutation.duration
+    if (data.mutation.duration !== undefined) {
+        pool.bonusCycle.pendingDuration = data.mutation.duration
+        mutation.duration = data.mutation.duration
     }
 
     if (
-        eventData.mutation.newCommission !== undefined &&
-        eventData.mutation.newCommission.__kind === 'SomeMutation' &&
-        eventData.mutation.newCommission.value !== undefined
+        data.mutation.newCommission !== undefined &&
+        data.mutation.newCommission.__kind === 'SomeMutation' &&
+        data.mutation.newCommission.value !== undefined
     ) {
-        pool.commission.current = eventData.mutation.newCommission.value
-        mutation.newCommission = eventData.mutation.newCommission.value
+        pool.commission.current = data.mutation.newCommission.value
+        mutation.newCommission = data.mutation.newCommission.value
     }
 
-    if (eventData.mutation.maxCommission !== undefined) {
-        pool.commission.max = eventData.mutation.maxCommission
-        mutation.maxCommission = eventData.mutation.maxCommission
+    if (data.mutation.maxCommission !== undefined) {
+        pool.commission.max = data.mutation.maxCommission
+        mutation.maxCommission = data.mutation.maxCommission
     }
 
-    if (eventData.mutation.changeRate) {
+    if (data.mutation.changeRate) {
         pool.commission.changeRate = new CommissionChangeRate({
-            maxDelta: eventData.mutation.changeRate.maxDelta,
-            minDelay: eventData.mutation.changeRate.minDelay,
+            maxDelta: data.mutation.changeRate.maxDelta,
+            minDelay: data.mutation.changeRate.minDelay,
         })
 
         mutation.changeRate = {
-            maxDelta: eventData.mutation.changeRate.maxDelta,
-            minDelay: eventData.mutation.changeRate.minDelay,
+            maxDelta: data.mutation.changeRate.maxDelta,
+            minDelay: data.mutation.changeRate.minDelay,
         }
     }
 
-    if ('capacity' in eventData.mutation && eventData.mutation.capacity) {
-        pool.capacity = eventData.mutation.capacity
+    if ('capacity' in data.mutation && data.mutation.capacity) {
+        pool.capacity = data.mutation.capacity
         mutation.capacity = pool.capacity.toString()
     }
 
-    if ('name' in eventData.mutation) {
-        pool.name = hexToString(eventData.mutation.name as string)
+    if ('name' in data.mutation) {
+        pool.name = hexToString(data.mutation.name as string)
         mutation.name = pool.name
     }
 
@@ -66,5 +65,5 @@ export async function poolMutated(ctx: CommonContext, block: Block, item: EventI
         },
     })
 
-    return mappings.nominationPools.events.poolMutatedEventModel(item, eventData)
+    return mappings.nominationPools.events.poolMutatedEventModel(item, data)
 }

@@ -7,7 +7,6 @@ export async function earlyBirdBonusPaymentUnlocked(ctx: CommonContext, block: B
     if (!item.extrinsic) return undefined
 
     const eventData = mappings.nominationPools.events.earlyBirdBonusPaymentUnlocked(item)
-
     await updateEarlyBirdInfo(ctx, block)
 
     return new EventModel({

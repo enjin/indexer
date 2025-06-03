@@ -44,17 +44,17 @@ export async function eraRewardsProcessed(
 ): Promise<EventModel | undefined> {
     if (!item.extrinsic) return undefined
 
-    const eventData = mappings.nominationPools.events.eraRewardsProcessed(item)
+    const data = mappings.nominationPools.events.eraRewardsProcessed(item)
 
     const [existReward, memberBalances, era] = await Promise.all([
-        ctx.store.findOneBy(EraReward, { id: `${eventData.poolId}-${eventData.era}` }),
-        getMembersBalance(block, eventData.poolId),
-        ctx.store.findOneBy(Era, { id: eventData.era.toString() }),
+        ctx.store.findOneBy(EraReward, { id: `${data.poolId}-${data.era}` }),
+        getMembersBalance(block, data.poolId),
+        ctx.store.findOneBy(Era, { id: data.era.toString() }),
     ])
-    const pool = await updatePool(ctx, block, eventData.poolId.toString())
+    const pool = await updatePool(ctx, block, data.poolId.toString())
 
-    if ('bonusCycleEnded' in eventData && eventData.bonusCycleEnded) {
-        const poolInfo = await mappings.nominationPools.storage.bondedPools(block, eventData.poolId)
+    if ('bonusCycleEnded' in data && data.bonusCycleEnded) {
+        const poolInfo = await mappings.nominationPools.storage.bondedPools(block, data.poolId)
         if (!poolInfo) throw new Error('Pool info not found')
         if (poolInfo.bonusCycle !== undefined) {
             pool.bonusCycle = new BonusCycle({
@@ -68,14 +68,14 @@ export async function eraRewardsProcessed(
     }
 
     if (existReward) {
-        existReward.bonus = eventData.bonus
-        existReward.commission = eventData.commission
+        existReward.bonus = data.bonus
+        existReward.commission = data.commission
             ? new CommissionPayment({
-                  beneficiary: eventData.commission.beneficiary,
-                  amount: eventData.commission.amount,
+                  beneficiary: data.commission.beneficiary,
+                  amount: data.commission.amount,
               })
             : null
-        existReward.reinvested = eventData.reinvested
+        existReward.reinvested = data.reinvested
         existReward.rate = pool.rate
 
         await ctx.store.save(existReward)
@@ -85,8 +85,8 @@ export async function eraRewardsProcessed(
     if (!era) {
         await ctx.store.save(
             new Era({
-                id: eventData.era.toString(),
-                index: eventData.era,
+                id: data.era.toString(),
+                index: data.era,
                 startAt: new Date(block.timestamp ?? 0),
                 startBlock: block.height,
                 nodeCount: 0,
@@ -95,14 +95,14 @@ export async function eraRewardsProcessed(
     }
 
     const reward = new EraReward({
-        id: `${eventData.poolId}-${eventData.era}`,
-        era: new Era({ id: eventData.era.toString() }),
-        bonus: eventData.bonus,
+        id: `${data.poolId}-${data.era}`,
+        era: new Era({ id: data.era.toString() }),
+        bonus: data.bonus,
         rate: pool.rate,
-        commission: eventData.commission
+        commission: data.commission
             ? new CommissionPayment({
-                  beneficiary: eventData.commission.beneficiary,
-                  amount: eventData.commission.amount,
+                  beneficiary: data.commission.beneficiary,
+                  amount: data.commission.amount,
               })
             : null,
         pool,
@@ -110,7 +110,7 @@ export async function eraRewardsProcessed(
         averageApy: 0,
         active: pool.balance.active,
         changeInRate: 0n,
-        reinvested: eventData.reinvested,
+        reinvested: data.reinvested,
     })
     await ctx.store.insert(reward)
     const eraRewards = await ctx.store.find(EraReward, {
@@ -187,12 +187,12 @@ export async function eraRewardsProcessed(
         id: item.id,
         name: item.name,
         body: {
-            pool: eventData.poolId.toString(),
-            era: eventData.era,
+            pool: data.poolId.toString(),
+            era: data.era,
             rate: pool.rate,
             extrinsic: item.extrinsic.id,
         },
     })
 
-    return mappings.nominationPools.events.eraRewardsProcessedEventModel(item, eventData, pool.rate)
+    return mappings.nominationPools.events.eraRewardsProcessedEventModel(item, data, pool.rate)
 }

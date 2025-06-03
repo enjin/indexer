@@ -6,10 +6,10 @@ import * as mappings from '../../index'
 export async function nominated(ctx: CommonContext, block: Block, item: EventItem): Promise<EventModel | undefined> {
     if (!item.extrinsic) return undefined
 
-    const eventData = mappings.nominationPools.events.nominated(item)
+    const data = mappings.nominationPools.events.nominated(item)
 
-    const pool = await ctx.store.findOneByOrFail<NominationPool>(NominationPool, { id: eventData.poolId.toString() })
-    const accounts = await Promise.all(eventData.validators.map((v) => getOrCreateAccount(ctx, v)))
+    const pool = await ctx.store.findOneByOrFail<NominationPool>(NominationPool, { id: data.poolId.toString() })
+    const accounts = await Promise.all(data.validators.map((v) => getOrCreateAccount(ctx, v)))
 
     for (const account of accounts) {
         const validator = await ctx.store.findOne(Validator, {
@@ -43,5 +43,5 @@ export async function nominated(ctx: CommonContext, block: Block, item: EventIte
 
     await ctx.store.save(poolValidators)
 
-    return mappings.nominationPools.events.nominatedEventModel(item, eventData)
+    return mappings.nominationPools.events.nominatedEventModel(item, data)
 }

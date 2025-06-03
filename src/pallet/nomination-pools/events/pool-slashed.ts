@@ -24,7 +24,7 @@ export function poolSlashedEventModel(item: EventItem, data: PoolSlashed): Event
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new NominationPoolsPoolSlashed({
             pool: data.poolId.toString(),
-            balance: 0n, // data.balance,
+            balance: data.balance,
         }),
     })
 }
