@@ -27,9 +27,9 @@ export async function syncAttributes(_job: Job, tokenId: string) {
     const tokenAttributes = generateAccountTokenEventAttributes(attributes)
     events.forEach((event) => {
         if (attributes?.length) {
-            event.attributes = tokenAttributes;
+            event.attributes = tokenAttributes
         } else {
-            event.attributes = [];
+            event.attributes = []
         }
     })
 
