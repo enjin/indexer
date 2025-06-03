@@ -204,10 +204,10 @@ async function bootstrap() {
                         }
                     }
 
-                    // if (block.header.height > dataService.lastBlockNumber) {
-                    //     p.balances.processors.addAccountsToSet(Array.from(signers))
-                    //     await p.balances.processors.saveAccounts(ctx as unknown as CommonContext, block.header)
-                    // }
+                    if (block.header.height > dataService.lastBlockNumber) {
+                        p.balances.processors.addAccountsToSet(Array.from(signers))
+                        await p.balances.processors.saveAccounts(ctx as unknown as CommonContext, block.header)
+                    }
 
                     for (const chunk of _.chunk(extrinsics, 1000)) {
                         void ctx.store.save(chunk)

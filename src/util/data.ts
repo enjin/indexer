@@ -108,6 +108,6 @@ export class DataService {
             throw new Error('DataService not initialized')
         }
 
-        return 10000000 //this._stateBlock ?? 0
+        return this._stateBlock ?? 0
     }
 }
