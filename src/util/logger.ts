@@ -3,7 +3,7 @@ import { Context } from '@logtail/types'
 import { createLogger, Logger as SqdLogger } from '@subsquid/logger'
 import config from './config'
 
-enum LogLevel {
+export enum LogLevel {
     TRACE = 0,
     DEBUG = 1,
     INFO = 2,

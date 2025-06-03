@@ -18,9 +18,9 @@ import { DataService } from './util/data'
 import { calls, events } from './type'
 import { QueueUtils } from './queue'
 import { QueuesEnum } from './queue/constants'
-import { Logger } from './util/logger'
+import { Logger, LogLevel } from './util/logger'
 
-const logger = new Logger('sqd:processor')
+const logger = new Logger('sqd:processor', LogLevel.DEBUG)
 
 async function bootstrap() {
     Sentry.init({

@@ -47,6 +47,9 @@ const ignoreEvents: string[] = [
     events.polkadotXcm.versionNotifyStarted.name,
     events.polkadotXcm.feesPaid.name,
     events.polkadotXcm.sent.name,
+    // TODO: Check if we don't need these
+    events.xcmPallet.sent.name,
+    events.xcmPallet.feesPaid.name,
 ]
 
 const eventItems: string[] = [
