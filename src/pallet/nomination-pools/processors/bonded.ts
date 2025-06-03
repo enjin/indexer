@@ -93,7 +93,7 @@ export async function bonded(ctx: CommonContext, block: Block, item: EventItem):
         const member = await ctx.store.findOneByOrFail<PoolMember>(PoolMember, { id: `${pool.id}-${account.id}` })
         member.bonded += eventData.bonded
         member.tokenAccount = new TokenAccount({ id: `${account.id}-1-${pool.id}` })
-        ctx.log.warn(`Setting tokenAccount for ${member.id} to ${member.tokenAccount.id}`)
+        ctx.log.debug(`Setting tokenAccount for ${member.id} to ${member.tokenAccount.id}`)
 
         await ctx.store.save(member)
     }

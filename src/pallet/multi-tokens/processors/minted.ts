@@ -61,7 +61,7 @@ export async function minted(
             id: `${data.tokenId}-${data.recipient}`,
         })
         if (poolMember) {
-            ctx.log.warn(`Adding tokenAccount ${tokenAccount.id} to poolMember ${poolMember.id}.`)
+            ctx.log.debug(`Adding tokenAccount ${tokenAccount.id} to poolMember ${poolMember.id}.`)
             poolMember.tokenAccount = tokenAccount
             await ctx.store.save(poolMember)
         }
