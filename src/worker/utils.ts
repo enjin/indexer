@@ -17,26 +17,25 @@ export function hash(str: string): string {
 }
 
 export function logError(error: Error, job?: Job): void {
-    const msg = `${error.name}: ${error.message}`
-    Logger.error(msg, LOGGER_NAMESPACE)
-
     if (job) {
-        void job.log(`[Error] ${msg}`)
+        void job.log(`[${error.name}] ${error.message}`)
     }
+
+    Logger.error(error, LOGGER_NAMESPACE)
 }
 
 export function logInfo(msg: string, job?: Job): void {
-    Logger.info(msg, LOGGER_NAMESPACE)
-
     if (job) {
         void job.log(`[Info] ${msg}`)
     }
+
+    Logger.info(msg, LOGGER_NAMESPACE)
 }
 
 export function logDebug(msg: string, job?: Job): void {
-    Logger.debug(msg, LOGGER_NAMESPACE)
-
     if (job) {
         void job.log(`[Debug] ${msg}`)
     }
+
+    Logger.debug(msg, LOGGER_NAMESPACE)
 }
