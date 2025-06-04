@@ -78,7 +78,7 @@ export async function bonded(ctx: CommonContext, block: Block, item: EventItem):
     }
 
     if (!alreadyExist) {
-        const memeber = new PoolMember({
+        const member = new PoolMember({
             id: `${pool.id}-${account.id}`,
             pool,
             account,
@@ -87,14 +87,12 @@ export async function bonded(ctx: CommonContext, block: Block, item: EventItem):
             joinedEra: activeEra,
         })
 
-        await ctx.store.insert(memeber)
+        await ctx.store.insert(member)
         pool.totalMembers += 1
     } else {
         const member = await ctx.store.findOneByOrFail<PoolMember>(PoolMember, { id: `${pool.id}-${account.id}` })
         member.bonded += eventData.bonded
         member.tokenAccount = new TokenAccount({ id: `${account.id}-1-${pool.id}` })
-        ctx.log.warn(`Setting tokenAccount for ${member.id} to ${member.tokenAccount.id}`)
-
         await ctx.store.save(member)
     }
 

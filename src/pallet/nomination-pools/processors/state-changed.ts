@@ -5,10 +5,11 @@ import * as mappings from '../../index'
 export async function stateChanged(ctx: CommonContext, block: Block, item: EventItem) {
     if (!item.extrinsic) return undefined
 
-    const eventData = mappings.nominationPools.events.stateChanged(item)
+    const data = mappings.nominationPools.events.stateChanged(item)
 
-    const pool = await ctx.store.findOneByOrFail(NominationPool, { id: eventData.poolId.toString() })
-    pool.state = PoolState[eventData.newState.__kind]
+    const pool = await ctx.store.findOneBy(NominationPool, { id: data.poolId.toString() })
+    if (!pool) return undefined
 
+    pool.state = PoolState[data.newState.__kind]
     await ctx.store.save(pool)
 }

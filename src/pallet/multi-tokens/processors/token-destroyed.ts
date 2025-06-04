@@ -1,5 +1,6 @@
 import { throwFatalError } from '../../../util/errors'
 import {
+    AccountTokenEvent,
     Attribute,
     Event as EventModel,
     Listing,
@@ -7,6 +8,7 @@ import {
     ListingStatus,
     RoyaltyCurrency,
     Token,
+    TokenAccount,
     TokenRarity,
     TraitToken,
 } from '../../../model'
@@ -17,7 +19,7 @@ import { QueueUtils } from '../../../queue'
 
 export async function tokenDestroyed(
     ctx: CommonContext,
-    block: Block,
+    _block: Block,
     item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {
@@ -41,6 +43,8 @@ export async function tokenDestroyed(
     await ctx.store.save(token)
 
     const [
+        accountTokenEvents,
+        tokenAccounts,
         listingSales,
         listingStatus,
         listingsMake,
@@ -50,6 +54,20 @@ export async function tokenDestroyed(
         tokenRarity,
         attributes,
     ] = await Promise.all([
+        ctx.store.find(AccountTokenEvent, {
+            where: {
+                token: {
+                    id: token.id,
+                },
+            },
+        }),
+        ctx.store.find(TokenAccount, {
+            where: {
+                token: {
+                    id: token.id,
+                },
+            },
+        }),
         ctx.store.find(ListingSale, {
             where: [
                 {
@@ -130,7 +148,14 @@ export async function tokenDestroyed(
         }),
     ])
 
+    const events = accountTokenEvents.map((e: AccountTokenEvent): AccountTokenEvent => {
+        e.token = null
+        return e
+    })
+
     await Promise.all([
+        ctx.store.save(events),
+        ctx.store.remove(tokenAccounts),
         ctx.store.remove(listingSales),
         ctx.store.remove(listingStatus),
         ctx.store.remove(listingsMake),
@@ -139,12 +164,8 @@ export async function tokenDestroyed(
         ctx.store.remove(traitTokens),
         ctx.store.remove(tokenRarity),
         ctx.store.remove(attributes),
+        ctx.store.remove(token),
     ])
-
-    await ctx.store.remove(token)
-
-    QueueUtils.dispatchComputeStats(data.collectionId.toString())
-    QueueUtils.dispatchComputeTraits(data.collectionId.toString())
 
     if (item.extrinsic) {
         await Sns.getInstance().send({
@@ -159,6 +180,9 @@ export async function tokenDestroyed(
             },
         })
     }
+
+    QueueUtils.dispatchComputeStats(data.collectionId.toString())
+    QueueUtils.dispatchComputeTraits(data.collectionId.toString())
 
     return mappings.multiTokens.events.tokenDestroyedEventModel(item, data)
 }

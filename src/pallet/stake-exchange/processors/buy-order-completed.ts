@@ -32,7 +32,7 @@ export async function buyOrderCompleted(
     let offerId = 'offerId' in event ? (event.offerId as bigint) : null
 
     if (offerId === null) {
-        const callData = mappings.stakeExchange.calls.buy(item.extrinsic.call)
+        const callData = mappings.stakeExchange.utils.anyBuy(item.extrinsic.call, event.tokenId, event.amount)
         offerId = callData.offerId
     }
 

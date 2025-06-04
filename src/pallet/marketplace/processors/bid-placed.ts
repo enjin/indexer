@@ -18,7 +18,9 @@ export async function bidPlaced(
         relations: {
             seller: true,
             makeAssetId: {
-                collection: true,
+                collection: {
+                    attributes: true,
+                },
                 bestListing: true,
                 attributes: true,
             },

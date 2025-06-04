@@ -23,6 +23,7 @@ export interface Config {
         stg: string
     }
     sentryDsn?: string
+    logLevel: number
     logtail: {
         token?: string
         host?: string
@@ -73,6 +74,7 @@ const config: Config = {
         stg: process.env.MARKETPLACE_API_STG_URL || '',
     },
     sentryDsn: process.env.SENTRY_DSN,
+    logLevel: process.env.LOG_LEVEL ? parseInt(process.env.LOG_LEVEL) : 2,
     logtail: {
         token: process.env.LOGTAIL_TOKEN,
         host: process.env.LOGTAIL_HOST,

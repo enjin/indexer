@@ -7,11 +7,11 @@ import * as mappings from '../../index'
 export async function poolSlashed(ctx: CommonContext, block: Block, item: EventItem): Promise<EventModel | undefined> {
     if (!item.extrinsic) return undefined
 
-    const eventData = mappings.nominationPools.events.poolSlashed(item)
+    const data = mappings.nominationPools.events.poolSlashed(item)
 
-    const pool = await updatePool(ctx, block, eventData.poolId.toString())
+    const pool = await updatePool(ctx, block, data.poolId.toString())
     const slash = new PoolSlash({
-        amount: eventData.balance,
+        amount: data.balance,
         appliedAt: new Date(block.timestamp ?? 0),
         appliedBlock: block.height,
     })
@@ -24,10 +24,10 @@ export async function poolSlashed(ctx: CommonContext, block: Block, item: EventI
         name: item.name,
         body: {
             pool: pool.id,
-            balance: eventData.balance,
+            balance: data.balance,
             extrinsic: item.extrinsic.id,
         },
     })
 
-    return mappings.nominationPools.events.poolSlashedEventModel(item, eventData)
+    return mappings.nominationPools.events.poolSlashedEventModel(item, data)
 }

@@ -40,7 +40,6 @@ export async function attributeRemoved(
 
             QueueUtils.dispatchComputeMetadata(token.id, 'token')
             QueueUtils.dispatchComputeTraits(data.collectionId.toString())
-            QueueUtils.dispatchSyncAttributes(token.id)
         } else {
             const collection = await ctx.store.findOne<Collection>(Collection, {
                 where: { id: data.collectionId.toString() },

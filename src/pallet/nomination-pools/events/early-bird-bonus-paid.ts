@@ -24,8 +24,8 @@ export function earlyBirdBonusPaidEventModel(item: EventItem, data: EarlyBirdBon
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new NominationPoolsEarlyBirdBonusPaid({
             pool: data.poolId.toString(),
-            paymentId: 0, // data.paymentId,
-            totalAccounts: 0, // data.totalAccounts,
+            paymentId: data.paymentId,
+            totalAccounts: data.totalAccounts,
         }),
     })
 }

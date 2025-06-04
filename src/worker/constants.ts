@@ -11,7 +11,6 @@ export const enum JobsEnum {
     FETCH_COLLECTIONS = 'FETCH_COLLECTIONS',
     FETCH_EXTRA = 'FETCH_EXTRA',
     INVALIDATE_LISTINGS = 'INVALIDATE_LISTINGS',
-    SYNC_ATTRIBUTES = 'SYNC_ATTRIBUTES',
 }
 
 export const enum QueuesEnum {
@@ -23,5 +22,4 @@ export const enum QueuesEnum {
     TOKENS = 'TOKENS',
     TRAITS = 'TRAITS',
     VALIDATORS = 'VALIDATORS',
-    ATTRIBUTES = 'ATTRIBUTES',
 }

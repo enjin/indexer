@@ -90,9 +90,7 @@ export async function created(ctx: CommonContext, block: Block, item: EventItem)
         nodeCount: 0,
     })
 
-    ctx.log.warn(`Pool ${pool.id} created`)
-
-    await ctx.store.insert(pool)
+    await ctx.store.save(pool)
 
     return mappings.nominationPools.events.createdEventModel(item, eventData)
 }

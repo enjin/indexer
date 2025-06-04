@@ -1,10 +1,58 @@
 import { throwFatalError } from '../../../util/errors'
-import { Collection, Event as EventModel, NativeTokenMetadata, Token } from '../../../model'
+import {
+    Collection,
+    Event as EventModel,
+    NativeTokenMetadata,
+    RoyaltyBeneficiary,
+    Token,
+    TokenBehaviorHasRoyalty,
+    TokenBehaviorIsCurrency,
+    TokenBehaviorType,
+} from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import * as mappings from '../../index'
 import { CreatePool } from '../../nomination-pools/calls'
 import { ForceMint, Mint } from '../calls'
 import { TokenCreated } from '../events'
+import { TokenMarketBehavior as TokenMarketBehavior500 } from '../../../type/matrixV500'
+import { TokenMarketBehavior as TokenMarketBehavior1020 } from '../../../type/matrixV1020'
+import { getOrCreateAccount } from '../../../util/entities'
+
+type TokenMarketBehavior = TokenMarketBehavior500 | TokenMarketBehavior1020
+
+async function getBehavior(
+    ctx: CommonContext,
+    behavior: TokenMarketBehavior
+): Promise<TokenBehaviorIsCurrency | TokenBehaviorHasRoyalty> {
+    if (behavior.__kind === TokenBehaviorType.IsCurrency) {
+        return new TokenBehaviorIsCurrency({
+            type: TokenBehaviorType.IsCurrency,
+        })
+    }
+    const beneficiaries =
+        'beneficiaries' in behavior.value
+            ? behavior.value.beneficiaries
+            : [
+                  {
+                      beneficiary: behavior.value.beneficiary,
+                      percentage: behavior.value.percentage,
+                  },
+              ]
+
+    const beneficiariesWithAccount = await Promise.all(
+        beneficiaries.map(async (v) => {
+            return new RoyaltyBeneficiary({
+                accountId: (await getOrCreateAccount(ctx, v.beneficiary)).id,
+                percentage: v.percentage,
+            })
+        })
+    )
+
+    return new TokenBehaviorHasRoyalty({
+        type: TokenBehaviorType.HasRoyalty,
+        beneficiaries: beneficiariesWithAccount,
+    })
+}
 
 async function tokenFromCall(
     ctx: CommonContext,
@@ -81,6 +129,13 @@ async function tokenFromCall(
         if ('metadata' in tokenParams) {
             token.nativeMetadata =
                 tokenParams.metadata !== undefined ? new NativeTokenMetadata(tokenParams.metadata) : null
+        }
+
+        if ('behavior' in tokenParams) {
+            token.behavior =
+                tokenParams.behavior !== undefined
+                    ? await getBehavior(ctx, tokenParams.behavior as TokenMarketBehavior)
+                    : null
         }
     }
 

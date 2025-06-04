@@ -12,6 +12,7 @@ import imOnline from './im-online'
 import system from './system'
 import polkadotXcm from './polkadot-xcm'
 import matrixUtility from './matrix-utility'
+import utility from './utility'
 
 export {
     multiTokens,
@@ -28,4 +29,5 @@ export {
     system,
     polkadotXcm,
     matrixUtility,
+    utility,
 }

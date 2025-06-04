@@ -12,8 +12,6 @@ import {
     Token,
 } from '../../../model'
 import { Minted } from './types'
-import { unwrapAccount } from '../../../util/entities'
-import { generateAccountTokenEventAttributes, generateAccountTokenEventMeta } from '../../../util/event'
 
 export function minted(event: EventItem): Minted {
     return match(event)
@@ -28,28 +26,32 @@ export function minted(event: EventItem): Minted {
 }
 
 export function mintedEventModel(
-    item: EventItem,
-    data: Minted,
-    creator: Account,
-    recipient: Account,
-    collection: Collection | null,
-    token: Token | null
+    eventId: string,
+    data: {
+        collectionId: bigint
+        tokenId: bigint
+        amount: bigint
+    },
+    relation: {
+        extrinsic: Extrinsic | undefined
+        issuer: Account
+        recipient: Account
+        collection: Collection | undefined
+        token: Token | undefined
+    }
 ): [EventModel, AccountTokenEvent] | EventModel | undefined {
-    const collectionId = collection ? collection.id : data.collectionId.toString()
-    const tokenId = token ? token.id : `${collectionId}-${data.tokenId}`
-
     const event = new EventModel({
-        id: item.id,
+        id: eventId,
         name: MultiTokensMinted.name,
-        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-        collectionId: collectionId,
-        tokenId: tokenId,
+        extrinsic: relation.extrinsic,
+        collectionId: data.collectionId.toString(),
+        tokenId: data.tokenId.toString(),
         data: new MultiTokensMinted({
             collectionId: data.collectionId,
             tokenId: data.tokenId,
-            token: tokenId,
-            issuer: unwrapAccount(data.issuer),
-            recipient: data.recipient,
+            token: `${data.collectionId}-${data.tokenId}`,
+            issuer: relation.issuer.id,
+            recipient: relation.recipient.id,
             amount: data.amount,
         }),
     })
@@ -57,14 +59,12 @@ export function mintedEventModel(
     return [
         event,
         new AccountTokenEvent({
-            id: item.id,
-            from: creator,
-            to: recipient,
+            id: eventId,
+            from: relation.issuer,
+            to: relation.recipient,
             event,
-            collectionId: collectionId,
-            tokenId: tokenId,
-            attributes: generateAccountTokenEventAttributes(token?.attributes),
-            meta: generateAccountTokenEventMeta(collection, token),
+            token: relation.token,
+            collection: relation.collection,
         }),
     ]
 }

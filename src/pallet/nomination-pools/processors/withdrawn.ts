@@ -15,16 +15,19 @@ function getActiveEra(ctx: CommonContext) {
 }
 
 export async function withdrawn(ctx: CommonContext, block: Block, item: EventItem): Promise<EventModel | undefined> {
-    if (!item.extrinsic) return undefined
-    if (!item.extrinsic.call) return undefined
+    if (!item.extrinsic || !item.extrinsic.call) return undefined
 
-    const eventData = mappings.nominationPools.events.withdrawn(item)
-    const pool = await updatePool(ctx, block, eventData.poolId.toString())
-    const account = await getOrCreateAccount(ctx, eventData.member)
-    const poolMember = await ctx.store.findOneOrFail<PoolMember>(PoolMember, {
-        where: { id: `${eventData.poolId}-${account.id}` },
+    const data = mappings.nominationPools.events.withdrawn(item)
+    const pool = await updatePool(ctx, block, data.poolId.toString())
+    const account = await getOrCreateAccount(ctx, data.member)
+
+    const poolMember = await ctx.store.findOne<PoolMember>(PoolMember, {
+        where: { id: `${data.poolId}-${account.id}` },
         relations: { tokenAccount: true },
     })
+    if (!poolMember) {
+        return undefined
+    }
 
     const activeEra = await getActiveEra(ctx)
 
@@ -42,12 +45,13 @@ export async function withdrawn(ctx: CommonContext, block: Block, item: EventIte
     await ctx.store.save(poolMember)
 
     if (poolMember.unbondingEras === null && (!poolMember.tokenAccount || poolMember.tokenAccount.balance <= 0n)) {
-        ctx.log.warn(`Deleting pool member ${poolMember.id}`)
         const poolMemberRewards = await ctx.store.findBy<PoolMemberRewards>(PoolMemberRewards, {
             member: { id: poolMember.id },
         })
+
         await ctx.store.remove(poolMemberRewards)
         await ctx.store.remove(poolMember)
+
         pool.totalMembers -= 1
         await ctx.store.save(pool)
     }
@@ -56,13 +60,13 @@ export async function withdrawn(ctx: CommonContext, block: Block, item: EventIte
         id: item.id,
         name: item.name,
         body: {
-            pool: eventData.poolId.toString(),
+            pool: data.poolId.toString(),
             account: account.id,
-            balance: eventData.balance,
-            points: eventData.points,
+            balance: data.balance,
+            points: data.points,
             extrinsic: item.extrinsic.id,
         },
     })
 
-    return mappings.nominationPools.events.withdrawnEventModel(item, eventData)
+    return mappings.nominationPools.events.withdrawnEventModel(item, data)
 }

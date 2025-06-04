@@ -6,8 +6,7 @@ import * as mappings from '../../index'
 export async function earlyBirdBonusCalculated(ctx: CommonContext, block: Block, item: EventItem) {
     if (!item.extrinsic) return undefined
 
-    const eventData = mappings.nominationPools.events.earlyBirdBonusCalculated(item)
-
+    const data = mappings.nominationPools.events.earlyBirdBonusCalculated(item)
     await updateEarlyBirdInfo(ctx, block)
 
     return new EventModel({
@@ -15,7 +14,7 @@ export async function earlyBirdBonusCalculated(ctx: CommonContext, block: Block,
         name: NominationPoolsEarlyBirdBonusCalculated.name,
         extrinsic: item.extrinsic.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new NominationPoolsEarlyBirdBonusCalculated({
-            totalAmount: eventData.totalAmount,
+            totalAmount: data.totalAmount,
         }),
     })
 }

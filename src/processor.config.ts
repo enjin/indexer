@@ -24,6 +24,27 @@ const commonEvents: string[] = [
 ]
 
 const ignoreEvents: string[] = [
+    events.balances.rescinded.name,
+    events.balances.upgraded.name,
+    events.claims.ethereumBlocksProcessed.name,
+    events.imOnline.allGood.name,
+    events.imOnline.heartbeatReceived.name,
+    events.fuelTanks.callDispatched.name,
+    events.fuelTanks.dispatchFailed.name,
+    events.fuelTanks.migrationStep.name,
+    events.fuelTanks.mutateFreezeStateScheduled.name,
+    events.fuelTanks.scheduleMutateFreezeStateFailed.name,
+    events.marketplace.migrationStep.name,
+    events.multiTokens.nextCollectionIdUpdated.name,
+    events.multiTokens.migrationStep.name,
+    events.multiTokens.tokenAccountDepositUpdated.name,
+    events.multiTokens.tokenAccountUpgraded.name,
+    events.multiTokens.tokenUpgraded.name,
+    events.multiTokens.tokenUpdated.name,
+    events.multiTokens.collectionUpgraded.name,
+    events.polkadotXcm.versionNotifyStarted.name,
+    events.polkadotXcm.feesPaid.name,
+    events.polkadotXcm.sent.name,
     events.staking.bonded.name,
     events.staking.unbonded.name,
     events.staking.payoutStarted.name,
@@ -31,19 +52,15 @@ const ignoreEvents: string[] = [
     events.staking.stakersElected.name,
     events.staking.withdrawn.name,
     events.staking.stakingElectionFailed.name,
-    events.imOnline.allGood.name,
-    events.imOnline.heartbeatReceived.name,
-    events.claims.ethereumBlocksProcessed.name,
-    events.fuelTanks.callDispatched.name,
-    events.fuelTanks.dispatchFailed.name,
-    events.fuelTanks.migrationStep.name,
-    events.marketplace.migrationStep.name,
-    events.multiTokens.nextCollectionIdUpdated.name,
-    events.multiTokens.migrationStep.name,
-    events.multiTokens.tokenAccountDepositUpdated.name,
-    events.polkadotXcm.versionNotifyStarted.name,
-    events.polkadotXcm.feesPaid.name,
-    events.polkadotXcm.sent.name,
+    events.xcmPallet.versionNotifyRequested.name,
+    events.xcmPallet.supportedVersionChanged.name,
+    events.xcmPallet.sent.name,
+    events.xcmPallet.feesPaid.name,
+    events.xcmPallet.assetsTrapped.name,
+    // TODO: This should probably be used if we don't use warp sync as we would need to update the info
+    events.multiTokens.collectionAccountApprovalsUpdated.name,
+    events.multiTokens.collectionDepositRecalculationInProgress.name,
+    events.multiTokens.collectionDepositUpdateCompleted.name,
 ]
 
 const eventItems: string[] = [
@@ -57,9 +74,8 @@ export const processorConfig = new SubstrateBatchProcessor()
     .setBlockRange({ from: config.dataSource.fromBlock })
     .addEvent({
         name: eventItems,
-        extrinsic: true,
-        stack: true,
         call: true,
+        extrinsic: true,
     })
     .setFields({
         block: {
@@ -68,20 +84,16 @@ export const processorConfig = new SubstrateBatchProcessor()
         },
         call: {
             origin: true,
-            success: true,
             args: true,
             name: true,
-            error: true,
         },
         extrinsic: {
             fee: true,
             hash: true,
             tip: true,
             signature: true,
-            version: true,
             success: true,
             error: true,
-            name: true,
         },
     })
 

@@ -1,5 +1,5 @@
 import { throwFatalError } from '../../../util/errors'
-import { AccountTokenEvent, Event as EventModel, PoolMember, Token, TokenAccount } from '../../../model'
+import { AccountTokenEvent, Event as EventModel, Extrinsic, PoolMember, Token, TokenAccount } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import { getOrCreateAccount } from '../../../util/entities'
 import { Sns } from '../../../util/sns'
@@ -20,19 +20,20 @@ export async function minted(
     const token = await ctx.store.findOne(Token, {
         where: { id: `${data.collectionId}-${data.tokenId}` },
         relations: {
-            collection: true,
+            collection: {
+                attributes: true,
+            },
             attributes: true,
         },
     })
     if (skipSave || !token || data.amount === 0n) {
-        return mappings.multiTokens.events.mintedEventModel(
-            item,
-            data,
+        return mappings.multiTokens.events.mintedEventModel(item.id, data, {
+            extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : undefined,
             issuer,
             recipient,
-            token?.collection ?? null,
-            token ?? null
-        )
+            collection: token?.collection,
+            token: token,
+        })
     }
 
     token.supply += data.amount
@@ -47,7 +48,13 @@ export async function minted(
         throwFatalError(
             `[Minted] We have not found token account ${data.recipient}-${data.collectionId}-${data.tokenId}.`
         )
-        return mappings.multiTokens.events.mintedEventModel(item, data, issuer, recipient, token.collection, token)
+        return mappings.multiTokens.events.mintedEventModel(item.id, data, {
+            extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : undefined,
+            issuer,
+            recipient,
+            collection: token.collection,
+            token: token,
+        })
     }
 
     tokenAccount.balance += data.amount
@@ -61,7 +68,7 @@ export async function minted(
             id: `${data.tokenId}-${data.recipient}`,
         })
         if (poolMember) {
-            ctx.log.warn(`Adding tokenAccount ${tokenAccount.id} to poolMember ${poolMember.id}.`)
+            ctx.log.debug(`Adding tokenAccount ${tokenAccount.id} to poolMember ${poolMember.id}.`)
             poolMember.tokenAccount = tokenAccount
             await ctx.store.save(poolMember)
         }
@@ -87,5 +94,11 @@ export async function minted(
     QueueUtils.dispatchComputeTraits(data.collectionId.toString())
     QueueUtils.dispatchComputeStats(data.collectionId.toString())
 
-    return mappings.multiTokens.events.mintedEventModel(item, data, issuer, recipient, token.collection, token)
+    return mappings.multiTokens.events.mintedEventModel(item.id, data, {
+        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : undefined,
+        issuer,
+        recipient,
+        collection: token.collection,
+        token: token,
+    })
 }

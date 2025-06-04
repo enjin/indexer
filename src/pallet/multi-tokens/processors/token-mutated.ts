@@ -1,9 +1,56 @@
 import { throwFatalError } from '../../../util/errors'
-import { Event as EventModel, NativeTokenMetadata, Token } from '../../../model'
+import {
+    Event as EventModel,
+    NativeTokenMetadata,
+    RoyaltyBeneficiary,
+    Token,
+    TokenBehaviorHasRoyalty,
+    TokenBehaviorIsCurrency,
+    TokenBehaviorType,
+} from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import * as mappings from '../../index'
 import { isNonFungible } from '../../../util/helpers'
 import { QueueUtils } from '../../../queue'
+import { getOrCreateAccount } from '../../../util/entities'
+import { TokenMarketBehavior as TokenMarketBehavior500 } from '../../../type/matrixV500'
+import { TokenMarketBehavior as TokenMarketBehavior1020 } from '../../../type/matrixV1020'
+
+type TokenMarketBehavior = TokenMarketBehavior500 | TokenMarketBehavior1020
+
+async function getBehavior(
+    ctx: CommonContext,
+    behavior: TokenMarketBehavior
+): Promise<TokenBehaviorIsCurrency | TokenBehaviorHasRoyalty> {
+    if (behavior.__kind === TokenBehaviorType.IsCurrency) {
+        return new TokenBehaviorIsCurrency({
+            type: TokenBehaviorType.IsCurrency,
+        })
+    }
+    const beneficiaries =
+        'beneficiaries' in behavior.value
+            ? behavior.value.beneficiaries
+            : [
+                  {
+                      beneficiary: behavior.value.beneficiary,
+                      percentage: behavior.value.percentage,
+                  },
+              ]
+
+    const beneficiariesWithAccount = await Promise.all(
+        beneficiaries.map(async (v) => {
+            return new RoyaltyBeneficiary({
+                accountId: (await getOrCreateAccount(ctx, v.beneficiary)).id,
+                percentage: v.percentage,
+            })
+        })
+    )
+
+    return new TokenBehaviorHasRoyalty({
+        type: TokenBehaviorType.HasRoyalty,
+        beneficiaries: beneficiariesWithAccount,
+    })
+}
 
 export async function tokenMutated(
     ctx: CommonContext,
@@ -43,8 +90,11 @@ export async function tokenMutated(
     }
 
     if (data.mutation.behavior.__kind === 'SomeMutation') {
-        // TODO: Fix this
-        // token.behavior = data.mutation.behavior.value === undefined ? null : await getBehavior(ctx, data.mutation.behavior.value)
+        if (data.mutation.behavior.value === undefined) {
+            token.behavior = null
+        } else {
+            token.behavior = await getBehavior(ctx, data.mutation.behavior.value as TokenMarketBehavior)
+        }
     }
 
     token.nonFungible = isNonFungible(token)
