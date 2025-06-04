@@ -7,7 +7,7 @@ import { genesisData } from './genesis-data'
 import { chainState } from './chain-state'
 import * as p from './pallet'
 import { getOrCreateAccount, unwrapAccount, unwrapSigner } from './util/entities'
-import { CommonContext, EventItem } from './contexts'
+import { Block, CommonContext, EventItem, ExtrinsicItem } from './contexts'
 import { updateClaimDetails } from './pallet/claims/processors/common'
 import { processorConfig } from './processor.config'
 import { Json } from '@subsquid/substrate-processor'
@@ -31,7 +31,7 @@ async function bootstrap() {
     const dataService = DataService.getInstance()
     await dataService.initialize()
 
-    logger.info(`Last block on config: ${dataService.lastBlockNumber}`)
+    logger.info(`last block number on config: ${dataService.lastBlockNumber}`)
 
     processorConfig.run(
         new TypeormDatabase({
@@ -53,7 +53,7 @@ async function bootstrap() {
                     const accountTokenEvents: AccountTokenEvent[] = []
 
                     if (block.header.height === 0) {
-                        ctx.log.info(`Starting chain-state sync`)
+                        ctx.log.info(`Starting warp sync...`)
 
                         await genesisData(ctx, block.header)
                         await chainState(ctx, block.header)
@@ -79,129 +79,22 @@ async function bootstrap() {
                     )
 
                     for (const extrinsic of block.extrinsics) {
-                        const { id, fee, hash, success, tip, call, error } = extrinsic
-
-                        let fuelTank = null
-                        if (!call) {
-                            continue
-                        }
-                        if (
-                            [calls.parachainSystem.setValidationData.name, calls.timestamp.set.name].includes(call.name)
-                        ) {
-                            continue
-                        }
-
-                        if (
-                            call.name === calls.fuelTanks.dispatch.name ||
-                            call.name === calls.fuelTanks.dispatchAndTouch.name
-                        ) {
-                            const tankData = p.fuelTanks.utils.anyDispatch(call)
-                            const tank = await ctx.store.findOneByOrFail<FuelTank>(FuelTank, {
-                                id: unwrapAccount(tankData.tankId),
-                            })
-
-                            fuelTank = new FuelTankData({
-                                id: tank.id,
-                                name: tank.name,
-                                feePaid: 0n,
-                                ruleSetId: tankData.ruleSetId,
-                                paysRemainingFee:
-                                    'settings' in tankData && tankData.settings !== undefined
-                                        ? tankData.settings.paysRemainingFee
-                                        : null,
-                                useNoneOrigin:
-                                    'settings' in tankData && tankData.settings !== undefined
-                                        ? tankData.settings.useNoneOrigin
-                                        : null,
-                            })
-
-                            for (const eventItem of block.events) {
-                                if (
-                                    eventItem.name !== events.balances.withdraw.name ||
-                                    eventItem.extrinsic?.id !== id
-                                ) {
-                                    continue
-                                }
-
-                                const transfer = p.balances.events.withdraw(eventItem)
-
-                                if (transfer.who === tank.id) {
-                                    fuelTank.feePaid = transfer.amount
-                                }
-                            }
-                        }
-
-                        const signer = await getOrCreateAccount(ctx, unwrapSigner(extrinsic))
-                        const callName = call.name.split('.')
-                        const txFee = (fee ?? 0n) + (fuelTank?.feePaid ?? 0n)
-
-                        const extrinsicM = new Extrinsic({
-                            id,
-                            hash,
-                            blockNumber: block.header.height,
-                            blockHash: block.header.hash,
-                            success,
-                            pallet: callName[0],
-                            method: callName[1],
-                            args: call.args,
-                            signer,
-                            nonce: signer.nonce,
-                            tip,
-                            error: error as string,
-                            fee: new Fee({
-                                amount: txFee,
-                                who: signer.id,
-                            }),
-                            fuelTank,
-                            createdAt: new Date(block.header.timestamp ?? 0),
-                            participants: getParticipants(call.args, extrinsic.events, signer.id),
-                        })
-
-                        // Hotfix for adding listing seller to participant
-                        if (
-                            call.name === calls.marketplace.fillListing.name ||
-                            call.name === calls.marketplace.finalizeAuction.name ||
-                            (fuelTank &&
-                                call.args.call?.__kind === 'Marketplace' &&
-                                call.args.call?.value?.__kind === 'fill_listing') ||
-                            (fuelTank &&
-                                call.args.call?.__kind === 'Marketplace' &&
-                                call.args.call?.value?.__kind === 'finalize_auction')
-                        ) {
-                            const listingId = call.args.call?.value?.listingId ?? call.args.listingId
-
-                            const listing = await ctx.store.findOne<Listing>(Listing, {
-                                where: { id: hexStripPrefix(listingId) },
-                                relations: { seller: true },
-                            })
-                            if (listing?.seller && !extrinsicM.participants.includes(listing.seller.id)) {
-                                extrinsicM.participants.push(listing.seller.id)
-                            }
-                        }
-
-                        signers.add(signer.id)
-                        extrinsics.push(extrinsicM)
+                        await processExtrinsics(ctx, block.header, block.events, extrinsic, signers, extrinsics)
                     }
 
                     for (const call of block.calls) {
-                        await callHandler(ctx as unknown as CommonContext, block.header, call)
+                        await callHandler(ctx, block.header, call)
                     }
+
                     for (const eventItem of block.events) {
-                        const event = await eventHandler(
-                            ctx as unknown as CommonContext,
+                        await processEvents(
+                            ctx,
                             block.header,
                             eventItem,
-                            block.header.height <= dataService.lastBlockNumber
+                            dataService.lastBlockNumber,
+                            eventsCollection,
+                            accountTokenEvents
                         )
-
-                        if (event) {
-                            if (Array.isArray(event)) {
-                                eventsCollection.push(event[0])
-                                accountTokenEvents.push(event[1])
-                            } else {
-                                eventsCollection.push(event)
-                            }
-                        }
                     }
 
                     if (block.header.height > dataService.lastBlockNumber) {
@@ -210,13 +103,13 @@ async function bootstrap() {
                     }
 
                     for (const chunk of _.chunk(extrinsics, 1000)) {
-                        void ctx.store.save(chunk)
+                        await ctx.store.save(chunk)
                     }
                     for (const chunk of _.chunk(eventsCollection, 1000)) {
-                        void ctx.store.save(chunk)
+                        await ctx.store.save(chunk)
                     }
                     for (const chunk of _.chunk(accountTokenEvents, 1000)) {
-                        void ctx.store.save(chunk)
+                        await ctx.store.save(chunk)
                     }
                 }
 
@@ -225,13 +118,133 @@ async function bootstrap() {
                     await chainState(ctx, lastBlock)
                 }
             } catch (error) {
+                await QueueUtils.resumeQueue(QueuesEnum.COLLECTIONS)
                 await QueueUtils.resumeQueue(QueuesEnum.METADATA)
 
+                logger.fatal(error)
                 Sentry.captureException(error)
+
                 throw error
             }
         }
     )
+}
+
+async function processEvents(
+    ctx: CommonContext,
+    block: Block,
+    eventItem: EventItem,
+    lastBlockNumber: number,
+    eventsCollection: Event[],
+    accountTokenEvents: AccountTokenEvent[]
+): Promise<void> {
+    const event = await eventHandler(ctx, block, eventItem, block.height <= lastBlockNumber)
+
+    if (event) {
+        if (Array.isArray(event)) {
+            eventsCollection.push(event[0])
+            accountTokenEvents.push(event[1])
+        } else {
+            eventsCollection.push(event)
+        }
+    }
+}
+
+async function processExtrinsics(
+    ctx: CommonContext,
+    block: Block,
+    eventItems: EventItem[],
+    extrinsic: ExtrinsicItem,
+    signers: Set<string>,
+    extrinsics: Extrinsic[]
+): Promise<void> {
+    const { id, fee, hash, success, tip, call, error } = extrinsic
+
+    let fuelTank = null
+    if (!call) {
+        return
+    }
+    if ([calls.parachainSystem.setValidationData.name, calls.timestamp.set.name].includes(call.name)) {
+        return
+    }
+
+    if (call.name === calls.fuelTanks.dispatch.name || call.name === calls.fuelTanks.dispatchAndTouch.name) {
+        const tankData = p.fuelTanks.utils.anyDispatch(call)
+        const tank = await ctx.store.findOneByOrFail<FuelTank>(FuelTank, {
+            id: unwrapAccount(tankData.tankId),
+        })
+
+        fuelTank = new FuelTankData({
+            id: tank.id,
+            name: tank.name,
+            feePaid: 0n,
+            ruleSetId: tankData.ruleSetId,
+            paysRemainingFee:
+                'settings' in tankData && tankData.settings !== undefined ? tankData.settings.paysRemainingFee : null,
+            useNoneOrigin:
+                'settings' in tankData && tankData.settings !== undefined ? tankData.settings.useNoneOrigin : null,
+        })
+
+        for (const eventItem of eventItems) {
+            if (eventItem.name !== events.balances.withdraw.name || eventItem.extrinsic?.id !== id) {
+                continue
+            }
+
+            const transfer = p.balances.events.withdraw(eventItem)
+
+            if (transfer.who === tank.id) {
+                fuelTank.feePaid = transfer.amount
+            }
+        }
+    }
+
+    const signer = await getOrCreateAccount(ctx, unwrapSigner(extrinsic))
+    const callName = call.name.split('.')
+    const txFee = (fee ?? 0n) + (fuelTank?.feePaid ?? 0n)
+
+    const extrinsicM = new Extrinsic({
+        id,
+        hash,
+        blockNumber: block.height,
+        blockHash: block.hash,
+        success,
+        pallet: callName[0],
+        method: callName[1],
+        args: call.args,
+        signer,
+        nonce: signer.nonce,
+        tip,
+        error: error as string,
+        fee: new Fee({
+            amount: txFee,
+            who: signer.id,
+        }),
+        fuelTank,
+        createdAt: new Date(block.timestamp ?? 0),
+        participants: getParticipants(call.args, extrinsic.events, signer.id),
+    })
+
+    // Hotfix for adding listing seller to participant
+    if (
+        call.name === calls.marketplace.fillListing.name ||
+        call.name === calls.marketplace.finalizeAuction.name ||
+        (fuelTank &&
+            calls.marketplace.fillListing.name === `${call.args.call?.__kind}.${call.args.call?.value?.__kind}`) ||
+        (fuelTank &&
+            calls.marketplace.finalizeAuction.name === `${call.args.call?.__kind}.${call.args.call?.value?.__kind}`)
+    ) {
+        const listingId = call.args.call?.value?.listingId ?? call.args.listingId
+        const listing = await ctx.store.findOne<Listing>(Listing, {
+            where: { id: hexStripPrefix(listingId) },
+            relations: { seller: true },
+        })
+        if (listing?.seller && !extrinsicM.participants.includes(listing.seller.id)) {
+            extrinsicM.participants.push(listing.seller.id)
+        }
+    }
+
+    signers.add(signer.id)
+    extrinsics.push(extrinsicM)
 }
 
 function getParticipants(args: Json, _events: EventItem[], signer: string): string[] {
