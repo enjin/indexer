@@ -38,6 +38,7 @@ const ignoreEvents: string[] = [
     events.multiTokens.nextCollectionIdUpdated.name,
     events.multiTokens.migrationStep.name,
     events.multiTokens.tokenAccountDepositUpdated.name,
+    events.multiTokens.tokenAccountUpgraded.name,
     events.multiTokens.tokenUpgraded.name,
     events.polkadotXcm.versionNotifyStarted.name,
     events.polkadotXcm.feesPaid.name,
