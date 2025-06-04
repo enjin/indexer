@@ -47,6 +47,10 @@ async function bootstrap() {
                 )
 
                 for (const block of ctx.blocks) {
+                    ctx.log.debug(
+                        `Processing block ${block.header.height}, ${block.events.length} events, ${block.calls.length} calls to process`
+                    )
+
                     const extrinsics: Extrinsic[] = []
                     const signers = new Set<string>()
                     const eventsCollection: Event[] = []
@@ -73,10 +77,6 @@ async function bootstrap() {
                         await QueueUtils.resumeQueue(QueuesEnum.METADATA)
                         await QueueUtils.resumeQueue(QueuesEnum.COLLECTIONS)
                     }
-
-                    ctx.log.debug(
-                        `Processing block ${block.header.height}, ${block.events.length} events, ${block.calls.length} calls to process`
-                    )
 
                     for (const extrinsic of block.extrinsics) {
                         const [s, e] = await processExtrinsics(ctx, block.header, block.events, extrinsic)
