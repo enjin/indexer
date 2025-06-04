@@ -28,21 +28,13 @@ export async function minted(
     })
     if (skipSave || !token || data.amount === 0n) {
         ctx.log.warn(token)
-        return mappings.multiTokens.events.mintedEventModel(
-            item.id,
-            {
-                collectionId: data.collectionId,
-                tokenId: data.tokenId,
-                amount: data.amount,
-            },
-            {
-                extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-                issuer,
-                recipient,
-                collection: token?.collection ?? null,
-                token: token ?? null,
-            }
-        )
+        return mappings.multiTokens.events.mintedEventModel(item.id, data, {
+            extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
+            issuer,
+            recipient,
+            collection: token?.collection,
+            token: token,
+        })
     }
 
     token.supply += data.amount
@@ -57,21 +49,13 @@ export async function minted(
         throwFatalError(
             `[Minted] We have not found token account ${data.recipient}-${data.collectionId}-${data.tokenId}.`
         )
-        return mappings.multiTokens.events.mintedEventModel(
-            item.id,
-            {
-                collectionId: data.collectionId,
-                tokenId: data.tokenId,
-                amount: data.amount,
-            },
-            {
-                extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-                issuer,
-                recipient,
-                collection: token?.collection ?? null,
-                token: token ?? null,
-            }
-        )
+        return mappings.multiTokens.events.mintedEventModel(item.id, data, {
+            extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
+            issuer,
+            recipient,
+            collection: token.collection,
+            token: token,
+        })
     }
 
     tokenAccount.balance += data.amount
@@ -111,19 +95,11 @@ export async function minted(
     QueueUtils.dispatchComputeTraits(data.collectionId.toString())
     QueueUtils.dispatchComputeStats(data.collectionId.toString())
 
-    return mappings.multiTokens.events.mintedEventModel(
-        item.id,
-        {
-            collectionId: data.collectionId,
-            tokenId: data.tokenId,
-            amount: data.amount,
-        },
-        {
-            extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-            issuer,
-            recipient,
-            collection: token?.collection ?? null,
-            token: token ?? null,
-        }
-    )
+    return mappings.multiTokens.events.mintedEventModel(item.id, data, {
+        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
+        issuer,
+        recipient,
+        collection: token.collection,
+        token: token,
+    })
 }
