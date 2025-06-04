@@ -12,7 +12,6 @@ import {
     Token,
 } from '../../../model'
 import { Minted } from './types'
-import { unwrapAccount } from '../../../util/entities'
 
 export function minted(event: EventItem): Minted {
     return match(event)
@@ -34,11 +33,11 @@ export function mintedEventModel(
         amount: bigint
     },
     relation: {
-        extrinsic: Extrinsic | null
+        extrinsic: Extrinsic | undefined
         issuer: Account
         recipient: Account
-        collection: Collection | null
-        token: Token | null
+        collection: Collection | undefined
+        token: Token | undefined
     }
 ): [EventModel, AccountTokenEvent] | EventModel | undefined {
     const event = new EventModel({

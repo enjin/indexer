@@ -27,9 +27,8 @@ export async function minted(
         },
     })
     if (skipSave || !token || data.amount === 0n) {
-        ctx.log.warn(token)
         return mappings.multiTokens.events.mintedEventModel(item.id, data, {
-            extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
+            extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : undefined,
             issuer,
             recipient,
             collection: token?.collection,
@@ -50,7 +49,7 @@ export async function minted(
             `[Minted] We have not found token account ${data.recipient}-${data.collectionId}-${data.tokenId}.`
         )
         return mappings.multiTokens.events.mintedEventModel(item.id, data, {
-            extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
+            extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : undefined,
             issuer,
             recipient,
             collection: token.collection,
@@ -96,7 +95,7 @@ export async function minted(
     QueueUtils.dispatchComputeStats(data.collectionId.toString())
 
     return mappings.multiTokens.events.mintedEventModel(item.id, data, {
-        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
+        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : undefined,
         issuer,
         recipient,
         collection: token.collection,
