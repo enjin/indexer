@@ -36,6 +36,7 @@ export async function computeTraits(job: Job, collectionId: string) {
             { value: string; display_name?: string } | string
         >
         Object.entries(attributes).forEach(([traitType, data]) => {
+            job.log(`Processing trait: ${JSON.stringify(data)}`)
             let value = data as string
             if (typeof data === 'object') {
                 value = data.value
@@ -43,6 +44,9 @@ export async function computeTraits(job: Job, collectionId: string) {
                     traitType = data.display_name
                 }
             }
+            
+            job.log(`Processing trait type: ${traitType}`)
+            job.log(`Processing trait value: ${value}`)
 
             if (!value) return
 
