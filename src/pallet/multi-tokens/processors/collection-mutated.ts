@@ -71,11 +71,30 @@ export async function collectionMutated(
         } else {
             collection.marketPolicy = await getMarket(ctx, data.mutation.royalty.value)
 
-            const previousPercentage = collection.marketPolicy?.royalty?.percentage || 0
-            const currentPercentage =
-                'percentage' in data.mutation.royalty.value ? data.mutation.royalty.value.percentage || 0 : 0
+            let hasChangedRoyalty = false
+            const percentage = {
+                old: 0,
+                new: 0,
+            }
+            const newBeneficiaries =
+                'beneficiaries' in data.mutation.royalty.value ? data.mutation.royalty.value.beneficiaries : []
+            const previousBeneficiaries = collection.marketPolicy?.beneficiaries || []
 
-            if (currentPercentage > previousPercentage) {
+            if (newBeneficiaries.length !== previousBeneficiaries.length) {
+                hasChangedRoyalty = true
+            } else {
+                for (const newB of newBeneficiaries) {
+                    const prevB = previousBeneficiaries.find((b) => b.accountId === newB.beneficiary)
+                    if (!prevB || prevB.percentage !== newB.percentage) {
+                        hasChangedRoyalty = true
+                        percentage.old = prevB?.percentage || 0
+                        percentage.new = newB.percentage
+                        break
+                    }
+                }
+            }
+
+            if (hasChangedRoyalty) {
                 // royalty has increased
                 // we need to update all active listings
                 const listings = await ctx.store.find<Listing>(Listing, {
@@ -95,8 +114,8 @@ export async function collectionMutated(
                     name: 'Marketplace.RoyaltyIncreased',
                     body: {
                         collectionId: data.collectionId,
-                        previousRoyalty: previousPercentage,
-                        newRoyalty: currentPercentage,
+                        previousRoyalty: percentage.old,
+                        newRoyalty: percentage.new,
                         sellers: listings.map((listing) => listing.seller.address),
                         listings: listings.map((listing) => listing.id),
                     },
