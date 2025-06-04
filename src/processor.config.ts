@@ -58,6 +58,7 @@ const ignoreEvents: string[] = [
     events.xcmPallet.assetsTrapped.name,
     // TODO: This should probably be used if we don't use warp sync as we would need to update the info
     events.multiTokens.collectionAccountApprovalsUpdated.name,
+    events.multiTokens.collectionDepositRecalculationInProgress.name,
     events.multiTokens.collectionDepositUpdateCompleted.name,
 ]
 
@@ -73,7 +74,6 @@ export const processorConfig = new SubstrateBatchProcessor()
     .addEvent({
         name: eventItems,
         extrinsic: true,
-        stack: true,
         call: true,
     })
     .setFields({
@@ -83,20 +83,16 @@ export const processorConfig = new SubstrateBatchProcessor()
         },
         call: {
             origin: true,
-            success: true,
             args: true,
             name: true,
-            error: true,
         },
         extrinsic: {
             fee: true,
             hash: true,
             tip: true,
             signature: true,
-            version: true,
             success: true,
             error: true,
-            name: true,
         },
     })
 
