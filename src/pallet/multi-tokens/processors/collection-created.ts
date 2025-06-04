@@ -87,6 +87,9 @@ export async function collectionCreated(
             ? callData.descriptor.policy.mint.forceSingleMint
             : callData.descriptor.policy.mint.forceCollapsingSupply
 
+    const royalty = callData.descriptor.policy.market?.royalty
+    const market = royalty ? await getMarket(ctx, royalty) : null
+
     const account = await getOrCreateAccount(ctx, eventData.owner)
     const collection = new Collection({
         id: eventData.collectionId.toString(),
@@ -97,8 +100,7 @@ export async function collectionCreated(
             maxTokenSupply: callData.descriptor.policy.mint.maxTokenSupply,
             forceSingleMint: forceSingleMint,
         }),
-        // TODO: Fix this
-        // marketPolicy: callData.descriptor.policy.market,
+        marketPolicy: callData.descriptor.policy.market,
         transferPolicy: new TransferPolicy({
             isFrozen: false,
         }),
