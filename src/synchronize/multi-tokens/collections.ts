@@ -7,7 +7,6 @@ import {
     CollectionStats,
     MarketPolicy,
     MintPolicy,
-    Royalty,
     RoyaltyBeneficiary,
     TransferPolicy,
 } from '../../model'

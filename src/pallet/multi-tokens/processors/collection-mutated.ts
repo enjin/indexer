@@ -4,7 +4,6 @@ import {
     Event as EventModel,
     Listing,
     MarketPolicy,
-    Royalty,
     RoyaltyBeneficiary,
     RoyaltyCurrency,
     Token,
@@ -78,7 +77,7 @@ export async function collectionMutated(
             }
             const newBeneficiaries =
                 'beneficiaries' in data.mutation.royalty.value ? data.mutation.royalty.value.beneficiaries : []
-            const previousBeneficiaries = collection.marketPolicy?.beneficiaries || []
+            const previousBeneficiaries = collection.marketPolicy.beneficiaries || []
 
             if (newBeneficiaries.length !== previousBeneficiaries.length) {
                 hasChangedRoyalty = true

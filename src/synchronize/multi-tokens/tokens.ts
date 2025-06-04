@@ -3,7 +3,6 @@ import { multiTokens } from '../../pallet'
 import {
     Collection,
     FreezeState,
-    Royalty,
     RoyaltyBeneficiary,
     Token,
     TokenBehaviorHasRoyalty,

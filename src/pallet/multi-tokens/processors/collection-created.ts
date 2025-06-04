@@ -9,7 +9,6 @@ import {
     CollectionFlags,
     CollectionStats,
     MarketPolicy,
-    Royalty,
     RoyaltyBeneficiary,
 } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
@@ -83,7 +82,7 @@ export async function collectionCreated(
             ? callData.descriptor.policy.mint.forceSingleMint
             : callData.descriptor.policy.mint.forceCollapsingSupply
 
-    const royalty = callData.descriptor.policy.market?.royalty
+    const royalty = callData.descriptor.policy.market.royalty
     const market = royalty ? await getMarket(ctx, royalty) : null
 
     const account = await getOrCreateAccount(ctx, eventData.owner)
