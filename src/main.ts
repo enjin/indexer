@@ -42,6 +42,11 @@ async function bootstrap() {
             try {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 ctx.log = logger as any
+
+                if (ctx.blocks[0].header.height === 0) {
+                    await startWarpSync(ctx, ctx.blocks[0].header)
+                }
+
                 ctx.log.debug(
                     `Processing batch of blocks from ${ctx.blocks[0].header.height} to ${ctx.blocks[ctx.blocks.length - 1].header.height}`
                 )
@@ -55,28 +60,6 @@ async function bootstrap() {
                     const signers = new Set<string>()
                     const eventsCollection: Event[] = []
                     const accountTokenEvents: AccountTokenEvent[] = []
-
-                    if (block.header.height === 0) {
-                        ctx.log.info(`Starting warp sync...`)
-
-                        await genesisData(ctx, block.header)
-                        await chainState(ctx, block.header)
-
-                        if (Number(config.prefix) === 1110) {
-                            await updateClaimDetails(ctx, block.header)
-                        }
-
-                        await QueueUtils.pauseQueue(QueuesEnum.COLLECTIONS)
-                        await QueueUtils.pauseQueue(QueuesEnum.METADATA)
-                        await syncState(ctx as unknown as CommonContext)
-                    }
-
-                    if (block.header.height === dataService.lastBlockNumber) {
-                        QueueUtils.dispatchComputeCollections()
-                        QueueUtils.dispatchFetchAllBalances()
-                        await QueueUtils.resumeQueue(QueuesEnum.METADATA)
-                        await QueueUtils.resumeQueue(QueuesEnum.COLLECTIONS)
-                    }
 
                     for (const extrinsic of block.extrinsics) {
                         const [s, e] = await processExtrinsics(ctx, block.header, block.events, extrinsic)
@@ -100,17 +83,25 @@ async function bootstrap() {
                     }
 
                     for (const chunk of _.chunk(extrinsics, 1000)) {
-                        void ctx.store.save(chunk)
+                        await ctx.store.save(chunk)
                     }
                     for (const chunk of _.chunk(eventsCollection, 1000)) {
-                        void ctx.store.save(chunk)
+                        await ctx.store.save(chunk)
                     }
                     for (const chunk of _.chunk(accountTokenEvents, 1000)) {
-                        void ctx.store.save(chunk)
+                        await ctx.store.save(chunk)
                     }
                 }
 
                 const lastBlock = ctx.blocks[ctx.blocks.length - 1].header
+
+                if (lastBlock.height === dataService.lastBlockNumber) {
+                    QueueUtils.dispatchComputeCollections()
+                    QueueUtils.dispatchFetchAllBalances()
+                    await QueueUtils.resumeQueue(QueuesEnum.METADATA)
+                    await QueueUtils.resumeQueue(QueuesEnum.COLLECTIONS)
+                }
+
                 if (lastBlock.height > dataService.lastBlockNumber) {
                     await chainState(ctx, lastBlock)
                 }
@@ -125,6 +116,28 @@ async function bootstrap() {
             }
         }
     )
+}
+
+/// This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). The promise rejected with the reason:
+// QueryFailedError: insert or update on table "account_token_event" violates foreign key constraint "FK_aaa1cf924ed392764b0bace1ad1"
+//     at PostgresQueryRunner.query (/squid/node_modules/.pnpm/typeorm@0.3.24_ioredis@5.6.1_pg-query-stream@4.10.0_pg@8.16.0__pg@8.16.0_reflect-metadata@0.2.2/node_modules/typeorm/driver/postgres/PostgresQueryRunner.js:216:19)
+//     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+//     at async InsertQueryBu
+
+async function startWarpSync(ctx: CommonContext, block: Block) {
+    ctx.log.info(`Starting warp sync...`)
+
+    await QueueUtils.pauseQueue(QueuesEnum.COLLECTIONS)
+    await QueueUtils.pauseQueue(QueuesEnum.METADATA)
+
+    await genesisData(ctx, block)
+    await chainState(ctx, block)
+
+    if (Number(config.prefix) === 1110) {
+        await updateClaimDetails(ctx, block)
+    }
+
+    await syncState(ctx)
 }
 
 async function processEvents(
