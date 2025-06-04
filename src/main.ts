@@ -94,10 +94,6 @@ async function bootstrap() {
                         if (a) accountTokenEvents.push(a)
                     }
 
-                    ctx.log.info(
-                        `Signers: ${signers.size} - Extrinsics: ${extrinsics.length} - Events: ${eventsCollection.length} - AccountEvents: ${accountTokenEvents.length}`
-                    )
-
                     if (block.header.height > dataService.lastBlockNumber) {
                         p.balances.processors.addAccountsToSet(Array.from(signers))
                         await p.balances.processors.saveAccounts(ctx, block.header)
