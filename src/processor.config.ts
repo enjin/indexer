@@ -73,7 +73,6 @@ export const processorConfig = new SubstrateBatchProcessor()
     .setBlockRange({ from: config.dataSource.fromBlock })
     .addEvent({
         name: eventItems,
-        extrinsic: true,
         call: true,
     })
     .setFields({
