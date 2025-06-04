@@ -75,6 +75,7 @@ export const processorConfig = new SubstrateBatchProcessor()
     .addEvent({
         name: eventItems,
         call: true,
+        extrinsic: true,
     })
     .setFields({
         block: {

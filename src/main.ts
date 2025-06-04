@@ -118,12 +118,6 @@ async function bootstrap() {
     )
 }
 
-/// This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). The promise rejected with the reason:
-// QueryFailedError: insert or update on table "account_token_event" violates foreign key constraint "FK_aaa1cf924ed392764b0bace1ad1"
-//     at PostgresQueryRunner.query (/squid/node_modules/.pnpm/typeorm@0.3.24_ioredis@5.6.1_pg-query-stream@4.10.0_pg@8.16.0__pg@8.16.0_reflect-metadata@0.2.2/node_modules/typeorm/driver/postgres/PostgresQueryRunner.js:216:19)
-//     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
-//     at async InsertQueryBu
-
 async function startWarpSync(ctx: CommonContext, block: Block) {
     ctx.log.info(`Starting warp sync...`)
 
