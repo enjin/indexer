@@ -76,17 +76,6 @@ type Event @entity {
   tokenId: String @index
 }
 
-type AccountTokenEventToken {
-  id: String!
-  tokenId: String!
-  attributes: [AccountTokenEventAttribute]
-}
-
-type AccountTokenEventCollection {
-  id: String!
-  attributes: [AccountTokenEventAttribute]
-}
-
 type AccountTokenEvent @entity {
   id: ID!
   from: Account! @index
@@ -94,14 +83,8 @@ type AccountTokenEvent @entity {
   event: Event!
   collectionId: String! @index
   tokenId: String! @index
-  token: AccountTokenEventToken
-  collection: AccountTokenEventCollection
-}
-
-type AccountTokenEventAttribute {
-  id: String!
-  key: String!
-  value: String!
+  collection: Collection
+  token: Token
 }
 
 type BalancesTransfer {

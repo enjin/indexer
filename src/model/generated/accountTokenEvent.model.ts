@@ -1,9 +1,8 @@
 import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, StringColumn as StringColumn_} from "@subsquid/typeorm-store"
-import * as marshal from "./marshal"
 import {Account} from "./account.model"
 import {Event} from "./event.model"
-import {AccountTokenEventToken} from "./_accountTokenEventToken"
-import {AccountTokenEventCollection} from "./_accountTokenEventCollection"
+import {Collection} from "./collection.model"
+import {Token} from "./token.model"
 
 @Entity_()
 export class AccountTokenEvent {
@@ -34,9 +33,11 @@ export class AccountTokenEvent {
     @StringColumn_({nullable: false})
     tokenId!: string
 
-    @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new AccountTokenEventToken(undefined, obj)}, nullable: true})
-    token!: AccountTokenEventToken | undefined | null
+    @Index_()
+    @ManyToOne_(() => Collection, {nullable: true})
+    collection!: Collection | undefined | null
 
-    @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new AccountTokenEventCollection(undefined, obj)}, nullable: true})
-    collection!: AccountTokenEventCollection | undefined | null
+    @Index_()
+    @ManyToOne_(() => Token, {nullable: true})
+    token!: Token | undefined | null
 }

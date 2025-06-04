@@ -1,4 +1,3 @@
-import { generateAccountTokenEventAttributes } from '../../util/event'
 import { connectionManager } from '../../contexts'
 import { AccountTokenEvent, Attribute } from '../../model'
 import { Job } from 'bullmq'
@@ -37,23 +36,20 @@ export async function syncAttributes(_job: Job, tokenId: string | undefined, col
         .where('event.token_id = :tokenId', { tokenId })
         .getMany()
 
-    const tokenAttributesData = generateAccountTokenEventAttributes(tokenAttributes)
-    const collectionAttributesData = generateAccountTokenEventAttributes(collectionAttributes)
-
     events.forEach((event) => {
-        if (tokenId) {
-            if (tokenAttributes?.length && event.token) {
-                event.token.attributes = tokenAttributesData
-            } else if (event.token) {
-                event.token.attributes = []
-            }
-        }
-
-        if (collectionAttributes?.length && event.collection) {
-            event.collection.attributes = collectionAttributesData
-        } else if (event.collection) {
-            event.collection.attributes = []
-        }
+        // if (tokenId) {
+        //     if (tokenAttributes?.length && event.token) {
+        //         event.token.attributes = tokenAttributesData
+        //     } else if (event.token) {
+        //         event.token.attributes = []
+        //     }
+        // }
+        //
+        // if (collectionAttributes?.length && event.collection) {
+        //     event.collection.attributes = collectionAttributesData
+        // } else if (event.collection) {
+        //     event.collection.attributes = []
+        // }
     })
 
     await em.save(events)

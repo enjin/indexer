@@ -18,7 +18,6 @@ import {
     Token,
 } from '../../../model'
 import { CounterOfferAnswered } from './types'
-import { generateAccountTokenEventCollection, generateAccountTokenEventToken } from '../../../util/event'
 
 export function counterOfferAnswered(event: EventItem): CounterOfferAnswered {
     return match(event)
@@ -96,8 +95,8 @@ export function counterOfferAnsweredEventModel(
             event,
             collectionId: collection.id,
             tokenId: token.id,
-            token: generateAccountTokenEventToken(token),
-            collection: generateAccountTokenEventCollection(collection),
+            token,
+            collection,
         }),
     ]
 }

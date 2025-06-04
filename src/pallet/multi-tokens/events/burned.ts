@@ -12,7 +12,6 @@ import {
     Token,
 } from '../../../model'
 import { Burned } from './types'
-import { generateAccountTokenEventCollection, generateAccountTokenEventToken } from '../../../util/event'
 
 export function burned(event: EventItem): Burned {
     return match(event)
@@ -59,8 +58,8 @@ export function burnedEventModel(
             event,
             collectionId: collectionId,
             tokenId: tokenId,
-            token: generateAccountTokenEventToken(token),
-            collection: generateAccountTokenEventCollection(collection),
+            token,
+            collection,
         }),
     ]
 }

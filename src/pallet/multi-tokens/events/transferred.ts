@@ -12,7 +12,6 @@ import {
     Token,
 } from '../../../model'
 import { Transferred } from './types'
-import { generateAccountTokenEventCollection, generateAccountTokenEventToken } from '../../../util/event'
 
 export function transferred(event: EventItem): Transferred {
     return match(event)
@@ -62,8 +61,8 @@ export function transferredEventModel(
             event,
             collectionId: collectionId,
             tokenId: tokenId,
-            token: generateAccountTokenEventToken(token),
-            collection: generateAccountTokenEventCollection(collection),
+            token,
+            collection,
         }),
     ]
 }

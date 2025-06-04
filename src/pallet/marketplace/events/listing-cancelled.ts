@@ -15,7 +15,6 @@ import {
     Token,
 } from '../../../model'
 import { ListingCancelled } from './types'
-import { generateAccountTokenEventCollection, generateAccountTokenEventToken } from '../../../util/event'
 
 export function listingCancelled(event: EventItem): ListingCancelled {
     return match(event)
@@ -68,8 +67,8 @@ export function listingCancelledEventModel(
             event,
             collectionId: collection.id,
             tokenId: token.id,
-            token: generateAccountTokenEventToken(token),
-            collection: generateAccountTokenEventCollection(collection),
+            token,
+            collection,
         }),
     ]
 }

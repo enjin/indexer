@@ -13,7 +13,6 @@ import {
     Token,
 } from '../../../model'
 import { CounterOfferPlaced } from './types'
-import { generateAccountTokenEventCollection, generateAccountTokenEventToken } from '../../../util/event'
 
 export function counterOfferPlaced(event: EventItem): CounterOfferPlaced {
     return match(event)
@@ -77,8 +76,8 @@ export function counterOfferPlacedEventModel(
             event,
             collectionId: collection.id,
             tokenId: token.id,
-            token: generateAccountTokenEventToken(token),
-            collection: generateAccountTokenEventCollection(collection),
+            token,
+            collection,
         }),
     ]
 }

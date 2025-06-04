@@ -15,7 +15,6 @@ import {
     Token,
 } from '../../../model'
 import { ListingFilled } from './types'
-import { generateAccountTokenEventCollection, generateAccountTokenEventToken } from '../../../util/event'
 
 export function listingFilled(event: EventItem): ListingFilled {
     return match(event)
@@ -109,8 +108,8 @@ export function listingFilledEventModel(
             event,
             collectionId: collection.id,
             tokenId: token.id,
-            token: generateAccountTokenEventToken(token),
-            collection: generateAccountTokenEventCollection(collection),
+            token,
+            collection,
         }),
     ]
 }

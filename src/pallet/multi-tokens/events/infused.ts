@@ -11,8 +11,7 @@ import {
     MultiTokensInfused,
     Token,
 } from '../../../model'
-import { Infused } from './types/infused'
-import { generateAccountTokenEventCollection, generateAccountTokenEventToken } from '../../../util/event'
+import { Infused } from './types'
 
 export function infused(event: EventItem): Infused {
     return match(event)
@@ -70,8 +69,8 @@ export function infusedEventModel(
             event,
             collectionId: collectionId,
             tokenId: tokenId,
-            token: generateAccountTokenEventToken(token),
-            collection: generateAccountTokenEventCollection(collection),
+            token,
+            collection,
         }),
     ]
 }
