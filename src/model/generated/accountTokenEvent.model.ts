@@ -1,9 +1,8 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, StringColumn as StringColumn_} from "@subsquid/typeorm-store"
-import * as marshal from "./marshal"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_} from "@subsquid/typeorm-store"
 import {Account} from "./account.model"
 import {Event} from "./event.model"
-import {AccountTokenEventAttribute} from "./_accountTokenEventAttribute"
-import {AccountTokenEventMeta} from "./_accountTokenEventMeta"
+import {Collection} from "./collection.model"
+import {Token} from "./token.model"
 
 @Entity_()
 export class AccountTokenEvent {
@@ -27,16 +26,10 @@ export class AccountTokenEvent {
     event!: Event
 
     @Index_()
-    @StringColumn_({nullable: false})
-    collectionId!: string
+    @ManyToOne_(() => Collection, {nullable: true})
+    collection!: Collection | undefined | null
 
     @Index_()
-    @StringColumn_({nullable: false})
-    tokenId!: string
-
-    @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.map((val: any) => val == null ? undefined : val.toJSON()), from: obj => obj == null ? undefined : marshal.fromList(obj, val => val == null ? undefined : new AccountTokenEventAttribute(undefined, val))}, nullable: true})
-    attributes!: (AccountTokenEventAttribute | undefined | null)[] | undefined | null
-
-    @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new AccountTokenEventMeta(undefined, obj)}, nullable: true})
-    meta!: AccountTokenEventMeta | undefined | null
+    @ManyToOne_(() => Token, {nullable: true})
+    token!: Token | undefined | null
 }

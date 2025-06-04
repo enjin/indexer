@@ -76,37 +76,13 @@ type Event @entity {
   tokenId: String @index
 }
 
-type AccountTokenEventMetaToken {
-  nonFungible: Boolean!
-  metadata: Metadata
-  createdAt: DateTime!
-}
-
-type AccountTokenEventMetaCollection {
-  metadata: Metadata
-  createdAt: DateTime!
-}
-
-type AccountTokenEventMeta {
-  collection: AccountTokenEventMetaCollection
-  token: AccountTokenEventMetaToken
-}
-
 type AccountTokenEvent @entity {
   id: ID!
   from: Account! @index
   to: Account @index
   event: Event!
-  collectionId: String! @index
-  tokenId: String! @index
-  attributes: [AccountTokenEventAttribute]
-  meta: AccountTokenEventMeta
-}
-
-type AccountTokenEventAttribute {
-  id: String!
-  key: String!
-  value: String!
+  collection: Collection
+  token: Token
 }
 
 type BalancesTransfer {
@@ -500,7 +476,6 @@ type TransferPolicy {
 }
 
 type MarketPolicy {
-  royalty: Royalty @deprecated
   beneficiaries: [RoyaltyBeneficiary!]
 }
 
@@ -641,7 +616,6 @@ type Royalty {
 
 type TokenBehaviorHasRoyalty {
   type: TokenBehaviorType!
-  royalty: Royalty @deprecated
   beneficiaries: [RoyaltyBeneficiary]
 }
 

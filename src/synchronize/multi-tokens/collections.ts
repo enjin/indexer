@@ -7,7 +7,6 @@ import {
     CollectionStats,
     MarketPolicy,
     MintPolicy,
-    Royalty,
     RoyaltyBeneficiary,
     TransferPolicy,
 } from '../../model'
@@ -48,10 +47,6 @@ export async function collections(ctx: CommonContext, block: Block) {
                 if (!account) throw new Error('Market beneficiary not found')
 
                 market = new MarketPolicy({
-                    royalty: new Royalty({
-                        beneficiary: account.id,
-                        percentage: beneficiares[0].percentage,
-                    }),
                     beneficiaries: beneficiares.map(
                         (b) =>
                             new RoyaltyBeneficiary({

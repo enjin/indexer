@@ -13,7 +13,6 @@ import {
     Token,
 } from '../../../model'
 import { CounterOfferRemoved } from './types'
-import { generateAccountTokenEventAttributes, generateAccountTokenEventMeta } from '../../../util/event'
 
 export function counterOfferRemoved(event: EventItem): CounterOfferRemoved {
     return match(event)
@@ -53,10 +52,8 @@ export function counterOfferRemovedEventModel(
             id: item.id,
             from: account,
             event,
-            collectionId: collection.id,
-            tokenId: token.id,
-            attributes: generateAccountTokenEventAttributes(token.attributes),
-            meta: generateAccountTokenEventMeta(collection, token),
+            token,
+            collection,
         }),
     ]
 }

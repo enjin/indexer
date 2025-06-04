@@ -13,7 +13,6 @@ import {
     Token,
 } from '../../../model'
 import { ListingRemovedUnderMinimum } from './types'
-import { generateAccountTokenEventAttributes, generateAccountTokenEventMeta } from '../../../util/event'
 
 export function listingRemovedUnderMinimum(event: EventItem): ListingRemovedUnderMinimum {
     return match(event)
@@ -51,10 +50,8 @@ export function listingRemovedUnderMinimumEventModel(
             id: item.id,
             from: account,
             event,
-            collectionId: collection.id,
-            tokenId: token.id,
-            attributes: generateAccountTokenEventAttributes(token.attributes),
-            meta: generateAccountTokenEventMeta(collection, token),
+            token,
+            collection,
         }),
     ]
 }
