@@ -8,22 +8,48 @@ import {
     CollectionSocials,
     CollectionFlags,
     CollectionStats,
+    MarketPolicy,
+    Royalty,
+    RoyaltyBeneficiary,
 } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import { getOrCreateAccount } from '../../../util/entities'
 import * as mappings from '../../index'
 import { Sns } from '../../../util/sns'
 import { matrixUtility } from '../../../type/calls'
+import { DefaultRoyalty as DefaultRoyalty1020 } from '../../../type/matrixV1020'
+import { DefaultRoyalty as DefaultRoyalty500 } from '../../../type/matrixV500'
 
-// async function getMarket(ctx: CommonContext, royalty: DefaultRoyalty) {
-//     const account = await getOrCreateAccount(ctx, royalty.beneficiary)
-//     return new MarketPolicy({
-//         royalty: new Royalty({
-//             beneficiary: account.id,
-//             percentage: royalty.percentage,
-//         }),
-//     })
-// }
+type DefaultRoyalty = DefaultRoyalty500 | DefaultRoyalty1020
+
+async function getMarket(ctx: CommonContext, royalty: DefaultRoyalty): Promise<MarketPolicy> {
+    const beneficiaries =
+        'beneficiaries' in royalty
+            ? royalty.beneficiaries
+            : [
+                  {
+                      beneficiary: royalty.beneficiary,
+                      percentage: royalty.percentage,
+                  },
+              ]
+
+    const beneficiariesWithAccount = await Promise.all(
+        beneficiaries.map(async (v) => {
+            return new RoyaltyBeneficiary({
+                accountId: (await getOrCreateAccount(ctx, v.beneficiary)).id,
+                percentage: v.percentage,
+            })
+        })
+    )
+
+    return new MarketPolicy({
+        royalty: new Royalty({
+            beneficiary: beneficiariesWithAccount[0].accountId,
+            percentage: beneficiariesWithAccount[0].percentage,
+        }),
+        beneficiaries: beneficiariesWithAccount,
+    })
+}
 
 export async function collectionCreated(
     ctx: CommonContext,
