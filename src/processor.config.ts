@@ -40,6 +40,7 @@ const ignoreEvents: string[] = [
     events.multiTokens.tokenAccountDepositUpdated.name,
     events.multiTokens.tokenAccountUpgraded.name,
     events.multiTokens.tokenUpgraded.name,
+    events.multiTokens.collectionUpgraded.name,
     events.polkadotXcm.versionNotifyStarted.name,
     events.polkadotXcm.feesPaid.name,
     events.polkadotXcm.sent.name,
@@ -55,6 +56,9 @@ const ignoreEvents: string[] = [
     events.xcmPallet.sent.name,
     events.xcmPallet.feesPaid.name,
     events.xcmPallet.assetsTrapped.name,
+    // TODO: This should probably be used if we don't use warp sync as we would need to update the info
+    events.multiTokens.collectionAccountApprovalsUpdated.name,
+    events.multiTokens.collectionDepositUpdateCompleted.name,
 ]
 
 const eventItems: string[] = [
