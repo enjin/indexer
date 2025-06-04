@@ -12,7 +12,7 @@ import { Block, CommonContext, EventItem } from '../../../contexts'
 import * as mappings from '../../index'
 import { isNonFungible } from '../../../util/helpers'
 import { QueueUtils } from '../../../queue'
-import { getOrCreateAccount } from 'src/util/entities'
+import { getOrCreateAccount } from '../../../util/entities'
 import { TokenMarketBehavior as TokenMarketBehavior500 } from '../../../type/matrixV500'
 import { TokenMarketBehavior as TokenMarketBehavior1020 } from '../../../type/matrixV1020'
 

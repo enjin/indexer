@@ -16,7 +16,7 @@ import { ForceMint, Mint } from '../calls'
 import { TokenCreated } from '../events'
 import { TokenMarketBehavior as TokenMarketBehavior500 } from '../../../type/matrixV500'
 import { TokenMarketBehavior as TokenMarketBehavior1020 } from '../../../type/matrixV1020'
-import { getOrCreateAccount } from 'src/util/entities'
+import { getOrCreateAccount } from '../../../util/entities'
 
 type TokenMarketBehavior = TokenMarketBehavior500 | TokenMarketBehavior1020
 
