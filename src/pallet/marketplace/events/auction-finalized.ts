@@ -54,8 +54,6 @@ export function auctionFinalizedEventModel(
             from: listing.seller,
             to: data.winningBid?.bidder ? new Account({ id: data.winningBid.bidder }) : null,
             event,
-            collectionId: listing.makeAssetId.collection.id,
-            tokenId: listing.makeAssetId.id,
             token,
             collection,
         }),

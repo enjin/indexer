@@ -74,8 +74,6 @@ export function counterOfferPlacedEventModel(
             id: item.id,
             from: account,
             event,
-            collectionId: collection.id,
-            tokenId: token.id,
             token,
             collection,
         }),

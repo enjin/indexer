@@ -59,8 +59,6 @@ export function transferredEventModel(
             from,
             to,
             event,
-            collectionId: collectionId,
-            tokenId: tokenId,
             token,
             collection,
         }),

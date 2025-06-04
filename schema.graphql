@@ -81,8 +81,6 @@ type AccountTokenEvent @entity {
   from: Account! @index
   to: Account @index
   event: Event!
-  collectionId: String! @index
-  tokenId: String! @index
   collection: Collection
   token: Token
 }

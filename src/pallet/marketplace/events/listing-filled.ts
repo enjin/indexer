@@ -106,8 +106,6 @@ export function listingFilledEventModel(
             from: account,
             to: new Account({ id: data.buyer }),
             event,
-            collectionId: collection.id,
-            tokenId: token.id,
             token,
             collection,
         }),

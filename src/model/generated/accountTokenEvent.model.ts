@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, StringColumn as StringColumn_} from "@subsquid/typeorm-store"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_} from "@subsquid/typeorm-store"
 import {Account} from "./account.model"
 import {Event} from "./event.model"
 import {Collection} from "./collection.model"
@@ -24,14 +24,6 @@ export class AccountTokenEvent {
     @Index_()
     @ManyToOne_(() => Event, {nullable: true})
     event!: Event
-
-    @Index_()
-    @StringColumn_({nullable: false})
-    collectionId!: string
-
-    @Index_()
-    @StringColumn_({nullable: false})
-    tokenId!: string
 
     @Index_()
     @ManyToOne_(() => Collection, {nullable: true})

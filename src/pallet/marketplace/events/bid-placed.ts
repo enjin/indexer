@@ -52,8 +52,6 @@ export function bidPlacedEventModel(
             id: item.id,
             from: bidder,
             event,
-            collectionId: collection.id,
-            tokenId: token.id,
             token,
             collection,
         }),

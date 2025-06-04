@@ -56,8 +56,6 @@ export function burnedEventModel(
             id: item.id,
             from: account,
             event,
-            collectionId: collectionId,
-            tokenId: tokenId,
             token,
             collection,
         }),

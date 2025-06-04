@@ -121,8 +121,6 @@ export function listingCreatedEventModel(
             from: fromAccount,
             to: toAccount,
             event,
-            collectionId: collection.id,
-            tokenId: token.id,
             token,
             collection,
         }),

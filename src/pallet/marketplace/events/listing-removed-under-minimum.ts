@@ -50,8 +50,6 @@ export function listingRemovedUnderMinimumEventModel(
             id: item.id,
             from: account,
             event,
-            collectionId: collection.id,
-            tokenId: token.id,
             token,
             collection,
         }),

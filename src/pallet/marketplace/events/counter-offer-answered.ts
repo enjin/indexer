@@ -93,8 +93,6 @@ export function counterOfferAnsweredEventModel(
             id: item.id,
             from: creator,
             event,
-            collectionId: collection.id,
-            tokenId: token.id,
             token,
             collection,
         }),
