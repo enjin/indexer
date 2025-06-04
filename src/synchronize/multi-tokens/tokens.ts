@@ -38,10 +38,6 @@ export async function tokens(ctx: CommonContext, block: Block) {
                     if ('beneficiaries' in data.marketBehavior.value) {
                         behavior = new TokenBehaviorHasRoyalty({
                             type: TokenBehaviorType.HasRoyalty,
-                            royalty: new Royalty({
-                                beneficiary: data.marketBehavior.value.beneficiaries[0].beneficiary,
-                                percentage: data.marketBehavior.value.beneficiaries[0].percentage,
-                            }),
                             beneficiaries: data.marketBehavior.value.beneficiaries.map(
                                 (b) =>
                                     new RoyaltyBeneficiary({

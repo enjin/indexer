@@ -39,10 +39,6 @@ async function getMarket(ctx: CommonContext, royalty: DefaultRoyalty): Promise<M
     )
 
     return new MarketPolicy({
-        royalty: new Royalty({
-            beneficiary: beneficiariesWithAccount[0].accountId,
-            percentage: beneficiariesWithAccount[0].percentage,
-        }),
         beneficiaries: beneficiariesWithAccount,
     })
 }

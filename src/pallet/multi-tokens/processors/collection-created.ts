@@ -43,10 +43,6 @@ async function getMarket(ctx: CommonContext, royalty: DefaultRoyalty): Promise<M
     )
 
     return new MarketPolicy({
-        royalty: new Royalty({
-            beneficiary: beneficiariesWithAccount[0].accountId,
-            percentage: beneficiariesWithAccount[0].percentage,
-        }),
         beneficiaries: beneficiariesWithAccount,
     })
 }
@@ -100,7 +96,7 @@ export async function collectionCreated(
             maxTokenSupply: callData.descriptor.policy.mint.maxTokenSupply,
             forceSingleMint: forceSingleMint,
         }),
-        marketPolicy: callData.descriptor.policy.market,
+        marketPolicy: market,
         transferPolicy: new TransferPolicy({
             isFrozen: false,
         }),

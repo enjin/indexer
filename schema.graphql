@@ -478,7 +478,6 @@ type TransferPolicy {
 }
 
 type MarketPolicy {
-  royalty: Royalty @deprecated
   beneficiaries: [RoyaltyBeneficiary!]
 }
 
