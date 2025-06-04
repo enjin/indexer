@@ -17,7 +17,7 @@ export async function burned(
 
     const token = await ctx.store.findOne(Token, {
         where: { id: `${data.collectionId}-${data.tokenId}` },
-        relations: { collection: true, attributes: true },
+        relations: { collection: { attributes: true }, attributes: true },
     })
     if (skipSave || !token || data.amount === 0n) {
         return mappings.multiTokens.events.burnedEventModel(

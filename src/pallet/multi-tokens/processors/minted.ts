@@ -20,7 +20,9 @@ export async function minted(
     const token = await ctx.store.findOne(Token, {
         where: { id: `${data.collectionId}-${data.tokenId}` },
         relations: {
-            collection: true,
+            collection: {
+                attributes: true,
+            },
             attributes: true,
         },
     })

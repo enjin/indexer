@@ -17,7 +17,9 @@ export async function counterOfferRemoved(
         relations: {
             seller: true,
             takeAssetId: {
-                collection: true,
+                collection: {
+                    attributes: true,
+                },
                 attributes: true,
             },
         },

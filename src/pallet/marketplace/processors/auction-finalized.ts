@@ -26,7 +26,9 @@ export async function auctionFinalized(
         relations: {
             seller: true,
             makeAssetId: {
-                collection: true,
+                collection: {
+                    attributes: true,
+                },
                 attributes: true,
             },
         },
