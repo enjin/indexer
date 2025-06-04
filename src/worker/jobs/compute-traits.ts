@@ -44,7 +44,7 @@ export async function computeTraits(job: Job, collectionId: string) {
                     traitType = data.display_name
                 }
             }
-            
+
             job.log(`Processing trait type: ${traitType}`)
             job.log(`Processing trait value: ${value}`)
 
