@@ -79,7 +79,9 @@ async function bootstrap() {
                     )
 
                     for (const extrinsic of block.extrinsics) {
-                        await processExtrinsics(ctx, block.header, block.events, extrinsic, signers, extrinsics)
+                        const [s, e] = await processExtrinsics(ctx, block.header, block.events, extrinsic)
+                        if (s) signers.add(s)
+                        if (e) extrinsics.push(e)
                     }
 
                     for (const call of block.calls) {
@@ -87,15 +89,14 @@ async function bootstrap() {
                     }
 
                     for (const eventItem of block.events) {
-                        await processEvents(
-                            ctx,
-                            block.header,
-                            eventItem,
-                            dataService.lastBlockNumber,
-                            eventsCollection,
-                            accountTokenEvents
-                        )
+                        const [e, a] = await processEvents(ctx, block.header, eventItem, dataService.lastBlockNumber)
+                        if (e) eventsCollection.push(e)
+                        if (a) accountTokenEvents.push(a)
                     }
+
+                    ctx.log.info(
+                        `Signers: ${signers.size} - Extrinsics: ${extrinsics.length} - Events: ${eventsCollection.length} - AccountEvents: ${accountTokenEvents.length}`
+                    )
 
                     if (block.header.height > dataService.lastBlockNumber) {
                         p.balances.processors.addAccountsToSet(Array.from(signers))
@@ -103,19 +104,19 @@ async function bootstrap() {
                     }
 
                     for (const chunk of _.chunk(extrinsics, 1000)) {
-                        await ctx.store.save(chunk)
+                        void ctx.store.save(chunk)
                     }
                     for (const chunk of _.chunk(eventsCollection, 1000)) {
-                        await ctx.store.save(chunk)
+                        void ctx.store.save(chunk)
                     }
                     for (const chunk of _.chunk(accountTokenEvents, 1000)) {
-                        await ctx.store.save(chunk)
+                        void ctx.store.save(chunk)
                     }
                 }
 
                 const lastBlock = ctx.blocks[ctx.blocks.length - 1].header
                 if (lastBlock.height > dataService.lastBlockNumber) {
-                    await chainState(ctx, lastBlock)
+                    void chainState(ctx, lastBlock)
                 }
             } catch (error) {
                 await QueueUtils.resumeQueue(QueuesEnum.COLLECTIONS)
@@ -134,38 +135,35 @@ async function processEvents(
     ctx: CommonContext,
     block: Block,
     eventItem: EventItem,
-    lastBlockNumber: number,
-    eventsCollection: Event[],
-    accountTokenEvents: AccountTokenEvent[]
-): Promise<void> {
+    lastBlockNumber: number
+): Promise<[Event | undefined, AccountTokenEvent | undefined]> {
     const event = await eventHandler(ctx, block, eventItem, block.height <= lastBlockNumber)
 
     if (event) {
         if (Array.isArray(event)) {
-            eventsCollection.push(event[0])
-            accountTokenEvents.push(event[1])
+            return [event[0], event[1]]
         } else {
-            eventsCollection.push(event)
+            return [event, undefined]
         }
     }
+
+    return [undefined, undefined]
 }
 
 async function processExtrinsics(
     ctx: CommonContext,
     block: Block,
     eventItems: EventItem[],
-    extrinsic: ExtrinsicItem,
-    signers: Set<string>,
-    extrinsics: Extrinsic[]
-): Promise<void> {
+    extrinsic: ExtrinsicItem
+): Promise<[string | undefined, Extrinsic | undefined]> {
     const { id, fee, hash, success, tip, call, error } = extrinsic
 
     let fuelTank = null
     if (!call) {
-        return
+        return [undefined, undefined]
     }
     if ([calls.parachainSystem.setValidationData.name, calls.timestamp.set.name].includes(call.name)) {
-        return
+        return [undefined, undefined]
     }
 
     if (call.name === calls.fuelTanks.dispatch.name || call.name === calls.fuelTanks.dispatchAndTouch.name) {
@@ -243,8 +241,7 @@ async function processExtrinsics(
         }
     }
 
-    signers.add(signer.id)
-    extrinsics.push(extrinsicM)
+    return [signer.id, extrinsicM]
 }
 
 function getParticipants(args: Json, _events: EventItem[], signer: string): string[] {
