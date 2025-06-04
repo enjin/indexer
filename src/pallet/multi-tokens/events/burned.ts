@@ -12,7 +12,7 @@ import {
     Token,
 } from '../../../model'
 import { Burned } from './types'
-import { generateAccountTokenEventAttributes, generateAccountTokenEventMeta } from '../../../util/event'
+import { generateAccountTokenEventCollection, generateAccountTokenEventToken } from '../../../util/event'
 
 export function burned(event: EventItem): Burned {
     return match(event)
@@ -59,8 +59,8 @@ export function burnedEventModel(
             event,
             collectionId: collectionId,
             tokenId: tokenId,
-            attributes: generateAccountTokenEventAttributes(token?.attributes),
-            meta: generateAccountTokenEventMeta(collection, token),
+            token: generateAccountTokenEventToken(token),
+            collection: generateAccountTokenEventCollection(collection),
         }),
     ]
 }

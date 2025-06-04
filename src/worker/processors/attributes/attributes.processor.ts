@@ -8,7 +8,7 @@ export class MetadataProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {
         switch (job.name as JobsEnum) {
             case JobsEnum.SYNC_ATTRIBUTES:
-                await syncAttributes(job, job.data.id)
+                await syncAttributes(job, job.data.tokenId, job.data.collectionId)
                 break
             default:
                 throw new Error(`${job.name} is not a valid job for this processor`)

@@ -15,7 +15,7 @@ import {
     Token,
 } from '../../../model'
 import { ListingCancelled } from './types'
-import { generateAccountTokenEventAttributes, generateAccountTokenEventMeta } from '../../../util/event'
+import { generateAccountTokenEventCollection, generateAccountTokenEventToken } from '../../../util/event'
 
 export function listingCancelled(event: EventItem): ListingCancelled {
     return match(event)
@@ -68,8 +68,8 @@ export function listingCancelledEventModel(
             event,
             collectionId: collection.id,
             tokenId: token.id,
-            attributes: generateAccountTokenEventAttributes(token.attributes),
-            meta: generateAccountTokenEventMeta(collection, token),
+            token: generateAccountTokenEventToken(token),
+            collection: generateAccountTokenEventCollection(collection),
         }),
     ]
 }

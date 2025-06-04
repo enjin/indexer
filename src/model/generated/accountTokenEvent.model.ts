@@ -2,8 +2,8 @@ import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, M
 import * as marshal from "./marshal"
 import {Account} from "./account.model"
 import {Event} from "./event.model"
-import {AccountTokenEventAttribute} from "./_accountTokenEventAttribute"
-import {AccountTokenEventMeta} from "./_accountTokenEventMeta"
+import {AccountTokenEventToken} from "./_accountTokenEventToken"
+import {AccountTokenEventCollection} from "./_accountTokenEventCollection"
 
 @Entity_()
 export class AccountTokenEvent {
@@ -34,9 +34,9 @@ export class AccountTokenEvent {
     @StringColumn_({nullable: false})
     tokenId!: string
 
-    @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.map((val: any) => val == null ? undefined : val.toJSON()), from: obj => obj == null ? undefined : marshal.fromList(obj, val => val == null ? undefined : new AccountTokenEventAttribute(undefined, val))}, nullable: true})
-    attributes!: (AccountTokenEventAttribute | undefined | null)[] | undefined | null
+    @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new AccountTokenEventToken(undefined, obj)}, nullable: true})
+    token!: AccountTokenEventToken | undefined | null
 
-    @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new AccountTokenEventMeta(undefined, obj)}, nullable: true})
-    meta!: AccountTokenEventMeta | undefined | null
+    @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new AccountTokenEventCollection(undefined, obj)}, nullable: true})
+    collection!: AccountTokenEventCollection | undefined | null
 }

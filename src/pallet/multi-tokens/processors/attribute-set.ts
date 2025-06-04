@@ -99,13 +99,14 @@ export async function attributeSet(
             }
             await ctx.store.save(token)
             QueueUtils.dispatchComputeMetadata(token.id, 'token')
-            QueueUtils.dispatchSyncAttributes(token.id)
+            QueueUtils.dispatchSyncAttributes(token.id, collection.id)
         } else {
             if (!collection.metadata) {
                 collection.metadata = new Metadata()
             }
             await ctx.store.save(collection)
             QueueUtils.dispatchComputeMetadata(collection.id, 'collection', false, true)
+            QueueUtils.dispatchSyncAttributes(undefined, collection.id)
         }
         await ctx.store.save(attribute)
     } else {

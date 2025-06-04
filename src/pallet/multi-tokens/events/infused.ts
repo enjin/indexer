@@ -12,7 +12,7 @@ import {
     Token,
 } from '../../../model'
 import { Infused } from './types/infused'
-import { generateAccountTokenEventAttributes, generateAccountTokenEventMeta } from '../../../util/event'
+import { generateAccountTokenEventCollection, generateAccountTokenEventToken } from '../../../util/event'
 
 export function infused(event: EventItem): Infused {
     return match(event)
@@ -70,8 +70,8 @@ export function infusedEventModel(
             event,
             collectionId: collectionId,
             tokenId: tokenId,
-            attributes: generateAccountTokenEventAttributes(token?.attributes),
-            meta: generateAccountTokenEventMeta(collection, token),
+            token: generateAccountTokenEventToken(token),
+            collection: generateAccountTokenEventCollection(collection),
         }),
     ]
 }

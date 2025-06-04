@@ -1,49 +1,34 @@
 import {
     AccountTokenEventAttribute,
-    AccountTokenEventMeta,
-    AccountTokenEventMetaCollection,
-    AccountTokenEventMetaToken,
+    AccountTokenEventCollection,
+    AccountTokenEventToken,
     Attribute,
     Collection,
     Token,
 } from '../model'
 
-export function generateAccountTokenEventMeta(
-    collection: Collection | null,
-    token: Token | null
-): AccountTokenEventMeta | undefined {
-    if (!collection && !token) {
+export function generateAccountTokenEventToken(token: Token | null): AccountTokenEventToken | undefined {
+    if (!token) {
         return undefined
     }
 
-    return new AccountTokenEventMeta({
-        collection: generateAccountTokenEventCollection(collection),
-        token: generateAccountTokenEventToken(token),
+    return new AccountTokenEventToken({
+        id: token.id,
+        tokenId: token.tokenId.toString(),
+        attributes: generateAccountTokenEventAttributes(token.attributes),
     })
 }
 
 export function generateAccountTokenEventCollection(
     collection: Collection | null
-): AccountTokenEventMetaCollection | undefined {
+): AccountTokenEventCollection | undefined {
     if (!collection) {
         return undefined
     }
 
-    return new AccountTokenEventMetaCollection({
-        metadata: collection.metadata,
-        createdAt: collection.createdAt,
-    })
-}
-
-export function generateAccountTokenEventToken(token: Token | null): AccountTokenEventMetaToken | undefined {
-    if (!token) {
-        return undefined
-    }
-
-    return new AccountTokenEventMetaToken({
-        metadata: token.metadata,
-        nonFungible: token.nonFungible,
-        createdAt: token.createdAt,
+    return new AccountTokenEventCollection({
+        id: collection.id,
+        attributes: generateAccountTokenEventAttributes(collection.attributes),
     })
 }
 

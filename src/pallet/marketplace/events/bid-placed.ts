@@ -13,7 +13,7 @@ import {
     Token,
 } from '../../../model'
 import { BidPlaced } from './types'
-import { generateAccountTokenEventAttributes, generateAccountTokenEventMeta } from '../../../util/event'
+import { generateAccountTokenEventCollection, generateAccountTokenEventToken } from '../../../util/event'
 
 export function bidPlaced(event: EventItem): BidPlaced {
     return match(event)
@@ -55,8 +55,8 @@ export function bidPlacedEventModel(
             event,
             collectionId: collection.id,
             tokenId: token.id,
-            attributes: generateAccountTokenEventAttributes(token.attributes),
-            meta: generateAccountTokenEventMeta(collection, token),
+            token: generateAccountTokenEventToken(token),
+            collection: generateAccountTokenEventCollection(collection),
         }),
     ]
 }

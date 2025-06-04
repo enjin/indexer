@@ -13,7 +13,7 @@ import {
     Token,
 } from '../../../model'
 import { AuctionFinalized } from './types'
-import { generateAccountTokenEventAttributes, generateAccountTokenEventMeta } from '../../../util/event'
+import { generateAccountTokenEventCollection, generateAccountTokenEventToken } from '../../../util/event'
 
 export function auctionFinalized(event: EventItem): AuctionFinalized {
     return match(event)
@@ -57,8 +57,8 @@ export function auctionFinalizedEventModel(
             event,
             collectionId: listing.makeAssetId.collection.id,
             tokenId: listing.makeAssetId.id,
-            attributes: generateAccountTokenEventAttributes(token.attributes),
-            meta: generateAccountTokenEventMeta(collection, token),
+            token: generateAccountTokenEventToken(token),
+            collection: generateAccountTokenEventCollection(collection),
         }),
     ]
 }
