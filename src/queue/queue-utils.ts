@@ -171,7 +171,11 @@ export function dispatchComputeTraits(id: string): void {
 }
 
 export function dispatchSyncAttributes(tokenId: string | undefined, collectionId: string): void {
-    AttributesQueue.add(JobsEnum.SYNC_ATTRIBUTES, { tokenId, collectionId }, { delay: 6000, jobId: `attributes.${tokenId}` }).catch(() => {
+    AttributesQueue.add(
+        JobsEnum.SYNC_ATTRIBUTES,
+        { tokenId, collectionId },
+        { delay: 6000, jobId: `attributes.${tokenId}` }
+    ).catch(() => {
         Logger.error('Failed to dispatch a job on attributes queue', LOGGER_NAMESPACE)
     })
 }
