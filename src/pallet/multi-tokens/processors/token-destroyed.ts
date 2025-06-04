@@ -1,5 +1,6 @@
 import { throwFatalError } from '../../../util/errors'
 import {
+    AccountTokenEvent,
     Attribute,
     Event as EventModel,
     Listing,
@@ -42,6 +43,7 @@ export async function tokenDestroyed(
     await ctx.store.save(token)
 
     const [
+        accountTokenEvents,
         tokenAccounts,
         listingSales,
         listingStatus,
@@ -52,6 +54,13 @@ export async function tokenDestroyed(
         tokenRarity,
         attributes,
     ] = await Promise.all([
+        ctx.store.find(AccountTokenEvent, {
+            where: {
+                token: {
+                    id: token.id,
+                },
+            },
+        }),
         ctx.store.find(TokenAccount, {
             where: {
                 token: {
@@ -139,7 +148,13 @@ export async function tokenDestroyed(
         }),
     ])
 
+    const events = accountTokenEvents.map((e: AccountTokenEvent): AccountTokenEvent => {
+        e.token = null
+        return e
+    })
+
     await Promise.all([
+        ctx.store.save(events),
         ctx.store.remove(tokenAccounts),
         ctx.store.remove(listingSales),
         ctx.store.remove(listingStatus),
