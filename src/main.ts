@@ -112,7 +112,7 @@ async function bootstrap() {
 
                 const lastBlock = ctx.blocks[ctx.blocks.length - 1].header
                 if (lastBlock.height > dataService.lastBlockNumber) {
-                    void chainState(ctx, lastBlock)
+                    await chainState(ctx, lastBlock)
                 }
             } catch (error) {
                 await QueueUtils.resumeQueue(QueuesEnum.COLLECTIONS)
