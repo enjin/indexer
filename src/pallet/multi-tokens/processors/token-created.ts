@@ -132,7 +132,10 @@ async function tokenFromCall(
         }
 
         if ('behavior' in tokenParams) {
-            token.behavior = await getBehavior(ctx, tokenParams.behavior as TokenMarketBehavior)
+            token.behavior =
+                tokenParams.behavior !== undefined
+                    ? await getBehavior(ctx, tokenParams.behavior as TokenMarketBehavior)
+                    : null
         }
     }
 
