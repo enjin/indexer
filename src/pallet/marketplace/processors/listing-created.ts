@@ -41,6 +41,9 @@ export async function listingCreated(
     })
     const takeAssetId = await ctx.store.findOne<Token>(Token, {
         where: { id: `${data.listing.takeAssetId.collectionId}-${data.listing.takeAssetId.tokenId}` },
+        relations: {
+            collection: true,
+        },
     })
     if (!makeAssetId || !takeAssetId) return undefined
 
