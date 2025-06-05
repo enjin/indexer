@@ -17,10 +17,7 @@ export async function counterOfferPlaced(
         relations: {
             seller: true,
             takeAssetId: {
-                collection: {
-                    attributes: true,
-                },
-                attributes: true,
+                collection: true,
             },
         },
     })
