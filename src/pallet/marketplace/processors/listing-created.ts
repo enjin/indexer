@@ -4,6 +4,7 @@ import {
     AuctionData,
     AuctionState,
     Event as EventModel,
+    Extrinsic,
     FeeSide,
     FixedPriceData,
     FixedPriceState,
@@ -21,104 +22,78 @@ import { getOrCreateAccount } from '../../../util/entities'
 import { Sns } from '../../../util/sns'
 import * as mappings from '../../index'
 import { QueueUtils } from '../../../queue'
+import { match } from 'ts-pattern'
 
 export async function listingCreated(
     ctx: CommonContext,
     block: Block,
     item: EventItem
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
-    const event = mappings.marketplace.events.listingCreated(item)
-    const listingId = event.listingId.substring(2)
+    const data = mappings.marketplace.events.listingCreated(item)
+    const listingId = data.listingId.substring(2)
 
     const makeAssetId = await ctx.store.findOne<Token>(Token, {
-        where: { id: `${event.listing.makeAssetId.collectionId}-${event.listing.makeAssetId.tokenId}` },
+        where: { id: `${data.listing.makeAssetId.collectionId}-${data.listing.makeAssetId.tokenId}` },
         relations: {
-            collection: {
-                attributes: true,
-            },
+            collection: true,
             bestListing: true,
-            attributes: true,
         },
     })
     const takeAssetId = await ctx.store.findOne<Token>(Token, {
-        where: { id: `${event.listing.takeAssetId.collectionId}-${event.listing.takeAssetId.tokenId}` },
+        where: { id: `${data.listing.takeAssetId.collectionId}-${data.listing.takeAssetId.tokenId}` },
     })
     if (!makeAssetId || !takeAssetId) return undefined
 
-    const fromAccount = await getOrCreateAccount(
-        ctx,
-        'creator' in event.listing ? event.listing.creator : event.listing.seller
-    )
+    const listingCreator = await getOrCreateAccount(ctx, data.listing.creator ?? data.listing.seller)
 
-    const feeSide = event.listing.feeSide.__kind as FeeSide
-    let listingData
-    let listingState
+    const listingData = match(data.listing.data)
+        .returnType<FixedPriceData | OfferData | AuctionData>()
+        .with(
+            { __kind: 'Offer' },
+            (offer) =>
+                new OfferData({
+                    listingType: ListingType.Offer,
+                    expiration: offer.expiration,
+                })
+        )
+        .with(
+            { __kind: 'Auction' },
+            (auction) =>
+                new AuctionData({
+                    listingType: ListingType.Auction,
+                    startHeight: auction.value.startBlock ?? 0,
+                    endHeight: auction.value.endBlock,
+                })
+        )
+        .with({ __kind: 'FixedPrice' }, () => new FixedPriceData({ listingType: ListingType.FixedPrice }))
+        .exhaustive()
 
-    switch (event.listing.data.__kind) {
-        case 'FixedPrice':
-            listingData = new FixedPriceData({ listingType: ListingType.FixedPrice })
-            break
-        case 'Auction': {
-            let endBlock = 0
-            let startBlock = 0
+    const listingState = match(data.listing.state)
+        .returnType<AuctionState | OfferState | FixedPriceState>()
+        .with({ __kind: 'Auction' }, () => new AuctionState({ listingType: ListingType.Auction }))
+        .with({ __kind: 'Offer' }, () => new OfferState({ listingType: ListingType.Offer, counterOfferCount: 0 }))
+        .with(
+            { __kind: 'FixedPrice' },
+            () => new FixedPriceState({ listingType: ListingType.FixedPrice, amountFilled: 0n })
+        )
+        .exhaustive()
 
-            if (event.listing.startBlock != undefined) {
-                startBlock = event.listing.startBlock
-            }
-            endBlock = 'endBlock' in event.listing.data.value ? event.listing.data.value.endBlock : 0
-            startBlock = ('startBlock' in event.listing.data.value ? event.listing.data.value.startBlock : 0) ?? 0
+    const feeSide = data.listing.feeSide.__kind as FeeSide
+    const usesWhitelist = typeof data.listing.whitelistedAccountCount === 'number'
 
-            listingData = new AuctionData({
-                listingType: ListingType.Auction,
-                startHeight: startBlock,
-                endHeight: endBlock,
-            })
-            break
-        }
-        case 'Offer': {
-            let expiration: number | undefined = undefined
-            if (event.listing.data.expiration != undefined) {
-                expiration = event.listing.data.expiration
-            }
-
-            listingData = new OfferData({
-                listingType: ListingType.Offer,
-                expiration: expiration,
-            })
-            break
-        }
-        default:
-            throw new Error('Unknown listing type')
-    }
-
-    switch (event.listing.state.__kind) {
-        case 'FixedPrice':
-            listingState = new FixedPriceState({ listingType: ListingType.FixedPrice, amountFilled: 0n })
-            break
-        case 'Auction':
-            listingState = new AuctionState({ listingType: ListingType.Auction })
-            break
-        case 'Offer':
-            listingState = new OfferState({ listingType: ListingType.Offer, counterOfferCount: 0 })
-            break
-        default:
-            throw new Error('Unknown listing type')
-    }
-
-    const usesWhitelist = typeof event.listing.whitelistedAccountCount === 'number'
     const listing = new Listing({
         id: listingId,
-        seller: fromAccount,
+        seller: listingCreator,
         makeAssetId,
         takeAssetId,
-        amount: event.listing.amount,
-        price: event.listing.price,
-        highestPrice: event.listing.price,
-        minTakeValue: event.listing.minTakeValue ?? event.listing.minReceived,
+        amount: data.listing.amount,
+        price: data.listing.price,
+        highestPrice: data.listing.price,
+        minTakeValue: data.listing.minTakeValue ?? data.listing.minReceived,
         feeSide,
-        height: event.listing.creationBlock,
-        deposit: typeof event.listing.deposit === 'bigint' ? event.listing.deposit : event.listing.deposit.amount,
-        salt: event.listing.salt,
+        height: data.listing.creationBlock,
+        deposit: typeof data.listing.deposit === 'bigint' ? data.listing.deposit : data.listing.deposit.amount,
+        salt: data.listing.salt,
         data: listingData,
         state: listingState,
         isActive: true,
@@ -149,8 +124,8 @@ export async function listingCreated(
             makeAssetId.bestListing = listing
         }
         makeAssetId.recentListing = listing
+        await ctx.store.save(makeAssetId)
     }
-    await ctx.store.save(makeAssetId)
 
     if (item.extrinsic) {
         await Sns.getInstance().send({
@@ -163,7 +138,7 @@ export async function listingCreated(
                     amount: listing.amount.toString(),
                     highestPrice: listing.highestPrice.toString(),
                     seller: {
-                        id: fromAccount.id,
+                        id: listingCreator.id,
                     },
                     data: listing.data.toJSON(),
                     state: listing.state.toJSON(),
@@ -177,9 +152,6 @@ export async function listingCreated(
         })
     }
 
-    QueueUtils.dispatchComputeStats(makeAssetId.collection.id)
-
-    // TODO: Check this
     let toAccount: Account | undefined
     if (isOffer && takeAssetId.nonFungible) {
         const tokenOwner = await ctx.store.findOne<TokenAccount>(TokenAccount, {
@@ -193,13 +165,22 @@ export async function listingCreated(
         }
     }
 
+    QueueUtils.dispatchComputeStats(makeAssetId.collection.id)
+
     return mappings.marketplace.events.listingCreatedEventModel(
-        item,
-        event,
-        listing,
-        fromAccount,
-        makeAssetId.collection,
-        makeAssetId,
-        toAccount
+        item.id,
+        {
+            collectionId: isOffer ? data.listing.takeAssetId.collectionId : data.listing.makeAssetId.collectionId,
+            tokenId: isOffer ? data.listing.takeAssetId.tokenId : data.listing.makeAssetId.tokenId,
+            listingId,
+            isOffer,
+        },
+        {
+            extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : undefined,
+            fromAccount: listingCreator,
+            collection: isOffer ? takeAssetId.collection : makeAssetId.collection,
+            token: isOffer ? takeAssetId : makeAssetId,
+            toAccount,
+        }
     )
 }
