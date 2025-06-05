@@ -68,10 +68,16 @@ jobs:
           rover graph lint --client-timeout 120 --schema apollo.graphql enjin-indexer@master
 
       - name: Check Schema
+        id: check
         if: github.ref_name != 'master' && github.event_name != 'release'
         continue-on-error: true
         run: |
           rover graph check --client-timeout 120 --schema apollo.graphql enjin-indexer@master 
+
+      - uses: mainmatter/continue-on-error-comment@v1
+        with:
+          outcome: ${{ steps.check.outcome }}
+          test-id: "Apollo Schema Check has failed make sure the changes are intended before merging the PR"
 
       - name: Publishes Apollo Schema to Master
         if: github.ref_name == 'master'
