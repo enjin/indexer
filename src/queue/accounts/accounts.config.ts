@@ -7,7 +7,7 @@ const config: QueueConfigType = {
     ...rootConfig,
     connection: {
         ...rootConfig.connection,
-        enableOfflineQueue: false,
+        enableOfflineQueue: true,
     },
     telemetry: new BullMQOtel('enjin'),
     queueName: QueuesEnum.ACCOUNTS,
