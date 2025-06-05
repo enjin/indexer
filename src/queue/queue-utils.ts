@@ -198,3 +198,16 @@ export function dispatchSyncAllMetadata(): void {
         Logger.error('Failed to dispatch sync all metadata', LOGGER_NAMESPACE)
     })
 }
+
+export function dispatchSyncOffers(): void {
+    ListingsQueue.add(
+        JobsEnum.FETCH_OFFERS,
+        {},
+        {
+            delay: 6000,
+            jobId: 'listings.offers.all',
+        }
+    ).catch(() => {
+        Logger.error('Failed to dispatch sync offers', LOGGER_NAMESPACE)
+    })
+}
