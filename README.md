@@ -6,7 +6,7 @@
 
 <div align="center">
 
-![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/enjin/indexer/run_build.yml?style=flat)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/enjin/indexer/ts-compiler.yml?style=flat)
 ![GitHub package.json dynamic](https://img.shields.io/github/package-json/version/enjin/indexer?style=flat)
 [![Discord](https://img.shields.io/discord/783393889548501023?style=flat)](https://discord.gg/EUKexwF5RM)
 ![GitHub Org's stars](https://img.shields.io/github/stars/enjin?style=flat)
