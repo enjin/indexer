@@ -2,6 +2,8 @@ name: Apollo Studio
 on:
   pull_request:
   push:
+    branches:
+      - master
   release:
     types: [created]
 
@@ -76,6 +78,7 @@ jobs:
 
       - uses: mainmatter/continue-on-error-comment@v1
         with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
           outcome: ${{ steps.check.outcome }}
           test-id: "Apollo Schema Check has failed make sure the changes are intended before merging the PR"
 
