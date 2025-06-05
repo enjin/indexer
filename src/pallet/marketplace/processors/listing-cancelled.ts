@@ -53,8 +53,6 @@ export async function listingCancelled(
     await ctx.store.save(listingStatus)
     await ctx.store.save(listing)
 
-    ctx.log.info(`listing type ${listing.type}`)
-    
     if (makeAssetId.bestListing?.id === listing.id && listing.type !== ListingType.Offer) {
         const bestListing = await getBestListing(ctx, makeAssetId.id)
         makeAssetId.bestListing = null
@@ -89,11 +87,13 @@ export async function listingCancelled(
 
     QueueUtils.dispatchComputeStats(makeAssetId.collection.id)
 
+    const isOffer = listing.type === ListingType.Offer
+
     return mappings.marketplace.events.listingCancelledEventModel(
         item,
         listing,
         seller,
-        makeAssetId.collection,
-        makeAssetId
+        isOffer ? takeAssetId.collection : makeAssetId.collection,
+        isOffer ? takeAssetId : makeAssetId
     )
 }
