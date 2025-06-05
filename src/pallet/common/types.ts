@@ -294,7 +294,7 @@ export interface ListingData_FixedPrice {
 
 export interface ListingData_Offer {
     __kind: 'Offer'
-    expiration?: number
+    value?: number
 }
 
 export type ListingData = ListingData_Auction | ListingData_FixedPrice | ListingData_Offer
