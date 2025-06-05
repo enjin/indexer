@@ -5,6 +5,7 @@ import { AccountTokenEvent, Listing, MarketplaceOfferCancelled, MarketplaceOffer
 export async function syncOffers(job: Job): Promise<void> {
     const em = await connectionManager()
     const accountTokenEvents = await em.find(AccountTokenEvent, {
+        select: ['id', 'event'],
         where: [
             {
                 event: {
@@ -31,6 +32,7 @@ export async function syncOffers(job: Job): Promise<void> {
             const listingId = event.data.listing
 
             const listing = await em.findOne(Listing, {
+                select: ['id', 'takeAssetId'],
                 where: { id: listingId },
                 relations: {
                     takeAssetId: {
