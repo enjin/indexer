@@ -99,10 +99,14 @@ export function listingCreatedEventModel(
         name: data.isOffer ? MarketplaceOfferCreated.name : MarketplaceListingCreated.name,
         extrinsic: relation.extrinsic,
         collectionId: data.collectionId.toString(),
-        tokenId: data.tokenId.toString(),
-        data: new MarketplaceListingCreated({
-            listing: data.listingId,
-        }),
+        tokenId: `${data.collectionId.toString()}-${data.tokenId.toString()}`,
+        data: data.isOffer
+            ? new MarketplaceOfferCreated({
+                  listing: data.listingId,
+              })
+            : new MarketplaceListingCreated({
+                  listing: data.listingId,
+              }),
     })
 
     return [
