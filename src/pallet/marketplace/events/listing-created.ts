@@ -8,7 +8,6 @@ import {
     Collection,
     Event as EventModel,
     Extrinsic,
-    Listing,
     MarketplaceListingCreated,
     MarketplaceOfferCreated,
     Token,
@@ -80,49 +79,45 @@ export function listingCreated(event: EventItem): ListingCreated {
 }
 
 export function listingCreatedEventModel(
-    item: EventItem,
-    data: ListingCreated,
-    listing: Listing,
-    fromAccount: Account,
-    collection: Collection,
-    token: Token,
-    toAccount?: Account
-): [EventModel, AccountTokenEvent] | undefined {
-    let event: EventModel
-
-    event = new EventModel({
-        id: item.id,
-        name: MarketplaceListingCreated.name,
-        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-        collectionId: collection.id,
-        tokenId: token.id,
-        data: new MarketplaceListingCreated({
-            listing: listing.id,
-        }),
-    })
-
-    if (data.listing.data.__kind === 'Offer') {
-        event = new EventModel({
-            id: item.id,
-            name: MarketplaceOfferCreated.name,
-            extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-            collectionId: collection.id,
-            tokenId: token.id,
-            data: new MarketplaceOfferCreated({
-                listing: listing.id,
-            }),
-        })
+    eventId: string,
+    data: {
+        collectionId: bigint
+        tokenId: bigint
+        listingId: string
+        isOffer: boolean
+    },
+    relation: {
+        extrinsic: Extrinsic | undefined
+        fromAccount: Account
+        collection: Collection
+        token: Token
+        toAccount: Account | undefined
     }
+): [EventModel, AccountTokenEvent] | undefined {
+    const event = new EventModel({
+        id: eventId,
+        name: data.isOffer ? MarketplaceOfferCreated.name : MarketplaceListingCreated.name,
+        extrinsic: relation.extrinsic,
+        collectionId: data.collectionId.toString(),
+        tokenId: `${data.collectionId.toString()}-${data.tokenId.toString()}`,
+        data: data.isOffer
+            ? new MarketplaceOfferCreated({
+                  listing: data.listingId,
+              })
+            : new MarketplaceListingCreated({
+                  listing: data.listingId,
+              }),
+    })
 
     return [
         event,
         new AccountTokenEvent({
-            id: item.id,
-            from: fromAccount,
-            to: toAccount,
+            id: eventId,
+            from: relation.fromAccount,
+            to: relation.toAccount,
             event,
-            token,
-            collection,
+            token: relation.token,
+            collection: relation.collection,
         }),
     ]
 }

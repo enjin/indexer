@@ -28,11 +28,8 @@ export async function listingRemovedUnderMinimum(
                 collection: true,
             },
             makeAssetId: {
-                collection: {
-                    attributes: true,
-                },
+                collection: true,
                 bestListing: true,
-                attributes: true,
             },
         },
     })

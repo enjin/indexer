@@ -28,10 +28,7 @@ export async function listingFilled(
             seller: true,
             makeAssetId: {
                 bestListing: true,
-                collection: {
-                    attributes: true,
-                },
-                attributes: true,
+                collection: true,
             },
             takeAssetId: {
                 collection: true,

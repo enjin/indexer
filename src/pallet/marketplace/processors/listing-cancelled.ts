@@ -25,11 +25,8 @@ export async function listingCancelled(
         relations: {
             seller: true,
             makeAssetId: {
-                collection: {
-                    attributes: true,
-                },
+                collection: true,
                 bestListing: true,
-                attributes: true,
             },
             takeAssetId: {
                 collection: true,
@@ -90,11 +87,13 @@ export async function listingCancelled(
 
     QueueUtils.dispatchComputeStats(makeAssetId.collection.id)
 
+    const isOffer = listing.type === ListingType.Offer
+
     return mappings.marketplace.events.listingCancelledEventModel(
         item,
         listing,
         seller,
-        makeAssetId.collection,
-        makeAssetId
+        isOffer ? takeAssetId.collection : makeAssetId.collection,
+        isOffer ? takeAssetId : makeAssetId
     )
 }

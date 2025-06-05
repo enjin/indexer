@@ -1,4 +1,12 @@
-import { Attribute, Collection, Event as EventModel, RoyaltyCurrency, Trait } from '../../../model'
+import {
+    AccountTokenEvent,
+    Attribute,
+    Collection,
+    CollectionAccount,
+    Event as EventModel,
+    RoyaltyCurrency,
+    Trait,
+} from '../../../model'
 import { Sns } from '../../../util/sns'
 import * as mappings from '../../index'
 import { Block, CommonContext, EventItem } from '../../../contexts'
@@ -10,22 +18,48 @@ export async function collectionDestroyed(
     skipSave: boolean
 ): Promise<EventModel | undefined> {
     const data = mappings.multiTokens.events.collectionDestroyed(item)
-
     if (skipSave) return mappings.multiTokens.events.collectionDestroyedEventModel(item, data)
 
     const collectionId = data.collectionId.toString()
+    const collection = await ctx.store.findOneBy(Collection, { id: collectionId })
 
-    const collection = await ctx.store.findOneByOrFail(Collection, { id: collectionId })
+    if (!collection) {
+        return mappings.multiTokens.events.collectionDestroyedEventModel(item, data)
+    }
 
-    const [traits, royaltyCurrencies, attributes] = await Promise.all([
+    const [accountTokenEvents, collectionAccounts, traits, royaltyCurrencies, attributes] = await Promise.all([
+        ctx.store.find(AccountTokenEvent, {
+            where: {
+                collection: {
+                    id: collection.id,
+                },
+            },
+        }),
+        ctx.store.find(CollectionAccount, {
+            where: {
+                collection: {
+                    id: collection.id,
+                },
+            },
+        }),
         ctx.store.find(Trait, { where: { collection: { id: collectionId } } }),
         ctx.store.find(RoyaltyCurrency, { where: { collection: { id: collectionId } } }),
         ctx.store.find(Attribute, { where: { collection: { id: collectionId } } }),
     ])
 
-    await Promise.all([ctx.store.remove(traits), ctx.store.remove(royaltyCurrencies), ctx.store.remove(attributes)])
+    const events = accountTokenEvents.map((e: AccountTokenEvent): AccountTokenEvent => {
+        e.token = null
+        return e
+    })
 
-    await ctx.store.remove(collection)
+    await Promise.all([
+        ctx.store.remove(events),
+        ctx.store.remove(collectionAccounts),
+        ctx.store.remove(traits),
+        ctx.store.remove(royaltyCurrencies),
+        ctx.store.remove(attributes),
+        ctx.store.remove(collection),
+    ])
 
     if (item.extrinsic) {
         await Sns.getInstance().send({

@@ -20,10 +20,7 @@ export async function minted(
     const token = await ctx.store.findOne(Token, {
         where: { id: `${data.collectionId}-${data.tokenId}` },
         relations: {
-            collection: {
-                attributes: true,
-            },
-            attributes: true,
+            collection: true,
         },
     })
     if (skipSave || !token || data.amount === 0n) {
