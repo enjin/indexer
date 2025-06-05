@@ -6,7 +6,7 @@ const config: WorkerConfigType = {
     ...rootConfig,
     connection: {
         ...rootConfig.connection,
-        enableOfflineQueue: false,
+        enableOfflineQueue: true,
     },
     queueName: QueuesEnum.METADATA,
     isSandboxed: true,

@@ -36,6 +36,7 @@ const ignoreEvents: string[] = [
     events.fuelTanks.scheduleMutateFreezeStateFailed.name,
     events.marketplace.listingUpgraded.name,
     events.marketplace.migrationStep.name,
+    events.marketplace.listingConverted.name,
     events.multiTokens.nextCollectionIdUpdated.name,
     events.multiTokens.migrationStep.name,
     events.multiTokens.tokenAccountDepositUpdated.name,
