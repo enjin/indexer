@@ -18,8 +18,6 @@ export async function syncOffers(job: Job): Promise<void> {
             },
         ],
         relations: {
-            collection: true,
-            token: true,
             event: true,
         },
     })
@@ -31,13 +29,13 @@ export async function syncOffers(job: Job): Promise<void> {
 
         if (event.data instanceof MarketplaceOfferCreated || event.data instanceof MarketplaceOfferCancelled) {
             const listingId = event.data.listing
+
             const listing = await em.findOne(Listing, {
                 where: { id: listingId },
                 relations: {
                     takeAssetId: {
                         collection: true,
                     },
-                    makeAssetId: true,
                 },
             })
             if (!listing) {
