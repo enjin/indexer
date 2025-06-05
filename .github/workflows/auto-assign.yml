@@ -7,7 +7,6 @@ jobs:
   assign:
     name: Assign Author
     runs-on: ubuntu-latest
-    if: ${{ github.event.sender.type != 'Bot' }}
 
     permissions:
       pull-requests: write
@@ -16,3 +15,5 @@ jobs:
       - uses: hkusu/review-assign-action@v1
         with:
           assignees: ${{ github.actor }}
+          reviewers: leonardocustodio, zlayine
+
