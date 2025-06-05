@@ -45,7 +45,7 @@ export function mintedEventModel(
         name: MultiTokensMinted.name,
         extrinsic: relation.extrinsic,
         collectionId: data.collectionId.toString(),
-        tokenId: data.tokenId.toString(),
+        tokenId: `${data.collectionId}-${data.tokenId}`,
         data: new MultiTokensMinted({
             collectionId: data.collectionId,
             tokenId: data.tokenId,
