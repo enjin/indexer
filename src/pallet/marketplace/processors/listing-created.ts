@@ -56,7 +56,7 @@ export async function listingCreated(
             (offer) =>
                 new OfferData({
                     listingType: ListingType.Offer,
-                    expiration: offer.expiration,
+                    expiration: offer.value.expiration,
                 })
         )
         .with(
