@@ -476,6 +476,7 @@ type TransferPolicy {
 }
 
 type MarketPolicy {
+  royalty: Royalty @deprecated
   beneficiaries: [RoyaltyBeneficiary!]
 }
 
@@ -616,6 +617,7 @@ type Royalty {
 
 type TokenBehaviorHasRoyalty {
   type: TokenBehaviorType!
+  royalty: Royalty @deprecated
   beneficiaries: [RoyaltyBeneficiary]
 }
 
