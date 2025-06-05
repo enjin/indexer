@@ -9,6 +9,9 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event.sender.type != 'Bot' }}
 
+    permissions:
+      pull-requests: write
+
     steps:
       - uses: hkusu/review-assign-action@v1
         with:
