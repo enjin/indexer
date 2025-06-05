@@ -11,10 +11,7 @@ export async function infused(ctx: CommonContext, block: Block, item: EventItem,
     const token = await ctx.store.findOne<Token>(Token, {
         where: { id: `${data.collectionId}-${data.tokenId}` },
         relations: {
-            collection: {
-                attributes: true,
-            },
-            attributes: true,
+            collection: true,
         },
     })
     if (skipSave || !token) {

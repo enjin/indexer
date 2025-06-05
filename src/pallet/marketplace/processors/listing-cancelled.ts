@@ -25,11 +25,8 @@ export async function listingCancelled(
         relations: {
             seller: true,
             makeAssetId: {
-                collection: {
-                    attributes: true,
-                },
+                collection: true,
                 bestListing: true,
-                attributes: true,
             },
             takeAssetId: {
                 collection: true,
