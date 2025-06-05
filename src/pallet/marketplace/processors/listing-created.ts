@@ -48,6 +48,7 @@ export async function listingCreated(
     if (!makeAssetId || !takeAssetId) return undefined
 
     const listingCreator = await getOrCreateAccount(ctx, data.listing.creator ?? data.listing.seller)
+    ctx.log.info(`listing creator ${JSON.stringify(data.listing.data)}`)
     const listingData = match(data.listing.data)
         .returnType<FixedPriceData | OfferData | AuctionData>()
         .with(
@@ -55,7 +56,7 @@ export async function listingCreated(
             (offer) =>
                 new OfferData({
                     listingType: ListingType.Offer,
-                    expiration: offer.value,
+                    expiration: offer.expiration,
                 })
         )
         .with(
