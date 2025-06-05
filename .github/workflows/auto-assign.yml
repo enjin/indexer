@@ -5,7 +5,7 @@ on:
 
 jobs:
   assign:
-    name: Assign Author
+    name: Assignees & Reviewers
     runs-on: ubuntu-latest
 
     permissions:
