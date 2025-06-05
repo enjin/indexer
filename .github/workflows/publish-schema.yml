@@ -59,14 +59,14 @@ jobs:
 
       - name: Install Rover
         run: |
-          curl -sSL https://rover.apollo.dev/nix/v0.29.1 | sh
+          curl -sSL https://rover.apollo.dev/nix/latest | sh
           echo "$HOME/.rover/bin" >> $GITHUB_PATH
 
       - name: Introspect, lint, check schema
         run: |
           rover graph introspect -o apollo.graphql http://localhost:4000/graphql 
-          rover graph lint --schema apollo.graphql enjin-indexer@master
-          rover graph check --schema apollo.graphql enjin-indexer@master 
+          rover graph lint --client-timeout 120 --schema apollo.graphql enjin-indexer@master
+          rover graph check --client-timeout 120 --schema apollo.graphql enjin-indexer@master 
 
       - name: Publishes Apollo Schema to Master
         if: github.ref_name == 'master'
