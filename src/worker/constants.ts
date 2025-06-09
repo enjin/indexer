@@ -12,6 +12,7 @@ export const enum JobsEnum {
     FETCH_EXTRA = 'FETCH_EXTRA',
     FETCH_OFFERS = 'FETCH_OFFERS',
     INVALIDATE_LISTINGS = 'INVALIDATE_LISTINGS',
+    SYNC_COLLECTION_TRANSFER = 'SYNC_COLLECTION_TRANSFER',
 }
 
 export const enum QueuesEnum {

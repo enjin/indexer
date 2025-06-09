@@ -5,6 +5,7 @@ import { syncCollections } from '../../jobs/sync-collections'
 import { computeExtras } from '../../jobs/compute-extras'
 import { computeStats } from '../../jobs/compute-stats'
 import { logDebug, logError } from '../../utils'
+import { syncCollectionTransfer } from '../../jobs/sync-collection-transfers'
 
 export class CollectionsProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {
@@ -17,6 +18,9 @@ export class CollectionsProcessor implements ProcessorDef {
                 break
             case JobsEnum.COMPUTE_STATS:
                 await computeStats(job, job.data.id)
+                break
+            case JobsEnum.SYNC_COLLECTION_TRANSFER:
+                await syncCollectionTransfer(job, job.data.id)
                 break
             default:
                 throw new Error(`${job.name} is not a valid job for this processor`)
