@@ -2,7 +2,9 @@ import { dataHandlerContext } from '../../contexts'
 import { Collection } from '../../model'
 import { Job } from 'bullmq'
 import Rpc from '../../util/rpc'
-import { getOrCreateAccount } from '../../util/entities'
+import { getOrCreateAccount, unwrapAccount } from '../../util/entities'
+import { decodeAddress } from '../../util/tools'
+
 
 export async function syncCollectionTransfer(_job: Job, id: string): Promise<void> {
     const ctx = await dataHandlerContext()
@@ -11,9 +13,6 @@ export async function syncCollectionTransfer(_job: Job, id: string): Promise<voi
     const pendingTransfer = await api.query.multiTokens.pendingCollectionTransfers(id)
 
     const resJson: any = pendingTransfer.toJSON()
-
-    _job.log(`Syncing collection transfer for ${id}`)
-    _job.log(resJson)
 
     if (!resJson) {
         return
@@ -28,9 +27,7 @@ export async function syncCollectionTransfer(_job: Job, id: string): Promise<voi
         return
     }
 
-    _job.log(`Real owner for ${id} is ${realOwnerJson.owner}`)
-
-    collection.owner = await getOrCreateAccount(ctx, realOwnerJson.owner)
+    collection.owner = await getOrCreateAccount(ctx, decodeAddress(realOwnerJson.owner))
 
     await ctx.store.save(collection)
 }
