@@ -60,10 +60,6 @@ export async function collectionMutated(
         return mappings.multiTokens.events.collectionMutatedEventModel(item, data)
     }
 
-    if (data.mutation.owner) {
-        collection.owner = await getOrCreateAccount(ctx, data.mutation.owner)
-    }
-
     if (data.mutation.royalty.__kind === 'SomeMutation') {
         if (data.mutation.royalty.value === undefined) {
             collection.marketPolicy = null
