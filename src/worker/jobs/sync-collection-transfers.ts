@@ -8,7 +8,7 @@ export async function syncCollectionTransfer(_job: Job, id: string): Promise<voi
     const ctx = await dataHandlerContext()
     const { api } = await Rpc.getInstance()
 
-    const pendingTransfer = await api.query.multiTokens.pendingCollectionTransfer(id)
+    const pendingTransfer = await api.query.multiTokens.pendingCollectionTransfers(id)
 
     const resJson: any = pendingTransfer.toJSON()
 
