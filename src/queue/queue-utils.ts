@@ -211,3 +211,16 @@ export function dispatchSyncOffers(): void {
         Logger.error('Failed to dispatch sync offers', LOGGER_NAMESPACE)
     })
 }
+
+export function dispatchSyncCollectionTransfer(id: string): void {
+    CollectionsQueue.add(
+        JobsEnum.SYNC_COLLECTION_TRANSFER,
+        { id },
+        {
+            delay: 6000,
+            jobId: `collections.sync-transfer.${id}`,
+        }
+    ).catch(() => {
+        Logger.error('Failed to dispatch sync collection transfer', LOGGER_NAMESPACE)
+    })
+}
