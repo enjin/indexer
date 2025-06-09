@@ -12,8 +12,8 @@ export async function syncCollectionTransfer(_job: Job, id: string): Promise<voi
 
     const resJson: any = pendingTransfer.toJSON()
 
-    ctx.log.info(`Syncing collection transfer for ${id}`)
-    ctx.log.info(resJson)
+    _job.log(`Syncing collection transfer for ${id}`)
+    _job.log(resJson)
 
     if (!resJson) {
         return
@@ -28,7 +28,7 @@ export async function syncCollectionTransfer(_job: Job, id: string): Promise<voi
         return
     }
 
-    ctx.log.info(`Real owner for ${id} is ${realOwnerJson.owner}`)
+    _job.log(`Real owner for ${id} is ${realOwnerJson.owner}`)
 
     collection.owner = await getOrCreateAccount(ctx, realOwnerJson.owner)
 
