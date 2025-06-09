@@ -5,7 +5,6 @@ import Rpc from '../../util/rpc'
 import { getOrCreateAccount, unwrapAccount } from '../../util/entities'
 import { decodeAddress } from '../../util/tools'
 
-
 export async function syncCollectionTransfer(_job: Job, id: string): Promise<void> {
     const ctx = await dataHandlerContext()
     const { api } = await Rpc.getInstance()
