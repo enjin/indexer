@@ -47,6 +47,11 @@ export async function burned(
     if (token.supply < 1n) {
         token.infusion = 0n
     }
+
+    if (token.cap && token.cap.isTypeOf === 'TokenCapSingleMint') {
+        token.cap.supply -= data.amount
+    }
+    
     await ctx.store.save(token)
 
     if (item.extrinsic) {
