@@ -10,6 +10,7 @@ export class CollectionStats {
     private _salesCount!: number
     private _marketCap!: bigint
     private _volume!: bigint
+    private _activeListingsAmount!: bigint | undefined | null
 
     constructor(props?: Partial<Omit<CollectionStats, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
@@ -22,6 +23,7 @@ export class CollectionStats {
             this._salesCount = marshal.int.fromJSON(json.salesCount)
             this._marketCap = marshal.bigint.fromJSON(json.marketCap)
             this._volume = marshal.bigint.fromJSON(json.volume)
+            this._activeListingsAmount = json.activeListingsAmount == null ? undefined : marshal.bigint.fromJSON(json.activeListingsAmount)
         }
     }
 
@@ -93,6 +95,14 @@ export class CollectionStats {
         this._volume = value
     }
 
+    get activeListingsAmount(): bigint | undefined | null {
+        return this._activeListingsAmount
+    }
+
+    set activeListingsAmount(value: bigint | undefined | null) {
+        this._activeListingsAmount = value
+    }
+
     toJSON(): object {
         return {
             floorPrice: this.floorPrice == null ? undefined : marshal.bigint.toJSON(this.floorPrice),
@@ -103,6 +113,7 @@ export class CollectionStats {
             salesCount: this.salesCount,
             marketCap: marshal.bigint.toJSON(this.marketCap),
             volume: marshal.bigint.toJSON(this.volume),
+            activeListingsAmount: this.activeListingsAmount == null ? undefined : marshal.bigint.toJSON(this.activeListingsAmount),
         }
     }
 }

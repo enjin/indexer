@@ -496,6 +496,7 @@ type CollectionStats {
   salesCount: Int!
   marketCap: BigInt!
   volume: BigInt!
+  activeListingsAmount: BigInt
 }
 
 type Trait @entity {
