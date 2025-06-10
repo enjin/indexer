@@ -224,3 +224,16 @@ export function dispatchSyncCollectionTransfer(id: string): void {
         Logger.error('Failed to dispatch sync collection transfer', LOGGER_NAMESPACE)
     })
 }
+
+export function dispatchComputeValidators(): void {
+    ValidatorsQueue.add(
+        JobsEnum.COMPUTE_VALIDATORS,
+        {},
+        {
+            delay: 6000,
+            jobId: 'validators.all',
+        }
+    ).catch(() => {
+        Logger.error('Failed to dispatch compute validators', LOGGER_NAMESPACE)
+    })
+}
