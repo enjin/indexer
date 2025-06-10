@@ -17,6 +17,7 @@ import { TokenCreated } from '../events'
 import { TokenMarketBehavior as TokenMarketBehavior500 } from '../../../type/matrixV500'
 import { TokenMarketBehavior as TokenMarketBehavior1020 } from '../../../type/matrixV1020'
 import { getOrCreateAccount } from '../../../util/entities'
+import { getCapType, getFreezeState, isTokenFrozen } from '../../../synchronize/common'
 
 type TokenMarketBehavior = TokenMarketBehavior500 | TokenMarketBehavior1020
 
@@ -72,8 +73,8 @@ async function tokenFromCall(
         id: `${event.collectionId}-${event.tokenId}`,
         tokenId: event.tokenId,
         supply: 0n, // Updated on `Minted`
-        cap: null, //params.cap,
-        behavior: null, //params.behavior,
+        cap: null, // params.cap,
+        behavior: null, // params.behavior,
         isFrozen: false, // isTokenFrozen(params.freezeState),
         freezeState: null, // params.freezeState != undefined ? FreezeState[params.freezeState.__kind] : null,
         minimumBalance: 1n,
@@ -87,7 +88,7 @@ async function tokenFromCall(
         accountDepositCount: 0,
         anyoneCanInfuse: false,
         nativeMetadata: null,
-        infusion: 0n, // Updated on `Infused`
+        infusion: 0n, // Updated on `Infused event`
         createdAt: new Date(block.timestamp ?? 0),
     })
 
@@ -136,6 +137,16 @@ async function tokenFromCall(
                 tokenParams.behavior !== undefined
                     ? await getBehavior(ctx, tokenParams.behavior as TokenMarketBehavior)
                     : null
+        }
+
+        if ('cap' in tokenParams) {
+            token.cap = tokenParams.cap ? getCapType(tokenParams.cap) : null
+        }
+
+        if ('freezeState' in tokenParams) {
+            const freezeState = tokenParams.freezeState ? getFreezeState(tokenParams.freezeState) : null
+            token.freezeState = freezeState
+            token.isFrozen = isTokenFrozen(freezeState)
         }
     }
 
