@@ -64,27 +64,35 @@ export async function collectionMutated(
         if (data.mutation.royalty.value === undefined) {
             collection.marketPolicy = null
         } else {
+            const previousMarketPolicy = collection.marketPolicy
             collection.marketPolicy = await getMarket(ctx, data.mutation.royalty.value)
 
             let hasChangedRoyalty = false
-            const percentage = {
-                old: 0,
-                new: 0,
-            }
+
             const newBeneficiaries =
                 'beneficiaries' in data.mutation.royalty.value ? data.mutation.royalty.value.beneficiaries : []
-            const previousBeneficiaries = collection.marketPolicy.beneficiaries || []
+            const previousBeneficiaries = previousMarketPolicy?.beneficiaries || []
 
             if (newBeneficiaries.length !== previousBeneficiaries.length) {
                 hasChangedRoyalty = true
             } else {
+                // Check if any new beneficiary has a different percentage
                 for (const newB of newBeneficiaries) {
                     const prevB = previousBeneficiaries.find((b) => b.accountId === newB.beneficiary)
                     if (!prevB || prevB.percentage !== newB.percentage) {
                         hasChangedRoyalty = true
-                        percentage.old = prevB?.percentage || 0
-                        percentage.new = newB.percentage
                         break
+                    }
+                }
+
+                // check if any previous beneficiary is no longer present (account ID changed)
+                if (!hasChangedRoyalty) {
+                    for (const prevB of previousBeneficiaries) {
+                        const newB = newBeneficiaries.find((b) => b.beneficiary === prevB.accountId)
+                        if (!newB) {
+                            hasChangedRoyalty = true
+                            break
+                        }
                     }
                 }
             }
@@ -109,8 +117,8 @@ export async function collectionMutated(
                     name: 'Marketplace.RoyaltyIncreased',
                     body: {
                         collectionId: data.collectionId,
-                        previousRoyalty: percentage.old,
-                        newRoyalty: percentage.new,
+                        previousRoyalty: previousBeneficiaries.map((b) => `${b.accountId}: ${b.percentage}`),
+                        newRoyalty: newBeneficiaries.map((b) => `${b.beneficiary}: ${b.percentage}`),
                         sellers: listings.map((listing) => listing.seller.address),
                         listings: listings.map((listing) => listing.id),
                     },
