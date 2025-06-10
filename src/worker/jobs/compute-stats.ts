@@ -4,6 +4,8 @@ import { Job } from 'bullmq'
 
 const floorQuery = `SELECT MIN("listing"."highest_price") AS floor_price FROM "listing" AS "listing" INNER JOIN "token" "token" ON "token"."id" = "listing"."make_asset_id_id" INNER JOIN "collection" "collection" ON "collection"."id" = "token"."collection_id" WHERE "collection"."id" = $1 AND "listing"."is_active" = TRUE AND "token"."is_frozen" = FALSE AND "token"."listing_forbidden" = FALSE;`
 
+const activeListingsAmountQuery = `SELECT COALESCE(SUM("listing"."amount"), 0) AS active_listings_amount FROM "listing" AS "listing" INNER JOIN "token" "token" ON "token"."id" = "listing"."make_asset_id_id" INNER JOIN "collection" "collection" ON "collection"."id" = "token"."collection_id" WHERE "collection"."id" = $1 AND "listing"."is_active" = TRUE AND "token"."is_frozen" = FALSE AND "token"."listing_forbidden" = FALSE;`
+
 export async function computeStats(_job: Job, collectionId: string) {
     const em = await connectionManager()
 
@@ -34,6 +36,7 @@ export async function computeStats(_job: Job, collectionId: string) {
             }, 'l')
             .getRawOne(),
         em.query(floorQuery, [collectionId]),
+        em.query(activeListingsAmountQuery, [collectionId]),
         em
             .getRepository(Token)
             .createQueryBuilder('token')
@@ -43,7 +46,7 @@ export async function computeStats(_job: Job, collectionId: string) {
             .getRawOne(),
     ]
 
-    const [sales, [{ floor_price }], { tokenCount, supply }] = await Promise.all(promises)
+    const [sales, [{ floor_price }], [{ active_listings_amount }], { tokenCount, supply }] = await Promise.all(promises)
 
     const stats = new CollectionStats({
         tokenCount: Number(tokenCount),
@@ -54,6 +57,7 @@ export async function computeStats(_job: Job, collectionId: string) {
         floorPrice: floor_price,
         lastSale: sales?.last_sale ?? null,
         highestSale: sales?.highest_sale ?? null,
+        activeListingsAmount: BigInt(active_listings_amount ?? 0n),
     })
 
     await em.update(Collection, { id: collectionId }, { stats })

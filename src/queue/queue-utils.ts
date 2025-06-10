@@ -224,3 +224,42 @@ export function dispatchSyncCollectionTransfer(id: string): void {
         Logger.error('Failed to dispatch sync collection transfer', LOGGER_NAMESPACE)
     })
 }
+
+export function dispatchComputeValidators(): void {
+    ValidatorsQueue.add(
+        JobsEnum.COMPUTE_VALIDATORS,
+        {},
+        {
+            delay: 6000,
+            jobId: 'validators.all',
+        }
+    ).catch(() => {
+        Logger.error('Failed to dispatch compute validators', LOGGER_NAMESPACE)
+    })
+}
+
+export function dispatchSyncTokens(): void {
+    TokensQueue.add(
+        JobsEnum.SYNC_TOKENS,
+        {},
+        {
+            delay: 6000,
+            jobId: 'tokens.supply.all',
+        }
+    ).catch(() => {
+        Logger.error('Failed to dispatch sync tokens', LOGGER_NAMESPACE)
+    })
+}
+
+export function dispatchComputeTokenSupply(id: string): void {
+    TokensQueue.add(
+        JobsEnum.COMPUTE_TOKEN_SUPPLY,
+        { id },
+        {
+            delay: 6000,
+            jobId: `tokens.supply.${id}`,
+        }
+    ).catch(() => {
+        Logger.error('Failed to dispatch compute token supply', LOGGER_NAMESPACE)
+    })
+}

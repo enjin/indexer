@@ -3,12 +3,20 @@ import { ProcessorDef } from '../processor.def'
 import { JobsEnum } from '../../constants'
 import { computeRarity } from '../../jobs/compute-rarity'
 import { logDebug, logError } from '../../utils'
+import { syncTokens } from '../../jobs/sync-tokens'
+import { computeTokenSupply } from '../../jobs/compute-token-supply'
 
 export class TokensProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {
         switch (job.name as JobsEnum) {
             case JobsEnum.COMPUTE_RARITY:
                 await computeRarity(job, job.data.collectionId)
+                break
+            case JobsEnum.SYNC_TOKENS:
+                await syncTokens(job)
+                break
+            case JobsEnum.COMPUTE_TOKEN_SUPPLY:
+                await computeTokenSupply(job, job.data.id)
                 break
             default:
                 throw new Error(`${job.name} is not a valid job for this processor`)
