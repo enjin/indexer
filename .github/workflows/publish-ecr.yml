@@ -36,6 +36,6 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          tags: ${{ steps.login-ecr.outputs.registry }}/indexer-matrixchain:${{ github.sha }}
+          tags: ${{ steps.login-ecr.outputs.registry }}/indexer-relaychain:${{ github.sha }}
           push: true
           build-args: SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
