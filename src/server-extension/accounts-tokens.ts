@@ -118,7 +118,7 @@ class AttributeType {
 }
 
 @ObjectType()
-class TokenCollection {
+class AccountsTokensCollection {
     @Field(() => String)
     id!: string
 
@@ -127,15 +127,15 @@ class TokenCollection {
 }
 
 @ObjectType()
-export class AccountsToken {
+export class AccountsTokensToken {
     @Field(() => String)
     id!: string
 
     @Field(() => BigInteger)
     tokenId!: typeof BigInteger
 
-    @Field(() => TokenCollection)
-    collection!: TokenCollection
+    @Field(() => AccountsTokensCollection)
+    collection!: AccountsTokensCollection
 
     @Field(() => [AttributeType], { nullable: true })
     attributes?: AttributeType[]
@@ -146,8 +146,8 @@ export class AccountsToken {
 
 @ObjectType()
 export class AccountsTokensResponse {
-    @Field(() => [AccountsToken])
-    data!: AccountsToken[]
+    @Field(() => [AccountsTokensToken])
+    data!: AccountsTokensToken[]
 
     @Field(() => Int)
     count!: number
@@ -299,7 +299,7 @@ export class AccountsTokensResolver {
         )
 
         const data = tokens.map((token) => {
-            const accountsToken = new AccountsToken()
+            const accountsToken = new AccountsTokensToken()
             accountsToken.id = token.id.toString()
             accountsToken.tokenId = token.tokenId as any
             accountsToken.collection = {
