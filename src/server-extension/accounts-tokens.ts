@@ -67,18 +67,18 @@ class AccountsTokensArgs {
 }
 
 @ObjectType()
-class AccountsTokensCollection {
+class AccountsTokensListing {
     @Field(() => ID)
     id!: string
 
     @Field(() => BigInteger)
-    collectionId!: typeof BigInteger
+    highestPrice!: typeof BigInteger
 
     @Field(() => Json)
-    metadata!: typeof Json
+    state!: typeof Json
 
     @Field(() => Json)
-    stats!: typeof Json
+    data!: typeof Json
 }
 
 @ObjectType()
@@ -109,64 +109,45 @@ class AccountsTokensOwner {
 }
 
 @ObjectType()
-class AccountsTokensListing {
-    @Field(() => ID)
-    id!: string
+class AttributeType {
+    @Field(() => String)
+    key!: string
 
-    @Field(() => BigInteger)
-    highestPrice!: typeof BigInteger
-
-    @Field(() => Json)
-    state!: typeof Json
-
-    @Field(() => Json)
-    data!: typeof Json
-
-    @Field(() => Json)
-    makeAssetId!: typeof Json
+    @Field(() => String, { nullable: true })
+    value?: string
 }
 
 @ObjectType()
-export class AccountsTokensToken {
-    @Field(() => ID)
+class TokenCollection {
+    @Field(() => String)
+    id!: string
+
+    @Field(() => [AttributeType], { nullable: true })
+    attributes?: AttributeType[]
+}
+
+@ObjectType()
+export class AccountsToken {
+    @Field(() => String)
     id!: string
 
     @Field(() => BigInteger)
     tokenId!: typeof BigInteger
 
-    @Field(() => BigInteger)
-    supply!: typeof BigInteger
+    @Field(() => TokenCollection)
+    collection!: TokenCollection
 
-    @Field(() => Boolean)
-    isFrozen!: boolean
-
-    @Field({ nullable: true })
-    freezeState!: FreezeState
-
-    @Field(() => Json, { nullable: true })
-    metadata!: typeof Json
-
-    @Field(() => Boolean)
-    nonFungible!: boolean
-
-    @Field()
-    createdAt!: Date
-
-    @Field(() => AccountsTokensCollection)
-    collection!: AccountsTokensCollection
+    @Field(() => [AttributeType], { nullable: true })
+    attributes?: AttributeType[]
 
     @Field(() => [AccountsTokensOwner], { nullable: false })
     owners!: AccountsTokensOwner[]
-
-    constructor(props: Partial<AccountsTokensResponse>) {
-        Object.assign(this, props)
-    }
 }
 
 @ObjectType()
 export class AccountsTokensResponse {
-    @Field(() => [AccountsTokensToken])
-    data!: AccountsTokensToken[]
+    @Field(() => [AccountsToken])
+    data!: AccountsToken[]
 
     @Field(() => Int)
     count!: number
@@ -229,7 +210,43 @@ export class AccountsTokensResolver {
         const tokens = await manager
             .getRepository(Token)
             .createQueryBuilder('token')
+            .select(['token.id', 'token.tokenId'])
             .innerJoinAndMapOne('token.collection', Collection, 'collection', 'token.collection = collection.id')
+            .addSelect(['collection.id'])
+            .leftJoinAndMapMany(
+                'token.attributes',
+                'token.attributes',
+                'tokenAttrs',
+                'tokenAttrs.key IN (:...tokenMetadataKeys)',
+                {
+                    tokenMetadataKeys: [
+                        'name',
+                        'description',
+                        'fallback_image',
+                        'banner_image',
+                        'media',
+                        'uri',
+                        'external_url',
+                    ],
+                }
+            )
+            .leftJoinAndMapMany(
+                'token.collection.attributes',
+                'collection.attributes',
+                'collectionAttrs',
+                'collectionAttrs.token_id IS NULL AND collectionAttrs.key IN (:...collectionMetadataKeys)',
+                {
+                    collectionMetadataKeys: [
+                        'name',
+                        'description',
+                        'fallback_image',
+                        'banner_image',
+                        'media',
+                        'uri',
+                        'external_url',
+                    ],
+                }
+            )
             .where('token.id IN (:...tokenIds)', { tokenIds: tokenIds })
             .orderBy(orderBy, order, 'NULLS LAST')
             .addOrderBy('token.id', order, 'NULLS LAST')
@@ -281,18 +298,32 @@ export class AccountsTokensResolver {
             {} as Record<string, any[]>
         )
 
-        const data = tokens.map((token: { id: string }) => {
-            const tokenObj = token as any
+        const data = tokens.map((token) => {
+            const accountsToken = new AccountsToken()
+            accountsToken.id = token.id.toString()
+            accountsToken.tokenId = token.tokenId as any
+            accountsToken.collection = {
+                id: token.collection.id.toString(),
+                attributes: (token.collection.attributes || []).map((attr: any) => ({
+                    key: attr.key,
+                    value: attr.value,
+                })),
+            }
+            accountsToken.attributes = (token.attributes || []).map((attr: any) => ({
+                key: attr.key,
+                value: attr.value,
+            }))
+
             const accounts = tokenAccountsByToken[token.id] || []
 
             // Create owner objects for each account (with their listings)
-            tokenObj.owners = accounts.map((ta) => {
+            accountsToken.owners = accounts.map((ta) => {
                 const accountId = ta.account.id
                 const key = `${token.id}-${accountId}`
                 const ownerListings = listingsByTokenAndAccount[key] || []
 
                 return {
-                    id: ta.id,
+                    id: ta.id.toString(),
                     balance: ta.balance,
                     reservedBalance: ta.reservedBalance,
                     isFrozen: ta.isFrozen,
@@ -300,16 +331,15 @@ export class AccountsTokensResolver {
                     updatedAt: ta.updatedAt,
                     createdAt: ta.createdAt,
                     listings: ownerListings.map((listing) => ({
-                        id: listing.id,
+                        id: listing.id.toString(),
                         highestPrice: listing.highestPrice,
                         state: listing.state,
                         data: listing.data,
-                        makeAssetId: listing.makeAssetId,
                     })),
                 }
             })
 
-            return tokenObj
+            return accountsToken
         })
 
         return new AccountsTokensResponse({ data, count })
