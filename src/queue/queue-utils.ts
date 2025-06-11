@@ -263,3 +263,16 @@ export function dispatchComputeTokenSupply(id: string): void {
         Logger.error('Failed to dispatch compute token supply', LOGGER_NAMESPACE)
     })
 }
+
+export function dispatchRefreshPool(id: string): void {
+    TokensQueue.add(
+        JobsEnum.REFRESH_POOL,
+        { id },
+        {
+            delay: 6000,
+            jobId: `tokens.refresh-pool.${id}`,
+        }
+    ).catch(() => {
+        Logger.error('Failed to dispatch refresh pool', LOGGER_NAMESPACE)
+    })
+}
