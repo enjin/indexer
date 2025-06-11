@@ -79,6 +79,9 @@ class AccountsTokensListing {
 
     @Field(() => Json)
     data!: typeof Json
+
+    @Field(() => Json)
+    makeAssetId!: typeof Json
 }
 
 @ObjectType()
@@ -119,8 +122,17 @@ class AttributeType {
 
 @ObjectType()
 class AccountsTokensCollection {
-    @Field(() => String)
+    @Field(() => ID)
     id!: string
+
+    @Field(() => BigInteger)
+    collectionId!: typeof BigInteger
+
+    @Field(() => Json, { nullable: true })
+    metadata!: typeof Json
+
+    @Field(() => Json)
+    stats!: typeof Json
 
     @Field(() => [AttributeType], { nullable: true })
     attributes?: AttributeType[]
@@ -128,11 +140,29 @@ class AccountsTokensCollection {
 
 @ObjectType()
 export class AccountsTokensToken {
-    @Field(() => String)
+    @Field(() => ID)
     id!: string
 
     @Field(() => BigInteger)
     tokenId!: typeof BigInteger
+
+    @Field(() => BigInteger)
+    supply!: typeof BigInteger
+
+    @Field(() => Boolean)
+    isFrozen!: boolean
+
+    @Field({ nullable: true })
+    freezeState!: FreezeState
+
+    @Field(() => Json, { nullable: true })
+    metadata!: typeof Json
+
+    @Field(() => Boolean)
+    nonFungible!: boolean
+
+    @Field()
+    createdAt!: Date
 
     @Field(() => AccountsTokensCollection)
     collection!: AccountsTokensCollection
@@ -142,6 +172,10 @@ export class AccountsTokensToken {
 
     @Field(() => [AccountsTokensOwner], { nullable: false })
     owners!: AccountsTokensOwner[]
+
+    constructor(props: Partial<AccountsTokensToken>) {
+        Object.assign(this, props)
+    }
 }
 
 @ObjectType()
@@ -210,9 +244,18 @@ export class AccountsTokensResolver {
         const tokens = await manager
             .getRepository(Token)
             .createQueryBuilder('token')
-            .select(['token.id', 'token.tokenId'])
+            .select([
+                'token.id',
+                'token.tokenId',
+                'token.supply',
+                'token.isFrozen',
+                'token.freezeState',
+                'token.metadata',
+                'token.nonFungible',
+                'token.createdAt',
+            ])
             .innerJoinAndMapOne('token.collection', Collection, 'collection', 'token.collection = collection.id')
-            .addSelect(['collection.id'])
+            .addSelect(['collection.id', 'collection.collectionId', 'collection.metadata', 'collection.stats'])
             .leftJoinAndMapMany(
                 'token.attributes',
                 'token.attributes',
@@ -299,11 +342,20 @@ export class AccountsTokensResolver {
         )
 
         const data = tokens.map((token) => {
-            const accountsToken = new AccountsTokensToken()
+            const accountsToken = new AccountsTokensToken({})
             accountsToken.id = token.id.toString()
             accountsToken.tokenId = token.tokenId as any
+            accountsToken.supply = token.supply as any
+            accountsToken.isFrozen = token.isFrozen
+            accountsToken.freezeState = token.freezeState as any
+            accountsToken.metadata = token.metadata as any
+            accountsToken.nonFungible = token.nonFungible
+            accountsToken.createdAt = token.createdAt
             accountsToken.collection = {
                 id: token.collection.id.toString(),
+                collectionId: token.collection.collectionId as any,
+                metadata: token.collection.metadata as any,
+                stats: token.collection.stats as any,
                 attributes: (token.collection.attributes || []).map((attr: any) => ({
                     key: attr.key,
                     value: attr.value,
@@ -335,6 +387,7 @@ export class AccountsTokensResolver {
                         highestPrice: listing.highestPrice,
                         state: listing.state,
                         data: listing.data,
+                        makeAssetId: listing.makeAssetId,
                     })),
                 }
             })
