@@ -17,7 +17,7 @@ export async function tokens(
     params?: { collectionId?: bigint; tokenId?: bigint; batchSize?: number }
 ): Promise<Token | AsyncIterable<[k: [bigint, bigint], v: Token | undefined][]> | undefined> {
     const getTokens = async (version: (typeof multiTokens.tokens)[keyof typeof multiTokens.tokens]) => {
-        if (params?.collectionId && params.tokenId) {
+        if (params?.collectionId && params.tokenId !== undefined) {
             return version.get(block, params.collectionId, params.tokenId)
         }
         return version.getPairsPaged(params?.batchSize ?? 1000, block)
