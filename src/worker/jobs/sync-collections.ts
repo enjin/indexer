@@ -10,10 +10,10 @@ export async function syncCollections(job: Job) {
     })
 
     for (const collection of collections) {
-        // QueueUtils.dispatchFetchExtra([collection.id])
-        // QueueUtils.dispatchComputeStats(collection.id)
-        // QueueUtils.dispatchComputeTraits(collection.id)
-        // QueueUtils.dispatchComputeRarity(collection.id)
+        QueueUtils.dispatchFetchExtra([collection.id])
+        QueueUtils.dispatchComputeStats(collection.id)
+        QueueUtils.dispatchComputeTraits(collection.id)
+        QueueUtils.dispatchComputeRarity(collection.id)
         QueueUtils.dispatchComputeMetadata(collection.id, 'collection', false, true)
     }
 
