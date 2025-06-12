@@ -17,6 +17,7 @@ export const enum JobsEnum {
     SYNC_TOKENS = 'SYNC_TOKENS',
     REFRESH_POOL = 'REFRESH_POOL',
     SYNC_ALL_ACCOUNTS = 'SYNC_ALL_ACCOUNTS',
+    SYNC_VALIDATORS = 'SYNC_VALIDATORS',
 }
 
 export const enum QueuesEnum {
