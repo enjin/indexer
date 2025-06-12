@@ -276,3 +276,16 @@ export function dispatchRefreshPool(id: string): void {
         Logger.error('Failed to dispatch refresh pool', LOGGER_NAMESPACE)
     })
 }
+
+export function dispatchSyncValidators(): void {
+    ValidatorsQueue.add(
+        JobsEnum.SYNC_VALIDATORS,
+        {},
+        {
+            delay: 6000,
+            jobId: 'validators.sync.all',
+        }
+    ).catch(() => {
+        Logger.error('Failed to dispatch sync validators', LOGGER_NAMESPACE)
+    })
+}
