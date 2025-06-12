@@ -16,6 +16,7 @@ export const enum JobsEnum {
     COMPUTE_TOKEN_SUPPLY = 'COMPUTE_TOKEN_SUPPLY',
     SYNC_TOKENS = 'SYNC_TOKENS',
     REFRESH_POOL = 'REFRESH_POOL',
+    SYNC_ALL_ACCOUNTS = 'SYNC_ALL_ACCOUNTS',
 }
 
 export const enum QueuesEnum {
