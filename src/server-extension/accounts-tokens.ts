@@ -3,7 +3,7 @@ import { Json, BigInteger } from '@subsquid/graphql-server'
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
 import { Validate, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator'
-import { Collection, FreezeState, Listing, Token, TokenAccount } from '../model'
+import { Collection, Listing, Token, TokenAccount } from '../model'
 import { isValidAddress } from '../util/tools'
 
 enum AccountsTokensOrderByInput {
@@ -17,6 +17,12 @@ enum AccountsTokensOrderInput {
     DESC = 'DESC',
 }
 
+enum AccountsTokensFreezeState {
+    Permanent = 'Permanent',
+    Temporary = 'Temporary',
+    Never = 'Never',
+}
+
 registerEnumType(AccountsTokensOrderByInput, {
     name: 'AccountsTokensOrderByInput',
 })
@@ -25,7 +31,7 @@ registerEnumType(AccountsTokensOrderInput, {
     name: 'AccountsTokensOrderInput',
 })
 
-registerEnumType(FreezeState, {
+registerEnumType(AccountsTokensFreezeState, {
     name: 'AccountsTokensFreezeState',
 })
 
@@ -112,7 +118,7 @@ class AccountsTokensOwner {
 }
 
 @ObjectType()
-class AttributeType {
+class AccountsTokensAttribute {
     @Field(() => String)
     key!: string
 
@@ -134,8 +140,8 @@ class AccountsTokensCollection {
     @Field(() => Json)
     stats!: typeof Json
 
-    @Field(() => [AttributeType], { nullable: true })
-    attributes?: AttributeType[]
+    @Field(() => [AccountsTokensAttribute], { nullable: true })
+    attributes?: AccountsTokensAttribute[]
 }
 
 @ObjectType()
@@ -153,7 +159,7 @@ export class AccountsTokensToken {
     isFrozen!: boolean
 
     @Field({ nullable: true })
-    freezeState!: FreezeState
+    freezeState!: AccountsTokensFreezeState
 
     @Field(() => Json, { nullable: true })
     metadata!: typeof Json
@@ -167,8 +173,8 @@ export class AccountsTokensToken {
     @Field(() => AccountsTokensCollection)
     collection!: AccountsTokensCollection
 
-    @Field(() => [AttributeType], { nullable: true })
-    attributes?: AttributeType[]
+    @Field(() => [AccountsTokensAttribute], { nullable: true })
+    attributes?: AccountsTokensAttribute[]
 
     @Field(() => [AccountsTokensOwner], { nullable: false })
     owners!: AccountsTokensOwner[]
