@@ -3,7 +3,7 @@ import { Json, BigInteger } from '@subsquid/graphql-server'
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
 import { Validate, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator'
-import { Collection, FreezeState, Listing, Token, TokenAccount } from '../model'
+import { Collection, Listing, Token, TokenAccount } from '../model'
 import { isValidAddress } from '../util/tools'
 
 enum AccountsTokensOrderByInput {
@@ -17,6 +17,12 @@ enum AccountsTokensOrderInput {
     DESC = 'DESC',
 }
 
+enum AccountsTokensFreezeState {
+    Permanent = 'Permanent',
+    Temporary = 'Temporary',
+    Never = 'Never',
+}
+
 registerEnumType(AccountsTokensOrderByInput, {
     name: 'AccountsTokensOrderByInput',
 })
@@ -25,7 +31,7 @@ registerEnumType(AccountsTokensOrderInput, {
     name: 'AccountsTokensOrderInput',
 })
 
-registerEnumType(FreezeState, {
+registerEnumType(AccountsTokensFreezeState, {
     name: 'AccountsTokensFreezeState',
 })
 
@@ -67,18 +73,21 @@ class AccountsTokensArgs {
 }
 
 @ObjectType()
-class AccountsTokensCollection {
+class AccountsTokensListing {
     @Field(() => ID)
     id!: string
 
     @Field(() => BigInteger)
-    collectionId!: typeof BigInteger
+    highestPrice!: typeof BigInteger
 
     @Field(() => Json)
-    metadata!: typeof Json
+    state!: typeof Json
 
     @Field(() => Json)
-    stats!: typeof Json
+    data!: typeof Json
+
+    @Field(() => Json)
+    makeAssetId!: typeof Json
 }
 
 @ObjectType()
@@ -109,21 +118,30 @@ class AccountsTokensOwner {
 }
 
 @ObjectType()
-class AccountsTokensListing {
+class AccountsTokensAttribute {
+    @Field(() => String)
+    key!: string
+
+    @Field(() => String, { nullable: true })
+    value?: string
+}
+
+@ObjectType()
+class AccountsTokensCollection {
     @Field(() => ID)
     id!: string
 
     @Field(() => BigInteger)
-    highestPrice!: typeof BigInteger
+    collectionId!: typeof BigInteger
+
+    @Field(() => Json, { nullable: true })
+    metadata!: typeof Json
 
     @Field(() => Json)
-    state!: typeof Json
+    stats!: typeof Json
 
-    @Field(() => Json)
-    data!: typeof Json
-
-    @Field(() => Json)
-    makeAssetId!: typeof Json
+    @Field(() => [AccountsTokensAttribute], { nullable: true })
+    attributes?: AccountsTokensAttribute[]
 }
 
 @ObjectType()
@@ -141,7 +159,7 @@ export class AccountsTokensToken {
     isFrozen!: boolean
 
     @Field({ nullable: true })
-    freezeState!: FreezeState
+    freezeState!: AccountsTokensFreezeState
 
     @Field(() => Json, { nullable: true })
     metadata!: typeof Json
@@ -155,10 +173,13 @@ export class AccountsTokensToken {
     @Field(() => AccountsTokensCollection)
     collection!: AccountsTokensCollection
 
+    @Field(() => [AccountsTokensAttribute], { nullable: true })
+    attributes?: AccountsTokensAttribute[]
+
     @Field(() => [AccountsTokensOwner], { nullable: false })
     owners!: AccountsTokensOwner[]
 
-    constructor(props: Partial<AccountsTokensResponse>) {
+    constructor(props: Partial<AccountsTokensToken>) {
         Object.assign(this, props)
     }
 }
@@ -229,7 +250,52 @@ export class AccountsTokensResolver {
         const tokens = await manager
             .getRepository(Token)
             .createQueryBuilder('token')
+            .select([
+                'token.id',
+                'token.tokenId',
+                'token.supply',
+                'token.isFrozen',
+                'token.freezeState',
+                'token.metadata',
+                'token.nonFungible',
+                'token.createdAt',
+            ])
             .innerJoinAndMapOne('token.collection', Collection, 'collection', 'token.collection = collection.id')
+            .addSelect(['collection.id', 'collection.collectionId', 'collection.metadata', 'collection.stats'])
+            .leftJoinAndMapMany(
+                'token.attributes',
+                'token.attributes',
+                'tokenAttrs',
+                'tokenAttrs.key IN (:...tokenMetadataKeys)',
+                {
+                    tokenMetadataKeys: [
+                        'name',
+                        'description',
+                        'fallback_image',
+                        'banner_image',
+                        'media',
+                        'uri',
+                        'external_url',
+                    ],
+                }
+            )
+            .leftJoinAndMapMany(
+                'token.collection.attributes',
+                'collection.attributes',
+                'collectionAttrs',
+                'collectionAttrs.token_id IS NULL AND collectionAttrs.key IN (:...collectionMetadataKeys)',
+                {
+                    collectionMetadataKeys: [
+                        'name',
+                        'description',
+                        'fallback_image',
+                        'banner_image',
+                        'media',
+                        'uri',
+                        'external_url',
+                    ],
+                }
+            )
             .where('token.id IN (:...tokenIds)', { tokenIds: tokenIds })
             .orderBy(orderBy, order, 'NULLS LAST')
             .addOrderBy('token.id', order, 'NULLS LAST')
@@ -281,18 +347,41 @@ export class AccountsTokensResolver {
             {} as Record<string, any[]>
         )
 
-        const data = tokens.map((token: { id: string }) => {
-            const tokenObj = token as any
+        const data = tokens.map((token) => {
+            const accountsToken = new AccountsTokensToken({})
+            accountsToken.id = token.id.toString()
+            accountsToken.tokenId = token.tokenId as any
+            accountsToken.supply = token.supply as any
+            accountsToken.isFrozen = token.isFrozen
+            accountsToken.freezeState = token.freezeState as any
+            accountsToken.metadata = token.metadata as any
+            accountsToken.nonFungible = token.nonFungible
+            accountsToken.createdAt = token.createdAt
+            accountsToken.collection = {
+                id: token.collection.id.toString(),
+                collectionId: token.collection.collectionId as any,
+                metadata: token.collection.metadata as any,
+                stats: token.collection.stats as any,
+                attributes: (token.collection.attributes || []).map((attr: any) => ({
+                    key: attr.key,
+                    value: attr.value,
+                })),
+            }
+            accountsToken.attributes = (token.attributes || []).map((attr: any) => ({
+                key: attr.key,
+                value: attr.value,
+            }))
+
             const accounts = tokenAccountsByToken[token.id] || []
 
             // Create owner objects for each account (with their listings)
-            tokenObj.owners = accounts.map((ta) => {
+            accountsToken.owners = accounts.map((ta) => {
                 const accountId = ta.account.id
                 const key = `${token.id}-${accountId}`
                 const ownerListings = listingsByTokenAndAccount[key] || []
 
                 return {
-                    id: ta.id,
+                    id: ta.id.toString(),
                     balance: ta.balance,
                     reservedBalance: ta.reservedBalance,
                     isFrozen: ta.isFrozen,
@@ -300,7 +389,7 @@ export class AccountsTokensResolver {
                     updatedAt: ta.updatedAt,
                     createdAt: ta.createdAt,
                     listings: ownerListings.map((listing) => ({
-                        id: listing.id,
+                        id: listing.id.toString(),
                         highestPrice: listing.highestPrice,
                         state: listing.state,
                         data: listing.data,
@@ -309,7 +398,7 @@ export class AccountsTokensResolver {
                 }
             })
 
-            return tokenObj
+            return accountsToken
         })
 
         return new AccountsTokensResponse({ data, count })
