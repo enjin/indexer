@@ -12,7 +12,9 @@ export async function syncAccounts(_job: Job, ids: string[] | null): Promise<voi
 
     const accounts = await Promise.all(
         data.filter(isNotNullOrEmpty).map(async (_d) => {
-            const account = await getOrCreateAccount(ctx, decode(_d.publicKey).bytes)
+            _job.log(`Fetched ${JSON.stringify(_d)}`)
+            const address = _d.publicKey.startsWith('0x') ? _d.publicKey : decode(_d.publicKey).toString()
+            const account = await getOrCreateAccount(ctx, address)
 
             account.username = _d.username
             account.image = _d.image
