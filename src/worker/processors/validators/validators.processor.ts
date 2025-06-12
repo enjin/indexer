@@ -27,7 +27,7 @@ export class ValidatorsProcessor implements ProcessorDef {
     }
 
     completed(job: Job): void {
-        logDebug('Finished computing collections', job)
+        logDebug('Finished computing validators', job)
     }
 }
 
