@@ -11,7 +11,7 @@ export class CollectionsProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {
         switch (job.name as JobsEnum) {
             case JobsEnum.COMPUTE_COLLECTIONS:
-                await syncCollections(job, null)
+                await syncCollections(job)
                 break
             case JobsEnum.FETCH_EXTRA:
                 await computeExtras(job, job.data.ids)
