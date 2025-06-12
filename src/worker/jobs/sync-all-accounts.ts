@@ -3,7 +3,7 @@ import { Account, Collection } from '../../model'
 import { connectionManager } from '../../contexts'
 import { Job } from 'bullmq'
 
-export async function syncAllAccounts(job: Job, ids: string[] | null) {
+export async function syncAllAccounts(job: Job) {
     const em = await connectionManager()
     const accounts = await em.find(Account, {
         select: ['id'],
