@@ -1,5 +1,5 @@
 import { QueueUtils } from '../../queue'
-import { Account, Collection } from '../../model'
+import { Account } from '../../model'
 import { connectionManager } from '../../contexts'
 import { Job } from 'bullmq'
 
