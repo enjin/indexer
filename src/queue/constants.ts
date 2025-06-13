@@ -28,4 +28,5 @@ export const enum JobsEnum {
     SYNC_TOKENS = 'SYNC_TOKENS',
     REFRESH_POOL = 'REFRESH_POOL',
     SYNC_VALIDATORS = 'SYNC_VALIDATORS',
+    SYNC_CHAIN = 'SYNC_CHAIN',
 }

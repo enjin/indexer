@@ -3,6 +3,8 @@ import { ChainInfo, Marketplace } from '../../model'
 import { connectionManager } from '../../contexts'
 import Rpc from '../../util/rpc'
 import { EntityManager } from 'typeorm'
+import { ApiPromise } from '@polkadot/api'
+import { QueueUtils } from 'src/queue'
 
 type LocalBlock = {
     hash: string
@@ -12,19 +14,8 @@ type LocalBlock = {
     specVersion: number
 }
 
-const saveChainInfo = async (em: EntityManager, block: LocalBlock) => {
+const saveChainInfo = async (em: EntityManager, api: ApiPromise, block: LocalBlock) => {
     try {
-        const existing = await em.getRepository(ChainInfo).findOne({
-            where: {
-                blockNumber: block.height,
-            },
-        })
-
-        if (existing) {
-            return
-        }
-
-        const { api } = await Rpc.getInstance()
         const [
             { transactionVersion },
             existentialDeposit,
@@ -63,32 +54,63 @@ const saveChainInfo = async (em: EntityManager, block: LocalBlock) => {
             }),
         })
 
-        await em.save(state)
+        return state
     } catch (error) {
         console.error(error)
     }
 }
 
-export async function syncChain(_job: Job) {
+export async function syncChain(_job: Job, fromBlock?: number, toBlock?: number) {
     const em = await connectionManager()
 
     const { api } = await Rpc.getInstance()
-
-    const chainInfo = await em
-        .getRepository(ChainInfo)
-        .createQueryBuilder('chain_info')
-        .orderBy('block_number', 'DESC')
-        .getOneOrFail()
-
-    const currentBlock = chainInfo?.blockNumber ?? 0
-    let variableDate = chainInfo.timestamp.getTime()
-
     const blocksInDay = 10 * 60 * 24
-    const length28dBlock = currentBlock - 28 * blocksInDay
+    let currentBlock = 0
+    let variableDate = 0
+    let length28dBlock = 0
+
+    if (!fromBlock) {
+        const chainInfo = await em
+            .getRepository(ChainInfo)
+            .createQueryBuilder('chain_info')
+            .orderBy('block_number', 'DESC')
+            .getOneOrFail()
+
+        currentBlock = chainInfo?.blockNumber ?? 0
+        variableDate = chainInfo.timestamp.getTime()
+        length28dBlock = currentBlock - 28 * blocksInDay
+
+        for (let i = currentBlock; i >= length28dBlock; i -= blocksInDay) {
+            QueueUtils.dispatchSyncChain(i, i - blocksInDay)
+        }
+
+        await _job.log(`Dispatched jobs for blocks from ${currentBlock} to ${length28dBlock}`)
+        return
+    }
+
+    if (fromBlock) {
+        currentBlock = fromBlock
+    }
+
+    if (toBlock) {
+        length28dBlock = toBlock
+    }
+
+    const states = []
+
     for (let i = currentBlock; i >= length28dBlock; i--) {
+        variableDate = variableDate - 6 * 1000
+        const existing = await em.getRepository(ChainInfo).findOne({
+            where: {
+                blockNumber: i,
+            },
+        })
+        if (existing) {
+            continue
+        }
+
         const blockHash = await api.rpc.chain.getBlockHash(i)
         const header = await api.derive.chain.getHeader(blockHash.toString())
-        variableDate = variableDate - 6 * 1000
 
         const localBlock: LocalBlock = {
             hash: blockHash.toString(),
@@ -98,8 +120,10 @@ export async function syncChain(_job: Job) {
             specVersion: Number(1050),
         }
 
-        await saveChainInfo(em, localBlock)
-
-        await _job.log(`Synced block ${i}`)
+        const state = await saveChainInfo(em, api, localBlock)
+        states.push(state)
     }
+
+    await em.save(states)
+    await _job.log(`Synced blocks from ${fromBlock} to ${toBlock}`)
 }
