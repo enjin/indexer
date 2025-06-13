@@ -15,6 +15,9 @@
     "emitDecoratorMetadata": true,
     "skipLibCheck": true,
     "baseUrl": ".",
+    "paths": {
+      "~/*": ["src/*"],
+    },
     "inlineSources": true,
     "sourceRoot": "/"
   },

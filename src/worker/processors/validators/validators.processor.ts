@@ -1,10 +1,10 @@
 import { Job } from 'bullmq'
-import { ProcessorDef } from '../processor.def'
-import { JobsEnum } from '../../constants'
-import { computeValidators } from '../../jobs/compute-validators'
-import { logDebug, logError } from '../../utils'
-import { syncValidators } from '../../jobs/sync-validators'
-import { syncChain } from '../../jobs/sync-chain'
+import { ProcessorDef } from '~/worker/processors/processor.def'
+import { JobsEnum } from '~/worker/constants'
+import { computeValidators } from '~/worker/jobs/compute-validators'
+import { logDebug, logError } from '~/worker/utils'
+import { syncValidators } from '~/worker/jobs/sync-validators'
+import { syncChain } from '~/worker/jobs/sync-chain'
 
 export class ValidatorsProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {
