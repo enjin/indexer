@@ -16,7 +16,7 @@ export class ValidatorsProcessor implements ProcessorDef {
                 await syncValidators(job)
                 break
             case JobsEnum.SYNC_CHAIN:
-                await syncChain(job)
+                await syncChain(job, job.data.fromBlock, job.data.toBlock)
                 break
             default:
                 throw new Error(`${job.name} is not a valid job for this processor`)
