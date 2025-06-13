@@ -7,7 +7,9 @@ export async function syncPools(job: Job) {
 
     const pools = await em.find(NominationPool, {
         relations: {
-            members: true,
+            members: {
+                account: true,
+            },
         },
     })
 
@@ -15,19 +17,30 @@ export async function syncPools(job: Job) {
         const poolId = pool.id
         const poolMembers = pool.members
 
+        await job.log(`Syncing pool ${poolId}`)
+
         // sync pool members
-        const tokenAccounts = await em
-            .createQueryBuilder(TokenAccount, 'tokenAccount')
-            .select('tokenAccount.id')
-            .select('account.id')
-            .select('tokenAccount.balance')
-            .leftJoin(Account, 'account', 'account.id = tokenAccount.account_id')
-            .where('tokenAccount.token_id = :tokenId', { tokenId: `1-${poolId}` })
-            .getMany()
+        const tokenAccounts = await em.find(TokenAccount, {
+            where: {
+                token: {
+                    id: `1-${poolId}`,
+                },
+            },
+            select: ['id', 'balance', 'token'],
+            relations: {
+                account: true,
+                token: true,
+            },
+        })
+
+        await job.log(`Found ${tokenAccounts.length} token accounts`)
 
         for (const tokenAccount of tokenAccounts) {
             const poolMember = poolMembers.find((poolMember) => poolMember.account.id === tokenAccount.account.id)
+
             if (!poolMember) {
+                await job.log(`Syncing pool member ${tokenAccount.account.id}`)
+
                 await em.save(
                     new PoolMember({
                         id: `${poolId}-${tokenAccount.account.id}`,
