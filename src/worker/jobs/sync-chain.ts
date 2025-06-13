@@ -99,6 +99,10 @@ export async function syncChain(_job: Job, fromBlock?: number, toBlock?: number)
     const states = []
 
     for (let i = currentBlock; i >= length28dBlock; i--) {
+        if (i % 1000 === 0) {
+            await _job.log(`Syncing block ${i}`)
+        }
+
         variableDate = variableDate - 6 * 1000
         const existing = await em.getRepository(ChainInfo).findOne({
             where: {

@@ -19,6 +19,7 @@ export const enum JobsEnum {
     SYNC_ALL_ACCOUNTS = 'SYNC_ALL_ACCOUNTS',
     SYNC_VALIDATORS = 'SYNC_VALIDATORS',
     SYNC_CHAIN = 'SYNC_CHAIN',
+    SYNC_POOLS = 'SYNC_POOLS',
 }
 
 export const enum QueuesEnum {
