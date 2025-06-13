@@ -35,13 +35,26 @@ export async function syncPools(job: Job) {
 
         await job.log(`Found ${tokenAccounts.length} token accounts`)
 
+        // check if pool members are not in the token accounts
+        const poolMembersToRemove = poolMembers.filter(
+            (poolMember) => !tokenAccounts.some((tokenAccount) => tokenAccount.account.id === poolMember.account.id)
+        )
+
+        await job.log(`Found ${poolMembersToRemove.length} pool members to remove`)
+
+        for (const poolMember of poolMembersToRemove) {
+            await job.log(`Removing pool member ${poolMember.account.id}`)
+
+            pool.members = pool.members.filter((member) => member.account.id !== poolMember.account.id)
+        }
+
         for (const tokenAccount of tokenAccounts) {
             const poolMember = poolMembers.find((poolMember) => poolMember.account.id === tokenAccount.account.id)
 
             if (!poolMember) {
                 await job.log(`Syncing pool member ${tokenAccount.account.id}`)
 
-                await em.save(
+                const newPoolMember = await em.save(
                     new PoolMember({
                         id: `${poolId}-${tokenAccount.account.id}`,
                         pool,
@@ -51,6 +64,8 @@ export async function syncPools(job: Job) {
                         joinedEra: null,
                     })
                 )
+
+                pool.members = [...pool.members, newPoolMember]
             }
         }
 
