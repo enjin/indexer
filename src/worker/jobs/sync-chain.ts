@@ -1,10 +1,10 @@
 import { Job } from 'bullmq'
-import { ChainInfo, Marketplace } from '~/model'
-import { connectionManager } from '~/contexts'
-import Rpc from '~/util/rpc'
+import { ChainInfo, Marketplace } from '../../model'
+import { connectionManager } from '../../contexts'
+import Rpc from '../../util/rpc'
 import { EntityManager } from 'typeorm'
 import { ApiPromise } from '@polkadot/api'
-import { QueueUtils } from '~/queue'
+import { QueueUtils } from '../../queue'
 
 type LocalBlock = {
     hash: string
