@@ -4,6 +4,7 @@ import { JobsEnum } from '../../constants'
 import { computeValidators } from '../../jobs/compute-validators'
 import { logDebug, logError } from '../../utils'
 import { syncValidators } from '../../jobs/sync-validators'
+import { syncChain } from '../../jobs/sync-chain'
 
 export class ValidatorsProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {
@@ -13,6 +14,9 @@ export class ValidatorsProcessor implements ProcessorDef {
                 break
             case JobsEnum.SYNC_VALIDATORS:
                 await syncValidators(job)
+                break
+            case JobsEnum.SYNC_CHAIN:
+                await syncChain(job)
                 break
             default:
                 throw new Error(`${job.name} is not a valid job for this processor`)
