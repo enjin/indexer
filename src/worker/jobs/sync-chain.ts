@@ -96,8 +96,6 @@ export async function syncChain(_job: Job, fromBlock?: number, toBlock?: number)
         length28dBlock = toBlock
     }
 
-    const states = []
-
     for (let i = currentBlock; i >= length28dBlock; i--) {
         if (i % 1000 === 0) {
             await _job.log(`Syncing block ${i}`)
@@ -125,9 +123,8 @@ export async function syncChain(_job: Job, fromBlock?: number, toBlock?: number)
         }
 
         const state = await saveChainInfo(em, api, localBlock)
-        states.push(state)
+        await em.save(state)
     }
 
-    await em.save(states)
     await _job.log(`Synced blocks from ${fromBlock} to ${toBlock}`)
 }
