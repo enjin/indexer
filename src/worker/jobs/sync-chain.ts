@@ -117,7 +117,7 @@ export async function syncChain(_job: Job, fromBlock?: number, toBlock?: number)
         const localBlock: LocalBlock = {
             hash: blockHash.toString(),
             height: header.number.toNumber(),
-            timestamp: variableDate,
+            timestamp: variableDate * 1000,
             validator: header.author?.toString() ?? '',
             specVersion: Number(1050),
         }
