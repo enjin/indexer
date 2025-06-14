@@ -94,7 +94,7 @@ export async function bonded(ctx: CommonContext, block: Block, item: EventItem):
         const member = await ctx.store.findOneByOrFail<PoolMember>(PoolMember, { id: `${pool.id}-${account.id}` })
         member.bonded += eventData.bonded
         member.tokenAccount = new TokenAccount({ id: `${account.id}-1-${pool.id}` })
-        if (member.isActive === false) {
+        if (!member.isActive) {
             member.isActive = true
             pool.totalMembers += 1
         }

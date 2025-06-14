@@ -112,7 +112,7 @@ export async function tokenAccountCreated(
                 bonded: member.bonded,
             })
 
-            if (member.isActive === false) {
+            if (!member.isActive) {
                 newMember.isActive = true
                 pool.totalMembers += 1
             }

@@ -102,7 +102,7 @@ export async function buyOrderCompleted(
         }
     } else {
         newMember.bonded += bonded
-        if (newMember.isActive === false) {
+        if (!newMember.isActive) {
             newMember.isActive = true
             pool.totalMembers += 1
         }
