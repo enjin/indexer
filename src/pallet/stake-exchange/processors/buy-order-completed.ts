@@ -72,7 +72,7 @@ export async function buyOrderCompleted(
         (!existingMember.tokenAccount || existingMember.tokenAccount.balance <= 0n)
     ) {
         const poolMember = await ctx.store.findOneByOrFail<PoolMember>(PoolMember, { id: existingMember.id })
-        poolMember.bonded = existingMember.tokenAccount?.balance || 0n
+        poolMember.bonded = 0n
         poolMember.isActive = false
         pool.totalMembers -= 1
         await ctx.store.save(poolMember)

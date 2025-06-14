@@ -45,7 +45,7 @@ export async function withdrawn(ctx: CommonContext, block: Block, item: EventIte
     await ctx.store.save(poolMember)
 
     if (poolMember.unbondingEras === null && (!poolMember.tokenAccount || poolMember.tokenAccount.balance <= 0n)) {
-        poolMember.bonded = poolMember.tokenAccount?.balance || 0n
+        poolMember.bonded = 0n
         poolMember.isActive = false
         pool.totalMembers -= 1
         await ctx.store.save(poolMember)

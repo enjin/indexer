@@ -37,8 +37,8 @@ export class PoolMember {
     @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.map((val: any) => val.toJSON()), from: obj => obj == null ? undefined : marshal.fromList(obj, val => new UnbondingEras(undefined, marshal.nonNull(val)))}, nullable: true})
     unbondingEras!: (UnbondingEras)[] | undefined | null
 
-    @BooleanColumn_({nullable: false})
-    isActive!: boolean
+    @BooleanColumn_({nullable: true})
+    isActive!: boolean | undefined | null
 
     @Index_()
     @ManyToOne_(() => Era, {nullable: true})
