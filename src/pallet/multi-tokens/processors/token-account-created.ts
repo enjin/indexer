@@ -106,18 +106,14 @@ export async function tokenAccountCreated(
             await ctx.store.save(pool)
             await ctx.store.insert(newMember)
         } else if (pool && member) {
-            const newMember = new PoolMember({
-                id: `${pool.id}-${account.id}`,
-                tokenAccount,
-                bonded: member.bonded,
-            })
-
+            member.tokenAccount = tokenAccount
             if (!member.isActive) {
-                newMember.isActive = true
+                member.isActive = true
                 pool.totalMembers += 1
             }
 
-            await ctx.store.save(newMember)
+            await ctx.store.save(member)
+            await ctx.store.save(pool)
         }
     }
 
