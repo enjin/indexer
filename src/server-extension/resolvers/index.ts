@@ -17,7 +17,7 @@ import { SyncMetadataResolver } from '../sync-metadata'
 import { AccountsTokensResolver } from '../accounts-tokens'
 import { SyncOffersResolver } from '../sync-offers'
 import { ValidatorDetailsResolver } from '../validator-details'
-
+import { RefreshPoolResolver } from '../refresh-pool'
 export {
     TokenSalesHistoryResolver,
     VerifyMessageResolver,
@@ -29,6 +29,7 @@ export {
     RefreshCollectionsResolver,
     TopCollectionResolver,
     MyTokensResolver,
+    RefreshPoolResolver,
     ClaimsAccountNonceResolver,
     SyncCollectionsResolver,
     TokenListingsResolver,

@@ -1,13 +1,5 @@
 import { Block, CommonContext, EventItem } from '../../../contexts'
-import {
-    Era,
-    Event as EventModel,
-    NominationPool,
-    PoolMember,
-    PoolMemberRewards,
-    StakeExchangeOffer,
-    TokenAccount,
-} from '../../../model'
+import { Era, Event as EventModel, NominationPool, PoolMember, StakeExchangeOffer, TokenAccount } from '../../../model'
 import { getOrCreateAccount } from '../../../util/entities'
 import { Sns } from '../../../util/sns'
 import * as mappings from '../../index'
@@ -79,13 +71,11 @@ export async function buyOrderCompleted(
         existingMember.unbondingEras === null &&
         (!existingMember.tokenAccount || existingMember.tokenAccount.balance <= 0n)
     ) {
-        const poolMemberRewards = await ctx.store.findBy<PoolMemberRewards>(PoolMemberRewards, {
-            member: { id: existingMember.id },
-        })
         const poolMember = await ctx.store.findOneByOrFail<PoolMember>(PoolMember, { id: existingMember.id })
-        await ctx.store.remove(poolMemberRewards)
-        await ctx.store.remove(poolMember)
+        poolMember.bonded = 0n
+        poolMember.isActive = false
         pool.totalMembers -= 1
+        await ctx.store.save(poolMember)
     }
 
     let newMember = await ctx.store.findOneBy<PoolMember>(PoolMember, { id: `${event.tokenId}-${offer.account.id}` })
@@ -104,6 +94,7 @@ export async function buyOrderCompleted(
                 account: offer.account,
                 bonded,
                 tokenAccount,
+                isActive: true,
                 joinedEra: (await getActiveEra(ctx))[0],
             })
             pool.totalMembers += 1
@@ -111,6 +102,11 @@ export async function buyOrderCompleted(
         }
     } else {
         newMember.bonded += bonded
+        if (!newMember.isActive) {
+            newMember.isActive = true
+            pool.totalMembers += 1
+        }
+
         await ctx.store.save(newMember)
     }
 

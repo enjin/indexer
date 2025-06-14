@@ -289,3 +289,19 @@ export function dispatchSyncValidators(): void {
         Logger.error('Failed to dispatch sync validators', LOGGER_NAMESPACE)
     })
 }
+
+export function dispatchSyncChain(fromBlock?: number, toBlock?: number): void {
+    ValidatorsQueue.add(
+        JobsEnum.SYNC_CHAIN,
+        {
+            fromBlock,
+            toBlock,
+        },
+        {
+            delay: 6000,
+            jobId: `chain.sync.${fromBlock}-${toBlock}`,
+        }
+    ).catch(() => {
+        Logger.error('Failed to dispatch sync chain', LOGGER_NAMESPACE)
+    })
+}

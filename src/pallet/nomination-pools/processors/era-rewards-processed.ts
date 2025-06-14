@@ -163,7 +163,10 @@ export async function eraRewardsProcessed(
     pool.apy = Math.max(apy.toNumber(), 0)
     reward.averageApy = apy.toNumber()
 
-    const members = await ctx.store.find(PoolMember, { relations: { account: true }, where: { pool: { id: pool.id } } })
+    const members = await ctx.store.find(PoolMember, {
+        relations: { account: true },
+        where: { pool: { id: pool.id }, isActive: true },
+    })
 
     const rewardPromise = members.map((member) => {
         let points = 0n

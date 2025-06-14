@@ -1286,6 +1286,7 @@ type PoolMember @entity {
   tokenAccount: TokenAccount
   rewards: [PoolMemberRewards!] @derivedFrom(field: "member")
   unbondingEras: [UnbondingEras!]
+  isActive: Boolean
   joinedEra: Era
 }
 
