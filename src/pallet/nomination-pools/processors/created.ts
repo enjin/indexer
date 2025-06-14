@@ -55,7 +55,6 @@ export async function created(ctx: CommonContext, block: Block, item: EventItem)
 
         await ctx.store.remove(poolId)
     }
-    ///////////
 
     const pool = new NominationPool({
         id: eventData.poolId.toString(),

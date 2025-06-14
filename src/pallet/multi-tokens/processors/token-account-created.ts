@@ -1,8 +1,17 @@
 import { throwFatalError } from '../../../util/errors'
-import { Collection, CollectionAccount, Event as EventModel, Token, TokenAccount } from '../../../model'
+import {
+    Collection,
+    CollectionAccount,
+    Event as EventModel,
+    NominationPool,
+    PoolMember,
+    Token,
+    TokenAccount,
+} from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import { getOrCreateAccount } from '../../../util/entities'
 import * as mappings from '../../index'
+import { getActiveEra } from '../../nomination-pools/processors/bonded'
 
 export async function tokenAccountCreated(
     ctx: CommonContext,
@@ -74,6 +83,37 @@ export async function tokenAccountCreated(
     })
 
     await ctx.store.save(tokenAccount)
+
+    // for relay chain
+    if (data.collectionId.toString() === '1') {
+        const [pool, member] = await Promise.all([
+            ctx.store.findOneBy(NominationPool, { id: data.tokenId.toString() }),
+            ctx.store.findOneBy(PoolMember, { id: `${data.tokenId.toString()}-${account.id}` }),
+        ])
+
+        if (pool && !member) {
+            const [activeEra] = await getActiveEra(ctx)
+            const newMember = new PoolMember({
+                id: `${pool.id}-${account.id}`,
+                pool,
+                account,
+                bonded: 0n,
+                tokenAccount,
+                joinedEra: activeEra,
+            })
+            pool.totalMembers += 1
+            await ctx.store.save(pool)
+            await ctx.store.insert(newMember)
+        } else if (pool && member) {
+            const newMember = new PoolMember({
+                id: `${pool.id}-${account.id}`,
+                tokenAccount,
+                bonded: member.bonded,
+            })
+
+            await ctx.store.save(newMember)
+        }
+    }
 
     return mappings.multiTokens.events.tokenAccountCreatedEventModel(item, data)
 }
