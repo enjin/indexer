@@ -1,5 +1,5 @@
 import { Block, CommonContext, EventItem } from '../../../contexts'
-import { Era, Event as EventModel, PoolMember, PoolMemberRewards } from '../../../model'
+import { Era, Event as EventModel, PoolMember } from '../../../model'
 import { getOrCreateAccount } from '../../../util/entities'
 import { updatePool } from './pool'
 import { Sns } from '../../../util/sns'
@@ -45,14 +45,10 @@ export async function withdrawn(ctx: CommonContext, block: Block, item: EventIte
     await ctx.store.save(poolMember)
 
     if (poolMember.unbondingEras === null && (!poolMember.tokenAccount || poolMember.tokenAccount.balance <= 0n)) {
-        const poolMemberRewards = await ctx.store.findBy<PoolMemberRewards>(PoolMemberRewards, {
-            member: { id: poolMember.id },
-        })
-
-        await ctx.store.remove(poolMemberRewards)
-        await ctx.store.remove(poolMember)
-
+        poolMember.bonded = poolMember.tokenAccount?.balance || 0n
+        poolMember.isActive = false
         pool.totalMembers -= 1
+        await ctx.store.save(poolMember)
         await ctx.store.save(pool)
     }
 

@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, BigIntColumn as BigIntColumn_, OneToMany as OneToMany_} from "@subsquid/typeorm-store"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, BigIntColumn as BigIntColumn_, OneToMany as OneToMany_, BooleanColumn as BooleanColumn_} from "@subsquid/typeorm-store"
 import * as marshal from "./marshal"
 import {NominationPool} from "./nominationPool.model"
 import {Account} from "./account.model"
@@ -36,6 +36,9 @@ export class PoolMember {
 
     @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.map((val: any) => val.toJSON()), from: obj => obj == null ? undefined : marshal.fromList(obj, val => new UnbondingEras(undefined, marshal.nonNull(val)))}, nullable: true})
     unbondingEras!: (UnbondingEras)[] | undefined | null
+
+    @BooleanColumn_({nullable: false})
+    isActive!: boolean
 
     @Index_()
     @ManyToOne_(() => Era, {nullable: true})

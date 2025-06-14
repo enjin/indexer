@@ -99,6 +99,7 @@ export async function tokenAccountCreated(
                 account,
                 bonded: 0n,
                 tokenAccount,
+                isActive: true,
                 joinedEra: activeEra,
             })
             pool.totalMembers += 1
@@ -110,6 +111,11 @@ export async function tokenAccountCreated(
                 tokenAccount,
                 bonded: member.bonded,
             })
+
+            if (member.isActive === false) {
+                newMember.isActive = true
+                pool.totalMembers += 1
+            }
 
             await ctx.store.save(newMember)
         }
