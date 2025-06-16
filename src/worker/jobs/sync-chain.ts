@@ -71,15 +71,16 @@ export async function syncChain(_job: Job, fromBlock?: number, toBlock?: number)
         api.consts.marketplace.minimumBidIncreasePercentage,
     ])
 
-    if (!fromBlock) {
-        const chainInfo = await em
-            .getRepository(ChainInfo)
-            .createQueryBuilder('chain_info')
-            .orderBy('block_number', 'DESC')
-            .getOneOrFail()
+    const chainInfo = await em
+        .getRepository(ChainInfo)
+        .createQueryBuilder('chain_info')
+        .orderBy('block_number', 'DESC')
+        .getOneOrFail()
 
+    variableDate = chainInfo.timestamp.getTime()
+
+    if (!fromBlock) {
         currentBlock = chainInfo?.blockNumber ?? 0
-        variableDate = chainInfo.timestamp.getTime()
         length28dBlock = currentBlock - 28 * blocksInDay
 
         for (let i = currentBlock; i >= length28dBlock; i -= blocksInDay) {
@@ -93,7 +94,6 @@ export async function syncChain(_job: Job, fromBlock?: number, toBlock?: number)
     if (fromBlock) {
         currentBlock = fromBlock
     }
-
     if (toBlock) {
         length28dBlock = toBlock
     }
@@ -157,17 +157,28 @@ export async function syncChain(_job: Job, fromBlock?: number, toBlock?: number)
         const localBlock: LocalBlock = {
             hash: blockHash.toString(),
             height: header.number.toNumber(),
-            timestamp: variableDate * 1000,
+            timestamp: variableDate,
             validator: header.author?.toString() ?? '',
             specVersion: Number(1050),
         }
 
         const state = await saveChainInfo(api, localBlock, blockData)
 
-        states.push(state)
+        if (state) {
+            states.push(state)
+        }
+
+        if (states.length >= BATCH_SIZE) {
+            await em.save(states)
+            await _job.log(`Saved batch of ${states.length} chain info records`)
+            states.length = 0
+        }
     }
 
-    await em.save(states)
+    if (states.length > 0) {
+        await em.save(states)
+        await _job.log(`Saved final batch of ${states.length} chain info records`)
+    }
 
     await _job.log(`Synced batch blocks from ${fromBlock} to ${toBlock}`)
 }
