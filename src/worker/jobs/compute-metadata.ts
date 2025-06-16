@@ -39,7 +39,6 @@ export async function computeMetadata(job: Job) {
 
     await con.transaction('READ COMMITTED', async (em) => {
         const jobData = job.data
-        await job.log(job.data)
 
         let resource: Collection | Token | null
         let attributes: Attribute[] = []

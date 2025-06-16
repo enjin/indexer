@@ -59,14 +59,10 @@ export async function computeRarity(job: Job, collectionId: string) {
         ])
 
         const totalSupply = collection.stats?.supply ?? 0
-        await job.log(`Total supply: ${totalSupply}`)
         if (!totalSupply || totalSupply <= 0) {
             return
         }
-
         const entropy = informationContentScoring.collectionEntropy(totalSupply, collection.traits)
-        await job.log(`Entropy: ${entropy}`)
-        await job.log(`Traits: ${collection.traits.length}`)
         if (!entropy || collection.traits.length === 0) {
             return
         }
@@ -75,7 +71,6 @@ export async function computeRarity(job: Job, collectionId: string) {
             return { score: informationContentScoring.scoreToken(totalSupply, entropy, token), token }
         })
 
-        await job.log(`Token rarities: ${tokenRarities.length}`)
         tokenRarities.sort((a, b) => Number(mathjs.compare(b.score, a.score)))
 
         tokenRarities.sort((a, b) => {
