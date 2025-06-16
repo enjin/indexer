@@ -5,6 +5,7 @@ import Rpc from '../../util/rpc'
 import { EntityManager } from 'typeorm'
 import { ApiPromise } from '@polkadot/api'
 import { QueueUtils } from '../../queue'
+import { decodeAddress } from '../../util/tools'
 
 type LocalBlock = {
     hash: string
@@ -14,7 +15,7 @@ type LocalBlock = {
     specVersion: number
 }
 
-const saveChainInfo = async (api: ApiPromise, block: LocalBlock, blockData: any) => {
+const saveChainInfo = async (block: LocalBlock, blockData: any) => {
     try {
         const [
             { transactionVersion },
@@ -97,12 +98,13 @@ export async function syncChain(_job: Job, fromBlock?: number, toBlock?: number)
 
     if (fromBlock) {
         currentBlock = fromBlock
+        variableDate = variableDate - (chainInfo[0].blockNumber - fromBlock) * 6 * 1000
     }
     if (toBlock) {
         length28dBlock = toBlock
     }
 
-    const states = []
+    let states: ChainInfo[] = []
 
     let blockHashes = []
     let blockHeaders = []
@@ -140,8 +142,8 @@ export async function syncChain(_job: Job, fromBlock?: number, toBlock?: number)
         blockHeaders.push(...headerBatch)
     }
 
-    for (let i = currentBlock; i >= length28dBlock; i--) {
-        if (i % 1000 === 0) {
+    for (let i = length28dBlock; i <= currentBlock; i++) {
+        if (i % 100 === 0) {
             await _job.log(`Syncing block ${i}`)
         }
 
@@ -162,20 +164,20 @@ export async function syncChain(_job: Job, fromBlock?: number, toBlock?: number)
             hash: blockHash.toString(),
             height: header.number.toNumber(),
             timestamp: variableDate,
-            validator: header.author?.toString() ?? '',
+            validator: decodeAddress(header.author?.toString() ?? '') ?? '',
             specVersion: Number(1050),
         }
 
-        const state = await saveChainInfo(api, localBlock, blockData)
+        const state = await saveChainInfo(localBlock, blockData)
 
         if (state) {
             states.push(state)
         }
 
         if (states.length >= BATCH_SIZE) {
-            await em.save(states)
-            await _job.log(`Saved batch of ${states.length} chain info records`)
-            states.length = 0
+            const res = await em.save(states)
+            await _job.log(`Saved batch of ${res.length} chain info records`)
+            states = []
         }
     }
 

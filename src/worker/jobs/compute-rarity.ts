@@ -40,63 +40,63 @@ export const informationContentScoring = {
 export async function computeRarity(job: Job, collectionId: string) {
     const em = await connectionManager()
 
-    const [collection, tokens] = await Promise.all([
-        em.findOneOrFail(Collection, {
-            relations: {
-                traits: true,
-            },
-            where: { id: collectionId },
-        }),
-        em.find(Token, {
-            relations: {
-                traits: {
-                    trait: true,
+    try {
+        const [collection, tokens] = await Promise.all([
+            em.findOneOrFail(Collection, {
+                relations: {
+                    traits: true,
                 },
-            },
-            where: { collection: { id: collectionId } },
-        }),
-    ])
+                where: { id: collectionId },
+            }),
+            em.find(Token, {
+                relations: {
+                    traits: {
+                        trait: true,
+                    },
+                },
+                where: { collection: { id: collectionId } },
+            }),
+        ])
 
-    const totalSupply = collection.stats?.supply ?? 0
-
-    // Check if the total supply is greater than 0
-    if (!totalSupply || totalSupply <= 0) {
-        return
-    }
-
-    const entropy = informationContentScoring.collectionEntropy(totalSupply, collection.traits)
-
-    if (!entropy || collection.traits.length === 0) {
-        return
-    }
-
-    const tokenRarities = tokens.map((token) => {
-        return { score: informationContentScoring.scoreToken(totalSupply, entropy, token), token }
-    })
-
-    tokenRarities.sort((a, b) => Number(mathjs.compare(b.score, a.score)))
-
-    // sort by token.id if two tokens have the same score
-    tokenRarities.sort((a, b) => {
-        if (Number(mathjs.compare(a.score, b.score)) === 0) {
-            return Number(mathjs.compare(mathjs.bignumber(a.token.tokenId), mathjs.bignumber(b.token.tokenId)))
+        const totalSupply = collection.stats?.supply ?? 0
+        if (!totalSupply || totalSupply <= 0) {
+            return
         }
-        return 0
-    })
+        const entropy = informationContentScoring.collectionEntropy(totalSupply, collection.traits)
+        if (!entropy || collection.traits.length === 0) {
+            return
+        }
 
-    const tokenRanks = tokenRarities.map((tokenRarity, index) => {
-        return new TokenRarity({
-            id: tokenRarity.token.id,
-            collection,
-            token: tokenRarity.token,
-            score: tokenRarity.score.toNumber(),
-            rank: index + 1,
+        const tokenRarities = tokens.map((token) => {
+            return { score: informationContentScoring.scoreToken(totalSupply, entropy, token), token }
         })
-    })
 
-    // delete existing token rarities
-    await em.delete(TokenRarity, { collection: { id: collectionId } })
+        tokenRarities.sort((a, b) => Number(mathjs.compare(b.score, a.score)))
 
-    // save new token rarities
-    await em.save(tokenRanks, { chunk: 1000 })
+        tokenRarities.sort((a, b) => {
+            if (Number(mathjs.compare(a.score, b.score)) === 0) {
+                return Number(mathjs.compare(mathjs.bignumber(a.token.tokenId), mathjs.bignumber(b.token.tokenId)))
+            }
+            return 0
+        })
+
+        const tokenRanks = tokenRarities.map((tokenRarity, index) => {
+            return new TokenRarity({
+                id: tokenRarity.token.id,
+                collection,
+                token: tokenRarity.token,
+                score: tokenRarity.score.toNumber(),
+                rank: index + 1,
+            })
+        })
+
+        await job.log(`Token ranks: ${tokenRanks.length}`)
+
+        await em.delete(TokenRarity, { collection: { id: collectionId } })
+
+        await em.save(tokenRanks, { chunk: 1000 })
+    } catch (error) {
+        await job.log(`Error in rarity ranker ${collectionId}`)
+        return
+    }
 }

@@ -28,11 +28,11 @@ export async function syncValidators(job: Job): Promise<void> {
         throw new Error('No current block found')
     }
 
-    const length50dBlock = currentBlock.blockNumber - 50 * 10 * 60 * 24
     const blocksInDay = 10 * 60 * 24
+    const length28dBlock = currentBlock.blockNumber - 28 * blocksInDay
 
-    for (let b = 0; b < 50; b++) {
-        const fromBlock = length50dBlock + b * blocksInDay
+    for (let b = 0; b < 28; b++) {
+        const fromBlock = length28dBlock + b * blocksInDay
         const toBlock = fromBlock + blocksInDay
 
         const validatorDetails = await getValidatorDetails(

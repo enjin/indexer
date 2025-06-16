@@ -9,7 +9,7 @@ interface AttributeStream {
     token_id?: string
 }
 
-export async function syncMetadata(job: Job, ids: string[] | null) {
+export async function syncMetadata(job: Job) {
     const em = await connectionManager()
     const collectionStream = await em
         .getRepository(Attribute)

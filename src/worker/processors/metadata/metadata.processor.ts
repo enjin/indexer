@@ -12,7 +12,7 @@ export class MetadataProcessor implements ProcessorDef {
                 await computeMetadata(job)
                 break
             case JobsEnum.FETCH_COLLECTIONS:
-                await syncMetadata(job, null)
+                await syncMetadata(job)
                 break
             default:
                 throw new Error(`${job.name} is not a valid job for this processor`)

@@ -145,7 +145,7 @@ export function dispatchComputeStats(id: string): void {
 export function dispatchComputeRarity(id: string): void {
     TokensQueue.add(
         JobsEnum.COMPUTE_RARITY,
-        { id },
+        { collectionId: id },
         {
             delay: 6000,
             jobId: `tokens.rarity.${id}`,

@@ -13,7 +13,6 @@ export async function syncCollections(job: Job) {
         QueueUtils.dispatchFetchExtra([collection.id])
         QueueUtils.dispatchComputeStats(collection.id)
         QueueUtils.dispatchComputeTraits(collection.id)
-        // QueueUtils.dispatchComputeRarity(collection.id)
     }
 
     await job.log(`Dispatched fetchExtra, computeStats, computeTraits for ${collections.length} collections`)
