@@ -15,7 +15,7 @@ type LocalBlock = {
     specVersion: number
 }
 
-const saveChainInfo = async (api: ApiPromise, block: LocalBlock, blockData: any) => {
+const saveChainInfo = async (block: LocalBlock, blockData: any) => {
     try {
         const [
             { transactionVersion },
@@ -142,7 +142,7 @@ export async function syncChain(_job: Job, fromBlock?: number, toBlock?: number)
         blockHeaders.push(...headerBatch)
     }
 
-    for (let i = currentBlock; i >= length28dBlock; i--) {
+    for (let i = length28dBlock; i <= currentBlock; i++) {
         if (i % 100 === 0) {
             await _job.log(`Syncing block ${i}`)
         }
@@ -168,15 +168,15 @@ export async function syncChain(_job: Job, fromBlock?: number, toBlock?: number)
             specVersion: Number(1050),
         }
 
-        const state = await saveChainInfo(api, localBlock, blockData)
+        const state = await saveChainInfo(localBlock, blockData)
 
         if (state) {
             states.push(state)
         }
 
         if (states.length >= BATCH_SIZE) {
-            await em.save(states)
-            await _job.log(`Saved batch of ${states.length} chain info records`)
+            const res = await em.save(states)
+            await _job.log(`Saved batch of ${res.length} chain info records`)
             states = []
         }
     }
