@@ -14,7 +14,7 @@ type LocalBlock = {
     specVersion: number
 }
 
-const saveChainInfo = async (em: EntityManager, api: ApiPromise, block: LocalBlock) => {
+const saveChainInfo = async (api: ApiPromise, block: LocalBlock, blockData: any) => {
     try {
         const [
             { transactionVersion },
@@ -24,15 +24,7 @@ const saveChainInfo = async (em: EntityManager, api: ApiPromise, block: LocalBlo
             maxRoundingError,
             maxSaltLength,
             minimumBidIncreasePercentage,
-        ] = await Promise.all([
-            api.consts.system.version,
-            api.consts.balances.existentialDeposit,
-            api.consts.marketplace.listingActiveDelay,
-            api.consts.marketplace.listingDeposit,
-            api.consts.marketplace.maxRoundingError,
-            api.consts.marketplace.maxSaltLength,
-            api.consts.marketplace.minimumBidIncreasePercentage,
-        ])
+        ] = blockData
 
         const state = new ChainInfo({
             id: block.hash,
@@ -69,6 +61,16 @@ export async function syncChain(_job: Job, fromBlock?: number, toBlock?: number)
     let variableDate = 0
     let length28dBlock = 0
 
+    const blockData = await Promise.all([
+        api.consts.system.version,
+        api.consts.balances.existentialDeposit,
+        api.consts.marketplace.listingActiveDelay,
+        api.consts.marketplace.listingDeposit,
+        api.consts.marketplace.maxRoundingError,
+        api.consts.marketplace.maxSaltLength,
+        api.consts.marketplace.minimumBidIncreasePercentage,
+    ])
+
     if (!fromBlock) {
         const chainInfo = await em
             .getRepository(ChainInfo)
@@ -96,6 +98,44 @@ export async function syncChain(_job: Job, fromBlock?: number, toBlock?: number)
         length28dBlock = toBlock
     }
 
+    const states = []
+
+    let blockHashes = []
+    let blockHeaders = []
+
+    const BATCH_SIZE = 100
+    const totalBlocks = currentBlock - length28dBlock + 1
+
+    // Fetch block hashes in batches of 100
+    for (let i = 0; i < totalBlocks; i += BATCH_SIZE) {
+        const batchEnd = Math.min(i + BATCH_SIZE, totalBlocks)
+        const batchSize = batchEnd - i
+
+        await _job.log(
+            `Fetching block hashes: batch ${Math.floor(i / BATCH_SIZE) + 1}/${Math.ceil(totalBlocks / BATCH_SIZE)} (${batchSize} blocks)`
+        )
+
+        const hashBatch = await Promise.all(
+            Array.from({ length: batchSize }, (_, j) => api.rpc.chain.getBlockHash(currentBlock - (i + j)))
+        )
+
+        blockHashes.push(...hashBatch)
+    }
+
+    // Fetch block headers in batches of 100
+    for (let i = 0; i < blockHashes.length; i += BATCH_SIZE) {
+        const batchEnd = Math.min(i + BATCH_SIZE, blockHashes.length)
+        const hashBatch = blockHashes.slice(i, batchEnd)
+
+        await _job.log(
+            `Fetching block headers: batch ${Math.floor(i / BATCH_SIZE) + 1}/${Math.ceil(blockHashes.length / BATCH_SIZE)} (${hashBatch.length} headers)`
+        )
+
+        const headerBatch = await Promise.all(hashBatch.map((hash) => api.derive.chain.getHeader(hash.toString())))
+
+        blockHeaders.push(...headerBatch)
+    }
+
     for (let i = currentBlock; i >= length28dBlock; i--) {
         if (i % 1000 === 0) {
             await _job.log(`Syncing block ${i}`)
@@ -111,8 +151,8 @@ export async function syncChain(_job: Job, fromBlock?: number, toBlock?: number)
             continue
         }
 
-        const blockHash = await api.rpc.chain.getBlockHash(i)
-        const header = await api.derive.chain.getHeader(blockHash.toString())
+        const blockHash = blockHashes[i - length28dBlock]
+        const header = blockHeaders[i - length28dBlock]
 
         const localBlock: LocalBlock = {
             hash: blockHash.toString(),
@@ -122,9 +162,12 @@ export async function syncChain(_job: Job, fromBlock?: number, toBlock?: number)
             specVersion: Number(1050),
         }
 
-        const state = await saveChainInfo(em, api, localBlock)
-        await em.save(state)
+        const state = await saveChainInfo(api, localBlock, blockData)
+
+        states.push(state)
     }
 
-    await _job.log(`Synced blocks from ${fromBlock} to ${toBlock}`)
+    await em.save(states)
+
+    await _job.log(`Synced batch blocks from ${fromBlock} to ${toBlock}`)
 }
