@@ -76,19 +76,19 @@ export async function syncChain(_job: Job, fromBlock?: number, toBlock?: number)
     let chainInfo: ChainInfo | null = null
     try {
         chainInfo = await em.findOne(ChainInfo, {
-            order: {
-                blockNumber: 'DESC',
+            where: {
+                blockNumber: 10707036,
             },
         })
 
-        variableDate = chainInfo?.timestamp.getTime() ?? new Date('2025-06-16T09:14:42.000000Z').getTime()
+        variableDate = chainInfo?.timestamp.getTime() ?? new Date('2025-06-16T09:35:36.000000Z').getTime()
         await _job.log('Fetching chain info done')
     } catch (error) {
-        await _job.log('Fetching chain info failed')
+        await _job.log('Fetching chain info failed' + error)
     }
 
     if (!fromBlock) {
-        currentBlock = chainInfo?.blockNumber ?? 11136641
+        currentBlock = chainInfo?.blockNumber ?? 10707036
         length28dBlock = currentBlock - 28 * blocksInDay
 
         for (let i = currentBlock; i >= length28dBlock; i -= 1000) {
