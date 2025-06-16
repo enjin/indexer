@@ -83,8 +83,8 @@ export async function syncChain(_job: Job, fromBlock?: number, toBlock?: number)
         currentBlock = chainInfo?.blockNumber ?? 0
         length28dBlock = currentBlock - 28 * blocksInDay
 
-        for (let i = currentBlock; i >= length28dBlock; i -= blocksInDay) {
-            QueueUtils.dispatchSyncChain(i, i - blocksInDay)
+        for (let i = currentBlock; i >= length28dBlock; i -= 1000) {
+            QueueUtils.dispatchSyncChain(i, i - 1000)
         }
 
         await _job.log(`Dispatched jobs for blocks from ${currentBlock} to ${length28dBlock}`)
