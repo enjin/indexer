@@ -97,6 +97,7 @@ export async function syncChain(_job: Job, fromBlock?: number, toBlock?: number)
 
     if (fromBlock) {
         currentBlock = fromBlock
+        variableDate = variableDate - (chainInfo[0].blockNumber - fromBlock) * 6 * 1000
     }
     if (toBlock) {
         length28dBlock = toBlock
