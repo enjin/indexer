@@ -61,6 +61,7 @@ export async function syncChain(_job: Job, fromBlock?: number, toBlock?: number)
     let variableDate = 0
     let length28dBlock = 0
 
+    await _job.log('Starting fetching data')
     const blockData = await Promise.all([
         api.consts.system.version,
         api.consts.balances.existentialDeposit,
@@ -70,6 +71,7 @@ export async function syncChain(_job: Job, fromBlock?: number, toBlock?: number)
         api.consts.marketplace.maxSaltLength,
         api.consts.marketplace.minimumBidIncreasePercentage,
     ])
+    await _job.log('Fetching data done')
 
     const chainInfo = await em
         .getRepository(ChainInfo)
@@ -78,6 +80,7 @@ export async function syncChain(_job: Job, fromBlock?: number, toBlock?: number)
         .getOneOrFail()
 
     variableDate = chainInfo.timestamp.getTime()
+    await _job.log('Fetching chain info done')
 
     if (!fromBlock) {
         currentBlock = chainInfo?.blockNumber ?? 0
