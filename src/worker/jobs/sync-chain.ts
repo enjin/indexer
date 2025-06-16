@@ -104,7 +104,7 @@ export async function syncChain(_job: Job, fromBlock?: number, toBlock?: number)
         length28dBlock = toBlock
     }
 
-    const states = []
+    let states: ChainInfo[] = []
 
     let blockHashes = []
     let blockHeaders = []
@@ -143,7 +143,7 @@ export async function syncChain(_job: Job, fromBlock?: number, toBlock?: number)
     }
 
     for (let i = currentBlock; i >= length28dBlock; i--) {
-        if (i % 1000 === 0) {
+        if (i % 100 === 0) {
             await _job.log(`Syncing block ${i}`)
         }
 
@@ -177,7 +177,7 @@ export async function syncChain(_job: Job, fromBlock?: number, toBlock?: number)
         if (states.length >= BATCH_SIZE) {
             await em.save(states)
             await _job.log(`Saved batch of ${states.length} chain info records`)
-            states.length = 0
+            states = []
         }
     }
 
