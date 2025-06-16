@@ -5,6 +5,7 @@ import Rpc from '../../util/rpc'
 import { EntityManager } from 'typeorm'
 import { ApiPromise } from '@polkadot/api'
 import { QueueUtils } from '../../queue'
+import { decodeAddress } from '../../util/tools'
 
 type LocalBlock = {
     hash: string
@@ -163,7 +164,7 @@ export async function syncChain(_job: Job, fromBlock?: number, toBlock?: number)
             hash: blockHash.toString(),
             height: header.number.toNumber(),
             timestamp: variableDate,
-            validator: header.author?.toString() ?? '',
+            validator: decodeAddress(header.author?.toString() ?? '') ?? '',
             specVersion: Number(1050),
         }
 
