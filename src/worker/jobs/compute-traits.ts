@@ -3,6 +3,7 @@ import { Collection, Token, Trait, TraitToken } from '../../model'
 import { isPlainObject } from 'lodash'
 import { Job } from 'bullmq'
 import { hash } from '../utils'
+import { QueueUtils } from '../../queue'
 
 type TraitValueMap = Map<string, bigint>
 
@@ -108,4 +109,6 @@ export async function computeTraits(job: Job, collectionId: string) {
         await job.log(`Saving ${traitsToSave.length} token traits`)
         await em.save(TraitToken, traitTokensToSave, { chunk: 1000 })
     }
+
+    QueueUtils.dispatchComputeRarity(collectionId)
 }
