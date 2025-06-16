@@ -73,13 +73,13 @@ export async function syncChain(_job: Job, fromBlock?: number, toBlock?: number)
     ])
     await _job.log('Fetching data done')
 
-    const chainInfo = await em
-        .getRepository(ChainInfo)
-        .createQueryBuilder('chain_info')
-        .orderBy('block_number', 'DESC')
-        .getOneOrFail()
+    const chainInfo = await em.findOne(ChainInfo, {
+        order: {
+            blockNumber: 'DESC',
+        },
+    })
 
-    variableDate = chainInfo.timestamp.getTime()
+    variableDate = chainInfo?.timestamp.getTime() ?? 0
     await _job.log('Fetching chain info done')
 
     if (!fromBlock) {
