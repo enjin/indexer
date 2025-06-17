@@ -59,10 +59,7 @@ export async function computeTraits(job: Job, id: string) {
                 tType.set(value, token.supply)
             }
 
-            tokenTraitMap.set(token.id, [
-                ...(tokenTraitMap.get(token.id) || []),
-                hash(`${id}-${traitType}-${value}`),
-            ])
+            tokenTraitMap.set(token.id, [...(tokenTraitMap.get(token.id) || []), hash(`${id}-${traitType}-${value}`)])
         })
     })
 
@@ -110,5 +107,6 @@ export async function computeTraits(job: Job, id: string) {
         await em.save(TraitToken, traitTokensToSave, { chunk: 1000 })
     }
 
-    QueueUtils.dispatchComputeRarity(id)
+    // delay to avoid rollback issue on fork
+    QueueUtils.dispatchComputeRarity({ id, delay: 120000 })
 }

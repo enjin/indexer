@@ -142,12 +142,12 @@ export function dispatchComputeStats(id: string): void {
     })
 }
 
-export function dispatchComputeRarity(id: string): void {
+export function dispatchComputeRarity({ id, delay = 6000 }: { id: string; delay?: number }): void {
     TokensQueue.add(
         JobsEnum.COMPUTE_RARITY,
         { id },
         {
-            delay: 6000,
+            delay,
             jobId: `tokens.rarity.${id}`,
         }
     ).catch(() => {
