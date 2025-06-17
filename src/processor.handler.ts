@@ -53,7 +53,7 @@ export async function eventHandler(
                 p.multiTokens.processors.collectionTransferred(ctx, block, item, skipSave)
             )
             .with(multiTokens.frozen.name, () => p.multiTokens.processors.frozen(ctx, block, item, skipSave))
-            // .with(multiTokens.minted.name, () => p.multiTokens.processors.minted(ctx, block, item, skipSave))
+            .with(multiTokens.minted.name, () => p.multiTokens.processors.minted(ctx, block, item, skipSave))
             .with(multiTokens.infused.name, () => p.multiTokens.processors.infused(ctx, block, item, skipSave))
             .with(multiTokens.reserved.name, () => p.multiTokens.processors.reserved(ctx, block, item, skipSave))
             .with(multiTokens.thawed.name, () => p.multiTokens.processors.thawed(ctx, block, item, skipSave))

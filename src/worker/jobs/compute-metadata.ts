@@ -63,8 +63,6 @@ export async function computeMetadata(job: Job) {
                 },
             })
 
-            await job.log(`Found resource ${resource?.id}`)
-
             collectionUriAttribute = await em.findOne(Attribute, {
                 where: {
                     collection: { id: jobData.resourceId.split('-')[0] },
@@ -79,6 +77,8 @@ export async function computeMetadata(job: Job) {
         if (!resource) {
             await job.log(`Resource ${jobData.resourceId} not found`)
             return
+        } else {
+            await job.log(`Resource ${resource.id} found`)
         }
 
         let uriAttribute = null

@@ -138,7 +138,7 @@ export async function attributeSet(
         }
     }
     if (token) {
-        QueueUtils.dispatchComputeTraits(token.id)
+        QueueUtils.dispatchComputeTraits(data.collectionId.toString())
     }
 
     return mappings.multiTokens.events.attributeSetEventModel(item, data)
