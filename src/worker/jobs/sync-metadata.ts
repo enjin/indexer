@@ -45,7 +45,7 @@ function processAttribute(job: Job, stream: ReadStream) {
                 return
             }
 
-            QueueUtils.dispatchComputeMetadata(resourceId, resourceType, false, false)
+            QueueUtils.dispatchComputeMetadata({ id: resourceId, type: resourceType })
             count++
         } catch (error) {
             console.error('Failed to process attribute stream data:', error)

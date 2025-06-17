@@ -37,7 +37,7 @@ export const informationContentScoring = {
     },
 }
 
-export async function computeRarity(job: Job, collectionId: string) {
+export async function computeRarity(job: Job, id: string) {
     const em = await connectionManager()
 
     try {
@@ -46,7 +46,7 @@ export async function computeRarity(job: Job, collectionId: string) {
                 relations: {
                     traits: true,
                 },
-                where: { id: collectionId },
+                where: { id },
             }),
             em.find(Token, {
                 relations: {
@@ -54,7 +54,7 @@ export async function computeRarity(job: Job, collectionId: string) {
                         trait: true,
                     },
                 },
-                where: { collection: { id: collectionId } },
+                where: { collection: { id } },
             }),
         ])
 
@@ -92,11 +92,11 @@ export async function computeRarity(job: Job, collectionId: string) {
 
         await job.log(`Token ranks: ${tokenRanks.length}`)
 
-        await em.delete(TokenRarity, { collection: { id: collectionId } })
+        await em.delete(TokenRarity, { collection: { id } })
 
         await em.save(tokenRanks, { chunk: 1000 })
     } catch (error) {
-        await job.log(`Error in rarity ranker ${collectionId}`)
+        await job.log(`Error in rarity ranker ${id}`)
         return
     }
 }

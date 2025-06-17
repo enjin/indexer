@@ -71,13 +71,17 @@ export class RefreshMetadataResolver {
             return { status: RefreshMetadataResponseStatus.ERROR, error: 'Resource not found' }
         }
 
-        QueueUtils.dispatchComputeMetadata(resource.id, isToken ? 'token' : 'collection', true, allTokens)
+        QueueUtils.dispatchComputeMetadata({
+            id: resource.id,
+            type: isToken ? 'token' : 'collection',
+            force: true,
+            allTokens,
+            traits: true,
+        })
 
         if (!isToken) {
             QueueUtils.dispatchComputeStats(collectionId)
         }
-
-        QueueUtils.dispatchComputeTraits(collectionId)
 
         return { status: RefreshMetadataResponseStatus.SUCCESS }
     }

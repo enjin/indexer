@@ -38,8 +38,7 @@ export async function attributeRemoved(
             token.attributeCount -= 1
             await ctx.store.save(token)
 
-            QueueUtils.dispatchComputeMetadata(token.id, 'token')
-            QueueUtils.dispatchComputeTraits(data.collectionId.toString())
+            QueueUtils.dispatchComputeMetadata({ id: token.id, type: 'token', traits: true })
         } else {
             const collection = await ctx.store.findOne<Collection>(Collection, {
                 where: { id: data.collectionId.toString() },
@@ -52,7 +51,7 @@ export async function attributeRemoved(
 
             collection.attributeCount -= 1
             await ctx.store.save(collection)
-            QueueUtils.dispatchComputeMetadata(collection.id, 'collection')
+            QueueUtils.dispatchComputeMetadata({ id: collection.id, type: 'collection', traits: true })
         }
 
         await ctx.store.remove(attribute)
