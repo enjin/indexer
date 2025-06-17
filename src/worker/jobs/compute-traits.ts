@@ -19,7 +19,7 @@ export async function computeTraits(job: Job, id: string) {
         .select('token.id')
         .addSelect('token.metadata')
         .addSelect('token.supply')
-        .where('token.collection = :collectionId', { id })
+        .where('token.collection = :id', { id })
         .andWhere('token.supply > 0')
         .getMany()
 
