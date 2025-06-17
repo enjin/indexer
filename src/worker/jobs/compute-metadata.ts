@@ -158,9 +158,10 @@ export async function computeMetadata(job: Job) {
                     QueueUtils.dispatchComputeMetadata({ id: token.id, type: 'token', force: jobData.force })
                 })
             }
-        } 
-        
-        if (jobData.traits && metadata.attributes) {
+        }
+
+        if (jobData.traits) {
+            await job.log(`Compute traits ${JSON.stringify(metadata.attributes)}`)
             const collectionId = resource instanceof Token ? resource.collection.id : resource.id
             QueueUtils.dispatchComputeTraits(collectionId)
         }
