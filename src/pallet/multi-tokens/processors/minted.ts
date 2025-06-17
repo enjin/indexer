@@ -16,7 +16,7 @@ export async function minted(
     const data = mappings.multiTokens.events.minted(item)
     const issuer = await getOrCreateAccount(ctx, data.issuer)
     const recipient = await getOrCreateAccount(ctx, data.recipient)
-
+    ctx.log.info(`MINTED: ${data.tokenId.toString()}`)
     const token = await ctx.store.findOne(Token, {
         where: { id: `${data.collectionId}-${data.tokenId}` },
         relations: {
