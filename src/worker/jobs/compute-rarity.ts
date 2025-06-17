@@ -96,7 +96,7 @@ export async function computeRarity(job: Job, id: string) {
 
         await em.save(tokenRanks, { chunk: 1000 })
     } catch (error) {
-        await job.log(`Error in rarity ranker ${id}`)
+        await job.log(`Error in rarity ranker ${id} ${error}`)
         return
     }
 }
