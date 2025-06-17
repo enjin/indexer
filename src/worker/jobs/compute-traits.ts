@@ -110,5 +110,5 @@ export async function computeTraits(job: Job, collectionId: string) {
         await em.save(TraitToken, traitTokensToSave, { chunk: 1000 })
     }
 
-    QueueUtils.dispatchComputeRarity(collectionId)
+    // QueueUtils.dispatchComputeRarity(collectionId)
 }

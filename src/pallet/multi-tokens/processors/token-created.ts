@@ -65,8 +65,6 @@ async function tokenFromCall(
         where: { id: event.collectionId.toString() },
     })
 
-    ctx.log.info(`TOKEN CREATED: ${event.tokenId.toString()}`)
-
     if (!collection) {
         throwFatalError(`[TokenCreated] We have not found collection ${event.collectionId.toString()}.`)
     }
