@@ -153,26 +153,19 @@ export async function tokenDestroyed(
         return e
     })
 
-    ctx.log.info(`Token rarity: ${tokenRarity.length}`)
-
-    try {
-        await ctx.store.remove(tokenRarity)
-
-        await Promise.all([
-            ctx.store.save(events),
-            ctx.store.remove(tokenAccounts),
-            ctx.store.remove(listingSales),
-            ctx.store.remove(listingStatus),
-            ctx.store.remove(listingsMake),
-            ctx.store.remove(listingTake),
-            ctx.store.remove(royaltyCurrencies),
-            ctx.store.remove(traitTokens),
-            ctx.store.remove(attributes),
-            ctx.store.remove(token),
-        ])
-    } catch (error) {
-        ctx.log.error(`Error in token destroyed: ${error}`)
-    }
+    await Promise.all([
+        ctx.store.save(events),
+        ctx.store.remove(tokenAccounts),
+        ctx.store.remove(listingSales),
+        ctx.store.remove(listingStatus),
+        ctx.store.remove(listingsMake),
+        ctx.store.remove(listingTake),
+        ctx.store.remove(royaltyCurrencies),
+        ctx.store.remove(traitTokens),
+        ctx.store.remove(tokenRarity),
+        ctx.store.remove(attributes),
+        ctx.store.remove(token),
+    ])
 
     if (item.extrinsic) {
         await Sns.getInstance().send({
