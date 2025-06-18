@@ -142,12 +142,12 @@ export function dispatchComputeStats(id: string): void {
     })
 }
 
-export function dispatchComputeRarity(id: string): void {
+export function dispatchComputeRarity({ id, delay = 6000 }: { id: string; delay?: number }): void {
     TokensQueue.add(
         JobsEnum.COMPUTE_RARITY,
-        { collectionId: id },
+        { id },
         {
-            delay: 6000,
+            delay,
             jobId: `tokens.rarity.${id}`,
         }
     ).catch(() => {
@@ -168,18 +168,25 @@ export function dispatchComputeTraits(id: string): void {
     })
 }
 
-export function dispatchComputeMetadata(
-    resourceId: string,
-    type: 'token' | 'collection',
+export function dispatchComputeMetadata({
+    id,
+    type,
     force = false,
-    allTokens = false
-): void {
+    allTokens = false,
+    traits = false,
+}: {
+    id: string
+    type: 'token' | 'collection'
+    force?: boolean
+    allTokens?: boolean
+    traits?: boolean
+}): void {
     MetadataQueue.add(
         JobsEnum.COMPUTE_METADATA,
-        { resourceId, type, force, allTokens },
+        { id, type, force, allTokens, traits },
         {
             delay: 6000,
-            jobId: `metadata.${resourceId}`,
+            jobId: `metadata.${id}`,
         }
     ).catch(() => {
         Logger.error('Failed to dispatch a job on metadata queue', LOGGER_NAMESPACE)

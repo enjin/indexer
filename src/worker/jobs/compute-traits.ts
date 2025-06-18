@@ -7,7 +7,7 @@ import { QueueUtils } from '../../queue'
 
 type TraitValueMap = Map<string, bigint>
 
-export async function computeTraits(job: Job, collectionId: string) {
+export async function computeTraits(job: Job, id: string) {
     const em = await connectionManager()
 
     const traitTypeMap = new Map<string, TraitValueMap>()
@@ -19,16 +19,16 @@ export async function computeTraits(job: Job, collectionId: string) {
         .select('token.id')
         .addSelect('token.metadata')
         .addSelect('token.supply')
-        .where('token.collection = :collectionId', { collectionId })
+        .where('token.collection = :id', { id })
         .andWhere('token.supply > 0')
         .getMany()
 
     await em.query(
         `DELETE FROM trait_token USING trait WHERE trait.id = trait_token.trait_id AND trait.collection_id = $1`,
-        [collectionId]
+        [id]
     )
 
-    await em.query(`DELETE FROM trait WHERE collection_id = $1`, [collectionId])
+    await em.query(`DELETE FROM trait WHERE collection_id = $1`, [id])
 
     tokens.forEach((token) => {
         if (!token.metadata || !token.metadata.attributes || !isPlainObject(token.metadata.attributes)) return
@@ -59,15 +59,12 @@ export async function computeTraits(job: Job, collectionId: string) {
                 tType.set(value, token.supply)
             }
 
-            tokenTraitMap.set(token.id, [
-                ...(tokenTraitMap.get(token.id) || []),
-                hash(`${collectionId}-${traitType}-${value}`),
-            ])
+            tokenTraitMap.set(token.id, [...(tokenTraitMap.get(token.id) || []), hash(`${id}-${traitType}-${value}`)])
         })
     })
 
     if (!traitTypeMap.size) {
-        await job.log(`No traits found for collection ${collectionId}`)
+        await job.log(`No traits found for collection ${id}`)
         return
     }
 
@@ -78,8 +75,8 @@ export async function computeTraits(job: Job, collectionId: string) {
         traitValueMap.forEach((count, value) => {
             traitsToSave.push(
                 new Trait({
-                    id: hash(`${collectionId}-${traitType}-${value}`),
-                    collection: new Collection({ id: collectionId }),
+                    id: hash(`${id}-${traitType}-${value}`),
+                    collection: new Collection({ id: id }),
                     traitType,
                     value,
                     count,
@@ -110,5 +107,6 @@ export async function computeTraits(job: Job, collectionId: string) {
         await em.save(TraitToken, traitTokensToSave, { chunk: 1000 })
     }
 
-    QueueUtils.dispatchComputeRarity(collectionId)
+    // delay to avoid rollback issue on fork
+    QueueUtils.dispatchComputeRarity({ id, delay: 120000 })
 }

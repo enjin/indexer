@@ -11,7 +11,7 @@ export class TokensProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {
         switch (job.name as JobsEnum) {
             case JobsEnum.COMPUTE_RARITY:
-                await computeRarity(job, job.data.collectionId)
+                await computeRarity(job, job.data.id)
                 break
             case JobsEnum.SYNC_TOKENS:
                 await syncTokens(job)

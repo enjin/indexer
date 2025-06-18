@@ -98,13 +98,13 @@ export async function attributeSet(
                 token.metadata = new Metadata()
             }
             await ctx.store.save(token)
-            QueueUtils.dispatchComputeMetadata(token.id, 'token')
+            QueueUtils.dispatchComputeMetadata({ id: token.id, type: 'token', traits: true })
         } else {
             if (!collection.metadata) {
                 collection.metadata = new Metadata()
             }
             await ctx.store.save(collection)
-            QueueUtils.dispatchComputeMetadata(collection.id, 'collection', false, true)
+            QueueUtils.dispatchComputeMetadata({ id: collection.id, type: 'collection', allTokens: true, traits: true })
         }
         await ctx.store.save(attribute)
     } else {
@@ -127,18 +127,15 @@ export async function attributeSet(
             }
             token.attributeCount += 1
             await ctx.store.save(token)
-            QueueUtils.dispatchComputeMetadata(token.id, 'token')
+            QueueUtils.dispatchComputeMetadata({ id: token.id, type: 'token', traits: true })
         } else {
             if (!collection.metadata) {
                 collection.metadata = new Metadata()
             }
             collection.attributeCount += 1
             await ctx.store.save(collection)
-            QueueUtils.dispatchComputeMetadata(collection.id, 'collection', false, true)
+            QueueUtils.dispatchComputeMetadata({ id: collection.id, type: 'collection', allTokens: true, traits: true })
         }
-    }
-    if (token) {
-        QueueUtils.dispatchComputeTraits(token.id)
     }
 
     return mappings.multiTokens.events.attributeSetEventModel(item, data)
