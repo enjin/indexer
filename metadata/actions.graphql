@@ -1,0 +1,10 @@
+type Query {
+    refreshPool(id: String!): Boolean!
+}
+
+type MetadataToken {
+    id: String!
+    name: String!
+    symbol: String!
+    decimals: Int!
+}

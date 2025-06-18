@@ -1,0 +1,21 @@
+table:
+  name: fuel_tank_rule_set
+  schema: public
+object_relationships:
+  - name: tank
+    using:
+      foreign_key_constraint_on: tank_id
+array_relationships:
+  - name: permittedExtrinsics
+    using:
+      foreign_key_constraint_on:
+        column: rule_set_id
+        table:
+          name: permitted_extrinsics
+          schema: public
+select_permissions:
+  - role: public
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
