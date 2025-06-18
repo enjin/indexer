@@ -63,7 +63,6 @@ export async function listingCreated(
             (auction) =>
                 new AuctionData({
                     listingType: ListingType.Auction,
-                    startHeight: auction.value.startBlock ?? 0,
                     endHeight: auction.value.endBlock,
                 })
         )
@@ -82,6 +81,7 @@ export async function listingCreated(
 
     const feeSide = data.listing.feeSide.__kind as FeeSide
     const usesWhitelist = typeof data.listing.whitelistedAccountCount === 'number'
+    const startBlock = listingData.listingType === ListingType.Auction ? data.listing.startBlock : undefined
 
     const listing = new Listing({
         id: listingId,
@@ -99,6 +99,7 @@ export async function listingCreated(
         data: listingData,
         state: listingState,
         isActive: true,
+        startBlock,
         type: listingData.listingType,
         usesWhitelist,
         creationBlock: block.height,
