@@ -81,7 +81,7 @@ export async function listingCreated(
 
     const feeSide = data.listing.feeSide.__kind as FeeSide
     const usesWhitelist = typeof data.listing.whitelistedAccountCount === 'number'
-    const startBlock = listingData.listingType === ListingType.Auction ? data.listing.startBlock : undefined
+    const startBlock = data.listing.startBlock ?? 0
 
     const listing = new Listing({
         id: listingId,
