@@ -17,7 +17,11 @@ export class RefreshBalancesResolver {
         }
 
         const publicKeys = args.ids.map((id) => {
-            return decodeAddress(id)
+            if (!id.startsWith('0x')) {
+                return decodeAddress(id)
+            }
+
+            return id
         })
 
         QueueUtils.dispatchFetchBalances(publicKeys)
