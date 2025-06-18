@@ -5,14 +5,14 @@ import {ListingType} from "./_listingType"
 export class AuctionData {
     public readonly isTypeOf = 'AuctionData'
     private _listingType!: ListingType
-    private _startHeight!: number
+    private _startHeight!: number | undefined | null
     private _endHeight!: number
 
     constructor(props?: Partial<Omit<AuctionData, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
         if (json != null) {
             this._listingType = marshal.enumFromJson(json.listingType, ListingType)
-            this._startHeight = marshal.int.fromJSON(json.startHeight)
+            this._startHeight = json.startHeight == null ? undefined : marshal.int.fromJSON(json.startHeight)
             this._endHeight = marshal.int.fromJSON(json.endHeight)
         }
     }
@@ -26,12 +26,11 @@ export class AuctionData {
         this._listingType = value
     }
 
-    get startHeight(): number {
-        assert(this._startHeight != null, 'uninitialized access')
+    get startHeight(): number | undefined | null {
         return this._startHeight
     }
 
-    set startHeight(value: number) {
+    set startHeight(value: number | undefined | null) {
         this._startHeight = value
     }
 
