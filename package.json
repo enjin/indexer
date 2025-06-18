@@ -35,7 +35,7 @@
     "db:wipe": "TRUNCATE_DATABASE=true node -r dotenv/config lib/synchronize/clear.js",
     "db:migrate": "pnpm exec squid-typeorm-migration apply",
     "db:generate": "pnpm exec squid-typeorm-migration generate",
-    "schema:generate": "pnpm run schema:codegen && pnpm run build && pnpm run hasura:regenerate",
+    "schema:generate": "pnpm run schema:codegen && pnpm run build && pnpm run schema:regenerate",
     "schema:codegen": "pnpm exec squid-typeorm-codegen",
     "schema:hasura": "pnpm exec squid-hasura-configuration apply",
     "schema:regenerate": "pnpm exec squid-hasura-configuration regenerate",
