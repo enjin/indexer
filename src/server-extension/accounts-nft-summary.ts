@@ -43,9 +43,7 @@ export class AccountsNftSummaryResolver {
     constructor(private tx: () => Promise<EntityManager>) {}
 
     @Query(() => AccountsNftSummaryResponse)
-    async accountsNftSummary(
-        @Args() { accountIds }: AccountsNftSummaryArgs
-    ): Promise<AccountsNftSummaryResponse> {
+    async accountsNftSummary(@Args() { accountIds }: AccountsNftSummaryArgs): Promise<AccountsNftSummaryResponse> {
         const manager = await this.tx()
 
         // Get total infused amount
