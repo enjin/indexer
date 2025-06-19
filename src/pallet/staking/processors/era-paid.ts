@@ -1,4 +1,3 @@
-import { QueueUtils } from '../../../queue'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import { Era, Event as EventModel, Extrinsic, StakingEraPaid } from '../../../model'
 import * as mappings from '../../index'
@@ -28,8 +27,6 @@ export async function eraPaid(ctx: CommonContext, block: Block, item: EventItem)
     })
 
     await ctx.store.save(era)
-
-    QueueUtils.dispatchComputeValidators()
 
     return new EventModel({
         id: item.id,
