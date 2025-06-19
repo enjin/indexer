@@ -18,16 +18,18 @@ export function unbonded(event: EventItem): Unbonded {
 }
 
 export function unbondedEventModel(item: EventItem, data: Unbonded): EventModel | undefined {
+    const unbondData = {
+        pool: data.poolId.toString(),
+        account: data.member,
+        unbondingPoints: data.points,
+        balance: data.balance,
+        era: data.era,
+    }
+
     return new EventModel({
         id: item.id,
         name: NominationPoolsUnbonded.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-        data: new NominationPoolsUnbonded({
-            pool: data.poolId.toString(),
-            account: data.member,
-            unbondingPoints: data.points,
-            balance: data.balance,
-            era: data.era,
-        }),
+        data: new NominationPoolsUnbonded(unbondData),
     })
 }

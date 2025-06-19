@@ -18,16 +18,17 @@ export function withdrawn(event: EventItem): Withdrawn {
 }
 
 export function withdrawnEventModel(item: EventItem, data: Withdrawn): EventModel | undefined {
+    const withdrawnData = {
+        pool: data.poolId.toString(),
+        account: data.member,
+        balance: data.balance,
+        points: data.points,
+        numSlashingSpans: 0, // data.numSlashingSpans,
+    }
     return new EventModel({
         id: item.id,
         name: NominationPoolsWithdrawn.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-        data: new NominationPoolsWithdrawn({
-            account: data.member,
-            balance: data.balance,
-            points: data.points,
-            numSlashingSpans: 0, // data.numSlashingSpans,
-            pool: data.poolId.toString(),
-        }),
+        data: new NominationPoolsWithdrawn(withdrawnData),
     })
 }

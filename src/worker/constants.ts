@@ -20,6 +20,7 @@ export const enum JobsEnum {
     SYNC_VALIDATORS = 'SYNC_VALIDATORS',
     SYNC_CHAIN = 'SYNC_CHAIN',
     SYNC_FUEL_TANKS = 'SYNC_FUEL_TANKS',
+    DESTROYED_POOLS_EVENTS = 'DESTROYED_POOLS_EVENTS',
 }
 
 export const enum QueuesEnum {
@@ -31,4 +32,5 @@ export const enum QueuesEnum {
     TOKENS = 'TOKENS',
     TRAITS = 'TRAITS',
     VALIDATORS = 'VALIDATORS',
+    NOMINATION_POOLS = 'NOMINATION_POOLS',
 }

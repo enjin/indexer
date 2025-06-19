@@ -1,0 +1,64 @@
+import { Era, NominationPool, PoolState, Event as EventModel } from '../../model'
+import { CommonContext, connectionManager, dataHandlerContext } from '../../contexts'
+import { Job } from 'bullmq'
+import { Sns } from '../../util/sns'
+
+export async function computeDestroyedPoolsEvents(_job: Job, extrinsicId?: string): Promise<void> {
+    const ctx = await dataHandlerContext()
+
+    const pools = await ctx.store.find(NominationPool, {
+        where: {
+            state: PoolState.Destroying,
+        },
+        relations: {
+            members: true,
+        },
+    })
+
+    const currentEra = await ctx.store.find(Era, {
+        order: {
+            startBlock: 'DESC',
+        },
+        take: 1,
+    })
+
+    if (!currentEra.length) {
+        throw new Error('No current era found')
+    }
+
+    for (const pool of pools) {
+        // check pool for unbonding complete
+        const unbondingMembers = pool.members.filter((member) => member.unbondingEras)
+        const isStashBonded = pool.members.filter((member) => member.bonded !== 0n)
+        if (unbondingMembers.length === 0 || unbondingMembers.length < pool.members.length - 1) {
+            continue
+        }
+
+        const unbondingComplete = unbondingMembers.every((member) =>
+            member.unbondingEras?.every((unbondingEra) => currentEra[0].index >= unbondingEra.era)
+        )
+        if (unbondingComplete) {
+            if (unbondingMembers.length && isStashBonded.length === 1) {
+                await Sns.getInstance().send({
+                    id: `${pool.id}-${currentEra[0].index}`,
+                    name: 'NominationPools.MembersUnbondedCompleted',
+                    body: {
+                        pool: pool.id,
+                        era: currentEra[0].index,
+                        extrinsic: extrinsicId,
+                    },
+                })
+            } else if (isStashBonded.length === 1 && unbondingMembers.length === 1) {
+                await Sns.getInstance().send({
+                    id: `${pool.id}-${currentEra[0].index}`,
+                    name: 'NominationPools.DepositUnbondedCompleted',
+                    body: {
+                        pool: pool.id,
+                        era: currentEra[0].index,
+                        extrinsic: extrinsicId,
+                    },
+                })
+            }
+        }
+    }
+}
