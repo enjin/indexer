@@ -1157,6 +1157,10 @@ type NominationPoolsDestroyed {
   pool: String!
 }
 
+type NominationPoolsDestroyInitiated {
+  pool: String!
+}
+
 type NominationPoolsPoolMutated {
   pool: String!
   mutation: JSON!
@@ -1472,7 +1476,7 @@ union EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiToken
   | BalancesTransfer | TeleportBalanceWithdrawn | ClaimsClaimRequested | ClaimsClaimed
   | FuelTankCreated | FuelTankDestroyed | MultiTokensClaimedCollections | MultiTokensClaimTokensInitiated
   | MultiTokensClaimTokensCompleted | MultiTokensCollectionTransferred | MultiTokensInfused
-  | StakingEraPaid | NominationPoolsBonded | NominationPoolsUnbonded
+  | StakingEraPaid | NominationPoolsBonded | NominationPoolsUnbonded | NominationPoolsDestroyInitiated
   | NominationPoolsEarlyBirdBonusPaymentUnlocked | NominationPoolsEarlyBirdBonusCalculated
   | NominationPoolsEarlyBirdSharesCaptured | NominationPoolsEarlyBirdBonusPaid | ImOnlineSomeOffline | ValidatorPrefsSet
   | NominationPoolsWithdrawn | NominationPoolsEraRewardsProcessed | NominationPoolsRewardPaid | NominationPoolsPoolSlashed
