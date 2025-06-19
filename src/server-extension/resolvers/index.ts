@@ -14,6 +14,7 @@ import { TokenListingsResolver } from '../token-listings'
 import { SyncBalancesResolver } from '../sync-balances'
 import { SyncMetadataResolver } from '../sync-metadata'
 import { AccountsTokensResolver } from '../accounts-tokens'
+import { AccountsNftSummaryResolver } from '../accounts-nft-summary'
 import { SyncOffersResolver } from '../sync-offers'
 import { ValidatorDetailsResolver } from '../validator-details'
 import { RefreshPoolResolver } from '../refresh-pool'
@@ -35,6 +36,7 @@ export {
     SyncBalancesResolver,
     SyncMetadataResolver,
     AccountsTokensResolver,
+    AccountsNftSummaryResolver,
     SyncOffersResolver,
     ValidatorDetailsResolver,
 }
