@@ -11,7 +11,6 @@ import { FuelTanksAccountsResolver } from '../fueltanks-accounts'
 import { ClaimableCollectionsResolver } from '../claimable-colllections'
 import { SyncCollectionsResolver } from '../sync-collections'
 import { TokenListingsResolver } from '../token-listings'
-import { RefreshTokenInfusionResolver } from '../refresh-token-infusion'
 import { SyncBalancesResolver } from '../sync-balances'
 import { SyncMetadataResolver } from '../sync-metadata'
 import { AccountsTokensResolver } from '../accounts-tokens'
@@ -33,7 +32,6 @@ export {
     ClaimsAccountNonceResolver,
     SyncCollectionsResolver,
     TokenListingsResolver,
-    RefreshTokenInfusionResolver,
     SyncBalancesResolver,
     SyncMetadataResolver,
     AccountsTokensResolver,
