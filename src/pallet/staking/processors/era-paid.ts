@@ -29,8 +29,6 @@ export async function eraPaid(ctx: CommonContext, block: Block, item: EventItem)
 
     await ctx.store.save(era)
 
-    QueueUtils.dispatchComputeValidators()
-
     return new EventModel({
         id: item.id,
         name: StakingEraPaid.name,
