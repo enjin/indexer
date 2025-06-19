@@ -10,6 +10,7 @@ import {
     TraitsQueue,
     ValidatorsQueue,
     ListingsQueue,
+    NominationPoolsQueue,
 } from '~/queue'
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter'
 import { EventEmitter } from 'events'
@@ -22,6 +23,7 @@ import {
     TokensWorker,
     TraitsWorker,
     ValidatorsWorker,
+    NominationPoolsWorker,
 } from '~/worker/processors'
 import { logError } from '~/worker/utils'
 
@@ -37,6 +39,7 @@ const WorkerMap = new Map([
     ['Tokens', TokensWorker],
     ['Traits', TraitsWorker],
     ['Validators', ValidatorsWorker],
+    ['NominationPools', NominationPoolsWorker],
 ])
 
 /**
@@ -65,6 +68,7 @@ createBullBoard({
         new BullMQAdapter(TokensQueue),
         new BullMQAdapter(TraitsQueue),
         new BullMQAdapter(ValidatorsQueue),
+        new BullMQAdapter(NominationPoolsQueue),
     ],
     serverAdapter,
     options: {

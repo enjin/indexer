@@ -1,5 +1,5 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { Era, Event as EventModel, PoolMember } from '~/model'
+import { Era, Event as EventModel, PoolMember, NominationPool } from '~/model'
 import { getOrCreateAccount } from '~/util/entities'
 import { updatePool } from '~/pallet/nomination-pools/processors/pool'
 import { Sns } from '~/util/sns'
@@ -64,5 +64,46 @@ export async function withdrawn(ctx: CommonContext, block: Block, item: EventIte
         },
     })
 
+    // check if all members are withdrawn
+    await handleWithdrawalComplete(ctx, item)
+
     return mappings.nominationPools.events.withdrawnEventModel(item, data)
+}
+
+async function handleWithdrawalComplete(ctx: CommonContext, item: EventItem): Promise<void> {
+    if (!item.extrinsic || !item.extrinsic.call) return
+
+    const data = mappings.nominationPools.events.withdrawn(item)
+
+    const pool = await ctx.store.findOneOrFail<NominationPool>(NominationPool, {
+        where: { id: data.poolId.toString() },
+        relations: {
+            members: true,
+        },
+    })
+
+    const allMembersUnbondedBool = pool.members.every((member) => member.bonded === 0n && member.unbondingEras === null)
+    const isStashBonded = pool.members.filter((member) => member.bonded !== 0n)
+
+    if (isStashBonded.length === 1) {
+        await Sns.getInstance().send({
+            id: item.id,
+            name: item.extrinsic.getCall().name, // Members withdrawn
+            body: {
+                pool: data.poolId.toString(),
+                allMembersWithdrawn: true,
+                extrinsic: item.extrinsic.id,
+            },
+        })
+    } else if (allMembersUnbondedBool) {
+        await Sns.getInstance().send({
+            id: item.id,
+            name: item.extrinsic.getCall().name, // Deposit withdrawn
+            body: {
+                pool: data.poolId.toString(),
+                depositWithdrawn: true,
+                extrinsic: item.extrinsic.id,
+            },
+        })
+    }
 }

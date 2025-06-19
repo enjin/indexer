@@ -9,6 +9,7 @@ import {
 } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import * as mappings from '~/pallet/index'
+import { Sns } from '~/util/sns' 
 
 export async function destroyed(ctx: CommonContext, block: Block, item: EventItem): Promise<EventModel | undefined> {
     const eventData = mappings.nominationPools.events.destroyed(item)
@@ -26,6 +27,15 @@ export async function destroyed(ctx: CommonContext, block: Block, item: EventIte
     if (eraRewards.length) await ctx.store.remove(eraRewards)
     if (poolValidators.length) await ctx.store.remove(poolValidators)
     if (nominationPool) await ctx.store.remove(nominationPool)
+
+    await Sns.getInstance().send({
+        id: item.id,
+        name: item.name,
+        body: {
+            pool: eventData.poolId.toString(),
+            extrinsic: item.extrinsic?.id,
+        },
+    })
 
     return mappings.nominationPools.events.destroyedEventModel(item, eventData)
 }

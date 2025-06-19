@@ -1,5 +1,5 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { Event as EventModel, PoolMember, UnbondingEras } from '~/model'
+import { Event as EventModel, NominationPool, PoolMember, UnbondingEras } from '~/model'
 import { getOrCreateAccount } from '~/util/entities'
 import { updatePool } from '~/pallet/nomination-pools/processors/pool'
 import { Sns } from '~/util/sns'
@@ -46,5 +46,35 @@ export async function unbonded(ctx: CommonContext, block: Block, item: EventItem
         },
     })
 
+    // check if all members are unbonded
+    await notifyUnbondingCompletion(ctx, item)
+
     return mappings.nominationPools.events.unbondedEventModel(item, data)
+}
+
+async function notifyUnbondingCompletion(ctx: CommonContext, item: EventItem): Promise<void> {
+    if (!item.extrinsic || !item.extrinsic.call) return
+
+    const data = mappings.nominationPools.events.unbonded(item)
+
+    const pool = await ctx.store.findOneOrFail<NominationPool>(NominationPool, {
+        where: { id: data.poolId.toString() },
+        relations: {
+            members: true,
+        },
+    })
+
+    const memberStillBonded = pool.members.filter((member) => member.bonded !== 0n)
+
+    if (memberStillBonded.length <= 1) {
+        await Sns.getInstance().send({
+            id: item.id,
+            name: item.name,
+            body: {
+                pool: data.poolId.toString(),
+                memberStillBonded: memberStillBonded.length,
+                extrinsic: item.extrinsic.id,
+            },
+        })
+    }
 }
