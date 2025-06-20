@@ -7,6 +7,7 @@ import {
     TokensQueue,
     ListingsQueue,
     ValidatorsQueue,
+    NominationPoolsQueue
 } from './index'
 import { JobsEnum } from './constants'
 import { xxhasher } from '../util/hasher'
@@ -38,6 +39,7 @@ function getQueueByType(queue: QueueType): Queue {
         .with('TOKENS', () => TokensQueue)
         .with('LISTINGS', () => ListingsQueue)
         .with('VALIDATORS', () => ValidatorsQueue)
+        .with('NOMINATION_POOLS', () => NominationPoolsQueue)
         .exhaustive()
 }
 
@@ -310,5 +312,18 @@ export function dispatchSyncChain(fromBlock?: number, toBlock?: number): void {
         }
     ).catch(() => {
         Logger.error('Failed to dispatch sync chain', LOGGER_NAMESPACE)
+    })
+}
+
+export function dispatchDestroyedPoolsEvents(): void {
+    NominationPoolsQueue.add(
+        JobsEnum.DESTROYED_POOLS_EVENTS,
+        {},
+        {
+            delay: 6000,
+            jobId: 'nomination-pools.destroyed-pools-events',
+        }
+    ).catch(() => {
+        Logger.error('Failed to dispatch destroyed pools events', LOGGER_NAMESPACE)
     })
 }
