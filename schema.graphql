@@ -1180,6 +1180,14 @@ type NominationPoolsUnbonded {
   era: Int!
 }
 
+type NominationPoolsDepositUnbonded {
+  account: Account!
+  unbondingPoints: BigInt!
+  balance: BigInt!
+  pool: String!
+  era: Int!
+}
+
 type NominationPoolsMembersUnbonded {
   pool: String!
 }
@@ -1494,6 +1502,6 @@ union EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiToken
   | NominationPoolsEarlyBirdBonusPaymentUnlocked | NominationPoolsEarlyBirdBonusCalculated
   | NominationPoolsEarlyBirdSharesCaptured | NominationPoolsEarlyBirdBonusPaid | ImOnlineSomeOffline | ValidatorPrefsSet
   | NominationPoolsWithdrawn | NominationPoolsEraRewardsProcessed | NominationPoolsRewardPaid | NominationPoolsPoolSlashed
-  | NominationPoolsNominated | NominationPoolsCreated | NominationPoolsDestroyed | NominationPoolsPoolMutated | NominationPoolsMembersUnbonded | NominationPoolsMembersUnbondedCompleted | NominationPoolsDepositUnbondedCompleted
+  | NominationPoolsNominated | NominationPoolsCreated | NominationPoolsDestroyed | NominationPoolsPoolMutated | NominationPoolsMembersUnbonded | NominationPoolsMembersUnbondedCompleted | NominationPoolsDepositUnbondedCompleted | NominationPoolsDepositUnbonded
   | StakeExchangeOfferCreated | StakeExchangeOfferCancelled | StakeExchangeLiquidityWithdrawn
   | StakeExchangeLiquidityConfigUpdated | StakeExchangeLiquidityAdded | StakeExchangeBuyOrderCompleted | StakeExchangeOfferCompleted

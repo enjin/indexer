@@ -46,14 +46,14 @@ export async function unbonded(ctx: CommonContext, block: Block, item: EventItem
         },
     })
 
-    // check all unbonded members
-    unbondedAll(ctx, block, item)
+    // check if all members are unbonded
+    const isDeposit = await unbondedAll(ctx, block, item)
 
-    return mappings.nominationPools.events.unbondedEventModel(item, data)
+    return mappings.nominationPools.events.unbondedEventModel(item, data, isDeposit)
 }
 
-export async function unbondedAll(ctx: CommonContext, block: Block, item: EventItem): Promise<EventModel | undefined> {
-    if (!item.extrinsic || !item.extrinsic.call) return undefined
+export async function unbondedAll(ctx: CommonContext, block: Block, item: EventItem): Promise<boolean> {
+    if (!item.extrinsic || !item.extrinsic.call) return false
 
     const data = mappings.nominationPools.events.unbonded(item)
 
@@ -68,10 +68,15 @@ export async function unbondedAll(ctx: CommonContext, block: Block, item: EventI
 
     const memberStillBonded = pool.members.filter((member) => member.tokenAccount?.balance !== 0n)
 
-    if (memberStillBonded.length === 0) {
+    if (memberStillBonded.length === 1) {
         const event = mappings.nominationPools.events.allMembersUnbonded(item, data)
         if (event) {
             await ctx.store.save(event)
         }
+        return false
+    } else if (memberStillBonded.length === 0) {
+        return true
     }
+
+    return false
 }
