@@ -1157,6 +1157,10 @@ type NominationPoolsDestroyed {
   pool: String!
 }
 
+type NominationPoolsDestroyInitiated {
+  pool: String!
+}
+
 type NominationPoolsPoolMutated {
   pool: String!
   mutation: JSON!
@@ -1176,6 +1180,32 @@ type NominationPoolsUnbonded {
   era: Int!
 }
 
+type NominationPoolsDepositUnbonded {
+  account: Account!
+  unbondingPoints: BigInt!
+  balance: BigInt!
+  pool: String!
+  era: Int!
+}
+
+type NominationPoolsMembersUnbonded {
+  pool: String!
+}
+
+type NominationPoolsMembersWithdrawn {
+  pool: String!
+}
+
+type NominationPoolsMembersUnbondedCompleted {
+  pool: String!
+  era: Int!
+}
+
+type NominationPoolsDepositUnbondedCompleted {
+  pool: String!
+  era: Int!
+}
+
 type NominationPoolsWithdrawn {
   account: Account!
   balance: BigInt!
@@ -1183,6 +1213,14 @@ type NominationPoolsWithdrawn {
   numSlashingSpans: Int
   pool: String!
 }
+
+type NominationPoolsDepositWithdrawn {
+  account: Account!
+  balance: BigInt!
+  points: BigInt!
+  pool: String!
+}
+
 
 type NominationPoolsEraRewardsProcessed {
   pool: String!
@@ -1472,10 +1510,12 @@ union EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiToken
   | BalancesTransfer | TeleportBalanceWithdrawn | ClaimsClaimRequested | ClaimsClaimed
   | FuelTankCreated | FuelTankDestroyed | MultiTokensClaimedCollections | MultiTokensClaimTokensInitiated
   | MultiTokensClaimTokensCompleted | MultiTokensCollectionTransferred | MultiTokensInfused
-  | StakingEraPaid | NominationPoolsBonded | NominationPoolsUnbonded
+  | StakingEraPaid | NominationPoolsBonded | NominationPoolsUnbonded | NominationPoolsDestroyInitiated
   | NominationPoolsEarlyBirdBonusPaymentUnlocked | NominationPoolsEarlyBirdBonusCalculated
   | NominationPoolsEarlyBirdSharesCaptured | NominationPoolsEarlyBirdBonusPaid | ImOnlineSomeOffline | ValidatorPrefsSet
   | NominationPoolsWithdrawn | NominationPoolsEraRewardsProcessed | NominationPoolsRewardPaid | NominationPoolsPoolSlashed
-  | NominationPoolsNominated | NominationPoolsCreated | NominationPoolsDestroyed | NominationPoolsPoolMutated
+  | NominationPoolsNominated | NominationPoolsCreated | NominationPoolsDestroyed | NominationPoolsPoolMutated 
+  | NominationPoolsMembersUnbonded | NominationPoolsMembersUnbondedCompleted | NominationPoolsDepositUnbondedCompleted | NominationPoolsDepositUnbonded
+  | NominationPoolsDepositWithdrawn | NominationPoolsMembersWithdrawn
   | StakeExchangeOfferCreated | StakeExchangeOfferCancelled | StakeExchangeLiquidityWithdrawn
   | StakeExchangeLiquidityConfigUpdated | StakeExchangeLiquidityAdded | StakeExchangeBuyOrderCompleted | StakeExchangeOfferCompleted
