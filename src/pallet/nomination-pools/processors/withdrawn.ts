@@ -1,5 +1,5 @@
 import { Block, CommonContext, EventItem } from '../../../contexts'
-import { Era, Event as EventModel, PoolMember } from '../../../model'
+import { Era, Event as EventModel, NominationPool, PoolMember } from '../../../model'
 import { getOrCreateAccount } from '../../../util/entities'
 import { updatePool } from './pool'
 import { Sns } from '../../../util/sns'
@@ -64,5 +64,36 @@ export async function withdrawn(ctx: CommonContext, block: Block, item: EventIte
         },
     })
 
-    return mappings.nominationPools.events.withdrawnEventModel(item, data)
+    // check if all members are withdrawn
+    const isDeposit = await withdrawnAll(ctx, block, item)
+
+    return mappings.nominationPools.events.withdrawnEventModel(item, data, isDeposit)
+}
+
+export async function withdrawnAll(ctx: CommonContext, block: Block, item: EventItem): Promise<boolean> {
+    if (!item.extrinsic || !item.extrinsic.call) return false
+
+    const data = mappings.nominationPools.events.withdrawn(item)
+
+    const pool = await ctx.store.findOneOrFail<NominationPool>(NominationPool, {
+        where: { id: data.poolId.toString() },
+        relations: {
+            members: true,
+        },
+    })
+
+    const allMembersUnbonded = pool.members.every((member) => member.bonded === 0n && member.unbondingEras === null)
+    const isStashBonded = pool.members.filter((member) => member.bonded !== 0n && member.unbondingEras === null)
+
+    if (isStashBonded.length === 1) {
+        const event = mappings.nominationPools.events.allMembersWithdrawn(item, data)
+        if (event) {
+            await ctx.store.save(event)
+        }
+        return false
+    } else if (allMembersUnbonded) {
+        return true
+    }
+
+    return false
 }

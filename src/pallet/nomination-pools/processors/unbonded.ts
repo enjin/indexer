@@ -60,13 +60,11 @@ export async function unbondedAll(ctx: CommonContext, block: Block, item: EventI
     const pool = await ctx.store.findOneOrFail<NominationPool>(NominationPool, {
         where: { id: data.poolId.toString() },
         relations: {
-            members: {
-                tokenAccount: true,
-            },
+            members: true,
         },
     })
 
-    const memberStillBonded = pool.members.filter((member) => member.tokenAccount?.balance !== 0n)
+    const memberStillBonded = pool.members.filter((member) => member.bonded !== 0n)
 
     if (memberStillBonded.length === 1) {
         const event = mappings.nominationPools.events.allMembersUnbonded(item, data)

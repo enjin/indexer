@@ -8,7 +8,6 @@ import {
 } from '../../model'
 import { CommonContext, dataHandlerContext } from '../../contexts'
 import { Job } from 'bullmq'
-import { Not, IsNull } from 'typeorm'
 
 export async function computeDestroyedPoolsEvents(_job: Job): Promise<void> {
     const ctx = await dataHandlerContext()
@@ -16,11 +15,6 @@ export async function computeDestroyedPoolsEvents(_job: Job): Promise<void> {
     const pools = await ctx.store.find(NominationPool, {
         where: {
             state: PoolState.Destroying,
-            members: {
-                unbondingEras: {
-                    era: Not(IsNull()),
-                },
-            },
         },
         relations: {
             members: true,
@@ -39,14 +33,18 @@ export async function computeDestroyedPoolsEvents(_job: Job): Promise<void> {
 
     for (const pool of pools) {
         // check pool for unbonding complete
-        const unbondingComplete = pool.members.every(
+        const unbondingMembers = pool.members.filter((member) => member.unbondingEras)
+        if (unbondingMembers.length === 0 || unbondingMembers.length < pool.members.length - 1) {
+            continue
+        }
+        const unbondingComplete = unbondingMembers.every(
             (member) => currentEra.startBlock === member.unbondingEras?.[0]?.era
         )
         if (unbondingComplete) {
-            if (pool.members.length > 1) {
+            if (unbondingMembers.length > 1) {
                 await createUnbondingCompleteEvent(ctx, pool, currentEra)
                 _job.log(`Unbonding complete for pool ${pool.id}`)
-            } else if (pool.members.length === 1) {
+            } else if (unbondingMembers.length === 1) {
                 await createUnbondingDepositCompleteEvent(ctx, pool, currentEra)
                 _job.log(`Unbonding deposit complete for pool ${pool.id}`)
             }
