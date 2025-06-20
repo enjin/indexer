@@ -3,6 +3,7 @@ import { EventItem } from '../../../contexts'
 import { UnsupportedEventError } from '../../../util/errors'
 import { match } from 'ts-pattern'
 import { StateChanged } from './types'
+import { Extrinsic, Event as EventModel, NominationPoolsDestroyInitiated } from '../../../model'
 
 export function stateChanged(event: EventItem): StateChanged {
     return match(event)
@@ -22,4 +23,15 @@ export function stateChanged(event: EventItem): StateChanged {
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })
+}
+
+export function stateChangedEventModel(item: EventItem, data: StateChanged): EventModel | undefined {
+    return new EventModel({
+        id: item.id,
+        name: NominationPoolsDestroyInitiated.name,
+        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
+        data: new NominationPoolsDestroyInitiated({
+            pool: data.poolId.toString(),
+        }),
+    })
 }

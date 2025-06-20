@@ -12,4 +12,8 @@ export async function stateChanged(ctx: CommonContext, block: Block, item: Event
 
     pool.state = PoolState[data.newState.__kind]
     await ctx.store.save(pool)
+
+    if (data.newState.__kind === PoolState.Destroying) {
+        return mappings.nominationPools.events.stateChangedEventModel(item, data)
+    }
 }

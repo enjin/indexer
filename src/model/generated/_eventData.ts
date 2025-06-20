@@ -43,6 +43,7 @@ import {MultiTokensInfused} from "./_multiTokensInfused"
 import {StakingEraPaid} from "./_stakingEraPaid"
 import {NominationPoolsBonded} from "./_nominationPoolsBonded"
 import {NominationPoolsUnbonded} from "./_nominationPoolsUnbonded"
+import {NominationPoolsDestroyInitiated} from "./_nominationPoolsDestroyInitiated"
 import {NominationPoolsEarlyBirdBonusPaymentUnlocked} from "./_nominationPoolsEarlyBirdBonusPaymentUnlocked"
 import {NominationPoolsEarlyBirdBonusCalculated} from "./_nominationPoolsEarlyBirdBonusCalculated"
 import {NominationPoolsEarlyBirdSharesCaptured} from "./_nominationPoolsEarlyBirdSharesCaptured"
@@ -57,6 +58,12 @@ import {NominationPoolsNominated} from "./_nominationPoolsNominated"
 import {NominationPoolsCreated} from "./_nominationPoolsCreated"
 import {NominationPoolsDestroyed} from "./_nominationPoolsDestroyed"
 import {NominationPoolsPoolMutated} from "./_nominationPoolsPoolMutated"
+import {NominationPoolsMembersUnbonded} from "./_nominationPoolsMembersUnbonded"
+import {NominationPoolsMembersUnbondedCompleted} from "./_nominationPoolsMembersUnbondedCompleted"
+import {NominationPoolsDepositUnbondedCompleted} from "./_nominationPoolsDepositUnbondedCompleted"
+import {NominationPoolsDepositUnbonded} from "./_nominationPoolsDepositUnbonded"
+import {NominationPoolsDepositWithdrawn} from "./_nominationPoolsDepositWithdrawn"
+import {NominationPoolsMembersWithdrawn} from "./_nominationPoolsMembersWithdrawn"
 import {StakeExchangeOfferCreated} from "./_stakeExchangeOfferCreated"
 import {StakeExchangeOfferCancelled} from "./_stakeExchangeOfferCancelled"
 import {StakeExchangeLiquidityWithdrawn} from "./_stakeExchangeLiquidityWithdrawn"
@@ -65,7 +72,7 @@ import {StakeExchangeLiquidityAdded} from "./_stakeExchangeLiquidityAdded"
 import {StakeExchangeBuyOrderCompleted} from "./_stakeExchangeBuyOrderCompleted"
 import {StakeExchangeOfferCompleted} from "./_stakeExchangeOfferCompleted"
 
-export type EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiTokensAttributeSet | MultiTokensBurned | MultiTokensCollectionAccountCreated | MultiTokensCollectionAccountDestroyed | MultiTokensCollectionCreated | MultiTokensCollectionDestroyed | MultiTokensCollectionMutated | MultiTokensFrozen | MultiTokensMinted | MultiTokensThawed | MultiTokensTokenAccountCreated | MultiTokensTokenAccountDestroyed | MultiTokensTokenCreated | MultiTokensTokenDestroyed | MultiTokensTokenMutated | MultiTokensTransferred | MultiTokensUnapproved | MarketplaceAuctionFinalized | MarketplaceBidPlaced | MarketplaceListingCancelled | MarketplaceListingCreated | MarketplaceListingFilled | MarketplaceCounterOfferPlaced | MarketplaceCounterOfferAnswered | MarketplaceCounterOfferRemoved | MarketplaceOfferCreated | MarketplaceOfferSettled | MarketplaceOfferCancelled | MarketplaceListingRemovedUnderMinimum | BalancesTransfer | TeleportBalanceWithdrawn | ClaimsClaimRequested | ClaimsClaimed | FuelTankCreated | FuelTankDestroyed | MultiTokensClaimedCollections | MultiTokensClaimTokensInitiated | MultiTokensClaimTokensCompleted | MultiTokensCollectionTransferred | MultiTokensInfused | StakingEraPaid | NominationPoolsBonded | NominationPoolsUnbonded | NominationPoolsEarlyBirdBonusPaymentUnlocked | NominationPoolsEarlyBirdBonusCalculated | NominationPoolsEarlyBirdSharesCaptured | NominationPoolsEarlyBirdBonusPaid | ImOnlineSomeOffline | ValidatorPrefsSet | NominationPoolsWithdrawn | NominationPoolsEraRewardsProcessed | NominationPoolsRewardPaid | NominationPoolsPoolSlashed | NominationPoolsNominated | NominationPoolsCreated | NominationPoolsDestroyed | NominationPoolsPoolMutated | StakeExchangeOfferCreated | StakeExchangeOfferCancelled | StakeExchangeLiquidityWithdrawn | StakeExchangeLiquidityConfigUpdated | StakeExchangeLiquidityAdded | StakeExchangeBuyOrderCompleted | StakeExchangeOfferCompleted
+export type EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiTokensAttributeSet | MultiTokensBurned | MultiTokensCollectionAccountCreated | MultiTokensCollectionAccountDestroyed | MultiTokensCollectionCreated | MultiTokensCollectionDestroyed | MultiTokensCollectionMutated | MultiTokensFrozen | MultiTokensMinted | MultiTokensThawed | MultiTokensTokenAccountCreated | MultiTokensTokenAccountDestroyed | MultiTokensTokenCreated | MultiTokensTokenDestroyed | MultiTokensTokenMutated | MultiTokensTransferred | MultiTokensUnapproved | MarketplaceAuctionFinalized | MarketplaceBidPlaced | MarketplaceListingCancelled | MarketplaceListingCreated | MarketplaceListingFilled | MarketplaceCounterOfferPlaced | MarketplaceCounterOfferAnswered | MarketplaceCounterOfferRemoved | MarketplaceOfferCreated | MarketplaceOfferSettled | MarketplaceOfferCancelled | MarketplaceListingRemovedUnderMinimum | BalancesTransfer | TeleportBalanceWithdrawn | ClaimsClaimRequested | ClaimsClaimed | FuelTankCreated | FuelTankDestroyed | MultiTokensClaimedCollections | MultiTokensClaimTokensInitiated | MultiTokensClaimTokensCompleted | MultiTokensCollectionTransferred | MultiTokensInfused | StakingEraPaid | NominationPoolsBonded | NominationPoolsUnbonded | NominationPoolsDestroyInitiated | NominationPoolsEarlyBirdBonusPaymentUnlocked | NominationPoolsEarlyBirdBonusCalculated | NominationPoolsEarlyBirdSharesCaptured | NominationPoolsEarlyBirdBonusPaid | ImOnlineSomeOffline | ValidatorPrefsSet | NominationPoolsWithdrawn | NominationPoolsEraRewardsProcessed | NominationPoolsRewardPaid | NominationPoolsPoolSlashed | NominationPoolsNominated | NominationPoolsCreated | NominationPoolsDestroyed | NominationPoolsPoolMutated | NominationPoolsMembersUnbonded | NominationPoolsMembersUnbondedCompleted | NominationPoolsDepositUnbondedCompleted | NominationPoolsDepositUnbonded | NominationPoolsDepositWithdrawn | NominationPoolsMembersWithdrawn | StakeExchangeOfferCreated | StakeExchangeOfferCancelled | StakeExchangeLiquidityWithdrawn | StakeExchangeLiquidityConfigUpdated | StakeExchangeLiquidityAdded | StakeExchangeBuyOrderCompleted | StakeExchangeOfferCompleted
 
 export function fromJsonEventData(json: any): EventData {
     switch(json?.isTypeOf) {
@@ -114,6 +121,7 @@ export function fromJsonEventData(json: any): EventData {
         case 'StakingEraPaid': return new StakingEraPaid(undefined, json)
         case 'NominationPoolsBonded': return new NominationPoolsBonded(undefined, json)
         case 'NominationPoolsUnbonded': return new NominationPoolsUnbonded(undefined, json)
+        case 'NominationPoolsDestroyInitiated': return new NominationPoolsDestroyInitiated(undefined, json)
         case 'NominationPoolsEarlyBirdBonusPaymentUnlocked': return new NominationPoolsEarlyBirdBonusPaymentUnlocked(undefined, json)
         case 'NominationPoolsEarlyBirdBonusCalculated': return new NominationPoolsEarlyBirdBonusCalculated(undefined, json)
         case 'NominationPoolsEarlyBirdSharesCaptured': return new NominationPoolsEarlyBirdSharesCaptured(undefined, json)
@@ -128,6 +136,12 @@ export function fromJsonEventData(json: any): EventData {
         case 'NominationPoolsCreated': return new NominationPoolsCreated(undefined, json)
         case 'NominationPoolsDestroyed': return new NominationPoolsDestroyed(undefined, json)
         case 'NominationPoolsPoolMutated': return new NominationPoolsPoolMutated(undefined, json)
+        case 'NominationPoolsMembersUnbonded': return new NominationPoolsMembersUnbonded(undefined, json)
+        case 'NominationPoolsMembersUnbondedCompleted': return new NominationPoolsMembersUnbondedCompleted(undefined, json)
+        case 'NominationPoolsDepositUnbondedCompleted': return new NominationPoolsDepositUnbondedCompleted(undefined, json)
+        case 'NominationPoolsDepositUnbonded': return new NominationPoolsDepositUnbonded(undefined, json)
+        case 'NominationPoolsDepositWithdrawn': return new NominationPoolsDepositWithdrawn(undefined, json)
+        case 'NominationPoolsMembersWithdrawn': return new NominationPoolsMembersWithdrawn(undefined, json)
         case 'StakeExchangeOfferCreated': return new StakeExchangeOfferCreated(undefined, json)
         case 'StakeExchangeOfferCancelled': return new StakeExchangeOfferCancelled(undefined, json)
         case 'StakeExchangeLiquidityWithdrawn': return new StakeExchangeLiquidityWithdrawn(undefined, json)
