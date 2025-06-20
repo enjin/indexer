@@ -320,7 +320,7 @@ export function dispatchDestroyedPoolsEvents(): void {
         JobsEnum.DESTROYED_POOLS_EVENTS,
         {},
         {
-            delay: 6000,
+            delay: 120000,
             jobId: 'nomination-pools.destroyed-pools-events',
         }
     ).catch(() => {
