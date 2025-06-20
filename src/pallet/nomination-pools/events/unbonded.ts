@@ -2,7 +2,7 @@ import { nominationPools } from '../../../type/events'
 import { EventItem } from '../../../contexts'
 import { UnsupportedEventError } from '../../../util/errors'
 import { match } from 'ts-pattern'
-import { Event as EventModel, Extrinsic, NominationPoolsUnbonded } from '../../../model'
+import { Event as EventModel, Extrinsic, NominationPoolsMembersUnbonded, NominationPoolsUnbonded } from '../../../model'
 import { Unbonded } from './types'
 
 export function unbonded(event: EventItem): Unbonded {
@@ -28,6 +28,17 @@ export function unbondedEventModel(item: EventItem, data: Unbonded): EventModel 
             unbondingPoints: data.points,
             balance: data.balance,
             era: data.era,
+        }),
+    })
+}
+
+export function allMembersUnbonded(item: EventItem, data: Unbonded): EventModel | undefined {
+    return new EventModel({
+        id: item.id,
+        name: NominationPoolsMembersUnbonded.name,
+        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
+        data: new NominationPoolsMembersUnbonded({
+            pool: data.poolId.toString(),
         }),
     })
 }

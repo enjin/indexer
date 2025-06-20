@@ -168,6 +168,7 @@ export async function eventHandler(
             .with(nominationPools.rewardPaid.name, () => p.nominationPools.processors.rewardPaid(ctx, block, item))
             .with(nominationPools.stateChanged.name, () => p.nominationPools.processors.stateChanged(ctx, block, item))
             .with(nominationPools.unbonded.name, () => p.nominationPools.processors.unbonded(ctx, block, item))
+            .with(nominationPools.unbonded.name, () => p.nominationPools.processors.unbondedAll(ctx, block, item))
             .with(nominationPools.withdrawn.name, () => p.nominationPools.processors.withdrawn(ctx, block, item))
             .with(nominationPools.earlyBirdBonusPaymentUnlocked.name, () =>
                 p.nominationPools.processors.earlyBirdBonusPaymentUnlocked(ctx, block, item)
