@@ -6,6 +6,7 @@ import updateInfoMetrics from './definitions/info'
 import updateMigrationMetrics from './definitions/migration'
 import updateMarketplaceMetrics from './definitions/marketplace'
 import updateIdentityMetrics from './definitions/identity'
+import updateStakingMetrics from './definitions/staking'
 import register from './registry'
 import express, { Application } from 'express'
 import { createLogger } from '@subsquid/logger'
@@ -25,6 +26,7 @@ const updateMetrics = async () => {
         updateInfoMetrics(),
         updateIdentityMetrics(),
         updateMarketplaceMetrics(),
+        updateStakingMetrics(),
     ])
 
     cachedMetrics = await register.metrics()
