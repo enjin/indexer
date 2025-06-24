@@ -1,129 +1,129 @@
-import api from 'prom-client'
+import client from 'prom-client'
 import register from '../registry'
 import Rpc from '../../util/rpc'
 import { connectionManager } from '../../contexts'
 import { BN } from '@polkadot/util'
 
-export const indexer_staking_staked_total = new api.Gauge({
+export const indexer_staking_staked_total = new client.Gauge({
     name: 'indexer_staking_staked_total',
     labelNames: ['staking'],
     help: 'The total number of ENJ staked.',
     registers: [register],
 })
 
-export const indexer_staking_staked_pct = new api.Gauge({
+export const indexer_staking_staked_pct = new client.Gauge({
     name: 'indexer_staking_staked_pct',
     labelNames: ['staking'],
     help: 'The percentage of ENJ staked.',
     registers: [register],
 })
 
-export const indexer_staking_pools_total = new api.Gauge({
+export const indexer_staking_pools_total = new client.Gauge({
     name: 'indexer_staking_pools_total',
     labelNames: ['staking'],
     help: 'The total number of nomination pools.',
     registers: [register],
 })
 
-export const indexer_staking_pool_stake_avg = new api.Gauge({
+export const indexer_staking_pool_stake_avg = new client.Gauge({
     name: 'indexer_staking_pool_stake_avg',
     labelNames: ['staking'],
     help: 'The average amount of ENJ staked in each pool.',
     registers: [register],
 })
 
-export const indexer_staking_unique_stakers_total = new api.Gauge({
+export const indexer_staking_unique_stakers_total = new client.Gauge({
     name: 'indexer_staking_unique_stakers_total',
     labelNames: ['staking'],
     help: 'The total number of unique stakers.',
     registers: [register],
 })
 
-export const indexer_staking_account_pools_avg = new api.Gauge({
+export const indexer_staking_account_pools_avg = new client.Gauge({
     name: 'indexer_staking_account_pools_avg',
     labelNames: ['staking'],
     help: 'The average number of pools each staker is in.',
     registers: [register],
 })
 
-export const indexer_staking_pool_accounts_avg = new api.Gauge({
+export const indexer_staking_pool_accounts_avg = new client.Gauge({
     name: 'indexer_staking_pool_accounts_avg',
     labelNames: ['staking'],
     help: 'The average number of accounts in each pool.',
     registers: [register],
 })
 
-export const indexer_staking_account_stake_avg = new api.Gauge({
+export const indexer_staking_account_stake_avg = new client.Gauge({
     name: 'indexer_staking_account_stake_avg',
     labelNames: ['staking'],
     help: 'The average number of ENJ staked per account.',
     registers: [register],
 })
 
-export const indexer_staking_validators_total = new api.Gauge({
+export const indexer_staking_validators_total = new client.Gauge({
     name: 'indexer_staking_validators_total',
     labelNames: ['staking'],
     help: 'The total number of validators.',
     registers: [register],
 })
 
-export const indexer_staking_active_validators_total = new api.Gauge({
+export const indexer_staking_active_validators_total = new client.Gauge({
     name: 'indexer_staking_active_validators_total',
     labelNames: ['staking'],
     help: 'The total number of active validators.',
     registers: [register],
 })
 
-export const indexer_staking_unbonding_accounts_total = new api.Gauge({
+export const indexer_staking_unbonding_accounts_total = new client.Gauge({
     name: 'indexer_staking_unbonding_accounts_total',
     labelNames: ['staking'],
     help: 'The total number of accounts in the unbonding state.',
     registers: [register],
 })
 
-export const indexer_staking_unbonding_amount_total = new api.Gauge({
+export const indexer_staking_unbonding_amount_total = new client.Gauge({
     name: 'indexer_staking_unbonding_amount_total',
     labelNames: ['staking'],
     help: 'The total number of ENJ currently awaiting to be unbonded.',
     registers: [register],
 })
 
-export const indexer_staking_exchange_offers_total = new api.Gauge({
+export const indexer_staking_exchange_offers_total = new client.Gauge({
     name: 'indexer_staking_exchange_offers_total',
     labelNames: ['staking'],
     help: 'The total number of staking exchange offers that have been created.',
     registers: [register],
 })
 
-export const indexer_staking_exchange_amount_total = new api.Gauge({
+export const indexer_staking_exchange_amount_total = new client.Gauge({
     name: 'indexer_staking_exchange_amount_total',
     labelNames: ['staking'],
     help: 'The total amount of ENJ offered through the staking exchange (lifetime).',
     registers: [register],
 })
 
-export const indexer_staking_active_exchange_offers_total = new api.Gauge({
+export const indexer_staking_active_exchange_offers_total = new client.Gauge({
     name: 'indexer_staking_active_exchange_offers_total',
     labelNames: ['staking'],
     help: 'The total number of active staking exchange offers (currently unfulfilled).',
     registers: [register],
 })
 
-export const indexer_staking_active_exchange_amount_total = new api.Gauge({
+export const indexer_staking_active_exchange_amount_total = new client.Gauge({
     name: 'indexer_staking_active_exchange_amount_total',
     labelNames: ['staking'],
     help: 'The total amount of ENJ currently on offer in the staking exchange.',
     registers: [register],
 })
 
-export const indexer_staking_fulfilled_exchange_offers_total = new api.Gauge({
+export const indexer_staking_fulfilled_exchange_offers_total = new client.Gauge({
     name: 'indexer_staking_fulfilled_exchange_offers_total',
     labelNames: ['staking'],
     help: 'The total number of staking exchange offers that have been fulfilled.',
     registers: [register],
 })
 
-export const indexer_staking_fulfilled_exchange_amount_total = new api.Gauge({
+export const indexer_staking_fulfilled_exchange_amount_total = new client.Gauge({
     name: 'indexer_staking_fulfilled_exchange_amount_total',
     labelNames: ['staking'],
     help: 'The total amount of ENJ that has been exchanged through the stake exchange.',
@@ -138,12 +138,18 @@ export default async () => {
 
     const [totalIssuance, stakedTotal] = await Promise.all([
         api.query.balances.totalIssuance(),
-        api.query.staking.erasTotalStake(activeEra.unwrapOrDefault().index),
+        api.query.staking.erasTotalStake(activeEra.value.index),
     ])
 
     const stakedPct =
-        new BN(stakedTotal.toString()).div(new BN(10).pow(new BN(16))).toNumber() /
-        new BN(totalIssuance.toString()).div(new BN(10).pow(new BN(18))).toNumber()
+        stakedTotal
+            .toBn()
+            .div(new BN(10).pow(new BN(16)))
+            .toNumber() /
+        totalIssuance
+            .toBn()
+            .div(new BN(10).pow(new BN(18)))
+            .toNumber()
 
     const [
         poolsTotal,
@@ -186,7 +192,12 @@ export default async () => {
         em.query(`SELECT COUNT(*) as count FROM stake_exchange_offer WHERE state = 'Active'`),
     ])
 
-    indexer_staking_staked_total.set(new BN(stakedTotal.toString()).div(new BN(10).pow(new BN(18))).toNumber())
+    indexer_staking_staked_total.set(
+        stakedTotal
+            .toBn()
+            .div(new BN(10).pow(new BN(18)))
+            .toNumber()
+    )
     indexer_staking_staked_pct.set(stakedPct)
     indexer_staking_pools_total.set(Number(poolsTotal[0].count))
     indexer_staking_pool_stake_avg.set(Number(stakeAvg[0].avg))
