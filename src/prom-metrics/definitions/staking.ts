@@ -134,6 +134,11 @@ export default async () => {
     const em = await connectionManager()
     const { api } = await Rpc.getInstance()
 
+    // eslint-disable-next-line
+    if (!api.query.staking) {
+        return
+    }
+
     const activeEra = await api.query.staking.activeEra()
 
     const [totalIssuance, stakedTotal] = await Promise.all([
