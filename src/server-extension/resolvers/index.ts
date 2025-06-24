@@ -18,6 +18,7 @@ import { AccountsNftSummaryResolver } from '../accounts-nft-summary'
 import { SyncOffersResolver } from '../sync-offers'
 import { ValidatorDetailsResolver } from '../validator-details'
 import { RefreshPoolResolver } from '../refresh-pool'
+import { HottestAuctionsResolver } from '../hottest-auctions'
 export {
     TokenSalesHistoryResolver,
     VerifyMessageResolver,
@@ -39,4 +40,5 @@ export {
     AccountsNftSummaryResolver,
     SyncOffersResolver,
     ValidatorDetailsResolver,
+    HottestAuctionsResolver,
 }
