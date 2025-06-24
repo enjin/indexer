@@ -14,9 +14,8 @@ import {
 } from 'type-graphql'
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
-import { ChainInfo, Collection, Listing, ListingType, Token } from '../model'
+import { Account, Attribute, ChainInfo, Collection, Listing, ListingSale, ListingType, Token } from '../model'
 import { BigInteger, Json } from '@subsquid/graphql-server'
-import { DateTimeColumn as DateTimeColumn_ } from '@subsquid/typeorm-store/lib/decorators/columns/DateTimeColumn'
 
 @ArgsType()
 class HottestAuctionsArgs {
@@ -25,6 +24,9 @@ class HottestAuctionsArgs {
 
     @Field(() => Int, { defaultValue: 0 })
     offset: number = 0
+
+    @Field(() => BigInteger, { nullable: true, defaultValue: '100' })
+    minVolume?: typeof BigInteger
 }
 
 @ObjectType()
@@ -53,8 +55,20 @@ class AuctionTokenCollection {
     @Field(() => AuctionAccount, { nullable: true })
     owner!: AuctionAccount
 
-    @Field(() => [AuctionCollectionAttribute])
-    collectionAttributes!: AuctionCollectionAttribute[]
+    @Field(() => [AuctionCollectionAttribute], { nullable: true })
+    attributes!: AuctionCollectionAttribute[]
+}
+
+@ObjectType()
+class AuctionTokenSale {
+    @Field(() => ID)
+    id!: string
+
+    @Field(() => BigInteger)
+    amount!: typeof BigInteger
+
+    @Field(() => BigInteger)
+    price!: typeof BigInteger
 }
 
 @ObjectType()
@@ -77,14 +91,14 @@ export class AuctionToken {
     @Field()
     createdAt!: Date
 
-    @Field(() => Json)
-    lastSale!: typeof Json
+    @Field(() => AuctionTokenSale, { nullable: true })
+    lastSale!: AuctionTokenSale
 
     @Field(() => AuctionTokenCollection)
     collection!: AuctionTokenCollection
 
-    @Field(() => [AuctionTokenAttribute])
-    tokenAttributes!: AuctionTokenAttribute[]
+    @Field(() => [AuctionTokenAttribute], { nullable: true })
+    attributes!: AuctionTokenAttribute[]
 }
 
 @ObjectType()
@@ -128,7 +142,7 @@ class HottestAuction {
     @Field(() => Boolean)
     isActive!: Boolean
 
-    @Field(() => Int)
+    @Field(() => Int, { nullable: true })
     startBlock!: number
 
     @Field(() => Date)
@@ -173,15 +187,6 @@ class AuctionCollectionAttribute {
 }
 
 @InputType()
-class FilterTokenCondition {
-    @Field(() => String, { nullable: true })
-    key_eq?: string
-
-    @Field(() => [String], { nullable: true })
-    key_in?: string[]
-}
-
-@InputType()
 class FilterCollectionCondition {
     @Field(() => Boolean, { nullable: true })
     token_isNull?: boolean
@@ -195,8 +200,14 @@ class FilterCollectionCondition {
 
 @InputType()
 class AuctionTokenAttributeWhereInput {
-    @Field(() => [FilterTokenCondition], { nullable: true })
-    AND?: FilterTokenCondition[]
+    @Field(() => Boolean, { nullable: true })
+    token_isNull?: boolean
+
+    @Field(() => String, { nullable: true })
+    key_eq?: string
+
+    @Field(() => [String], { nullable: true })
+    key_in?: string[]
 }
 
 @InputType()
@@ -211,7 +222,7 @@ export class HottestAuctionsResolver {
     constructor(private tx: () => Promise<EntityManager>) {}
 
     @Query(() => [HottestAuction], { nullable: true })
-    async hottestAuctions(@Args() { limit, offset }: HottestAuctionsArgs): Promise<HottestAuction[]> {
+    async hottestAuctions(@Args() { limit, offset, minVolume }: HottestAuctionsArgs): Promise<HottestAuction[]> {
         const em = await this.tx()
 
         const currentBlock = await em
@@ -224,12 +235,32 @@ export class HottestAuctionsResolver {
             .createQueryBuilder(Listing, 'listing')
             .leftJoinAndMapOne('listing.makeAssetId', Token, 'makeAssetId', 'listing.makeAssetId = makeAssetId.id')
             .leftJoinAndMapOne('listing.takeAssetId', Token, 'takeAssetId', 'listing.takeAssetId = takeAssetId.id')
+            .leftJoinAndMapOne('listing.seller', Account, 'seller', 'listing.seller = seller.id')
             .leftJoinAndMapOne(
                 'makeAssetId.collection',
                 Collection,
                 'collection',
                 'makeAssetId.collection = collection.id'
             )
+            .leftJoinAndMapMany(
+                'collection.attributes',
+                Attribute,
+                'collectionAttribute',
+                'collectionAttribute.collection_id = collection.id'
+            )
+            .leftJoinAndMapMany(
+                'makeAssetId.attributes',
+                Attribute,
+                'makeAssetIdAttribute',
+                'makeAssetIdAttribute.token_id = makeAssetId.id'
+            )
+            .leftJoinAndMapOne(
+                'makeAssetId.lastSale',
+                ListingSale,
+                'listingSale',
+                'makeAssetId.last_sale_id = listingSale.id'
+            )
+            .leftJoinAndMapOne('collection.owner', Account, 'collectionOwner', 'collection.owner = collectionOwner.id')
             .where(
                 "(listing.data->>'endHeight')::int > :currentBlock AND listing.isActive = true AND listing.type = :listingType",
                 {
@@ -238,7 +269,9 @@ export class HottestAuctionsResolver {
                     listingType: ListingType.Auction,
                 }
             )
-            .andWhere("collection.stats->>'volume' > '100' AND collection.hidden = false")
+            .andWhere("(collection.stats->>'volume')::numeric > :minVolume AND collection.hidden = false", {
+                minVolume,
+            })
             .andWhere("takeAssetId.id = '0-0' AND makeAssetId.id != '0-0'")
             .orderBy("listing.data->>'endHeight'", 'ASC')
             .skip(offset)
@@ -248,56 +281,64 @@ export class HottestAuctionsResolver {
 
         return data
     }
+}
 
-    @FieldResolver(() => [AuctionCollectionAttribute])
-    collectionAttributes(
-        @Root() hottestAuctions: HottestAuction,
-        @Arg('where', () => AuctionCollectionAttributeWhereInput, { defaultValue: [] })
-        where?: AuctionCollectionAttributeWhereInput
-    ): AuctionCollectionAttribute[] {
-        if (!where || !where.AND || where.AND.length === 0) {
-            return hottestAuctions.makeAssetId.collection.collectionAttributes
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+@Resolver((of) => AuctionToken)
+export class AuctionTokenResolver {
+    @FieldResolver(() => [AuctionTokenAttribute])
+    attributes(
+        @Root() makeAssetId: AuctionToken,
+        @Arg('where', () => AuctionTokenAttributeWhereInput, { defaultValue: [] })
+        where?: AuctionTokenAttributeWhereInput
+    ): AuctionTokenAttribute[] {
+        if (!where) {
+            return makeAssetId.attributes
         }
 
-        const keyEq = where.AND.find((cond) => cond.key_eq)
-        const keyIn = where.AND.find((cond) => cond.key_in)
-        if ((!keyEq && !keyIn) || (keyEq && !keyIn && !keyEq.key_eq) || (keyIn && !keyEq && !keyIn.key_in)) {
-            return hottestAuctions.makeAssetId.collection.collectionAttributes
+        const keyEq = where.key_eq
+        const keyIn = where.key_in
+        if ((!keyEq && !keyIn) || (keyEq && !keyIn && !keyEq) || (keyIn && !keyEq && !keyIn)) {
+            return makeAssetId.attributes
         }
 
         return (
-            hottestAuctions.makeAssetId.collection.collectionAttributes.filter((attr) => {
-                if (keyEq?.key_eq) {
-                    return attr.key === keyEq.key_eq
+            makeAssetId.attributes.filter((attr) => {
+                if (keyEq) {
+                    return attr.key === keyEq
                 }
 
-                if (keyIn?.key_in && keyIn?.key_in.length > 0) {
-                    return keyIn?.key_in?.includes(attr.key)
+                if (keyIn && keyIn.length > 0) {
+                    return keyIn.includes(attr.key)
                 }
 
                 return false
             }) ?? []
         )
     }
+}
 
-    @FieldResolver(() => [AuctionTokenAttribute])
-    tokenAttributes(
-        @Root() makeAssetId: AuctionToken,
-        @Arg('where', () => AuctionTokenAttributeWhereInput, { defaultValue: [] })
-        where?: AuctionTokenAttributeWhereInput
-    ): AuctionTokenAttribute[] {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+@Resolver((of) => AuctionTokenCollection)
+export class AuctionTokenCollectionResolver {
+    @FieldResolver(() => [AuctionCollectionAttribute])
+    attributes(
+        @Root() collection: AuctionTokenCollection,
+        @Arg('where', () => AuctionCollectionAttributeWhereInput, { defaultValue: [] })
+        where?: AuctionCollectionAttributeWhereInput
+    ): AuctionCollectionAttribute[] {
         if (!where || !where.AND || where.AND.length === 0) {
-            return makeAssetId.tokenAttributes
+            return collection.attributes
         }
 
         const keyEq = where.AND.find((cond) => cond.key_eq)
         const keyIn = where.AND.find((cond) => cond.key_in)
         if ((!keyEq && !keyIn) || (keyEq && !keyIn && !keyEq.key_eq) || (keyIn && !keyEq && !keyIn.key_in)) {
-            return makeAssetId.tokenAttributes
+            return collection.attributes
         }
 
         return (
-            makeAssetId.tokenAttributes.filter((attr) => {
+            collection.attributes.filter((attr) => {
                 if (keyEq?.key_eq) {
                     return attr.key === keyEq.key_eq
                 }
