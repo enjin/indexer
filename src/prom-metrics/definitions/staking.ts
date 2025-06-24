@@ -134,7 +134,8 @@ export default async () => {
     const em = await connectionManager()
     const { api } = await Rpc.getInstance()
 
-    if (!api.query.staking || !api.query.balances) {
+    // eslint-disable-next-line
+    if (!api.query.staking) {
         return
     }
 
