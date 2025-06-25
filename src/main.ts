@@ -4,7 +4,7 @@ import * as Sentry from '@sentry/node'
 import config from './util/config'
 import {
     AccountTokenEvent,
-    AuctionData,
+    AuctionState,
     Event,
     Extrinsic,
     Fee,
@@ -114,7 +114,10 @@ async function bootstrap() {
 
                 if (lastBlock.height > dataService.lastBlockNumber) {
                     await chainState(ctx, lastBlock)
-                    checkAuctionState(ctx, lastBlock)
+                    checkAuctionState(ctx, lastBlock).catch((error) => {
+                        logger.error(error)
+                        Sentry.captureException(error)
+                    })
                 }
             } catch (error) {
                 await QueueUtils.resumeQueue(QueuesEnum.COLLECTIONS)
@@ -286,14 +289,14 @@ async function checkAuctionState(ctx: CommonContext, block: Block) {
     })
     for (const auction of auctions) {
         if (auction.data.isTypeOf === 'AuctionData') {
-            const auctionData = auction.data as AuctionData
+            const auctionData = auction.data
             if (
-                auction.state &&
                 auctionData.endHeight < block.height &&
                 auctionData.endHeight > 0 &&
-                auction.state.isTypeOf === 'AuctionState'
+                auction.state.isTypeOf === 'AuctionState' &&
+                (auction.state.isExpired === false || auction.state.isExpired === undefined)
             ) {
-                auction.state.isExpired = true
+                auction.state = new AuctionState({ listingType: ListingType.Auction, isExpired: true })
                 await ctx.store.save(auction)
             }
         }
