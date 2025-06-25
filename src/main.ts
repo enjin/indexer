@@ -12,6 +12,7 @@ import {
     FuelTankData,
     Listing,
     ListingType,
+    OfferState,
 } from './model'
 import { genesisData } from './genesis-data'
 import { chainState } from './chain-state'
@@ -114,7 +115,7 @@ async function bootstrap() {
 
                 if (lastBlock.height > dataService.lastBlockNumber) {
                     await chainState(ctx, lastBlock)
-                    await checkAuctionState(ctx, lastBlock)
+                    await checkListingState(ctx, lastBlock)
                 }
             } catch (error) {
                 await QueueUtils.resumeQueue(QueuesEnum.COLLECTIONS)
@@ -280,21 +281,34 @@ function getParticipants(args: Json, _events: EventItem[], signer: string): stri
     return Array.from(accounts)
 }
 
-async function checkAuctionState(ctx: CommonContext, block: Block) {
-    const auctions = await ctx.store.find(Listing, {
+async function checkListingState(ctx: CommonContext, block: Block) {
+    const listings = await ctx.store.find(Listing, {
         where: { type: ListingType.Auction, isActive: true },
     })
-    for (const auction of auctions) {
-        if (auction.data.isTypeOf === 'AuctionData') {
-            const auctionData = auction.data
+    for (const listing of listings) {
+        if (listing.data.isTypeOf === 'AuctionData') {
+            const auctionData = listing.data
             if (
                 auctionData.endHeight < block.height &&
                 auctionData.endHeight > 0 &&
-                auction.state.isTypeOf === 'AuctionState' &&
-                (auction.state.isExpired === false || auction.state.isExpired === undefined)
+                listing.state.isTypeOf === 'AuctionState' &&
+                (listing.state.isExpired === false || listing.state.isExpired === undefined)
             ) {
-                auction.state = new AuctionState({ listingType: ListingType.Auction, isExpired: true })
-                await ctx.store.save(auction)
+                listing.state = new AuctionState({ listingType: ListingType.Auction, isExpired: true })
+                await ctx.store.save(listing)
+            }
+        }
+
+        if (listing.data.isTypeOf === 'OfferData') {
+            const offerData = listing.data
+            if (
+                listing.state.isTypeOf === 'OfferState' &&
+                listing.state.isExpired === false &&
+                offerData.expiration &&
+                offerData.expiration < block.height
+            ) {
+                listing.state = new OfferState({ listingType: ListingType.Offer, isExpired: true })
+                await ctx.store.save(listing)
             }
         }
     }

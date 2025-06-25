@@ -822,6 +822,7 @@ type AuctionState {
 type OfferState {
   listingType: ListingType!
   counterOfferCount: Int!
+  isExpired: Boolean
 }
 
 union ListingState = FixedPriceState | AuctionState | OfferState

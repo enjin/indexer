@@ -72,7 +72,7 @@ export async function listingCreated(
     const listingState = match(data.listing.state)
         .returnType<AuctionState | OfferState | FixedPriceState>()
         .with({ __kind: 'Auction' }, () => new AuctionState({ listingType: ListingType.Auction, isExpired: false }))
-        .with({ __kind: 'Offer' }, () => new OfferState({ listingType: ListingType.Offer, counterOfferCount: 0 }))
+        .with({ __kind: 'Offer' }, () => new OfferState({ listingType: ListingType.Offer, counterOfferCount: 0, isExpired: false }))
         .with(
             { __kind: 'FixedPrice' },
             () => new FixedPriceState({ listingType: ListingType.FixedPrice, amountFilled: 0n })
