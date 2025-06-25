@@ -114,7 +114,7 @@ async function bootstrap() {
 
                 if (lastBlock.height > dataService.lastBlockNumber) {
                     await chainState(ctx, lastBlock)
-                    checkAuctionState(ctx, lastBlock).catch((error) => {
+                    checkAuctionState(ctx, lastBlock).catch((error: unknown) => {
                         logger.error(error)
                         Sentry.captureException(error)
                     })
