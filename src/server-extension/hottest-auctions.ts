@@ -250,7 +250,7 @@ export class HottestAuctionsResolver {
                 'makeAssetId.collection',
                 Collection,
                 'collection',
-                'makeAssetId.collection = collection.id'
+                'makeAssetId.collection = collection.id and collection.hidden = false'
             )
             .leftJoinAndMapOne(
                 'makeAssetId.lastSale',
@@ -267,10 +267,9 @@ export class HottestAuctionsResolver {
                     listingType: ListingType.Auction,
                 }
             )
-            .andWhere("(collection.stats->>'volume')::numeric > :minVolume AND collection.hidden = false", {
+            .andWhere("(collection.stats->>'volume')::numeric > :minVolume", {
                 minVolume,
             })
-            .andWhere("takeAssetId.id = '0-0' AND makeAssetId.id != '0-0'")
             .orderBy("listing.data->>'endHeight'", 'ASC')
             .skip(offset)
             .limit(limit)
