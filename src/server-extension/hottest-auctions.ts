@@ -233,26 +233,24 @@ export class HottestAuctionsResolver {
 
         const builder = em
             .createQueryBuilder(Listing, 'listing')
-            .leftJoinAndMapOne('listing.makeAssetId', Token, 'makeAssetId', 'listing.makeAssetId = makeAssetId.id')
-            .leftJoinAndMapOne('listing.takeAssetId', Token, 'takeAssetId', 'listing.takeAssetId = takeAssetId.id')
+            .leftJoinAndMapOne(
+                'listing.makeAssetId',
+                Token,
+                'makeAssetId',
+                "listing.makeAssetId = makeAssetId.id AND makeAssetId.id != '0-0'"
+            )
+            .leftJoinAndMapOne(
+                'listing.takeAssetId',
+                Token,
+                'takeAssetId',
+                "listing.takeAssetId = takeAssetId.id AND takeAssetId.id = '0-0'"
+            )
             .leftJoinAndMapOne('listing.seller', Account, 'seller', 'listing.seller = seller.id')
             .leftJoinAndMapOne(
                 'makeAssetId.collection',
                 Collection,
                 'collection',
                 'makeAssetId.collection = collection.id'
-            )
-            .leftJoinAndMapMany(
-                'collection.attributes',
-                Attribute,
-                'collectionAttribute',
-                'collectionAttribute.collection_id = collection.id'
-            )
-            .leftJoinAndMapMany(
-                'makeAssetId.attributes',
-                Attribute,
-                'makeAssetIdAttribute',
-                'makeAssetIdAttribute.token_id = makeAssetId.id'
             )
             .leftJoinAndMapOne(
                 'makeAssetId.lastSale',
@@ -277,9 +275,69 @@ export class HottestAuctionsResolver {
             .skip(offset)
             .limit(limit)
 
-        const data = (await builder.getMany()) as any[]
+        const listings = (await builder.getMany()) as any[]
 
-        return data
+        // Fetch attributes separately to avoid cartesian product but still provide the data
+        if (listings.length > 0) {
+            const collectionIds = [...new Set(listings.map((l) => l.makeAssetId?.collection?.id).filter(Boolean))]
+            const tokenIds = [...new Set(listings.map((l) => l.makeAssetId?.id).filter(Boolean))]
+
+            const [collectionAttributes, tokenAttributes] = await Promise.all([
+                // Fetch collection attributes
+                collectionIds.length > 0
+                    ? em
+                          .getRepository(Attribute)
+                          .createQueryBuilder('attr')
+                          .leftJoinAndSelect('attr.collection', 'collection')
+                          .where('attr.collection_id IN (:...collectionIds)', { collectionIds })
+                          .getMany()
+                    : [],
+                // Fetch token attributes
+                tokenIds.length > 0
+                    ? em
+                          .getRepository(Attribute)
+                          .createQueryBuilder('attr')
+                          .leftJoinAndSelect('attr.token', 'token')
+                          .where('attr.token_id IN (:...tokenIds)', { tokenIds })
+                          .getMany()
+                    : [],
+            ])
+
+            // Group attributes by collection
+            const collectionAttrMap = new Map()
+            collectionAttributes.forEach((attr) => {
+                if (attr.collection) {
+                    if (!collectionAttrMap.has(attr.collection.id)) {
+                        collectionAttrMap.set(attr.collection.id, [])
+                    }
+                    collectionAttrMap.get(attr.collection.id).push(attr)
+                }
+            })
+
+            // Group attributes by token
+            const tokenAttrMap = new Map()
+            tokenAttributes.forEach((attr) => {
+                if (attr.token) {
+                    if (!tokenAttrMap.has(attr.token.id)) {
+                        tokenAttrMap.set(attr.token.id, [])
+                    }
+                    tokenAttrMap.get(attr.token.id).push(attr)
+                }
+            })
+
+            // Assign attributes to collections and tokens
+            listings.forEach((listing) => {
+                if (listing.makeAssetId?.collection?.id) {
+                    listing.makeAssetId.collection.attributes =
+                        collectionAttrMap.get(listing.makeAssetId.collection.id) || []
+                }
+                if (listing.makeAssetId?.id) {
+                    listing.makeAssetId.attributes = tokenAttrMap.get(listing.makeAssetId.id) || []
+                }
+            })
+        }
+
+        return listings
     }
 }
 
