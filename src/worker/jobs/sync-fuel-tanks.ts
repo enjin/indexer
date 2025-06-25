@@ -18,9 +18,9 @@ export async function syncFuelTanks(job: Job) {
         const fuelTankRPC = await api.query.fuelTanks.tanks(fuelTank.tankAccount.address)
         const fuelTankJson: any = fuelTankRPC.toJSON()
 
-        await job.log(`Fuel tank (${fuelTank.tankAccount.address}) coverage: ${fuelTankJson.coverage}`)
-        if (fuelTankJson.coverage) {
-            fuelTank.coveragePolicy = fuelTankJson.coverage.toString()
+        await job.log(`Fuel tank (${fuelTank.tankAccount.address}) coverage: ${fuelTankJson.coveragePolicy}`)
+        if (fuelTankJson.coveragePolicy) {
+            fuelTank.coveragePolicy = fuelTankJson.coveragePolicy.toString()
 
             await em.save(fuelTank)
         }
