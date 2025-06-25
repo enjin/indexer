@@ -284,7 +284,6 @@ async function checkAuctionState(ctx: CommonContext, block: Block) {
     const auctions = await ctx.store.find(Listing, {
         where: { type: ListingType.Auction, isActive: true },
     })
-    logger.info(`Checking ${auctions.length} auctions`)
     for (const auction of auctions) {
         if (auction.data.isTypeOf === 'AuctionData') {
             const auctionData = auction.data as AuctionData
@@ -294,7 +293,6 @@ async function checkAuctionState(ctx: CommonContext, block: Block) {
                 auctionData.endHeight > 0 &&
                 auction.state.isTypeOf === 'AuctionState'
             ) {
-                logger.info(`Updating auction ${auction.id}`)
                 auction.state.isExpired = true
                 await ctx.store.save(auction)
             }

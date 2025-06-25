@@ -2,7 +2,6 @@ import { Field, ObjectType, Query, Resolver, Arg } from 'type-graphql'
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
 import { Listing, ListingSale } from '../model'
-import { Logger } from '../util/logger'
 
 @ObjectType()
 export class TokenSale {
@@ -43,9 +42,6 @@ export class TokenSalesHistoryResolver {
             .addSelect('COUNT(*) AS trades')
             .addSelect('SUM(listing_sale.price) AS price')
             .addSelect('SUM(listing_sale.amount) AS amount')
-
-        Logger.info(builder.getQueryAndParameters().toString(), 'sqd:graphql')
-        Logger.info(fromDate, 'sqd:graphql')
 
         if (fromDate) {
             builder.andWhere('listing_sale.created_at >= :fromDate', { fromDate })
