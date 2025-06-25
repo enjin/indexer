@@ -2,7 +2,17 @@ import { TypeormDatabase } from '@subsquid/typeorm-store'
 import _ from 'lodash'
 import * as Sentry from '@sentry/node'
 import config from './util/config'
-import { AccountTokenEvent, Event, Extrinsic, Fee, FuelTank, FuelTankData, Listing } from './model'
+import {
+    AccountTokenEvent,
+    AuctionData,
+    Event,
+    Extrinsic,
+    Fee,
+    FuelTank,
+    FuelTankData,
+    Listing,
+    ListingType,
+} from './model'
 import { genesisData } from './genesis-data'
 import { chainState } from './chain-state'
 import * as p from './pallet'
@@ -104,6 +114,7 @@ async function bootstrap() {
 
                 if (lastBlock.height > dataService.lastBlockNumber) {
                     await chainState(ctx, lastBlock)
+                    checkAuctionState(ctx, lastBlock)
                 }
             } catch (error) {
                 await QueueUtils.resumeQueue(QueuesEnum.COLLECTIONS)
@@ -267,6 +278,28 @@ function getParticipants(args: Json, _events: EventItem[], signer: string): stri
     }
 
     return Array.from(accounts)
+}
+
+async function checkAuctionState(ctx: CommonContext, block: Block) {
+    const auctions = await ctx.store.find(Listing, {
+        where: { type: ListingType.Auction, isActive: true },
+    })
+    logger.info(`Checking ${auctions.length} auctions`)
+    for (const auction of auctions) {
+        if (auction.data.isTypeOf === 'AuctionData') {
+            const auctionData = auction.data as AuctionData
+            if (
+                auction.state &&
+                auctionData.endHeight < block.height &&
+                auctionData.endHeight > 0 &&
+                auction.state.isTypeOf === 'AuctionState'
+            ) {
+                logger.info(`Updating auction ${auction.id}`)
+                auction.state.isExpired = true
+                await ctx.store.save(auction)
+            }
+        }
+    }
 }
 
 bootstrap().catch((error: unknown) => {

@@ -312,3 +312,16 @@ export function dispatchSyncChain(fromBlock?: number, toBlock?: number): void {
         Logger.error('Failed to dispatch sync chain', LOGGER_NAMESPACE)
     })
 }
+
+export function dispatchSyncAccounts(): void {
+    AccountsQueue.add(
+        JobsEnum.SYNC_ALL_ACCOUNTS,
+        {},
+        {
+            delay: 6000,
+            jobId: 'accounts.sync.all',
+        }
+    ).catch(() => {
+        Logger.error('Failed to dispatch sync accounts', LOGGER_NAMESPACE)
+    })
+}

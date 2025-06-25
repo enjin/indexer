@@ -816,6 +816,7 @@ type FixedPriceState {
 type AuctionState {
   listingType: ListingType!
   highBid: Bid
+  isExpired: Boolean
 }
 
 type OfferState {
