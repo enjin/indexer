@@ -14,6 +14,8 @@ export async function stateChanged(ctx: CommonContext, block: Block, item: Event
     pool.state = PoolState[data.newState.__kind]
     await ctx.store.save(pool)
 
+    ctx.log.info(`Pool ${data.poolId.toString()} is being destroyed ${item.name}`)
+    
     if (data.newState.__kind === PoolState.Destroying) {
         await Sns.getInstance().send({
             id: item.id,
