@@ -1,8 +1,8 @@
-import { Era, NominationPool, PoolState, Event as EventModel } from '../../model'
-import { CommonContext, connectionManager, dataHandlerContext } from '../../contexts'
+import { Era, NominationPool, PoolState } from '../../model'
+import { dataHandlerContext } from '../../contexts'
 import { Job } from 'bullmq'
 import { Sns } from '../../util/sns'
-import { staking } from 'src/type/events'
+import { staking } from '../../type/events'
 
 export async function computeDestroyedPoolsEvents(_job: Job, extrinsicId?: string): Promise<void> {
     const ctx = await dataHandlerContext()
