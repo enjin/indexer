@@ -3,7 +3,7 @@ import 'reflect-metadata'
 import { QueueUtils } from '../queue'
 
 @Resolver()
-export class SyncCollectionsResolver {
+export class SyncAccountsResolver {
     @Query(() => Boolean)
     async syncAccounts(): Promise<boolean> {
         QueueUtils.dispatchSyncAccounts()
