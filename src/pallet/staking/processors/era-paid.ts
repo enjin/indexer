@@ -29,7 +29,10 @@ export async function eraPaid(ctx: CommonContext, block: Block, item: EventItem)
 
     await ctx.store.save(era)
 
-    await Promise.all([QueueUtils.dispatchComputeValidators(), QueueUtils.dispatchDestroyedPoolsEvents(item.extrinsic?.id)])
+    await Promise.all([
+        QueueUtils.dispatchComputeValidators(),
+        QueueUtils.dispatchDestroyedPoolsEvents(item.extrinsic?.id),
+    ])
 
     return new EventModel({
         id: item.id,
