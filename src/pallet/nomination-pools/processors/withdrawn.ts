@@ -65,7 +65,7 @@ export async function withdrawn(ctx: CommonContext, block: Block, item: EventIte
     })
 
     // check if all members are withdrawn
-    await withdrawnAll(ctx, item)
+    await handleWithdrawalComplete(ctx, item)
 
     return mappings.nominationPools.events.withdrawnEventModel(item, data)
 }
