@@ -70,7 +70,7 @@ export async function withdrawn(ctx: CommonContext, block: Block, item: EventIte
     return mappings.nominationPools.events.withdrawnEventModel(item, data)
 }
 
-export async function withdrawnAll(ctx: CommonContext, item: EventItem): Promise<void> {
+async function handleWithdrawalComplete(ctx: CommonContext, item: EventItem): Promise<void> {
     if (!item.extrinsic || !item.extrinsic.call) return
 
     const data = mappings.nominationPools.events.withdrawn(item)

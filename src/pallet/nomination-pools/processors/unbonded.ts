@@ -48,12 +48,11 @@ export async function unbonded(ctx: CommonContext, block: Block, item: EventItem
 
     // check if all members are unbonded
     await notifyUnbondingCompletion(ctx, item)
-    await handleUnbondingComplete(ctx, item)
 
     return mappings.nominationPools.events.unbondedEventModel(item, data)
 }
 
-export async function unbondedAll(ctx: CommonContext, item: EventItem): Promise<void> {
+async function notifyUnbondingCompletion(ctx: CommonContext, item: EventItem): Promise<void> {
     if (!item.extrinsic || !item.extrinsic.call) return
 
     const data = mappings.nominationPools.events.unbonded(item)
