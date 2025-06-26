@@ -66,23 +66,13 @@ export async function unbondedAll(ctx: CommonContext, item: EventItem): Promise<
 
     const memberStillBonded = pool.members.filter((member) => member.bonded !== 0n)
 
-    if (memberStillBonded.length === 1) {
+    if (memberStillBonded.length <= 1) {
         await Sns.getInstance().send({
             id: item.id,
             name: item.name,
             body: {
                 pool: data.poolId.toString(),
-                allMembersUnbonded: true,
-                extrinsic: item.extrinsic.id,
-            },
-        })
-    } else if (memberStillBonded.length === 0) {
-        await Sns.getInstance().send({
-            id: item.id,
-            name: item.name,
-            body: {
-                pool: data.poolId.toString(),
-                depositUnbonded: true,
+                memberStillBonded: memberStillBonded.length,
                 extrinsic: item.extrinsic.id,
             },
         })
