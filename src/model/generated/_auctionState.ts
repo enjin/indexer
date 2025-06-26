@@ -7,12 +7,14 @@ export class AuctionState {
     public readonly isTypeOf = 'AuctionState'
     private _listingType!: ListingType
     private _highBid!: string | undefined | null
+    private _isExpired!: boolean | undefined | null
 
     constructor(props?: Partial<Omit<AuctionState, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
         if (json != null) {
             this._listingType = marshal.enumFromJson(json.listingType, ListingType)
             this._highBid = json.highBid == null ? undefined : marshal.string.fromJSON(json.highBid)
+            this._isExpired = json.isExpired == null ? undefined : marshal.boolean.fromJSON(json.isExpired)
         }
     }
 
@@ -33,11 +35,20 @@ export class AuctionState {
         this._highBid = value
     }
 
+    get isExpired(): boolean | undefined | null {
+        return this._isExpired
+    }
+
+    set isExpired(value: boolean | undefined | null) {
+        this._isExpired = value
+    }
+
     toJSON(): object {
         return {
             isTypeOf: this.isTypeOf,
             listingType: this.listingType,
             highBid: this.highBid,
+            isExpired: this.isExpired,
         }
     }
 }
