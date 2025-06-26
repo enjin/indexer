@@ -2,6 +2,7 @@ import { Era, NominationPool, PoolState, Event as EventModel } from '../../model
 import { CommonContext, connectionManager, dataHandlerContext } from '../../contexts'
 import { Job } from 'bullmq'
 import { Sns } from '../../util/sns'
+import { staking } from 'src/type/events'
 
 export async function computeDestroyedPoolsEvents(_job: Job, extrinsicId?: string): Promise<void> {
     const ctx = await dataHandlerContext()
@@ -41,20 +42,22 @@ export async function computeDestroyedPoolsEvents(_job: Job, extrinsicId?: strin
             if (unbondingMembers.length && isStashBonded.length === 1) {
                 await Sns.getInstance().send({
                     id: `${pool.id}-${currentEra[0].index}`,
-                    name: 'NominationPools.MembersUnbondedCompleted',
+                    name: staking.eraPaid.name,
                     body: {
                         pool: pool.id,
                         era: currentEra[0].index,
+                        membersUnbondingCompleted: true,
                         extrinsic: extrinsicId,
                     },
                 })
             } else if (isStashBonded.length === 1 && unbondingMembers.length === 1) {
                 await Sns.getInstance().send({
                     id: `${pool.id}-${currentEra[0].index}`,
-                    name: 'NominationPools.DepositUnbondedCompleted',
+                    name: staking.eraPaid.name,
                     body: {
                         pool: pool.id,
                         era: currentEra[0].index,
+                        depositUnbondingCompleted: true,
                         extrinsic: extrinsicId,
                     },
                 })
