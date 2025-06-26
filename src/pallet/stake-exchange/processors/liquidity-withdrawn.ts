@@ -30,5 +30,5 @@ export async function liquidityWithdrawn(
         },
     })
 
-    return mappings.stakeExchange.events.liquidityWithdrawnEventModel(item, event)
+    return mappings.stakeExchange.events.liquidityWithdrawnEventModel(item, event, call.amount)
 }
