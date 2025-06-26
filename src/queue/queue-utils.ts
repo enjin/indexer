@@ -325,3 +325,16 @@ export function dispatchSyncAccounts(): void {
         Logger.error('Failed to dispatch sync accounts', LOGGER_NAMESPACE)
     })
 }
+
+export function dispatchRefreshListings(ids: string[]): void {
+    ListingsQueue.add(
+        JobsEnum.REFRESH_LISTINGS,
+        { ids },
+        {
+            delay: 6000,
+            jobId: `listings.refresh.${ids}`,
+        }
+    ).catch(() => {
+        Logger.error('Failed to dispatch refresh listings', LOGGER_NAMESPACE)
+    })
+}

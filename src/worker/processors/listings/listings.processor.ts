@@ -4,6 +4,7 @@ import { JobsEnum } from '../../constants'
 import { computeListings } from '../../jobs/compute-listings'
 import { logError, logInfo } from '../../utils'
 import { syncOffers } from '../../jobs/sync-offers'
+import { refreshListings } from '../../jobs/refresh-listings'
 
 export class ListingsProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {
@@ -13,6 +14,9 @@ export class ListingsProcessor implements ProcessorDef {
                 break
             case JobsEnum.FETCH_OFFERS:
                 await syncOffers(job)
+                break
+            case JobsEnum.REFRESH_LISTINGS:
+                await refreshListings(job, job.data.ids)
                 break
             default:
                 throw new Error(`${job.name} is not a valid job for this processor`)
