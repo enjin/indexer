@@ -22,6 +22,7 @@ export async function poolMutated(ctx: CommonContext, block: Block, item: EventI
         data.mutation.newCommission.__kind === 'SomeMutation' &&
         data.mutation.newCommission.value !== undefined
     ) {
+        mutation.oldCommission = pool.commission.current ?? 0
         pool.commission.current = data.mutation.newCommission.value
         mutation.newCommission = data.mutation.newCommission.value
     }
