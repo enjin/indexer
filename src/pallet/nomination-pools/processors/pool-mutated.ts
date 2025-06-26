@@ -56,6 +56,7 @@ export async function poolMutated(ctx: CommonContext, block: Block, item: EventI
 
     await ctx.store.save(pool)
 
+    ctx.log.info(`Pool ${pool.id} mutated: ${JSON.stringify(mutation)}`)
     await Sns.getInstance().send({
         id: item.id,
         name: item.name,
