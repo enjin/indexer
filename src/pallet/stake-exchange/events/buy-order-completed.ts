@@ -50,6 +50,8 @@ export function buyOrderCompletedEventModel(
     data: BuyOrderCompleted,
     offerId: bigint
 ): EventModel | undefined {
+    const rate = typeof data.rate === 'bigint' ? data.rate : BigInt(data.rate * 10 ** 9)
+
     return new EventModel({
         id: item.id,
         name: StakeExchangeBuyOrderCompleted.name,
@@ -58,9 +60,9 @@ export function buyOrderCompletedEventModel(
             offerId,
             account: data.who,
             tokenId: data.tokenId,
-            amount: 0n, // data.amount
-            rate: 0n, //data.rate,
-            points: 0n, // data.points
+            amount: data.amount,
+            rate,
+            points: (data.amount * rate) / 10n ** 18n,
         }),
     })
 }

@@ -30,5 +30,5 @@ export async function liquidityAdded(
 
     await ctx.store.save(offer)
 
-    return mappings.stakeExchange.events.liquidityAddedEventModel(item, event)
+    return mappings.stakeExchange.events.liquidityAddedEventModel(item, event, call.amount)
 }
