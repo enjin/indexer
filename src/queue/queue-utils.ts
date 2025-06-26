@@ -7,6 +7,7 @@ import {
     TokensQueue,
     ListingsQueue,
     ValidatorsQueue,
+    NominationPoolsQueue,
 } from './index'
 import { JobsEnum } from './constants'
 import { xxhasher } from '../util/hasher'
@@ -38,6 +39,7 @@ function getQueueByType(queue: QueueType): Queue {
         .with('TOKENS', () => TokensQueue)
         .with('LISTINGS', () => ListingsQueue)
         .with('VALIDATORS', () => ValidatorsQueue)
+        .with('NOMINATION_POOLS', () => NominationPoolsQueue)
         .exhaustive()
 }
 
@@ -232,7 +234,11 @@ export function dispatchSyncCollectionTransfer(id: string): void {
     })
 }
 
-export function dispatchComputeValidators(): void {
+export async function dispatchComputeValidators(): Promise<void> {
+    const job = await ValidatorsQueue.getJob('validators.all')
+    if (job) {
+        await ValidatorsQueue.remove(job.id)
+    }
     ValidatorsQueue.add(
         JobsEnum.COMPUTE_VALIDATORS,
         {},
@@ -245,7 +251,11 @@ export function dispatchComputeValidators(): void {
     })
 }
 
-export function dispatchSyncTokens(): void {
+export async function dispatchSyncTokens(): Promise<void> {
+    const job = await TokensQueue.getJob('tokens.supply.all')
+    if (job) {
+        await TokensQueue.remove(job.id)
+    }
     TokensQueue.add(
         JobsEnum.SYNC_TOKENS,
         {},
@@ -284,7 +294,11 @@ export function dispatchRefreshPool(id: string): void {
     })
 }
 
-export function dispatchSyncValidators(): void {
+export async function dispatchSyncValidators(): Promise<void> {
+    const job = await ValidatorsQueue.getJob('validators.sync.all')
+    if (job) {
+        await ValidatorsQueue.remove(job.id)
+    }
     ValidatorsQueue.add(
         JobsEnum.SYNC_VALIDATORS,
         {},
@@ -323,5 +337,22 @@ export function dispatchSyncAccounts(): void {
         }
     ).catch(() => {
         Logger.error('Failed to dispatch sync accounts', LOGGER_NAMESPACE)
+    })
+}
+
+export async function dispatchDestroyedPoolsEvents(extrinsicId?: string): Promise<void> {
+    const job = await NominationPoolsQueue.getJob('nomination-pools.destroyed-pools-events')
+    if (job) {
+        await NominationPoolsQueue.remove(job.id)
+    }
+    NominationPoolsQueue.add(
+        JobsEnum.DESTROYED_POOLS_EVENTS,
+        { extrinsicId },
+        {
+            delay: 6000,
+            jobId: 'nomination-pools.destroyed-pools-events',
+        }
+    ).catch(() => {
+        Logger.error('Failed to dispatch destroyed pools events', LOGGER_NAMESPACE)
     })
 }
