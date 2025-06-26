@@ -14,12 +14,12 @@ export async function stateChanged(ctx: CommonContext, block: Block, item: Event
     pool.state = PoolState[data.newState.__kind]
     await ctx.store.save(pool)
 
-    ctx.log.info(`Pool ${data.poolId.toString()} is being destroyed ${item.name}`)
+    const extrinsicName = item.extrinsic.getCall().name
     
     if (data.newState.__kind === PoolState.Destroying) {
         await Sns.getInstance().send({
             id: item.id,
-            name: item.name,
+            name: extrinsicName,
             body: {
                 pool: data.poolId.toString(),
                 state: data.newState.__kind,
