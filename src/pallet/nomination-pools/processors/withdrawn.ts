@@ -88,7 +88,7 @@ async function handleWithdrawalComplete(ctx: CommonContext, item: EventItem): Pr
     if (isStashBonded.length === 1) {
         await Sns.getInstance().send({
             id: item.id,
-            name: item.name,
+            name: item.extrinsic.getCall().name, // Members withdrawn
             body: {
                 pool: data.poolId.toString(),
                 allMembersWithdrawn: true,
@@ -98,7 +98,7 @@ async function handleWithdrawalComplete(ctx: CommonContext, item: EventItem): Pr
     } else if (allMembersUnbondedBool) {
         await Sns.getInstance().send({
             id: item.id,
-            name: item.name,
+            name: item.extrinsic.getCall().name, // Deposit withdrawn
             body: {
                 pool: data.poolId.toString(),
                 depositWithdrawn: true,
