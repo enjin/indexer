@@ -19,6 +19,8 @@ import { SyncOffersResolver } from '../sync-offers'
 import { ValidatorDetailsResolver } from '../validator-details'
 import { RefreshPoolResolver } from '../refresh-pool'
 import { SyncAccountsResolver } from '../sync-accounts'
+import { RefreshListingsResolver } from '../refresh-listings'
+
 export {
     TokenSalesHistoryResolver,
     VerifyMessageResolver,
@@ -41,4 +43,5 @@ export {
     SyncOffersResolver,
     ValidatorDetailsResolver,
     SyncAccountsResolver,
+    RefreshListingsResolver,
 }
