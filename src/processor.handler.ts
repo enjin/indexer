@@ -52,7 +52,7 @@ export async function eventHandler(
             .with(multiTokens.collectionTransferred.name, () =>
                 p.multiTokens.processors.collectionTransferred(ctx, block, item, skipSave)
             )
-            .with(multiTokens.collectionTransferCancelled.name, () => 
+            .with(multiTokens.collectionTransferCancelled.name, () =>
                 p.multiTokens.processors.collectionTransferCancelled(ctx, block, item, skipSave)
             )
             .with(multiTokens.frozen.name, () => p.multiTokens.processors.frozen(ctx, block, item, skipSave))
