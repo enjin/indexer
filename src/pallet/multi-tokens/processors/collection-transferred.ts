@@ -25,6 +25,8 @@ export async function collectionTransferred(
 
     collection.owner = await getOrCreateAccount(ctx, data.newOwner)
 
+    collection.isTransferPending = false
+
     await ctx.store.save(collection)
 
     if (item.extrinsic) {

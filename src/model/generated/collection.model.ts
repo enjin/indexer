@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, BigIntColumn as BigIntColumn_, Index as Index_, ManyToOne as ManyToOne_, OneToMany as OneToMany_, StringColumn as StringColumn_, IntColumn as IntColumn_, DateTimeColumn as DateTimeColumn_, BooleanColumn as BooleanColumn_} from "@subsquid/typeorm-store"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, BigIntColumn as BigIntColumn_, Index as Index_, ManyToOne as ManyToOne_, OneToMany as OneToMany_, StringColumn as StringColumn_, IntColumn as IntColumn_, BooleanColumn as BooleanColumn_, DateTimeColumn as DateTimeColumn_} from "@subsquid/typeorm-store"
 import * as marshal from "./marshal"
 import {Account} from "./account.model"
 import {MintPolicy} from "./_mintPolicy"
@@ -56,6 +56,9 @@ export class Collection {
 
     @BigIntColumn_({nullable: false})
     totalDeposit!: bigint
+
+    @BooleanColumn_({nullable: true})
+    isTransferPending!: boolean | undefined | null
 
     @OneToMany_(() => Token, e => e.collection)
     tokens!: Token[]

@@ -542,6 +542,7 @@ type Collection @entity {
   attributePolicy: String
   attributeCount: Int!
   totalDeposit: BigInt!
+  isTransferPending: Boolean
 
   # Relations
   tokens: [Token] @derivedFrom(field: "collection")
