@@ -14,7 +14,6 @@ import { Block, CommonContext, EventItem } from '../../../contexts'
 import { Sns } from '../../../util/sns'
 import processorConfig from '../../../util/config'
 import * as mappings from '../../index'
-import { QueueUtils } from '../../../queue'
 
 async function getMembersBalance(block: Block, poolId: number): Promise<Record<string, bigint>> {
     const result = await mappings.multiTokens.storage.tokenAccounts(block, {
@@ -186,8 +185,6 @@ export async function eraRewardsProcessed(
     })
 
     await Promise.all([ctx.store.insert(rewardPromise), ctx.store.save(pool), ctx.store.save(reward)])
-
-    QueueUtils.dispatchComputeValidators()
 
     await Sns.getInstance().send({
         id: item.id,
