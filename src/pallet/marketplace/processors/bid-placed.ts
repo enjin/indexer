@@ -50,8 +50,7 @@ export async function bidPlaced(
         highBid: bid.id,
     })
 
-    await ctx.store.save(bid)
-    await ctx.store.save(listing)
+    await Promise.all([ctx.store.save(bid), ctx.store.save(listing)])
 
     if (makeAssetId.bestListing?.id === listing.id) {
         const bestListing = await getBestListing(ctx, makeAssetId.id)
