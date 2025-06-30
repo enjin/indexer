@@ -30,6 +30,7 @@ import { calls, events } from './type'
 import { QueueUtils } from './queue'
 import { QueuesEnum } from './queue/constants'
 import { Logger } from './util/logger'
+import { isRelay } from './util/tools'
 
 const logger = new Logger('sqd:processor', config.logLevel)
 
@@ -111,6 +112,11 @@ async function bootstrap() {
                     QueueUtils.dispatchFetchAllBalances()
                     await QueueUtils.resumeQueue(QueuesEnum.METADATA)
                     await QueueUtils.resumeQueue(QueuesEnum.COLLECTIONS)
+                }
+
+                // save chain state for the last 28 days
+                if (lastBlock.height < dataService.lastBlockNumber - 28 * 10 * 60 * 24 && isRelay()) {
+                    await chainState(ctx, lastBlock)
                 }
 
                 if (lastBlock.height > dataService.lastBlockNumber) {
