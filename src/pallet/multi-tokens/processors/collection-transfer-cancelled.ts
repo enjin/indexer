@@ -1,7 +1,6 @@
 import { throwFatalError } from '../../../util/errors'
 import { Collection, Event as EventModel } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
-import { getOrCreateAccount } from '../../../util/entities'
 import { Sns } from '../../../util/sns'
 import * as mappings from '../../index'
 

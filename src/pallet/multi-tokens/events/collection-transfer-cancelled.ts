@@ -2,7 +2,7 @@ import { multiTokens } from '../../../type/events'
 import { EventItem } from '../../../contexts'
 import { UnsupportedEventError } from '../../../util/errors'
 import { match } from 'ts-pattern'
-import { Event as EventModel, Extrinsic, MultiTokensCollectionTransferCancelled, MultiTokensCollectionTransferred } from '../../../model'
+import { Event as EventModel, Extrinsic, MultiTokensCollectionTransferCancelled } from '../../../model'
 import { CollectionTransferCancelled } from './types'
 
 export function collectionTransferCancelled(event: EventItem): CollectionTransferCancelled {
