@@ -246,6 +246,10 @@ type MultiTokensCollectionTransferred {
   owner: Account!
 }
 
+type MultiTokensCollectionTransferCancelled {
+  collectionId: BigInt!
+}
+
 type MultiTokensFrozen {
   extrinsic: Extrinsic
 }
@@ -1474,7 +1478,7 @@ union EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiToken
   | MarketplaceOfferCreated | MarketplaceOfferSettled | MarketplaceOfferCancelled | MarketplaceListingRemovedUnderMinimum
   | BalancesTransfer | TeleportBalanceWithdrawn | ClaimsClaimRequested | ClaimsClaimed
   | FuelTankCreated | FuelTankDestroyed | MultiTokensClaimedCollections | MultiTokensClaimTokensInitiated
-  | MultiTokensClaimTokensCompleted | MultiTokensCollectionTransferred | MultiTokensInfused
+  | MultiTokensClaimTokensCompleted | MultiTokensCollectionTransferred | MultiTokensCollectionTransferCancelled | MultiTokensInfused
   | StakingEraPaid | NominationPoolsBonded | NominationPoolsUnbonded
   | NominationPoolsEarlyBirdBonusPaymentUnlocked | NominationPoolsEarlyBirdBonusCalculated
   | NominationPoolsEarlyBirdSharesCaptured | NominationPoolsEarlyBirdBonusPaid | ImOnlineSomeOffline | ValidatorPrefsSet
