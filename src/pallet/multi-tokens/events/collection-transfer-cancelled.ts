@@ -9,8 +9,8 @@ export function collectionTransferCancelled(event: EventItem): CollectionTransfe
     return match(event)
         .returnType<CollectionTransferCancelled>()
         .when(
-            () => multiTokens.collectionTransferred.matrixEnjinV1004.is(event),
-            () => multiTokens.collectionTransferred.matrixEnjinV1004.decode(event)
+            () => multiTokens.collectionTransferCancelled.matrixEnjinV1004.is(event),
+            () => multiTokens.collectionTransferCancelled.matrixEnjinV1004.decode(event)
         )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
