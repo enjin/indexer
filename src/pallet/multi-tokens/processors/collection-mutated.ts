@@ -60,6 +60,10 @@ export async function collectionMutated(
         return mappings.multiTokens.events.collectionMutatedEventModel(item, data)
     }
 
+    if (data.mutation.owner) {
+        collection.isTransferPending = true
+    }
+
     if (data.mutation.royalty.__kind === 'SomeMutation') {
         if (data.mutation.royalty.value === undefined) {
             collection.marketPolicy = null
