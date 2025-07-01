@@ -5,6 +5,7 @@ import { computeValidators } from '../../jobs/compute-validators'
 import { logDebug, logError } from '../../utils'
 import { syncValidators } from '../../jobs/sync-validators'
 import { syncChain } from '../../jobs/sync-chain'
+import { computeEraRewards } from '../../jobs/compute-era-rewards'
 
 export class ValidatorsProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {
@@ -17,6 +18,9 @@ export class ValidatorsProcessor implements ProcessorDef {
                 break
             case JobsEnum.SYNC_CHAIN:
                 await syncChain(job, job.data.fromBlock, job.data.toBlock)
+                break
+            case JobsEnum.COMPUTE_ERA_REWARDS:
+                await computeEraRewards(job)
                 break
             default:
                 throw new Error(`${job.name} is not a valid job for this processor`)

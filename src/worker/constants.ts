@@ -21,6 +21,7 @@ export const enum JobsEnum {
     SYNC_CHAIN = 'SYNC_CHAIN',
     SYNC_FUEL_TANKS = 'SYNC_FUEL_TANKS',
     REFRESH_LISTINGS = 'REFRESH_LISTINGS',
+    COMPUTE_ERA_REWARDS = 'COMPUTE_ERA_REWARDS',
 }
 
 export const enum QueuesEnum {
