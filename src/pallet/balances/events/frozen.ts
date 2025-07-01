@@ -1,8 +1,8 @@
-import { balances } from '../../../type/events'
-import { EventItem } from '../../../contexts'
-import { UnsupportedEventError } from '../../../util/errors'
+import { balances } from '~/type/events'
+import { EventItem } from '~/contexts'
+import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
-import { Frozen } from './types'
+import { Frozen } from '~/pallet/balances/events/types'
 
 export function frozen(event: EventItem): Frozen {
     return match(event)

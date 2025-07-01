@@ -1,8 +1,8 @@
-import { Block } from '../../../contexts'
-import { UnsupportedStorageError } from '../../../util/errors'
-import { claims } from '../../../type/storage'
+import { Block } from '~/contexts'
+import { UnsupportedStorageError } from '~/util/errors'
+import { claims } from '~/type/storage'
 import { match } from 'ts-pattern'
-import { ExchangeRate } from './types'
+import { ExchangeRate } from '~/pallet/claims/storage/types'
 
 export async function exchangeRate(block: Block): Promise<ExchangeRate | undefined> {
     return match(block)

@@ -1,7 +1,7 @@
-import { Event as EventModel, Extrinsic, MultiTokensClaims, MultiTokensClaimTokensCompleted } from '../../../model'
-import { Block, CommonContext, EventItem } from '../../../contexts'
-import { Sns } from '../../../util/sns'
-import * as mappings from '../../index'
+import { Event as EventModel, Extrinsic, MultiTokensClaims, MultiTokensClaimTokensCompleted } from '~/model'
+import { Block, CommonContext, EventItem } from '~/contexts'
+import { Sns } from '~/util/sns'
+import * as mappings from '~/pallet/index'
 
 export async function claimTokensCompleted(
     ctx: CommonContext,

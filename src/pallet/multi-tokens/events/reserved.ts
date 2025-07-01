@@ -1,8 +1,8 @@
-import { multiTokens } from '../../../type/events'
-import { EventItem } from '../../../contexts'
-import { UnsupportedEventError } from '../../../util/errors'
+import { multiTokens } from '~/type/events'
+import { EventItem } from '~/contexts'
+import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
-import { Reserved } from './types'
+import { Reserved } from '~/pallet/multi-tokens/events/types'
 
 export function reserved(event: EventItem): Reserved {
     return match(event)

@@ -1,9 +1,9 @@
-import { CallItem } from '../../../contexts'
-import { UnsupportedCallError } from '../../../util/errors'
-import { calls } from '../../../type'
+import { CallItem } from '~/contexts'
+import { UnsupportedCallError } from '~/util/errors'
+import { calls } from '~/type'
 import { match } from 'ts-pattern'
-import { Mint } from './types'
-import { withDispatchCheck } from '../../fuel-tanks/utils'
+import { Mint } from '~/pallet/multi-tokens/calls/types'
+import { withDispatchCheck } from '~/pallet/fuel-tanks/utils'
 
 export const mint = withDispatchCheck((call: CallItem): Mint => {
     return match(call)

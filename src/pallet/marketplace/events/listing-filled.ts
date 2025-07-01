@@ -1,6 +1,6 @@
-import { marketplace } from '../../../type/events'
-import { EventItem } from '../../../contexts'
-import { UnsupportedEventError } from '../../../util/errors'
+import { marketplace } from '~/type/events'
+import { EventItem } from '~/contexts'
+import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
 import {
     Account,
@@ -13,8 +13,8 @@ import {
     MarketplaceListingFilled,
     MarketplaceOfferSettled,
     Token,
-} from '../../../model'
-import { ListingFilled } from './types'
+} from '~/model'
+import { ListingFilled } from '~/pallet/marketplace/events/types'
 
 export function listingFilled(event: EventItem): ListingFilled {
     return match(event)

@@ -1,4 +1,4 @@
-import Rpc from './rpc'
+import Rpc from '~/util/rpc'
 import { HexString } from '@polkadot/util/types'
 
 export interface SystemAccount {

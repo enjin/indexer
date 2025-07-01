@@ -1,8 +1,8 @@
-import { CallItem } from '../../contexts'
+import { CallItem } from '~/contexts'
 import { match } from 'ts-pattern'
-import { UnsupportedCallError } from '../../util/errors'
-import { calls } from '../../type'
-import * as mappings from '../index'
+import { UnsupportedCallError } from '~/util/errors'
+import { calls } from '~/type'
+import * as mappings from '~/pallet/index'
 import {
     CreateCollection,
     ForceCreateCollection,
@@ -10,11 +10,11 @@ import {
     ForceMint,
     BatchMint,
     ForceCreateEthereumCollection,
-} from './calls'
-import { DefaultMintParams_CreateToken } from '../common/types'
-import { withDispatchCheck } from '../fuel-tanks/utils'
-import { Batch } from '../matrix-utility/calls'
-import { CreatePool } from '../nomination-pools/calls'
+} from '~/pallet/multi-tokens/calls'
+import { DefaultMintParams_CreateToken } from '~/pallet/common/types'
+import { withDispatchCheck } from '~/pallet/fuel-tanks/utils'
+import { Batch } from '~/pallet/matrix-utility/calls'
+import { CreatePool } from '~/pallet/nomination-pools/calls'
 
 export function anyCreateCollection(
     call: CallItem

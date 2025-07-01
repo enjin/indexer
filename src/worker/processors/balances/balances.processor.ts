@@ -1,8 +1,8 @@
 import { Job } from 'bullmq'
-import { ProcessorDef } from '../processor.def'
-import { syncBalances } from '../../jobs/sync-balances'
-import { JobsEnum } from '../../constants'
-import { logDebug, logError } from '../../utils'
+import { ProcessorDef } from '~/worker/processors/processor.def'
+import { syncBalances } from '~/worker/jobs/sync-balances'
+import { JobsEnum } from '~/queue/constants'
+import { logDebug, logError } from '~/worker/utils'
 
 export class BalancesProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {

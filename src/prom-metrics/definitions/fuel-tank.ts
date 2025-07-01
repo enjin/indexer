@@ -1,6 +1,6 @@
 import client from 'prom-client'
-import register from '../registry'
-import { connectionManager } from '../../contexts'
+import register from '~/prom-metrics/registry'
+import { connectionManager } from '~/contexts'
 
 export const indexer_fueltanks_tanks_total = new client.Gauge({
     name: 'indexer_fueltanks_tanks_total',

@@ -1,9 +1,9 @@
-import { Account, Balance, Listing } from '../model'
-import { CommonContext, ExtrinsicItem } from '../contexts'
+import { Account, Balance, Listing } from '~/model'
+import { CommonContext, ExtrinsicItem } from '~/contexts'
 import { isU8a, u8aToHex } from '@polkadot/util'
-import { AccountNotParsableError } from './errors'
-import { RootOrSigned, MultiAddress } from '../pallet/common/types'
-import { encodeAddress } from './tools'
+import { AccountNotParsableError } from '~/util/errors'
+import { RootOrSigned, MultiAddress } from '~/pallet/common/types'
+import { encodeAddress } from '~/util/tools'
 
 interface AddressWithKind {
     __kind: 'Id' | 'AccountId'

@@ -1,7 +1,7 @@
-import * as events from './events'
-import * as calls from './calls'
-import * as processors from './processors'
-import * as utils from './common'
+import * as events from '~/pallet/stake-exchange/events'
+import * as calls from '~/pallet/stake-exchange/calls'
+import * as processors from '~/pallet/stake-exchange/processors'
+import * as utils from '~/pallet/stake-exchange/common'
 
 export default {
     events,

@@ -5,7 +5,7 @@ import {
     Sufficiency,
     TokenCap,
     TokenMarketBehavior,
-} from '../../../common/types'
+} from '~/pallet/common/types'
 
 export type Token = {
     supply: bigint

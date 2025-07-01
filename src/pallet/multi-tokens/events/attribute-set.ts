@@ -1,10 +1,10 @@
-import { multiTokens } from '../../../type/events'
-import { EventItem } from '../../../contexts'
-import { UnsupportedEventError } from '../../../util/errors'
+import { multiTokens } from '~/type/events'
+import { EventItem } from '~/contexts'
+import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
-import { Event as EventModel, Extrinsic, MultiTokensAttributeSet } from '../../../model'
-import { safeString } from '../../../util/tools'
-import { AttributeSet } from './types'
+import { Event as EventModel, Extrinsic, MultiTokensAttributeSet } from '~/model'
+import { safeString } from '~/util/tools'
+import { AttributeSet } from '~/pallet/multi-tokens/events/types'
 import { hexToString } from '@polkadot/util'
 
 export function attributeSet(event: EventItem): AttributeSet {

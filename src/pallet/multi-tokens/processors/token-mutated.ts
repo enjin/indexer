@@ -1,4 +1,4 @@
-import { throwFatalError } from '../../../util/errors'
+import { throwFatalError } from '~/util/errors'
 import {
     Event as EventModel,
     NativeTokenMetadata,
@@ -7,14 +7,14 @@ import {
     TokenBehaviorHasRoyalty,
     TokenBehaviorIsCurrency,
     TokenBehaviorType,
-} from '../../../model'
-import { Block, CommonContext, EventItem } from '../../../contexts'
-import * as mappings from '../../index'
-import { isNonFungible } from '../../../util/helpers'
-import { QueueUtils } from '../../../queue'
-import { getOrCreateAccount } from '../../../util/entities'
-import { TokenMarketBehavior as TokenMarketBehavior500 } from '../../../type/matrixV500'
-import { TokenMarketBehavior as TokenMarketBehavior1020 } from '../../../type/matrixV1020'
+} from '~/model'
+import { Block, CommonContext, EventItem } from '~/contexts'
+import * as mappings from '~/pallet/index'
+import { isNonFungible } from '~/util/helpers'
+import { QueueUtils } from '~/queue'
+import { getOrCreateAccount } from '~/util/entities'
+import { TokenMarketBehavior as TokenMarketBehavior500 } from '~/type/matrixV500'
+import { TokenMarketBehavior as TokenMarketBehavior1020 } from '~/type/matrixV1020'
 
 type TokenMarketBehavior = TokenMarketBehavior500 | TokenMarketBehavior1020
 

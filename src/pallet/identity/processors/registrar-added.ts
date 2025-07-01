@@ -1,7 +1,7 @@
-import { Event as EventModel, IdentityRegistrar } from '../../../model'
-import { Block, CommonContext, EventItem } from '../../../contexts'
-import { getOrCreateAccount } from '../../../util/entities'
-import * as mappings from '../../index'
+import { Event as EventModel, IdentityRegistrar } from '~/model'
+import { Block, CommonContext, EventItem } from '~/contexts'
+import { getOrCreateAccount } from '~/util/entities'
+import * as mappings from '~/pallet/index'
 
 export async function registrarAdded(
     ctx: CommonContext,

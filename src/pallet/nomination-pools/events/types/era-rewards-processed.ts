@@ -1,4 +1,4 @@
-import { CommissionPayment } from '../../../common/types'
+import { CommissionPayment } from '~/pallet/common/types'
 
 export type EraRewardsProcessed = {
     poolId: number

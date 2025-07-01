@@ -1,9 +1,9 @@
-import { UnsupportedCallError } from '../../../util/errors'
-import { calls } from '../../../type'
-import { CallItem } from '../../../contexts'
+import { UnsupportedCallError } from '~/util/errors'
+import { calls } from '~/type'
+import { CallItem } from '~/contexts'
 import { match } from 'ts-pattern'
-import { AddSub } from './types'
-import { withDispatchCheck } from '../../fuel-tanks/utils'
+import { AddSub } from '~/pallet/identity/calls/types'
+import { withDispatchCheck } from '~/pallet/fuel-tanks/utils'
 
 export const addSub = withDispatchCheck((call: CallItem): AddSub => {
     return match(call)

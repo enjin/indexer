@@ -1,4 +1,4 @@
-import { Data, Bytes } from '../../../common/types'
+import { Data, Bytes } from '~/pallet/common/types'
 
 export type SetIdentity = {
     info: {

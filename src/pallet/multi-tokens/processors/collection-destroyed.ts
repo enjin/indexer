@@ -6,10 +6,10 @@ import {
     Event as EventModel,
     RoyaltyCurrency,
     Trait,
-} from '../../../model'
-import { Sns } from '../../../util/sns'
-import * as mappings from '../../index'
-import { Block, CommonContext, EventItem } from '../../../contexts'
+} from '~/model'
+import { Sns } from '~/util/sns'
+import * as mappings from '~/pallet/index'
+import { Block, CommonContext, EventItem } from '~/contexts'
 
 export async function collectionDestroyed(
     ctx: CommonContext,

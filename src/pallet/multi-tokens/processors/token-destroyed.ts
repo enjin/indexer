@@ -1,4 +1,4 @@
-import { throwFatalError } from '../../../util/errors'
+import { throwFatalError } from '~/util/errors'
 import {
     AccountTokenEvent,
     Attribute,
@@ -11,11 +11,11 @@ import {
     TokenAccount,
     TokenRarity,
     TraitToken,
-} from '../../../model'
-import { Block, CommonContext, EventItem } from '../../../contexts'
-import { Sns } from '../../../util/sns'
-import * as mappings from '../../index'
-import { QueueUtils } from '../../../queue'
+} from '~/model'
+import { Block, CommonContext, EventItem } from '~/contexts'
+import { Sns } from '~/util/sns'
+import * as mappings from '~/pallet/index'
+import { QueueUtils } from '~/queue'
 
 export async function tokenDestroyed(
     ctx: CommonContext,

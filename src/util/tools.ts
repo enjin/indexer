@@ -2,7 +2,7 @@ import * as ss58 from '@subsquid/ss58'
 import { decode } from '@subsquid/ss58'
 import { isHex, stringToHex } from '@polkadot/util'
 import { HexString } from '@polkadot/util/types'
-import config from './config'
+import config from '~/util/config'
 
 export function isMainnet(): boolean {
     return ['enjin-relaychain', 'enjin-matrixchain'].includes(config.chainName)

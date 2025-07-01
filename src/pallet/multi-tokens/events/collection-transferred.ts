@@ -1,9 +1,9 @@
-import { multiTokens } from '../../../type/events'
-import { EventItem } from '../../../contexts'
-import { UnsupportedEventError } from '../../../util/errors'
+import { multiTokens } from '~/type/events'
+import { EventItem } from '~/contexts'
+import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
-import { Event as EventModel, Extrinsic, MultiTokensCollectionTransferred } from '../../../model'
-import { CollectionTransferred } from './types'
+import { Event as EventModel, Extrinsic, MultiTokensCollectionTransferred } from '~/model'
+import { CollectionTransferred } from '~/pallet/multi-tokens/events/types'
 
 export function collectionTransferred(event: EventItem): CollectionTransferred {
     return match(event)

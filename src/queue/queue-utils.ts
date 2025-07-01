@@ -7,13 +7,13 @@ import {
     TokensQueue,
     ListingsQueue,
     ValidatorsQueue,
-} from './index'
-import { JobsEnum } from './constants'
-import { xxhasher } from '../util/hasher'
+} from '~/queue/index'
+import { JobsEnum } from '~/queue/constants'
+import { xxhasher } from '~/util/hasher'
 import { match } from 'ts-pattern'
 import { type Queue } from 'bullmq'
-import { QueueType } from './types'
-import { Logger } from '../util/logger'
+import { QueueType } from '~/queue/types'
+import { Logger } from '~/util/logger'
 
 const LOGGER_NAMESPACE = 'sqd:queue'
 

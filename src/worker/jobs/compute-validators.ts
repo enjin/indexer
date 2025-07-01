@@ -1,6 +1,6 @@
 import { EntityManager } from 'typeorm'
-import { Era, Identity, JudgementType, Registration, ScoreGrade, Validator } from '../../model'
-import { connectionManager } from '../../contexts'
+import { Era, Identity, JudgementType, Registration, ScoreGrade, Validator } from '~/model'
+import { connectionManager } from '~/contexts'
 import { Job } from 'bullmq'
 
 function getJudgement(identity: Identity | null | undefined): JudgementType {

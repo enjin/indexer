@@ -1,9 +1,8 @@
 import { Args, ArgsType, Field, ID, ObjectType, Query, Resolver } from 'type-graphql'
 import 'reflect-metadata'
 import { EntityManager } from 'typeorm'
-import { Identity, Registration, Validator } from '../model'
-import { isValidAddress } from '../util/tools'
-import { RefreshCollectionsArgs } from './refresh-collections'
+import { Identity, Registration, Validator } from '~/model'
+import { isValidAddress } from '~/util/tools'
 
 @ObjectType()
 class ValidatorDetailsResolverResult {
@@ -44,7 +43,7 @@ export class ValidatorDetailsResolver {
     constructor(private tx: () => Promise<EntityManager>) {}
 
     @Query(() => [ValidatorDetailsResolverResult])
-    async validatorDetails(@Args() args: RefreshCollectionsArgs): Promise<ValidatorDetailsResolverResult[]> {
+    async validatorDetails(@Args() args: ValidatorDetailsArgs): Promise<ValidatorDetailsResolverResult[]> {
         if (!args.ids.every(isValidAddress)) {
             throw new Error('Invalid address')
         }

@@ -1,8 +1,8 @@
-import { Block } from '../../../contexts'
-import { UnsupportedStorageError } from '../../../util/errors'
-import { multiTokens } from '../../../type/storage'
+import { Block } from '~/contexts'
+import { UnsupportedStorageError } from '~/util/errors'
+import { multiTokens } from '~/type/storage'
 import { match } from 'ts-pattern'
-import { Collection } from './types'
+import { Collection } from '~/pallet/multi-tokens/storage/types'
 
 export async function collections(block: Block, params: { collectionId: bigint }): Promise<Collection | undefined>
 export async function collections(

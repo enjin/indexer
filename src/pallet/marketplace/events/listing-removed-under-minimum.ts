@@ -1,6 +1,6 @@
-import { marketplace } from '../../../type/events'
-import { EventItem } from '../../../contexts'
-import { UnsupportedEventError } from '../../../util/errors'
+import { marketplace } from '~/type/events'
+import { EventItem } from '~/contexts'
+import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
 import {
     Account,
@@ -11,8 +11,8 @@ import {
     Listing,
     MarketplaceListingRemovedUnderMinimum,
     Token,
-} from '../../../model'
-import { ListingRemovedUnderMinimum } from './types'
+} from '~/model'
+import { ListingRemovedUnderMinimum } from '~/pallet/marketplace/events/types'
 
 export function listingRemovedUnderMinimum(event: EventItem): ListingRemovedUnderMinimum {
     return match(event)

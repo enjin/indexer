@@ -1,8 +1,8 @@
-import { UnsupportedStorageError } from '../../../util/errors'
+import { UnsupportedStorageError } from '~/util/errors'
 import { BlockHeader } from '@subsquid/substrate-processor'
-import { storage } from '../../../type'
+import { storage } from '~/type'
 import { match } from 'ts-pattern'
-import { PoolBonusInfo } from './types'
+import { PoolBonusInfo } from '~/pallet/nomination-pools/storage/types'
 
 export async function poolBonusInfo(block: BlockHeader, poolId: number): Promise<PoolBonusInfo | undefined> {
     return match(block)

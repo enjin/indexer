@@ -1,4 +1,4 @@
-import { throwFatalError } from '../../../util/errors'
+import { throwFatalError } from '~/util/errors'
 import {
     Collection,
     Event as EventModel,
@@ -8,16 +8,16 @@ import {
     TokenBehaviorHasRoyalty,
     TokenBehaviorIsCurrency,
     TokenBehaviorType,
-} from '../../../model'
-import { Block, CommonContext, EventItem } from '../../../contexts'
-import * as mappings from '../../index'
-import { CreatePool } from '../../nomination-pools/calls'
-import { ForceMint, Mint } from '../calls'
-import { TokenCreated } from '../events'
-import { TokenMarketBehavior as TokenMarketBehavior500 } from '../../../type/matrixV500'
-import { TokenMarketBehavior as TokenMarketBehavior1020 } from '../../../type/matrixV1020'
-import { getOrCreateAccount } from '../../../util/entities'
-import { getCapType, getFreezeState, isTokenFrozen } from '../../../synchronize/common'
+} from '~/model'
+import { Block, CommonContext, EventItem } from '~/contexts'
+import * as mappings from '~/pallet/index'
+import { CreatePool } from '~/pallet/nomination-pools/calls'
+import { ForceMint, Mint } from '~/pallet/multi-tokens/calls'
+import { TokenCreated } from '~/pallet/multi-tokens/events'
+import { TokenMarketBehavior as TokenMarketBehavior500 } from '~/type/matrixV500'
+import { TokenMarketBehavior as TokenMarketBehavior1020 } from '~/type/matrixV1020'
+import { getOrCreateAccount } from '~/util/entities'
+import { getCapType, getFreezeState, isTokenFrozen } from '~/synchronize/common'
 
 type TokenMarketBehavior = TokenMarketBehavior500 | TokenMarketBehavior1020
 

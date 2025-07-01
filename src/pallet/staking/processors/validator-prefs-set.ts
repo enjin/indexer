@@ -1,7 +1,7 @@
-import { Block, CommonContext, EventItem } from '../../../contexts'
-import { Event as EventModel, Extrinsic, Validator, ValidatorPrefsSet } from '../../../model'
-import { getOrCreateAccount } from '../../../util/entities'
-import * as mappings from '../../index'
+import { Block, CommonContext, EventItem } from '~/contexts'
+import { Event as EventModel, Extrinsic, Validator, ValidatorPrefsSet } from '~/model'
+import { getOrCreateAccount } from '~/util/entities'
+import * as mappings from '~/pallet/index'
 
 export async function validatorPrefsSet(ctx: CommonContext, block: Block, item: EventItem) {
     const event = mappings.staking.events.validatorPrefsSet(item)

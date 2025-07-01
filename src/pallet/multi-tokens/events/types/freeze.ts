@@ -1,4 +1,4 @@
-import { FreezeType } from '../../../common/types'
+import { FreezeType } from '~/pallet/common/types'
 
 export type Freeze = {
     collectionId: bigint

@@ -1,5 +1,5 @@
 import { Queue } from 'bullmq'
-import config from './balances.config'
+import config from '~/queue/balances/balances.config'
 
 const { queueName, connection, defaultJobOptions } = config
 

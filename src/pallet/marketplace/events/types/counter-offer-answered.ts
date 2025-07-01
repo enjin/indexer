@@ -1,4 +1,4 @@
-import { AccountId32, CounterOfferResponse, H256 } from '../../../common/types'
+import { AccountId32, CounterOfferResponse, H256 } from '~/pallet/common/types'
 
 export type CounterOfferAnswered = {
     listingId: H256

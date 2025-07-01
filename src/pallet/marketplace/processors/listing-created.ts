@@ -16,12 +16,12 @@ import {
     OfferState,
     Token,
     TokenAccount,
-} from '../../../model'
-import { Block, CommonContext, EventItem } from '../../../contexts'
-import { getOrCreateAccount } from '../../../util/entities'
-import { Sns } from '../../../util/sns'
-import * as mappings from '../../index'
-import { QueueUtils } from '../../../queue'
+} from '~/model'
+import { Block, CommonContext, EventItem } from '~/contexts'
+import { getOrCreateAccount } from '~/util/entities'
+import { Sns } from '~/util/sns'
+import * as mappings from '~/pallet/index'
+import { QueueUtils } from '~/queue'
 import { match } from 'ts-pattern'
 
 export async function listingCreated(

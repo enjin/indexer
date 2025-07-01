@@ -1,5 +1,5 @@
-import { Block, CommonContext } from '../../contexts'
-import { multiTokens } from '../../pallet'
+import { Block, CommonContext } from '~/contexts'
+import { multiTokens } from '~/pallet'
 import {
     Collection,
     FreezeState,
@@ -8,9 +8,9 @@ import {
     TokenBehaviorHasRoyalty,
     TokenBehaviorIsCurrency,
     TokenBehaviorType,
-} from '../../model'
-import { isNonFungible } from '../../util/helpers'
-import { BATCH_SIZE, getCapType, getFreezeState, isTokenFrozen } from '../common'
+} from '~/model'
+import { isNonFungible } from '~/util/helpers'
+import { BATCH_SIZE, getCapType, getFreezeState, isTokenFrozen } from '~/synchronize/common'
 
 export async function tokens(ctx: CommonContext, block: Block) {
     ctx.log.info('Syncing tokens...')

@@ -1,8 +1,8 @@
-import { throwFatalError } from '../../../util/errors'
-import { Attribute, Collection, Event as EventModel, Token } from '../../../model'
-import { Block, CommonContext, EventItem } from '../../../contexts'
-import * as mappings from '../../index'
-import { QueueUtils } from '../../../queue'
+import { throwFatalError } from '~/util/errors'
+import { Attribute, Collection, Event as EventModel, Token } from '~/model'
+import { Block, CommonContext, EventItem } from '~/contexts'
+import * as mappings from '~/pallet/index'
+import { QueueUtils } from '~/queue'
 
 export async function attributeRemoved(
     ctx: CommonContext,

@@ -1,7 +1,7 @@
-import { EventItem } from '../../../contexts'
-import { BalancesTransfer, Event as EventModel, Extrinsic } from '../../../model'
-import { Sns } from '../../../util/sns'
-import * as mappings from '../../index'
+import { EventItem } from '~/contexts'
+import { BalancesTransfer, Event as EventModel, Extrinsic } from '~/model'
+import { Sns } from '~/util/sns'
+import * as mappings from '~/pallet/index'
 
 export async function transfer(item: EventItem): Promise<EventModel | undefined> {
     const data = mappings.balances.events.transfer(item)

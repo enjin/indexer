@@ -1,9 +1,9 @@
-import { stakeExchange } from '../../../type/events'
-import { EventItem } from '../../../contexts'
-import { UnsupportedEventError } from '../../../util/errors'
+import { stakeExchange } from '~/type/events'
+import { EventItem } from '~/contexts'
+import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
-import { Event as EventModel, Extrinsic, StakeExchangeLiquidityWithdrawn } from '../../../model'
-import { LiquidityWithdrawn } from './types'
+import { Event as EventModel, Extrinsic, StakeExchangeLiquidityWithdrawn } from '~/model'
+import { LiquidityWithdrawn } from '~/pallet/stake-exchange/events/types'
 
 export function liquidityWithdrawn(event: EventItem): LiquidityWithdrawn {
     return match(event)

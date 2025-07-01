@@ -1,4 +1,4 @@
-import { DefaultMintParams, AccountId32 } from '../../../common/types'
+import { DefaultMintParams, AccountId32 } from '~/pallet/common/types'
 
 export type BatchMint = {
     collectionId: bigint

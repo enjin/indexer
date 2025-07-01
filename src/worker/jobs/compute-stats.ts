@@ -1,5 +1,5 @@
-import { connectionManager } from '../../contexts'
-import { Collection, CollectionStats, Listing, ListingSale, ListingStatus, Token } from '../../model'
+import { connectionManager } from '~/contexts'
+import { Collection, CollectionStats, Listing, ListingSale, ListingStatus, Token } from '~/model'
 import { Job } from 'bullmq'
 
 const floorQuery = `SELECT MIN("listing"."highest_price") AS floor_price FROM "listing" AS "listing" INNER JOIN "token" "token" ON "token"."id" = "listing"."make_asset_id_id" INNER JOIN "collection" "collection" ON "collection"."id" = "token"."collection_id" WHERE "collection"."id" = $1 AND "listing"."is_active" = TRUE AND "token"."is_frozen" = FALSE AND "token"."listing_forbidden" = FALSE;`

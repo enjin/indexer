@@ -1,4 +1,4 @@
-import { RootOrSigned } from '../../../common/types'
+import { RootOrSigned } from '~/pallet/common/types'
 
 export type TokenCreated = {
     collectionId: bigint

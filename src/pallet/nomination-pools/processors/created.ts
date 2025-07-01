@@ -12,11 +12,11 @@ import {
     PoolState,
     PoolValidator,
     Token,
-} from '../../../model'
-import { storage } from '../../../type'
-import { Block, CommonContext, EventItem } from '../../../contexts'
-import * as mappings from '../../index'
-import { UnsupportedStorageError } from '../../../util/errors'
+} from '~/model'
+import { storage } from '~/type'
+import { Block, CommonContext, EventItem } from '~/contexts'
+import * as mappings from '~/pallet/index'
+import { UnsupportedStorageError } from '~/util/errors'
 
 function getCurrentEra(ctx: CommonContext, block: Block) {
     if (storage.staking.currentEra.enjinV100.is(block)) {

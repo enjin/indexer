@@ -1,1 +1,1 @@
-export * from './ledger'
+export * from '~/pallet/staking/storage/types/ledger'

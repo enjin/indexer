@@ -1,8 +1,8 @@
-import { fuelTanks } from '../../../type/events'
-import { EventItem } from '../../../contexts'
-import { UnsupportedEventError } from '../../../util/errors'
+import { fuelTanks } from '~/type/events'
+import { EventItem } from '~/contexts'
+import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
-import { AccountAdded } from './types'
+import { AccountAdded } from '~/pallet/fuel-tanks/events/types'
 
 export function accountAdded(event: EventItem): AccountAdded {
     return match(event)

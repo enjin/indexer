@@ -1,4 +1,4 @@
-import { AccountId32, H160 } from '../../../common/types'
+import { AccountId32, H160 } from '~/pallet/common/types'
 
 export type ClaimTokensCompleted = {
     destination: AccountId32

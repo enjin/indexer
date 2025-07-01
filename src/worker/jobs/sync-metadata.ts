@@ -1,7 +1,7 @@
-import { connectionManager } from '../../contexts'
-import { Attribute } from '../../model'
+import { connectionManager } from '~/contexts'
+import { Attribute } from '~/model'
 import { Job } from 'bullmq'
-import { QueueUtils } from '../../queue'
+import { QueueUtils } from '~/queue'
 import { ReadStream } from 'fs'
 
 interface AttributeStream {

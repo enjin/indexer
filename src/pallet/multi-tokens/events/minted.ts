@@ -1,6 +1,6 @@
-import { multiTokens } from '../../../type/events'
-import { EventItem } from '../../../contexts'
-import { UnsupportedEventError } from '../../../util/errors'
+import { multiTokens } from '~/type/events'
+import { EventItem } from '~/contexts'
+import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
 import {
     Account,
@@ -10,8 +10,8 @@ import {
     Extrinsic,
     MultiTokensMinted,
     Token,
-} from '../../../model'
-import { Minted } from './types'
+} from '~/model'
+import { Minted } from '~/pallet/multi-tokens/events/types'
 
 export function minted(event: EventItem): Minted {
     return match(event)

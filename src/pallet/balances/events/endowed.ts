@@ -1,8 +1,8 @@
-import { balances } from '../../../type/events'
-import { EventItem } from '../../../contexts'
-import { UnsupportedEventError } from '../../../util/errors'
+import { balances } from '~/type/events'
+import { EventItem } from '~/contexts'
+import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
-import { Endowed } from './types'
+import { Endowed } from '~/pallet/balances/events/types'
 
 export function endowed(event: EventItem): Endowed {
     return match(event)

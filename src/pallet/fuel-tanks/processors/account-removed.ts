@@ -1,6 +1,6 @@
-import { Event as EventModel, FuelTank, FuelTankUserAccounts } from '../../../model'
-import { Block, CommonContext, EventItem } from '../../../contexts'
-import * as mappings from '../../index'
+import { Event as EventModel, FuelTank, FuelTankUserAccounts } from '~/model'
+import { Block, CommonContext, EventItem } from '~/contexts'
+import * as mappings from '~/pallet/index'
 
 export async function accountRemoved(
     ctx: CommonContext,

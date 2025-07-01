@@ -1,3 +1,3 @@
-import { balances } from './balances'
+import { balances } from '~/synchronize/system/balances'
 
 export { balances }

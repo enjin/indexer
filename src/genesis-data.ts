@@ -1,4 +1,4 @@
-import { Block, CommonContext } from './contexts'
+import { Block, CommonContext } from '~/contexts'
 import {
     Collection,
     CollectionFlags,
@@ -9,12 +9,12 @@ import {
     MintPolicy,
     Token,
     TransferPolicy,
-} from './model'
-import { getOrCreateAccount } from './util/entities'
-import { isMainnet, isRelay } from './util/tools'
+} from '~/model'
+import { getOrCreateAccount } from '~/util/entities'
+import { isMainnet, isRelay } from '~/util/tools'
 import { match } from 'ts-pattern'
-import config from './util/config'
-import { multiTokens } from './pallet'
+import config from '~/util/config'
+import { multiTokens } from '~/pallet'
 
 export async function genesisData(ctx: CommonContext, block: Block) {
     const enjinToken = await ctx.store.findOneBy<Token>(Token, { id: '0-0' })

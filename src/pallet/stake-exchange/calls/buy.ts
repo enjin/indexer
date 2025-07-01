@@ -1,9 +1,9 @@
-import { UnsupportedCallError } from '../../../util/errors'
-import { CallItem } from '../../../contexts'
-import { calls } from '../../../type'
+import { UnsupportedCallError } from '~/util/errors'
+import { CallItem } from '~/contexts'
+import { calls } from '~/type'
 import { match } from 'ts-pattern'
-import { Buy } from './types'
-import { withDispatchCheck } from '../../fuel-tanks/utils'
+import { Buy } from '~/pallet/stake-exchange/calls/types'
+import { withDispatchCheck } from '~/pallet/fuel-tanks/utils'
 
 export const buy = withDispatchCheck((call: CallItem): Buy => {
     return match(call)

@@ -1,4 +1,4 @@
-import { DefaultCollectionMutation } from '../../../common/types'
+import { DefaultCollectionMutation } from '~/pallet/common/types'
 
 export type CollectionMutated = {
     collectionId: bigint

@@ -1,6 +1,6 @@
-import { marketplace } from '../../../type/events'
-import { EventItem } from '../../../contexts'
-import { UnsupportedEventError } from '../../../util/errors'
+import { marketplace } from '~/type/events'
+import { EventItem } from '~/contexts'
+import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
 import {
     Account,
@@ -11,8 +11,8 @@ import {
     Listing,
     MarketplaceBidPlaced,
     Token,
-} from '../../../model'
-import { BidPlaced } from './types'
+} from '~/model'
+import { BidPlaced } from '~/pallet/marketplace/events/types'
 
 export function bidPlaced(event: EventItem): BidPlaced {
     return match(event)

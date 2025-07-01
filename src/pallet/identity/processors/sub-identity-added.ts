@@ -1,9 +1,9 @@
 import { hexToString } from '@polkadot/util'
-import { CallNotDefinedError } from '../../../util/errors'
-import { Event as EventModel, Identity, Registration } from '../../../model'
-import { Block, CommonContext, EventItem } from '../../../contexts'
-import { getOrCreateAccount } from '../../../util/entities'
-import * as mappings from '../../index'
+import { CallNotDefinedError } from '~/util/errors'
+import { Event as EventModel, Identity, Registration } from '~/model'
+import { Block, CommonContext, EventItem } from '~/contexts'
+import { getOrCreateAccount } from '~/util/entities'
+import * as mappings from '~/pallet/index'
 
 export async function subIdentityAdded(
     ctx: CommonContext,

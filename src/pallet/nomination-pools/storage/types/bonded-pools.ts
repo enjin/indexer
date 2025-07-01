@@ -1,4 +1,4 @@
-import { BoundedVec, PoolState, Commission, PoolRoles, BonusCycle } from '../../../common/types'
+import { BoundedVec, PoolState, Commission, PoolRoles, BonusCycle } from '~/pallet/common/types'
 
 export type BondedPools = {
     points?: bigint // Removed on v104

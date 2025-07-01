@@ -1,4 +1,4 @@
-import { PoolMutation } from '../../../common/types'
+import { PoolMutation } from '~/pallet/common/types'
 
 export type PoolMutated = {
     poolId: number

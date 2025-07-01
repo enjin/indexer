@@ -1,1 +1,1 @@
-export * from './attempted'
+export * from '~/pallet/polkadot-xcm/processors/attempted'

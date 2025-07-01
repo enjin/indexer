@@ -1,4 +1,4 @@
-import { throwFatalError } from '../../../util/errors'
+import { throwFatalError } from '~/util/errors'
 import {
     Collection,
     CollectionAccount,
@@ -7,11 +7,11 @@ import {
     PoolMember,
     Token,
     TokenAccount,
-} from '../../../model'
-import { Block, CommonContext, EventItem } from '../../../contexts'
-import { getOrCreateAccount } from '../../../util/entities'
-import * as mappings from '../../index'
-import { getActiveEra } from '../../nomination-pools/processors/bonded'
+} from '~/model'
+import { Block, CommonContext, EventItem } from '~/contexts'
+import { getOrCreateAccount } from '~/util/entities'
+import * as mappings from '~/pallet/index'
+import { getActiveEra } from '~/pallet/nomination-pools/processors/bonded'
 
 export async function tokenAccountCreated(
     ctx: CommonContext,

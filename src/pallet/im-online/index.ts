@@ -1,5 +1,5 @@
-import * as events from './events'
-import * as processors from './processors'
+import * as events from '~/pallet/im-online/events'
+import * as processors from '~/pallet/im-online/processors'
 
 export default {
     events,

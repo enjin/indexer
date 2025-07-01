@@ -1,6 +1,6 @@
-import { Block, CommonContext, EventItem } from '../../../contexts'
-import { Event as EventModel, Extrinsic, ImOnlineSomeOffline } from '../../../model'
-import * as mappings from '../../index'
+import { Block, CommonContext, EventItem } from '~/contexts'
+import { Event as EventModel, Extrinsic, ImOnlineSomeOffline } from '~/model'
+import * as mappings from '~/pallet/index'
 
 export function someOffline(ctx: CommonContext, block: Block, item: EventItem): EventModel | undefined {
     const event = mappings.imOnline.events.someOffline(item)

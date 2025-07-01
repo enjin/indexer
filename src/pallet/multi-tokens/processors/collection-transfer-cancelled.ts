@@ -1,8 +1,8 @@
-import { throwFatalError } from '../../../util/errors'
-import { Collection, Event as EventModel } from '../../../model'
-import { Block, CommonContext, EventItem } from '../../../contexts'
-import { Sns } from '../../../util/sns'
-import * as mappings from '../../index'
+import { throwFatalError } from '~/util/errors'
+import { Collection, Event as EventModel } from '~/model'
+import { Block, CommonContext, EventItem } from '~/contexts'
+import { Sns } from '~/util/sns'
+import * as mappings from '~/pallet/index'
 
 export async function collectionTransferCancelled(
     ctx: CommonContext,

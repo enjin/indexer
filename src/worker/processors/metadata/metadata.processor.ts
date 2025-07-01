@@ -1,10 +1,10 @@
 import { Job } from 'bullmq'
-import { ProcessorDef } from '../processor.def'
-import { JobsEnum } from '../../constants'
-import { computeMetadata } from '../../jobs/compute-metadata'
-import { syncMetadata } from '../../jobs/sync-metadata'
-import { logDebug, logError } from '../../utils'
-import { syncFuelTanks } from '../../jobs/sync-fuel-tanks'
+import { ProcessorDef } from '~/worker/processors/processor.def'
+import { JobsEnum } from '~/queue/constants'
+import { computeMetadata } from '~/worker/jobs/compute-metadata'
+import { syncMetadata } from '~/worker/jobs/sync-metadata'
+import { logDebug, logError } from '~/worker/utils'
+import { syncFuelTanks } from '~/worker/jobs/sync-fuel-tanks'
 
 export class MetadataProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {

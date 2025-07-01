@@ -1,6 +1,6 @@
 import { hexToString } from '@polkadot/util'
 import { randomBytes } from 'crypto'
-import { CallNotDefinedError } from '../../../util/errors'
+import { CallNotDefinedError } from '~/util/errors'
 import {
     Event as EventModel,
     Extrinsic,
@@ -11,11 +11,11 @@ import {
     FuelTankUserAccountManagement,
     RequireToken,
     WhitelistedCallers,
-} from '../../../model'
-import { Block, CommonContext, EventItem } from '../../../contexts'
-import { getOrCreateAccount } from '../../../util/entities'
-import * as mappings from '../../index'
-import { rulesToMap } from '../utils'
+} from '~/model'
+import { Block, CommonContext, EventItem } from '~/contexts'
+import { getOrCreateAccount } from '~/util/entities'
+import * as mappings from '~/pallet/index'
+import { rulesToMap } from '~/pallet/fuel-tanks/utils'
 
 export async function fuelTankCreated(
     ctx: CommonContext,

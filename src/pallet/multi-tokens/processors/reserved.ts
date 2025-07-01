@@ -1,9 +1,9 @@
 import { hexToString } from '@polkadot/util'
-import { TokenAccount, TokenNamedReserve } from '../../../model'
-import { Block, CommonContext, EventItem } from '../../../contexts'
-import { QueueUtils } from '../../../queue'
-import { throwFatalError } from '../../../util/errors'
-import * as mappings from '../../index'
+import { TokenAccount, TokenNamedReserve } from '~/model'
+import { Block, CommonContext, EventItem } from '~/contexts'
+import { QueueUtils } from '~/queue'
+import { throwFatalError } from '~/util/errors'
+import * as mappings from '~/pallet/index'
 import { match, P } from 'ts-pattern'
 
 export async function reserved(ctx: CommonContext, block: Block, item: EventItem, skipSave: boolean) {

@@ -1,7 +1,7 @@
-import { connectionManager } from '../../contexts'
+import { connectionManager } from '~/contexts'
 import { EntityManager } from 'typeorm'
 import { Job } from 'bullmq'
-import { ChainInfo, Identity, JudgementType, Registration, ScoreGrade, Validator } from '../../model'
+import { ChainInfo, Identity, JudgementType, Registration, ScoreGrade, Validator } from '~/model'
 
 function getJudgement(identity: Identity | null | undefined): JudgementType {
     if (identity === undefined || identity === null) return JudgementType.Unknown

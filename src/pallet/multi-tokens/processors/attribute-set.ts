@@ -1,5 +1,5 @@
 import { hexToString } from '@polkadot/util'
-import { throwFatalError } from '../../../util/errors'
+import { throwFatalError } from '~/util/errors'
 import {
     Attribute,
     Collection,
@@ -10,12 +10,12 @@ import {
     Metadata,
     MintPolicy,
     Token,
-} from '../../../model'
-import { Block, CommonContext, EventItem } from '../../../contexts'
-import { getOrCreateAccount } from '../../../util/entities'
-import * as mappings from '../../index'
-import { QueueUtils } from '../../../queue'
-import { safeString } from '../../../util/tools'
+} from '~/model'
+import { Block, CommonContext, EventItem } from '~/contexts'
+import { getOrCreateAccount } from '~/util/entities'
+import * as mappings from '~/pallet/index'
+import { QueueUtils } from '~/queue'
+import { safeString } from '~/util/tools'
 
 export async function attributeSet(
     ctx: CommonContext,

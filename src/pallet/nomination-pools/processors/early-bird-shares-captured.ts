@@ -1,7 +1,7 @@
-import { Block, CommonContext, EventItem } from '../../../contexts'
-import { Account, EarlyBirdShares, NominationPool } from '../../../model'
-import { Sns } from '../../../util/sns'
-import * as mappings from '../../index'
+import { Block, CommonContext, EventItem } from '~/contexts'
+import { Account, EarlyBirdShares, NominationPool } from '~/model'
+import { Sns } from '~/util/sns'
+import * as mappings from '~/pallet/index'
 
 export async function earlyBirdSharesCaptured(ctx: CommonContext, block: Block, item: EventItem) {
     if (!item.extrinsic) return undefined

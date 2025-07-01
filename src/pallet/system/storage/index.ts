@@ -1,2 +1,2 @@
-export * from './accounts'
-export * from './types'
+export * from '~/pallet/system/storage/accounts'
+export * from '~/pallet/system/storage/types'

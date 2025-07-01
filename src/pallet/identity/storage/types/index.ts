@@ -1,1 +1,1 @@
-export * from './registrar-info'
+export * from '~/pallet/identity/storage/types/registrar-info'

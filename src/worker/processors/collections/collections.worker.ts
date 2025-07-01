@@ -1,6 +1,6 @@
 import { Job, Worker } from 'bullmq'
-import computeCollectionsConfig from './collections.config'
-import instance from './collections.processor'
+import computeCollectionsConfig from '~/worker/processors/collections/collections.config'
+import instance from '~/worker/processors/collections/collections.processor'
 
 const { queueName, connection, isSandboxed } = computeCollectionsConfig
 

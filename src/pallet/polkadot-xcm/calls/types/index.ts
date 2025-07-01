@@ -1,3 +1,3 @@
-export * from './limited-reserve-transfer-assets'
-export * from './limited-teleport-assets'
-export * from './teleport-assets'
+export * from '~/pallet/polkadot-xcm/calls/types/limited-reserve-transfer-assets'
+export * from '~/pallet/polkadot-xcm/calls/types/limited-teleport-assets'
+export * from '~/pallet/polkadot-xcm/calls/types/teleport-assets'

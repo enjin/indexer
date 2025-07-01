@@ -1,9 +1,9 @@
-import { UnsupportedCallError } from '../../../util/errors'
-import { CallItem } from '../../../contexts'
-import { calls } from '../../../type'
+import { UnsupportedCallError } from '~/util/errors'
+import { CallItem } from '~/contexts'
+import { calls } from '~/type'
 import { match } from 'ts-pattern'
-import { WithdrawUnbonded } from './types'
-import { withDispatchCheck } from '../../fuel-tanks/utils'
+import { WithdrawUnbonded } from '~/pallet/nomination-pools/calls/types'
+import { withDispatchCheck } from '~/pallet/fuel-tanks/utils'
 
 export const withdrawUnbonded = withDispatchCheck((call: CallItem): WithdrawUnbonded => {
     return match(call)

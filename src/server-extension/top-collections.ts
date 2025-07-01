@@ -16,7 +16,7 @@ import {
 import { BigInteger, Json } from '@subsquid/graphql-server'
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
-import { Collection, Listing, ListingSale, ListingStatus, Token } from '../model'
+import { Collection, Listing, ListingSale, ListingStatus, Token } from '~/model'
 import { DateTimeColumn as DateTimeColumn_ } from '@subsquid/typeorm-store/lib/decorators/columns/DateTimeColumn'
 
 const timeFrameMap = {

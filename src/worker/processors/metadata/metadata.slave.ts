@@ -1,3 +1,3 @@
-import instance from './metadata.processor'
+import instance from '~/worker/processors/metadata/metadata.processor'
 
 export default instance.handle

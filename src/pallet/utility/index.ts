@@ -1,4 +1,4 @@
-import * as calls from './calls'
+import * as calls from '~/pallet/utility/calls'
 
 export default {
     calls,

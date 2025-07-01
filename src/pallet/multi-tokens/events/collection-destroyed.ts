@@ -1,9 +1,9 @@
-import { multiTokens } from '../../../type/events'
-import { EventItem } from '../../../contexts'
-import { UnsupportedEventError } from '../../../util/errors'
+import { multiTokens } from '~/type/events'
+import { EventItem } from '~/contexts'
+import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
-import { Event as EventModel, Extrinsic, MultiTokensCollectionDestroyed } from '../../../model'
-import { CollectionDestroyed } from './types'
+import { Event as EventModel, Extrinsic, MultiTokensCollectionDestroyed } from '~/model'
+import { CollectionDestroyed } from '~/pallet/multi-tokens/events/types'
 
 export function collectionDestroyed(event: EventItem): CollectionDestroyed {
     return match(event)

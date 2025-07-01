@@ -1,8 +1,8 @@
-import { claims } from '../../../type/events'
-import { EventItem } from '../../../contexts'
-import { UnsupportedEventError } from '../../../util/errors'
+import { claims } from '~/type/events'
+import { EventItem } from '~/contexts'
+import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
-import { Claimed } from './types'
+import { Claimed } from '~/pallet/claims/events/types'
 
 export function claimed(event: EventItem): Claimed {
     return match(event)

@@ -1,4 +1,4 @@
-import { MultiAddress, H256, Judgement } from '../../../common/types'
+import { MultiAddress, H256, Judgement } from '~/pallet/common/types'
 
 export type ProvideJudgement = {
     regIndex: number

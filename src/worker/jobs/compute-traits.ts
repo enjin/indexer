@@ -1,9 +1,9 @@
-import { connectionManager } from '../../contexts'
-import { Collection, Token, Trait, TraitToken } from '../../model'
+import { connectionManager } from '~/contexts'
+import { Collection, Token, Trait, TraitToken } from '~/model'
 import { isPlainObject } from 'lodash'
 import { Job } from 'bullmq'
-import { hash } from '../utils'
-import { QueueUtils } from '../../queue'
+import { hash } from '~/worker/utils'
+import { QueueUtils } from '~/queue'
 
 type TraitValueMap = Map<string, bigint>
 

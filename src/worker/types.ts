@@ -1,5 +1,5 @@
 import { ConnectionOptions, Telemetry } from 'bullmq'
-import { QueuesEnum } from './constants'
+import { QueuesEnum } from '~/queue/constants'
 
 export interface BaseConfigType {
     queueName: QueuesEnum

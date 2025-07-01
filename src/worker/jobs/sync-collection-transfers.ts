@@ -1,9 +1,9 @@
-import { dataHandlerContext } from '../../contexts'
-import { Collection } from '../../model'
+import { dataHandlerContext } from '~/contexts'
+import { Collection } from '~/model'
 import { Job } from 'bullmq'
-import Rpc from '../../util/rpc'
-import { getOrCreateAccount, unwrapAccount } from '../../util/entities'
-import { decodeAddress } from '../../util/tools'
+import Rpc from '~/util/rpc'
+import { getOrCreateAccount } from '~/util/entities'
+import { decodeAddress } from '~/util/tools'
 
 export async function syncCollectionTransfer(_job: Job, id: string): Promise<void> {
     const ctx = await dataHandlerContext()

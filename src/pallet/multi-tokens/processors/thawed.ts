@@ -1,10 +1,10 @@
-import { throwFatalError } from '../../../util/errors'
-import { Collection, CollectionAccount, Event as EventModel, Token, TokenAccount, TransferPolicy } from '../../../model'
-import { Block, CommonContext, EventItem } from '../../../contexts'
-import { Sns } from '../../../util/sns'
-import * as mappings from '../../index'
+import { throwFatalError } from '~/util/errors'
+import { Collection, CollectionAccount, Event as EventModel, Token, TokenAccount, TransferPolicy } from '~/model'
+import { Block, CommonContext, EventItem } from '~/contexts'
+import { Sns } from '~/util/sns'
+import * as mappings from '~/pallet/index'
 import { match } from 'ts-pattern'
-import { QueueUtils } from '../../../queue'
+import { QueueUtils } from '~/queue'
 
 export async function thawed(
     ctx: CommonContext,

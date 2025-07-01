@@ -7,8 +7,8 @@ import {
     Extrinsic,
     SubstrateBatchProcessorFields,
 } from '@subsquid/substrate-processor'
-import { processorConfig } from './processor.config'
-import { getDataSource } from './connection'
+import { processorConfig } from '~/processor.config'
+import { getDataSource } from '~/connection'
 
 export const connectionManager = async () => {
     const con = await getDataSource()

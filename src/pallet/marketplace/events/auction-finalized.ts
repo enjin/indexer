@@ -1,6 +1,6 @@
-import { marketplace } from '../../../type/events'
-import { EventItem } from '../../../contexts'
-import { UnsupportedEventError } from '../../../util/errors'
+import { marketplace } from '~/type/events'
+import { EventItem } from '~/contexts'
+import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
 import {
     Account,
@@ -11,8 +11,8 @@ import {
     Listing,
     MarketplaceAuctionFinalized,
     Token,
-} from '../../../model'
-import { AuctionFinalized } from './types'
+} from '~/model'
+import { AuctionFinalized } from '~/pallet/marketplace/events/types'
 
 export function auctionFinalized(event: EventItem): AuctionFinalized {
     return match(event)

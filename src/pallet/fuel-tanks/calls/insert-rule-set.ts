@@ -1,9 +1,9 @@
-import { UnsupportedCallError } from '../../../util/errors'
-import { calls } from '../../../type'
-import { CallItem } from '../../../contexts'
+import { UnsupportedCallError } from '~/util/errors'
+import { calls } from '~/type'
+import { CallItem } from '~/contexts'
 import { match } from 'ts-pattern'
-import { InsertRuleSet } from './types'
-import { withDispatchCheck } from '../utils'
+import { InsertRuleSet } from '~/pallet/fuel-tanks/calls/types'
+import { withDispatchCheck } from '~/pallet/fuel-tanks/utils'
 
 export const insertRuleSet = withDispatchCheck((call: CallItem): InsertRuleSet => {
     return match(call)

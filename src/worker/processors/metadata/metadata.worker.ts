@@ -1,6 +1,6 @@
 import { Job, Worker } from 'bullmq'
-import computeMetadataConfig from './metadata.config'
-import instance from './metadata.processor'
+import computeMetadataConfig from '~/worker/processors/metadata/metadata.config'
+import instance from '~/worker/processors/metadata/metadata.processor'
 
 const { queueName, connection, isSandboxed } = computeMetadataConfig
 

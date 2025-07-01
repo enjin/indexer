@@ -1,5 +1,5 @@
 import { ConnectionOptions } from 'bullmq'
-import processorConfig from '../util/config'
+import processorConfig from '~/util/config'
 
 export const connection: ConnectionOptions = {
     host: processorConfig.redis.host,

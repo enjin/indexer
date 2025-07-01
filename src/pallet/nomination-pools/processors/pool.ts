@@ -1,9 +1,9 @@
 import Big from 'big.js'
-import { constants } from '../../../type'
-import { Block, CommonContext } from '../../../contexts'
-import { EarlyBirdDetails, EraReward, NominationPool, PoolBalance } from '../../../model'
-import processorConfig from '../../../util/config'
-import * as mappings from '../../index'
+import { constants } from '~/type'
+import { Block, CommonContext } from '~/contexts'
+import { EarlyBirdDetails, EraReward, NominationPool, PoolBalance } from '~/model'
+import processorConfig from '~/util/config'
+import * as mappings from '~/pallet/index'
 import { bnToU8a, hexToU8a, stringToU8a, u8aConcat, u8aToHex, BN } from '@polkadot/util'
 
 const EMPTY_H256 = new Uint8Array(15)

@@ -1,9 +1,16 @@
-import { CallItem } from '../../contexts'
+import { CallItem } from '~/contexts'
 import { match } from 'ts-pattern'
-import { CreateFuelTank, Dispatch, dispatch, DispatchAndTouch, dispatchAndTouch, ForceCreateFuelTank } from './calls'
-import { UnsupportedCallError } from '../../util/errors'
-import { calls } from '../../type'
-import * as mappings from '../index'
+import {
+    CreateFuelTank,
+    Dispatch,
+    dispatch,
+    DispatchAndTouch,
+    dispatchAndTouch,
+    ForceCreateFuelTank,
+} from '~/pallet/fuel-tanks/calls'
+import { UnsupportedCallError } from '~/util/errors'
+import { calls } from '~/type'
+import * as mappings from '~/pallet/index'
 import {
     FuelTankRuleSet,
     MaxFuelBurnPerTransaction,
@@ -11,8 +18,8 @@ import {
     RequireToken,
     TankFuelBudget,
     UserFuelBudget,
-} from '../../model'
-import { DispatchRuleDescriptor } from '../common/types'
+} from '~/model'
+import { DispatchRuleDescriptor } from '~/pallet/common/types'
 
 export function withDispatchCheck<T>(fn: (call: CallItem) => T): (call: CallItem) => T {
     return (call: CallItem) => {

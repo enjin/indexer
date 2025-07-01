@@ -1,6 +1,6 @@
 import { Job, Worker } from 'bullmq'
-import computeRarityConfig from './tokens.config'
-import instance from './tokens.processor'
+import computeRarityConfig from '~/worker/processors/tokens/tokens.config'
+import instance from '~/worker/processors/tokens/tokens.processor'
 
 const { queueName, connection, isSandboxed } = computeRarityConfig
 

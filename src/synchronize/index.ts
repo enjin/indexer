@@ -1,14 +1,14 @@
-import { Block, CommonContext } from '../contexts'
-import Rpc from '../util/rpc'
+import { Block, CommonContext } from '~/contexts'
+import Rpc from '~/util/rpc'
 import { Bytes, Runtime } from '@subsquid/substrate-runtime'
 import * as fs from 'fs'
 import * as readline from 'readline'
 import * as path from 'path'
 import { ParentBlockHeader } from '@subsquid/substrate-processor'
-import * as multiTokens from './multi-tokens'
-import * as system from './system'
-import config from '../util/config'
-import { DataService } from '../util/data'
+import * as multiTokens from '~/synchronize/multi-tokens'
+import * as system from '~/synchronize/system'
+import config from '~/util/config'
+import { DataService } from '~/util/data'
 
 export async function syncState(ctx: CommonContext): Promise<void> {
     if (config.skipSync) {

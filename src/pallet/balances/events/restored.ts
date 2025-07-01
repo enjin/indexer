@@ -1,8 +1,8 @@
-import { balances } from '../../../type/events'
-import { EventItem } from '../../../contexts'
-import { UnsupportedEventError } from '../../../util/errors'
+import { balances } from '~/type/events'
+import { EventItem } from '~/contexts'
+import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
-import { Restored } from './types'
+import { Restored } from '~/pallet/balances/events/types'
 
 export function restored(event: EventItem): Restored {
     return match(event)

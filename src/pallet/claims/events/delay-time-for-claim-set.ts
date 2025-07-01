@@ -1,8 +1,8 @@
-import { claims } from '../../../type/events'
-import { EventItem } from '../../../contexts'
-import { UnsupportedEventError } from '../../../util/errors'
+import { claims } from '~/type/events'
+import { EventItem } from '~/contexts'
+import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
-import { DelayTimeForClaimSet } from './types'
+import { DelayTimeForClaimSet } from '~/pallet/claims/events/types'
 
 export function delayTimeForClaimSet(event: EventItem): DelayTimeForClaimSet {
     return match(event)

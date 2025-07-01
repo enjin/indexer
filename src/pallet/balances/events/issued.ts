@@ -1,8 +1,8 @@
-import { balances } from '../../../type/events'
-import { EventItem } from '../../../contexts'
-import { UnsupportedEventError } from '../../../util/errors'
+import { balances } from '~/type/events'
+import { EventItem } from '~/contexts'
+import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
-import { Issued } from './types'
+import { Issued } from '~/pallet/balances/events/types'
 
 export function issued(event: EventItem): Issued {
     return match(event)

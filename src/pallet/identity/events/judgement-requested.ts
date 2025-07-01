@@ -1,8 +1,8 @@
-import { identity } from '../../../type/events'
-import { EventItem } from '../../../contexts'
-import { UnsupportedEventError } from '../../../util/errors'
+import { identity } from '~/type/events'
+import { EventItem } from '~/contexts'
+import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
-import { JudgementRequested } from './types'
+import { JudgementRequested } from '~/pallet/identity/events/types'
 
 export function judgementRequested(event: EventItem): JudgementRequested {
     return match(event)

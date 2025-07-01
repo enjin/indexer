@@ -1,4 +1,4 @@
-import { VersionedAssets, VersionedLocation } from '../../../common/xcm'
+import { VersionedAssets, VersionedLocation } from '~/pallet/common/xcm'
 
 export type LimitedTeleportAssets = {
     dest: VersionedLocation

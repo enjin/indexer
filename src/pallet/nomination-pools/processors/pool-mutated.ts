@@ -1,8 +1,8 @@
-import { Block, CommonContext, EventItem } from '../../../contexts'
-import { CommissionChangeRate, NominationPool } from '../../../model'
-import { Sns } from '../../../util/sns'
+import { Block, CommonContext, EventItem } from '~/contexts'
+import { CommissionChangeRate, NominationPool } from '~/model'
+import { Sns } from '~/util/sns'
 import { hexToString } from '@polkadot/util'
-import * as mappings from '../../index'
+import * as mappings from '~/pallet/index'
 
 export async function poolMutated(ctx: CommonContext, block: Block, item: EventItem) {
     if (!item.extrinsic) return undefined

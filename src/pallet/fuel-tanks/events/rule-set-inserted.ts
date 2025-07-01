@@ -1,8 +1,8 @@
-import { fuelTanks } from '../../../type/events'
-import { EventItem } from '../../../contexts'
-import { UnsupportedEventError } from '../../../util/errors'
+import { fuelTanks } from '~/type/events'
+import { EventItem } from '~/contexts'
+import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
-import { RuleSetInserted } from './types'
+import { RuleSetInserted } from '~/pallet/fuel-tanks/events/types'
 
 export function ruleSetInserted(event: EventItem): RuleSetInserted {
     return match(event)

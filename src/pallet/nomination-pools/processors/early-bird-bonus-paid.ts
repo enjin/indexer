@@ -1,8 +1,8 @@
-import { Block, CommonContext, EventItem } from '../../../contexts'
-import { EarlyBirdBonus } from '../../../model'
-import { updateEarlyBirdInfo, updatePool } from './pool'
-import { Sns } from '../../../util/sns'
-import * as mappings from '../../index'
+import { Block, CommonContext, EventItem } from '~/contexts'
+import { EarlyBirdBonus } from '~/model'
+import { updateEarlyBirdInfo, updatePool } from '~/pallet/nomination-pools/processors/pool'
+import { Sns } from '~/util/sns'
+import * as mappings from '~/pallet/index'
 
 export async function earlyBirdBonusPaid(ctx: CommonContext, block: Block, item: EventItem) {
     if (!item.extrinsic) return undefined

@@ -1,4 +1,4 @@
-import { AccountId32, Bytes } from '../../../common/types'
+import { AccountId32, Bytes } from '~/pallet/common/types'
 
 export type FuelTankCreated = {
     tankId: AccountId32

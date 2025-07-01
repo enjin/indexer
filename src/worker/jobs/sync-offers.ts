@@ -1,6 +1,6 @@
-import { connectionManager } from '../../contexts'
+import { connectionManager } from '~/contexts'
 import { Job } from 'bullmq'
-import { AccountTokenEvent, Listing, MarketplaceOfferCancelled, MarketplaceOfferCreated } from '../../model'
+import { AccountTokenEvent, Listing, MarketplaceOfferCancelled, MarketplaceOfferCreated } from '~/model'
 
 export async function syncOffers(job: Job): Promise<void> {
     const em = await connectionManager()

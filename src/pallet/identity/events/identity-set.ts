@@ -1,8 +1,8 @@
-import { identity } from '../../../type/events'
-import { EventItem } from '../../../contexts'
-import { UnsupportedEventError } from '../../../util/errors'
+import { identity } from '~/type/events'
+import { EventItem } from '~/contexts'
+import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
-import { IdentitySet } from './types'
+import { IdentitySet } from '~/pallet/identity/events/types'
 
 export function identitySet(event: EventItem): IdentitySet {
     return match(event)

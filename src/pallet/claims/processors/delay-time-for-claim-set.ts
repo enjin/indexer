@@ -1,6 +1,6 @@
-import { Block, CommonContext, EventItem } from '../../../contexts'
-import { ClaimDetails } from '../../../model'
-import * as mappings from '../../index'
+import { Block, CommonContext, EventItem } from '~/contexts'
+import { ClaimDetails } from '~/model'
+import * as mappings from '~/pallet/index'
 
 export async function delayTimeForClaimSet(ctx: CommonContext, block: Block, item: EventItem): Promise<undefined> {
     const event = mappings.claims.events.delayTimeForClaimSet(item)

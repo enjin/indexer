@@ -1,7 +1,7 @@
 import { Arg, Query, Resolver } from 'type-graphql'
 import 'reflect-metadata'
 import { type EntityManager } from 'typeorm'
-import { QueueUtils } from '../queue'
+import { QueueUtils } from '~/queue'
 
 @Resolver()
 export class RefreshPoolResolver {

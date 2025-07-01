@@ -1,7 +1,7 @@
-import { Block, CommonContext } from '../../contexts'
-import { multiTokens } from '../../pallet'
-import { Collection, Token, TokenAccount, TokenApproval, TokenLock, TokenNamedReserve } from '../../model'
-import { BATCH_SIZE, getAccountMap } from '../common'
+import { Block, CommonContext } from '~/contexts'
+import { multiTokens } from '~/pallet'
+import { Collection, Token, TokenAccount, TokenApproval, TokenLock, TokenNamedReserve } from '~/model'
+import { BATCH_SIZE, getAccountMap } from '~/synchronize/common'
 
 export async function tokenAccounts(ctx: CommonContext, block: Block) {
     ctx.log.info('Syncing token accounts...')

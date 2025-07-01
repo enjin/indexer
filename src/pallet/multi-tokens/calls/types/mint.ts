@@ -1,4 +1,4 @@
-import { MultiAddress, DefaultMintParams } from '../../../common/types'
+import { MultiAddress, DefaultMintParams } from '~/pallet/common/types'
 
 export type Mint = {
     recipient: MultiAddress

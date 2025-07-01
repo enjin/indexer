@@ -1,8 +1,8 @@
-import { Event as EventModel, Extrinsic, TeleportBalanceWithdrawn } from '../../../model'
-import { Block, CommonContext, EventItem } from '../../../contexts'
-import { getOrCreateAccount, unwrapSigner } from '../../../util/entities'
-import processorConfig from '../../../util/config'
-import * as mappings from '../../index'
+import { Event as EventModel, Extrinsic, TeleportBalanceWithdrawn } from '~/model'
+import { Block, CommonContext, EventItem } from '~/contexts'
+import { getOrCreateAccount, unwrapSigner } from '~/util/entities'
+import processorConfig from '~/util/config'
+import * as mappings from '~/pallet/index'
 
 export async function attempted(ctx: CommonContext, block: Block, item: EventItem): Promise<EventModel | undefined> {
     if (item.call === undefined || !item.extrinsic) return undefined

@@ -1,9 +1,9 @@
 import { EntityManager, IsNull } from 'typeorm'
-import { Attribute, Collection, Metadata, Token } from '../../model'
-import { connectionManager } from '../../contexts'
-import { fetchMetadata, metadataParser } from '../../util/metadata'
+import { Attribute, Collection, Metadata, Token } from '~/model'
+import { connectionManager } from '~/contexts'
+import { fetchMetadata, metadataParser } from '~/util/metadata'
 import { Job } from 'bullmq'
-import { QueueUtils } from '../../queue'
+import { QueueUtils } from '~/queue'
 
 type MetadataType = {
     id: string

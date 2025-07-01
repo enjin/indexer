@@ -1,9 +1,9 @@
-import { Block } from '../../../contexts'
-import { UnsupportedStorageError } from '../../../util/errors'
-import { multiTokens } from '../../../type/storage'
+import { Block } from '~/contexts'
+import { UnsupportedStorageError } from '~/util/errors'
+import { multiTokens } from '~/type/storage'
 import { match } from 'ts-pattern'
-import { Attribute } from './types'
-import { Bytes } from '../../common/types'
+import { Attribute } from '~/pallet/multi-tokens/storage/types'
+import { Bytes } from '~/pallet/common/types'
 
 export async function attributes(
     block: Block,

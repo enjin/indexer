@@ -1,6 +1,6 @@
-import { Arg, Args, ArgsType, Field, Query, Resolver } from 'type-graphql'
-import { QueueUtils } from '../queue'
-import { decodeAddress } from '../util/tools'
+import { Args, ArgsType, Field, Query, Resolver } from 'type-graphql'
+import { QueueUtils } from '~/queue'
+import { decodeAddress } from '~/util/tools'
 
 @ArgsType()
 export class RefreshBalancesArgs {

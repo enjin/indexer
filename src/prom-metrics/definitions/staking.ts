@@ -1,7 +1,7 @@
 import api from 'prom-client'
-import register from '../registry'
-import Rpc from '../../util/rpc'
-import { connectionManager } from '../../contexts'
+import register from '~/prom-metrics/registry'
+import Rpc from '~/util/rpc'
+import { connectionManager } from '~/contexts'
 import { BN } from '@polkadot/util'
 
 export const indexer_staking_staked_total = new api.Gauge({

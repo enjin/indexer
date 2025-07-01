@@ -1,9 +1,9 @@
-import { throwFatalError } from '../../../util/errors'
-import { CollectionAccount, Event as EventModel, TokenAccount } from '../../../model'
-import { Sns } from '../../../util/sns'
-import * as mappings from '../../index'
-import { Block, CommonContext, EventItem } from '../../../contexts'
-import { encodeAddress } from '../../../util/tools'
+import { throwFatalError } from '~/util/errors'
+import { CollectionAccount, Event as EventModel, TokenAccount } from '~/model'
+import { Sns } from '~/util/sns'
+import * as mappings from '~/pallet/index'
+import { Block, CommonContext, EventItem } from '~/contexts'
+import { encodeAddress } from '~/util/tools'
 
 export async function unapproved(
     ctx: CommonContext,

@@ -1,8 +1,8 @@
 import { IsNull } from 'typeorm'
-import { connectionManager } from '../../contexts'
-import { Token } from '../../model'
+import { connectionManager } from '~/contexts'
+import { Token } from '~/model'
 import { Job } from 'bullmq'
-import { QueueUtils } from '../../queue'
+import { QueueUtils } from '~/queue'
 
 export async function syncTokens(job: Job) {
     const em = await connectionManager()

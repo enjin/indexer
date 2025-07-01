@@ -1,8 +1,8 @@
-import { dataHandlerContext } from '../../contexts'
-import { fetchCollectionsExtra } from '../../util/marketplace'
-import { Collection, CollectionFlags, CollectionSocials } from '../../model'
+import { dataHandlerContext } from '~/contexts'
+import { fetchCollectionsExtra } from '~/util/marketplace'
+import { Collection, CollectionFlags, CollectionSocials } from '~/model'
 import { Job } from 'bullmq'
-import { isNotNullOrEmpty } from '../utils'
+import { isNotNullOrEmpty } from '~/worker/utils'
 
 export async function computeExtras(_job: Job, ids: string[]): Promise<void> {
     const ctx = await dataHandlerContext()

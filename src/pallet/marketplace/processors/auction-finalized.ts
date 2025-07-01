@@ -6,12 +6,12 @@ import {
     ListingSale,
     ListingStatus,
     ListingStatusType,
-} from '../../../model'
-import { Block, CommonContext, EventItem } from '../../../contexts'
-import { getBestListing } from '../../../util/entities'
-import { Sns } from '../../../util/sns'
-import * as mappings from '../../index'
-import { QueueUtils } from '../../../queue'
+} from '~/model'
+import { Block, CommonContext, EventItem } from '~/contexts'
+import { getBestListing } from '~/util/entities'
+import { Sns } from '~/util/sns'
+import * as mappings from '~/pallet/index'
+import { QueueUtils } from '~/queue'
 
 export async function auctionFinalized(
     ctx: CommonContext,

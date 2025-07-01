@@ -1,4 +1,4 @@
-import { AccountId32, BitFlags } from '../../../common/types'
+import { AccountId32, BitFlags } from '~/pallet/common/types'
 
 export type RegistrarInfo = {
     account: AccountId32

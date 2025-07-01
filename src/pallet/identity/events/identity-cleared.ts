@@ -1,8 +1,8 @@
-import { identity } from '../../../type/events'
-import { EventItem } from '../../../contexts'
-import { UnsupportedEventError } from '../../../util/errors'
+import { identity } from '~/type/events'
+import { EventItem } from '~/contexts'
+import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
-import { IdentityCleared } from './types'
+import { IdentityCleared } from '~/pallet/identity/events/types'
 
 export function identityCleared(event: EventItem): IdentityCleared {
     return match(event)

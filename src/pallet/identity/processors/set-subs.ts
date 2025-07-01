@@ -1,8 +1,8 @@
 import { hexToString } from '@polkadot/util'
-import { Event as EventModel, Identity, Registration } from '../../../model'
-import { Block, CallItem, CommonContext } from '../../../contexts'
-import { getOrCreateAccount, unwrapSigner } from '../../../util/entities'
-import * as mappings from '../../index'
+import { Event as EventModel, Identity, Registration } from '~/model'
+import { Block, CallItem, CommonContext } from '~/contexts'
+import { getOrCreateAccount, unwrapSigner } from '~/util/entities'
+import * as mappings from '~/pallet/index'
 
 export async function setSubs(ctx: CommonContext, block: Block, item: CallItem): Promise<EventModel | undefined> {
     if (!item.extrinsic?.signature) {

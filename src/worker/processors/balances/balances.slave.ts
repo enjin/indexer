@@ -1,3 +1,3 @@
-import instance from './balances.processor'
+import instance from '~/worker/processors/balances/balances.processor'
 
 export default instance.handle

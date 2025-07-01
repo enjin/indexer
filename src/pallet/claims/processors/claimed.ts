@@ -1,8 +1,8 @@
 import { LessThan } from 'typeorm'
-import { Claim, ClaimDetails, ClaimRequest, ClaimsClaimed, Event as EventModel, Extrinsic } from '../../../model'
-import { Block, CommonContext, EventItem } from '../../../contexts'
-import { getOrCreateAccount } from '../../../util/entities'
-import * as mappings from '../../index'
+import { Claim, ClaimDetails, ClaimRequest, ClaimsClaimed, Event as EventModel, Extrinsic } from '~/model'
+import { Block, CommonContext, EventItem } from '~/contexts'
+import { getOrCreateAccount } from '~/util/entities'
+import * as mappings from '~/pallet/index'
 
 export async function claimed(ctx: CommonContext, block: Block, item: EventItem): Promise<EventModel | undefined> {
     if (!item.extrinsic) return undefined

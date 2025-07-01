@@ -1,9 +1,9 @@
-import { nominationPools } from '../../../type/events'
-import { EventItem } from '../../../contexts'
-import { UnsupportedEventError } from '../../../util/errors'
+import { nominationPools } from '~/type/events'
+import { EventItem } from '~/contexts'
+import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
-import { Event as EventModel, Extrinsic, NominationPoolsNominated } from '../../../model'
-import { Nominated } from './types'
+import { Event as EventModel, Extrinsic, NominationPoolsNominated } from '~/model'
+import { Nominated } from '~/pallet/nomination-pools/events/types'
 
 export function nominated(event: EventItem): Nominated {
     return match(event)

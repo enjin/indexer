@@ -1,4 +1,4 @@
-import { AccountData } from '../../../common/types'
+import { AccountData } from '~/pallet/common/types'
 
 export type AccountInfo = {
     nonce: number

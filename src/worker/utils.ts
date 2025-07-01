@@ -1,5 +1,5 @@
 import { createHash } from 'crypto'
-import { Logger } from '../util/logger'
+import { Logger } from '~/util/logger'
 import { Job } from 'bullmq'
 
 const LOGGER_NAMESPACE = 'sqd:worker'

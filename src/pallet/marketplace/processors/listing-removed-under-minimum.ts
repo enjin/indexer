@@ -1,16 +1,9 @@
-import {
-    AccountTokenEvent,
-    Event as EventModel,
-    Listing,
-    ListingStatus,
-    ListingStatusType,
-    ListingType,
-} from '../../../model'
-import { Block, CommonContext, EventItem } from '../../../contexts'
-import { getBestListing, getOrCreateAccount } from '../../../util/entities'
-import { Sns } from '../../../util/sns'
-import * as mappings from '../../index'
-import { QueueUtils } from '../../../queue'
+import { AccountTokenEvent, Event as EventModel, Listing, ListingStatus, ListingStatusType, ListingType } from '~/model'
+import { Block, CommonContext, EventItem } from '~/contexts'
+import { getBestListing, getOrCreateAccount } from '~/util/entities'
+import { Sns } from '~/util/sns'
+import * as mappings from '~/pallet/index'
+import { QueueUtils } from '~/queue'
 
 export async function listingRemovedUnderMinimum(
     ctx: CommonContext,

@@ -1,6 +1,6 @@
 import { Job, Worker } from 'bullmq'
-import computeTraitsConfig from './traits.config'
-import instance from './traits.processor'
+import computeTraitsConfig from '~/worker/processors/traits/traits.config'
+import instance from '~/worker/processors/traits/traits.processor'
 
 const { queueName, connection, isSandboxed } = computeTraitsConfig
 

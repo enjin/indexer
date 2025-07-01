@@ -1,4 +1,4 @@
-import { MultiAddress, DispatchSettings, Call } from '../../../common/types'
+import { MultiAddress, DispatchSettings, Call } from '~/pallet/common/types'
 
 export type Dispatch = {
     tankId: MultiAddress

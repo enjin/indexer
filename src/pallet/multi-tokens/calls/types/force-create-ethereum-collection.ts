@@ -1,4 +1,4 @@
-import { DefaultCollectionDescriptor, AccountId32, H160, RangeInclusive } from '../../../common/types'
+import { DefaultCollectionDescriptor, AccountId32, H160, RangeInclusive } from '~/pallet/common/types'
 
 export type ForceCreateEthereumCollection = {
     owner: AccountId32

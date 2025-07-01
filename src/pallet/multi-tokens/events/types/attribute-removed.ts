@@ -1,4 +1,4 @@
-import { Bytes } from '../../../common/types'
+import { Bytes } from '~/pallet/common/types'
 
 export type AttributeRemoved = {
     collectionId: bigint
