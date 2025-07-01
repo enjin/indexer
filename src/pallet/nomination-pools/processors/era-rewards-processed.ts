@@ -8,6 +8,7 @@ import {
     Event as EventModel,
     PoolMember,
     PoolMemberRewards,
+    PoolState,
 } from '../../../model'
 import { updatePool } from './pool'
 import { Block, CommonContext, EventItem } from '../../../contexts'
@@ -92,6 +93,10 @@ export async function eraRewardsProcessed(
                 nodeCount: 0,
             })
         )
+    }
+
+    if (pool.state === PoolState.Destroying) {
+        return undefined
     }
 
     const reward = new EraReward({
