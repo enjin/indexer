@@ -2,7 +2,7 @@ import { multiTokens } from '~/type/events'
 import { EventItem } from '~/contexts'
 import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
-import { Unreserved } from '~/pallet/multi-tokens/events/types' 
+import { Unreserved } from '~/pallet/multi-tokens/events/types'
 
 export function unreserved(event: EventItem): Unreserved {
     return match(event)

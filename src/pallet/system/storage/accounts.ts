@@ -1,7 +1,7 @@
 import { system } from '~/type/storage'
 import { UnsupportedStorageError } from '~/util/errors'
 import { match } from 'ts-pattern'
-import { AccountInfo } from '~/pallet/system/storage/types' 
+import { AccountInfo } from '~/pallet/system/storage/types'
 import { Block } from '~/contexts'
 import { AccountId32 } from '~/pallet/common/types'
 

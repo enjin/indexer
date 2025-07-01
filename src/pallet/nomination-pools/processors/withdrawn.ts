@@ -1,7 +1,7 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { Era, Event as EventModel, PoolMember } from '~/model'
 import { getOrCreateAccount } from '~/util/entities'
-import { updatePool } from '~/pallet/nomination-pools/processors/pool' 
+import { updatePool } from '~/pallet/nomination-pools/processors/pool'
 import { Sns } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 

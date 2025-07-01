@@ -1,4 +1,4 @@
-export * as QueueUtils from '~/queue/queue-utils' 
+export * as QueueUtils from '~/queue/queue-utils'
 
 export { default as AccountsQueue } from '~/queue/accounts/accounts.queue'
 export { default as BalancesQueue } from '~/queue/balances/balances.queue'

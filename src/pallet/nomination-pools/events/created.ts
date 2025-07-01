@@ -3,7 +3,7 @@ import { EventItem } from '~/contexts'
 import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, NominationPoolsCreated } from '~/model'
-import { Created } from '~/pallet/nomination-pools/events/types' 
+import { Created } from '~/pallet/nomination-pools/events/types'
 
 export function created(event: EventItem): Created {
     return match(event)

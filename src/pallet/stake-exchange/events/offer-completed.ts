@@ -3,7 +3,7 @@ import { EventItem } from '~/contexts'
 import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, StakeExchangeOfferCompleted } from '~/model'
-import { OfferCompleted } from '~/pallet/stake-exchange/events/types' 
+import { OfferCompleted } from '~/pallet/stake-exchange/events/types'
 
 export function offerCompleted(event: EventItem): OfferCompleted {
     return match(event)

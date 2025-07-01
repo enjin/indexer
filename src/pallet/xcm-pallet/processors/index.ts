@@ -1,1 +1,1 @@
-export * from '~/pallet/xcm-pallet/processors/attempted' 
+export * from '~/pallet/xcm-pallet/processors/attempted'

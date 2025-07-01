@@ -1,4 +1,4 @@
-export * from '~/pallet/stake-exchange/processors/offer-created' 
+export * from '~/pallet/stake-exchange/processors/offer-created'
 export * from '~/pallet/stake-exchange/processors/offer-cancelled'
 export * from '~/pallet/stake-exchange/processors/liquidity-withdrawn'
 export * from '~/pallet/stake-exchange/processors/liquidity-added'

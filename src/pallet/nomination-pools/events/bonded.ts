@@ -3,7 +3,7 @@ import { EventItem } from '~/contexts'
 import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, NominationPoolsBonded } from '~/model'
-import { Bonded } from '~/pallet/nomination-pools/events/types' 
+import { Bonded } from '~/pallet/nomination-pools/events/types'
 
 export function bonded(event: EventItem): Bonded {
     return match(event)

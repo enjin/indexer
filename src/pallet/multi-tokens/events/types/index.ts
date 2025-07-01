@@ -1,4 +1,4 @@
-export * from '~/pallet/multi-tokens/events/types/approved' 
+export * from '~/pallet/multi-tokens/events/types/approved'
 export * from '~/pallet/multi-tokens/events/types/attribute-removed'
 export * from '~/pallet/multi-tokens/events/types/attribute-set'
 export * from '~/pallet/multi-tokens/events/types/burned'

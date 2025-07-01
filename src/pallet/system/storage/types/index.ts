@@ -1,1 +1,1 @@
-export * from '~/pallet/system/storage/types/account' 
+export * from '~/pallet/system/storage/types/account'

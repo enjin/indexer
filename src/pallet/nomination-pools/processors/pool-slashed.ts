@@ -1,7 +1,7 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { Event as EventModel, PoolSlash } from '~/model'
 import { Sns } from '~/util/sns'
-import { updatePool } from '~/pallet/nomination-pools/processors/pool' 
+import { updatePool } from '~/pallet/nomination-pools/processors/pool'
 import * as mappings from '~/pallet/index'
 
 export async function poolSlashed(ctx: CommonContext, block: Block, item: EventItem): Promise<EventModel | undefined> {

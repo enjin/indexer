@@ -3,7 +3,7 @@ import { EventItem } from '~/contexts'
 import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, MultiTokensCollectionAccountDestroyed } from '~/model'
-import { CollectionAccountDestroyed } from '~/pallet/multi-tokens/events/types' 
+import { CollectionAccountDestroyed } from '~/pallet/multi-tokens/events/types'
 
 export function collectionAccountDestroyed(event: EventItem): CollectionAccountDestroyed {
     return match(event)

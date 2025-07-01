@@ -1,4 +1,4 @@
-export * from '~/pallet/multi-tokens/events/collection-created' 
+export * from '~/pallet/multi-tokens/events/collection-created'
 export * from '~/pallet/multi-tokens/events/collection-destroyed'
 export * from '~/pallet/multi-tokens/events/token-created'
 export * from '~/pallet/multi-tokens/events/collection-account-created'

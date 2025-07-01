@@ -11,7 +11,7 @@ import {
     MultiTokensMinted,
     Token,
 } from '~/model'
-import { Minted } from '~/pallet/multi-tokens/events/types' 
+import { Minted } from '~/pallet/multi-tokens/events/types'
 
 export function minted(event: EventItem): Minted {
     return match(event)

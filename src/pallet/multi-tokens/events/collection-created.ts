@@ -3,7 +3,7 @@ import { EventItem } from '~/contexts'
 import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, MultiTokensCollectionCreated } from '~/model'
-import { CollectionCreated } from '~/pallet/multi-tokens/events/types' 
+import { CollectionCreated } from '~/pallet/multi-tokens/events/types'
 
 export function collectionCreated(event: EventItem): CollectionCreated {
     return match(event)

@@ -11,7 +11,7 @@ import {
     MultiTokensTransferred,
     Token,
 } from '~/model'
-import { Transferred } from '~/pallet/multi-tokens/events/types' 
+import { Transferred } from '~/pallet/multi-tokens/events/types'
 
 export function transferred(event: EventItem): Transferred {
     return match(event)

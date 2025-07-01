@@ -2,7 +2,7 @@ import { nominationPools } from '~/type/events'
 import { EventItem } from '~/contexts'
 import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
-import { StateChanged } from '~/pallet/nomination-pools/events/types' 
+import { StateChanged } from '~/pallet/nomination-pools/events/types'
 
 export function stateChanged(event: EventItem): StateChanged {
     return match(event)

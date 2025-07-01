@@ -2,7 +2,7 @@ import { multiTokens } from '~/type/events'
 import { EventItem } from '~/contexts'
 import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
-import { ClaimedCollections } from '~/pallet/multi-tokens/events/types' 
+import { ClaimedCollections } from '~/pallet/multi-tokens/events/types'
 
 export function claimedCollections(event: EventItem): ClaimedCollections {
     return match(event)

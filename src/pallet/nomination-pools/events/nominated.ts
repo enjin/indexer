@@ -3,7 +3,7 @@ import { EventItem } from '~/contexts'
 import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, NominationPoolsNominated } from '~/model'
-import { Nominated } from '~/pallet/nomination-pools/events/types' 
+import { Nominated } from '~/pallet/nomination-pools/events/types'
 
 export function nominated(event: EventItem): Nominated {
     return match(event)

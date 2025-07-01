@@ -1,5 +1,5 @@
 export * from '~/pallet/nomination-pools/storage/bonded-pools'
 export * from '~/pallet/nomination-pools/storage/pool-bonus-infos'
 export * from '~/pallet/nomination-pools/storage/early-bird-shares'
-export * from '~/pallet/nomination-pools/storage/early-bird-bonus-info' 
+export * from '~/pallet/nomination-pools/storage/early-bird-bonus-info'
 export * from '~/pallet/nomination-pools/storage/types'

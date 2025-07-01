@@ -1,4 +1,4 @@
-export * from '~/pallet/multi-tokens/processors/collection-created' 
+export * from '~/pallet/multi-tokens/processors/collection-created'
 export * from '~/pallet/multi-tokens/processors/collection-destroyed'
 export * from '~/pallet/multi-tokens/processors/token-created'
 export * from '~/pallet/multi-tokens/processors/collection-account-created'

@@ -3,7 +3,7 @@ import { EventItem } from '~/contexts'
 import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, NominationPoolsEarlyBirdSharesCaptured } from '~/model'
-import { EarlyBirdSharesCaptured } from '~/pallet/nomination-pools/events/types' 
+import { EarlyBirdSharesCaptured } from '~/pallet/nomination-pools/events/types'
 
 export function earlyBirdSharesCaptured(event: EventItem): EarlyBirdSharesCaptured {
     return match(event)

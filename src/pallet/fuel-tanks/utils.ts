@@ -1,6 +1,13 @@
 import { CallItem } from '~/contexts'
 import { match } from 'ts-pattern'
-import { CreateFuelTank, Dispatch, dispatch, DispatchAndTouch, dispatchAndTouch, ForceCreateFuelTank } from '~/pallet/fuel-tanks/calls'
+import {
+    CreateFuelTank,
+    Dispatch,
+    dispatch,
+    DispatchAndTouch,
+    dispatchAndTouch,
+    ForceCreateFuelTank,
+} from '~/pallet/fuel-tanks/calls'
 import { UnsupportedCallError } from '~/util/errors'
 import { calls } from '~/type'
 import * as mappings from '~/pallet/index'

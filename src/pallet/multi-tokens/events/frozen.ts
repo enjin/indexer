@@ -3,7 +3,7 @@ import { EventItem } from '~/contexts'
 import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, MultiTokensFrozen } from '~/model'
-import { Freeze } from '~/pallet/multi-tokens/events/types' 
+import { Freeze } from '~/pallet/multi-tokens/events/types'
 
 export function frozen(event: EventItem): Freeze {
     return match(event)

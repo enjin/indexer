@@ -1,1 +1,1 @@
-export * from '~/pallet/nomination-pools/constants/early-bird-bonus-distribution-block' 
+export * from '~/pallet/nomination-pools/constants/early-bird-bonus-distribution-block'

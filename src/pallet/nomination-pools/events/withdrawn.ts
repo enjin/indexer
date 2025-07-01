@@ -3,7 +3,7 @@ import { EventItem } from '~/contexts'
 import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, NominationPoolsWithdrawn } from '~/model'
-import { Withdrawn } from '~/pallet/nomination-pools/events/types' 
+import { Withdrawn } from '~/pallet/nomination-pools/events/types'
 
 export function withdrawn(event: EventItem): Withdrawn {
     return match(event)

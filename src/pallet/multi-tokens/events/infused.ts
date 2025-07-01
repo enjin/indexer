@@ -11,7 +11,7 @@ import {
     MultiTokensInfused,
     Token,
 } from '~/model'
-import { Infused } from '~/pallet/multi-tokens/events/types' 
+import { Infused } from '~/pallet/multi-tokens/events/types'
 
 export function infused(event: EventItem): Infused {
     return match(event)

@@ -3,7 +3,7 @@ import { EventItem } from '~/contexts'
 import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, NominationPoolsPoolSlashed } from '~/model'
-import { PoolSlashed } from '~/pallet/nomination-pools/events/types' 
+import { PoolSlashed } from '~/pallet/nomination-pools/events/types'
 
 export function poolSlashed(event: EventItem): PoolSlashed {
     return match(event)

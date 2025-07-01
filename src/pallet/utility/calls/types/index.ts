@@ -1,1 +1,1 @@
-export * from '~/pallet/utility/calls/types/batch' 
+export * from '~/pallet/utility/calls/types/batch'

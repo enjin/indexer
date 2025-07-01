@@ -3,7 +3,7 @@ import { EventItem } from '~/contexts'
 import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, MultiTokensCollectionTransferred } from '~/model'
-import { CollectionTransferred } from '~/pallet/multi-tokens/events/types' 
+import { CollectionTransferred } from '~/pallet/multi-tokens/events/types'
 
 export function collectionTransferred(event: EventItem): CollectionTransferred {
     return match(event)

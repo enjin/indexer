@@ -3,7 +3,7 @@ import { EventItem } from '~/contexts'
 import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, NominationPoolsEraRewardsProcessed } from '~/model'
-import { EraRewardsProcessed } from '~/pallet/nomination-pools/events/types' 
+import { EraRewardsProcessed } from '~/pallet/nomination-pools/events/types'
 
 export function eraRewardsProcessed(event: EventItem): EraRewardsProcessed {
     return match(event)

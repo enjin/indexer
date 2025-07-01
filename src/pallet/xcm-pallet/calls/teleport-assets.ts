@@ -2,7 +2,7 @@ import { UnsupportedCallError } from '~/util/errors'
 import { calls } from '~/type'
 import { CallItem } from '~/contexts'
 import { match } from 'ts-pattern'
-import { TeleportAssets } from '~/pallet/xcm-pallet/calls/types' 
+import { TeleportAssets } from '~/pallet/xcm-pallet/calls/types'
 import { withDispatchCheck } from '~/pallet/fuel-tanks/utils'
 
 export const teleportAssets = withDispatchCheck((call: CallItem): TeleportAssets => {

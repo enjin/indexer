@@ -11,7 +11,7 @@ import {
     MultiTokensBurned,
     Token,
 } from '~/model'
-import { Burned } from '~/pallet/multi-tokens/events/types' 
+import { Burned } from '~/pallet/multi-tokens/events/types'
 
 export function burned(event: EventItem): Burned {
     return match(event)

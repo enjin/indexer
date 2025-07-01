@@ -10,7 +10,7 @@ import {
     PoolMemberRewards,
     PoolState,
 } from '~/model'
-import { updatePool } from '~/pallet/nomination-pools/processors/pool' 
+import { updatePool } from '~/pallet/nomination-pools/processors/pool'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { Sns } from '~/util/sns'
 import processorConfig from '~/util/config'

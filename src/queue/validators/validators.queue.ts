@@ -1,5 +1,5 @@
 import { Queue } from 'bullmq'
-import config from '~/queue/validators/validators.config' 
+import config from '~/queue/validators/validators.config'
 
 const { queueName, connection, defaultJobOptions } = config
 

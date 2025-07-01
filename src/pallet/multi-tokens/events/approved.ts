@@ -3,7 +3,7 @@ import { EventItem } from '~/contexts'
 import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, MultiTokensApproved } from '~/model'
-import { Approved } from '~/pallet/multi-tokens/events/types' 
+import { Approved } from '~/pallet/multi-tokens/events/types'
 
 export function approved(event: EventItem): Approved {
     return match(event)
