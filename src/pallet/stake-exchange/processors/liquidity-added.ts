@@ -17,6 +17,7 @@ export async function liquidityAdded(
         id: event.offerId.toString(),
     })
     offer.total += call.amount
+    if (offer.amount) offer.amount += call.amount
 
     await Sns.getInstance().send({
         id: item.id,
