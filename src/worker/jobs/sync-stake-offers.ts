@@ -16,8 +16,6 @@ export async function syncStakeOffers(job: Job): Promise<void> {
         select: ['id', 'offerId', 'amount'],
     })
 
-    await job.log(`Found ${stakeExchangeOffers.length} stake exchange offers`)
-
     const promises: Promise<any>[] = []
 
     const offerEvents = await em.find(Event, {
@@ -38,7 +36,6 @@ export async function syncStakeOffers(job: Job): Promise<void> {
             // @ts-ignore
             (offerEvent) => offerEvent.data?.offerId === stakeExchangeOffer.offerId
         )
-        await job.log(`Found ${offerIdEvents.length} offer events for stake exchange offer ${stakeExchangeOffer.offerId}`)
         stakeExchangeOffer.amount = 0n
 
         for (const offerEvent of offerIdEvents) {
