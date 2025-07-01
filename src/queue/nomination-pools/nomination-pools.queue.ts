@@ -1,5 +1,5 @@
 import { Queue } from 'bullmq'
-import config from '~/queue/nomination-pools/nomination-pools.config' 
+import config from '~/queue/nomination-pools/nomination-pools.config'
 
 const { queueName, connection, defaultJobOptions } = config
 

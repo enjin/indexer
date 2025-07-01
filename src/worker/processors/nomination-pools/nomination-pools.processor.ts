@@ -1,5 +1,5 @@
 import { Job } from 'bullmq'
-import { ProcessorDef } from '~/worker/processors/processor.def' 
+import { ProcessorDef } from '~/worker/processors/processor.def'
 import { JobsEnum } from '~/queue/constants'
 import { logDebug, logError } from '~/worker/utils'
 import { computeDestroyedPoolsEvents } from '~/worker/jobs/compute-destroyed-pool-events'

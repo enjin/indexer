@@ -1,6 +1,6 @@
 import rootConfig from '~/queue/config'
 import { QueueConfigType } from '~/queue/types'
-import { QueuesEnum } from '~/queue/constants' 
+import { QueuesEnum } from '~/queue/constants'
 import { BullMQOtel } from 'bullmq-otel'
 
 const config: QueueConfigType = {

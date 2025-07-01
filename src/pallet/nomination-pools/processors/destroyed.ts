@@ -9,7 +9,7 @@ import {
 } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import * as mappings from '~/pallet/index'
-import { Sns } from '~/util/sns' 
+import { Sns } from '~/util/sns'
 
 export async function destroyed(ctx: CommonContext, block: Block, item: EventItem): Promise<EventModel | undefined> {
     const eventData = mappings.nominationPools.events.destroyed(item)
