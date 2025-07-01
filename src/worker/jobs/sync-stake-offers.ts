@@ -16,21 +16,40 @@ export async function syncStakeOffers(job: Job): Promise<void> {
         select: ['id', 'offerId', 'amount'],
     })
 
+    await job.log(`Found ${stakeExchangeOffers.length} stake exchange offers`)
+
     const promises: Promise<any>[] = []
 
     for (const stakeExchangeOffer of stakeExchangeOffers) {
+
         const offerEvents = await em.find(Event, {
             where: {
                 data: {
                     offerId: stakeExchangeOffer.offerId,
                 },
-                name: In([StakeExchangeOfferCreated.name]),
+                name: In([
+                    StakeExchangeOfferCreated.name,
+                    StakeExchangeLiquidityAdded.name,
+                    StakeExchangeLiquidityWithdrawn.name,
+                ]),
             },
         })
 
+        await job.log(`Found ${offerEvents.length} offer events for stake exchange offer ${stakeExchangeOffer.id}`)
+        stakeExchangeOffer.amount = 0n
+        
         for (const offerEvent of offerEvents) {
-            // @ts-ignore
-            stakeExchangeOffer.amount = offerEvent.data?.total
+            if (offerEvent.data?.isTypeOf === StakeExchangeOfferCreated.name) {
+                stakeExchangeOffer.amount = (offerEvent.data as StakeExchangeOfferCreated).total
+            }
+
+            if (offerEvent.data?.isTypeOf === StakeExchangeLiquidityAdded.name && stakeExchangeOffer.amount) {
+                stakeExchangeOffer.amount += (offerEvent.data as StakeExchangeLiquidityAdded).amount
+            }
+
+            if (offerEvent.data?.isTypeOf === StakeExchangeLiquidityWithdrawn.name && stakeExchangeOffer.amount) {
+                stakeExchangeOffer.amount -= (offerEvent.data as StakeExchangeLiquidityWithdrawn).amount
+            }
         }
 
         promises.push(em.save(stakeExchangeOffer))
