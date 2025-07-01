@@ -20,25 +20,28 @@ export async function syncStakeOffers(job: Job): Promise<void> {
 
     const promises: Promise<any>[] = []
 
+    const offerEvents = await em.find(Event, {
+        where: {
+            name: In([
+                StakeExchangeOfferCreated.name,
+                StakeExchangeLiquidityAdded.name,
+                StakeExchangeLiquidityWithdrawn.name,
+            ]),
+        },
+        order: {
+            id: 'ASC',
+        },
+    })
+
     for (const stakeExchangeOffer of stakeExchangeOffers) {
-
-        const offerEvents = await em.find(Event, {
-            where: {
-                data: {
-                    offerId: stakeExchangeOffer.offerId,
-                },
-                name: In([
-                    StakeExchangeOfferCreated.name,
-                    StakeExchangeLiquidityAdded.name,
-                    StakeExchangeLiquidityWithdrawn.name,
-                ]),
-            },
-        })
-
-        await job.log(`Found ${offerEvents.length} offer events for stake exchange offer ${stakeExchangeOffer.id}`)
+        const offerIdEvents = offerEvents.filter(
+            // @ts-ignore
+            (offerEvent) => offerEvent.data?.offerId === stakeExchangeOffer.offerId
+        )
+        await job.log(`Found ${offerIdEvents.length} offer events for stake exchange offer ${stakeExchangeOffer.offerId}`)
         stakeExchangeOffer.amount = 0n
-        
-        for (const offerEvent of offerEvents) {
+
+        for (const offerEvent of offerIdEvents) {
             if (offerEvent.data?.isTypeOf === StakeExchangeOfferCreated.name) {
                 stakeExchangeOffer.amount = (offerEvent.data as StakeExchangeOfferCreated).total
             }
