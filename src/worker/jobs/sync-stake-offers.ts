@@ -24,26 +24,13 @@ export async function syncStakeOffers(job: Job): Promise<void> {
                 data: {
                     offerId: stakeExchangeOffer.offerId,
                 },
-                name: In([
-                    StakeExchangeOfferCreated.name,
-                    StakeExchangeLiquidityAdded.name,
-                    StakeExchangeLiquidityWithdrawn.name,
-                ]),
+                name: In([StakeExchangeOfferCreated.name]),
             },
         })
 
         for (const offerEvent of offerEvents) {
-            if (offerEvent.data?.isTypeOf === StakeExchangeOfferCreated.name) {
-                stakeExchangeOffer.amount = (offerEvent.data as StakeExchangeOfferCreated).total
-            }
-
-            if (offerEvent.data?.isTypeOf === StakeExchangeLiquidityAdded.name && stakeExchangeOffer.amount) {
-                stakeExchangeOffer.amount += (offerEvent.data as StakeExchangeLiquidityAdded).amount
-            }
-
-            if (offerEvent.data?.isTypeOf === StakeExchangeLiquidityWithdrawn.name && stakeExchangeOffer.amount) {
-                stakeExchangeOffer.amount -= (offerEvent.data as StakeExchangeLiquidityWithdrawn).amount
-            }
+            // @ts-ignore
+            stakeExchangeOffer.amount = offerEvent.data?.total
         }
 
         promises.push(em.save(stakeExchangeOffer))
