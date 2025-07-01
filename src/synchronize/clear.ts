@@ -1,5 +1,5 @@
-import { DataService } from '../util/data'
-import config from '../util/config'
+import { DataService } from '~/util/data'
+import config from '~/util/config'
 ;(async function clearDatabase() {
     try {
         const dataService = DataService.getInstance()

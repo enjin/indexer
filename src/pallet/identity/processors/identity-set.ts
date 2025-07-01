@@ -1,10 +1,10 @@
 import { hexToString } from '@polkadot/util'
-import { CallNotDefinedError } from '../../../util/errors'
-import { Event as EventModel, Identity, JudgementType, Registration } from '../../../model'
-import { Block, CommonContext, EventItem } from '../../../contexts'
-import { getOrCreateAccount } from '../../../util/entities'
-import * as mappings from '../../index'
-import { Data } from '../../common/types'
+import { CallNotDefinedError } from '~/util/errors'
+import { Event as EventModel, Identity, JudgementType, Registration } from '~/model'
+import { Block, CommonContext, EventItem } from '~/contexts'
+import { getOrCreateAccount } from '~/util/entities'
+import * as mappings from '~/pallet/index'
+import { Data } from '~/pallet/common/types'
 
 const dataToValue = (raw: Data) => {
     if (raw.__kind !== 'None') {

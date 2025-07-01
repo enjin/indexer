@@ -1,5 +1,5 @@
 import { connectionManager } from '../contexts'
-import { Config, ChainInfo } from '../model'
+import { Config, ChainInfo } from '~/model'
 import { createLogger } from '@subsquid/logger'
 
 export class DataService {

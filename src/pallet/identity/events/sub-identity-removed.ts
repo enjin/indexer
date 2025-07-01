@@ -1,8 +1,8 @@
-import { identity } from '../../../type/events'
-import { EventItem } from '../../../contexts'
-import { UnsupportedEventError } from '../../../util/errors'
+import { identity } from '~/type/events'
+import { EventItem } from '~/contexts'
+import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
-import { SubIdentityRemoved } from './types'
+import { SubIdentityRemoved } from '~/pallet/identity/events/types'
 
 export function subIdentityRemoved(event: EventItem): SubIdentityRemoved {
     return match(event)

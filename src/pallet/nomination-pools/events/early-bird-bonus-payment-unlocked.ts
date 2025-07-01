@@ -1,8 +1,8 @@
-import { nominationPools } from '../../../type/events'
-import { EventItem } from '../../../contexts'
-import { UnsupportedEventError } from '../../../util/errors'
+import { nominationPools } from '~/type/events'
+import { EventItem } from '~/contexts'
+import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
-import { EarlyBirdBonusPaymentUnlocked } from './types'
+import { EarlyBirdBonusPaymentUnlocked } from '~/pallet/nomination-pools/events/types' 
 
 export function earlyBirdBonusPaymentUnlocked(event: EventItem): EarlyBirdBonusPaymentUnlocked {
     return match(event)

@@ -1,10 +1,10 @@
-import { CallItem } from '../../contexts'
-import { LimitedReserveTransferAssets, LimitedTeleportAssets, TeleportAssets } from './calls'
+import { CallItem } from '~/contexts'
+import { LimitedReserveTransferAssets, LimitedTeleportAssets, TeleportAssets } from '~/pallet/polkadot-xcm/calls'
 import { match } from 'ts-pattern'
-import * as mappings from '../index'
-import { UnsupportedCallError } from '../../util/errors'
-import { calls } from '../../type'
-import { withDispatchCheck } from '../fuel-tanks/utils'
+import * as mappings from '~/pallet/index'
+import { UnsupportedCallError } from '~/util/errors'
+import { calls } from '~/type'
+import { withDispatchCheck } from '~/pallet/fuel-tanks/utils'
 
 export function anyTeleportAssets(
     call: CallItem

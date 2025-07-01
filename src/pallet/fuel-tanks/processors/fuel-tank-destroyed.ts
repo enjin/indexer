@@ -6,9 +6,9 @@ import {
     FuelTankDestroyed,
     FuelTankRuleSet,
     PermittedExtrinsics,
-} from '../../../model'
-import { Block, CommonContext, EventItem } from '../../../contexts'
-import * as mappings from '../../index'
+} from '~/model'
+import { Block, CommonContext, EventItem } from '~/contexts'
+import * as mappings from '~/pallet/index'
 
 export async function fuelTankDestroyed(
     ctx: CommonContext,

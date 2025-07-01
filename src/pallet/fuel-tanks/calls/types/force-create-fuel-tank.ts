@@ -1,4 +1,4 @@
-import { MultiAddress, FuelTankDescriptor } from '../../../common/types'
+import { MultiAddress, FuelTankDescriptor } from '~/pallet/common/types'
 
 export type ForceCreateFuelTank = {
     owner: MultiAddress

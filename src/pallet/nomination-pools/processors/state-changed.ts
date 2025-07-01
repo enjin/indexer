@@ -1,6 +1,6 @@
-import { Block, CommonContext, EventItem } from '../../../contexts'
-import { NominationPool, PoolState } from '../../../model'
-import * as mappings from '../../index'
+import { Block, CommonContext, EventItem } from '~/contexts'
+import { NominationPool, PoolState } from '~/model'
+import * as mappings from '~/pallet/index'
 
 export async function stateChanged(ctx: CommonContext, block: Block, item: EventItem) {
     if (!item.extrinsic) return undefined

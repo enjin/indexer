@@ -1,5 +1,5 @@
-import { connectionManager } from '../../contexts'
-import { Collection, Token, TokenRarity, Trait } from '../../model'
+import { connectionManager } from '~/contexts'
+import { Collection, Token, TokenRarity, Trait } from '~/model'
 import * as mathjs from 'mathjs'
 import { Job } from 'bullmq'
 

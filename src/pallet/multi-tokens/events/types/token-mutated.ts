@@ -1,4 +1,4 @@
-import { TokenMutation } from '../../../common/types'
+import { TokenMutation } from '~/pallet/common/types'
 
 export type TokenMutated = {
     collectionId: bigint

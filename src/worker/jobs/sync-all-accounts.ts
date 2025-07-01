@@ -1,6 +1,6 @@
-import { QueueUtils } from '../../queue'
-import { Account } from '../../model'
-import { connectionManager } from '../../contexts'
+import { QueueUtils } from '~/queue'
+import { Account } from '~/model'
+import { connectionManager } from '~/contexts'
 import { Job } from 'bullmq'
 
 export async function syncAllAccounts(job: Job) {

@@ -1,9 +1,9 @@
-import { CallItem } from '../../../contexts'
-import { UnsupportedCallError } from '../../../util/errors'
-import { calls } from '../../../type'
+import { CallItem } from '~/contexts'
+import { UnsupportedCallError } from '~/util/errors'
+import { calls } from '~/type'
 import { match } from 'ts-pattern'
-import { withDispatchCheck } from '../../fuel-tanks/utils'
-import { Batch } from './types'
+import { withDispatchCheck } from '~/pallet/fuel-tanks/utils'
+import { Batch } from '~/pallet/matrix-utility/calls/types'
 
 export const batch = withDispatchCheck((call: CallItem): Batch => {
     return match(call)

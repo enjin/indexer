@@ -1,6 +1,6 @@
-import { multiTokens } from '../../../type/events'
-import { EventItem } from '../../../contexts'
-import { UnsupportedEventError } from '../../../util/errors'
+import { multiTokens } from '~/type/events'
+import { EventItem } from '~/contexts'
+import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
 import {
     Account,
@@ -10,8 +10,8 @@ import {
     Extrinsic,
     MultiTokensTransferred,
     Token,
-} from '../../../model'
-import { Transferred } from './types'
+} from '~/model'
+import { Transferred } from '~/pallet/multi-tokens/events/types' 
 
 export function transferred(event: EventItem): Transferred {
     return match(event)

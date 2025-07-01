@@ -1,9 +1,9 @@
-import { CallItem } from '../../../contexts'
-import { UnsupportedCallError } from '../../../util/errors'
-import { calls } from '../../../type'
+import { CallItem } from '~/contexts'
+import { UnsupportedCallError } from '~/util/errors'
+import { calls } from '~/type'
 import { match } from 'ts-pattern'
-import { ForceCreateEthereumCollection } from './types'
-import { withDispatchCheck } from '../../fuel-tanks/utils'
+import { ForceCreateEthereumCollection } from '~/pallet/multi-tokens/calls/types'
+import { withDispatchCheck } from '~/pallet/fuel-tanks/utils'
 
 export const forceCreateEthereumCollection = withDispatchCheck((call: CallItem): ForceCreateEthereumCollection => {
     return match(call)

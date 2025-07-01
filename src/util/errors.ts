@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/node'
-import { CallItem, EventItem } from '../contexts'
+import { CallItem, EventItem } from '~/contexts'
 
 export class UnsupportedEventError extends Error {
     constructor(event: EventItem) {

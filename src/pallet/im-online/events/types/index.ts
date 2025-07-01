@@ -1,1 +1,1 @@
-export * from './some-offline'
+export * from '~/pallet/im-online/events/types/some-offline'

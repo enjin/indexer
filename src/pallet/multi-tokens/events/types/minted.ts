@@ -1,4 +1,4 @@
-import { AccountId32, RootOrSigned } from '../../../common/types'
+import { AccountId32, RootOrSigned } from '~/pallet/common/types'
 
 export type Minted = {
     collectionId: bigint

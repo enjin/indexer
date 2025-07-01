@@ -1,7 +1,7 @@
 import { MessageAttributeValue, PublishCommand, SNSClient } from '@aws-sdk/client-sns'
-import config from './config'
-import { safeJsonString } from './tools'
-import { DataService } from './data'
+import config from '~/util/config'
+import { safeJsonString } from '~/util/tools'
+import { DataService } from '~/util/data'
 
 export class Sns {
     private static instance: Sns | undefined = undefined

@@ -1,4 +1,4 @@
-import { AccountId32, Bytes, RuntimeHoldReason } from '../../../common/types'
+import { AccountId32, Bytes, RuntimeHoldReason } from '~/pallet/common/types'
 
 export type Unreserved = {
     collectionId: bigint

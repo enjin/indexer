@@ -1,9 +1,9 @@
-import { connectionManager } from '../../contexts'
-import { Collection, Token, TokenCapSingleMint } from '../../model'
+import { connectionManager } from '~/contexts'
+import { Collection, Token, TokenCapSingleMint } from '~/model'
 import { Job } from 'bullmq'
-import Rpc from '../../util/rpc'
-import { TokenCapSupply } from '../../model/generated/_tokenCapSupply'
-import { CapType } from '../../model/generated/_capType'
+import Rpc from '~/util/rpc'
+import { TokenCapSupply } from '~/model/generated/_tokenCapSupply'
+import { CapType } from '~/model/generated/_capType'
 
 function getCapType(capSupply: string, capType: string) {
     if (capType === 'supply') {

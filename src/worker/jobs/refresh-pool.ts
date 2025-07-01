@@ -1,7 +1,7 @@
-import { EraReward, NominationPool } from '../../model'
-import { connectionManager } from '../../contexts'
+import { EraReward, NominationPool } from '~/model'
+import { connectionManager } from '~/contexts'
 import { Job } from 'bullmq'
-import Rpc from '../../util/rpc'
+import Rpc from '~/util/rpc'
 import { bnToU8a, hexToBigInt, hexToU8a, u8aConcat, u8aToHex, BN, stringToU8a, hexToString } from '@polkadot/util'
 import Big from 'big.js'
 

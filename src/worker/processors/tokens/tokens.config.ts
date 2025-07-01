@@ -1,6 +1,6 @@
-import rootConfig from '../../config'
-import { WorkerConfigType } from '../../types'
-import { QueuesEnum } from '../../constants'
+import rootConfig from '~/worker/config'
+import { WorkerConfigType } from '~/worker/types'
+import { QueuesEnum } from '~/queue/constants'
 
 const config: WorkerConfigType = {
     ...rootConfig,

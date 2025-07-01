@@ -1,8 +1,8 @@
-import { UnsupportedCallError } from '../../../util/errors'
-import { calls } from '../../../type'
-import { CallItem } from '../../../contexts'
+import { UnsupportedCallError } from '~/util/errors'
+import { calls } from '~/type'
+import { CallItem } from '~/contexts'
 import { match } from 'ts-pattern'
-import { Dispatch } from './types'
+import { Dispatch } from '~/pallet/fuel-tanks/calls/types'
 
 export function dispatch(call: CallItem): Dispatch {
     return match(call)

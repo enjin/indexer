@@ -1,7 +1,7 @@
-import * as events from './events'
-import * as calls from './calls'
-import * as utils from './utils'
-import * as processors from './processors'
+import * as events from '~/pallet/fuel-tanks/events'
+import * as calls from '~/pallet/fuel-tanks/calls'
+import * as utils from '~/pallet/fuel-tanks/utils'
+import * as processors from '~/pallet/fuel-tanks/processors'
 
 export default {
     events,

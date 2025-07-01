@@ -1,8 +1,8 @@
-import { multiTokens } from '../../../type/events'
-import { EventItem } from '../../../contexts'
-import { UnsupportedEventError } from '../../../util/errors'
+import { multiTokens } from '~/type/events'
+import { EventItem } from '~/contexts'
+import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
-import { ClaimTokensCompleted } from './types'
+import { ClaimTokensCompleted } from '~/pallet/multi-tokens/events/types' 
 
 export function claimTokensCompleted(event: EventItem): ClaimTokensCompleted {
     return match(event)

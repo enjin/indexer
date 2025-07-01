@@ -6,9 +6,9 @@ import {
     PoolMember,
     PoolMemberRewards,
     PoolValidator,
-} from '../../../model'
-import { Block, CommonContext, EventItem } from '../../../contexts'
-import * as mappings from '../../index'
+} from '~/model'
+import { Block, CommonContext, EventItem } from '~/contexts'
+import * as mappings from '~/pallet/index'
 
 export async function destroyed(ctx: CommonContext, block: Block, item: EventItem): Promise<EventModel | undefined> {
     const eventData = mappings.nominationPools.events.destroyed(item)

@@ -1,7 +1,7 @@
-import { Collection, CollectionAccount, Event as EventModel } from '../../../model'
-import { Block, CommonContext, EventItem } from '../../../contexts'
-import { getOrCreateAccount } from '../../../util/entities'
-import * as mappings from '../../index'
+import { Collection, CollectionAccount, Event as EventModel } from '~/model'
+import { Block, CommonContext, EventItem } from '~/contexts'
+import { getOrCreateAccount } from '~/util/entities'
+import * as mappings from '~/pallet/index'
 
 export async function collectionAccountCreated(
     ctx: CommonContext,

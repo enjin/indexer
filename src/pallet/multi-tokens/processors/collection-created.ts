@@ -10,14 +10,14 @@ import {
     CollectionStats,
     MarketPolicy,
     RoyaltyBeneficiary,
-} from '../../../model'
-import { Block, CommonContext, EventItem } from '../../../contexts'
-import { getOrCreateAccount } from '../../../util/entities'
-import * as mappings from '../../index'
-import { Sns } from '../../../util/sns'
-import { matrixUtility } from '../../../type/calls'
-import { DefaultRoyalty as DefaultRoyalty1020 } from '../../../type/matrixV1020'
-import { DefaultRoyalty as DefaultRoyalty500 } from '../../../type/matrixV500'
+} from '~/model'
+import { Block, CommonContext, EventItem } from '~/contexts'
+import { getOrCreateAccount } from '~/util/entities'
+import * as mappings from '~/pallet/index'
+import { Sns } from '~/util/sns'
+import { matrixUtility } from '~/type/calls'
+import { DefaultRoyalty as DefaultRoyalty1020 } from '~/type/matrixV1020'
+import { DefaultRoyalty as DefaultRoyalty500 } from '~/type/matrixV500'
 
 type DefaultRoyalty = DefaultRoyalty500 | DefaultRoyalty1020
 

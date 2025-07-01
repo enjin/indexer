@@ -1,1 +1,1 @@
-export * from './exchange-rate'
+export * from '~/pallet/claims/storage/types/exchange-rate'

@@ -1,4 +1,4 @@
-import { Bytes } from './types'
+import { Bytes } from '~/pallet/common/types'
 
 export type V2Junction =
     | V2Junction_AccountId32

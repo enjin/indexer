@@ -1,9 +1,9 @@
-import { CallNotDefinedError } from '../../../util/errors'
-import { calls } from '../../../type'
-import { Event as EventModel, FuelTank, FuelTankRuleSet, PermittedExtrinsics } from '../../../model'
-import { Block, CommonContext, EventItem } from '../../../contexts'
-import * as mappings from '../../index'
-import { rulesToMap } from '../utils'
+import { CallNotDefinedError } from '~/util/errors'
+import { calls } from '~/type'
+import { Event as EventModel, FuelTank, FuelTankRuleSet, PermittedExtrinsics } from '~/model'
+import { Block, CommonContext, EventItem } from '~/contexts'
+import * as mappings from '~/pallet/index'
+import { rulesToMap } from '~/pallet/fuel-tanks/utils'
 
 export async function ruleSetInserted(
     ctx: CommonContext,

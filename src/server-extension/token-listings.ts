@@ -1,6 +1,6 @@
 import { Field, ObjectType, Query, Resolver, Arg, ID, registerEnumType, Int, createUnionType } from 'type-graphql'
 import { BigInteger } from '@subsquid/graphql-server'
-import { Listing, Token, TokenAccount, Account } from '../model'
+import { Listing, Token, TokenAccount, Account } from '~/model'
 import 'reflect-metadata'
 import { EntityManager } from 'typeorm'
 

@@ -1,8 +1,8 @@
-import { Block } from '../../../contexts'
-import { UnsupportedStorageError } from '../../../util/errors'
-import { multiTokens } from '../../../type/storage'
+import { Block } from '~/contexts'
+import { UnsupportedStorageError } from '~/util/errors'
+import { multiTokens } from '~/type/storage'
 import { match } from 'ts-pattern'
-import { Token } from './types'
+import { Token } from '~/pallet/multi-tokens/storage/types'
 
 export async function tokens(
     block: Block,

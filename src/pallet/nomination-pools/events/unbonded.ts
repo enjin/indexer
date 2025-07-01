@@ -1,9 +1,9 @@
-import { nominationPools } from '../../../type/events'
-import { EventItem } from '../../../contexts'
-import { UnsupportedEventError } from '../../../util/errors'
+import { nominationPools } from '~/type/events'
+import { EventItem } from '~/contexts'
+import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
-import { Event as EventModel, Extrinsic, NominationPoolsUnbonded } from '../../../model'
-import { Unbonded } from './types'
+import { Event as EventModel, Extrinsic, NominationPoolsUnbonded } from '~/model'
+import { Unbonded } from '~/pallet/nomination-pools/events/types' 
 
 export function unbonded(event: EventItem): Unbonded {
     return match(event)

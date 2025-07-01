@@ -1,4 +1,4 @@
-import { MultiAddress } from '../../../common/types'
+import { MultiAddress } from '~/pallet/common/types'
 
 export type WithdrawUnbonded = {
     poolId: number

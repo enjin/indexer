@@ -1,6 +1,6 @@
 import { Job, Worker } from 'bullmq'
-import fetchAccountsConfig from './accounts.config'
-import instance from './accounts.processor'
+import fetchAccountsConfig from '~/worker/processors/accounts/accounts.config'
+import instance from '~/worker/processors/accounts/accounts.processor'
 
 const { queueName, connection, isSandboxed } = fetchAccountsConfig
 

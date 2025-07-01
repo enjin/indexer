@@ -1,4 +1,4 @@
-import { DispatchRuleDescriptor, MultiAddress, RuleSetDescriptor } from '../../../common/types'
+import { DispatchRuleDescriptor, MultiAddress, RuleSetDescriptor } from '~/pallet/common/types'
 
 export type InsertRuleSet = {
     tankId: MultiAddress

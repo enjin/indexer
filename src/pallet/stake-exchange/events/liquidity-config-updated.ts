@@ -1,8 +1,8 @@
-import { stakeExchange } from '../../../type/events'
-import { EventItem } from '../../../contexts'
-import { UnsupportedEventError } from '../../../util/errors'
+import { stakeExchange } from '~/type/events'
+import { EventItem } from '~/contexts'
+import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
-import { LiquidityConfigUpdated } from './types'
+import { LiquidityConfigUpdated } from '~/pallet/stake-exchange/events/types'
 
 export function liquidityConfigUpdated(event: EventItem): LiquidityConfigUpdated {
     return match(event)

@@ -1,4 +1,4 @@
-import { Offer } from '../../../common/types'
+import { Offer } from '~/pallet/common/types'
 
 export type OfferCreated = {
     offerId: bigint

@@ -1,10 +1,10 @@
 import { BlockHeader } from '@subsquid/substrate-processor'
 import chunk from 'lodash/chunk'
-import { Account, Balance, Event as EventModel } from '../../../model'
-import { balances } from '../../../type/events'
-import { CommonContext, EventItem } from '../../../contexts'
-import * as mappings from '../../index'
-import { encodeAddress } from '../../../util/tools'
+import { Account, Balance, Event as EventModel } from '~/model'
+import { balances } from '~/type/events'
+import { CommonContext, EventItem } from '~/contexts'
+import * as mappings from '~/pallet/index'
+import { encodeAddress } from '~/util/tools'
 
 function processBalancesEventItem(event: EventItem) {
     const ids: string[] = []

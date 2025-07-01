@@ -1,5 +1,5 @@
-import * as events from './events'
-import * as processors from './processors'
+import * as events from '~/pallet/balances/events'
+import * as processors from '~/pallet/balances/processors'
 
 export default {
     events,

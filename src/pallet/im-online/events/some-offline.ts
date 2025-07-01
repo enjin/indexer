@@ -1,8 +1,8 @@
-import { imOnline } from '../../../type/events'
-import { EventItem } from '../../../contexts'
-import { UnsupportedEventError } from '../../../util/errors'
+import { imOnline } from '~/type/events'
+import { EventItem } from '~/contexts'
+import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
-import { SomeOffline } from './types'
+import { SomeOffline } from '~/pallet/im-online/events/types'
 
 export function someOffline(event: EventItem): SomeOffline {
     return match(event)

@@ -1,5 +1,5 @@
-import { connectionManager } from '../../contexts'
-import { Listing, ListingType } from '../../model'
+import { connectionManager } from '~/contexts'
+import { Listing, ListingType } from '~/model'
 import { Brackets } from 'typeorm'
 import { Job } from 'bullmq'
 

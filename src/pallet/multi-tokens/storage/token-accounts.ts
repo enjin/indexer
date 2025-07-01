@@ -1,10 +1,10 @@
-import { Block } from '../../../contexts'
-import { UnsupportedStorageError } from '../../../util/errors'
-import { multiTokens } from '../../../type/storage'
+import { Block } from '~/contexts'
+import { UnsupportedStorageError } from '~/util/errors'
+import { multiTokens } from '~/type/storage'
 import { match } from 'ts-pattern'
-import { TokenAccount } from './types'
-import { AccountId32 } from '../../common/types'
-import { TokenAccountsV100 } from '../../../type/multi-tokens/storage'
+import { TokenAccount } from '~/pallet/multi-tokens/storage/types'
+import { AccountId32 } from '~/pallet/common/types'
+import { TokenAccountsV100 } from '~/type/multi-tokens/storage'
 
 // Probably better to refactor this and use multiple different functions instead of overloading
 export async function tokenAccounts(

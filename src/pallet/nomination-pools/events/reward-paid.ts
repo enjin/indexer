@@ -1,8 +1,8 @@
-import { nominationPools } from '../../../type/events'
-import { EventItem } from '../../../contexts'
-import { UnsupportedEventError } from '../../../util/errors'
+import { nominationPools } from '~/type/events'
+import { EventItem } from '~/contexts'
+import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
-import { RewardPaid } from './types'
+import { RewardPaid } from '~/pallet/nomination-pools/events/types' 
 
 export function rewardPaid(event: EventItem): RewardPaid {
     return match(event)

@@ -1,5 +1,5 @@
 import { BlockHeader } from '@subsquid/substrate-processor'
-import { constants } from '../../../type'
+import { constants } from '~/type'
 import { match } from 'ts-pattern'
 
 export function earlyBirdBonusDistributionBlock(block: BlockHeader): number {

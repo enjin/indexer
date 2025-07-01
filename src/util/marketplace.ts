@@ -1,6 +1,6 @@
 import axios from 'axios'
-import processorConfig from './config'
-import { isMainnet } from './tools'
+import processorConfig from '~/util/config'
+import { isMainnet } from '~/util/tools'
 
 const addressesQuery = `query AddressesQuery($ids: [String!]) {
     result: AddressesVerification(publicKeys:$ids){

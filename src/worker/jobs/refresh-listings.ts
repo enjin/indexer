@@ -1,7 +1,7 @@
-import { AuctionData, Listing, ListingType } from '../../model'
-import { connectionManager } from '../../contexts'
+import { AuctionData, Listing, ListingType } from '~/model'
+import { connectionManager } from '~/contexts'
 import { Job } from 'bullmq'
-import Rpc from '../../util/rpc'
+import Rpc from '~/util/rpc'
 
 export async function refreshListings(job: Job, ids: string[]) {
     const em = await connectionManager()

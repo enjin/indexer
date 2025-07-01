@@ -1,6 +1,6 @@
 import '@polkadot/api-augment/substrate'
 import { ApiPromise, WsProvider } from '@polkadot/api'
-import config from './config'
+import config from '~/util/config'
 
 class Rpc {
     private static _instance: Rpc | null = null

@@ -1,4 +1,4 @@
-import { FlexibleMintParams, MultiAddress } from '../../../common/types'
+import { FlexibleMintParams, MultiAddress } from '~/pallet/common/types'
 
 export type ForceMint = {
     caller?: MultiAddress // Changed from MultiAddress to MultiAddress? on v1023

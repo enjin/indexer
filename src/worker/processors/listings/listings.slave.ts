@@ -1,3 +1,4 @@
-import instance from './listings.processor'
+import instance from '~/worker/processors/listings/listings.processor'
 
 export default instance.handle
+

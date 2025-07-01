@@ -1,7 +1,7 @@
-import { Block, CommonContext, EventItem } from '../../../contexts'
-import { Event as EventModel, NominationPool, PoolValidator, Validator } from '../../../model'
-import { getOrCreateAccount } from '../../../util/entities'
-import * as mappings from '../../index'
+import { Block, CommonContext, EventItem } from '~/contexts'
+import { Event as EventModel, NominationPool, PoolValidator, Validator } from '~/model'
+import { getOrCreateAccount } from '~/util/entities'
+import * as mappings from '~/pallet/index'
 
 export async function nominated(ctx: CommonContext, block: Block, item: EventItem): Promise<EventModel | undefined> {
     if (!item.extrinsic) return undefined

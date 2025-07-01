@@ -1,6 +1,6 @@
-import { Block, CommonContext } from '../../../contexts'
-import { ClaimDetails } from '../../../model'
-import * as mappings from '../../index'
+import { Block, CommonContext } from '~/contexts'
+import { ClaimDetails } from '~/model'
+import * as mappings from '~/pallet/index'
 
 export async function updateClaimDetails(ctx: CommonContext, block: Block) {
     const exchangeRate = await mappings.claims.storage.exchangeRate(block)

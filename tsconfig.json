@@ -16,7 +16,10 @@
     "skipLibCheck": true,
     "baseUrl": ".",
     "inlineSources": true,
-    "sourceRoot": "/"
+    "sourceRoot": "/",
+    "paths": {
+      "~/*": ["./src/*"]
+    }
   },
   "include": ["src"],
   "exclude": [

@@ -1,7 +1,7 @@
 import { Logtail } from '@logtail/node'
 import { Context } from '@logtail/types'
 import { createLogger, Logger as SqdLogger } from '@subsquid/logger'
-import config from './config'
+import config from '~/util/config'
 
 export enum LogLevel {
     TRACE = 0,

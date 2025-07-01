@@ -1,4 +1,4 @@
-import { throwFatalError } from '../../../util/errors'
+import { throwFatalError } from '~/util/errors'
 import {
     Collection,
     Event as EventModel,
@@ -7,13 +7,13 @@ import {
     RoyaltyBeneficiary,
     RoyaltyCurrency,
     Token,
-} from '../../../model'
-import { Block, CommonContext, EventItem } from '../../../contexts'
-import { getOrCreateAccount } from '../../../util/entities'
-import { Sns } from '../../../util/sns'
-import * as mappings from '../../index'
-import { DefaultRoyalty as DefaultRoyalty1020 } from '../../../type/matrixV1020'
-import { DefaultRoyalty as DefaultRoyalty500 } from '../../../type/matrixV500'
+} from '~/model'
+import { Block, CommonContext, EventItem } from '~/contexts'
+import { getOrCreateAccount } from '~/util/entities'
+import { Sns } from '~/util/sns'
+import * as mappings from '~/pallet/index'
+import { DefaultRoyalty as DefaultRoyalty1020 } from '~/type/matrixV1020'
+import { DefaultRoyalty as DefaultRoyalty500 } from '~/type/matrixV500'
 
 type DefaultRoyalty = DefaultRoyalty500 | DefaultRoyalty1020
 

@@ -1,4 +1,4 @@
-import { AccountId32, Deposit, Bytes, Approval, TokenAccountReserve } from '../../../common/types'
+import { AccountId32, Deposit, Bytes, Approval, TokenAccountReserve } from '~/pallet/common/types'
 
 export type TokenAccount = {
     balance: bigint

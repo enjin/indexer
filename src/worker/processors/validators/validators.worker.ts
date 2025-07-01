@@ -1,6 +1,6 @@
 import { Job, Worker } from 'bullmq'
-import computeValidatorsConfig from './validators.config'
-import instance from './validators.processor'
+import computeValidatorsConfig from '~/worker/processors/validators/validators.config'
+import instance from '~/worker/processors/validators/validators.processor'
 
 const { queueName, connection, isSandboxed } = computeValidatorsConfig
 

@@ -1,4 +1,4 @@
-import { H256, AccountId32 } from '../../../common/types'
+import { H256, AccountId32 } from '~/pallet/common/types'
 
 export type ListingFilled = {
     listingId: H256

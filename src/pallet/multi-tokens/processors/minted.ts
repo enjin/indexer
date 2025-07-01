@@ -1,11 +1,11 @@
-import { throwFatalError } from '../../../util/errors'
-import { AccountTokenEvent, Event as EventModel, Extrinsic, PoolMember, Token, TokenAccount } from '../../../model'
-import { Block, CommonContext, EventItem } from '../../../contexts'
-import { getOrCreateAccount } from '../../../util/entities'
-import { Sns } from '../../../util/sns'
-import * as mappings from '../../index'
-import { isNonFungible } from '../../../util/helpers'
-import { QueueUtils } from '../../../queue'
+import { throwFatalError } from '~/util/errors'
+import { AccountTokenEvent, Event as EventModel, Extrinsic, PoolMember, Token, TokenAccount } from '~/model'
+import { Block, CommonContext, EventItem } from '~/contexts'
+import { getOrCreateAccount } from '~/util/entities'
+import { Sns } from '~/util/sns'
+import * as mappings from '~/pallet/index'
+import { isNonFungible } from '~/util/helpers'
+import { QueueUtils } from '~/queue'
 
 export async function minted(
     ctx: CommonContext,

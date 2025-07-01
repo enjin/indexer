@@ -1,4 +1,4 @@
-import { DefaultCollectionDescriptor } from '../../../common/types'
+import { DefaultCollectionDescriptor } from '~/pallet/common/types'
 
 export type ForceCreateCollection = {
     owner: string

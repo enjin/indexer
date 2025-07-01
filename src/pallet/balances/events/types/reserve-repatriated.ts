@@ -1,4 +1,4 @@
-import { AccountId32, BalanceStatus } from '../../../common/types'
+import { AccountId32, BalanceStatus } from '~/pallet/common/types'
 
 export type ReserveRepatriated = {
     from: AccountId32

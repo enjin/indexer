@@ -1,10 +1,10 @@
 import { Job } from 'bullmq'
-import { ProcessorDef } from '../processor.def'
-import { JobsEnum } from '../../constants'
-import { computeListings } from '../../jobs/compute-listings'
-import { logError, logInfo } from '../../utils'
-import { syncOffers } from '../../jobs/sync-offers'
-import { refreshListings } from '../../jobs/refresh-listings'
+import { ProcessorDef } from '~/worker/processors/processor.def'
+import { JobsEnum } from '~/queue/constants'
+import { computeListings } from '~/worker/jobs/compute-listings'
+import { logError, logInfo } from '~/worker/utils'
+import { syncOffers } from '~/worker/jobs/sync-offers'
+import { refreshListings } from '~/worker/jobs/refresh-listings'
 
 export class ListingsProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {

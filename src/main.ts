@@ -1,7 +1,7 @@
 import { TypeormDatabase } from '@subsquid/typeorm-store'
 import _ from 'lodash'
 import * as Sentry from '@sentry/node'
-import config from './util/config'
+import config from '~/util/config'
 import {
     AccountTokenEvent,
     AuctionState,
@@ -13,24 +13,24 @@ import {
     Listing,
     ListingType,
     OfferState,
-} from './model'
-import { genesisData } from './genesis-data'
-import { chainState } from './chain-state'
-import * as p from './pallet'
-import { getOrCreateAccount, unwrapAccount, unwrapSigner } from './util/entities'
-import { Block, CommonContext, EventItem, ExtrinsicItem } from './contexts'
-import { updateClaimDetails } from './pallet/claims/processors/common'
-import { processorConfig } from './processor.config'
+} from '~/model'
+import { genesisData } from '~/genesis-data'
+import { chainState } from '~/chain-state'
+import * as p from '~/pallet'
+import { getOrCreateAccount, unwrapAccount, unwrapSigner } from '~/util/entities'
+import { Block, CommonContext, EventItem, ExtrinsicItem } from '~/contexts'
+import { updateClaimDetails } from '~/pallet/claims/processors/common'
+import { processorConfig } from '~/processor.config'
 import { Json } from '@subsquid/substrate-processor'
 import { hexStripPrefix } from '@polkadot/util'
-import { syncState } from './synchronize'
-import { callHandler, eventHandler } from './processor.handler'
-import { DataService } from './util/data'
-import { calls, events } from './type'
-import { QueueUtils } from './queue'
-import { QueuesEnum } from './queue/constants'
-import { Logger } from './util/logger'
-import { isRelay } from './util/tools'
+import { syncState } from '~/synchronize'
+import { callHandler, eventHandler } from '~/processor.handler'
+import { DataService } from '~/util/data'
+import { calls, events } from '~/type'
+import { QueueUtils } from '~/queue'
+import { QueuesEnum } from '~/queue/constants'
+import { Logger } from '~/util/logger'
+import { isRelay } from '~/util/tools'
 
 const logger = new Logger('sqd:processor', config.logLevel)
 

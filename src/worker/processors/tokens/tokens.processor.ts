@@ -1,11 +1,11 @@
 import { Job } from 'bullmq'
-import { ProcessorDef } from '../processor.def'
-import { JobsEnum } from '../../constants'
-import { computeRarity } from '../../jobs/compute-rarity'
-import { logDebug, logError } from '../../utils'
-import { syncTokens } from '../../jobs/sync-tokens'
-import { computeTokenSupply } from '../../jobs/compute-token-supply'
-import { refreshPool } from '../../jobs/refresh-pool'
+import { ProcessorDef } from '~/worker/processors/processor.def'
+import { JobsEnum } from '~/queue/constants'
+import { computeRarity } from '~/worker/jobs/compute-rarity'
+import { logDebug, logError } from '~/worker/utils'
+import { syncTokens } from '~/worker/jobs/sync-tokens'
+import { computeTokenSupply } from '~/worker/jobs/compute-token-supply'
+import { refreshPool } from '~/worker/jobs/refresh-pool'
 
 export class TokensProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {

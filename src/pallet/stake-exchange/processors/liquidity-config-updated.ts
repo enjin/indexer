@@ -1,15 +1,15 @@
-import { Block, CommonContext, EventItem } from '../../../contexts'
+import { Block, CommonContext, EventItem } from '~/contexts'
 import {
     Event as EventModel,
     Extrinsic,
     StakeExchangeLiquidityConfigUpdated,
     StakeExchangeTokenFilter,
     StakeExchangeTokenFilterType,
-} from '../../../model'
-import { getOrCreateAccount } from '../../../util/entities'
-import { Sns } from '../../../util/sns'
-import * as mappings from '../../index'
-import { TokenFilter } from '../../common/types'
+} from '~/model'
+import { getOrCreateAccount } from '~/util/entities'
+import { Sns } from '~/util/sns'
+import * as mappings from '~/pallet/index'
+import { TokenFilter } from '~/pallet/common/types'
 
 export function getFilterFromType(tokenFilter: TokenFilter) {
     let entity: StakeExchangeTokenFilter | null = null

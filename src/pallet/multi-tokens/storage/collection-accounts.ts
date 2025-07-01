@@ -1,9 +1,9 @@
-import { Block } from '../../../contexts'
-import { UnsupportedStorageError } from '../../../util/errors'
-import { multiTokens } from '../../../type/storage'
+import { Block } from '~/contexts'
+import { UnsupportedStorageError } from '~/util/errors'
+import { multiTokens } from '~/type/storage'
 import { match } from 'ts-pattern'
-import { CollectionAccount } from './types'
-import { AccountId32 } from '../../common/types'
+import { CollectionAccount } from '~/pallet/multi-tokens/storage/types'
+import { AccountId32 } from '~/pallet/common/types'
 
 export async function collectionAccounts(
     block: Block,

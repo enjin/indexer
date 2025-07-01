@@ -1,7 +1,7 @@
-import { Block, CommonContext } from '../../contexts'
-import { system, balances as balance } from '../../pallet'
-import { BATCH_SIZE, getAccountMap } from '../common'
-import { Account } from '../../model'
+import { Block, CommonContext } from '~/contexts'
+import { system, balances as balance } from '~/pallet'
+import { BATCH_SIZE, getAccountMap } from '~/synchronize/common'
+import { Account } from '~/model'
 
 export async function balances(ctx: CommonContext, block: Block) {
     ctx.log.info('Syncing balances...')

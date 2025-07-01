@@ -1,4 +1,4 @@
-import { AccountId32, UnlockChunk } from '../../../common/types'
+import { AccountId32, UnlockChunk } from '~/pallet/common/types'
 
 export type StakingLedger = {
     stash: AccountId32

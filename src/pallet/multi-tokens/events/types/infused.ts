@@ -1,5 +1,5 @@
-import { AccountId32 } from '../../../common/types'
-import { RootOrSigned } from '../../../common/types'
+import { AccountId32 } from '~/pallet/common/types'
+import { RootOrSigned } from '~/pallet/common/types'
 
 export type Infused = {
     collectionId: bigint

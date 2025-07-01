@@ -3,8 +3,8 @@ import { BigInteger } from '@subsquid/graphql-server'
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
 import { Validate, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator'
-import { TokenAccount, Token, Collection } from '../model'
-import { isValidAddress } from '../util/tools'
+import { TokenAccount, Token, Collection } from '~/model'
+import { isValidAddress } from '~/util/tools'
 
 @ValidatorConstraint({ name: 'PublicKeyArray', async: false })
 export class IsPublicKeyArray implements ValidatorConstraintInterface {

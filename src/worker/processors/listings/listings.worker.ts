@@ -1,6 +1,6 @@
 import { Job, Worker } from 'bullmq'
-import invalidateListingsConfig from './listings.config'
-import instance from './listings.processor'
+import invalidateListingsConfig from '~/worker/processors/listings/listings.config'
+import instance from '~/worker/processors/listings/listings.processor'
 
 const { queueName, connection, isSandboxed } = invalidateListingsConfig
 

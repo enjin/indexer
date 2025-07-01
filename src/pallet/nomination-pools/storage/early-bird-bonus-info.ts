@@ -1,8 +1,8 @@
-import { UnsupportedStorageError } from '../../../util/errors'
+import { UnsupportedStorageError } from '~/util/errors'
 import { BlockHeader } from '@subsquid/substrate-processor'
-import { storage } from '../../../type'
+import { storage } from '~/type'
 import { match } from 'ts-pattern'
-import { EarlyBirdBonusInfo } from './types'
+import { EarlyBirdBonusInfo } from '~/pallet/nomination-pools/storage/types' 
 
 export async function earlyBirdBonusInfo(block: BlockHeader): Promise<EarlyBirdBonusInfo | undefined> {
     return match(block)

@@ -3,7 +3,7 @@ import https from 'https'
 import Queue from 'bullmq'
 import mime from 'mime-types'
 import { safeString } from './tools'
-import { Attribute, Metadata, MetadataMedia } from '../model'
+import { Attribute, Metadata, MetadataMedia } from '~/model'
 
 type Media = {
     url: string

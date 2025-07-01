@@ -1,4 +1,4 @@
-import { H256, Bid } from '../../../common/types'
+import { H256, Bid } from '~/pallet/common/types'
 
 export type AuctionFinalized = {
     listingId: H256

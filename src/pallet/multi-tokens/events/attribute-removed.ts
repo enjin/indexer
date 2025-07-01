@@ -1,9 +1,9 @@
-import { multiTokens } from '../../../type/events'
-import { EventItem } from '../../../contexts'
-import { UnsupportedEventError } from '../../../util/errors'
+import { multiTokens } from '~/type/events'
+import { EventItem } from '~/contexts'
+import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
-import { Event as EventModel, Extrinsic, MultiTokensAttributeRemoved } from '../../../model'
-import { AttributeRemoved } from './types'
+import { Event as EventModel, Extrinsic, MultiTokensAttributeRemoved } from '~/model'
+import { AttributeRemoved } from '~/pallet/multi-tokens/events/types' 
 
 export function attributeRemoved(event: EventItem): AttributeRemoved {
     return match(event)

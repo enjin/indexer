@@ -1,3 +1,4 @@
-import instance from './tokens.processor'
+import instance from '~/worker/processors/tokens/tokens.processor'
 
 export default instance.handle
+

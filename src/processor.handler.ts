@@ -1,7 +1,7 @@
-import { Block, CallItem, CommonContext, EventItem } from './contexts'
-import { AccountTokenEvent, Event } from './model'
+import { Block, CallItem, CommonContext, EventItem } from '~/contexts'
+import { AccountTokenEvent, Event } from '~/model'
 import { match } from 'ts-pattern'
-import * as p from './pallet'
+import * as p from '~/pallet'
 import {
     multiTokens,
     balances,
@@ -15,8 +15,8 @@ import {
     staking,
     xcmPallet,
     imOnline,
-} from './type/events'
-import { calls } from './type'
+} from '~/type/events'
+import { calls } from '~/type'
 
 export async function eventHandler(
     ctx: CommonContext,

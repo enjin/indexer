@@ -1,5 +1,5 @@
 import { Queue } from 'bullmq'
-import config from './tokens.config'
+import config from '~/queue/tokens/tokens.config' 
 
 const { queueName, connection, defaultJobOptions } = config
 

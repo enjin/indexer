@@ -1,10 +1,10 @@
-import { dataHandlerContext } from '../../contexts'
-import { fetchAccountsDetail } from '../../util/marketplace'
-import { getOrCreateAccount } from '../../util/entities'
+import { dataHandlerContext } from '~/contexts'
+import { fetchAccountsDetail } from '~/util/marketplace'
+import { getOrCreateAccount } from '~/util/entities'
 import { decode } from '@subsquid/ss58'
-import { Account } from '../../model'
+import { Account } from '~/model'
 import { Job } from 'bullmq'
-import { isNotNullOrEmpty } from '../utils'
+import { isNotNullOrEmpty } from '~/worker/utils'
 
 export async function syncAccounts(_job: Job, ids: string[] | null): Promise<void> {
     const ctx = await dataHandlerContext()

@@ -1,9 +1,9 @@
-import { UnsupportedCallError } from '../../../util/errors'
-import { calls } from '../../../type'
-import { CallItem } from '../../../contexts'
+import { UnsupportedCallError } from '~/util/errors'
+import { calls } from '~/type'
+import { CallItem } from '~/contexts'
 import { match } from 'ts-pattern'
-import { ForceCreateFuelTank } from './types'
-import { withDispatchCheck } from '../utils'
+import { ForceCreateFuelTank } from '~/pallet/fuel-tanks/calls/types'
+import { withDispatchCheck } from '~/pallet/fuel-tanks/utils'
 
 export const forceCreateFuelTank = withDispatchCheck((call: CallItem): ForceCreateFuelTank => {
     return match(call)

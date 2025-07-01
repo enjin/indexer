@@ -1,9 +1,9 @@
-import { multiTokens } from '../../../type/events'
-import { EventItem } from '../../../contexts'
-import { UnsupportedEventError } from '../../../util/errors'
+import { multiTokens } from '~/type/events'
+import { EventItem } from '~/contexts'
+import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
-import { Event as EventModel, Extrinsic, MultiTokensTokenMutated } from '../../../model'
-import { TokenMutated } from './types'
+import { Event as EventModel, Extrinsic, MultiTokensTokenMutated } from '~/model'
+import { TokenMutated } from '~/pallet/multi-tokens/events/types' 
 
 export function tokenMutated(event: EventItem): TokenMutated {
     return match(event)

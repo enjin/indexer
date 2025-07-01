@@ -10,7 +10,7 @@ import {
     TraitsQueue,
     ValidatorsQueue,
     ListingsQueue,
-} from '../queue'
+} from '~/queue'
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter'
 import { EventEmitter } from 'events'
 import {
@@ -22,8 +22,8 @@ import {
     TokensWorker,
     TraitsWorker,
     ValidatorsWorker,
-} from './processors'
-import { logError } from './utils'
+} from '~/worker/processors'
+import { logError } from '~/worker/utils'
 
 // Increase max listeners to avoid warnings
 EventEmitter.defaultMaxListeners = 30

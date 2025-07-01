@@ -1,8 +1,8 @@
-import { Block, CommonContext, EventItem } from '../../../contexts'
-import { Era, Event as EventModel, NominationPool, PoolMember, StakeExchangeOffer, TokenAccount } from '../../../model'
-import { getOrCreateAccount } from '../../../util/entities'
-import { Sns } from '../../../util/sns'
-import * as mappings from '../../index'
+import { Block, CommonContext, EventItem } from '~/contexts'
+import { Era, Event as EventModel, NominationPool, PoolMember, StakeExchangeOffer, TokenAccount } from '~/model'
+import { getOrCreateAccount } from '~/util/entities'
+import { Sns } from '~/util/sns'
+import * as mappings from '~/pallet/index'
 
 function getActiveEra(ctx: CommonContext) {
     return ctx.store.find(Era, {

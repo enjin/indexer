@@ -1,7 +1,7 @@
 import { Query, Resolver, Arg, ArgsType, Field, Args } from 'type-graphql'
 import 'reflect-metadata'
-import { QueueUtils } from '../queue'
-import { decodeAddress } from '../util/tools'
+import { QueueUtils } from '~/queue'
+import { decodeAddress } from '~/util/tools'
 
 @ArgsType()
 export class RefreshAccountsArgs {

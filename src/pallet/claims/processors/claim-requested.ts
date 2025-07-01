@@ -1,8 +1,8 @@
-import { AccountClaimType, ClaimRequest, ClaimsClaimRequested, Event as EventModel, Extrinsic } from '../../../model'
-import { Block, CommonContext, EventItem } from '../../../contexts'
-import { Sns } from '../../../util/sns'
-import * as mappings from '../../index'
-import { unwrapAccount } from '../../../util/entities'
+import { AccountClaimType, ClaimRequest, ClaimsClaimRequested, Event as EventModel, Extrinsic } from '~/model'
+import { Block, CommonContext, EventItem } from '~/contexts'
+import { Sns } from '~/util/sns'
+import * as mappings from '~/pallet/index'
+import { unwrapAccount } from '~/util/entities'
 
 export async function claimRequested(
     ctx: CommonContext,

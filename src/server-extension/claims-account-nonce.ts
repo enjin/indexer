@@ -1,6 +1,6 @@
 import { Query, Resolver, Arg, ObjectType, Field } from 'type-graphql'
 import 'reflect-metadata'
-import Rpc from '../util/rpc'
+import Rpc from '~/util/rpc'
 
 @ObjectType()
 export class ClaimsAccountNonceResult {

@@ -1,6 +1,6 @@
-import { multiTokens } from '../../../type/events'
-import { EventItem } from '../../../contexts'
-import { UnsupportedEventError } from '../../../util/errors'
+import { multiTokens } from '~/type/events'
+import { EventItem } from '~/contexts'
+import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
 import {
     Account,
@@ -10,8 +10,8 @@ import {
     Extrinsic,
     MultiTokensBurned,
     Token,
-} from '../../../model'
-import { Burned } from './types'
+} from '~/model'
+import { Burned } from '~/pallet/multi-tokens/events/types' 
 
 export function burned(event: EventItem): Burned {
     return match(event)

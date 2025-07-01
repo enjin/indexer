@@ -1,4 +1,4 @@
-import { AccountId32, H160, CollectionIdPair } from '../../../common/types'
+import { AccountId32, H160, CollectionIdPair } from '~/pallet/common/types'
 
 export type ClaimedCollections = {
     accountId: AccountId32

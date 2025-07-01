@@ -1,4 +1,4 @@
-import { Account, H160, H256 } from '../../../common/types'
+import { Account, H160, H256 } from '~/pallet/common/types'
 
 export type ClaimRequested = {
     who: H160 | Account // H160 at matrixEnjinV603, Account at v104

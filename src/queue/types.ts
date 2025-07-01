@@ -1,5 +1,5 @@
 import { ConnectionOptions, DefaultJobOptions, Telemetry } from 'bullmq'
-import { QueuesEnum } from './constants'
+import { QueuesEnum } from '~/queue/constants'
 
 export type QueueType = keyof typeof QueuesEnum
 

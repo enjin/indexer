@@ -1,6 +1,6 @@
-import * as calls from './calls'
-import * as utils from './utils'
-import * as processors from './processors'
+import * as calls from '~/pallet/polkadot-xcm/calls'
+import * as utils from '~/pallet/polkadot-xcm/utils'
+import * as processors from '~/pallet/polkadot-xcm/processors' 
 
 export default {
     calls,

@@ -1,11 +1,11 @@
-import { CallItem } from '../../contexts'
+import { CallItem } from '~/contexts'
 import { match } from 'ts-pattern'
-import { UnsupportedCallError } from '../../util/errors'
-import { calls } from '../../type'
-import * as mappings from '../index'
-import { Buy } from './calls'
-import { withDispatchCheck } from '../fuel-tanks/utils'
-import { Batch } from '../utility/calls'
+import { UnsupportedCallError } from '~/util/errors'
+import { calls } from '~/type'
+import * as mappings from '~/pallet/index'
+import { Buy } from '~/pallet/stake-exchange/calls'
+import { withDispatchCheck } from '~/pallet/fuel-tanks/utils'
+import { Batch } from '~/pallet/utility/calls'
 
 export function anyBuy(call: CallItem, tokenId: bigint, amount: bigint): Buy {
     const processCall = withDispatchCheck((call: CallItem): Buy => {

@@ -1,4 +1,4 @@
-import { MultiAddress, BoundedVec } from '../../../common/types'
+import { MultiAddress, BoundedVec } from '~/pallet/common/types'
 
 export type CreatePool = {
     tokenId: bigint

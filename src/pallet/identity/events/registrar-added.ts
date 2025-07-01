@@ -1,8 +1,8 @@
-import { identity } from '../../../type/events'
-import { EventItem } from '../../../contexts'
-import { UnsupportedEventError } from '../../../util/errors'
+import { identity } from '~/type/events'
+import { EventItem } from '~/contexts'
+import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
-import { RegistrarAdded } from './types'
+import { RegistrarAdded } from '~/pallet/identity/events/types'
 
 export function registrarAdded(event: EventItem): RegistrarAdded {
     return match(event)

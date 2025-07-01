@@ -1,6 +1,6 @@
-import { marketplace } from '../../../type/events'
-import { EventItem } from '../../../contexts'
-import { UnsupportedEventError } from '../../../util/errors'
+import { marketplace } from '~/type/events'
+import { EventItem } from '~/contexts'
+import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
 import {
     Account,
@@ -11,8 +11,8 @@ import {
     Listing,
     MarketplaceCounterOfferRemoved,
     Token,
-} from '../../../model'
-import { CounterOfferRemoved } from './types'
+} from '~/model'
+import { CounterOfferRemoved } from '~/pallet/marketplace/events/types'
 
 export function counterOfferRemoved(event: EventItem): CounterOfferRemoved {
     return match(event)

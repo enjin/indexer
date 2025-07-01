@@ -1,9 +1,9 @@
-import { system } from '../../../type/storage'
-import { UnsupportedStorageError } from '../../../util/errors'
+import { system } from '~/type/storage'
+import { UnsupportedStorageError } from '~/util/errors'
 import { match } from 'ts-pattern'
-import { AccountInfo } from './types'
-import { Block } from '../../../contexts'
-import { AccountId32 } from '../../common/types'
+import { AccountInfo } from '~/pallet/system/storage/types' 
+import { Block } from '~/contexts'
+import { AccountId32 } from '~/pallet/common/types'
 
 export async function accounts(block: Block, params: { account: string }): Promise<AccountInfo | undefined>
 export async function accounts(block: Block, params: { accounts: string[] }): Promise<(AccountInfo | undefined)[]>

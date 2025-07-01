@@ -1,5 +1,5 @@
 import { Queue } from 'bullmq'
-import config from './metadata.config'
+import config from '~/queue/metadata/metadata.config' 
 
 const { queueName, connection, defaultJobOptions } = config
 

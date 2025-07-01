@@ -1,8 +1,8 @@
-import { balances } from '../../../type/events'
-import { EventItem } from '../../../contexts'
-import { UnsupportedEventError } from '../../../util/errors'
+import { balances } from '~/type/events'
+import { EventItem } from '~/contexts'
+import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
-import { Withdraw } from './types'
+import { Withdraw } from '~/pallet/balances/events/types'
 
 export function withdraw(event: EventItem): Withdraw {
     return match(event)

@@ -3,8 +3,8 @@ import { Json, BigInteger } from '@subsquid/graphql-server'
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
 import { Validate, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator'
-import { Collection, FreezeState, Listing, Token, TokenAccount } from '../model'
-import { isValidAddress } from '../util/tools'
+import { Collection, FreezeState, Listing, Token, TokenAccount } from '~/model'
+import { isValidAddress } from '~/util/tools'
 
 enum MyTokensOrderByInput {
     COLLECTION_NAME = "collection.metadata->>'name'",
