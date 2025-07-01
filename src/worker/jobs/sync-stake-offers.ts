@@ -1,15 +1,10 @@
 import { connectionManager } from '~/contexts'
 import { Job } from 'bullmq'
 import {
-    AccountTokenEvent,
     Event,
-    Listing,
-    MarketplaceOfferCancelled,
-    MarketplaceOfferCreated,
     StakeExchangeLiquidityAdded,
     StakeExchangeLiquidityWithdrawn,
     StakeExchangeOffer,
-    StakeExchangeOfferCancelled,
     StakeExchangeOfferCreated,
 } from '~/model'
 import { In } from 'typeorm'
@@ -38,16 +33,16 @@ export async function syncStakeOffers(job: Job): Promise<void> {
         })
 
         for (const offerEvent of offerEvents) {
-            if (offerEvent.data instanceof StakeExchangeOfferCreated) {
-                stakeExchangeOffer.amount = offerEvent.data.total
+            if (offerEvent.data?.isTypeOf === StakeExchangeOfferCreated.name) {
+                stakeExchangeOffer.amount = (offerEvent.data as StakeExchangeOfferCreated).total
             }
 
-            if (offerEvent.data instanceof StakeExchangeLiquidityAdded && stakeExchangeOffer.amount) {
-                stakeExchangeOffer.amount += offerEvent.data.amount
+            if (offerEvent.data?.isTypeOf === StakeExchangeLiquidityAdded.name && stakeExchangeOffer.amount) {
+                stakeExchangeOffer.amount += (offerEvent.data as StakeExchangeLiquidityAdded).amount
             }
 
-            if (offerEvent.data instanceof StakeExchangeLiquidityWithdrawn && stakeExchangeOffer.amount) {
-                stakeExchangeOffer.amount -= offerEvent.data.amount
+            if (offerEvent.data?.isTypeOf === StakeExchangeLiquidityWithdrawn.name && stakeExchangeOffer.amount) {
+                stakeExchangeOffer.amount -= (offerEvent.data as StakeExchangeLiquidityWithdrawn).amount
             }
         }
 
