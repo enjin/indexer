@@ -18,11 +18,11 @@ import {
     TokenAccount,
 } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { getOrCreateAccount } from '~/util/entities'
+import { getBestListing, getOrCreateAccount } from '~/util/entities'
 import { Sns } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
-import { match } from 'ts-pattern'
+import { match, P } from 'ts-pattern'
 
 export async function listingCreated(
     ctx: CommonContext,
@@ -123,11 +123,10 @@ export async function listingCreated(
 
     const isOffer = listing.type === ListingType.Offer
     if (!isOffer) {
-        if (
-            (makeAssetId.bestListing && makeAssetId.bestListing.highestPrice < listing.price) ||
-            !makeAssetId.bestListing
-        ) {
-            makeAssetId.bestListing = listing
+        const bestListing = await getBestListing(ctx, makeAssetId.id)
+        makeAssetId.bestListing = null
+        if (bestListing) {
+            makeAssetId.bestListing = bestListing
         }
         makeAssetId.recentListing = listing
         await ctx.store.save(makeAssetId)

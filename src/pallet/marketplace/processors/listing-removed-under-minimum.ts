@@ -35,13 +35,11 @@ export async function listingRemovedUnderMinimum(
 
     if (listing.type !== ListingType.Offer) {
         const bestListing = await getBestListing(ctx, makeAssetId.id)
-        if (bestListing?.id !== listing.id) {
-            makeAssetId.bestListing = null
-            if (bestListing) {
-                makeAssetId.bestListing = bestListing
-            }
-            await ctx.store.save(makeAssetId)
+        makeAssetId.bestListing = null
+        if (bestListing) {
+            makeAssetId.bestListing = bestListing
         }
+        await ctx.store.save(makeAssetId)
     }
 
     const listingStatus = new ListingStatus({

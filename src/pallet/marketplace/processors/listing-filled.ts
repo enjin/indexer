@@ -58,11 +58,9 @@ export async function listingFilled(
         await ctx.store.save(takeAssetId)
     } else {
         const bestListing = await getBestListing(ctx, makeAssetId.id)
-        if (bestListing?.id !== listing.id) {
-            makeAssetId.bestListing = null
-            if (bestListing) {
-                makeAssetId.bestListing = bestListing
-            }
+        makeAssetId.bestListing = null
+        if (bestListing) {
+            makeAssetId.bestListing = bestListing
         }
 
         makeAssetId.lastSale = sale
