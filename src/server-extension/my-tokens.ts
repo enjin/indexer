@@ -5,7 +5,6 @@ import { type EntityManager, SelectQueryBuilder } from 'typeorm'
 import { Validate, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator'
 import { Collection, FreezeState, Listing, Token, TokenAccount } from '~/model'
 import { isValidAddress } from '~/util/tools'
-import { GraphQLScalarType } from 'graphql/type/definition';
 
 enum MyTokensOrderByInput {
     COLLECTION_NAME = "collection.metadata->>'name'",
@@ -44,7 +43,7 @@ export class IsPublicKey implements ValidatorConstraintInterface {
 
 @ArgsType()
 class MyTokenArgs {
-    @Field((): GraphQLScalarType => ID)
+    @Field(() => ID)
     @Validate(IsPublicKey)
     accountId!: string
 
@@ -54,10 +53,10 @@ class MyTokenArgs {
     @Field((): typeof MyTokensOrderInput => MyTokensOrderInput)
     order!: MyTokensOrderInput
 
-    @Field((): GraphQLScalarType => Int, { defaultValue: 0 })
+    @Field(() => Int, { defaultValue: 0 })
     offset: number = 0
 
-    @Field((): GraphQLScalarType => Int, { defaultValue: 10 })
+    @Field(() => Int, { defaultValue: 10 })
     limit: number = 10
 
     @Field((): StringConstructor => String, { nullable: true })
@@ -66,25 +65,25 @@ class MyTokenArgs {
 
 @ObjectType()
 class MyTokensCollection {
-    @Field((): GraphQLScalarType => ID)
+    @Field(() => ID)
     id!: string
 
-    @Field((): GraphQLScalarType => BigInteger)
+    @Field(() => BigInteger)
     collectionId!: typeof BigInteger
 
-    @Field((): GraphQLScalarType => Json)
+    @Field(() => Json)
     metadata!: typeof Json
 
-    @Field((): GraphQLScalarType => Json)
+    @Field(() => Json)
     stats!: typeof Json
 }
 
 @ObjectType()
 class MyTokensOwner {
-    @Field((): GraphQLScalarType => ID)
+    @Field(() => ID)
     id!: string
 
-    @Field((): GraphQLScalarType => BigInteger)
+    @Field(() => BigInteger)
     balance!: typeof BigInteger
 
     @Field((): BooleanConstructor => Boolean)
@@ -93,28 +92,28 @@ class MyTokensOwner {
 
 @ObjectType()
 class MyTokensBestListing {
-    @Field((): GraphQLScalarType => ID)
+    @Field(() => ID)
     id!: string
 
-    @Field((): GraphQLScalarType => BigInteger)
+    @Field(() => BigInteger)
     highestPrice!: typeof BigInteger
 
-    @Field((): GraphQLScalarType => Json)
+    @Field(() => Json)
     state!: typeof Json
 
-    @Field((): GraphQLScalarType => Json)
+    @Field(() => Json)
     data!: typeof Json
 }
 
 @ObjectType()
 export class MyTokensToken {
-    @Field((): GraphQLScalarType => ID)
+    @Field(() => ID)
     id!: string
 
-    @Field((): GraphQLScalarType => BigInteger)
+    @Field(() => BigInteger)
     tokenId!: typeof BigInteger
 
-    @Field((): GraphQLScalarType => BigInteger)
+    @Field(() => BigInteger)
     supply!: typeof BigInteger
 
     @Field((): BooleanConstructor => Boolean)
@@ -123,7 +122,7 @@ export class MyTokensToken {
     @Field({ nullable: true })
     freezeState!: FreezeState
 
-    @Field((): GraphQLScalarType => Json, { nullable: true })
+    @Field(() => Json, { nullable: true })
     metadata!: typeof Json
 
     @Field((): BooleanConstructor => Boolean)
@@ -151,7 +150,7 @@ export class MyTokensResponse {
     @Field((): (typeof MyTokensToken)[] => [MyTokensToken])
     data!: MyTokensToken[]
 
-    @Field((): GraphQLScalarType => Int)
+    @Field(() => Int)
     count!: number
 
     constructor(props: Partial<MyTokensResponse>) {
