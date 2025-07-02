@@ -60,6 +60,7 @@ export async function offerCreated(ctx: CommonContext, block: Block, item: Event
         state: StakeExchangeOfferState.Active,
         offerId: event.offerId,
         account,
+        amount: event.offer.total,
         total: event.offer.total,
         rate,
         minAverageRewardRate: rewardRate,

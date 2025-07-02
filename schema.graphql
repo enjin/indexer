@@ -1448,6 +1448,7 @@ type StakeExchangeOffer @entity {
 
   state: StakeExchangeOfferState!
   account: Account!
+  amount: BigInt # TODO: make this required
   total: BigInt!
   rate: BigInt!
   minAverageRewardRate: BigInt!

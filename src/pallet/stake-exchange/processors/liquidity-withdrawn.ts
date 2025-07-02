@@ -16,6 +16,7 @@ export async function liquidityWithdrawn(
     const offer = await ctx.store.findOneByOrFail<StakeExchangeOffer>(StakeExchangeOffer, {
         id: event.offerId.toString(),
     })
+    if (offer.amount) offer.amount -= call.amount
     offer.total -= call.amount
 
     await ctx.store.save(offer)

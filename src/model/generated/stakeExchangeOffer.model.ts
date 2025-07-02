@@ -22,6 +22,9 @@ export class StakeExchangeOffer {
     @ManyToOne_(() => Account, {nullable: true})
     account!: Account
 
+    @BigIntColumn_({nullable: true})
+    amount!: bigint | undefined | null
+
     @BigIntColumn_({nullable: false})
     total!: bigint
 
