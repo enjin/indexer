@@ -1,7 +1,7 @@
 import { Field, ObjectType, Query, Resolver, ID, Int, registerEnumType, ArgsType, Args } from 'type-graphql'
 import { Json, BigInteger } from '@subsquid/graphql-server'
 import 'reflect-metadata'
-import { EntityManager, SelectQueryBuilder } from 'typeorm'
+import { type EntityManager, SelectQueryBuilder } from 'typeorm'
 import { Validate, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator'
 import { Collection, FreezeState, Listing, Token, TokenAccount } from '~/model'
 import { isValidAddress } from '~/util/tools'
