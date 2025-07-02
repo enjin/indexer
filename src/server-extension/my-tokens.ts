@@ -1,10 +1,11 @@
 import { Field, ObjectType, Query, Resolver, ID, Int, registerEnumType, ArgsType, Args } from 'type-graphql'
 import { Json, BigInteger } from '@subsquid/graphql-server'
 import 'reflect-metadata'
-import type { EntityManager } from 'typeorm'
+import { EntityManager, SelectQueryBuilder } from 'typeorm'
 import { Validate, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator'
 import { Collection, FreezeState, Listing, Token, TokenAccount } from '~/model'
 import { isValidAddress } from '~/util/tools'
+import { GraphQLScalarType } from 'graphql/type/definition';
 
 enum MyTokensOrderByInput {
     COLLECTION_NAME = "collection.metadata->>'name'",
@@ -32,112 +33,112 @@ registerEnumType(FreezeState, {
 
 @ValidatorConstraint({ name: 'PublicKey', async: false })
 export class IsPublicKey implements ValidatorConstraintInterface {
-    validate(value: string) {
+    validate(value: string): boolean {
         return isValidAddress(value)
     }
 
-    defaultMessage() {
+    defaultMessage(): string {
         return 'Invalid public key!'
     }
 }
 
 @ArgsType()
 class MyTokenArgs {
-    @Field(() => ID)
+    @Field((): GraphQLScalarType => ID)
     @Validate(IsPublicKey)
     accountId!: string
 
-    @Field(() => MyTokensOrderByInput)
+    @Field((): typeof MyTokensOrderByInput => MyTokensOrderByInput)
     orderBy!: MyTokensOrderByInput
 
-    @Field(() => MyTokensOrderInput)
+    @Field((): typeof MyTokensOrderInput => MyTokensOrderInput)
     order!: MyTokensOrderInput
 
-    @Field(() => Int, { defaultValue: 0 })
+    @Field((): GraphQLScalarType => Int, { defaultValue: 0 })
     offset: number = 0
 
-    @Field(() => Int, { defaultValue: 10 })
+    @Field((): GraphQLScalarType => Int, { defaultValue: 10 })
     limit: number = 10
 
-    @Field(() => String, { nullable: true })
+    @Field((): StringConstructor => String, { nullable: true })
     query?: string
 }
 
 @ObjectType()
 class MyTokensCollection {
-    @Field(() => ID)
+    @Field((): GraphQLScalarType => ID)
     id!: string
 
-    @Field(() => BigInteger)
+    @Field((): GraphQLScalarType => BigInteger)
     collectionId!: typeof BigInteger
 
-    @Field(() => Json)
+    @Field((): GraphQLScalarType => Json)
     metadata!: typeof Json
 
-    @Field(() => Json)
+    @Field((): GraphQLScalarType => Json)
     stats!: typeof Json
 }
 
 @ObjectType()
 class MyTokensOwner {
-    @Field(() => ID)
+    @Field((): GraphQLScalarType => ID)
     id!: string
 
-    @Field(() => BigInteger)
+    @Field((): GraphQLScalarType => BigInteger)
     balance!: typeof BigInteger
 
-    @Field(() => Boolean)
+    @Field((): BooleanConstructor => Boolean)
     isFrozen!: boolean
 }
 
 @ObjectType()
 class MyTokensBestListing {
-    @Field(() => ID)
+    @Field((): GraphQLScalarType => ID)
     id!: string
 
-    @Field(() => BigInteger)
+    @Field((): GraphQLScalarType => BigInteger)
     highestPrice!: typeof BigInteger
 
-    @Field(() => Json)
+    @Field((): GraphQLScalarType => Json)
     state!: typeof Json
 
-    @Field(() => Json)
+    @Field((): GraphQLScalarType => Json)
     data!: typeof Json
 }
 
 @ObjectType()
 export class MyTokensToken {
-    @Field(() => ID)
+    @Field((): GraphQLScalarType => ID)
     id!: string
 
-    @Field(() => BigInteger)
+    @Field((): GraphQLScalarType => BigInteger)
     tokenId!: typeof BigInteger
 
-    @Field(() => BigInteger)
+    @Field((): GraphQLScalarType => BigInteger)
     supply!: typeof BigInteger
 
-    @Field(() => Boolean)
+    @Field((): BooleanConstructor => Boolean)
     isFrozen!: boolean
 
     @Field({ nullable: true })
     freezeState!: FreezeState
 
-    @Field(() => Json, { nullable: true })
+    @Field((): GraphQLScalarType => Json, { nullable: true })
     metadata!: typeof Json
 
-    @Field(() => Boolean)
+    @Field((): BooleanConstructor => Boolean)
     nonFungible!: boolean
 
     @Field()
     createdAt!: Date
 
-    @Field(() => MyTokensCollection)
+    @Field((): typeof MyTokensCollection => MyTokensCollection)
     collection!: MyTokensCollection
 
-    @Field(() => MyTokensBestListing, { nullable: true })
+    @Field((): typeof MyTokensBestListing => MyTokensBestListing, { nullable: true })
     bestListing!: MyTokensBestListing
 
-    @Field(() => MyTokensOwner, { nullable: false })
+    @Field((): typeof MyTokensOwner => MyTokensOwner, { nullable: false })
     owner!: MyTokensOwner
 
     constructor(props: Partial<MyTokensResponse>) {
@@ -147,10 +148,10 @@ export class MyTokensToken {
 
 @ObjectType()
 export class MyTokensResponse {
-    @Field(() => [MyTokensToken])
+    @Field((): (typeof MyTokensToken)[] => [MyTokensToken])
     data!: MyTokensToken[]
 
-    @Field(() => Int)
+    @Field((): GraphQLScalarType => Int)
     count!: number
 
     constructor(props: Partial<MyTokensResponse>) {
@@ -162,17 +163,17 @@ export class MyTokensResponse {
 export class MyTokensResolver {
     constructor(private tx: () => Promise<EntityManager>) {}
 
-    @Query(() => MyTokensResponse)
+    @Query((): typeof MyTokensResponse => MyTokensResponse)
     async myTokens(
         @Args() { accountId, limit, offset, order, orderBy, query }: MyTokenArgs
     ): Promise<MyTokensResponse> {
-        const manager = await this.tx()
+        const manager: EntityManager = await this.tx()
 
-        const builder = manager
+        const builder: SelectQueryBuilder<Token> = manager
             .getRepository(Token)
             .createQueryBuilder('token')
             .innerJoinAndMapOne('token.collection', Collection, 'collection', 'token.collection = collection.id')
-            .leftJoinAndMapOne('token.bestListing', Listing, 'listing', 'listing.makeAssetId = token.id')
+            .leftJoinAndMapOne('token.bestListing', Listing, 'listing', 'listing.makeAssetId = token.id and listing.is_active = true')
             .innerJoinAndMapOne(
                 'token.owner',
                 TokenAccount,
