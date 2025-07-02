@@ -1,4 +1,4 @@
-import { IsNull } from 'typeorm'
+import { IsNull, Not } from 'typeorm'
 import { connectionManager } from '~/contexts'
 import { Token } from '~/model'
 import { Job } from 'bullmq'
@@ -9,7 +9,7 @@ export async function syncTokens(job: Job) {
     const tokens = await em.find(Token, {
         select: ['id'],
         where: {
-            cap: IsNull(),
+            bestListing: Not(IsNull()),
         },
     })
 
@@ -18,5 +18,5 @@ export async function syncTokens(job: Job) {
         QueueUtils.dispatchComputeTokenBestListing(token.id)
     }
 
-    await job.log(`Dispatched computeTokenSupply for ${tokens.length} tokens`)
+    await job.log(`Dispatched sync for ${tokens.length} tokens`)
 }
