@@ -22,7 +22,7 @@ import { getBestListing, getOrCreateAccount } from '~/util/entities'
 import { Sns } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
-import { match, P } from 'ts-pattern'
+import { match } from 'ts-pattern'
 
 export async function listingCreated(
     ctx: CommonContext,
