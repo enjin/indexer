@@ -46,7 +46,7 @@ export async function listingCancelled(
     await ctx.store.save(listingStatus)
     await ctx.store.save(listing)
 
-    if (makeAssetId.bestListing?.id === listing.id && listing.type !== ListingType.Offer) {
+    if (listing.type !== ListingType.Offer) {
         const bestListing = await getBestListing(ctx, makeAssetId.id)
         makeAssetId.bestListing = null
         if (bestListing) {

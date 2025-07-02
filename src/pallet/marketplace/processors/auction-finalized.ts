@@ -56,12 +56,10 @@ export async function auctionFinalized(
         makeAssetId.lastSale = sale
     }
 
-    if (makeAssetId.bestListing?.id === listing.id) {
-        const bestListing = await getBestListing(ctx, makeAssetId.id)
-        makeAssetId.bestListing = null
-        if (bestListing) {
-            makeAssetId.bestListing = bestListing
-        }
+    const bestListing = await getBestListing(ctx, makeAssetId.id)
+    makeAssetId.bestListing = null
+    if (bestListing) {
+        makeAssetId.bestListing = bestListing
     }
 
     listing.isActive = false

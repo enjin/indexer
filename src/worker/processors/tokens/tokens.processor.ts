@@ -6,6 +6,7 @@ import { logDebug, logError } from '~/worker/utils'
 import { syncTokens } from '~/worker/jobs/sync-tokens'
 import { computeTokenSupply } from '~/worker/jobs/compute-token-supply'
 import { refreshPool } from '~/worker/jobs/refresh-pool'
+import { computeTokenBestListing } from '~/worker/jobs/compute-token-bestlisting'
 
 export class TokensProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {
@@ -21,6 +22,9 @@ export class TokensProcessor implements ProcessorDef {
                 break
             case JobsEnum.REFRESH_POOL:
                 await refreshPool(job, job.data.id)
+                break
+            case JobsEnum.COMPUTE_TOKEN_BEST_LISTING:
+                await computeTokenBestListing(job, job.data.id)
                 break
             default:
                 throw new Error(`${job.name} is not a valid job for this processor`)
