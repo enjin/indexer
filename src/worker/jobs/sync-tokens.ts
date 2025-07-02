@@ -14,7 +14,8 @@ export async function syncTokens(job: Job) {
     })
 
     for (const token of tokens) {
-        QueueUtils.dispatchComputeTokenSupply(token.id)
+        // QueueUtils.dispatchComputeTokenSupply(token.id)
+        QueueUtils.dispatchComputeTokenBestListing(token.id)
     }
 
     await job.log(`Dispatched computeTokenSupply for ${tokens.length} tokens`)

@@ -338,3 +338,16 @@ export function dispatchRefreshListings(ids: string[]): void {
         Logger.error('Failed to dispatch refresh listings', LOGGER_NAMESPACE)
     })
 }
+
+export function dispatchComputeTokenBestListing(id: string): void {
+    TokensQueue.add(
+        JobsEnum.COMPUTE_TOKEN_BEST_LISTING,
+        { id },
+        {
+            delay: 6000,
+            jobId: `tokens.best-listing.${id}`,
+        }
+    ).catch(() => {
+        Logger.error('Failed to dispatch compute token best listing', LOGGER_NAMESPACE)
+    })
+}
