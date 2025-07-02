@@ -172,7 +172,12 @@ export class MyTokensResolver {
             .getRepository(Token)
             .createQueryBuilder('token')
             .innerJoinAndMapOne('token.collection', Collection, 'collection', 'token.collection = collection.id')
-            .leftJoinAndMapOne('token.bestListing', Listing, 'listing', 'listing.makeAssetId = token.id and listing.is_active = true')
+            .leftJoinAndMapOne(
+                'token.bestListing',
+                Listing,
+                'listing',
+                'listing.makeAssetId = token.id and listing.is_active = true'
+            )
             .innerJoinAndMapOne(
                 'token.owner',
                 TokenAccount,
