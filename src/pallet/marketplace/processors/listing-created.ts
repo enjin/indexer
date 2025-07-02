@@ -124,7 +124,7 @@ export async function listingCreated(
     const isOffer = listing.type === ListingType.Offer
     if (!isOffer) {
         if (
-            (makeAssetId.bestListing && makeAssetId.bestListing.highestPrice >= listing.price) ||
+            (makeAssetId.bestListing && makeAssetId.bestListing.highestPrice < listing.price) ||
             !makeAssetId.bestListing
         ) {
             makeAssetId.bestListing = listing

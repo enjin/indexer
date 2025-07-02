@@ -57,8 +57,8 @@ export async function listingFilled(
         takeAssetId.lastSale = sale
         await ctx.store.save(takeAssetId)
     } else {
-        if (makeAssetId.bestListing?.id === listing.id && event.amountRemaining === 0n) {
-            const bestListing = await getBestListing(ctx, makeAssetId.id)
+        const bestListing = await getBestListing(ctx, makeAssetId.id)
+        if (bestListing?.id !== listing.id) {
             makeAssetId.bestListing = null
             if (bestListing) {
                 makeAssetId.bestListing = bestListing

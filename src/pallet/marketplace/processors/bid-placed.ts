@@ -52,12 +52,10 @@ export async function bidPlaced(
 
     await Promise.all([ctx.store.save(bid), ctx.store.save(listing)])
 
-    if (makeAssetId.bestListing?.id === listing.id) {
-        const bestListing = await getBestListing(ctx, makeAssetId.id)
-        if (bestListing?.id !== listing.id) {
-            makeAssetId.bestListing = bestListing
-            await ctx.store.save(makeAssetId)
-        }
+    const bestListing = await getBestListing(ctx, makeAssetId.id)
+    if (bestListing?.id !== listing.id) {
+        makeAssetId.bestListing = bestListing
+        await ctx.store.save(makeAssetId)
     }
 
     if (item.extrinsic) {
