@@ -6,3 +6,4 @@ export { default as MetadataWorker } from '~/worker/processors/metadata/metadata
 export { default as TokensWorker } from '~/worker/processors/tokens/tokens.worker'
 export { default as TraitsWorker } from '~/worker/processors/traits/traits.worker'
 export { default as ValidatorsWorker } from '~/worker/processors/validators/validators.worker'
+export { default as NominationPoolsWorker } from './nomination-pools/nomination-pools.worker'
