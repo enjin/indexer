@@ -10,10 +10,12 @@ export async function computeTokenBestListing(_job: Job, id: string): Promise<vo
 
     const bestListing = await getBestListing(ctx, token.id)
 
+    token.bestListing = null
     if (bestListing) {
         token.bestListing = bestListing
-        await ctx.store.save(token)
     }
+
+    await ctx.store.save(token)
 
     await _job.log(`Token ${token.id} best listing computed`)
 }
