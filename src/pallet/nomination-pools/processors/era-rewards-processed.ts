@@ -189,7 +189,28 @@ export async function eraRewardsProcessed(
         })
     })
 
-    await Promise.all([ctx.store.insert(rewardPromise), ctx.store.save(pool), ctx.store.save(reward)])
+    const accumulatedRewardsPromise = members.map((member) => {
+        if (member.accumulatedRewards === undefined || member.accumulatedRewards === null) {
+            member.accumulatedRewards = 0n
+        }
+
+        let points = 0n
+        if (memberBalances[member.account.id] !== undefined) {
+            points = memberBalances[member.account.id]
+        }
+
+        const memberReward = Big(points.toString()).times(reward.changeInRate.toString())
+        member.accumulatedRewards = BigInt(Big(member.accumulatedRewards.toString()).plus(memberReward).toString())
+
+        return member
+    })
+
+    await Promise.all([
+        ctx.store.insert(rewardPromise),
+        ctx.store.save(pool),
+        ctx.store.save(reward),
+        ctx.store.save(accumulatedRewardsPromise),
+    ])
 
     await Sns.getInstance().send({
         id: item.id,
