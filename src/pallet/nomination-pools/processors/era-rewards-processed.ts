@@ -189,29 +189,22 @@ export async function eraRewardsProcessed(
         })
     })
 
-    const accumulatedRewardsPromise = members.map((member) => {
-        if (member.accumulatedRewards === undefined || member.accumulatedRewards === null) {
-            member.accumulatedRewards = 0n
-        }
+    const updatedMembers = members.map((member) => {
+    member.accumulatedRewards ??= 0n;
+    const points = memberBalances[member.account.id] ?? 0n;
+    const memberReward = Big(points.toString()).times(reward.changeInRate.toString());
+    member.accumulatedRewards = BigInt(
+        Big(member.accumulatedRewards.toString()).plus(memberReward).toString()
+    );
+    return member;
+});
 
-        let points = 0n
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-        if (memberBalances[member.account.id] !== undefined) {
-            points = memberBalances[member.account.id]
-        }
-
-        const memberReward = Big(points.toString()).times(reward.changeInRate.toString())
-        member.accumulatedRewards = BigInt(Big(member.accumulatedRewards.toString()).plus(memberReward).toString())
-
-        return member
-    })
-
-    await Promise.all([
-        ctx.store.insert(rewardPromise),
-        ctx.store.save(pool),
-        ctx.store.save(reward),
-        ctx.store.save(accumulatedRewardsPromise),
-    ])
+await Promise.all([
+    ctx.store.insert(rewardPromise),
+    ctx.store.save(pool),
+    ctx.store.save(reward),
+    ctx.store.save(updatedMembers), 
+]);
 
     await Sns.getInstance().send({
         id: item.id,
