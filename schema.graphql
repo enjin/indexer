@@ -1292,6 +1292,7 @@ type PoolMember @entity {
   bonded: BigInt!
   tokenAccount: TokenAccount
   rewards: [PoolMemberRewards!] @derivedFrom(field: "member")
+  accumulatedRewards: BigInt # TODO: make this required
   unbondingEras: [UnbondingEras!]
   isActive: Boolean
   joinedEra: Era

@@ -99,6 +99,7 @@ export async function tokenAccountCreated(
                 account,
                 bonded: 0n,
                 tokenAccount,
+                accumulatedRewards: 0n,
                 isActive: true,
                 joinedEra: activeEra,
             })
