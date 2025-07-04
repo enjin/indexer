@@ -56,15 +56,6 @@ export async function listingFilled(
     if (isOffer) {
         takeAssetId.lastSale = sale
         await ctx.store.save(takeAssetId)
-    } else {
-        const bestListing = await getBestListing(ctx, makeAssetId.id)
-        makeAssetId.bestListing = null
-        if (bestListing) {
-            makeAssetId.bestListing = bestListing
-        }
-
-        makeAssetId.lastSale = sale
-        await ctx.store.save(makeAssetId)
     }
 
     if (event.amountRemaining === 0n) {
@@ -89,6 +80,17 @@ export async function listingFilled(
 
     listing.updatedAt = new Date(block.timestamp ?? 0)
     await ctx.store.save(listing)
+
+    if (!isOffer) {
+        const bestListing = await getBestListing(ctx, makeAssetId.id)
+        makeAssetId.bestListing = null
+        if (bestListing) {
+            makeAssetId.bestListing = bestListing
+        }
+
+        makeAssetId.lastSale = sale
+        await ctx.store.save(makeAssetId)
+    }
 
     if (item.extrinsic) {
         await Sns.getInstance().send({
