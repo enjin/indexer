@@ -190,21 +190,19 @@ export async function eraRewardsProcessed(
     })
 
     const updatedMembers = members.map((member) => {
-    member.accumulatedRewards ??= 0n;
-    const points = memberBalances[member.account.id] ?? 0n;
-    const memberReward = Big(points.toString()).times(reward.changeInRate.toString());
-    member.accumulatedRewards = BigInt(
-        Big(member.accumulatedRewards.toString()).plus(memberReward).toString()
-    );
-    return member;
-});
+        member.accumulatedRewards ??= 0n
+        const points = memberBalances[member.account.id] ?? 0n
+        const memberReward = Big(points.toString()).times(reward.changeInRate.toString())
+        member.accumulatedRewards = BigInt(Big(member.accumulatedRewards.toString()).plus(memberReward).toString())
+        return member
+    })
 
-await Promise.all([
-    ctx.store.insert(rewardPromise),
-    ctx.store.save(pool),
-    ctx.store.save(reward),
-    ctx.store.save(updatedMembers), 
-]);
+    await Promise.all([
+        ctx.store.insert(rewardPromise),
+        ctx.store.save(pool),
+        ctx.store.save(reward),
+        ctx.store.save(updatedMembers),
+    ])
 
     await Sns.getInstance().send({
         id: item.id,
