@@ -56,16 +56,17 @@ export async function auctionFinalized(
         makeAssetId.lastSale = sale
     }
 
+    listing.isActive = false
+    listing.updatedAt = new Date(block.timestamp ?? 0)
+
+    await ctx.store.save(listing)
+
     const bestListing = await getBestListing(ctx, makeAssetId.id)
     makeAssetId.bestListing = null
     if (bestListing) {
         makeAssetId.bestListing = bestListing
     }
 
-    listing.isActive = false
-    listing.updatedAt = new Date(block.timestamp ?? 0)
-
-    await ctx.store.save(listing)
     await ctx.store.save(makeAssetId)
 
     if (item.extrinsic) {
