@@ -28,11 +28,17 @@ export async function computePoolRewards(_job: Job, id?: string): Promise<void> 
 
     for (const member of members) {
         const totalRewards = member.rewards.reduce((acc, reward) => {
-            return acc.plus(Big(reward.points.toString()).times(reward.reward.changeInRate.toString()))
+            return acc.plus(((reward.points * reward.reward.changeInRate) / 10n ** 18n).toString())
         }, Big(0))
 
-        member.accumulatedRewards = BigInt(totalRewards.toString())
+        await _job.log(
+            `Computed rewards for ${member.id}, data: ${JSON.stringify({
+                memberId: member.id,
+                totalRewards: totalRewards.toString(),
+            })}`
+        )
 
+        member.accumulatedRewards = BigInt(totalRewards.toString())
         await ctx.store.save(member)
     }
 
