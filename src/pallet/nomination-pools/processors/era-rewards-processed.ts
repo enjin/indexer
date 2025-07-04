@@ -192,8 +192,8 @@ export async function eraRewardsProcessed(
     const updatedMembers = members.map((member) => {
         member.accumulatedRewards ??= 0n
         const points = memberBalances[member.account.id] ?? 0n
-        const memberReward = Big(points.toString()).times(reward.changeInRate.toString())
-        member.accumulatedRewards = BigInt(Big(member.accumulatedRewards.toString()).plus(memberReward).toString())
+        const memberReward = (points * reward.changeInRate) / 10n ** 18n
+        member.accumulatedRewards = BigInt(Big(member.accumulatedRewards.toString()).plus(memberReward.toString()).toString())
         return member
     })
 
