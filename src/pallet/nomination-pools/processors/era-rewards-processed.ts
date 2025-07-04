@@ -195,6 +195,7 @@ export async function eraRewardsProcessed(
         }
 
         let points = 0n
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (memberBalances[member.account.id] !== undefined) {
             points = memberBalances[member.account.id]
         }
