@@ -84,6 +84,7 @@ export async function bonded(ctx: CommonContext, block: Block, item: EventItem):
             account,
             bonded: eventData.bonded,
             tokenAccount: new TokenAccount({ id: `${account.id}-1-${pool.id}` }),
+            accumulatedRewards: 0n,
             isActive: true,
             joinedEra: activeEra,
         })

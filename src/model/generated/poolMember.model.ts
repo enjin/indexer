@@ -34,6 +34,9 @@ export class PoolMember {
     @OneToMany_(() => PoolMemberRewards, e => e.member)
     rewards!: PoolMemberRewards[]
 
+    @BigIntColumn_({nullable: true})
+    accumulatedRewards!: bigint | undefined | null
+
     @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.map((val: any) => val.toJSON()), from: obj => obj == null ? undefined : marshal.fromList(obj, val => new UnbondingEras(undefined, marshal.nonNull(val)))}, nullable: true})
     unbondingEras!: (UnbondingEras)[] | undefined | null
 

@@ -382,3 +382,29 @@ export async function dispatchDestroyedPoolsEvents(extrinsicId?: string): Promis
         Logger.error('Failed to dispatch destroyed pools events', LOGGER_NAMESPACE)
     })
 }
+
+export function dispatchSyncPoolRewards(): void {
+    NominationPoolsQueue.add(
+        JobsEnum.SYNC_POOL_REWARDS,
+        {},
+        {
+            delay: 6000,
+            jobId: 'nomination-pools.sync-rewards',
+        }
+    ).catch(() => {
+        Logger.error('Failed to dispatch sync pool rewards', LOGGER_NAMESPACE)
+    })
+}
+
+export function dispatchComputePoolRewards(id: string): void {
+    NominationPoolsQueue.add(
+        JobsEnum.COMPUTE_POOL_REWARDS,
+        { id },
+        {
+            delay: 6000,
+            jobId: `nomination-pools.compute-rewards.${id}`,
+        }
+    ).catch(() => {
+        Logger.error('Failed to dispatch compute pool rewards', LOGGER_NAMESPACE)
+    })
+}
