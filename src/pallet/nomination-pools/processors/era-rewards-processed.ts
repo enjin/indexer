@@ -193,9 +193,7 @@ export async function eraRewardsProcessed(
         member.accumulatedRewards ??= 0n
         const points = memberBalances[member.account.id] ?? 0n
         const memberReward = (points * reward.changeInRate) / 10n ** 18n
-        member.accumulatedRewards = BigInt(
-            Big(member.accumulatedRewards.toString()).plus(memberReward.toString()).toString()
-        )
+        member.accumulatedRewards = member.accumulatedRewards + memberReward
         return member
     })
 
