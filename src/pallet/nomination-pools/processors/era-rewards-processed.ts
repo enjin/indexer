@@ -190,7 +190,9 @@ export async function eraRewardsProcessed(
     })
 
     const updatedMembers = members.map((member) => {
-        member.accumulatedRewards ??= 0n
+        if (!member.accumulatedRewards) {
+            member.accumulatedRewards = 0n
+        }
         const points = memberBalances[member.account.id] ?? 0n
         member.accumulatedRewards += (points * reward.changeInRate) / 10n ** 18n
         return member
