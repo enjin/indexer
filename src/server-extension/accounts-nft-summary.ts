@@ -66,7 +66,7 @@ export class AccountsNftSummaryResolver {
             .innerJoin(Collection, 'collection', 'token.collection = collection.id')
             .select('collection.id', 'collectionId')
             .addSelect("collection.stats->>'floorPrice'", 'floorPrice')
-            .addSelect('SUM(token_account.balance)', 'totalBalance')
+            .addSelect('SUM(token_account.totalBalance)', 'totalBalance')
             .where('token_account.account IN (:...accountIds)', { accountIds })
             .groupBy('collection.id')
             .addGroupBy("collection.stats->>'floorPrice'")
