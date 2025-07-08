@@ -43,6 +43,8 @@ export async function unbonded(ctx: CommonContext, block: Block, item: EventItem
             balance: data.balance,
             unbondingPoints: data.points,
             extrinsic: item.extrinsic.id,
+            name: pool.name,
+            tokenId: pool.degenToken.id,
         },
     })
 
@@ -74,6 +76,8 @@ async function notifyUnbondingCompletion(ctx: CommonContext, item: EventItem): P
                 pool: data.poolId.toString(),
                 memberStillBonded: memberStillBonded.length,
                 extrinsic: item.extrinsic.id,
+                name: pool.name,
+                tokenId: pool.degenToken.id,
             },
         })
     }

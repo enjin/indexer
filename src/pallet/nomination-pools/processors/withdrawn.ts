@@ -61,6 +61,8 @@ export async function withdrawn(ctx: CommonContext, block: Block, item: EventIte
             balance: data.balance,
             points: data.points,
             extrinsic: item.extrinsic.id,
+            name: pool.name,
+            tokenId: pool.degenToken.id,
         },
     })
 
@@ -93,6 +95,8 @@ async function handleWithdrawalComplete(ctx: CommonContext, item: EventItem): Pr
                 pool: data.poolId.toString(),
                 allMembersWithdrawn: true,
                 extrinsic: item.extrinsic.id,
+                name: pool.name,
+                tokenId: pool.degenToken.id,
             },
         })
     } else if (allMembersUnbondedBool) {
@@ -103,6 +107,8 @@ async function handleWithdrawalComplete(ctx: CommonContext, item: EventItem): Pr
                 pool: data.poolId.toString(),
                 depositWithdrawn: true,
                 extrinsic: item.extrinsic.id,
+                name: pool.name,
+                tokenId: pool.degenToken.id,
             },
         })
     }

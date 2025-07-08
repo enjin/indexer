@@ -24,6 +24,8 @@ export async function stateChanged(ctx: CommonContext, block: Block, item: Event
                 pool: data.poolId.toString(),
                 state: data.newState.__kind,
                 extrinsic: item.extrinsic.id,
+                name: pool.name,
+                tokenId: pool.degenToken.id,
             },
         })
     }

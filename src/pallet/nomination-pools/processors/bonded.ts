@@ -112,6 +112,8 @@ export async function bonded(ctx: CommonContext, block: Block, item: EventItem):
             account: eventData.member,
             bonded: eventData.bonded.toString(),
             extrinsic: item.extrinsic.id,
+            name: pool.name,
+            tokenId: pool.degenToken.id,
         },
     })
 
