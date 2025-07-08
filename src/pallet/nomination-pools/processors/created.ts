@@ -91,5 +91,5 @@ export async function created(ctx: CommonContext, block: Block, item: EventItem)
 
     await ctx.store.save(pool)
 
-    return mappings.nominationPools.events.createdEventModel(item, eventData)
+    return mappings.nominationPools.events.createdEventModel(item, eventData, callData.tokenId)
 }

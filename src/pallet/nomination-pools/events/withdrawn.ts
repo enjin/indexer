@@ -17,13 +17,14 @@ export function withdrawn(event: EventItem): Withdrawn {
         })
 }
 
-export function withdrawnEventModel(item: EventItem, data: Withdrawn): EventModel | undefined {
+export function withdrawnEventModel(item: EventItem, data: Withdrawn, tokenId: bigint): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: NominationPoolsWithdrawn.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new NominationPoolsWithdrawn({
             pool: data.poolId.toString(),
+            tokenId: tokenId,
             account: data.member,
             balance: data.balance,
             points: data.points,

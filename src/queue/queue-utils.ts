@@ -366,20 +366,20 @@ export function dispatchComputeTokenBestListing(id: string): void {
     })
 }
 
-export async function dispatchDestroyedPoolsEvents(extrinsicId?: string): Promise<void> {
-    const job = await NominationPoolsQueue.getJob('nomination-pools.destroyed-pools-events')
+export async function dispatchStakePoolsEvents(extrinsicId?: string): Promise<void> {
+    const job = await NominationPoolsQueue.getJob('nomination-pools.stake-pools-events')
     if (job) {
         await NominationPoolsQueue.remove(job.id)
     }
     NominationPoolsQueue.add(
-        JobsEnum.DESTROYED_POOLS_EVENTS,
+        JobsEnum.STAKE_POOLS_EVENTS,
         { extrinsicId },
         {
             delay: 6000,
-            jobId: 'nomination-pools.destroyed-pools-events',
+            jobId: 'nomination-pools.stake-pools-events',
         }
     ).catch(() => {
-        Logger.error('Failed to dispatch destroyed pools events', LOGGER_NAMESPACE)
+        Logger.error('Failed to dispatch stake pools events', LOGGER_NAMESPACE)
     })
 }
 

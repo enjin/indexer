@@ -117,5 +117,5 @@ export async function bonded(ctx: CommonContext, block: Block, item: EventItem):
         },
     })
 
-    return mappings.nominationPools.events.bondedEventModel(item, eventData)
+    return mappings.nominationPools.events.bondedEventModel(item, eventData, pool.degenToken.tokenId)
 }

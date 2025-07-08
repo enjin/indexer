@@ -25,13 +25,14 @@ export function created(event: EventItem): Created {
         })
 }
 
-export function createdEventModel(item: EventItem, data: Created): EventModel | undefined {
+export function createdEventModel(item: EventItem, data: Created, tokenId: bigint): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: NominationPoolsCreated.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new NominationPoolsCreated({
             pool: data.poolId.toString(),
+            tokenId: tokenId,
         }),
     })
 }

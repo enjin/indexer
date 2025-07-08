@@ -29,13 +29,14 @@ export function bonded(event: EventItem): Bonded {
         })
 }
 
-export function bondedEventModel(item: EventItem, data: Bonded): EventModel | undefined {
+export function bondedEventModel(item: EventItem, data: Bonded, tokenId: bigint): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: NominationPoolsBonded.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new NominationPoolsBonded({
             pool: data.poolId.toString(),
+            tokenId: tokenId,
             account: data.member,
             bonded: data.bonded,
         }),

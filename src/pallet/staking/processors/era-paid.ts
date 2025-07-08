@@ -31,7 +31,7 @@ export async function eraPaid(ctx: CommonContext, block: Block, item: EventItem)
 
     await Promise.all([
         QueueUtils.dispatchComputeValidators(),
-        QueueUtils.dispatchDestroyedPoolsEvents(item.extrinsic?.id),
+        QueueUtils.dispatchStakePoolsEvents(item.extrinsic?.id),
     ])
 
     return new EventModel({

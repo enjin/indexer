@@ -8,7 +8,10 @@ export async function stateChanged(ctx: CommonContext, block: Block, item: Event
 
     const data = mappings.nominationPools.events.stateChanged(item)
 
-    const pool = await ctx.store.findOneBy(NominationPool, { id: data.poolId.toString() })
+    const pool = await ctx.store.findOne(NominationPool, {
+        where: { id: data.poolId.toString() },
+        relations: { degenToken: true },
+    })
     if (!pool) return undefined
 
     pool.state = PoolState[data.newState.__kind]
