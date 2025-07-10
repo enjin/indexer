@@ -82,6 +82,7 @@ async function handleWithdrawalComplete(ctx: CommonContext, item: EventItem): Pr
         where: { id: data.poolId.toString() },
         relations: {
             members: true,
+            degenToken: true,
         },
     })
 
