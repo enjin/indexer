@@ -9,8 +9,21 @@ export async function stateChanged(ctx: CommonContext, block: Block, item: Event
     const data = mappings.nominationPools.events.stateChanged(item)
 
     const pool = await ctx.store.findOne(NominationPool, {
-        where: { id: data.poolId.toString() },
-        relations: { degenToken: true },
+        where: {
+            id: data.poolId.toString(),
+            degenToken: {
+                tokenAccounts: {
+                    balance: 1n,
+                },
+            },
+        },
+        relations: {
+            degenToken: {
+                tokenAccounts: {
+                    account: true,
+                },
+            },
+        },
     })
     if (!pool) return undefined
 
@@ -29,6 +42,7 @@ export async function stateChanged(ctx: CommonContext, block: Block, item: Event
                 extrinsic: item.extrinsic.id,
                 name: pool.name,
                 tokenId: pool.degenToken.id,
+                owner: pool.degenToken.tokenAccounts[0].account.id,
             },
         })
     }
