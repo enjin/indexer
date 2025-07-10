@@ -64,6 +64,7 @@ async function notifyUnbondingCompletion(ctx: CommonContext, item: EventItem): P
         where: { id: data.poolId.toString() },
         relations: {
             members: true,
+            degenToken: true,
         },
     })
 
