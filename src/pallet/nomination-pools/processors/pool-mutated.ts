@@ -10,7 +10,12 @@ export async function poolMutated(ctx: CommonContext, block: Block, item: EventI
     const data = mappings.nominationPools.events.poolMutated(item)
     const mutation: Record<string, number | string | Record<string, number>> = {}
 
-    const pool = await ctx.store.findOneByOrFail<NominationPool>(NominationPool, { id: data.poolId.toString() })
+    const pool = await ctx.store.findOneOrFail<NominationPool>(NominationPool, {
+        where: { id: data.poolId.toString() },
+        relations: {
+            degenToken: true,
+        },
+    })
 
     if (data.mutation.duration !== undefined) {
         pool.bonusCycle.pendingDuration = data.mutation.duration
@@ -63,6 +68,8 @@ export async function poolMutated(ctx: CommonContext, block: Block, item: EventI
             pool: pool.id,
             mutation,
             extrinsic: item.extrinsic.id,
+            name: pool.name,
+            tokenId: pool.degenToken.id,
         },
     })
 
