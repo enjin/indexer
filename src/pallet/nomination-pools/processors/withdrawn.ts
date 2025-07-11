@@ -63,7 +63,7 @@ export async function withdrawn(ctx: CommonContext, block: Block, item: EventIte
             extrinsic: item.extrinsic.id,
             name: pool.name,
             tokenId: pool.degenToken.id,
-            poolState: pool.state,
+            state: pool.state,
         },
     })
 
@@ -99,7 +99,7 @@ async function handleWithdrawalComplete(ctx: CommonContext, item: EventItem): Pr
                 extrinsic: item.extrinsic.id,
                 name: pool.name,
                 tokenId: pool.degenToken.id,
-                poolState: pool.state,
+                state: pool.state,
             },
         })
     } else if (allMembersUnbondedBool) {
@@ -112,7 +112,7 @@ async function handleWithdrawalComplete(ctx: CommonContext, item: EventItem): Pr
                 extrinsic: item.extrinsic.id,
                 name: pool.name,
                 tokenId: pool.degenToken.id,
-                poolState: pool.state,
+                state: pool.state,
             },
         })
     }
