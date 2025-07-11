@@ -9,6 +9,7 @@ export class NominationPoolsUnbonded {
     private _balance!: bigint
     private _pool!: string
     private _era!: number
+    private _tokenId!: bigint | undefined | null
 
     constructor(props?: Partial<Omit<NominationPoolsUnbonded, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
@@ -18,6 +19,7 @@ export class NominationPoolsUnbonded {
             this._balance = marshal.bigint.fromJSON(json.balance)
             this._pool = marshal.string.fromJSON(json.pool)
             this._era = marshal.int.fromJSON(json.era)
+            this._tokenId = json.tokenId == null ? undefined : marshal.bigint.fromJSON(json.tokenId)
         }
     }
 
@@ -66,6 +68,14 @@ export class NominationPoolsUnbonded {
         this._era = value
     }
 
+    get tokenId(): bigint | undefined | null {
+        return this._tokenId
+    }
+
+    set tokenId(value: bigint | undefined | null) {
+        this._tokenId = value
+    }
+
     toJSON(): object {
         return {
             isTypeOf: this.isTypeOf,
@@ -74,6 +84,7 @@ export class NominationPoolsUnbonded {
             balance: marshal.bigint.toJSON(this.balance),
             pool: this.pool,
             era: this.era,
+            tokenId: this.tokenId == null ? undefined : marshal.bigint.toJSON(this.tokenId),
         }
     }
 }

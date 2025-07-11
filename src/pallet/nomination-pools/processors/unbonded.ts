@@ -11,7 +11,7 @@ export async function unbonded(ctx: CommonContext, block: Block, item: EventItem
     const data = mappings.nominationPools.events.unbonded(item)
     // This event should never be emitted, but since it is, we are just going to ignore events with balance 0
     if (data.balance === 0n) {
-        return mappings.nominationPools.events.unbondedEventModel(item, data)
+        return mappings.nominationPools.events.unbondedEventModel(item, data, 0n)
     }
 
     const pool = await updatePool(ctx, block, data.poolId.toString())
@@ -43,13 +43,16 @@ export async function unbonded(ctx: CommonContext, block: Block, item: EventItem
             balance: data.balance,
             unbondingPoints: data.points,
             extrinsic: item.extrinsic.id,
+            name: pool.name,
+            tokenId: pool.degenToken.id,
+            poolState: pool.state,
         },
     })
 
     // check if all members are unbonded
     await notifyUnbondingCompletion(ctx, item)
 
-    return mappings.nominationPools.events.unbondedEventModel(item, data)
+    return mappings.nominationPools.events.unbondedEventModel(item, data, pool.degenToken.tokenId)
 }
 
 async function notifyUnbondingCompletion(ctx: CommonContext, item: EventItem): Promise<void> {
@@ -61,6 +64,7 @@ async function notifyUnbondingCompletion(ctx: CommonContext, item: EventItem): P
         where: { id: data.poolId.toString() },
         relations: {
             members: true,
+            degenToken: true,
         },
     })
 
@@ -74,6 +78,9 @@ async function notifyUnbondingCompletion(ctx: CommonContext, item: EventItem): P
                 pool: data.poolId.toString(),
                 memberStillBonded: memberStillBonded.length,
                 extrinsic: item.extrinsic.id,
+                name: pool.name,
+                tokenId: pool.degenToken.id,
+                poolState: pool.state,
             },
         })
     }

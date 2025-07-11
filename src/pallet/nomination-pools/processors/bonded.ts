@@ -112,8 +112,10 @@ export async function bonded(ctx: CommonContext, block: Block, item: EventItem):
             account: eventData.member,
             bonded: eventData.bonded.toString(),
             extrinsic: item.extrinsic.id,
+            name: pool.name,
+            tokenId: pool.degenToken.id,
         },
     })
 
-    return mappings.nominationPools.events.bondedEventModel(item, eventData)
+    return mappings.nominationPools.events.bondedEventModel(item, eventData, pool.degenToken.tokenId)
 }

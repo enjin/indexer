@@ -61,13 +61,16 @@ export async function withdrawn(ctx: CommonContext, block: Block, item: EventIte
             balance: data.balance,
             points: data.points,
             extrinsic: item.extrinsic.id,
+            name: pool.name,
+            tokenId: pool.degenToken.id,
+            poolState: pool.state,
         },
     })
 
     // check if all members are withdrawn
     await handleWithdrawalComplete(ctx, item)
 
-    return mappings.nominationPools.events.withdrawnEventModel(item, data)
+    return mappings.nominationPools.events.withdrawnEventModel(item, data, pool.degenToken.tokenId)
 }
 
 async function handleWithdrawalComplete(ctx: CommonContext, item: EventItem): Promise<void> {
@@ -79,6 +82,7 @@ async function handleWithdrawalComplete(ctx: CommonContext, item: EventItem): Pr
         where: { id: data.poolId.toString() },
         relations: {
             members: true,
+            degenToken: true,
         },
     })
 
@@ -93,6 +97,9 @@ async function handleWithdrawalComplete(ctx: CommonContext, item: EventItem): Pr
                 pool: data.poolId.toString(),
                 allMembersWithdrawn: true,
                 extrinsic: item.extrinsic.id,
+                name: pool.name,
+                tokenId: pool.degenToken.id,
+                poolState: pool.state,
             },
         })
     } else if (allMembersUnbondedBool) {
@@ -103,6 +110,9 @@ async function handleWithdrawalComplete(ctx: CommonContext, item: EventItem): Pr
                 pool: data.poolId.toString(),
                 depositWithdrawn: true,
                 extrinsic: item.extrinsic.id,
+                name: pool.name,
+                tokenId: pool.degenToken.id,
+                poolState: pool.state,
             },
         })
     }

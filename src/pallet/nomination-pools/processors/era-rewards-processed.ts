@@ -213,6 +213,8 @@ export async function eraRewardsProcessed(
             era: data.era,
             rate: pool.rate,
             extrinsic: item.extrinsic.id,
+            name: pool.name,
+            tokenId: pool.degenToken.id,
         },
     })
 

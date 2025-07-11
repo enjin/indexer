@@ -38,7 +38,10 @@ async function getActiveStake(block: Block, poolId: string) {
 
 export async function updatePool(ctx: CommonContext, block: Block, poolId: string) {
     const [pool, poolBalance, poolPoints, activeStake, eraCount] = await Promise.all([
-        ctx.store.findOneByOrFail<NominationPool>(NominationPool, { id: poolId }),
+        ctx.store.findOneOrFail<NominationPool>(NominationPool, {
+            where: { id: poolId },
+            relations: { degenToken: true },
+        }),
         fetchPoolBalance(block, poolId),
         getPoolPointsStorage(block, poolId),
         getActiveStake(block, poolId),
