@@ -45,7 +45,7 @@ export async function unbonded(ctx: CommonContext, block: Block, item: EventItem
             extrinsic: item.extrinsic.id,
             name: pool.name,
             tokenId: pool.degenToken.id,
-            poolState: pool.state,
+            state: pool.state,
         },
     })
 
@@ -80,7 +80,7 @@ async function notifyUnbondingCompletion(ctx: CommonContext, item: EventItem): P
                 extrinsic: item.extrinsic.id,
                 name: pool.name,
                 tokenId: pool.degenToken.id,
-                poolState: pool.state,
+                state: pool.state,
             },
         })
     }
