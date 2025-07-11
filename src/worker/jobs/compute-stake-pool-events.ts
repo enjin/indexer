@@ -1,4 +1,4 @@
-import { Era, NominationPool, PoolState } from '~/model'
+import { Era, NominationPool, PoolState, TokenAccount } from '~/model'
 import { dataHandlerContext } from '~/contexts'
 import { Job } from 'bullmq'
 import { Sns } from '~/util/sns'
@@ -78,6 +78,20 @@ export async function computeStakePoolsEvents(_job: Job, extrinsicId?: string): 
                 member.unbondingEras?.every((unbondingEra) => currentEra[0].index >= unbondingEra.era)
             )
             if (unbondingComplete) {
+                const owner = await ctx.store.findOne(TokenAccount, {
+                    where: {
+                        balance: 1n,
+                        token: {
+                            id: pool.degenToken.id,
+                        },
+                    },
+                    relations: {
+                        account: true,
+                    },
+                })
+                if (!owner) {
+                    throw new Error('Owner not found')
+                }
                 if (unbondingMembers.length && isStashBonded.length === 1) {
                     await Sns.getInstance().send({
                         id: `${pool.id}-${currentEra[0].index}`,
@@ -89,7 +103,8 @@ export async function computeStakePoolsEvents(_job: Job, extrinsicId?: string): 
                             extrinsic: extrinsicId,
                             name: pool.name,
                             tokenId: pool.degenToken.id,
-                            poolState: pool.state,
+                            state: pool.state,
+                            owner: owner.account.id,
                         },
                     })
                 } else if (isStashBonded.length === 1 && unbondingMembers.length === 1) {
@@ -103,7 +118,8 @@ export async function computeStakePoolsEvents(_job: Job, extrinsicId?: string): 
                             extrinsic: extrinsicId,
                             name: pool.name,
                             tokenId: pool.degenToken.id,
-                            poolState: pool.state,
+                            state: pool.state,
+                            owner: owner.account.id,
                         },
                     })
                 }
