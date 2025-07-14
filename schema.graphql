@@ -1120,10 +1120,13 @@ type StakeExchangeOfferCreated {
   rate: BigInt!
   minAverageCommission: Int! @deprecated
   minAverageRewardRate: BigInt!
+  pool: String!
 }
 
 type StakeExchangeOfferCancelled {
   offerId: BigInt!
+  total: BigInt!
+  pool: String!
 }
 
 type StakeExchangeLiquidityWithdrawn {
@@ -1150,6 +1153,7 @@ type StakeExchangeBuyOrderCompleted {
   amount: BigInt!
   rate: BigInt!
   points: BigInt!
+  pool: String!
 }
 
 type StakeExchangeOfferCompleted {
@@ -1164,6 +1168,7 @@ type NominationPoolsCreated {
 type NominationPoolsDestroyed {
   pool: String!
   tokenId: BigInt
+  account: Account!
 }
 
 type NominationPoolsPoolMutated {

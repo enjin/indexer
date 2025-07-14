@@ -25,5 +25,5 @@ export async function offerCancelled(
         },
     })
 
-    return mappings.stakeExchange.events.offerCancelledEventModel(item, event)
+    return mappings.stakeExchange.events.offerCancelledEventModel(item, stakeExchangeOffer)
 }

@@ -17,14 +17,20 @@ export function destroyed(event: EventItem): Destroyed {
         })
 }
 
-export function destroyedEventModel(item: EventItem, data: Destroyed, tokenId: bigint): EventModel | undefined {
+export function destroyedEventModel(
+    item: EventItem,
+    data: Destroyed,
+    tokenId: bigint,
+    owner: string | undefined
+): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: NominationPoolsDestroyed.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new NominationPoolsDestroyed({
             pool: data.poolId.toString(),
-            tokenId: tokenId,
+            tokenId,
+            account: owner,
         }),
     })
 }
