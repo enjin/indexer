@@ -51,7 +51,7 @@ export class AccountsNftSummaryResolver {
             .getRepository(TokenAccount)
             .createQueryBuilder('token_account')
             .innerJoin(Token, 'token', 'token_account.token = token.id')
-            .select('SUM(token.infusion * token_account.balance)', 'totalInfused')
+            .select('SUM(token.infusion * token_account.totalBalance)', 'totalInfused')
             .where('token_account.account IN (:...accountIds)', { accountIds })
             .getRawOne()
 
