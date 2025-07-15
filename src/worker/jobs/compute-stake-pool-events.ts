@@ -38,7 +38,7 @@ export async function computeStakePoolsEvents(_job: Job, extrinsicId?: string): 
             for (const member of unbondingMembers) {
                 if (member.unbondingEras?.length) {
                     const unbondingComplete = member.unbondingEras.some(
-                        (unbondingEra) => currentEra[0].index >= unbondingEra.era
+                        (unbondingEra) => currentEra[0].index === unbondingEra.era
                     )
                     const totalUnbondingBalance = member.unbondingEras.reduce((acc, unbondingEra) => {
                         if (currentEra[0].index >= unbondingEra.era) {
