@@ -81,7 +81,6 @@ export async function eraRewardsProcessed(
 
         await ctx.store.save(existReward)
         if (data.commission) {
-            // pool.commissionRewards += data.commission.amount
             await ctx.store.save(pool)
         }
         return undefined
@@ -201,8 +200,6 @@ export async function eraRewardsProcessed(
         member.accumulatedRewards += (points * reward.changeInRate) / 10n ** 18n
         return member
     })
-
-    // pool.commissionRewards += data.commission?.amount ?? 0n
 
     await Promise.all([
         ctx.store.insert(rewardPromise),
