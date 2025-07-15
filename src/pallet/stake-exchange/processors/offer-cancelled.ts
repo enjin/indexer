@@ -15,6 +15,7 @@ export async function offerCancelled(
         },
         relations: {
             tokenFilter: true,
+            account: true,
         },
     })
 

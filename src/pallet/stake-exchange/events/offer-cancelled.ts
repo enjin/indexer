@@ -51,6 +51,7 @@ export function offerCancelledEventModel(
             offerId: stakeExchangeOffer.offerId,
             total: stakeExchangeOffer.total,
             pool: poolId ?? undefined,
+            account: stakeExchangeOffer.account.id,
         }),
     })
 }

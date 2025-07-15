@@ -19,9 +19,10 @@ export async function syncStakeOffers(job: Job): Promise<void> {
     const promises: Promise<any>[] = []
 
     const stakeExchangeOffers = await em.find(StakeExchangeOffer, {
-        select: ['id', 'offerId', 'amount', 'tokenFilter', 'state'],
+        select: ['id', 'offerId', 'amount', 'tokenFilter', 'state', 'account'],
         relations: {
             tokenFilter: true,
+            account: true,
         },
     })
 
@@ -80,6 +81,7 @@ export async function syncStakeOffers(job: Job): Promise<void> {
                     ...(offerEvent.data as StakeExchangeOfferCancelled),
                     total: stakeExchangeOffer.amount,
                     pool: poolId,
+                    account: stakeExchangeOffer.account.id,
                 })
                 promises.push(em.save(offerEvent))
             }
