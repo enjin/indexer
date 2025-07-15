@@ -22,10 +22,8 @@ export async function syncStakeOffers(job: Job): Promise<void> {
         select: ['id', 'offerId', 'amount', 'tokenFilter', 'state'],
         relations: {
             tokenFilter: true,
-        }
+        },
     })
-
-    await job.log(`Found ${stakeExchangeOffers.length} stake exchange offers`)
 
     const offerEvents = await em
         .createQueryBuilder(Event, 'event')
@@ -41,10 +39,7 @@ export async function syncStakeOffers(job: Job): Promise<void> {
         .orderBy('event.id', 'ASC')
         .getMany()
 
-    await job.log(`Found ${offerEvents.length} offer events`)
-
     for (const stakeExchangeOffer of stakeExchangeOffers) {
-        await job.log(`Processing offer ${stakeExchangeOffer.offerId.toString()}`)
         const offerIdEvents = offerEvents.filter(
             (offerEvent) =>
                 (
@@ -56,10 +51,8 @@ export async function syncStakeOffers(job: Job): Promise<void> {
                         | StakeExchangeLiquidityWithdrawn
                 ).offerId === stakeExchangeOffer.offerId
         )
-        await job.log(`Init amount `)
         stakeExchangeOffer.amount = 0n
 
-        await job.log(`Processing offer pool`)
         const poolId =
             stakeExchangeOffer.tokenFilter?.type === StakeExchangeTokenFilterType.Whitelist
                 ? stakeExchangeOffer.tokenFilter?.value?.map((v) => v?.toString())[0]
@@ -70,8 +63,6 @@ export async function syncStakeOffers(job: Job): Promise<void> {
         }
 
         for (const offerEvent of offerIdEvents) {
-            await job.log(`Processing offer event ${offerEvent.id}`)
-
             if (offerEvent.data?.isTypeOf === StakeExchangeOfferCreated.name) {
                 stakeExchangeOffer.amount = (offerEvent.data as StakeExchangeOfferCreated).total
 
@@ -124,8 +115,6 @@ export async function syncStakeOffers(job: Job): Promise<void> {
                 }
             }
         }
-
-        await job.log(`Saving offer ${stakeExchangeOffer.offerId.toString()}`)
 
         promises.push(em.save(stakeExchangeOffer))
     }
