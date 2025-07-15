@@ -178,7 +178,8 @@ async function generateRelayData(ctx: CommonContext, block: Block) {
             mintPolicy: new MintPolicy({
                 maxTokenCount: degenCollectionData.policy.mint.maxTokenCount,
                 maxTokenSupply: degenCollectionData.policy.mint.maxTokenSupply,
-                forceSingleMint: degenCollectionData.policy.mint.forceSingleMint,
+                // forceSingleMint: degenCollectionData.policy.mint.forceSingleMint,
+                forceSingleMint: true,
             }),
             metadata: new Metadata({
                 name: 'Degen',
