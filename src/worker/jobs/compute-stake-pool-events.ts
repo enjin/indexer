@@ -75,7 +75,7 @@ export async function computeStakePoolsEvents(_job: Job, extrinsicId?: string): 
             }
 
             const unbondingComplete = unbondingMembers.every((member) =>
-                member.unbondingEras?.every((unbondingEra) => currentEra[0].index >= unbondingEra.era)
+                member.unbondingEras?.every((unbondingEra) => currentEra[0].index === unbondingEra.era)
             )
             if (unbondingComplete) {
                 const owner = await ctx.store.findOne(TokenAccount, {
