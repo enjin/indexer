@@ -74,7 +74,7 @@ export async function tokens(ctx: CommonContext, block: Block) {
                 metadata: null,
                 listingForbidden: 'listingForbidden' in data ? data.listingForbidden : false,
                 accountDepositCount: 0,
-                anyoneCanInfuse: false,
+                anyoneCanInfuse: data.anyoneCanInfuse ?? false,
                 nativeMetadata: null,
                 infusion: data.infusion,
                 createdAt: new Date(block.timestamp ?? 0),
