@@ -1,5 +1,5 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { Era, Event as EventModel, PoolMember, NominationPool } from '~/model'
+import { Era, Event as EventModel, PoolMember, NominationPool, TokenAccount } from '~/model'
 import { getOrCreateAccount } from '~/util/entities'
 import { updatePool } from '~/pallet/nomination-pools/processors/pool'
 import { Sns } from '~/util/sns'
@@ -52,29 +52,33 @@ export async function withdrawn(ctx: CommonContext, block: Block, item: EventIte
         await ctx.store.save(pool)
     }
 
+    const owner = await ctx.store.findOne(TokenAccount, {
+        where: { token: { id: pool.degenToken.id } },
+    })
+
+    const isDepositWithdrawn = await checkWithdrawalDeposit(ctx, item)
+
     await Sns.getInstance().send({
         id: item.id,
         name: item.name,
         body: {
             pool: data.poolId.toString(),
-            account: account.id,
+            account: isDepositWithdrawn ? owner?.id : account.id,
             balance: data.balance,
             points: data.points,
             extrinsic: item.extrinsic.id,
             name: pool.name,
             tokenId: pool.degenToken.id,
             state: pool.state,
+            depositWithdrawn: isDepositWithdrawn,
         },
     })
-
-    // check if all members are withdrawn
-    await handleWithdrawalComplete(ctx, item)
 
     return mappings.nominationPools.events.withdrawnEventModel(item, data, pool.degenToken.tokenId)
 }
 
-async function handleWithdrawalComplete(ctx: CommonContext, item: EventItem): Promise<void> {
-    if (!item.extrinsic || !item.extrinsic.call) return
+async function checkWithdrawalDeposit(ctx: CommonContext, item: EventItem): Promise<boolean> {
+    if (!item.extrinsic || !item.extrinsic.call) return false
 
     const data = mappings.nominationPools.events.withdrawn(item)
 
@@ -87,33 +91,10 @@ async function handleWithdrawalComplete(ctx: CommonContext, item: EventItem): Pr
     })
 
     const allMembersUnbondedBool = pool.members.every((member) => member.bonded === 0n && member.unbondingEras === null)
-    const isStashBonded = pool.members.filter((member) => member.bonded !== 0n)
 
-    if (isStashBonded.length === 1) {
-        await Sns.getInstance().send({
-            id: item.id,
-            name: item.extrinsic.getCall().name, // Members withdrawn
-            body: {
-                pool: data.poolId.toString(),
-                allMembersWithdrawn: true,
-                extrinsic: item.extrinsic.id,
-                name: pool.name,
-                tokenId: pool.degenToken.id,
-                state: pool.state,
-            },
-        })
-    } else if (allMembersUnbondedBool) {
-        await Sns.getInstance().send({
-            id: item.id,
-            name: item.extrinsic.getCall().name, // Deposit withdrawn
-            body: {
-                pool: data.poolId.toString(),
-                depositWithdrawn: true,
-                extrinsic: item.extrinsic.id,
-                name: pool.name,
-                tokenId: pool.degenToken.id,
-                state: pool.state,
-            },
-        })
+    if (allMembersUnbondedBool) {
+        return true
     }
+
+    return false
 }
