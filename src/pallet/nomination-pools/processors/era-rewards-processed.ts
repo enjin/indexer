@@ -80,9 +80,6 @@ export async function eraRewardsProcessed(
         existReward.rate = pool.rate
 
         await ctx.store.save(existReward)
-        if (data.commission) {
-            await ctx.store.save(pool)
-        }
         return undefined
     }
 

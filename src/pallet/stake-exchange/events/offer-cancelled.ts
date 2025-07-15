@@ -2,13 +2,7 @@ import { stakeExchange } from '~/type/events'
 import { EventItem } from '~/contexts'
 import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
-import {
-    Event as EventModel,
-    Extrinsic,
-    StakeExchangeOffer,
-    StakeExchangeOfferCancelled,
-    StakeExchangeTokenFilterType,
-} from '~/model'
+import { Event as EventModel, Extrinsic, StakeExchangeOfferCancelled } from '~/model'
 import { OfferCancelled } from '~/pallet/stake-exchange/events/types'
 
 export function offerCancelled(event: EventItem): OfferCancelled {
@@ -23,35 +17,13 @@ export function offerCancelled(event: EventItem): OfferCancelled {
         })
 }
 
-export function offerCancelledEventModel(
-    item: EventItem,
-    stakeExchangeOffer: StakeExchangeOffer
-): EventModel | undefined {
-    const pool = (() => {
-        switch (stakeExchangeOffer.tokenFilter?.type) {
-            case StakeExchangeTokenFilterType.All:
-                return []
-            case StakeExchangeTokenFilterType.Whitelist:
-                return stakeExchangeOffer.tokenFilter.value?.map((v) => v?.toString())
-            case StakeExchangeTokenFilterType.BlockList:
-                return stakeExchangeOffer.tokenFilter.value?.map((v) => v?.toString())
-            default:
-                return []
-        }
-    })()
-
-    const poolId =
-        stakeExchangeOffer.tokenFilter?.type === StakeExchangeTokenFilterType.Whitelist ? pool?.[0] : undefined
-
+export function offerCancelledEventModel(item: EventItem, data: OfferCancelled): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: StakeExchangeOfferCancelled.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new StakeExchangeOfferCancelled({
-            offerId: stakeExchangeOffer.offerId,
-            total: stakeExchangeOffer.total,
-            pool: poolId ?? undefined,
-            account: stakeExchangeOffer.account.id,
+            offerId: data.offerId,
         }),
     })
 }

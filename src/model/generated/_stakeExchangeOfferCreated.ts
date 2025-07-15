@@ -10,7 +10,6 @@ export class StakeExchangeOfferCreated {
     private _rate!: bigint
     private _minAverageCommission!: number
     private _minAverageRewardRate!: bigint
-    private _pool!: string
 
     constructor(props?: Partial<Omit<StakeExchangeOfferCreated, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
@@ -21,7 +20,6 @@ export class StakeExchangeOfferCreated {
             this._rate = marshal.bigint.fromJSON(json.rate)
             this._minAverageCommission = marshal.int.fromJSON(json.minAverageCommission)
             this._minAverageRewardRate = marshal.bigint.fromJSON(json.minAverageRewardRate)
-            this._pool = marshal.string.fromJSON(json.pool)
         }
     }
 
@@ -79,15 +77,6 @@ export class StakeExchangeOfferCreated {
         this._minAverageRewardRate = value
     }
 
-    get pool(): string {
-        assert(this._pool != null, 'uninitialized access')
-        return this._pool
-    }
-
-    set pool(value: string) {
-        this._pool = value
-    }
-
     toJSON(): object {
         return {
             isTypeOf: this.isTypeOf,
@@ -97,7 +86,6 @@ export class StakeExchangeOfferCreated {
             rate: marshal.bigint.toJSON(this.rate),
             minAverageCommission: this.minAverageCommission,
             minAverageRewardRate: marshal.bigint.toJSON(this.minAverageRewardRate),
-            pool: this.pool,
         }
     }
 }

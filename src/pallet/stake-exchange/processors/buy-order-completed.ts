@@ -54,7 +54,7 @@ export async function buyOrderCompleted(
     })
 
     if (!pool && !existingMember) {
-        return mappings.stakeExchange.events.buyOrderCompletedEventModel(item, event, offerId, undefined)
+        return mappings.stakeExchange.events.buyOrderCompletedEventModel(item, event, offerId)
     }
 
     if (!pool) {
@@ -127,5 +127,5 @@ export async function buyOrderCompleted(
         },
     })
 
-    return mappings.stakeExchange.events.buyOrderCompletedEventModel(item, event, offerId, pool.id)
+    return mappings.stakeExchange.events.buyOrderCompletedEventModel(item, event, offerId)
 }
