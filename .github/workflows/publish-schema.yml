@@ -67,7 +67,7 @@ jobs:
       - name: Introspect & Lint
         run: |
           rover graph introspect -o apollo.graphql http://localhost:4000/graphql 
-          rover graph lint --client-timeout 120 --schema apollo.graphql --lint-rule-level arguments-camel-case=off enjin-indexer@master
+          rover graph lint --client-timeout 120 --schema apollo.graphql enjin-indexer@master
 
       - name: Check Schema
         id: check
