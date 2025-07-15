@@ -45,7 +45,7 @@ export async function unbonded(ctx: CommonContext, block: Block, item: EventItem
         name: item.name,
         body: {
             pool: pool.id,
-            account: isUnbondingDeposit ? owner?.id : account.id,
+            account: account.id,
             balance: data.balance,
             unbondingPoints: data.points,
             extrinsic: item.extrinsic.id,
@@ -53,6 +53,7 @@ export async function unbonded(ctx: CommonContext, block: Block, item: EventItem
             tokenId: pool.degenToken.id,
             state: pool.state,
             unbondingDeposit: isUnbondingDeposit,
+            owner: owner?.id,
         },
     })
 

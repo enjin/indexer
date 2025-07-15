@@ -63,7 +63,7 @@ export async function withdrawn(ctx: CommonContext, block: Block, item: EventIte
         name: item.name,
         body: {
             pool: data.poolId.toString(),
-            account: isDepositWithdrawn ? owner?.id : account.id,
+            account: account.id,
             balance: data.balance,
             points: data.points,
             extrinsic: item.extrinsic.id,
@@ -71,6 +71,7 @@ export async function withdrawn(ctx: CommonContext, block: Block, item: EventIte
             tokenId: pool.degenToken.id,
             state: pool.state,
             depositWithdrawn: isDepositWithdrawn,
+            owner: owner?.id,
         },
     })
 
