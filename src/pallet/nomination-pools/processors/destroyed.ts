@@ -10,21 +10,25 @@ import {
     StakeExchangeOfferState,
 } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
+import { connectionManager } from '~/contexts'
 import * as mappings from '~/pallet/index'
 import { Sns } from '~/util/sns'
-import { In } from 'typeorm'
 
 export async function destroyed(ctx: CommonContext, block: Block, item: EventItem): Promise<EventModel | undefined> {
     const eventData = mappings.nominationPools.events.destroyed(item)
+    const em = await connectionManager()
 
     const earlyBirdShares = await ctx.store.findBy(EarlyBirdShares, { pool: { id: eventData.poolId.toString() } })
     const poolMemberRewards = await ctx.store.findBy(PoolMemberRewards, { pool: { id: eventData.poolId.toString() } })
     const poolMembers = await ctx.store.findBy(PoolMember, { pool: { id: eventData.poolId.toString() } })
     const eraRewards = await ctx.store.findBy(EraReward, { pool: { id: eventData.poolId.toString() } })
     const poolValidators = await ctx.store.findBy(PoolValidator, { pool: { id: eventData.poolId.toString() } })
-    const stakeExchangeOffers = await ctx.store.findBy(StakeExchangeOffer, {
-        tokenFilter: { value: In([eventData.poolId.toString()]) },
-    })
+    const stakeExchangeOffers = await em
+        .createQueryBuilder(StakeExchangeOffer, 'offer')
+        .leftJoinAndSelect('offer.tokenFilter', 'tokenFilter')
+        .where(':poolId = ANY(tokenFilter.value)', { poolId: eventData.poolId.toString() })
+        .getMany()
+
     const nominationPool = await ctx.store.findOne(NominationPool, {
         where: {
             id: eventData.poolId.toString(),

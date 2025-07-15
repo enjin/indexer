@@ -9,8 +9,13 @@ export async function offerCancelled(
     item: EventItem
 ): Promise<EventModel | undefined> {
     const event = mappings.stakeExchange.events.offerCancelled(item)
-    const stakeExchangeOffer = await ctx.store.findOneByOrFail<StakeExchangeOffer>(StakeExchangeOffer, {
-        id: event.offerId.toString(),
+    const stakeExchangeOffer = await ctx.store.findOneOrFail<StakeExchangeOffer>(StakeExchangeOffer, {
+        where: {
+            offerId: event.offerId,
+        },
+        relations: {
+            tokenFilter: true,
+        },
     })
 
     stakeExchangeOffer.state = StakeExchangeOfferState.Cancelled

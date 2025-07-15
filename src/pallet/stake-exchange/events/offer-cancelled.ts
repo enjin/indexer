@@ -40,6 +40,8 @@ export function offerCancelledEventModel(
         }
     })()
 
+    const poolId = stakeExchangeOffer.tokenFilter?.type === StakeExchangeTokenFilterType.Whitelist ? pool?.[0] : undefined
+
     return new EventModel({
         id: item.id,
         name: StakeExchangeOfferCancelled.name,
@@ -47,8 +49,7 @@ export function offerCancelledEventModel(
         data: new StakeExchangeOfferCancelled({
             offerId: stakeExchangeOffer.offerId,
             total: stakeExchangeOffer.total,
-            pool:
-                stakeExchangeOffer.tokenFilter?.type === StakeExchangeTokenFilterType.Whitelist ? pool?.[0] : undefined,
+            pool: poolId ?? undefined,
         }),
     })
 }
