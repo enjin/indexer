@@ -40,7 +40,8 @@ export function offerCancelledEventModel(
         }
     })()
 
-    const poolId = stakeExchangeOffer.tokenFilter?.type === StakeExchangeTokenFilterType.Whitelist ? pool?.[0] : undefined
+    const poolId =
+        stakeExchangeOffer.tokenFilter?.type === StakeExchangeTokenFilterType.Whitelist ? pool?.[0] : undefined
 
     return new EventModel({
         id: item.id,
