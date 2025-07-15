@@ -12,7 +12,6 @@ import {
     StakeExchangeOfferState,
     StakeExchangeTokenFilterType,
 } from '~/model'
-import { In } from 'typeorm'
 
 export async function syncStakeOffers(job: Job): Promise<void> {
     const em = await connectionManager()

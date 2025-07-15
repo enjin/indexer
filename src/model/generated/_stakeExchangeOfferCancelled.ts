@@ -7,7 +7,7 @@ export class StakeExchangeOfferCancelled {
     private _offerId!: bigint
     private _total!: bigint
     private _pool!: string
-    private _account!: string
+    private _account!: string | undefined | null
 
     constructor(props?: Partial<Omit<StakeExchangeOfferCancelled, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
@@ -15,7 +15,7 @@ export class StakeExchangeOfferCancelled {
             this._offerId = marshal.bigint.fromJSON(json.offerId)
             this._total = marshal.bigint.fromJSON(json.total)
             this._pool = marshal.string.fromJSON(json.pool)
-            this._account = marshal.string.fromJSON(json.account)
+            this._account = json.account == null ? undefined : marshal.string.fromJSON(json.account)
         }
     }
 
@@ -46,12 +46,11 @@ export class StakeExchangeOfferCancelled {
         this._pool = value
     }
 
-    get account(): string {
-        assert(this._account != null, 'uninitialized access')
+    get account(): string | undefined | null {
         return this._account
     }
 
-    set account(value: string) {
+    set account(value: string | undefined | null) {
         this._account = value
     }
 
