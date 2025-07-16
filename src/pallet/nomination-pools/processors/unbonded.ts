@@ -38,11 +38,9 @@ export async function unbonded(ctx: CommonContext, block: Block, item: EventItem
     await ctx.store.save(poolMember)
     await ctx.store.save(pool)
 
-    const isUnbondingDeposit = await checkUnbondingDeposit(ctx, item)
-
     await Sns.getInstance().send({
         id: item.id,
-        name: item.name,
+        name: poolMember.isStash ? 'NominationPools.DepositUnbond' : item.name,
         body: {
             pool: pool.id,
             account: account.id,
@@ -52,32 +50,9 @@ export async function unbonded(ctx: CommonContext, block: Block, item: EventItem
             name: pool.name,
             tokenId: pool.degenToken.id,
             state: pool.state,
-            unbondingDeposit: isUnbondingDeposit,
             owner: owner?.id,
         },
     })
 
     return mappings.nominationPools.events.unbondedEventModel(item, data, pool.degenToken.tokenId)
-}
-
-async function checkUnbondingDeposit(ctx: CommonContext, item: EventItem): Promise<boolean> {
-    if (!item.extrinsic || !item.extrinsic.call) return false
-
-    const data = mappings.nominationPools.events.unbonded(item)
-
-    const pool = await ctx.store.findOneOrFail<NominationPool>(NominationPool, {
-        where: { id: data.poolId.toString() },
-        relations: {
-            members: true,
-            degenToken: true,
-        },
-    })
-
-    const memberStillBonded = pool.members.filter((member) => member.bonded !== 0n)
-
-    if (memberStillBonded.length <= 1) {
-        return true
-    }
-
-    return false
 }

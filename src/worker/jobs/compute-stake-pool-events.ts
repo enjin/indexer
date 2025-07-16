@@ -50,17 +50,16 @@ export async function computeStakePoolsEvents(_job: Job, extrinsicId?: string): 
                     if (unbondingComplete) {
                         await Sns.getInstance().send({
                             id: `${pool.id}-${currentEra[0].index}`,
-                            name: staking.eraPaid.name,
+                            name: 'NominationPools.MemberUnbonded',
                             body: {
                                 pool: pool.id,
                                 member: member.account.id,
                                 balance: totalUnbondingBalance,
                                 era: currentEra[0].index,
-                                memberUnbondingCompleted: true,
                                 extrinsic: extrinsicId,
                                 name: pool.name,
                                 tokenId: pool.degenToken.id,
-                                poolState: pool.state,
+                                state: pool.state,
                             },
                         })
                     }
@@ -95,11 +94,10 @@ export async function computeStakePoolsEvents(_job: Job, extrinsicId?: string): 
                 if (unbondingMembers.length && isStashBonded.length === 1) {
                     await Sns.getInstance().send({
                         id: `${pool.id}-${currentEra[0].index}`,
-                        name: staking.eraPaid.name,
+                        name: 'NominationPools.AllMembersUnbonded',
                         body: {
                             pool: pool.id,
                             era: currentEra[0].index,
-                            membersUnbondingCompleted: true,
                             extrinsic: extrinsicId,
                             name: pool.name,
                             tokenId: pool.degenToken.id,
@@ -110,11 +108,10 @@ export async function computeStakePoolsEvents(_job: Job, extrinsicId?: string): 
                 } else if (isStashBonded.length === 1 && unbondingMembers.length === 1) {
                     await Sns.getInstance().send({
                         id: `${pool.id}-${currentEra[0].index}`,
-                        name: staking.eraPaid.name,
+                        name: 'NominationPools.DepositUnbonded',
                         body: {
                             pool: pool.id,
                             era: currentEra[0].index,
-                            depositUnbondingCompleted: true,
                             extrinsic: extrinsicId,
                             name: pool.name,
                             tokenId: pool.degenToken.id,

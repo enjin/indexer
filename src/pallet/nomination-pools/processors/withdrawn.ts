@@ -56,11 +56,9 @@ export async function withdrawn(ctx: CommonContext, block: Block, item: EventIte
         where: { token: { id: pool.degenToken.id } },
     })
 
-    const isDepositWithdrawn = await checkWithdrawalDeposit(ctx, item)
-
     await Sns.getInstance().send({
         id: item.id,
-        name: item.name,
+        name: poolMember.isStash ? 'NominationPools.DepositWithdrawn' : item.name,
         body: {
             pool: data.poolId.toString(),
             account: account.id,
@@ -70,32 +68,9 @@ export async function withdrawn(ctx: CommonContext, block: Block, item: EventIte
             name: pool.name,
             tokenId: pool.degenToken.id,
             state: pool.state,
-            depositWithdrawn: isDepositWithdrawn,
             owner: owner?.id,
         },
     })
 
     return mappings.nominationPools.events.withdrawnEventModel(item, data, pool.degenToken.tokenId)
-}
-
-async function checkWithdrawalDeposit(ctx: CommonContext, item: EventItem): Promise<boolean> {
-    if (!item.extrinsic || !item.extrinsic.call) return false
-
-    const data = mappings.nominationPools.events.withdrawn(item)
-
-    const pool = await ctx.store.findOneOrFail<NominationPool>(NominationPool, {
-        where: { id: data.poolId.toString() },
-        relations: {
-            members: true,
-            degenToken: true,
-        },
-    })
-
-    const allMembersUnbondedBool = pool.members.every((member) => member.bonded === 0n && member.unbondingEras === null)
-
-    if (allMembersUnbondedBool) {
-        return true
-    }
-
-    return false
 }
