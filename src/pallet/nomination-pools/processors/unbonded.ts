@@ -40,7 +40,7 @@ export async function unbonded(ctx: CommonContext, block: Block, item: EventItem
 
     await Sns.getInstance().send({
         id: item.id,
-        name: poolMember.isStash ? 'NominationPools.DepositUnbond' : item.name,
+        name: poolMember.isStash ? 'NominationPools.DepositUnbond' : 'NominationPools.Unbond',
         body: {
             pool: pool.id,
             account: account.id,
@@ -54,5 +54,47 @@ export async function unbonded(ctx: CommonContext, block: Block, item: EventItem
         },
     })
 
+    await sendAllMembersUnbondedEvent(ctx, pool.id, item)
+
     return mappings.nominationPools.events.unbondedEventModel(item, data, pool.degenToken.tokenId)
+}
+
+async function sendAllMembersUnbondedEvent(ctx: CommonContext, poolId: string, item: EventItem): Promise<void> {
+    if (!item.extrinsic || !item.extrinsic.call) return
+
+    const pool = await ctx.store.findOneOrFail<NominationPool>(NominationPool, {
+        where: {
+            id: poolId,
+            degenToken: {
+                tokenAccounts: {
+                    balance: 1n,
+                },
+            },
+        },
+        relations: {
+            members: true,
+            degenToken: {
+                tokenAccounts: {
+                    account: true,
+                },
+            },
+        },
+    })
+
+    const memberStillBonded = pool.members.filter((member) => member.bonded !== 0n)
+
+    if (memberStillBonded.length === 1) {
+        await Sns.getInstance().send({
+            id: item.id,
+            name: 'NominationPools.AllMembersUnbond',
+            body: {
+                pool: pool.id,
+                extrinsic: item.extrinsic.id,
+                name: pool.name,
+                tokenId: pool.degenToken.id,
+                state: pool.state,
+                owner: pool.degenToken.tokenAccounts[0].account.id,
+            },
+        })
+    }
 }

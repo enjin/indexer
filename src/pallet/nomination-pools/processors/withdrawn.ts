@@ -72,5 +72,43 @@ export async function withdrawn(ctx: CommonContext, block: Block, item: EventIte
         },
     })
 
+    await sendAllMembersWithdrawnEvent(ctx, pool.id, item)
+
     return mappings.nominationPools.events.withdrawnEventModel(item, data, pool.degenToken.tokenId)
+}
+
+async function sendAllMembersWithdrawnEvent(ctx: CommonContext, poolId: string, item: EventItem): Promise<void> {
+    if (!item.extrinsic || !item.extrinsic.call) return
+
+    const pool = await ctx.store.findOneOrFail<NominationPool>(NominationPool, {
+        where: {
+            id: poolId,
+            degenToken: {
+                tokenAccounts: {
+                    balance: 1n,
+                },
+            },
+        },
+        relations: {
+            members: true,
+            degenToken: true,
+        },
+    })
+
+    const allMembersUnbondedBool = pool.members.every((member) => member.bonded <= 0n && member.unbondingEras === null)
+
+    if (allMembersUnbondedBool) {
+        await Sns.getInstance().send({
+            id: item.id,
+            name: 'NominationPools.AllMembersWithdrawn',
+            body: {
+                pool: pool.id,
+                extrinsic: item.extrinsic.id,
+                name: pool.name,
+                tokenId: pool.degenToken.id,
+                state: pool.state,
+                owner: pool.degenToken.tokenAccounts[0].account.id,
+            },
+        })
+    }
 }
