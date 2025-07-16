@@ -15,8 +15,11 @@ import { Block, CommonContext, EventItem } from '~/contexts'
 import { Sns } from '~/util/sns'
 import processorConfig from '~/util/config'
 import * as mappings from '~/pallet/index'
+import { TokenAccount } from '~/pallet/multi-tokens/storage/types'
 
 async function getMembersBalance(block: Block, poolId: number): Promise<Record<string, bigint>> {
+    type StorageEntry = [k: [bigint, bigint, string], v: TokenAccount | undefined]
+
     const result = await mappings.multiTokens.storage.tokenAccounts(block, {
         collectionId: 1n,
         tokenId: BigInt(poolId),
@@ -25,12 +28,22 @@ async function getMembersBalance(block: Block, poolId: number): Promise<Record<s
     const accountMap: Record<string, bigint> = {}
 
     // Check if a result exists and is an array or iterable
-    if (typeof result[Symbol.iterator] === 'function') {
-        for (const pair of result) {
-            if (Array.isArray(pair) && pair[0][2]) {
-                const key = pair[0]
-                const value = pair[1]
-                accountMap[key[2]] = value?.balance ?? 0n
+    // Check if result is an async generator
+    if (result && Symbol.asyncIterator in result) {
+        for await (const batch of result as AsyncIterable<StorageEntry[]>) {
+            for (const storageEntry of batch) {
+                if (storageEntry?.[0]?.[2]) {
+                    const [[, , accountId], tokenAccount] = storageEntry
+                    accountMap[accountId] = BigInt(tokenAccount?.balance || 0)
+                }
+            }
+        }
+    } else if (result && Symbol.iterator in result) {
+        // Check if a result exists and is a sync iterable
+        for (const storageEntry of result as StorageEntry[]) {
+            if (storageEntry?.[0]?.[2]) {
+                const [[, , accountId], tokenAccount] = storageEntry
+                accountMap[accountId] = BigInt(tokenAccount?.balance || 0)
             }
         }
     }
