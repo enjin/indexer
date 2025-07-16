@@ -48,8 +48,7 @@ export function buyOrderCompleted(event: EventItem): BuyOrderCompleted {
 export function buyOrderCompletedEventModel(
     item: EventItem,
     data: BuyOrderCompleted,
-    offerId: bigint,
-    pool: string | undefined
+    offerId: bigint
 ): EventModel | undefined {
     const rate = typeof data.rate === 'bigint' ? data.rate : BigInt(data.rate * 10 ** 9)
 
@@ -64,7 +63,6 @@ export function buyOrderCompletedEventModel(
             amount: data.amount,
             rate,
             points: (data.amount * rate) / 10n ** 18n,
-            pool,
         }),
     })
 }
