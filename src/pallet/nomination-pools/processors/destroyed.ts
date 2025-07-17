@@ -69,6 +69,7 @@ export async function destroyed(ctx: CommonContext, block: Block, item: EventIte
             name: nominationPool?.name,
             tokenId: nominationPool?.degenToken.id,
             owner,
+            amount: nominationPool?.deposit,
         },
     })
 
