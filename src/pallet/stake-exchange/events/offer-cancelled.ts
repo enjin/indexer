@@ -2,13 +2,7 @@ import { stakeExchange } from '~/type/events'
 import { EventItem } from '~/contexts'
 import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
-import {
-    Event as EventModel,
-    Extrinsic,
-    StakeExchangeOffer,
-    StakeExchangeOfferCancelled,
-    StakeExchangeTokenFilterType,
-} from '~/model'
+import { Event as EventModel, Extrinsic, StakeExchangeOffer, StakeExchangeOfferCancelled } from '~/model'
 import { OfferCancelled } from '~/pallet/stake-exchange/events/types'
 
 export function offerCancelled(event: EventItem): OfferCancelled {

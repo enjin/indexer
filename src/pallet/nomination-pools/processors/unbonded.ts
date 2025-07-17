@@ -1,5 +1,5 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { Event as EventModel, NominationPool, PoolMember, TokenAccount, UnbondingEras } from '~/model'
+import { Event as EventModel, PoolMember, TokenAccount, UnbondingEras } from '~/model'
 import { getOrCreateAccount } from '~/util/entities'
 import { updatePool } from '~/pallet/nomination-pools/processors/pool'
 import { Sns } from '~/util/sns'
