@@ -2,7 +2,6 @@ import { Job } from 'bullmq'
 import { ProcessorDef } from '~/worker/processors/processor.def'
 import { JobsEnum } from '~/queue/constants'
 import { logDebug, logError } from '~/worker/utils'
-import { computeStakePoolsEvents } from '~/worker/jobs/compute-stake-pool-events'
 import { syncPoolRewards } from '~/worker/jobs/sync-pool-rewards'
 import { computePoolRewards } from '~/worker/jobs/compute-pool-rewards'
 import { syncPoolMembers } from '~/worker/jobs/sync-pool-members'
@@ -10,9 +9,6 @@ import { syncPoolMembers } from '~/worker/jobs/sync-pool-members'
 export class NominationPoolsProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {
         switch (job.name as JobsEnum) {
-            case JobsEnum.STAKE_POOLS_EVENTS:
-                await computeStakePoolsEvents(job, job.data.extrinsicId)
-                break
             case JobsEnum.SYNC_POOL_REWARDS:
                 await syncPoolRewards(job)
                 break
