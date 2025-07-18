@@ -95,6 +95,7 @@ export async function buyOrderCompleted(
                 bonded,
                 tokenAccount,
                 accumulatedRewards: 0n,
+                isStash: false,
                 isActive: true,
                 joinedEra: (await getActiveEra(ctx))[0],
             })

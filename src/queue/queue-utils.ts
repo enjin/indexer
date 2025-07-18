@@ -366,20 +366,16 @@ export function dispatchComputeTokenBestListing(id: string): void {
     })
 }
 
-export async function dispatchStakePoolsEvents(extrinsicId?: string): Promise<void> {
-    const job = await NominationPoolsQueue.getJob('nomination-pools.stake-pools-events')
-    if (job) {
-        await NominationPoolsQueue.remove(job.id)
-    }
-    NominationPoolsQueue.add(
-        JobsEnum.STAKE_POOLS_EVENTS,
-        { extrinsicId },
+export function dispatchComputeTokenInfusion(id: string): void {
+    TokensQueue.add(
+        JobsEnum.COMPUTE_TOKEN_INFUSION,
+        { id },
         {
             delay: 6000,
-            jobId: 'nomination-pools.stake-pools-events',
+            jobId: `tokens.infusion.${id}`,
         }
     ).catch(() => {
-        Logger.error('Failed to dispatch stake pools events', LOGGER_NAMESPACE)
+        Logger.error('Failed to dispatch compute token infusion', LOGGER_NAMESPACE)
     })
 }
 

@@ -100,6 +100,7 @@ export async function tokenAccountCreated(
                 bonded: 0n,
                 tokenAccount,
                 accumulatedRewards: 0n,
+                isStash: pool.totalMembers === 0,
                 isActive: true,
                 joinedEra: activeEra,
             })
