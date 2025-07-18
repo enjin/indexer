@@ -69,7 +69,7 @@ export async function syncStakeOffers(job: Job): Promise<void> {
                 if (poolId) {
                     offerEvent.data = new StakeExchangeOfferCreated({
                         ...(offerEvent.data as StakeExchangeOfferCreated),
-                        pool: poolId,
+                        tokenFilter: stakeExchangeOffer.tokenFilter?.id,
                     })
                     promises.push(em.save(offerEvent))
                 }
@@ -79,7 +79,7 @@ export async function syncStakeOffers(job: Job): Promise<void> {
                 offerEvent.data = new StakeExchangeOfferCancelled({
                     ...(offerEvent.data as StakeExchangeOfferCancelled),
                     total: stakeExchangeOffer.amount,
-                    pool: poolId,
+                    tokenFilter: stakeExchangeOffer.tokenFilter?.id,
                     account: stakeExchangeOffer.account.id,
                 })
                 promises.push(em.save(offerEvent))

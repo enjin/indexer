@@ -90,5 +90,5 @@ export async function offerCreated(ctx: CommonContext, block: Block, item: Event
         },
     })
 
-    return mappings.stakeExchange.events.offerCreatedEventModel(item, event, rewardRate)
+    return mappings.stakeExchange.events.offerCreatedEventModel(item, event, rewardRate, offer)
 }
