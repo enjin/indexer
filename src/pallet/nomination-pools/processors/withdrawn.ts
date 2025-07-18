@@ -1,10 +1,10 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { Era, Event as EventModel, PoolMember, TokenAccount } from '~/model'
+import { Era, Event as EventModel, PoolMember, NominationPool, TokenAccount } from '~/model'
 import { getOrCreateAccount } from '~/util/entities'
 import { updatePool } from '~/pallet/nomination-pools/processors/pool'
 import { Sns } from '~/util/sns'
 import * as mappings from '~/pallet/index'
-import { IsNull, Not } from 'typeorm'
+import { IsNull, MoreThan, Not } from 'typeorm'
 
 function getActiveEra(ctx: CommonContext) {
     return ctx.store.find(Era, {
@@ -31,6 +31,18 @@ export async function withdrawn(ctx: CommonContext, block: Block, item: EventIte
     }
 
     const activeEra = await getActiveEra(ctx)
+
+    const isStashWithdrawing = await (async () => {
+        const unbondingMembers = await ctx.store.find(PoolMember, {
+            where: { pool: { id: pool.id }, unbondingEras: Not(IsNull()), isStash: false },
+        })
+
+        const unbondingStash = await ctx.store.findOne(PoolMember, {
+            where: { pool: { id: pool.id }, unbondingEras: Not(IsNull()), isStash: true },
+        })
+
+        return unbondingMembers.length === 0 && unbondingStash
+    })()
 
     if (poolMember.unbondingEras && poolMember.unbondingEras.length > 1) {
         poolMember.unbondingEras = poolMember.unbondingEras.filter((era) => {
@@ -64,7 +76,7 @@ export async function withdrawn(ctx: CommonContext, block: Block, item: EventIte
 
     await Sns.getInstance().send({
         id: item.id,
-        name: poolMember.isStash ? 'NominationPools.DepositWithdrawn' : item.name,
+        name: isStashWithdrawing ? 'NominationPools.DepositWithdrawn' : item.name,
         body: {
             pool: data.poolId.toString(),
             account: account.id,
@@ -78,7 +90,7 @@ export async function withdrawn(ctx: CommonContext, block: Block, item: EventIte
         },
     })
 
-    if (!poolMember.isStash && unbondingMembers.length === 0) {
+    if (!isStashWithdrawing && unbondingMembers.length === 0) {
         await Sns.getInstance().send({
             id: `${item.id}-all-members-withdrawn`,
             name: 'NominationPools.AllMembersWithdrawn',

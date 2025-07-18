@@ -48,12 +48,14 @@ async function dispatchStakePoolsEvents(ctx: CommonContext, eraIndex: number, it
     for (const pool of pools) {
         if (pool.state !== PoolState.Destroying) {
             const unbondingMembers = pool.members.filter((member) => member.unbondingEras && !member.isStash)
+            ctx.log.info(`Unbonding members: ${unbondingMembers.length} for pool ${pool.id}`)
             for (const member of unbondingMembers) {
                 if (member.unbondingEras?.length) {
                     const unbondingComplete = member.unbondingEras.some((unbondingEra) => eraIndex === unbondingEra.era)
                     if (!unbondingComplete) {
                         continue
                     }
+                    ctx.log.info(`Unbonding complete for member ${member.account.id} for pool ${pool.id}`)
                     const totalUnbondingBalance = member.unbondingEras.reduce((acc, unbondingEra) => {
                         if (eraIndex >= unbondingEra.era) {
                             return acc + unbondingEra.balance
@@ -80,7 +82,7 @@ async function dispatchStakePoolsEvents(ctx: CommonContext, eraIndex: number, it
             }
         } else {
             const unbondingMembers = pool.members.filter((member) => member.unbondingEras)
-            if (unbondingMembers.length === 0 || unbondingMembers.length < pool.members.length - 1) {
+            if (unbondingMembers.length === 0) {
                 continue
             }
 
