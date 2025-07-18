@@ -1,10 +1,10 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { Era, Event as EventModel, PoolMember, NominationPool, TokenAccount } from '~/model'
+import { Era, Event as EventModel, PoolMember, TokenAccount } from '~/model'
 import { getOrCreateAccount } from '~/util/entities'
 import { updatePool } from '~/pallet/nomination-pools/processors/pool'
 import { Sns } from '~/util/sns'
 import * as mappings from '~/pallet/index'
-import { IsNull, MoreThan, Not } from 'typeorm'
+import { IsNull, Not } from 'typeorm'
 
 function getActiveEra(ctx: CommonContext) {
     return ctx.store.find(Era, {
