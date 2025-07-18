@@ -64,7 +64,7 @@ export async function withdrawn(ctx: CommonContext, block: Block, item: EventIte
 
     await Sns.getInstance().send({
         id: item.id,
-        name: account.id === owner?.account.id ? 'NominationPools.DepositWithdrawn' : item.name,
+        name: poolMember.isStash ? 'NominationPools.DepositWithdrawn' : item.name,
         body: {
             pool: data.poolId.toString(),
             account: account.id,
@@ -78,7 +78,7 @@ export async function withdrawn(ctx: CommonContext, block: Block, item: EventIte
         },
     })
 
-    if (account.id !== owner?.account.id && unbondingMembers.length === 0) {
+    if (!poolMember.isStash && unbondingMembers.length === 0) {
         await Sns.getInstance().send({
             id: `${item.id}-all-members-withdrawn`,
             name: 'NominationPools.AllMembersWithdrawn',
