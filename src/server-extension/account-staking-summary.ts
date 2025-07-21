@@ -64,7 +64,7 @@ export class AccountStakingSummaryResolver {
             .getRepository(NominationPool)
             .createQueryBuilder('pool')
             .innerJoin(PoolMember, 'pool_member', 'pool.id = pool_member.pool')
-            .innerJoin(TokenAccount, 'token_account', 'token_account.id = pool_member.token_account')
+            .innerJoin(TokenAccount, 'token_account', 'token_account.id = pool_member.token_account_id')
             .select('pool.id', 'id')
             .addSelect('pool.name', 'name')
             .addSelect('pool.apy', 'apy')
