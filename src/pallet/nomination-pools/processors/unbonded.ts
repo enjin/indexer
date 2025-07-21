@@ -1,9 +1,10 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { Event as EventModel, NominationPool, PoolMember, UnbondingEras } from '~/model'
+import { Event as EventModel, PoolMember, TokenAccount, UnbondingEras } from '~/model'
 import { getOrCreateAccount } from '~/util/entities'
 import { updatePool } from '~/pallet/nomination-pools/processors/pool'
 import { Sns } from '~/util/sns'
 import * as mappings from '~/pallet/index'
+import { MoreThan } from 'typeorm'
 
 export async function unbonded(ctx: CommonContext, block: Block, item: EventItem): Promise<EventModel | undefined> {
     if (!item.extrinsic || !item.extrinsic.call) return undefined
@@ -31,12 +32,21 @@ export async function unbonded(ctx: CommonContext, block: Block, item: EventItem
         new UnbondingEras({ era: data.era, balance: data.balance }),
     ])
 
+    const owner = await ctx.store.findOne(TokenAccount, {
+        where: { token: { id: pool.degenToken.id }, balance: 1n },
+        relations: { account: true },
+    })
+
     await ctx.store.save(poolMember)
     await ctx.store.save(pool)
 
+    const bondedMembers = await ctx.store.find(PoolMember, {
+        where: { pool: { id: pool.id }, bonded: MoreThan(0n), isStash: false },
+    })
+
     await Sns.getInstance().send({
         id: item.id,
-        name: item.name,
+        name: poolMember.isStash ? 'NominationPools.DepositUnbond' : 'NominationPools.Unbond',
         body: {
             pool: pool.id,
             account: account.id,
@@ -46,42 +56,24 @@ export async function unbonded(ctx: CommonContext, block: Block, item: EventItem
             name: pool.name,
             tokenId: pool.degenToken.id,
             state: pool.state,
+            owner: owner?.account.id,
         },
     })
 
-    // check if all members are unbonded
-    await notifyUnbondingCompletion(ctx, item)
-
-    return mappings.nominationPools.events.unbondedEventModel(item, data, pool.degenToken.tokenId)
-}
-
-async function notifyUnbondingCompletion(ctx: CommonContext, item: EventItem): Promise<void> {
-    if (!item.extrinsic || !item.extrinsic.call) return
-
-    const data = mappings.nominationPools.events.unbonded(item)
-
-    const pool = await ctx.store.findOneOrFail<NominationPool>(NominationPool, {
-        where: { id: data.poolId.toString() },
-        relations: {
-            members: true,
-            degenToken: true,
-        },
-    })
-
-    const memberStillBonded = pool.members.filter((member) => member.bonded !== 0n)
-
-    if (memberStillBonded.length <= 1) {
+    if (!poolMember.isStash && bondedMembers.length === 0) {
         await Sns.getInstance().send({
-            id: item.id,
-            name: item.name,
+            id: `${item.id}-all-members-unbonded`,
+            name: 'NominationPools.AllMembersUnbond',
             body: {
-                pool: data.poolId.toString(),
-                memberStillBonded: memberStillBonded.length,
+                pool: pool.id,
                 extrinsic: item.extrinsic.id,
                 name: pool.name,
                 tokenId: pool.degenToken.id,
                 state: pool.state,
+                owner: owner?.account.id,
             },
         })
     }
+
+    return mappings.nominationPools.events.unbondedEventModel(item, data, pool.degenToken.tokenId)
 }
