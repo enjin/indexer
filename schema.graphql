@@ -1120,14 +1120,14 @@ type StakeExchangeOfferCreated {
   rate: BigInt!
   minAverageCommission: Int! @deprecated
   minAverageRewardRate: BigInt!
-  pool: String!
+  tokenFilter: StakeExchangeTokenFilter 
 }
 
 type StakeExchangeOfferCancelled {
   offerId: BigInt!
   total: BigInt!
-  pool: String!
   account: Account
+  tokenFilter: StakeExchangeTokenFilter
 }
 
 type StakeExchangeLiquidityWithdrawn {
@@ -1159,6 +1159,7 @@ type StakeExchangeBuyOrderCompleted {
 
 type StakeExchangeOfferCompleted {
   offerId: BigInt!
+  tokenFilter: StakeExchangeTokenFilter
 }
 
 type NominationPoolsCreated {
@@ -1305,6 +1306,7 @@ type PoolMember @entity {
   rewards: [PoolMemberRewards!] @derivedFrom(field: "member")
   accumulatedRewards: BigInt # TODO: make this required
   unbondingEras: [UnbondingEras!]
+  isStash: Boolean
   isActive: Boolean
   joinedEra: Era
 }

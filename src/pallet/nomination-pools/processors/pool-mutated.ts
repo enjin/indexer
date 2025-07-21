@@ -11,9 +11,20 @@ export async function poolMutated(ctx: CommonContext, block: Block, item: EventI
     const mutation: Record<string, number | string | Record<string, number>> = {}
 
     const pool = await ctx.store.findOneOrFail<NominationPool>(NominationPool, {
-        where: { id: data.poolId.toString() },
+        where: {
+            id: data.poolId.toString(),
+            degenToken: {
+                tokenAccounts: {
+                    balance: 1n,
+                },
+            },
+        },
         relations: {
-            degenToken: true,
+            degenToken: {
+                tokenAccounts: {
+                    account: true,
+                },
+            },
         },
     })
 
@@ -70,6 +81,7 @@ export async function poolMutated(ctx: CommonContext, block: Block, item: EventI
             extrinsic: item.extrinsic.id,
             name: pool.name,
             tokenId: pool.degenToken.id,
+            owner: pool.degenToken.tokenAccounts[0].account.id,
         },
     })
 

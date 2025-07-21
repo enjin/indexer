@@ -3,6 +3,7 @@ import { EventItem } from '~/contexts'
 import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
 import { EraPaid } from '~/pallet/staking/events/types'
+import { Event as EventModel, Extrinsic, StakingEraPaid } from '~/model'
 
 export function eraPaid(event: EventItem): EraPaid {
     return match(event)
@@ -14,4 +15,17 @@ export function eraPaid(event: EventItem): EraPaid {
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })
+}
+
+export function eraPaidEventModel(item: EventItem, event: EraPaid): EventModel {
+    return new EventModel({
+        id: item.id,
+        name: StakingEraPaid.name,
+        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
+        data: new StakingEraPaid({
+            eraIndex: event.eraIndex,
+            validatorPayout: event.validatorPayout,
+            remainder: event.remainder,
+        }),
+    })
 }

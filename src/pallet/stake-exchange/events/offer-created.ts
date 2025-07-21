@@ -2,7 +2,7 @@ import { stakeExchange } from '~/type/events'
 import { EventItem } from '~/contexts'
 import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
-import { Event as EventModel, Extrinsic, StakeExchangeOfferCreated, StakeExchangeTokenFilterType } from '~/model'
+import { Event as EventModel, Extrinsic, StakeExchangeOffer, StakeExchangeOfferCreated } from '~/model'
 import { OfferCreated } from '~/pallet/stake-exchange/events/types'
 
 export function offerCreated(event: EventItem): OfferCreated {
@@ -52,21 +52,10 @@ export function offerCreated(event: EventItem): OfferCreated {
 export function offerCreatedEventModel(
     item: EventItem,
     data: OfferCreated,
-    rewardRateAsFixedu128: bigint
+    rewardRateAsFixedu128: bigint,
+    offer: StakeExchangeOffer
 ): EventModel | undefined {
     const rate = typeof data.offer.rate === 'bigint' ? data.offer.rate : BigInt(data.offer.rate * 10 ** 9)
-    const pool = (() => {
-        switch (data.offer.tokenFilter?.__kind) {
-            case 'All':
-                return []
-            case 'Whitelist':
-                return data.offer.tokenFilter.value.map((v) => v.toString())
-            case 'BlockList':
-                return data.offer.tokenFilter.value.map((v) => v.toString())
-            default:
-                return []
-        }
-    })()
 
     return new EventModel({
         id: item.id,
@@ -79,7 +68,7 @@ export function offerCreatedEventModel(
             minAverageCommission: 0,
             rate,
             minAverageRewardRate: rewardRateAsFixedu128,
-            pool: data.offer.tokenFilter?.__kind === StakeExchangeTokenFilterType.Whitelist ? pool[0] : undefined,
+            tokenFilter: offer.tokenFilter?.id,
         }),
     })
 }

@@ -41,6 +41,9 @@ export class PoolMember {
     unbondingEras!: (UnbondingEras)[] | undefined | null
 
     @BooleanColumn_({nullable: true})
+    isStash!: boolean | undefined | null
+
+    @BooleanColumn_({nullable: true})
     isActive!: boolean | undefined | null
 
     @Index_()
