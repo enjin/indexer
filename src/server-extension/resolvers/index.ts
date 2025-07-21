@@ -20,6 +20,7 @@ import { ValidatorDetailsResolver } from '~/server-extension/validator-details'
 import { RefreshPoolResolver } from '~/server-extension/refresh-pool'
 import { SyncAccountsResolver } from '~/server-extension/sync-accounts'
 import { RefreshListingsResolver } from '~/server-extension/refresh-listings'
+import { AccountStakingSummaryResolver } from '~/server-extension/account-staking-summary'
 
 export {
     TokenSalesHistoryResolver,
@@ -44,4 +45,5 @@ export {
     ValidatorDetailsResolver,
     SyncAccountsResolver,
     RefreshListingsResolver,
+    AccountStakingSummaryResolver,
 }
