@@ -1264,7 +1264,8 @@ type StakeExchangeTokenFilter @entity {
 enum PoolState {
   Open,
   Blocked,
-  Destroying
+  Destroying,
+  Destroyed
 }
 
 type CommissionChangeRate {

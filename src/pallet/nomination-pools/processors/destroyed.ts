@@ -5,6 +5,7 @@ import {
     NominationPool,
     PoolMember,
     PoolMemberRewards,
+    PoolState,
     PoolValidator,
     StakeExchangeOffer,
     StakeExchangeOfferState,
@@ -18,11 +19,6 @@ export async function destroyed(ctx: CommonContext, block: Block, item: EventIte
     const eventData = mappings.nominationPools.events.destroyed(item)
     const em = await connectionManager()
 
-    const earlyBirdShares = await ctx.store.findBy(EarlyBirdShares, { pool: { id: eventData.poolId.toString() } })
-    const poolMemberRewards = await ctx.store.findBy(PoolMemberRewards, { pool: { id: eventData.poolId.toString() } })
-    const poolMembers = await ctx.store.findBy(PoolMember, { pool: { id: eventData.poolId.toString() } })
-    const eraRewards = await ctx.store.findBy(EraReward, { pool: { id: eventData.poolId.toString() } })
-    const poolValidators = await ctx.store.findBy(PoolValidator, { pool: { id: eventData.poolId.toString() } })
     const stakeExchangeOffers = await em
         .createQueryBuilder(StakeExchangeOffer, 'offer')
         .leftJoinAndSelect('offer.tokenFilter', 'tokenFilter')
@@ -39,6 +35,7 @@ export async function destroyed(ctx: CommonContext, block: Block, item: EventIte
             },
         },
         relations: {
+            members: true,
             degenToken: {
                 tokenAccounts: {
                     account: true,
@@ -47,7 +44,11 @@ export async function destroyed(ctx: CommonContext, block: Block, item: EventIte
         },
     })
 
-    const owner = nominationPool?.degenToken.tokenAccounts[0].account.id
+    if (!nominationPool) {
+        return
+    }
+
+    const owner = nominationPool.degenToken.tokenAccounts[0].account.id
 
     if (stakeExchangeOffers.length) {
         for (const stakeExchangeOffer of stakeExchangeOffers) {
@@ -59,6 +60,25 @@ export async function destroyed(ctx: CommonContext, block: Block, item: EventIte
             }
         }
     }
+
+    if (nominationPool.members.length) {
+        for (const member of nominationPool.members) {
+            member.unbondingEras = null
+            member.bonded = 0n
+            member.isActive = false
+
+            await ctx.store.save(member)
+        }
+    }
+
+    nominationPool.state = PoolState.Destroyed
+    const token = nominationPool.degenToken
+    token.nominationPool = null
+
+    await ctx.store.save(nominationPool)
+    await ctx.store.save(token)
+
+    const tokenId = nominationPool?.degenToken.tokenId ?? 0n
 
     await Sns.getInstance().send({
         id: item.id,
@@ -72,15 +92,6 @@ export async function destroyed(ctx: CommonContext, block: Block, item: EventIte
             amount: nominationPool?.deposit,
         },
     })
-
-    const tokenId = nominationPool?.degenToken.tokenId ?? 0n
-
-    if (earlyBirdShares.length) await ctx.store.remove(earlyBirdShares)
-    if (poolMemberRewards.length) await ctx.store.remove(poolMemberRewards)
-    if (poolMembers.length) await ctx.store.remove(poolMembers)
-    if (eraRewards.length) await ctx.store.remove(eraRewards)
-    if (poolValidators.length) await ctx.store.remove(poolValidators)
-    if (nominationPool) await ctx.store.remove(nominationPool)
 
     return mappings.nominationPools.events.destroyedEventModel(item, eventData, tokenId, owner)
 }
