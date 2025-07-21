@@ -33,7 +33,7 @@ export async function eraPaid(ctx: CommonContext, block: Block, item: EventItem)
     await dispatchStakePoolsEvents(ctx, event.eraIndex + 1, item)
 
     await QueueUtils.dispatchComputeValidators()
-    
+
     return mappings.staking.events.eraPaidEventModel(item, event)
 }
 
