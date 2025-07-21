@@ -366,6 +366,19 @@ export function dispatchComputeTokenBestListing(id: string): void {
     })
 }
 
+export function dispatchComputeTokenInfusion(id: string): void {
+    TokensQueue.add(
+        JobsEnum.COMPUTE_TOKEN_INFUSION,
+        { id },
+        {
+            delay: 6000,
+            jobId: `tokens.infusion.${id}`,
+        }
+    ).catch(() => {
+        Logger.error('Failed to dispatch compute token infusion', LOGGER_NAMESPACE)
+    })
+}
+
 export function dispatchSyncPoolRewards(): void {
     NominationPoolsQueue.add(
         JobsEnum.SYNC_POOL_REWARDS,
