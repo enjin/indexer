@@ -1,15 +1,4 @@
-import {
-    EarlyBirdShares,
-    EraReward,
-    Event as EventModel,
-    NominationPool,
-    PoolMember,
-    PoolMemberRewards,
-    PoolState,
-    PoolValidator,
-    StakeExchangeOffer,
-    StakeExchangeOfferState,
-} from '~/model'
+import { Event as EventModel, NominationPool, PoolState, StakeExchangeOffer, StakeExchangeOfferState } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { connectionManager } from '~/contexts'
 import * as mappings from '~/pallet/index'
@@ -78,7 +67,7 @@ export async function destroyed(ctx: CommonContext, block: Block, item: EventIte
     await ctx.store.save(nominationPool)
     await ctx.store.save(token)
 
-    const tokenId = nominationPool?.degenToken.tokenId ?? 0n
+    const tokenId = nominationPool.degenToken.tokenId
 
     await Sns.getInstance().send({
         id: item.id,
@@ -86,8 +75,8 @@ export async function destroyed(ctx: CommonContext, block: Block, item: EventIte
         body: {
             pool: eventData.poolId.toString(),
             extrinsic: item.extrinsic?.id,
-            name: nominationPool?.name,
-            tokenId: nominationPool?.degenToken.id,
+            name: nominationPool.name,
+            tokenId: nominationPool.degenToken.id,
             owner,
             amount: nominationPool?.deposit,
         },
