@@ -116,6 +116,13 @@ export class AccountStakingSummaryResolver {
 
         const memberIds = poolData.map((pool) => pool.memberId)
 
+        if (memberIds.length === 0) {
+            return {
+                pools: [],
+                rewards: [],
+            }
+        }
+
         const rewardsData = await manager
             .getRepository(PoolMemberRewards)
             .createQueryBuilder('pmr')
@@ -141,6 +148,7 @@ export class AccountStakingSummaryResolver {
             era: reward.era,
             eraStartAt: reward.eraStartAt,
             apy: reward.apy,
+            changeInRate: BigInt(Math.floor(reward.changeInRate || 0)),
             bonus: reward.totalBonus,
         }))
 
