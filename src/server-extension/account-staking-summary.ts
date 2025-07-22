@@ -34,6 +34,12 @@ export class PoolMemberReward {
     @Field(() => Number)
     era!: number
 
+    @Field(() => Date)
+    eraStartAt!: Date
+
+    @Field(() => Number)
+    apy!: number
+
     @Field(() => BigInt)
     changeInRate!: BigInt
 }
@@ -105,6 +111,8 @@ export class AccountStakingSummaryResolver {
             .innerJoin('era_reward.era', 'era')
             .addSelect('pmr.points', 'points')
             .addSelect('era.index', 'era')
+            .addSelect('era.startAt', 'eraStartAt')
+            .addSelect('pmr.apy', 'apy')
             .addSelect('era_reward.changeInRate', 'changeInRate')
             .addSelect('pmr.member', 'memberId')
             .where('pmr.member IN (:...memberIds)', { memberIds })
@@ -121,6 +129,8 @@ export class AccountStakingSummaryResolver {
                     points: BigInt(reward.points),
                     era: reward.era,
                     changeInRate: BigInt(reward.changeInRate),
+                    apy: reward.apy,
+                    eraStartAt: reward.eraStartAt,
                 })
                 return acc
             },
