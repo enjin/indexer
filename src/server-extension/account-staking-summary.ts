@@ -40,8 +40,8 @@ export class PoolMemberReward {
     @Field(() => Number)
     apy!: number
 
-    @Field(() => BigInt)
-    changeInRate!: BigInt
+    @Field(() => String)
+    bonus!: string
 }
 
 @ObjectType()
@@ -70,21 +70,32 @@ export class NominationPoolSummary {
     @Field(() => BigInt)
     capacity!: BigInt
 
-    @Field(() => [PoolMemberReward])
-    rewards!: PoolMemberReward[]
-
     constructor(props: Partial<NominationPoolSummary>) {
         Object.assign(this, props)
     }
+}
+
+@ObjectType()
+export class NominationPoolSummaryResponse {
+    @Field(() => [NominationPoolSummary])
+    pools!: NominationPoolSummary[]
+
+    @Field(() => [PoolMemberReward])
+    rewards!: PoolMemberReward[]
 }
 
 @Resolver()
 export class AccountStakingSummaryResolver {
     constructor(private tx: () => Promise<EntityManager>) {}
 
-    @Query(() => [NominationPoolSummary])
-    async accountStakingSummary(@Args() { accountId }: AccountStakingSummaryArgs): Promise<NominationPoolSummary[]> {
+    @Query(() => NominationPoolSummaryResponse)
+    async accountStakingSummary(
+        @Args() { accountId }: AccountStakingSummaryArgs
+    ): Promise<NominationPoolSummaryResponse> {
         const manager = await this.tx()
+
+        const thirtyDaysAgo = new Date()
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
         const poolData = await manager
             .getRepository(NominationPool)
@@ -104,40 +115,36 @@ export class AccountStakingSummaryResolver {
             .getRawMany()
 
         const memberIds = poolData.map((pool) => pool.memberId)
+
         const rewardsData = await manager
             .getRepository(PoolMemberRewards)
             .createQueryBuilder('pmr')
             .innerJoin('pmr.reward', 'era_reward')
             .innerJoin('era_reward.era', 'era')
-            .addSelect('pmr.points', 'points')
-            .addSelect('era.index', 'era')
+            .select('era.index', 'era')
             .addSelect('era.startAt', 'eraStartAt')
-            .addSelect('pmr.apy', 'apy')
-            .addSelect('era_reward.changeInRate', 'changeInRate')
-            .addSelect('pmr.member', 'memberId')
+            .addSelect('AVG(era_reward.apy)', 'apy')
+            .addSelect('AVG(era_reward.changeInRate)', 'changeInRate')
+            .addSelect('SUM(pmr.points)', 'totalPoints')
+            .addSelect('SUM(pmr.points * (era_reward.changeInRate / 1000000000000000000))', 'totalBonus')
+            .addSelect('COUNT(pmr.id)', 'rewardCount')
             .where('pmr.member IN (:...memberIds)', { memberIds })
+            .andWhere('era.startAt >= :thirtyDaysAgo', { thirtyDaysAgo })
+            .groupBy('era.index')
+            .addGroupBy('era.startAt')
             .orderBy('era.index', 'ASC')
             .getRawMany()
 
-        const rewardsByMember = rewardsData.reduce(
-            (acc, reward) => {
-                if (!acc[reward.memberId]) {
-                    acc[reward.memberId] = []
-                }
-                acc[reward.memberId].push({
-                    id: reward.id,
-                    points: BigInt(reward.points),
-                    era: reward.era,
-                    changeInRate: BigInt(reward.changeInRate),
-                    apy: reward.apy,
-                    eraStartAt: reward.eraStartAt,
-                })
-                return acc
-            },
-            {} as Record<string, PoolMemberReward[]>
-        )
+        const rewards: PoolMemberReward[] = rewardsData.map((reward) => ({
+            id: `era-${reward.era}`,
+            points: BigInt(reward.totalPoints || '0'),
+            era: reward.era,
+            eraStartAt: reward.eraStartAt,
+            apy: reward.apy,
+            bonus: reward.totalBonus,
+        }))
 
-        return poolData.map(
+        const pools = poolData.map(
             (pool) =>
                 new NominationPoolSummary({
                     id: pool.id,
@@ -148,8 +155,12 @@ export class AccountStakingSummaryResolver {
                     balance: BigInt(pool.balance),
                     bonded: BigInt(pool.bonded),
                     accumulatedRewards: BigInt(pool.accumulatedRewards || '0'),
-                    rewards: rewardsByMember[pool.memberId] || [],
                 })
         )
+
+        return {
+            pools,
+            rewards,
+        }
     }
 }
