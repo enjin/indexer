@@ -14,7 +14,7 @@ export async function destroyed(ctx: CommonContext, block: Block, item: EventIte
         .where(':poolId = ANY(tokenFilter.value)', { poolId: eventData.poolId.toString() })
         .getMany()
 
-    const nominationPool = await ctx.store.findOne(NominationPool, {
+    const nominationPool = await ctx.store.findOneOrFail(NominationPool, {
         where: {
             id: eventData.poolId.toString(),
             degenToken: {
@@ -32,10 +32,6 @@ export async function destroyed(ctx: CommonContext, block: Block, item: EventIte
             },
         },
     })
-
-    if (!nominationPool) {
-        return
-    }
 
     const owner = nominationPool.degenToken.tokenAccounts[0].account.id
 
@@ -78,7 +74,7 @@ export async function destroyed(ctx: CommonContext, block: Block, item: EventIte
             name: nominationPool.name,
             tokenId: nominationPool.degenToken.id,
             owner,
-            amount: nominationPool?.deposit,
+            amount: nominationPool.deposit,
         },
     })
 
