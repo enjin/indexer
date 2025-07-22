@@ -72,10 +72,8 @@ export async function destroyed(ctx: CommonContext, block: Block, item: EventIte
         },
     })
 
-    if (token) {
-        token.nominationPool = null
-        await ctx.store.save(token)
-    }
+    token.nominationPool = null
+    await ctx.store.save(token)
 
     await Sns.getInstance().send({
         id: item.id,
