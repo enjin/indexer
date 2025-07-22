@@ -33,7 +33,7 @@ export async function unbonded(ctx: CommonContext, block: Block, item: EventItem
     ])
 
     const owner = await ctx.store.findOne(TokenAccount, {
-        where: { token: { id: pool.degenToken.id }, balance: 1n },
+        where: { token: { id: `2-${pool.tokenId}` }, balance: 1n },
         relations: { account: true },
     })
 
@@ -54,7 +54,7 @@ export async function unbonded(ctx: CommonContext, block: Block, item: EventItem
             unbondingPoints: data.points,
             extrinsic: item.extrinsic.id,
             name: pool.name,
-            tokenId: pool.degenToken.id,
+            tokenId: `2-${pool.tokenId}`,
             state: pool.state,
             owner: owner?.account.id,
         },
@@ -68,12 +68,12 @@ export async function unbonded(ctx: CommonContext, block: Block, item: EventItem
                 pool: pool.id,
                 extrinsic: item.extrinsic.id,
                 name: pool.name,
-                tokenId: pool.degenToken.id,
+                tokenId: `2-${pool.tokenId}`,
                 state: pool.state,
                 owner: owner?.account.id,
             },
         })
     }
 
-    return mappings.nominationPools.events.unbondedEventModel(item, data, pool.degenToken.tokenId)
+    return mappings.nominationPools.events.unbondedEventModel(item, data, pool.tokenId)
 }

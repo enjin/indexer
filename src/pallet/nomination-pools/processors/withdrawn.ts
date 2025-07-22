@@ -66,7 +66,7 @@ export async function withdrawn(ctx: CommonContext, block: Block, item: EventIte
     }
 
     const owner = await ctx.store.findOne(TokenAccount, {
-        where: { token: { id: pool.degenToken.id }, balance: 1n },
+        where: { token: { id: `2-${pool.tokenId}` }, balance: 1n },
         relations: { account: true },
     })
 
@@ -84,7 +84,7 @@ export async function withdrawn(ctx: CommonContext, block: Block, item: EventIte
             points: data.points,
             extrinsic: item.extrinsic.id,
             name: pool.name,
-            tokenId: pool.degenToken.id,
+            tokenId: `2-${pool.tokenId}`,
             state: pool.state,
             owner: owner?.account.id,
         },
@@ -98,12 +98,12 @@ export async function withdrawn(ctx: CommonContext, block: Block, item: EventIte
                 pool: pool.id,
                 extrinsic: item.extrinsic.id,
                 name: pool.name,
-                tokenId: pool.degenToken.id,
+                tokenId: `2-${pool.tokenId}`,
                 state: pool.state,
                 owner: owner?.account.id,
             },
         })
     }
 
-    return mappings.nominationPools.events.withdrawnEventModel(item, data, pool.degenToken.tokenId)
+    return mappings.nominationPools.events.withdrawnEventModel(item, data, pool.tokenId)
 }

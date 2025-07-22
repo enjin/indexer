@@ -80,8 +80,8 @@ export async function poolMutated(ctx: CommonContext, block: Block, item: EventI
             mutation,
             extrinsic: item.extrinsic.id,
             name: pool.name,
-            tokenId: pool.degenToken.id,
-            owner: pool.degenToken.tokenAccounts[0].account.id,
+            tokenId: `2-${pool.tokenId}`,
+            owner: pool.degenToken?.tokenAccounts[0].account.id,
         },
     })
 

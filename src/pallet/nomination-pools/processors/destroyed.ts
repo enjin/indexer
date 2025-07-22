@@ -1,4 +1,11 @@
-import { Event as EventModel, NominationPool, PoolState, StakeExchangeOffer, StakeExchangeOfferState } from '~/model'
+import {
+    Event as EventModel,
+    NominationPool,
+    PoolState,
+    StakeExchangeOffer,
+    StakeExchangeOfferState,
+    Token,
+} from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { connectionManager } from '~/contexts'
 import * as mappings from '~/pallet/index'
@@ -33,7 +40,7 @@ export async function destroyed(ctx: CommonContext, block: Block, item: EventIte
         },
     })
 
-    const owner = nominationPool.degenToken.tokenAccounts[0].account.id
+    const owner = nominationPool.degenToken?.tokenAccounts[0].account.id
 
     if (stakeExchangeOffers.length) {
         for (const stakeExchangeOffer of stakeExchangeOffers) {
@@ -57,13 +64,18 @@ export async function destroyed(ctx: CommonContext, block: Block, item: EventIte
     }
 
     nominationPool.state = PoolState.Destroyed
-    const token = nominationPool.degenToken
-    token.nominationPool = null
-
     await ctx.store.save(nominationPool)
-    await ctx.store.save(token)
 
-    const tokenId = nominationPool.degenToken.tokenId
+    const token = await ctx.store.findOneOrFail(Token, {
+        where: {
+            id: `2-${nominationPool.tokenId}`,
+        },
+    })
+
+    if (token) {
+        token.nominationPool = null
+        await ctx.store.save(token)
+    }
 
     await Sns.getInstance().send({
         id: item.id,
@@ -72,11 +84,11 @@ export async function destroyed(ctx: CommonContext, block: Block, item: EventIte
             pool: eventData.poolId.toString(),
             extrinsic: item.extrinsic?.id,
             name: nominationPool.name,
-            tokenId: nominationPool.degenToken.id,
+            tokenId: `2-${nominationPool.tokenId}`,
             owner,
             amount: nominationPool.deposit,
         },
     })
 
-    return mappings.nominationPools.events.destroyedEventModel(item, eventData, tokenId, owner)
+    return mappings.nominationPools.events.destroyedEventModel(item, eventData, nominationPool.tokenId, owner)
 }

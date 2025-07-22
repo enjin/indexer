@@ -78,7 +78,7 @@ async function dispatchStakePoolsEvents(ctx: CommonContext, eraIndex: number, it
                             era: eraIndex,
                             extrinsic: item.extrinsic?.id,
                             name: pool.name,
-                            tokenId: pool.degenToken.id,
+                            tokenId: `2-${pool.tokenId}`,
                             state: pool.state,
                         },
                     })
@@ -101,7 +101,7 @@ async function dispatchStakePoolsEvents(ctx: CommonContext, eraIndex: number, it
                     where: {
                         balance: 1n,
                         token: {
-                            id: pool.degenToken.id,
+                            id: `2-${pool.tokenId}`,
                         },
                     },
                     relations: {
@@ -123,7 +123,7 @@ async function dispatchStakePoolsEvents(ctx: CommonContext, eraIndex: number, it
                         era: eraIndex,
                         extrinsic: item.extrinsic?.id,
                         name: pool.name,
-                        tokenId: pool.degenToken.id,
+                        tokenId: `2-${pool.tokenId}`,
                         state: pool.state,
                         owner: owner.account.id,
                     },

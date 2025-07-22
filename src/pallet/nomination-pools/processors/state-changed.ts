@@ -39,8 +39,8 @@ export async function stateChanged(ctx: CommonContext, block: Block, item: Event
                 state: data.newState.__kind,
                 extrinsic: item.extrinsic.id,
                 name: pool.name,
-                tokenId: pool.degenToken.id,
-                owner: pool.degenToken.tokenAccounts[0].account.id,
+                tokenId: `2-${pool.tokenId}`,
+                owner: pool.degenToken?.tokenAccounts[0].account.id,
             },
         })
     }

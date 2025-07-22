@@ -84,7 +84,7 @@ export class NominationPool {
     @Index_({unique: true})
     @OneToOne_(() => Token, {nullable: true})
     @JoinColumn_()
-    degenToken!: Token
+    degenToken!: Token | undefined | null
 
     @Column_("varchar", {length: 1, nullable: true})
     score!: ScoreGrade | undefined | null
