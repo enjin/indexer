@@ -1,12 +1,16 @@
 import { connectionManager } from '~/contexts'
 import { Job } from 'bullmq'
-import { NominationPool } from '~/model'
+import { NominationPool, PoolState } from '~/model'
 import { QueueUtils } from '~/queue'
+import { Not } from 'typeorm'
 
 export async function syncPoolRewards(job: Job): Promise<void> {
     const em = await connectionManager()
 
     const pools = await em.find(NominationPool, {
+        where: {
+            state: Not(PoolState.Destroyed),
+        },
         relations: {
             members: true,
         },

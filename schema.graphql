@@ -1264,7 +1264,8 @@ type StakeExchangeTokenFilter @entity {
 enum PoolState {
   Open,
   Blocked,
-  Destroying
+  Destroying,
+  Destroyed
 }
 
 type CommissionChangeRate {
@@ -1393,7 +1394,7 @@ type NominationPool @entity {
   eraRewards: [EraReward]! @derivedFrom(field: "pool")
   slashes: [PoolSlash]!
   validators: [PoolValidator]! @derivedFrom(field: "pool")
-  degenToken: Token! @unique
+  degenToken: Token @unique
 
   # Computed by job
   score: ScoreGrade

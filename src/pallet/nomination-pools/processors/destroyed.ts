@@ -1,13 +1,10 @@
 import {
-    EarlyBirdShares,
-    EraReward,
     Event as EventModel,
     NominationPool,
-    PoolMember,
-    PoolMemberRewards,
-    PoolValidator,
+    PoolState,
     StakeExchangeOffer,
     StakeExchangeOfferState,
+    Token,
 } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { connectionManager } from '~/contexts'
@@ -18,18 +15,13 @@ export async function destroyed(ctx: CommonContext, block: Block, item: EventIte
     const eventData = mappings.nominationPools.events.destroyed(item)
     const em = await connectionManager()
 
-    const earlyBirdShares = await ctx.store.findBy(EarlyBirdShares, { pool: { id: eventData.poolId.toString() } })
-    const poolMemberRewards = await ctx.store.findBy(PoolMemberRewards, { pool: { id: eventData.poolId.toString() } })
-    const poolMembers = await ctx.store.findBy(PoolMember, { pool: { id: eventData.poolId.toString() } })
-    const eraRewards = await ctx.store.findBy(EraReward, { pool: { id: eventData.poolId.toString() } })
-    const poolValidators = await ctx.store.findBy(PoolValidator, { pool: { id: eventData.poolId.toString() } })
     const stakeExchangeOffers = await em
         .createQueryBuilder(StakeExchangeOffer, 'offer')
         .leftJoinAndSelect('offer.tokenFilter', 'tokenFilter')
         .where(':poolId = ANY(tokenFilter.value)', { poolId: eventData.poolId.toString() })
         .getMany()
 
-    const nominationPool = await ctx.store.findOne(NominationPool, {
+    const nominationPool = await ctx.store.findOneOrFail(NominationPool, {
         where: {
             id: eventData.poolId.toString(),
             degenToken: {
@@ -39,6 +31,7 @@ export async function destroyed(ctx: CommonContext, block: Block, item: EventIte
             },
         },
         relations: {
+            members: true,
             degenToken: {
                 tokenAccounts: {
                     account: true,
@@ -47,7 +40,7 @@ export async function destroyed(ctx: CommonContext, block: Block, item: EventIte
         },
     })
 
-    const owner = nominationPool?.degenToken.tokenAccounts[0].account.id
+    const owner = nominationPool.degenToken?.tokenAccounts[0].account.id
 
     if (stakeExchangeOffers.length) {
         for (const stakeExchangeOffer of stakeExchangeOffers) {
@@ -60,27 +53,41 @@ export async function destroyed(ctx: CommonContext, block: Block, item: EventIte
         }
     }
 
+    if (nominationPool.members.length) {
+        for (const member of nominationPool.members) {
+            member.unbondingEras = null
+            member.bonded = 0n
+            member.isActive = false
+
+            await ctx.store.save(member)
+        }
+    }
+
+    nominationPool.state = PoolState.Destroyed
+    nominationPool.degenToken = null
+    await ctx.store.save(nominationPool)
+
+    const token = await ctx.store.findOneOrFail(Token, {
+        where: {
+            id: `2-${nominationPool.tokenId}`,
+        },
+    })
+
+    token.nominationPool = null
+    await ctx.store.save(token)
+
     await Sns.getInstance().send({
         id: item.id,
         name: item.name,
         body: {
             pool: eventData.poolId.toString(),
             extrinsic: item.extrinsic?.id,
-            name: nominationPool?.name,
-            tokenId: nominationPool?.degenToken.id,
+            name: nominationPool.name,
+            tokenId: `2-${nominationPool.tokenId}`,
             owner,
-            amount: nominationPool?.deposit,
+            amount: nominationPool.deposit,
         },
     })
 
-    const tokenId = nominationPool?.degenToken.tokenId ?? 0n
-
-    if (earlyBirdShares.length) await ctx.store.remove(earlyBirdShares)
-    if (poolMemberRewards.length) await ctx.store.remove(poolMemberRewards)
-    if (poolMembers.length) await ctx.store.remove(poolMembers)
-    if (eraRewards.length) await ctx.store.remove(eraRewards)
-    if (poolValidators.length) await ctx.store.remove(poolValidators)
-    if (nominationPool) await ctx.store.remove(nominationPool)
-
-    return mappings.nominationPools.events.destroyedEventModel(item, eventData, tokenId, owner)
+    return mappings.nominationPools.events.destroyedEventModel(item, eventData, nominationPool.tokenId, owner)
 }
