@@ -64,6 +64,7 @@ export async function destroyed(ctx: CommonContext, block: Block, item: EventIte
     }
 
     nominationPool.state = PoolState.Destroyed
+    nominationPool.degenToken = null
     await ctx.store.save(nominationPool)
 
     const token = await ctx.store.findOneOrFail(Token, {
