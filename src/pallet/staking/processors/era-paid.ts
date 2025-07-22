@@ -1,3 +1,4 @@
+import { Not } from 'typeorm'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { Era, NominationPool, PoolState, TokenAccount } from '~/model'
 import * as mappings from '~/pallet/index'
@@ -39,6 +40,9 @@ export async function eraPaid(ctx: CommonContext, block: Block, item: EventItem)
 
 async function dispatchStakePoolsEvents(ctx: CommonContext, eraIndex: number, item: EventItem) {
     const pools = await ctx.store.find(NominationPool, {
+        where: {
+            state: Not(PoolState.Destroyed),
+        },
         relations: {
             members: {
                 account: true,
