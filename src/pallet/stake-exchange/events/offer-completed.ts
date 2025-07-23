@@ -28,6 +28,7 @@ export function offerCompletedEventModel(
         data: new StakeExchangeOfferCompleted({
             offerId: stakeExchangeOffer.offerId,
             tokenFilter: stakeExchangeOffer.tokenFilter?.id,
+            amount: stakeExchangeOffer.amount ?? 0n,
             account: stakeExchangeOffer.account.id,
         }),
     })
