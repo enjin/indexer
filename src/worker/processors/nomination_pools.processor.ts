@@ -35,7 +35,7 @@ export class NominationPoolsProcessor implements ProcessorDef {
     }
 
     completed(job: Job): void {
-        logDebug('Finished computing nomination pools events', job)
+        logDebug('Finished computing nomination pools', job)
     }
 }
 

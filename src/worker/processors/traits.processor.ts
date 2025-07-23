@@ -1,17 +1,14 @@
 import { Job } from 'bullmq'
 import { ProcessorDef } from '~/worker/processors/processor.def'
-import { syncAccounts, syncAllAccounts } from '~/worker/jobs'
 import { JobsEnum } from '~/queue/constants'
+import { computeTraits } from '~/worker/jobs'
 import { logDebug, logError } from '~/worker/utils'
 
-export class AccountsProcessor implements ProcessorDef {
+export class TraitsProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {
         switch (job.name as JobsEnum) {
-            case JobsEnum.FETCH_ACCOUNTS:
-                await syncAccounts(job, job.data.ids)
-                break
-            case JobsEnum.SYNC_ALL_ACCOUNTS:
-                await syncAllAccounts(job)
+            case JobsEnum.COMPUTE_TRAITS:
+                await computeTraits(job, job.data.id)
                 break
             default:
                 throw new Error(`${job.name} is not a valid job for this processor`)
@@ -26,8 +23,8 @@ export class AccountsProcessor implements ProcessorDef {
     }
 
     completed(job: Job): void {
-        logDebug('Finished fetching accounts', job)
+        logDebug('Finished computing traits', job)
     }
 }
 
-export default new AccountsProcessor()
+export default new TraitsProcessor()

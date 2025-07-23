@@ -1,20 +1,17 @@
 import { Job } from 'bullmq'
 import { ProcessorDef } from '~/worker/processors/processor.def'
+import { syncAccounts, syncAllAccounts } from '~/worker/jobs'
 import { JobsEnum } from '~/queue/constants'
-import { computeMetadata, syncMetadata, syncFuelTanks } from '~/worker/jobs'
 import { logDebug, logError } from '~/worker/utils'
 
-export class MetadataProcessor implements ProcessorDef {
+export class AccountsProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {
         switch (job.name as JobsEnum) {
-            case JobsEnum.COMPUTE_METADATA:
-                await computeMetadata(job)
+            case JobsEnum.FETCH_ACCOUNTS:
+                await syncAccounts(job, job.data.ids)
                 break
-            case JobsEnum.FETCH_COLLECTIONS:
-                await syncMetadata(job)
-                break
-            case JobsEnum.SYNC_FUEL_TANKS:
-                await syncFuelTanks(job)
+            case JobsEnum.SYNC_ALL_ACCOUNTS:
+                await syncAllAccounts(job)
                 break
             default:
                 throw new Error(`${job.name} is not a valid job for this processor`)
@@ -29,8 +26,8 @@ export class MetadataProcessor implements ProcessorDef {
     }
 
     completed(job: Job): void {
-        logDebug('Finished computing metadata', job)
+        logDebug('Finished fetching accounts', job)
     }
 }
 
-export default new MetadataProcessor()
+export default new AccountsProcessor()

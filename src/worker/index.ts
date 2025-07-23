@@ -14,44 +14,10 @@ import {
 } from '~/queue'
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter'
 import { EventEmitter } from 'events'
-import {
-    AccountsWorker,
-    BalancesWorker,
-    CollectionsWorker,
-    ListingsWorker,
-    MetadataWorker,
-    TokensWorker,
-    TraitsWorker,
-    ValidatorsWorker,
-    NominationPoolsWorker,
-} from '~/worker/processors'
-import { logError } from '~/worker/utils'
+import { WorkerFactory } from './worker.factory'
 
 // Increase max listeners to avoid warnings
 EventEmitter.defaultMaxListeners = 30
-
-const WorkerMap = new Map([
-    ['Accounts', AccountsWorker],
-    ['Balances', BalancesWorker],
-    ['Collections', CollectionsWorker],
-    ['Listings', ListingsWorker],
-    ['Metadata', MetadataWorker],
-    ['Tokens', TokensWorker],
-    ['Traits', TraitsWorker],
-    ['Validators', ValidatorsWorker],
-    ['NominationPools', NominationPoolsWorker],
-])
-
-/**
- * Initialize workers by binding an event listener to it
- */
-function initializeJobs() {
-    WorkerMap.forEach((worker) => {
-        worker.on('error', (err) => {
-            logError(err)
-        })
-    })
-}
 
 const server: Application = express()
 const serverAdapter = new ExpressAdapter()
@@ -85,6 +51,6 @@ createBullBoard({
 
 server.use('/', serverAdapter.getRouter())
 server.listen(9090, () => {
-    initializeJobs()
+    WorkerFactory.initializeWorkers()
     console.log(`Server running at port 9090`)
 })

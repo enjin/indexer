@@ -32,7 +32,7 @@ export class ListingsProcessor implements ProcessorDef {
     }
 
     completed(job: Job): void {
-        logInfo('Finished computing collections', job)
+        logInfo('Finished computing listings', job)
     }
 }
 

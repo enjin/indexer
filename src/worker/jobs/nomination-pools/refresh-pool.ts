@@ -47,16 +47,18 @@ export async function refreshPool(job: Job, poolId: string) {
     }
 
     pool.points = hexToBigInt(poolPointsJson?.supply)
-    pool.rate = (hexToBigInt(activeStakeJson?.active) * 1000_000_000_000_000_000n) / pool.points
-    pool.saturation = pool.points > 0n ? (hexToBigInt(poolPointsJson?.supply) * 100n) / pool.capacity : 0n
+    if (pool.points > 0n) {
+        pool.rate = (hexToBigInt(activeStakeJson?.active) * 1000_000_000_000_000_000n) / pool.points
+        pool.saturation = pool.points > 0n ? (hexToBigInt(poolPointsJson?.supply) * 100n) / pool.capacity : 0n
 
-    if (pool.rate && eraCount > 0) {
-        pool.historicalApy = Big(pool.rate.toString())
-            .div(1e18)
-            .pow(Big(365).div(eraCount).round(0, Big.roundUp).toNumber())
-            .sub(1)
-            .mul(100)
-            .toNumber()
+        if (pool.rate && eraCount > 0) {
+            pool.historicalApy = Big(pool.rate.toString())
+                .div(1e18)
+                .pow(Big(365).div(eraCount).round(0, Big.roundUp).toNumber())
+                .sub(1)
+                .mul(100)
+                .toNumber()
+        }
     }
 
     if (bondedPoolsJson) {
