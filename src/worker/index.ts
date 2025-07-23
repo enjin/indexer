@@ -14,7 +14,7 @@ import {
 } from '~/queue'
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter'
 import { EventEmitter } from 'events'
-import { WorkerFactory } from './worker.factory'
+import { initializeWorkers } from './worker.factory'
 
 // Increase max listeners to avoid warnings
 EventEmitter.defaultMaxListeners = 30
@@ -51,6 +51,6 @@ createBullBoard({
 
 server.use('/', serverAdapter.getRouter())
 server.listen(9090, () => {
-    WorkerFactory.initializeWorkers()
+    initializeWorkers()
     console.log(`Server running at port 9090`)
 })

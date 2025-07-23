@@ -13,32 +13,30 @@ import {
     NominationPoolsProcessor,
 } from '~/worker/processors'
 
-export class WorkerFactory {
-    private static processors: Map<QueuesEnum, { processor: ProcessorDef; options?: WorkerOptions }> = new Map([
-        [QueuesEnum.ACCOUNTS, { processor: new AccountsProcessor(), }],
-        [QueuesEnum.BALANCES, { processor: new BalancesProcessor() }],
-        [QueuesEnum.COLLECTIONS, { processor: new CollectionsProcessor() }],
-        [QueuesEnum.LISTINGS, { processor: new ListingsProcessor() }],
-        [QueuesEnum.METADATA, { processor: new MetadataProcessor(), options: { concurrency: 10 } }],
-        [QueuesEnum.TOKENS, { processor: new TokensProcessor() }],
-        [QueuesEnum.TRAITS, { processor: new TraitsProcessor() }],
-        [QueuesEnum.VALIDATORS, { processor: new ValidatorsProcessor() }],
-        [QueuesEnum.NOMINATION_POOLS, { processor: new NominationPoolsProcessor() }],
-    ])
+const processors: Map<QueuesEnum, { processor: ProcessorDef; options?: WorkerOptions }> = new Map([
+    [QueuesEnum.ACCOUNTS, { processor: new AccountsProcessor() }],
+    [QueuesEnum.BALANCES, { processor: new BalancesProcessor() }],
+    [QueuesEnum.COLLECTIONS, { processor: new CollectionsProcessor() }],
+    [QueuesEnum.LISTINGS, { processor: new ListingsProcessor() }],
+    [QueuesEnum.METADATA, { processor: new MetadataProcessor(), options: { concurrency: 10 } }],
+    [QueuesEnum.TOKENS, { processor: new TokensProcessor() }],
+    [QueuesEnum.TRAITS, { processor: new TraitsProcessor() }],
+    [QueuesEnum.VALIDATORS, { processor: new ValidatorsProcessor() }],
+    [QueuesEnum.NOMINATION_POOLS, { processor: new NominationPoolsProcessor() }],
+])
 
-    static createWorker(queueType: QueuesEnum, options: WorkerOptions = {}): BaseWorker {
-        const processor = this.processors.get(queueType)?.processor
+export function createWorker(queueType: QueuesEnum, options: WorkerOptions = {}): BaseWorker {
+    const processor = processors.get(queueType)?.processor
 
-        if (!processor) {
-            throw new Error(`No processor found for queue type: ${queueType}`)
-        }
-
-        return new BaseWorker(queueType, processor, options)
+    if (!processor) {
+        throw new Error(`No processor found for queue type: ${queueType}`)
     }
 
-    static initializeWorkers(): void {
-        this.processors.forEach((processor, queueType) => {
-            this.createWorker(queueType, processor.options)
-        })
-    }
+    return new BaseWorker(queueType, processor, options)
+}
+
+export function initializeWorkers(): void {
+    processors.forEach((processor, queueType) => {
+        createWorker(queueType, processor.options)
+    })
 }
