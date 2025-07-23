@@ -68,7 +68,7 @@ export function offerCreatedEventModel(
             minAverageCommission: 0,
             rate,
             minAverageRewardRate: rewardRateAsFixedu128,
-            tokenFilter: offer.tokenFilter?.id,
+            tokenFilter: offer.id, // TokenFilter id is the same as the offer id
         }),
     })
 }

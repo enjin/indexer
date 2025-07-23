@@ -1,17 +1,22 @@
 import assert from "assert"
 import * as marshal from "./marshal"
+import {Account} from "./account.model"
 import {StakeExchangeTokenFilter} from "./stakeExchangeTokenFilter.model"
 
 export class StakeExchangeOfferCompleted {
     public readonly isTypeOf = 'StakeExchangeOfferCompleted'
     private _offerId!: bigint
+    private _account!: string
     private _tokenFilter!: string | undefined | null
+    private _amount!: bigint
 
     constructor(props?: Partial<Omit<StakeExchangeOfferCompleted, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
         if (json != null) {
             this._offerId = marshal.bigint.fromJSON(json.offerId)
+            this._account = marshal.string.fromJSON(json.account)
             this._tokenFilter = json.tokenFilter == null ? undefined : marshal.string.fromJSON(json.tokenFilter)
+            this._amount = marshal.bigint.fromJSON(json.amount)
         }
     }
 
@@ -24,6 +29,15 @@ export class StakeExchangeOfferCompleted {
         this._offerId = value
     }
 
+    get account(): string {
+        assert(this._account != null, 'uninitialized access')
+        return this._account
+    }
+
+    set account(value: string) {
+        this._account = value
+    }
+
     get tokenFilter(): string | undefined | null {
         return this._tokenFilter
     }
@@ -32,11 +46,22 @@ export class StakeExchangeOfferCompleted {
         this._tokenFilter = value
     }
 
+    get amount(): bigint {
+        assert(this._amount != null, 'uninitialized access')
+        return this._amount
+    }
+
+    set amount(value: bigint) {
+        this._amount = value
+    }
+
     toJSON(): object {
         return {
             isTypeOf: this.isTypeOf,
             offerId: marshal.bigint.toJSON(this.offerId),
+            account: this.account,
             tokenFilter: this.tokenFilter,
+            amount: marshal.bigint.toJSON(this.amount),
         }
     }
 }

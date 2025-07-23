@@ -1159,7 +1159,9 @@ type StakeExchangeBuyOrderCompleted {
 
 type StakeExchangeOfferCompleted {
   offerId: BigInt!
+  account: Account!
   tokenFilter: StakeExchangeTokenFilter
+  amount: BigInt!
 }
 
 type NominationPoolsCreated {
