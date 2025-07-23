@@ -31,9 +31,5 @@ export async function offerCancelled(
         },
     })
 
-    ctx.log.info(
-        `Offer cancelled: ${stakeExchangeOffer.offerId} with token filter ${stakeExchangeOffer.tokenFilter?.id}`
-    )
-
     return mappings.stakeExchange.events.offerCancelledEventModel(item, stakeExchangeOffer)
 }
