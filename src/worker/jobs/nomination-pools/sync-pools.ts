@@ -4,7 +4,7 @@ import { NominationPool, PoolState } from '~/model'
 import { QueueUtils } from '~/queue'
 import { Not } from 'typeorm'
 
-export async function syncPoolRewards(job: Job): Promise<void> {
+export async function syncPools(job: Job): Promise<void> {
     const em = await connectionManager()
 
     const pools = await em.find(NominationPool, {
@@ -20,8 +20,10 @@ export async function syncPoolRewards(job: Job): Promise<void> {
     })
 
     for (const pool of pools) {
+        QueueUtils.dispatchRefreshPool(pool.id)
+        QueueUtils.dispatchComputePoolRewards(pool.id)
         for (const member of pool.members) {
-            QueueUtils.dispatchComputePoolRewards(member.id)
+            QueueUtils.dispatchComputePoolMemberRewards(member.id)
         }
     }
 

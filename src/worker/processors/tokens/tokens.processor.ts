@@ -1,13 +1,14 @@
 import { Job } from 'bullmq'
 import { ProcessorDef } from '~/worker/processors/processor.def'
 import { JobsEnum } from '~/queue/constants'
-import { computeRarity } from '~/worker/jobs/compute-rarity'
+import {
+    computeRarity,
+    syncTokens,
+    computeTokenSupply,
+    computeTokenBestListing,
+    computeTokenInfusion,
+} from '~/worker/jobs'
 import { logDebug, logError } from '~/worker/utils'
-import { syncTokens } from '~/worker/jobs/sync-tokens'
-import { computeTokenSupply } from '~/worker/jobs/compute-token-supply'
-import { refreshPool } from '~/worker/jobs/refresh-pool'
-import { computeTokenBestListing } from '~/worker/jobs/compute-token-bestlisting'
-import { computeTokenInfusion } from '~/worker/jobs/compute-token-infusion'
 
 export class TokensProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {
@@ -20,9 +21,6 @@ export class TokensProcessor implements ProcessorDef {
                 break
             case JobsEnum.COMPUTE_TOKEN_SUPPLY:
                 await computeTokenSupply(job, job.data.id)
-                break
-            case JobsEnum.REFRESH_POOL:
-                await refreshPool(job, job.data.id)
                 break
             case JobsEnum.COMPUTE_TOKEN_BEST_LISTING:
                 await computeTokenBestListing(job, job.data.id)

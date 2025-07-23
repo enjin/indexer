@@ -1,9 +1,8 @@
 import { Job } from 'bullmq'
 import { ProcessorDef } from '~/worker/processors/processor.def'
-import { syncAccounts } from '~/worker/jobs/sync-accounts'
+import { syncAccounts, syncAllAccounts } from '~/worker/jobs'
 import { JobsEnum } from '~/queue/constants'
 import { logDebug, logError } from '~/worker/utils'
-import { syncAllAccounts } from '~/worker/jobs/sync-all-accounts'
 
 export class AccountsProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {

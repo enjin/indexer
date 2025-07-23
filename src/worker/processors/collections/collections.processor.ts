@@ -1,11 +1,10 @@
 import { Job } from 'bullmq'
 import { ProcessorDef } from '~/worker/processors/processor.def'
 import { JobsEnum } from '~/queue/constants'
-import { syncCollections } from '~/worker/jobs/sync-collections'
-import { computeExtras } from '~/worker/jobs/compute-extras'
-import { computeStats } from '~/worker/jobs/compute-stats'
+import { syncCollections } from '~/worker/jobs/collections/sync-collections'
+import { computeExtras } from '~/worker/jobs/collections/compute-extras'
+import { computeStats, syncCollectionTransfer } from '~/worker/jobs'
 import { logDebug, logError } from '~/worker/utils'
-import { syncCollectionTransfer } from '~/worker/jobs/sync-collection-transfers'
 
 export class CollectionsProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {

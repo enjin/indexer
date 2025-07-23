@@ -1,6 +1,6 @@
 import { Job } from 'bullmq'
 import { ProcessorDef } from '~/worker/processors/processor.def'
-import { syncBalances } from '~/worker/jobs/sync-balances'
+import { syncBalances } from '~/worker/jobs'
 import { JobsEnum } from '~/queue/constants'
 import { logDebug, logError } from '~/worker/utils'
 

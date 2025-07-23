@@ -1,7 +1,7 @@
 import { Job } from 'bullmq'
 import { ProcessorDef } from '~/worker/processors/processor.def'
 import { JobsEnum } from '~/queue/constants'
-import { computeTraits } from '~/worker/jobs/compute-traits'
+import { computeTraits } from '~/worker/jobs'
 import { logDebug, logError } from '~/worker/utils'
 
 export class TraitsProcessor implements ProcessorDef {

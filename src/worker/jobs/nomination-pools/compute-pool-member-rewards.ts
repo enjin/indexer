@@ -2,7 +2,7 @@ import { PoolMember } from '~/model'
 import { dataHandlerContext } from '~/contexts'
 import { Job } from 'bullmq'
 
-export async function computePoolRewards(_job: Job, id?: string): Promise<void> {
+export async function computePoolMemberRewards(_job: Job, id?: string): Promise<void> {
     const ctx = await dataHandlerContext()
 
     const member = await ctx.store.findOne(PoolMember, {
