@@ -1390,6 +1390,7 @@ type NominationPool @entity {
   availableStakeAmount: BigInt!
   availableStakePoints: BigInt!
   earlyBirdBonus: EarlyBirdBonus
+  accumulatedCommission: BigInt
 
   # Relationships
   members: [PoolMember]! @derivedFrom(field: "pool")

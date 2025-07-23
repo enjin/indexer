@@ -171,6 +171,10 @@ export async function eraRewardsProcessed(
     pool.apy = Math.max(apy.toNumber(), 0)
     reward.averageApy = apy.toNumber()
 
+    if (data.commission) {
+        pool.accumulatedCommission = (pool.accumulatedCommission ?? 0n) + data.commission.amount
+    }
+
     const members = await ctx.store.find(PoolMember, {
         relations: { account: true },
         where: { pool: { id: pool.id }, isActive: true },

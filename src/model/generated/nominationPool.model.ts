@@ -69,6 +69,9 @@ export class NominationPool {
     @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new EarlyBirdBonus(undefined, obj)}, nullable: true})
     earlyBirdBonus!: EarlyBirdBonus | undefined | null
 
+    @BigIntColumn_({nullable: true})
+    accumulatedCommission!: bigint | undefined | null
+
     @OneToMany_(() => PoolMember, e => e.pool)
     members!: PoolMember[]
 

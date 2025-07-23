@@ -69,6 +69,7 @@ export async function created(ctx: CommonContext, block: Block, item: EventItem)
         saturation: 0n,
         availableStakeAmount: eventData.capacity,
         availableStakePoints: eventData.capacity,
+        accumulatedCommission: 0n,
         balance: new PoolBalance({
             stash: 0n,
             reward: 0n,
