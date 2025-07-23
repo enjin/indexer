@@ -13,6 +13,7 @@ import { Sns } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { match } from 'ts-pattern'
 import { QueueUtils } from '~/queue'
+import { isTokenFrozen } from '~/synchronize/common'
 
 export async function frozen(
     ctx: CommonContext,
@@ -78,8 +79,7 @@ export async function frozen(
                 break
         }
 
-        // TODO: Fix this
-        // token.isFrozen = isTokenFrozen(token.freezeState)
+        token.isFrozen = isTokenFrozen(token.freezeState)
 
         await ctx.store.save(token)
     } else {
