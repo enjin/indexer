@@ -83,6 +83,7 @@ export async function withdrawn(ctx: CommonContext, block: Block, item: EventIte
             balance: data.balance,
             points: data.points,
             extrinsic: item.extrinsic.id,
+            hash: item.extrinsic.hash,
             name: pool.name,
             tokenId: `2-${pool.tokenId}`,
             state: pool.state,
@@ -97,6 +98,7 @@ export async function withdrawn(ctx: CommonContext, block: Block, item: EventIte
             body: {
                 pool: pool.id,
                 extrinsic: item.extrinsic.id,
+                hash: item.extrinsic.hash,
                 name: pool.name,
                 tokenId: `2-${pool.tokenId}`,
                 state: pool.state,
