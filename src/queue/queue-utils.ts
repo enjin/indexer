@@ -282,12 +282,12 @@ export function dispatchComputeTokenSupply(id: string): void {
 }
 
 export function dispatchRefreshPool(id: string): void {
-    TokensQueue.add(
+    NominationPoolsQueue.add(
         JobsEnum.REFRESH_POOL,
         { id },
         {
             delay: 6000,
-            jobId: `tokens.refresh-pool.${id}`,
+            jobId: `nomination-pools.refresh-pool.${id}`,
         }
     ).catch(() => {
         Logger.error('Failed to dispatch refresh pool', LOGGER_NAMESPACE)
@@ -379,16 +379,16 @@ export function dispatchComputeTokenInfusion(id: string): void {
     })
 }
 
-export function dispatchSyncPoolRewards(): void {
+export function dispatchSyncPools(): void {
     NominationPoolsQueue.add(
-        JobsEnum.SYNC_POOL_REWARDS,
+        JobsEnum.SYNC_POOLS,
         {},
         {
             delay: 6000,
-            jobId: 'nomination-pools.sync-rewards',
+            jobId: 'nomination-pools.sync-pools',
         }
     ).catch(() => {
-        Logger.error('Failed to dispatch sync pool rewards', LOGGER_NAMESPACE)
+        Logger.error('Failed to dispatch sync pools', LOGGER_NAMESPACE)
     })
 }
 
@@ -402,5 +402,18 @@ export function dispatchComputePoolRewards(id: string): void {
         }
     ).catch(() => {
         Logger.error('Failed to dispatch compute pool rewards', LOGGER_NAMESPACE)
+    })
+}
+
+export function dispatchComputePoolMemberRewards(id: string): void {
+    NominationPoolsQueue.add(
+        JobsEnum.COMPUTE_POOL_MEMBER_REWARDS,
+        { id },
+        {
+            delay: 6000,
+            jobId: `nomination-pools.compute-member-rewards.${id}`,
+        }
+    ).catch(() => {
+        Logger.error('Failed to dispatch compute pool member rewards', LOGGER_NAMESPACE)
     })
 }
