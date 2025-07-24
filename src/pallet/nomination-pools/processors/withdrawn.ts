@@ -5,6 +5,7 @@ import { updatePool } from '~/pallet/nomination-pools/processors/pool'
 import { Sns } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { IsNull, Not } from 'typeorm'
+import { CustomStakingEvent } from '~/pallet/common/types'
 
 function getActiveEra(ctx: CommonContext) {
     return ctx.store.find(Era, {
@@ -76,7 +77,7 @@ export async function withdrawn(ctx: CommonContext, block: Block, item: EventIte
 
     await Sns.getInstance().send({
         id: item.id,
-        name: isStashWithdrawing ? 'NominationPools.DepositWithdrawn' : item.name,
+        name: isStashWithdrawing ? CustomStakingEvent.DepositWithdrawn : item.name,
         body: {
             pool: data.poolId.toString(),
             account: account.id,
@@ -94,7 +95,7 @@ export async function withdrawn(ctx: CommonContext, block: Block, item: EventIte
     if (!isStashWithdrawing && unbondingMembers.length === 0 && pool.state === PoolState.Destroying) {
         await Sns.getInstance().send({
             id: `${item.id}-all-members-withdrawn`,
-            name: 'NominationPools.AllMembersWithdrawn',
+            name: CustomStakingEvent.AllMembersWithdrawn,
             body: {
                 pool: pool.id,
                 extrinsic: item.extrinsic.id,

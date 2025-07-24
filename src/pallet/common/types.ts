@@ -975,3 +975,15 @@ export type CommissionPayment = {
     beneficiary: AccountId32
     amount: bigint
 }
+
+export enum CustomStakingEvent {
+    DepositUnbond = 'NominationPools.DepositUnbond',
+    Unbond = 'NominationPools.Unbond',
+    AllMembersUnbond = 'NominationPools.AllMembersUnbond',
+    DepositWithdrawn = 'NominationPools.DepositWithdrawn',
+    AllMembersWithdrawn = 'NominationPools.AllMembersWithdrawn',
+    Destroy = 'NominationPools.Destroy',
+    DepositUnbonded = 'NominationPools.DepositUnbonded',
+    AllMembersUnbonded = 'NominationPools.AllMembersUnbonded',
+    MemberUnbonded = 'NominationPools.MemberUnbonded',
+}

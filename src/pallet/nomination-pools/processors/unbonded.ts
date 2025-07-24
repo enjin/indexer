@@ -5,6 +5,7 @@ import { updatePool } from '~/pallet/nomination-pools/processors/pool'
 import { Sns } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { MoreThan } from 'typeorm'
+import { CustomStakingEvent } from '~/pallet/common/types'
 
 export async function unbonded(ctx: CommonContext, block: Block, item: EventItem): Promise<EventModel | undefined> {
     if (!item.extrinsic || !item.extrinsic.call) return undefined
@@ -46,7 +47,7 @@ export async function unbonded(ctx: CommonContext, block: Block, item: EventItem
 
     await Sns.getInstance().send({
         id: item.id,
-        name: poolMember.isStash ? 'NominationPools.DepositUnbond' : 'NominationPools.Unbond',
+        name: poolMember.isStash ? CustomStakingEvent.DepositUnbond : CustomStakingEvent.Unbond,
         body: {
             pool: pool.id,
             account: account.id,
@@ -63,7 +64,7 @@ export async function unbonded(ctx: CommonContext, block: Block, item: EventItem
     if (!poolMember.isStash && bondedMembers.length === 0 && pool.state === PoolState.Destroying) {
         await Sns.getInstance().send({
             id: `${item.id}-all-members-unbonded`,
-            name: 'NominationPools.AllMembersUnbond',
+            name: CustomStakingEvent.AllMembersUnbond,
             body: {
                 pool: pool.id,
                 extrinsic: item.extrinsic.id,

@@ -2,6 +2,7 @@ import { Sns } from '~/util/sns'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { NominationPool, PoolState } from '~/model'
 import * as mappings from '~/pallet/index'
+import { CustomStakingEvent } from '~/pallet/common/types'
 
 export async function stateChanged(ctx: CommonContext, block: Block, item: EventItem) {
     if (!item.extrinsic) return undefined
@@ -33,7 +34,7 @@ export async function stateChanged(ctx: CommonContext, block: Block, item: Event
     if (data.newState.__kind === PoolState.Destroying) {
         await Sns.getInstance().send({
             id: item.id,
-            name: 'NominationPools.Destroy',
+            name: CustomStakingEvent.Destroy,
             body: {
                 pool: data.poolId.toString(),
                 state: data.newState.__kind,
