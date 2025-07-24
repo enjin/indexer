@@ -80,7 +80,7 @@ type AccountTokenEvent @entity {
   id: ID!
   from: Account! @index
   to: Account @index
-  event: Event!
+  event: Event! @index
   collection: Collection
   token: Token
 }
@@ -767,7 +767,7 @@ type Metadata {
   attributes: JSON
 }
 
-type Attribute @entity {
+type Attribute @entity @index(fields: ["key", "token", "collection"]) {
   id: ID!
 
   # Storage defaults
