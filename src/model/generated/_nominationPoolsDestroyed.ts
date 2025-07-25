@@ -1,6 +1,7 @@
 import assert from "assert"
 import * as marshal from "./marshal"
 import {Account} from "./account.model"
+import {PoolState} from "~/model";
 
 export class NominationPoolsDestroyed {
     public readonly isTypeOf = 'NominationPoolsDestroyed'
@@ -49,6 +50,7 @@ export class NominationPoolsDestroyed {
             pool: this.pool,
             tokenId: this.tokenId == null ? undefined : marshal.bigint.toJSON(this.tokenId),
             account: this.account,
+            state: PoolState.Destroyed.toString(),
         }
     }
 }

@@ -10,6 +10,7 @@ export class NominationPoolsWithdrawn {
     private _numSlashingSpans!: number | undefined | null
     private _pool!: string
     private _tokenId!: bigint | undefined | null
+    private _state!: string
 
     constructor(props?: Partial<Omit<NominationPoolsWithdrawn, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
@@ -20,6 +21,7 @@ export class NominationPoolsWithdrawn {
             this._numSlashingSpans = json.numSlashingSpans == null ? undefined : marshal.int.fromJSON(json.numSlashingSpans)
             this._pool = marshal.string.fromJSON(json.pool)
             this._tokenId = json.tokenId == null ? undefined : marshal.bigint.fromJSON(json.tokenId)
+            this._state = marshal.string.fromJSON(json.state)
         }
     }
 
@@ -75,6 +77,15 @@ export class NominationPoolsWithdrawn {
         this._tokenId = value
     }
 
+    get state(): string {
+        assert(this._state != null, 'uninitialized access')
+        return this._state
+    }
+
+    set state(value: string) {
+        this._state = value
+    }
+
     toJSON(): object {
         return {
             isTypeOf: this.isTypeOf,
@@ -84,6 +95,7 @@ export class NominationPoolsWithdrawn {
             numSlashingSpans: this.numSlashingSpans,
             pool: this.pool,
             tokenId: this.tokenId == null ? undefined : marshal.bigint.toJSON(this.tokenId),
+            state: this.state,
         }
     }
 }

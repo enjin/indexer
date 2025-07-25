@@ -8,6 +8,7 @@ export class NominationPoolsBonded {
     private _account!: string
     private _bonded!: bigint
     private _tokenId!: bigint | undefined | null
+    private _state!: string
 
     constructor(props?: Partial<Omit<NominationPoolsBonded, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
@@ -16,6 +17,7 @@ export class NominationPoolsBonded {
             this._account = marshal.string.fromJSON(json.account)
             this._bonded = marshal.bigint.fromJSON(json.bonded)
             this._tokenId = json.tokenId == null ? undefined : marshal.bigint.fromJSON(json.tokenId)
+            this._state = marshal.string.fromJSON(json.state)
         }
     }
 
@@ -54,6 +56,15 @@ export class NominationPoolsBonded {
         this._tokenId = value
     }
 
+    get state(): string {
+        assert(this._state != null, 'uninitialized access')
+        return this._state
+    }
+
+    set state(value: string) {
+        this._state = value
+    }
+
     toJSON(): object {
         return {
             isTypeOf: this.isTypeOf,
@@ -61,6 +72,7 @@ export class NominationPoolsBonded {
             account: this.account,
             bonded: marshal.bigint.toJSON(this.bonded),
             tokenId: this.tokenId == null ? undefined : marshal.bigint.toJSON(this.tokenId),
+            state: this.state,
         }
     }
 }
