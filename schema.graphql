@@ -1320,6 +1320,9 @@ type PoolMemberRewards @entity {
   member: PoolMember!
   reward: EraReward!
   points: BigInt!
+  accumulatedRewards: BigInt!
+  rewards: BigInt!
+  earlyBirdReward: BigInt!
 }
 
 type Validator @entity {

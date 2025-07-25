@@ -1,11 +1,20 @@
 import { throwFatalError } from '~/util/errors'
-import { AccountTokenEvent, Event as EventModel, Extrinsic, PoolMember, Token, TokenAccount } from '~/model'
+import {
+    AccountTokenEvent,
+    Event as EventModel,
+    Extrinsic,
+    PoolMember,
+    PoolMemberRewards,
+    Token,
+    TokenAccount,
+} from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
 import { Sns } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { isNonFungible } from '~/util/helpers'
 import { QueueUtils } from '~/queue'
+import { calls } from '~/type'
 
 export async function minted(
     ctx: CommonContext,
@@ -68,6 +77,33 @@ export async function minted(
             ctx.log.debug(`Adding tokenAccount ${tokenAccount.id} to poolMember ${poolMember.id}.`)
             poolMember.tokenAccount = tokenAccount
             await ctx.store.save(poolMember)
+
+            // Check if this mint is part of an early bird bonus payment extrinsic
+            if (
+                item.extrinsic &&
+                item.extrinsic.call &&
+                item.extrinsic.call.name === calls.nominationPools.payEarlyBirdBonus.name
+            ) {
+                ctx.log.debug(`Early bird bonus payment detected for member ${poolMember.id}, amount: ${data.amount}`)
+
+                // Find the most recent PoolMemberRewards for this member to update the earlyBirdReward field
+                const recentReward = await ctx.store.findOne(PoolMemberRewards, {
+                    where: {
+                        member: { id: poolMember.id },
+                    },
+                    order: { reward: { era: { index: 'DESC' } } },
+                })
+
+                if (recentReward) {
+                    recentReward.earlyBirdReward += data.amount
+                    recentReward.accumulatedRewards += data.amount
+                    poolMember.accumulatedRewards = (poolMember.accumulatedRewards ?? 0n) + data.amount
+
+                    await ctx.store.save(recentReward)
+                    await ctx.store.save(poolMember)
+                    ctx.log.debug(`Updated earlyBirdReward for member ${poolMember.id} in ${recentReward.id}`)
+                }
+            }
         }
     }
 
