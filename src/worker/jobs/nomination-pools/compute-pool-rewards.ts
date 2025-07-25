@@ -32,10 +32,9 @@ export async function computePoolRewards(_job: Job, id?: string): Promise<void> 
 
     pool.accumulatedCommission = totalRewards
 
-    // count the last 15 eras
     const eraRewards = pool.eraRewards.slice(0, 15)
 
-    let { sumOfRewards } = computeEraApy(eraRewards)
+    const { sumOfRewards } = computeEraApy(eraRewards, eraRewards[0])
 
     pool.apy = sumOfRewards / (eraRewards.length < 15 ? eraRewards.length : 15)
 

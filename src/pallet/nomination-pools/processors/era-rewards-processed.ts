@@ -151,7 +151,7 @@ export async function eraRewardsProcessed(
         const changeInRate = lastRewards.minus(prevRewards)
         reward.changeInRate = BigInt(changeInRate.toString())
 
-        const { sumOfRewards, previousCountedApy } = computeEraApy(eraRewards)
+        const { sumOfRewards, previousCountedApy } = computeEraApy(eraRewards, reward)
 
         // add the current apy to the sum because the current apy is 0 in the eraRewards
         let finalSumOfRewards = sumOfRewards
@@ -238,20 +238,22 @@ export const discardEra = (apy: number, previousEraApy: number) => {
     return apyDifferencePercent >= 50
 }
 
-export const computeEraApy = (eraRewards: EraReward[]): { sumOfRewards: number; previousCountedApy: number } => {
+export const computeEraApy = (
+    eraRewards: EraReward[],
+    reward: EraReward
+): { sumOfRewards: number; previousCountedApy: number } => {
     let sumOfRewards = 0
     let previousCountedApy = 0
 
-    // discard the eras that have apy difference of more than 50% from the previous era
     for (let i = 0; i < eraRewards.length; i++) {
         const era = eraRewards[i]
-        if (
-            era.apy > 0 &&
-            ((i !== 0 && !discardEra(era.apy, previousCountedApy)) ||
-                (i === 0 && !discardEra(era.apy, eraRewards[i + 1].apy)))
-        ) {
-            previousCountedApy = era.apy
-            sumOfRewards += era.apy
+
+        const currentApy = i === 0 ? reward.apy : era.apy
+        const previousApy = i === 0 ? eraRewards[i + 1].apy : previousCountedApy
+
+        if (!discardEra(currentApy, previousApy)) {
+            previousCountedApy = currentApy
+            sumOfRewards += currentApy
         } else {
             sumOfRewards += previousCountedApy
         }
