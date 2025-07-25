@@ -1,7 +1,10 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
 import {
     Account,
-    Event as EventModel, NominationPool, PoolsOffers,
+    Event as EventModel,
+    NominationPool,
+    PoolsOffers,
+    PoolState,
     StakeExchangeOffer,
     StakeExchangeOfferState,
     StakeExchangeTokenFilter,
@@ -11,7 +14,8 @@ import { getOrCreateAccount } from '~/util/entities'
 import { Sns } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { TokenFilter } from '~/pallet/common/types'
-import {OfferCreated} from "~/pallet/stake-exchange/events/types";
+import { OfferCreated } from '~/pallet/stake-exchange/events/types'
+import { In, Not } from 'typeorm'
 
 function getFilterFromType(tokenFilter: TokenFilter | undefined) {
     let entity: StakeExchangeTokenFilter | null = null
@@ -39,6 +43,56 @@ function getFilterFromType(tokenFilter: TokenFilter | undefined) {
     }
 
     return entity
+}
+
+async function savePoolsOffersForStakeExchange(
+    event: OfferCreated,
+    ctx: CommonContext,
+    offer: StakeExchangeOffer
+): Promise<void> {
+    if (event.offer.tokenFilter?.__kind === StakeExchangeTokenFilterType.Whitelist) {
+        for (const value of event.offer.tokenFilter.value) {
+            const pool: NominationPool | undefined = await ctx.store.findOne(NominationPool, {
+                where: {
+                    id: value.toString(),
+                    state: PoolState.Open,
+                },
+            })
+
+            if (pool) {
+                const poolsOffers = new PoolsOffers({
+                    offer,
+                    pool,
+                })
+                await ctx.store.save(poolsOffers)
+            }
+        }
+    } else if (event.offer.tokenFilter?.__kind === StakeExchangeTokenFilterType.All) {
+        const pools: NominationPool[] = await ctx.store.find(NominationPool, { where: { state: PoolState.Open } })
+
+        for (const pool of pools) {
+            const poolsOffers = new PoolsOffers({
+                offer,
+                pool,
+            })
+            await ctx.store.save(poolsOffers)
+        }
+    } else if (event.offer.tokenFilter?.__kind === StakeExchangeTokenFilterType.BlockList) {
+        const pools: NominationPool[] = await ctx.store.find(NominationPool, {
+            where: {
+                state: PoolState.Open,
+                id: Not(In(event.offer.tokenFilter.value)),
+            },
+        })
+
+        for (const pool of pools) {
+            const poolsOffers = new PoolsOffers({
+                offer,
+                pool,
+            })
+            await ctx.store.save(poolsOffers)
+        }
+    }
 }
 
 export async function offerCreated(ctx: CommonContext, block: Block, item: EventItem): Promise<EventModel | undefined> {
@@ -78,16 +132,8 @@ export async function offerCreated(ctx: CommonContext, block: Block, item: Event
         entity.offer = offer
         await ctx.store.save(entity)
 
-        if (event.offer.tokenFilter?.__kind === StakeExchangeTokenFilterType.Whitelist) {
-            for (const value of event.offer.tokenFilter.value) {
-                const poolsOffers = new PoolsOffers({
-                    offer: offer,
-                    pool: await ctx.store.findOne(NominationPool, { where:{ id: value.toString() }})
-                });
-                await ctx.store.save(poolsOffers)
-            }
-        }
-    } //TODO handle other StakeExchangeTokenFilterType cases
+        await savePoolsOffersForStakeExchange(event, ctx, offer)
+    }
 
     await Sns.getInstance().send({
         id: item.id,

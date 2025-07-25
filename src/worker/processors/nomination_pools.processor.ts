@@ -2,7 +2,14 @@ import { Job } from 'bullmq'
 import { ProcessorDef } from '~/worker/processors/processor.def'
 import { JobsEnum } from '~/queue/constants'
 import { logDebug, logError } from '~/worker/utils'
-import { syncPools, computePoolRewards, syncPoolMembers, computePoolMemberRewards, refreshPool } from '~/worker/jobs'
+import {
+    computePoolMemberRewards,
+    computePoolOffers,
+    computePoolRewards,
+    refreshPool,
+    syncPoolMembers,
+    syncPools,
+} from '~/worker/jobs'
 
 export class NominationPoolsProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {
@@ -21,6 +28,9 @@ export class NominationPoolsProcessor implements ProcessorDef {
                 break
             case JobsEnum.REFRESH_POOL:
                 await refreshPool(job, job.data.id)
+                break
+            case JobsEnum.COMPUTE_POOL_OFFERS:
+                await computePoolOffers(job, job.data.id)
                 break
             default:
                 throw new Error(`${job.name} is not a valid job for this processor`)
