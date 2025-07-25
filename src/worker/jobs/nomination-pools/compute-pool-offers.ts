@@ -31,5 +31,5 @@ export async function computePoolOffers(job: Job, poolId: string): Promise<void>
         await em.save(poolsOffers)
     }
 
-    await job.log(`Dispatched ${offers.length} jobs to sync pool rewards`)
+    await job.log(`Created ${offers} offers for pool ${poolId}`)
 }
