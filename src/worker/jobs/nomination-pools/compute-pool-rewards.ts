@@ -9,7 +9,9 @@ export async function computePoolRewards(_job: Job, id?: string): Promise<void> 
     const pool = await ctx.store.findOne(NominationPool, {
         where: { id },
         relations: {
-            eraRewards: true,
+            eraRewards: {
+                era: true,
+            },
         },
         order: {
             eraRewards: {
