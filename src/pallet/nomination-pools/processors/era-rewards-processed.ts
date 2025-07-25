@@ -15,7 +15,6 @@ import { Block, CommonContext, EventItem } from '~/contexts'
 import { Sns } from '~/util/sns'
 import processorConfig from '~/util/config'
 import * as mappings from '~/pallet/index'
-import e from 'express'
 
 async function getMembersBalance(block: Block, poolId: number): Promise<Record<string, bigint>> {
     const result = await mappings.multiTokens.storage.tokenAccounts(block, {
