@@ -34,7 +34,7 @@ export function withdrawnEventModel(
             balance: data.balance,
             points: data.points,
             numSlashingSpans: 0, // data.numSlashingSpans,
-            state: state.toString(),
+            state: state,
         }),
     })
 }

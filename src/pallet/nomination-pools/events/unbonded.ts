@@ -34,7 +34,7 @@ export function unbondedEventModel(
             unbondingPoints: data.points,
             balance: data.balance,
             era: data.era,
-            state: state.toString(),
+            state: state,
         }),
     })
 }

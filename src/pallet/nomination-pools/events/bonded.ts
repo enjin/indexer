@@ -44,7 +44,7 @@ export function bondedEventModel(
             tokenId: tokenId,
             account: data.member,
             bonded: data.bonded,
-            state: state.toString(),
+            state: state,
         }),
     })
 }
