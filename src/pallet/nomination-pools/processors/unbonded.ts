@@ -5,14 +5,15 @@ import { updatePool } from '~/pallet/nomination-pools/processors/pool'
 import { Sns } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { MoreThan } from 'typeorm'
+import { Unbonded } from '~/pallet/nomination-pools/events'
 
 export async function unbonded(ctx: CommonContext, block: Block, item: EventItem): Promise<EventModel | undefined> {
     if (!item.extrinsic || !item.extrinsic.call) return undefined
 
-    const data = mappings.nominationPools.events.unbonded(item)
+    const data: Unbonded = mappings.nominationPools.events.unbonded(item)
     // This event should never be emitted, but since it is, we are just going to ignore events with balance 0
     if (data.balance === 0n) {
-        return mappings.nominationPools.events.unbondedEventModel(item, data, 0n)
+        return mappings.nominationPools.events.unbondedEventModel(item, data, 0n, PoolState.Open)
     }
 
     const pool = await updatePool(ctx, block, data.poolId.toString())
@@ -75,5 +76,5 @@ export async function unbonded(ctx: CommonContext, block: Block, item: EventItem
         })
     }
 
-    return mappings.nominationPools.events.unbondedEventModel(item, data, pool.tokenId)
+    return mappings.nominationPools.events.unbondedEventModel(item, data, pool.tokenId, pool.state)
 }

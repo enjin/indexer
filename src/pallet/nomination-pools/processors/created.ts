@@ -17,6 +17,7 @@ import { storage } from '~/type'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import * as mappings from '~/pallet/index'
 import { UnsupportedStorageError } from '~/util/errors'
+import { QueueUtils } from '~/queue'
 
 function getCurrentEra(ctx: CommonContext, block: Block) {
     if (storage.staking.currentEra.enjinV100.is(block)) {
@@ -91,6 +92,8 @@ export async function created(ctx: CommonContext, block: Block, item: EventItem)
     })
 
     await ctx.store.save(pool)
+
+    QueueUtils.dispatchComputePoolOffers(pool.id.toString())
 
     return mappings.nominationPools.events.createdEventModel(item, eventData, callData.tokenId)
 }

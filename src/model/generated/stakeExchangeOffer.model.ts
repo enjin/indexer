@@ -1,7 +1,8 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, BigIntColumn as BigIntColumn_, ManyToOne as ManyToOne_, Index as Index_, OneToOne as OneToOne_, DateTimeColumn as DateTimeColumn_, IntColumn as IntColumn_} from "@subsquid/typeorm-store"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, BigIntColumn as BigIntColumn_, ManyToOne as ManyToOne_, Index as Index_, OneToOne as OneToOne_, OneToMany as OneToMany_, DateTimeColumn as DateTimeColumn_, IntColumn as IntColumn_} from "@subsquid/typeorm-store"
 import {StakeExchangeOfferState} from "./_stakeExchangeOfferState"
 import {Account} from "./account.model"
 import {StakeExchangeTokenFilter} from "./stakeExchangeTokenFilter.model"
+import {PoolsOffers} from "./poolsOffers.model"
 
 @Entity_()
 export class StakeExchangeOffer {
@@ -36,6 +37,9 @@ export class StakeExchangeOffer {
 
     @OneToOne_(() => StakeExchangeTokenFilter, e => e.offer)
     tokenFilter!: StakeExchangeTokenFilter | undefined | null
+
+    @OneToMany_(() => PoolsOffers, e => e.offer)
+    pools!: PoolsOffers[]
 
     @DateTimeColumn_({nullable: false})
     createdAt!: Date
