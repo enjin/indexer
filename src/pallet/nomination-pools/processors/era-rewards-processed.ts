@@ -151,12 +151,17 @@ export async function eraRewardsProcessed(
         const changeInRate = lastRewards.minus(prevRewards)
         reward.changeInRate = BigInt(changeInRate.toString())
 
-        // take the average apy of the last n eras
-        const sumOfRewards = eraRewards.reduce((acc, era) => {
-            return acc + era.apy
-        }, 0)
+        const { sumOfRewards, previousCountedApy } = computeEraApy(eraRewards)
+
         // add the current apy to the sum because the current apy is 0 in the eraRewards
-        apy = new Big(sumOfRewards).plus(reward.apy).div(eraRewards.length)
+        let finalSumOfRewards = sumOfRewards
+        if (discardEra(reward.apy, previousCountedApy)) {
+            finalSumOfRewards += previousCountedApy
+        } else {
+            finalSumOfRewards += reward.apy
+        }
+
+        apy = Big(finalSumOfRewards).div(eraRewards.length)
     }
 
     if (
@@ -226,4 +231,31 @@ export async function eraRewardsProcessed(
     })
 
     return mappings.nominationPools.events.eraRewardsProcessedEventModel(item, data, pool.rate)
+}
+
+export const discardEra = (apy: number, previousEraApy: number) => {
+    const apyDifferencePercent = Math.abs((apy - previousEraApy) / previousEraApy) * 100
+    return apyDifferencePercent >= 50
+}
+
+export const computeEraApy = (eraRewards: EraReward[]): { sumOfRewards: number; previousCountedApy: number } => {
+    let sumOfRewards = 0
+    let previousCountedApy = 0
+
+    // discard the eras that have apy difference of more than 50% from the previous era
+    for (let i = 0; i < eraRewards.length; i++) {
+        const era = eraRewards[i]
+        if (
+            era.apy > 0 &&
+            ((i !== 0 && !discardEra(era.apy, previousCountedApy)) ||
+                (i === 0 && !discardEra(era.apy, eraRewards[i + 1].apy)))
+        ) {
+            previousCountedApy = era.apy
+            sumOfRewards += era.apy
+        } else {
+            sumOfRewards += previousCountedApy
+        }
+    }
+
+    return { sumOfRewards, previousCountedApy }
 }
