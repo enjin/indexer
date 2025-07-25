@@ -15,8 +15,11 @@ import { Block, CommonContext, EventItem } from '~/contexts'
 import { Sns } from '~/util/sns'
 import processorConfig from '~/util/config'
 import * as mappings from '~/pallet/index'
+import { TokenAccount } from '~/pallet/multi-tokens/storage/types'
 
 async function getMembersBalance(block: Block, poolId: number): Promise<Record<string, bigint>> {
+    type StorageEntry = [k: [bigint, bigint, string], v: TokenAccount | undefined]
+
     const result = await mappings.multiTokens.storage.tokenAccounts(block, {
         collectionId: 1n,
         tokenId: BigInt(poolId),
@@ -25,12 +28,22 @@ async function getMembersBalance(block: Block, poolId: number): Promise<Record<s
     const accountMap: Record<string, bigint> = {}
 
     // Check if a result exists and is an array or iterable
-    if (typeof result[Symbol.iterator] === 'function') {
-        for (const pair of result) {
-            if (Array.isArray(pair) && pair[0][2]) {
-                const key = pair[0]
-                const value = pair[1]
-                accountMap[key[2]] = value?.balance ?? 0n
+    // Check if result is an async generator
+    if (result && Symbol.asyncIterator in result) {
+        for await (const batch of result as AsyncIterable<StorageEntry[]>) {
+            for (const storageEntry of batch) {
+                if (storageEntry?.[0]?.[2]) {
+                    const [[, , accountId], tokenAccount] = storageEntry
+                    accountMap[accountId] = BigInt(tokenAccount?.balance || 0)
+                }
+            }
+        }
+    } else if (result && Symbol.iterator in result) {
+        // Check if a result exists and is a sync iterable
+        for (const storageEntry of result as StorageEntry[]) {
+            if (storageEntry?.[0]?.[2]) {
+                const [[, , accountId], tokenAccount] = storageEntry
+                accountMap[accountId] = BigInt(tokenAccount?.balance || 0)
             }
         }
     }
@@ -102,6 +115,21 @@ export async function eraRewardsProcessed(
         return undefined
     }
 
+    // Query for previous era rewards BEFORE inserting the new one to avoid race condition
+    const eraRewards = await ctx.store.find(EraReward, {
+        where: { pool: { id: pool.id } },
+        relations: {
+            era: true,
+        },
+        order: { era: { index: 'desc' } },
+        take: 14,
+    })
+
+    // Calculate changeInRate consistently: current rate - previous rate
+    // For first era, use 0 as baseline (no previous rate to compare against)
+    const changeInRate =
+        eraRewards.length > 0 ? Big(pool.rate.toString()).minus(Big(eraRewards[0].rate.toString())) : Big(0)
+
     const reward = new EraReward({
         id: `${data.poolId}-${data.era}`,
         era: new Era({ id: data.era.toString() }),
@@ -117,46 +145,32 @@ export async function eraRewardsProcessed(
         apy: 0,
         averageApy: 0,
         active: pool.balance.active,
-        changeInRate: 0n,
+        changeInRate: BigInt(changeInRate.toString()),
         reinvested: data.reinvested,
-    })
-    await ctx.store.insert(reward)
-    const eraRewards = await ctx.store.find(EraReward, {
-        where: { pool: { id: pool.id } },
-        relations: {
-            era: true,
-        },
-        order: { era: { index: 'desc' } },
-        take: 14,
     })
 
     let apy: Big.Big
 
-    if (eraRewards.length === 1) {
-        const rate = Big(eraRewards[0].rate.toString())
+    if (eraRewards.length === 0) {
+        // First era for this pool
+        const rate = Big(pool.rate.toString())
         const decimals = Big(10).pow(18)
-        const changeInRate = rate.minus(decimals)
         apy = rate.div(decimals).pow(processorConfig.erasPerYear).sub(1).mul(100)
-        reward.changeInRate = BigInt(changeInRate.toString())
         reward.apy = apy.toNumber()
     } else {
-        const previousBalance = Big(eraRewards[1].active.toString())
+        // Calculate APY based on balance change from previous era
+        const previousBalance = Big(eraRewards[0].active.toString())
         const newBalance = Big(reward.reinvested.toString()).plus(previousBalance)
 
         const currentApy = newBalance.div(previousBalance).pow(processorConfig.erasPerYear).sub(1).mul(100)
         reward.apy = currentApy.toNumber()
 
-        const lastRewards = Big(eraRewards[0].rate.toString())
-        const prevRewards = Big(eraRewards[1].rate.toString())
-        const changeInRate = lastRewards.minus(prevRewards)
-        reward.changeInRate = BigInt(changeInRate.toString())
-
         // take the average apy of the last n eras
         const sumOfRewards = eraRewards.reduce((acc, era) => {
             return acc + era.apy
         }, 0)
-        // add the current apy to the sum because the current apy is 0 in the eraRewards
-        apy = new Big(sumOfRewards).plus(reward.apy).div(eraRewards.length)
+        // add the current apy to the sum because the current apy is not yet in the eraRewards
+        apy = new Big(sumOfRewards).plus(reward.apy).div(eraRewards.length + 1)
     }
 
     if (
@@ -187,12 +201,22 @@ export async function eraRewardsProcessed(
             points = memberBalances[member.account.id]
         }
 
+        // Calculate this era's rewards for the member
+        const eraRewards = (points * reward.changeInRate) / 10n ** 18n
+
+        // Calculate accumulated rewards (current member accumulated + this era's rewards)
+        const currentAccumulated = member.accumulatedRewards || 0n
+        const newAccumulated = currentAccumulated + eraRewards
+
         return new PoolMemberRewards({
             id: `${member.id}-${reward.id}`,
             member,
             reward,
             pool,
             points,
+            accumulatedRewards: newAccumulated,
+            rewards: eraRewards,
+            earlyBirdReward: 0n, // Will be updated in the minted processor
         })
     })
 
@@ -201,16 +225,14 @@ export async function eraRewardsProcessed(
             member.accumulatedRewards = 0n
         }
         const points = memberBalances[member.account.id] ?? 0n
-        member.accumulatedRewards += (points * reward.changeInRate) / 10n ** 18n
+        const eraRewards = (points * reward.changeInRate) / 10n ** 18n
+        member.accumulatedRewards += eraRewards
         return member
     })
 
-    await Promise.all([
-        ctx.store.insert(rewardPromise),
-        ctx.store.save(pool),
-        ctx.store.save(reward),
-        ctx.store.save(updatedMembers),
-    ])
+    await ctx.store.insert(reward)
+
+    await Promise.all([ctx.store.insert(rewardPromise), ctx.store.save(pool), ctx.store.save(updatedMembers)])
 
     await Sns.getInstance().send({
         id: item.id,

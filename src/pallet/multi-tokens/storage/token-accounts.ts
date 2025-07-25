@@ -10,7 +10,10 @@ import { TokenAccountsV100 } from '~/type/multi-tokens/storage'
 export async function tokenAccounts(
     block: Block,
     params: { collectionId: bigint; tokenId: bigint }
-): Promise<[k: [bigint, bigint, string], v: TokenAccount | undefined][]>
+): Promise<
+    | [k: [bigint, bigint, string], v: TokenAccount | undefined][]
+    | AsyncIterable<[k: [bigint, bigint, string] | [string, bigint, bigint], v: TokenAccount | undefined][]>
+>
 export async function tokenAccounts(
     block: Block,
     params: { collectionId: bigint; tokenId: bigint; accountId: string }
