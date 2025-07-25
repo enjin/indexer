@@ -1,6 +1,7 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
 import {
-    Event as EventModel,
+    Account,
+    Event as EventModel, NominationPool, PoolsOffers,
     StakeExchangeOffer,
     StakeExchangeOfferState,
     StakeExchangeTokenFilter,
@@ -10,6 +11,7 @@ import { getOrCreateAccount } from '~/util/entities'
 import { Sns } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { TokenFilter } from '~/pallet/common/types'
+import {OfferCreated} from "~/pallet/stake-exchange/events/types";
 
 function getFilterFromType(tokenFilter: TokenFilter | undefined) {
     let entity: StakeExchangeTokenFilter | null = null
@@ -40,7 +42,7 @@ function getFilterFromType(tokenFilter: TokenFilter | undefined) {
 }
 
 export async function offerCreated(ctx: CommonContext, block: Block, item: EventItem): Promise<EventModel | undefined> {
-    const event = mappings.stakeExchange.events.offerCreated(item)
+    const event: OfferCreated = mappings.stakeExchange.events.offerCreated(item)
 
     let rewardRate: bigint
 
@@ -52,8 +54,8 @@ export async function offerCreated(ctx: CommonContext, block: Block, item: Event
         rewardRate = event.offer.minAverageRewardRate ?? 0n
     }
 
-    const account = await getOrCreateAccount(ctx, event.offer.account)
-    const rate = typeof event.offer.rate === 'bigint' ? event.offer.rate : BigInt(event.offer.rate * 10 ** 9)
+    const account: Account = await getOrCreateAccount(ctx, event.offer.account)
+    const rate: bigint = typeof event.offer.rate === 'bigint' ? event.offer.rate : BigInt(event.offer.rate * 10 ** 9)
 
     const offer = new StakeExchangeOffer({
         id: event.offerId.toString(),
@@ -71,11 +73,21 @@ export async function offerCreated(ctx: CommonContext, block: Block, item: Event
     await ctx.store.save(offer)
 
     if ('tokenFilter' in event.offer) {
-        const entity = getFilterFromType(event.offer.tokenFilter)
+        const entity: StakeExchangeTokenFilter = getFilterFromType(event.offer.tokenFilter)
         entity.id = offer.id
         entity.offer = offer
         await ctx.store.save(entity)
-    }
+
+        if (event.offer.tokenFilter?.__kind === StakeExchangeTokenFilterType.Whitelist) {
+            for (const value of event.offer.tokenFilter.value) {
+                const poolsOffers = new PoolsOffers({
+                    offer: offer,
+                    pool: await ctx.store.findOne(NominationPool, { where:{ id: value.toString() }})
+                });
+                await ctx.store.save(poolsOffers)
+            }
+        }
+    } //TODO handle other StakeExchangeTokenFilterType cases
 
     await Sns.getInstance().send({
         id: item.id,
