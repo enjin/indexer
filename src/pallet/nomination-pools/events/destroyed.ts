@@ -2,7 +2,7 @@ import { nominationPools } from '~/type/events'
 import { EventItem } from '~/contexts'
 import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
-import {Event as EventModel, Extrinsic, NominationPoolsDestroyed} from '~/model'
+import { Event as EventModel, Extrinsic, NominationPoolsDestroyed } from '~/model'
 import { Destroyed } from '~/pallet/nomination-pools/events/types'
 
 export function destroyed(event: EventItem): Destroyed {
