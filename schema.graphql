@@ -1407,6 +1407,7 @@ type NominationPool @entity {
   slashes: [PoolSlash]!
   validators: [PoolValidator]! @derivedFrom(field: "pool")
   degenToken: Token @unique
+  stakeExchangeOffers: [PoolsOffers]! @derivedFrom(field: "pool")
 
   # Computed by job
   score: ScoreGrade
@@ -1481,9 +1482,16 @@ type StakeExchangeOffer @entity {
   minAverageRewardRate: BigInt!
 
   tokenFilter: StakeExchangeTokenFilter @derivedFrom(field: "offer")
+  pools: [PoolsOffers]! @derivedFrom(field: "offer")
 
   createdAt: DateTime!
   createdBlock: Int!
+}
+
+type PoolsOffers @entity {
+  id: ID!
+  pool: NominationPool!
+  offer: StakeExchangeOffer!
 }
 
 type EarlyBirdDetails @entity {

@@ -2,7 +2,7 @@ import { Block, CommonContext, EventItem } from '~/contexts'
 import { Event as EventModel, StakeExchangeOffer, StakeExchangeOfferState } from '~/model'
 import { Sns } from '~/util/sns'
 import * as mappings from '~/pallet/index'
-import { OfferCompleted } from "~/pallet/stake-exchange/events/types";
+import { OfferCompleted } from '~/pallet/stake-exchange/events/types'
 
 export async function offerCompleted(
     ctx: CommonContext,

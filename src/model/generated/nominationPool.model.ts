@@ -10,6 +10,7 @@ import {EraReward} from "./eraReward.model"
 import {PoolSlash} from "./_poolSlash"
 import {PoolValidator} from "./poolValidator.model"
 import {Token} from "./token.model"
+import {PoolsOffers} from "./poolsOffers.model"
 import {ScoreGrade} from "./_scoreGrade"
 
 @Entity_()
@@ -88,6 +89,9 @@ export class NominationPool {
     @OneToOne_(() => Token, {nullable: true})
     @JoinColumn_()
     degenToken!: Token | undefined | null
+
+    @OneToMany_(() => PoolsOffers, e => e.pool)
+    stakeExchangeOffers!: PoolsOffers[]
 
     @Column_("varchar", {length: 1, nullable: true})
     score!: ScoreGrade | undefined | null
