@@ -417,3 +417,16 @@ export function dispatchComputePoolMemberRewards(id: string): void {
         Logger.error('Failed to dispatch compute pool member rewards', LOGGER_NAMESPACE)
     })
 }
+
+export function dispatchComputePoolOffers(id: string): void {
+    NominationPoolsQueue.add(
+        JobsEnum.COMPUTE_POOL_OFFERS,
+        { id },
+        {
+            delay: 6000,
+            jobId: `nomination-pools.compute-pool-offers.${id}`,
+        }
+    ).catch(() => {
+        Logger.error('Failed to dispatch compute pool offers', LOGGER_NAMESPACE)
+    })
+}
