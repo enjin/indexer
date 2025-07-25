@@ -151,22 +151,7 @@ export async function eraRewardsProcessed(
         const changeInRate = lastRewards.minus(prevRewards)
         reward.changeInRate = BigInt(changeInRate.toString())
 
-        let sumOfRewards = 0
-        let previousCountedApy = 0
-        // discard the eras that have apy difference of more than 50% from the previous era
-        for (let i = 0; i < eraRewards.length; i++) {
-            const era = eraRewards[i]
-            if (
-                era.apy > 0 &&
-                ((i !== 0 && !discardEra(era.apy, previousCountedApy)) ||
-                    (i === 0 && !discardEra(era.apy, eraRewards[i + 1].apy)))
-            ) {
-                previousCountedApy = era.apy
-                sumOfRewards += era.apy
-            } else {
-                sumOfRewards += previousCountedApy
-            }
-        }
+        let { sumOfRewards, previousCountedApy } = computeEraApy(eraRewards)
 
         // add the current apy to the sum because the current apy is 0 in the eraRewards
         if (discardEra(reward.apy, previousCountedApy)) {
@@ -250,4 +235,26 @@ export async function eraRewardsProcessed(
 export const discardEra = (apy: number, previousEraApy: number) => {
     const apyDifferencePercent = Math.abs((apy - previousEraApy) / previousEraApy) * 100
     return apyDifferencePercent >= 50
+}
+
+export const computeEraApy = (eraRewards: EraReward[]): { sumOfRewards: number; previousCountedApy: number } => {
+    let sumOfRewards = 0
+    let previousCountedApy = 0
+
+    // discard the eras that have apy difference of more than 50% from the previous era
+    for (let i = 0; i < eraRewards.length; i++) {
+        const era = eraRewards[i]
+        if (
+            era.apy > 0 &&
+            ((i !== 0 && !discardEra(era.apy, previousCountedApy)) ||
+                (i === 0 && !discardEra(era.apy, eraRewards[i + 1].apy)))
+        ) {
+            previousCountedApy = era.apy
+            sumOfRewards += era.apy
+        } else {
+            sumOfRewards += previousCountedApy
+        }
+    }
+
+    return { sumOfRewards, previousCountedApy }
 }
