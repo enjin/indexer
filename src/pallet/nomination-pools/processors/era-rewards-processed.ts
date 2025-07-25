@@ -248,7 +248,7 @@ export async function eraRewardsProcessed(
     return mappings.nominationPools.events.eraRewardsProcessedEventModel(item, data, pool.rate)
 }
 
-const discardEra = (apy: number, previousEraApy: number) => {
+export const discardEra = (apy: number, previousEraApy: number) => {
     const apyDifferencePercent = Math.abs((apy - previousEraApy) / previousEraApy) * 100
     return apyDifferencePercent >= 50
 }
