@@ -127,9 +127,8 @@ export async function eraRewardsProcessed(
 
     // Calculate changeInRate consistently: current rate - previous rate
     // For first era, use 0 as baseline (no previous rate to compare against)
-    const changeInRate = eraRewards.length > 0
-        ? Big(pool.rate.toString()).minus(Big(eraRewards[0].rate.toString()))
-        : Big(0)
+    const changeInRate =
+        eraRewards.length > 0 ? Big(pool.rate.toString()).minus(Big(eraRewards[0].rate.toString())) : Big(0)
 
     const reward = new EraReward({
         id: `${data.poolId}-${data.era}`,
@@ -202,12 +201,22 @@ export async function eraRewardsProcessed(
             points = memberBalances[member.account.id]
         }
 
+        // Calculate this era's rewards for the member
+        const eraRewards = (points * reward.changeInRate) / 10n ** 18n
+
+        // Calculate accumulated rewards (current member accumulated + this era's rewards)
+        const currentAccumulated = member.accumulatedRewards || 0n
+        const newAccumulated = currentAccumulated + eraRewards
+
         return new PoolMemberRewards({
             id: `${member.id}-${reward.id}`,
             member,
             reward,
             pool,
             points,
+            accumulatedRewards: newAccumulated,
+            rewards: eraRewards,
+            earlyBirdReward: 0n, // Will be updated in the minted processor
         })
     })
 
@@ -216,17 +225,14 @@ export async function eraRewardsProcessed(
             member.accumulatedRewards = 0n
         }
         const points = memberBalances[member.account.id] ?? 0n
-        member.accumulatedRewards += (points * reward.changeInRate) / 10n ** 18n
+        const eraRewards = (points * reward.changeInRate) / 10n ** 18n
+        member.accumulatedRewards += eraRewards
         return member
     })
 
     await ctx.store.insert(reward)
-    
-    await Promise.all([
-        ctx.store.insert(rewardPromise),
-        ctx.store.save(pool),
-        ctx.store.save(updatedMembers),
-    ])
+
+    await Promise.all([ctx.store.insert(rewardPromise), ctx.store.save(pool), ctx.store.save(updatedMembers)])
 
     await Sns.getInstance().send({
         id: item.id,
