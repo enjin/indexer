@@ -2,7 +2,7 @@ import { nominationPools } from '~/type/events'
 import { EventItem } from '~/contexts'
 import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
-import {Event as EventModel, Extrinsic, NominationPoolsWithdrawn, PoolState} from '~/model'
+import { Event as EventModel, Extrinsic, NominationPoolsWithdrawn, PoolState } from '~/model'
 import { Withdrawn } from '~/pallet/nomination-pools/events/types'
 
 export function withdrawn(event: EventItem): Withdrawn {
@@ -17,7 +17,12 @@ export function withdrawn(event: EventItem): Withdrawn {
         })
 }
 
-export function withdrawnEventModel(item: EventItem, data: Withdrawn, tokenId: bigint, state: PoolState): EventModel | undefined {
+export function withdrawnEventModel(
+    item: EventItem,
+    data: Withdrawn,
+    tokenId: bigint,
+    state: PoolState
+): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: NominationPoolsWithdrawn.name,
