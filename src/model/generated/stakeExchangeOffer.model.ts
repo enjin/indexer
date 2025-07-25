@@ -2,6 +2,7 @@ import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, B
 import {StakeExchangeOfferState} from "./_stakeExchangeOfferState"
 import {Account} from "./account.model"
 import {StakeExchangeTokenFilter} from "./stakeExchangeTokenFilter.model"
+import {ManyToMany} from "typeorm";
 
 @Entity_()
 export class StakeExchangeOffer {

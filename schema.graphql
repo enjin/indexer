@@ -1120,7 +1120,8 @@ type StakeExchangeOfferCreated {
   rate: BigInt!
   minAverageCommission: Int! @deprecated
   minAverageRewardRate: BigInt!
-  tokenFilter: StakeExchangeTokenFilter 
+  tokenFilter: StakeExchangeTokenFilter
+  state: PoolState!
 }
 
 type StakeExchangeOfferCancelled {
@@ -1128,6 +1129,7 @@ type StakeExchangeOfferCancelled {
   total: BigInt!
   account: Account
   tokenFilter: StakeExchangeTokenFilter
+  state: PoolState!
 }
 
 type StakeExchangeLiquidityWithdrawn {
@@ -1155,6 +1157,7 @@ type StakeExchangeBuyOrderCompleted {
   rate: BigInt!
   points: BigInt!
   pool: String!
+  state: PoolState!
 }
 
 type StakeExchangeOfferCompleted {
@@ -1162,6 +1165,7 @@ type StakeExchangeOfferCompleted {
   account: Account!
   tokenFilter: StakeExchangeTokenFilter
   amount: BigInt!
+  state: PoolState!
 }
 
 type NominationPoolsCreated {
@@ -1173,11 +1177,13 @@ type NominationPoolsDestroyed {
   pool: String!
   tokenId: BigInt
   account: Account!
+  state: PoolState!
 }
 
 type NominationPoolsPoolMutated {
   pool: String!
   mutation: JSON!
+  state: PoolState!
 }
 
 type NominationPoolsBonded {
@@ -1185,6 +1191,7 @@ type NominationPoolsBonded {
   account: Account!
   bonded: BigInt!
   tokenId: BigInt
+  state: PoolState!
 }
 
 type NominationPoolsUnbonded {
@@ -1194,6 +1201,7 @@ type NominationPoolsUnbonded {
   pool: String!
   era: Int!
   tokenId: BigInt
+  state: PoolState!
 }
 
 type NominationPoolsWithdrawn {
@@ -1203,6 +1211,7 @@ type NominationPoolsWithdrawn {
   numSlashingSpans: Int
   pool: String!
   tokenId: BigInt
+  state: PoolState!
 }
 
 type NominationPoolsEraRewardsProcessed {

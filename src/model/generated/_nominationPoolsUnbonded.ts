@@ -1,6 +1,7 @@
 import assert from "assert"
 import * as marshal from "./marshal"
 import {Account} from "./account.model"
+import {PoolState} from "./_poolState"
 
 export class NominationPoolsUnbonded {
     public readonly isTypeOf = 'NominationPoolsUnbonded'
@@ -10,7 +11,7 @@ export class NominationPoolsUnbonded {
     private _pool!: string
     private _era!: number
     private _tokenId!: bigint | undefined | null
-    private _state!: string
+    private _state!: PoolState
 
     constructor(props?: Partial<Omit<NominationPoolsUnbonded, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
@@ -21,7 +22,7 @@ export class NominationPoolsUnbonded {
             this._pool = marshal.string.fromJSON(json.pool)
             this._era = marshal.int.fromJSON(json.era)
             this._tokenId = json.tokenId == null ? undefined : marshal.bigint.fromJSON(json.tokenId)
-            this._state = marshal.string.fromJSON(json.state)
+            this._state = marshal.enumFromJson(json.state, PoolState)
         }
     }
 
@@ -78,12 +79,12 @@ export class NominationPoolsUnbonded {
         this._tokenId = value
     }
 
-    get state(): string {
+    get state(): PoolState {
         assert(this._state != null, 'uninitialized access')
         return this._state
     }
 
-    set state(value: string) {
+    set state(value: PoolState) {
         this._state = value
     }
 
