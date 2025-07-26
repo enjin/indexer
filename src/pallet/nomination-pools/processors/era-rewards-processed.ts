@@ -160,9 +160,8 @@ export async function eraRewardsProcessed(
             const era = eraRewards[i]
             ctx.log.info(`Era ${era.id} has apy: ${era.apy}`)
             if (
-                era.apy > 0 &&
-                ((i !== 0 && !discardEra(era.apy, previousCountedApy)) ||
-                    (i === 0 && !discardEra(era.apy, eraRewards[i + 1].apy)))
+                (i !== 0 && !discardEra(era.apy, previousCountedApy)) ||
+                (i === 0 && !discardEra(era.apy, eraRewards[i + 1].apy))
             ) {
                 ctx.log.info(`Adding era ${era.id} to the sum of rewards ${era.apy}`)
                 previousCountedApy = era.apy
