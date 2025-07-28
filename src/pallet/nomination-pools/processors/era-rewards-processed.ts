@@ -115,21 +115,6 @@ export async function eraRewardsProcessed(
         return undefined
     }
 
-    // Query for previous era rewards BEFORE inserting the new one to avoid race condition
-    const eraRewards = await ctx.store.find(EraReward, {
-        where: { pool: { id: pool.id } },
-        relations: {
-            era: true,
-        },
-        order: { era: { index: 'desc' } },
-        take: 14,
-    })
-
-    // Calculate changeInRate consistently: current rate - previous rate
-    // For first era, use 0 as baseline (no previous rate to compare against)
-    const changeInRate =
-        eraRewards.length > 0 ? Big(pool.rate.toString()).minus(Big(eraRewards[0].rate.toString())) : Big(0)
-
     const reward = new EraReward({
         id: `${data.poolId}-${data.era}`,
         era: new Era({ id: data.era.toString() }),
@@ -145,32 +130,43 @@ export async function eraRewardsProcessed(
         apy: 0,
         averageApy: 0,
         active: pool.balance.active,
-        changeInRate: BigInt(changeInRate.toString()),
+        changeInRate: 0n,
         reinvested: data.reinvested,
+    })
+    await ctx.store.insert(reward)
+    const eraRewards = await ctx.store.find(EraReward, {
+        where: { pool: { id: pool.id } },
+        relations: {
+            era: true,
+        },
+        order: { era: { index: 'desc' } },
+        take: 14,
     })
 
     let apy: Big.Big
 
-    if (eraRewards.length === 0) {
-        // First era for this pool
-        const rate = Big(pool.rate.toString())
+    if (eraRewards.length === 1) {
+        const rate = Big(eraRewards[0].rate.toString())
         const decimals = Big(10).pow(18)
+        const changeInRate = rate.minus(decimals)
         apy = rate.div(decimals).pow(processorConfig.erasPerYear).sub(1).mul(100)
+        reward.changeInRate = BigInt(changeInRate.toString())
         reward.apy = apy.toNumber()
     } else {
-        // Calculate APY based on balance change from previous era
-        const previousBalance = Big(eraRewards[0].active.toString())
+        const previousBalance = Big(eraRewards[1].active.toString())
         const newBalance = Big(reward.reinvested.toString()).plus(previousBalance)
 
         const currentApy = newBalance.div(previousBalance).pow(processorConfig.erasPerYear).sub(1).mul(100)
         reward.apy = currentApy.toNumber()
 
-        // take the average apy of the last n eras
-        const sumOfRewards = eraRewards.reduce((acc, era) => {
-            return acc + era.apy
-        }, 0)
-        // add the current apy to the sum because the current apy is not yet in the eraRewards
-        apy = new Big(sumOfRewards).plus(reward.apy).div(eraRewards.length + 1)
+        const lastRewards = Big(eraRewards[0].rate.toString())
+        const prevRewards = Big(eraRewards[1].rate.toString())
+        const changeInRate = lastRewards.minus(prevRewards)
+        reward.changeInRate = BigInt(changeInRate.toString())
+
+        const { sumOfRewards } = computeEraApy(eraRewards, reward)
+
+        apy = Big(sumOfRewards).div(eraRewards.length)
     }
 
     if (
@@ -229,8 +225,6 @@ export async function eraRewardsProcessed(
         member.accumulatedRewards += eraRewards
         return member
     })
-
-    await ctx.store.insert(reward)
 
     await Promise.all([ctx.store.insert(rewardPromise), ctx.store.save(pool), ctx.store.save(updatedMembers)])
 
