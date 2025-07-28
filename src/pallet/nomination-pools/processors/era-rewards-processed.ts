@@ -151,17 +151,9 @@ export async function eraRewardsProcessed(
         const changeInRate = lastRewards.minus(prevRewards)
         reward.changeInRate = BigInt(changeInRate.toString())
 
-        const { sumOfRewards, previousCountedApy } = computeEraApy(eraRewards, reward)
+        const { sumOfRewards } = computeEraApy(eraRewards, reward)
 
-        // add the current apy to the sum because the current apy is 0 in the eraRewards
-        let finalSumOfRewards = sumOfRewards
-        if (discardEra(reward.apy, previousCountedApy)) {
-            finalSumOfRewards += previousCountedApy
-        } else {
-            finalSumOfRewards += reward.apy
-        }
-
-        apy = Big(finalSumOfRewards).div(eraRewards.length)
+        apy = Big(sumOfRewards).div(eraRewards.length)
     }
 
     if (
