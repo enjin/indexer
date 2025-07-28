@@ -21,14 +21,24 @@ export async function computePoolOffers(job: Job, poolId: string): Promise<void>
                 type: StakeExchangeTokenFilterType.All,
             },
         },
+        relations: {
+            tokenFilter: true,
+        },
     })
 
-    for (const offer of offers) {
-        const poolsOffers = new PoolsOffers({
-            offer,
-            pool,
-        })
-        await em.save(poolsOffers)
+    const existingOffers: PoolsOffers[] = await em.find(PoolsOffers, {
+        where: { pool: { id: pool.id } },
+        relations: { offer: true },
+    })
+
+    const existingOfferIds = new Set(existingOffers.map(({ offer }: PoolsOffers): string => offer.id))
+
+    const newPoolsOffers: PoolsOffers[] = offers
+        .filter((offer: StakeExchangeOffer): boolean => !existingOfferIds.has(offer.id))
+        .map((offer: StakeExchangeOffer): PoolsOffers => new PoolsOffers({ pool, offer }))
+
+    if (newPoolsOffers.length > 0) {
+        await em.save(newPoolsOffers)
     }
 
     await job.log(`Created ${offers} offers for pool ${poolId}`)
