@@ -13,6 +13,7 @@ export default tseslint.config(
             '.idea/',
             '.husky/',
             '.nx/',
+            '.playground/',
             'node_modules/',
             'lib/',
             'db/',
