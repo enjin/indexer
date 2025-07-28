@@ -221,8 +221,7 @@ export async function eraRewardsProcessed(
             member.accumulatedRewards = 0n
         }
         const points = memberBalances[member.account.id] ?? 0n
-        const eraRewards = (points * reward.changeInRate) / 10n ** 18n
-        member.accumulatedRewards += eraRewards
+        member.accumulatedRewards += (points * reward.changeInRate) / 10n ** 18n
         return member
     })
 
