@@ -50,26 +50,7 @@ async function savePoolsOffersForStakeExchange(
     ctx: CommonContext,
     offer: StakeExchangeOffer
 ): Promise<void> {
-    if (event.offer.tokenFilter?.__kind === StakeExchangeTokenFilterType.Whitelist) {
-        for (const value of event.offer.tokenFilter.value) {
-            const pool: NominationPool | undefined = await ctx.store.findOne(NominationPool, {
-                where: {
-                    id: value.toString(),
-                    state: PoolState.Open,
-                },
-            })
-
-            if (pool) {
-                const poolsOffers = new PoolsOffers({
-                    offer,
-                    pool,
-                })
-                await ctx.store.save(poolsOffers)
-            }
-        }
-    } else if (event.offer.tokenFilter?.__kind === StakeExchangeTokenFilterType.All) {
-        const pools: NominationPool[] = await ctx.store.find(NominationPool, { where: { state: PoolState.Open } })
-
+    async function savePoolsOfferIntoPivotTable(pools: NominationPool[]): Promise<void> {
         for (const pool of pools) {
             const poolsOffers = new PoolsOffers({
                 offer,
@@ -77,6 +58,21 @@ async function savePoolsOffersForStakeExchange(
             })
             await ctx.store.save(poolsOffers)
         }
+    }
+
+    if (event.offer.tokenFilter?.__kind === StakeExchangeTokenFilterType.Whitelist) {
+        const pools: NominationPool[] = await ctx.store.find(NominationPool, {
+            where: {
+                state: PoolState.Open,
+                id: In(event.offer.tokenFilter.value),
+            },
+        })
+
+        await savePoolsOfferIntoPivotTable(pools)
+    } else if (event.offer.tokenFilter?.__kind === StakeExchangeTokenFilterType.All) {
+        const pools: NominationPool[] = await ctx.store.find(NominationPool, { where: { state: PoolState.Open } })
+
+        await savePoolsOfferIntoPivotTable(pools)
     } else if (event.offer.tokenFilter?.__kind === StakeExchangeTokenFilterType.BlockList) {
         const pools: NominationPool[] = await ctx.store.find(NominationPool, {
             where: {
@@ -85,13 +81,7 @@ async function savePoolsOffersForStakeExchange(
             },
         })
 
-        for (const pool of pools) {
-            const poolsOffers = new PoolsOffers({
-                offer,
-                pool,
-            })
-            await ctx.store.save(poolsOffers)
-        }
+        await savePoolsOfferIntoPivotTable(pools)
     }
 }
 
