@@ -1,6 +1,7 @@
-import { NominationPool, PoolMember } from '~/model'
+import { NominationPool } from '~/model'
 import { dataHandlerContext } from '~/contexts'
 import { Job } from 'bullmq'
+import { computeEraApy } from '~/pallet/nomination-pools/processors'
 
 export async function computePoolRewards(_job: Job, id?: string): Promise<void> {
     const ctx = await dataHandlerContext()
@@ -8,12 +9,14 @@ export async function computePoolRewards(_job: Job, id?: string): Promise<void> 
     const pool = await ctx.store.findOne(NominationPool, {
         where: { id },
         relations: {
-            eraRewards: true,
+            eraRewards: {
+                era: true,
+            },
         },
         order: {
             eraRewards: {
                 era: {
-                    index: 'ASC',
+                    index: 'DESC',
                 },
             },
         },
@@ -28,6 +31,13 @@ export async function computePoolRewards(_job: Job, id?: string): Promise<void> 
     }, 0n)
 
     pool.accumulatedCommission = totalRewards
+
+    const eraRewards = pool.eraRewards.slice(0, 15)
+
+    const { sumOfRewards } = computeEraApy(eraRewards, eraRewards[0])
+
+    pool.apy = sumOfRewards / (eraRewards.length < 15 ? eraRewards.length : 15)
+
     await ctx.store.save(pool)
 
     await _job.log(`Computed rewards for ${pool.id}`)

@@ -151,12 +151,9 @@ export async function eraRewardsProcessed(
         const changeInRate = lastRewards.minus(prevRewards)
         reward.changeInRate = BigInt(changeInRate.toString())
 
-        // take the average apy of the last n eras
-        const sumOfRewards = eraRewards.reduce((acc, era) => {
-            return acc + era.apy
-        }, 0)
-        // add the current apy to the sum because the current apy is 0 in the eraRewards
-        apy = new Big(sumOfRewards).plus(reward.apy).div(eraRewards.length)
+        const { sumOfRewards } = computeEraApy(eraRewards, reward)
+
+        apy = Big(sumOfRewards).div(eraRewards.length)
     }
 
     if (
@@ -226,4 +223,33 @@ export async function eraRewardsProcessed(
     })
 
     return mappings.nominationPools.events.eraRewardsProcessedEventModel(item, data, pool.rate)
+}
+
+export const discardEra = (apy: number, previousEraApy: number) => {
+    const apyDifferencePercent = Math.abs((apy - previousEraApy) / previousEraApy) * 100
+    return apyDifferencePercent >= 50
+}
+
+export const computeEraApy = (
+    eraRewards: EraReward[],
+    reward: EraReward
+): { sumOfRewards: number; previousCountedApy: number } => {
+    let sumOfRewards = 0
+    let previousCountedApy = 0
+
+    for (let i = 0; i < eraRewards.length; i++) {
+        const era = eraRewards[i]
+
+        const currentApy = i === 0 ? reward.apy : era.apy
+        const previousApy = i === 0 ? eraRewards[i + 1].apy : previousCountedApy
+
+        if (!discardEra(currentApy, previousApy)) {
+            previousCountedApy = currentApy
+            sumOfRewards += currentApy
+        } else {
+            sumOfRewards += previousCountedApy
+        }
+    }
+
+    return { sumOfRewards, previousCountedApy }
 }
