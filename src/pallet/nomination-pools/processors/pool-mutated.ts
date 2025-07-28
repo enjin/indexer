@@ -66,8 +66,11 @@ export async function poolMutated(ctx: CommonContext, block: Block, item: EventI
     }
 
     if ('name' in data.mutation) {
-        pool.name = hexToString(data.mutation.name as string)
-        mutation.name = pool.name
+        const name = hexToString(data.mutation.name as string)
+        if (name.length > 0) {
+            pool.name = name
+            mutation.name = name
+        }
     }
 
     await ctx.store.save(pool)
