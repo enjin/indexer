@@ -21,7 +21,7 @@ export async function tokenAccountCreated(
 ): Promise<EventModel | undefined> {
     const data = mappings.multiTokens.events.tokenAccountCreated(item)
 
-    if (skipSave) {
+    if (skipSave && data.collectionId.toString() != '1') {
         const tokenAccount = await ctx.store.findOne(TokenAccount, {
             where: { id: `${data.accountId}-${data.collectionId}-${data.tokenId}` },
         })

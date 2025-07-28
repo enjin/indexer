@@ -16,6 +16,65 @@ import { isNonFungible } from '~/util/helpers'
 import { QueueUtils } from '~/queue'
 import { calls } from '~/type'
 
+async function processEarlyBirdBonus(
+    ctx: CommonContext,
+    data: { collectionId: bigint; tokenId: bigint; recipient: string; amount: bigint },
+    item: EventItem
+): Promise<void> {
+    // Find the pool member associated with this sENJ token
+    ctx.log.info(
+        `Processing early bird bonus for ${data.recipient} with tokenId ${data.tokenId} in block ${item.block.height} in extrinsic ${item.extrinsic?.call?.name}`
+    )
+    const poolMember = await ctx.store.findOneBy<PoolMember>(PoolMember, {
+        id: `${data.tokenId}-${data.recipient}`,
+    })
+
+    if (poolMember) {
+        // Find the most recent PoolMemberRewards for this member
+        // Use a simpler approach to get the latest reward record
+        const recentReward = await ctx.store.findOne(PoolMemberRewards, {
+            where: {
+                member: { id: poolMember.id },
+            },
+            relations: {
+                reward: {
+                    era: true,
+                },
+            },
+            order: {
+                reward: {
+                    era: {
+                        index: 'DESC',
+                    },
+                },
+            },
+        })
+
+        if (recentReward) {
+            recentReward.earlyBirdReward += data.amount
+            recentReward.accumulatedRewards += data.amount
+            poolMember.accumulatedRewards = (poolMember.accumulatedRewards ?? 0n) + data.amount
+
+            await ctx.store.save(recentReward)
+            await ctx.store.save(poolMember)
+        } else {
+            ctx.log.info(
+                `No recent reward found for member ${poolMember.id} in block ${item.block.height} in extrinsic ${item.extrinsic?.call?.name}`
+            )
+        }
+    } else {
+        throw new Error(`No pool member found for ${data.recipient} with tokenId ${data.tokenId}`)
+    }
+}
+
+function isEarlyBirdBonus(item: EventItem): boolean {
+    return !!(
+        item.extrinsic?.call?.subcalls &&
+        item.extrinsic?.call?.subcalls?.length > 0 &&
+        item.extrinsic?.call?.subcalls?.every((subcall) => subcall.name == calls.nominationPools.payEarlyBirdBonus.name)
+    )
+}
+
 export async function minted(
     ctx: CommonContext,
     block: Block,
@@ -25,6 +84,11 @@ export async function minted(
     const data = mappings.multiTokens.events.minted(item)
     const issuer = await getOrCreateAccount(ctx, data.issuer)
     const recipient = await getOrCreateAccount(ctx, data.recipient)
+
+    // Process early bird bonus detection BEFORE any early returns
+    if (isEarlyBirdBonus(item)) {
+        await processEarlyBirdBonus(ctx, data, item)
+    }
 
     const token = await ctx.store.findOne(Token, {
         where: { id: `${data.collectionId}-${data.tokenId}` },
@@ -69,7 +133,6 @@ export async function minted(
     await ctx.store.save(tokenAccount)
 
     if (data.collectionId === 1n) {
-        // This means the user got sENJ in that case we should associate the tokenAccount to PoolMember again if it is not
         const poolMember = await ctx.store.findOneBy<PoolMember>(PoolMember, {
             id: `${data.tokenId}-${data.recipient}`,
         })
@@ -77,33 +140,6 @@ export async function minted(
             ctx.log.debug(`Adding tokenAccount ${tokenAccount.id} to poolMember ${poolMember.id}.`)
             poolMember.tokenAccount = tokenAccount
             await ctx.store.save(poolMember)
-
-            // Check if this mint is part of an early bird bonus payment extrinsic
-            if (
-                item.extrinsic &&
-                item.extrinsic.call &&
-                item.extrinsic.call.name === calls.nominationPools.payEarlyBirdBonus.name
-            ) {
-                ctx.log.debug(`Early bird bonus payment detected for member ${poolMember.id}, amount: ${data.amount}`)
-
-                // Find the most recent PoolMemberRewards for this member to update the earlyBirdReward field
-                const recentReward = await ctx.store.findOne(PoolMemberRewards, {
-                    where: {
-                        member: { id: poolMember.id },
-                    },
-                    order: { reward: { era: { index: 'DESC' } } },
-                })
-
-                if (recentReward) {
-                    recentReward.earlyBirdReward += data.amount
-                    recentReward.accumulatedRewards += data.amount
-                    poolMember.accumulatedRewards = (poolMember.accumulatedRewards ?? 0n) + data.amount
-
-                    await ctx.store.save(recentReward)
-                    await ctx.store.save(poolMember)
-                    ctx.log.debug(`Updated earlyBirdReward for member ${poolMember.id} in ${recentReward.id}`)
-                }
-            }
         }
     }
 

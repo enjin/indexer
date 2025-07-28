@@ -31,6 +31,7 @@ export async function bonded(ctx: CommonContext, block: Block, item: EventItem):
         getActiveEra(ctx),
     ])
 
+    //TODO: do we need this? tokenAccountCreated should be created before this
     if (!tAExist) {
         if (!tokenExist) {
             const token = new Token({
