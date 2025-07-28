@@ -1120,7 +1120,7 @@ type StakeExchangeOfferCreated {
   rate: BigInt!
   minAverageCommission: Int! @deprecated
   minAverageRewardRate: BigInt!
-  tokenFilter: StakeExchangeTokenFilter 
+  tokenFilter: StakeExchangeTokenFilter
 }
 
 type StakeExchangeOfferCancelled {
@@ -1322,7 +1322,7 @@ type PoolMemberRewards @entity {
   points: BigInt!
   accumulatedRewards: BigInt!
   rewards: BigInt!
-  earlyBirdReward: BigInt!
+  earlyBirdRewards: BigInt!
 }
 
 type Validator @entity {

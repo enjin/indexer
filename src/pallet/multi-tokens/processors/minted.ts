@@ -51,17 +51,17 @@ async function processEarlyBirdBonus(
         })
 
         if (recentReward) {
-            recentReward.earlyBirdReward += data.amount
+            recentReward.earlyBirdRewards += data.amount
             recentReward.accumulatedRewards += data.amount
-            poolMember.accumulatedRewards = (poolMember.accumulatedRewards ?? 0n) + data.amount
-
             await ctx.store.save(recentReward)
-            await ctx.store.save(poolMember)
         } else {
             ctx.log.info(
                 `No recent reward found for member ${poolMember.id} in block ${item.block.height} in extrinsic ${item.extrinsic?.call?.name}`
             )
         }
+        // We also increase the accumualted rewards so we can easily fetch all rewards an user received in a single field
+        poolMember.accumulatedRewards = (poolMember.accumulatedRewards ?? 0n) + data.amount
+        await ctx.store.save(poolMember)
     } else {
         throw new Error(`No pool member found for ${data.recipient} with tokenId ${data.tokenId}`)
     }

@@ -212,7 +212,7 @@ export async function eraRewardsProcessed(
             points,
             accumulatedRewards: newAccumulated,
             rewards: eraRewards,
-            earlyBirdReward: 0n, // Will be updated in the minted processor
+            earlyBirdRewards: 0n, // Will be updated in the minted processor
         })
     })
 

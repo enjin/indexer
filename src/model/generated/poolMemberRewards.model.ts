@@ -34,5 +34,5 @@ export class PoolMemberRewards {
     rewards!: bigint
 
     @BigIntColumn_({nullable: false})
-    earlyBirdReward!: bigint
+    earlyBirdRewards!: bigint
 }
