@@ -2,7 +2,7 @@ import { nominationPools } from '~/type/events'
 import { EventItem } from '~/contexts'
 import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
-import { Event as EventModel, Extrinsic, NominationPoolsPoolMutated } from '~/model'
+import { Event as EventModel, Extrinsic, NominationPool, NominationPoolsPoolMutated } from '~/model'
 import { PoolMutated } from '~/pallet/nomination-pools/events/types'
 import { hexToString } from '@polkadot/util'
 
@@ -42,7 +42,11 @@ export function poolMutated(event: EventItem): PoolMutated {
         })
 }
 
-export function poolMutatedEventModel(item: EventItem, data: PoolMutated): EventModel | undefined {
+export function poolMutatedEventModel(
+    item: EventItem,
+    data: PoolMutated,
+    pool: NominationPool
+): EventModel | undefined {
     const mutation: Record<string, string | number | undefined> = {}
     if (
         data.mutation.newCommission !== undefined &&
@@ -69,6 +73,7 @@ export function poolMutatedEventModel(item: EventItem, data: PoolMutated): Event
         data: new NominationPoolsPoolMutated({
             pool: data.poolId.toString(),
             mutation,
+            state: pool.state,
         }),
     })
 }
