@@ -56,21 +56,17 @@ export async function buyOrderCompleted(
     if (!existingMember) {
         throw new Error(`Member not found for token ${event.tokenId} and account ${account.id}`)
     }
-    // if (!pool && !existingMember) {
-    //     return mappings.stakeExchange.events.buyOrderCompletedEventModel(item, event, offerId, undefined)
-    // }
 
     if (!pool) {
         throw new Error(`Pool not found for token ${event.tokenId}`)
     }
 
-    if (existingMember && existingMember.tokenAccount) {
+    if (existingMember.tokenAccount) {
         existingMember.bonded -= event.amount
         await ctx.store.save(existingMember)
     }
 
     if (
-        existingMember &&
         existingMember.unbondingEras === null &&
         (!existingMember.tokenAccount || existingMember.tokenAccount.balance <= 0n)
     ) {

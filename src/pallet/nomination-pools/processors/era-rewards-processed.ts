@@ -29,19 +29,19 @@ async function getMembersBalance(block: Block, poolId: number): Promise<Record<s
 
     // Check if a result exists and is an array or iterable
     // Check if result is an async generator
-    if (result && Symbol.asyncIterator in result) {
+    if (Symbol.asyncIterator in result) {
         for await (const batch of result as AsyncIterable<StorageEntry[]>) {
             for (const storageEntry of batch) {
-                if (storageEntry?.[0]?.[2]) {
+                if (storageEntry[0][2]) {
                     const [[, , accountId], tokenAccount] = storageEntry
                     accountMap[accountId] = BigInt(tokenAccount?.balance || 0)
                 }
             }
         }
-    } else if (result && Symbol.iterator in result) {
+    } else if (Symbol.iterator in result) {
         // Check if a result exists and is a sync iterable
         for (const storageEntry of result as StorageEntry[]) {
-            if (storageEntry?.[0]?.[2]) {
+            if (storageEntry[0][2]) {
                 const [[, , accountId], tokenAccount] = storageEntry
                 accountMap[accountId] = BigInt(tokenAccount?.balance || 0)
             }

@@ -70,8 +70,8 @@ async function processEarlyBirdBonus(
 function isEarlyBirdBonus(item: EventItem): boolean {
     return !!(
         item.extrinsic?.call?.subcalls &&
-        item.extrinsic?.call?.subcalls?.length > 0 &&
-        item.extrinsic?.call?.subcalls?.every((subcall) => subcall.name == calls.nominationPools.payEarlyBirdBonus.name)
+        item.extrinsic.call.subcalls.length > 0 &&
+        item.extrinsic.call.subcalls.every((subcall) => subcall.name == calls.nominationPools.payEarlyBirdBonus.name)
     )
 }
 
