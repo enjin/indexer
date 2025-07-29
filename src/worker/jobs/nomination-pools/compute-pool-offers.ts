@@ -35,7 +35,7 @@ export async function computePoolOffers(job: Job, poolId: string): Promise<void>
 
     const newPoolsOffers: PoolsOffers[] = offers
         .filter((offer: StakeExchangeOffer): boolean => !existingOfferIds.has(offer.id))
-        .map((offer: StakeExchangeOffer): PoolsOffers => new PoolsOffers({ pool, offer }))
+        .map((offer: StakeExchangeOffer): PoolsOffers => new PoolsOffers({ id: `${pool.id}-${offer.id}`, pool, offer }))
 
     if (newPoolsOffers.length > 0) {
         await em.save(newPoolsOffers)

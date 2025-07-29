@@ -52,10 +52,7 @@ async function savePoolsOffersForStakeExchange(
 ): Promise<void> {
     async function savePoolsOfferIntoPivotTable(pools: NominationPool[]): Promise<void> {
         for (const pool of pools) {
-            const poolsOffers = new PoolsOffers({
-                offer,
-                pool,
-            })
+            const poolsOffers = new PoolsOffers({ id: `${pool.id}-${offer.id}`, offer, pool })
             await ctx.store.save(poolsOffers)
         }
     }
