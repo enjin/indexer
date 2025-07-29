@@ -5,7 +5,6 @@ import {
     Event as EventModel,
     NominationPool,
     PoolMember,
-    PoolState,
     StakeExchangeOffer,
     TokenAccount,
 } from '~/model'
@@ -67,13 +66,7 @@ export async function buyOrderCompleted(
     })
 
     if (!pool && !existingMember) {
-        return mappings.stakeExchange.events.buyOrderCompletedEventModel(
-            item,
-            event,
-            offerId,
-            undefined,
-            PoolState.Open
-        )
+        return mappings.stakeExchange.events.buyOrderCompletedEventModel(item, event, offerId, undefined)
     }
 
     if (!pool) {
@@ -149,5 +142,5 @@ export async function buyOrderCompleted(
         },
     })
 
-    return mappings.stakeExchange.events.buyOrderCompletedEventModel(item, event, offerId, pool.id, pool.state)
+    return mappings.stakeExchange.events.buyOrderCompletedEventModel(item, event, offerId, pool.id)
 }

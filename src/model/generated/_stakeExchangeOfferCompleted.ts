@@ -2,7 +2,6 @@ import assert from "assert"
 import * as marshal from "./marshal"
 import {Account} from "./account.model"
 import {StakeExchangeTokenFilter} from "./stakeExchangeTokenFilter.model"
-import {PoolState} from "./_poolState"
 
 export class StakeExchangeOfferCompleted {
     public readonly isTypeOf = 'StakeExchangeOfferCompleted'
@@ -10,7 +9,6 @@ export class StakeExchangeOfferCompleted {
     private _account!: string
     private _tokenFilter!: string | undefined | null
     private _amount!: bigint
-    private _state!: PoolState
 
     constructor(props?: Partial<Omit<StakeExchangeOfferCompleted, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
@@ -19,7 +17,6 @@ export class StakeExchangeOfferCompleted {
             this._account = marshal.string.fromJSON(json.account)
             this._tokenFilter = json.tokenFilter == null ? undefined : marshal.string.fromJSON(json.tokenFilter)
             this._amount = marshal.bigint.fromJSON(json.amount)
-            this._state = marshal.enumFromJson(json.state, PoolState)
         }
     }
 
@@ -58,15 +55,6 @@ export class StakeExchangeOfferCompleted {
         this._amount = value
     }
 
-    get state(): PoolState {
-        assert(this._state != null, 'uninitialized access')
-        return this._state
-    }
-
-    set state(value: PoolState) {
-        this._state = value
-    }
-
     toJSON(): object {
         return {
             isTypeOf: this.isTypeOf,
@@ -74,7 +62,6 @@ export class StakeExchangeOfferCompleted {
             account: this.account,
             tokenFilter: this.tokenFilter,
             amount: marshal.bigint.toJSON(this.amount),
-            state: this.state,
         }
     }
 }

@@ -2,7 +2,7 @@ import { stakeExchange } from '~/type/events'
 import { EventItem } from '~/contexts'
 import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
-import { Event as EventModel, Extrinsic, PoolState, StakeExchangeBuyOrderCompleted } from '~/model'
+import { Event as EventModel, Extrinsic, StakeExchangeBuyOrderCompleted } from '~/model'
 import { BuyOrderCompleted } from '~/pallet/stake-exchange/events/types'
 
 export function buyOrderCompleted(event: EventItem): BuyOrderCompleted {
@@ -49,8 +49,7 @@ export function buyOrderCompletedEventModel(
     item: EventItem,
     data: BuyOrderCompleted,
     offerId: bigint,
-    poolId: string | undefined,
-    poolState: PoolState
+    poolId: string | undefined
 ): EventModel | undefined {
     const rate: bigint = typeof data.rate === 'bigint' ? data.rate : BigInt(data.rate * 10 ** 9)
 
@@ -66,7 +65,6 @@ export function buyOrderCompletedEventModel(
             rate,
             points: (data.amount * rate) / 10n ** 18n,
             pool: poolId,
-            state: poolState,
         }),
     })
 }

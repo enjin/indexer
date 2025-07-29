@@ -1121,7 +1121,6 @@ type StakeExchangeOfferCreated {
   minAverageCommission: Int! @deprecated
   minAverageRewardRate: BigInt!
   tokenFilter: StakeExchangeTokenFilter
-  state: PoolState!
 }
 
 type StakeExchangeOfferCancelled {
@@ -1129,7 +1128,6 @@ type StakeExchangeOfferCancelled {
   total: BigInt!
   account: Account
   tokenFilter: StakeExchangeTokenFilter
-  state: PoolState!
 }
 
 type StakeExchangeLiquidityWithdrawn {
@@ -1157,7 +1155,6 @@ type StakeExchangeBuyOrderCompleted {
   rate: BigInt!
   points: BigInt!
   pool: String!
-  state: PoolState!
 }
 
 type StakeExchangeOfferCompleted {
@@ -1165,7 +1162,6 @@ type StakeExchangeOfferCompleted {
   account: Account!
   tokenFilter: StakeExchangeTokenFilter
   amount: BigInt!
-  state: PoolState!
 }
 
 type NominationPoolsCreated {
