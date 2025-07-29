@@ -20,7 +20,7 @@ export async function transferred(
         where: { id: `${data.collectionId}-${data.tokenId}` },
         relations: { collection: true },
     })
-    if ((skipSave || !token) && data.collectionId.toString() !== '1') {
+    if ((skipSave || !token) && data.collectionId.toString() != '1') {
         return mappings.multiTokens.events.transferredEventModel(
             item,
             data,
