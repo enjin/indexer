@@ -34,9 +34,7 @@ export async function computePoolRewards(_job: Job, id?: string): Promise<void> 
 
     const eraRewards = pool.eraRewards.slice(0, 15)
 
-    const { sumOfRewards } = computeEraApy(eraRewards, eraRewards[0])
-
-    pool.apy = sumOfRewards / (eraRewards.length < 15 ? eraRewards.length : 15)
+    pool.apy = computeEraApy(eraRewards, null).toNumber()
 
     await ctx.store.save(pool)
 
