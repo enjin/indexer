@@ -1,8 +1,19 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { Era, Event as EventModel, NominationPool, PoolMember, StakeExchangeOffer, TokenAccount } from '~/model'
+import {
+    Account,
+    Era,
+    Event as EventModel,
+    NominationPool,
+    PoolMember,
+    PoolState,
+    StakeExchangeOffer,
+    TokenAccount,
+} from '~/model'
 import { getOrCreateAccount } from '~/util/entities'
 import { Sns } from '~/util/sns'
 import * as mappings from '~/pallet/index'
+import { BuyOrderCompleted } from '~/pallet/stake-exchange/events/types'
+import { Buy } from '~/pallet/stake-exchange/calls'
 
 function getActiveEra(ctx: CommonContext) {
     return ctx.store.find(Era, {
@@ -20,20 +31,20 @@ export async function buyOrderCompleted(
 ): Promise<EventModel | undefined> {
     if (!item.extrinsic || !item.extrinsic.call) return undefined
 
-    const event = mappings.stakeExchange.events.buyOrderCompleted(item)
-    let offerId = 'offerId' in event ? (event.offerId as bigint) : null
+    const event: BuyOrderCompleted = mappings.stakeExchange.events.buyOrderCompleted(item)
+    let offerId: bigint | null = 'offerId' in event ? (event.offerId as bigint) : null
 
     if (offerId === null) {
-        const callData = mappings.stakeExchange.utils.anyBuy(item.extrinsic.call, event.tokenId, event.amount)
+        const callData: Buy = mappings.stakeExchange.utils.anyBuy(item.extrinsic.call, event.tokenId, event.amount)
         offerId = callData.offerId
     }
 
     // change in rate from bigint to number (perBill) in v120
-    const rate = typeof event.rate === 'bigint' ? event.rate : BigInt(event.rate * 10 ** 9)
-    const points = (event.amount * rate) / 10n ** 18n
-    const account = await getOrCreateAccount(ctx, event.who)
+    const rate: bigint = typeof event.rate === 'bigint' ? event.rate : BigInt(event.rate * 10 ** 9)
+    const points: bigint = (event.amount * rate) / 10n ** 18n
+    const account: Account = await getOrCreateAccount(ctx, event.who)
 
-    const offer = await ctx.store.findOneOrFail<StakeExchangeOffer>(StakeExchangeOffer, {
+    const offer: StakeExchangeOffer = await ctx.store.findOneOrFail<StakeExchangeOffer>(StakeExchangeOffer, {
         where: { id: offerId.toString() },
         relations: {
             account: true,
@@ -43,9 +54,11 @@ export async function buyOrderCompleted(
 
     await ctx.store.save(offer)
 
-    const pool = await ctx.store.findOneBy<NominationPool>(NominationPool, { id: event.tokenId.toString() })
+    const pool: NominationPool | undefined = await ctx.store.findOneBy<NominationPool>(NominationPool, {
+        id: event.tokenId.toString(),
+    })
 
-    const existingMember = await ctx.store.findOne<PoolMember>(PoolMember, {
+    const existingMember: PoolMember | undefined = await ctx.store.findOne<PoolMember>(PoolMember, {
         where: { id: `${event.tokenId}-${account.id}` },
         relations: {
             account: true,
@@ -54,7 +67,13 @@ export async function buyOrderCompleted(
     })
 
     if (!pool && !existingMember) {
-        return mappings.stakeExchange.events.buyOrderCompletedEventModel(item, event, offerId, undefined)
+        return mappings.stakeExchange.events.buyOrderCompletedEventModel(
+            item,
+            event,
+            offerId,
+            undefined,
+            PoolState.Open
+        )
     }
 
     if (!pool) {
@@ -78,12 +97,14 @@ export async function buyOrderCompleted(
         await ctx.store.save(poolMember)
     }
 
-    let newMember = await ctx.store.findOneBy<PoolMember>(PoolMember, { id: `${event.tokenId}-${offer.account.id}` })
+    let newMember: PoolMember | undefined = await ctx.store.findOneBy<PoolMember>(PoolMember, {
+        id: `${event.tokenId}-${offer.account.id}`,
+    })
 
-    const bonded = event.amount
+    const bonded: bigint = event.amount
 
     if (!newMember) {
-        const tokenAccount = await ctx.store.findOneBy<TokenAccount>(TokenAccount, {
+        const tokenAccount: TokenAccount | undefined = await ctx.store.findOneBy<TokenAccount>(TokenAccount, {
             id: `${offer.account.id}-1-${event.tokenId}`,
         })
 
@@ -128,5 +149,5 @@ export async function buyOrderCompleted(
         },
     })
 
-    return mappings.stakeExchange.events.buyOrderCompletedEventModel(item, event, offerId, pool.id)
+    return mappings.stakeExchange.events.buyOrderCompletedEventModel(item, event, offerId, pool.id, pool.state)
 }
