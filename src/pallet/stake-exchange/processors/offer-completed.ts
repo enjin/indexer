@@ -10,13 +10,16 @@ export async function offerCompleted(
     item: EventItem
 ): Promise<EventModel | undefined> {
     const event: OfferCompleted = mappings.stakeExchange.events.offerCompleted(item)
-    const stakeExchangeOffer: StakeExchangeOffer = await ctx.store.findOneOrFail<StakeExchangeOffer>(StakeExchangeOffer, {
-        where: { id: event.offerId.toString() },
-        relations: {
-            tokenFilter: true,
-            account: true,
-        },
-    })
+    const stakeExchangeOffer: StakeExchangeOffer = await ctx.store.findOneOrFail<StakeExchangeOffer>(
+        StakeExchangeOffer,
+        {
+            where: { id: event.offerId.toString() },
+            relations: {
+                tokenFilter: true,
+                account: true,
+            },
+        }
+    )
 
     stakeExchangeOffer.state = StakeExchangeOfferState.Completed
 
