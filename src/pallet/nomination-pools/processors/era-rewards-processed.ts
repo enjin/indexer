@@ -256,7 +256,7 @@ export const computeEraApy = (eraRewards: EraReward[], reward: EraReward | undef
         eraRewards.unshift(reward)
     }
 
-    let { sumOfApy } = eraRewards.reduce(
+    const { sumOfApy } = eraRewards.reduce(
         (acc, era, i) => {
             if (discardEra(era.apy, acc.previousValidApy) && i > 0) {
                 return {
