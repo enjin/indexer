@@ -32,7 +32,7 @@ async function getMembersBalance(block: Block, poolId: number): Promise<Record<s
     if (Symbol.asyncIterator in result) {
         for await (const batch of result as AsyncIterable<StorageEntry[]>) {
             for (const storageEntry of batch) {
-                if (storageEntry[0][2]) {
+                if (storageEntry[0][2] && storageEntry[0][1] == BigInt(poolId) && storageEntry[0][0] == 1n) {
                     const [[, , accountId], tokenAccount] = storageEntry
                     accountMap[accountId] = BigInt(tokenAccount?.balance || 0)
                 }
@@ -41,7 +41,7 @@ async function getMembersBalance(block: Block, poolId: number): Promise<Record<s
     } else if (Symbol.iterator in result) {
         // Check if a result exists and is a sync iterable
         for (const storageEntry of result as StorageEntry[]) {
-            if (storageEntry[0][2]) {
+            if (storageEntry[0][2] && storageEntry[0][1] == BigInt(poolId) && storageEntry[0][0] == 1n) {
                 const [[, , accountId], tokenAccount] = storageEntry
                 accountMap[accountId] = BigInt(tokenAccount?.balance || 0)
             }
@@ -227,6 +227,7 @@ export async function eraRewardsProcessed(
     })
 
     await ctx.store.insert(reward)
+
     await Promise.all([ctx.store.insert(rewardPromise), ctx.store.save(pool), ctx.store.save(updatedMembers)])
 
     await Sns.getInstance().send({
