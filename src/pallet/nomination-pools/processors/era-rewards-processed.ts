@@ -191,9 +191,11 @@ export async function eraRewardsProcessed(
         where: { pool: { id: pool.id }, isActive: true },
     })
 
+    const totalPoolPoints = (pool.balance.active * 10n ** 18n) / pool.rate
+
     const poolMemberRewards = members.map((member) => {
         const points = memberBalances[member.account.id] ?? 0n
-        const eraRewards = (points * reward.changeInRate) / 10n ** 18n
+        const eraRewards = (points * data.reinvested) / totalPoolPoints
         const newAccumulated = (member.accumulatedRewards || 0n) + eraRewards
 
         member.accumulatedRewards = newAccumulated
