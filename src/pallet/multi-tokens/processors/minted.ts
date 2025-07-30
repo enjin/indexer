@@ -18,31 +18,36 @@ import { isNonFungible } from '~/util/helpers'
 import { QueueUtils } from '~/queue'
 import { calls } from '~/type'
 
+export async function getActiveEra(ctx: CommonContext) {
+    const eras = await ctx.store.find(Era, {
+        order: {
+            index: 'DESC',
+        },
+        take: 1,
+    })
+
+    if (eras.length === 0) {
+        throw new Error('No active era found')
+    }
+
+    return eras[0]
+}
+
 async function processEarlyBirdBonus(
     ctx: CommonContext,
     data: { collectionId: bigint; tokenId: bigint; recipient: string; amount: bigint },
     item: EventItem
 ): Promise<void> {
-    // Validate this is for sENJ tokens (collectionId = 1)
     if (data.collectionId !== 1n) {
         return
     }
-
-    // Find the pool member associated with this sENJ token
     const poolMember = await ctx.store.findOneByOrFail<PoolMember>(PoolMember, {
         id: `${data.tokenId}-${data.recipient}`,
     })
-
     const pool = await ctx.store.findOneByOrFail(NominationPool, {
         id: data.tokenId.toString(),
     })
-
-    // Find or create the Era entity
-    const era = await ctx.store.findOneOrFail(Era, {
-        order: {
-            index: 'DESC',
-        },
-    })
+    const era = await getActiveEra(ctx)
 
     // Calculate the reward based on the pool rate
     const reward = (data.amount * pool.rate) / 10n ** 18n
@@ -55,7 +60,8 @@ async function processEarlyBirdBonus(
         era: era,
         amount: data.amount,
         reward: reward,
-        event: new EventModel({ id: item.id }),
+        eventId: item.id,
+        extrinsicId: item.extrinsic?.id,
     })
 
     // Update accumulated rewards
