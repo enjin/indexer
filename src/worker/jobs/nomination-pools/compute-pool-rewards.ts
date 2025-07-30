@@ -26,6 +26,14 @@ export async function computePoolRewards(_job: Job, id?: string): Promise<void> 
         throw new Error(`Pool not found: ${id}`)
     }
 
+    if (pool.eraRewards.length === 0) {
+        pool.apy = 0
+        pool.accumulatedCommission = 0n
+        await ctx.store.save(pool)
+
+        return
+    }
+
     const totalRewards = pool.eraRewards.reduce((acc, reward) => {
         return acc + (reward.commission?.amount ?? 0n)
     }, 0n)
