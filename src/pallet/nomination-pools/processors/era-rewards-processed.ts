@@ -126,7 +126,7 @@ export async function eraRewardsProcessed(
     })
 
     // Calculate changeInRate consistently: current rate - previous rate
-    // For first era, use 0 as baseline (no previous rate to compare against)
+    // For first era, use 1 as baseline (no previous rate to compare against)
     const changeInRate =
         eraRewards.length > 0
             ? Big(pool.rate.toString()).minus(Big(eraRewards[0].rate.toString()))
@@ -191,19 +191,12 @@ export async function eraRewardsProcessed(
         where: { pool: { id: pool.id }, isActive: true },
     })
 
-    const rewardPromise = members.map((member) => {
-        let points = 0n
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-        if (memberBalances[member.account.id] !== undefined) {
-            points = memberBalances[member.account.id]
-        }
-
-        // Calculate this era's rewards for the member
+    const poolMemberRewards = members.map((member) => {
+        const points = memberBalances[member.account.id] ?? 0n
         const eraRewards = (points * reward.changeInRate) / 10n ** 18n
+        const newAccumulated = (member.accumulatedRewards || 0n) + eraRewards
 
-        // Calculate accumulated rewards (current member accumulated + this era's rewards)
-        const currentAccumulated = member.accumulatedRewards || 0n
-        const newAccumulated = currentAccumulated + eraRewards
+        member.accumulatedRewards = newAccumulated
 
         return new PoolMemberRewards({
             id: `${member.id}-${reward.id}`,
@@ -213,22 +206,12 @@ export async function eraRewardsProcessed(
             points,
             accumulatedRewards: newAccumulated,
             rewards: eraRewards,
-            earlyBirdRewards: 0n, // Will be updated in the minted processor
         })
-    })
-
-    const updatedMembers = members.map((member) => {
-        if (!member.accumulatedRewards) {
-            member.accumulatedRewards = 0n
-        }
-        const points = memberBalances[member.account.id] ?? 0n
-        member.accumulatedRewards += (points * reward.changeInRate) / 10n ** 18n
-        return member
     })
 
     await ctx.store.insert(reward)
 
-    await Promise.all([ctx.store.insert(rewardPromise), ctx.store.save(pool), ctx.store.save(updatedMembers)])
+    await Promise.all([ctx.store.insert(poolMemberRewards), ctx.store.save(pool), ctx.store.save(members)])
 
     await Sns.getInstance().send({
         id: item.id,

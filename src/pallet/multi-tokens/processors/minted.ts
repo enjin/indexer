@@ -5,9 +5,10 @@ import {
     Extrinsic,
     NominationPool,
     PoolMember,
-    PoolMemberRewards,
     Token,
     TokenAccount,
+    EarlyBirdMintEvent,
+    Era,
 } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
@@ -22,44 +23,61 @@ async function processEarlyBirdBonus(
     data: { collectionId: bigint; tokenId: bigint; recipient: string; amount: bigint },
     item: EventItem
 ): Promise<void> {
+    // Validate this is for sENJ tokens (collectionId = 1)
+    if (data.collectionId !== 1n) {
+        return
+    }
+
     // Find the pool member associated with this sENJ token
     const poolMember = await ctx.store.findOneByOrFail<PoolMember>(PoolMember, {
         id: `${data.tokenId}-${data.recipient}`,
-    })
-
-    // Find the most recent PoolMemberRewards for this member
-    // Use a simpler approach to get the latest reward record
-    const recentReward = await ctx.store.findOne(PoolMemberRewards, {
-        where: {
-            member: { id: poolMember.id },
-        },
-        relations: {
-            reward: { era: true },
-        },
-        order: {
-            reward: { era: { index: 'DESC' } },
-        },
     })
 
     const pool = await ctx.store.findOneByOrFail(NominationPool, {
         id: data.tokenId.toString(),
     })
 
+    // Find or create the Era entity
+    const era = await ctx.store.findOneOrFail(Era, {
+        order: {
+            index: 'DESC',
+        },
+    })
+
+    // Calculate the reward based on the pool rate
     const reward = (data.amount * pool.rate) / 10n ** 18n
 
-    if (recentReward) {
-        recentReward.earlyBirdRewards += reward
-        recentReward.accumulatedRewards += reward
-        await ctx.store.save(recentReward)
-    } else {
-        ctx.log.info(
-            `No recent reward found for member ${poolMember.id} in block ${item.block.height} in extrinsic ${item.extrinsic?.call?.name}`
-        )
+    // Create the early bird mint event
+    const earlyBirdMintEvent = new EarlyBirdMintEvent({
+        id: `${poolMember.id}-${era.index}`,
+        pool: pool,
+        poolMember: poolMember,
+        era: era,
+        amount: data.amount,
+        reward: reward,
+        event: new EventModel({ id: item.id }),
+    })
+
+    // Update accumulated rewards
+    poolMember.accumulatedRewards = (poolMember.accumulatedRewards ?? 0n) + reward
+    if (!poolMember.isActive) {
+        poolMember.isActive = true
+        pool.totalMembers += 1
     }
 
-    // We also increase the accumualted rewards so we can easily fetch all rewards an user received in a single field
-    poolMember.accumulatedRewards = (poolMember.accumulatedRewards ?? 0n) + reward
-    await ctx.store.save(poolMember)
+    await Promise.all([ctx.store.save(poolMember), ctx.store.save(earlyBirdMintEvent), ctx.store.save(pool)])
+
+    ctx.log.info(
+        [
+            'Created EarlyBirdMintEvent:',
+            `Pool ID: ${pool.id}`,
+            `Member ID: ${poolMember.id}`,
+            `Era: ${era.index}`,
+            `Amount: ${data.amount}`,
+            `Reward: ${reward}`,
+            `Rate: ${pool.rate}`,
+        ].join(' | ')
+    )
 }
 
 function isEarlyBirdBonus(item: EventItem): boolean {

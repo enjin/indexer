@@ -1,11 +1,12 @@
 import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, BigIntColumn as BigIntColumn_} from "@subsquid/typeorm-store"
 import {NominationPool} from "./nominationPool.model"
 import {PoolMember} from "./poolMember.model"
-import {EraReward} from "./eraReward.model"
+import {Era} from "./era.model"
+import {Event} from "./event.model"
 
 @Entity_()
-export class PoolMemberRewards {
-    constructor(props?: Partial<PoolMemberRewards>) {
+export class EarlyBirdMintEvent {
+    constructor(props?: Partial<EarlyBirdMintEvent>) {
         Object.assign(this, props)
     }
 
@@ -18,18 +19,19 @@ export class PoolMemberRewards {
 
     @Index_()
     @ManyToOne_(() => PoolMember, {nullable: true})
-    member!: PoolMember
+    poolMember!: PoolMember
 
     @Index_()
-    @ManyToOne_(() => EraReward, {nullable: true})
-    reward!: EraReward
+    @ManyToOne_(() => Era, {nullable: true})
+    era!: Era
 
     @BigIntColumn_({nullable: false})
-    points!: bigint
+    amount!: bigint
 
     @BigIntColumn_({nullable: false})
-    accumulatedRewards!: bigint
+    reward!: bigint
 
-    @BigIntColumn_({nullable: false})
-    rewards!: bigint
+    @Index_()
+    @ManyToOne_(() => Event, {nullable: true})
+    event!: Event
 }
