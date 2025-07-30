@@ -1120,7 +1120,7 @@ type StakeExchangeOfferCreated {
   rate: BigInt!
   minAverageCommission: Int! @deprecated
   minAverageRewardRate: BigInt!
-  tokenFilter: StakeExchangeTokenFilter 
+  tokenFilter: StakeExchangeTokenFilter
 }
 
 type StakeExchangeOfferCancelled {
@@ -1173,11 +1173,13 @@ type NominationPoolsDestroyed {
   pool: String!
   tokenId: BigInt
   account: Account!
+  state: PoolState!
 }
 
 type NominationPoolsPoolMutated {
   pool: String!
   mutation: JSON!
+  state: PoolState!
 }
 
 type NominationPoolsBonded {
@@ -1185,6 +1187,7 @@ type NominationPoolsBonded {
   account: Account!
   bonded: BigInt!
   tokenId: BigInt
+  state: PoolState!
 }
 
 type NominationPoolsUnbonded {
@@ -1194,6 +1197,7 @@ type NominationPoolsUnbonded {
   pool: String!
   era: Int!
   tokenId: BigInt
+  state: PoolState!
 }
 
 type NominationPoolsWithdrawn {
@@ -1203,6 +1207,7 @@ type NominationPoolsWithdrawn {
   numSlashingSpans: Int
   pool: String!
   tokenId: BigInt
+  state: PoolState!
 }
 
 type NominationPoolsEraRewardsProcessed {
@@ -1398,6 +1403,7 @@ type NominationPool @entity {
   slashes: [PoolSlash]!
   validators: [PoolValidator]! @derivedFrom(field: "pool")
   degenToken: Token @unique
+  stakeExchangeOffers: [PoolsOffers]! @derivedFrom(field: "pool")
 
   # Computed by job
   score: ScoreGrade
@@ -1472,9 +1478,16 @@ type StakeExchangeOffer @entity {
   minAverageRewardRate: BigInt!
 
   tokenFilter: StakeExchangeTokenFilter @derivedFrom(field: "offer")
+  pools: [PoolsOffers]! @derivedFrom(field: "offer")
 
   createdAt: DateTime!
   createdBlock: Int!
+}
+
+type PoolsOffers @entity {
+  id: ID!
+  pool: NominationPool!
+  offer: StakeExchangeOffer!
 }
 
 type EarlyBirdDetails @entity {
