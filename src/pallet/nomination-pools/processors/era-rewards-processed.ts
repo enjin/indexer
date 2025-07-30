@@ -239,19 +239,34 @@ export const computeEraApy = (eraRewards: EraReward[], reward: EraReward | undef
         eraRewards.unshift(reward)
     }
 
-    const { sumOfApy } = eraRewards.reduce(
-        (acc, era, i) => {
-            if (discardEra(era.apy, acc.previousValidApy) && i > 0) {
-                return {
-                    sumOfApy: acc.sumOfApy + acc.previousValidApy,
-                    previousValidApy: acc.previousValidApy,
-                }
-            }
+    if (eraRewards.length === 1) {
+        return Big(eraRewards[0].apy)
+    }
 
-            return { sumOfApy: acc.sumOfApy + era.apy, previousValidApy: era.apy }
-        },
-        { sumOfApy: 0, previousValidApy: 0 }
-    )
+    let sumOfApy: number
+    let previousCountedApy: number
+
+    if (!discardEra(eraRewards[0].apy, eraRewards[1].apy)) {
+        // First era is valid
+        sumOfApy = eraRewards[0].apy
+        previousCountedApy = eraRewards[0].apy
+    } else {
+        // First era is an outlier, use second era APY
+        sumOfApy = eraRewards[1].apy
+        previousCountedApy = eraRewards[1].apy
+    }
+
+    // Process remaining eras
+    for (let i = 1; i < eraRewards.length; i++) {
+        const era = eraRewards[i]
+
+        if (!discardEra(era.apy, previousCountedApy)) {
+            previousCountedApy = era.apy
+            sumOfApy += era.apy
+        } else {
+            sumOfApy += previousCountedApy
+        }
+    }
 
     return Big(sumOfApy).div(eraRewards.length)
 }
