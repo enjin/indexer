@@ -72,18 +72,6 @@ async function processEarlyBirdBonus(
     }
 
     await Promise.all([ctx.store.save(poolMember), ctx.store.save(earlyBirdMintEvent), ctx.store.save(pool)])
-
-    ctx.log.info(
-        [
-            'Created EarlyBirdMintEvent:',
-            `Pool ID: ${pool.id}`,
-            `Member ID: ${poolMember.id}`,
-            `Era: ${era.index}`,
-            `Amount: ${data.amount}`,
-            `Reward: ${reward}`,
-            `Rate: ${pool.rate}`,
-        ].join(' | ')
-    )
 }
 
 function isEarlyBirdBonus(item: EventItem): boolean {
