@@ -17,6 +17,7 @@ import * as mappings from '~/pallet/index'
 import { isNonFungible } from '~/util/helpers'
 import { QueueUtils } from '~/queue'
 import { calls } from '~/type'
+import { getOrCreatePoolMemberRewards } from '~/util/earlyBird'
 
 export async function getActiveEra(ctx: CommonContext) {
     const eras = await ctx.store.find(Era, {
@@ -41,16 +42,25 @@ async function processEarlyBirdBonus(
     if (data.collectionId !== 1n) {
         return
     }
-    const poolMember = await ctx.store.findOneByOrFail<PoolMember>(PoolMember, {
-        id: `${data.tokenId}-${data.recipient}`,
-    })
-    const pool = await ctx.store.findOneByOrFail(NominationPool, {
-        id: data.tokenId.toString(),
-    })
-    const era = await getActiveEra(ctx)
+
+    const [poolMember, pool, era] = await Promise.all([
+        ctx.store.findOneByOrFail<PoolMember>(PoolMember, {
+            id: `${data.tokenId}-${data.recipient}`,
+        }),
+        ctx.store.findOneByOrFail(NominationPool, { id: data.tokenId.toString() }),
+        getActiveEra(ctx),
+    ])
 
     // Calculate the reward based on the pool rate
     const reward = (data.amount * pool.rate) / 10n ** 18n
+
+    // Update accumulated rewards
+    poolMember.accumulatedRewards = (poolMember.accumulatedRewards ?? 0n) + reward
+
+    // Get or create PoolMemberRewards entry and add early bird reward
+    const pmr = await getOrCreatePoolMemberRewards(ctx, poolMember, pool, era)
+    pmr.rewards = (pmr.rewards || 0n) + reward
+    pmr.accumulatedRewards = poolMember.accumulatedRewards
 
     // Create the early bird mint event
     const earlyBirdMintEvent = new EarlyBirdMintEvent({
@@ -64,14 +74,17 @@ async function processEarlyBirdBonus(
         extrinsicId: item.extrinsic?.id,
     })
 
-    // Update accumulated rewards
-    poolMember.accumulatedRewards = (poolMember.accumulatedRewards ?? 0n) + reward
     if (!poolMember.isActive) {
         poolMember.isActive = true
         pool.totalMembers += 1
     }
 
-    await Promise.all([ctx.store.save(poolMember), ctx.store.save(earlyBirdMintEvent), ctx.store.save(pool)])
+    await Promise.all([
+        ctx.store.save(poolMember),
+        ctx.store.save(pmr),
+        ctx.store.save(earlyBirdMintEvent),
+        ctx.store.save(pool),
+    ])
 }
 
 function isEarlyBirdBonus(item: EventItem): boolean {

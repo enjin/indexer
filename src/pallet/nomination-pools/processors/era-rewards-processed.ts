@@ -16,6 +16,7 @@ import { Sns } from '~/util/sns'
 import processorConfig from '~/util/config'
 import * as mappings from '~/pallet/index'
 import { TokenAccount } from '~/pallet/multi-tokens/storage/types'
+import { needEarlyBirdMerge } from '~/util/earlyBird'
 
 async function getMembersBalance(block: Block, poolId: number): Promise<Record<string, bigint>> {
     type StorageEntry = [k: [bigint, bigint, string], v: TokenAccount | undefined]
@@ -193,27 +194,55 @@ export async function eraRewardsProcessed(
 
     const totalPoolPoints = (pool.balance.active * 10n ** 18n) / pool.rate
 
-    const poolMemberRewards = members.map((member) => {
+    // Check if we need to merge with early bird rewards
+    const earlyBirdMergeNeeded = await needEarlyBirdMerge(ctx, data.era)
+
+    // Use inserts and updates as inserts is faster than saves
+    const inserts: PoolMemberRewards[] = []
+    const updates: PoolMemberRewards[] = []
+
+    for (const member of members) {
         const points = memberBalances[member.account.id] ?? 0n
         const eraRewards = (points * data.reinvested) / totalPoolPoints
         const newAccumulated = (member.accumulatedRewards || 0n) + eraRewards
 
         member.accumulatedRewards = newAccumulated
 
-        return new PoolMemberRewards({
-            id: `${member.id}-${reward.id}`,
+        const pmrId = `${member.id}-${data.era}`
+        const pmrData = {
+            id: pmrId,
+            pool,
             member,
             reward,
-            pool,
             points,
-            accumulatedRewards: newAccumulated,
             rewards: eraRewards,
-        })
-    })
+            accumulatedRewards: newAccumulated,
+        }
 
+        if (earlyBirdMergeNeeded) {
+            const existing = await ctx.store.findOneBy(PoolMemberRewards, { id: pmrId })
+            if (existing) {
+                // update existing record as it was created with empty values
+                existing.reward = reward
+                existing.points = points
+                existing.rewards += eraRewards // it was set in the minted so we increment with the era rewards now
+                existing.accumulatedRewards = newAccumulated
+                updates.push(existing)
+                continue
+            }
+        }
+        inserts.push(new PoolMemberRewards(pmrData))
+    }
+
+    // Save the reward first is necessary for pmr
     await ctx.store.insert(reward)
 
-    await Promise.all([ctx.store.insert(poolMemberRewards), ctx.store.save(pool), ctx.store.save(members)])
+    await Promise.all([
+        ctx.store.save(pool),
+        ctx.store.save(members),
+        inserts.length && ctx.store.insert(inserts),
+        updates.length && ctx.store.save(updates),
+    ])
 
     await Sns.getInstance().send({
         id: item.id,
