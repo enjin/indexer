@@ -64,6 +64,7 @@ async function bootstrap() {
                 )
 
                 for (const block of ctx.blocks) {
+                    const blockStart = Date.now()
                     ctx.log.debug(
                         `Processing block ${block.header.height}, ${block.events.length} events, ${block.calls.length} calls to process`
                     )
@@ -102,6 +103,12 @@ async function bootstrap() {
                     }
                     for (const chunk of _.chunk(accountTokenEvents, 1000)) {
                         await ctx.store.save(chunk)
+                    }
+
+                    const blockEnd = Date.now()
+                    const durationMs = blockEnd - blockStart
+                    if (durationMs > 1000) {
+                        ctx.log.warn(`Block ${block.header.height} took ${durationMs}ms to process`)
                     }
                 }
 

@@ -1325,6 +1325,8 @@ type PoolMemberRewards @entity {
   member: PoolMember!
   reward: EraReward!
   points: BigInt!
+  accumulatedRewards: BigInt!
+  rewards: BigInt!
 }
 
 type Validator @entity {
@@ -1498,6 +1500,23 @@ type EarlyBirdDetails @entity {
   nextPaymentBlock: Int
   earlyBirdBonusDistributionBlock: Int!
   totalPaid: BigInt
+}
+
+type EarlyBirdMintEvent @entity {
+  id: ID!
+
+  # Entity relations
+  pool: NominationPool! @index
+  poolMember: PoolMember! @index
+  era: Era! @index
+
+  # Values
+  amount: BigInt!  # sENJ amount minted
+  reward: BigInt!  # Calculated reward to add
+  
+  # Reference IDs
+  eventId: String!
+  extrinsicId: String
 }
 
 union EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiTokensAttributeSet | MultiTokensBurned

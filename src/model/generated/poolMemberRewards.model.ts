@@ -26,4 +26,10 @@ export class PoolMemberRewards {
 
     @BigIntColumn_({nullable: false})
     points!: bigint
+
+    @BigIntColumn_({nullable: false})
+    accumulatedRewards!: bigint
+
+    @BigIntColumn_({nullable: false})
+    rewards!: bigint
 }

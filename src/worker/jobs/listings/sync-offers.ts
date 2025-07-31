@@ -28,7 +28,10 @@ export async function syncOffers(job: Job): Promise<void> {
     for (const accountEvent of accountTokenEvents) {
         const { event } = accountEvent
 
-        if (event.data instanceof MarketplaceOfferCreated || event.data instanceof MarketplaceOfferCancelled) {
+        if (
+            event &&
+            (event.data instanceof MarketplaceOfferCreated || event.data instanceof MarketplaceOfferCancelled)
+        ) {
             const listingId = event.data.listing
 
             const listing = await em.findOne(Listing, {

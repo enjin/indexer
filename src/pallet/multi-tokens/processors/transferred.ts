@@ -20,7 +20,7 @@ export async function transferred(
         where: { id: `${data.collectionId}-${data.tokenId}` },
         relations: { collection: true },
     })
-    if (skipSave || !token) {
+    if ((skipSave || !token) && data.collectionId.toString() != '1') {
         return mappings.multiTokens.events.transferredEventModel(
             item,
             data,
@@ -79,5 +79,12 @@ export async function transferred(
 
     QueueUtils.dispatchComputeStats(data.collectionId.toString())
 
-    return mappings.multiTokens.events.transferredEventModel(item, data, from, to, token.collection, token)
+    return mappings.multiTokens.events.transferredEventModel(
+        item,
+        data,
+        from,
+        to,
+        token?.collection ?? null,
+        token ?? null
+    )
 }

@@ -1,11 +1,99 @@
 import { throwFatalError } from '~/util/errors'
-import { AccountTokenEvent, Event as EventModel, Extrinsic, PoolMember, Token, TokenAccount } from '~/model'
+import {
+    AccountTokenEvent,
+    Event as EventModel,
+    Extrinsic,
+    NominationPool,
+    PoolMember,
+    Token,
+    TokenAccount,
+    EarlyBirdMintEvent,
+    Era,
+} from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
 import { Sns } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { isNonFungible } from '~/util/helpers'
 import { QueueUtils } from '~/queue'
+import { calls } from '~/type'
+import { getOrCreatePoolMemberRewards } from '~/util/earlyBird'
+
+export async function getActiveEra(ctx: CommonContext) {
+    const eras = await ctx.store.find(Era, {
+        order: {
+            index: 'DESC',
+        },
+        take: 1,
+    })
+
+    if (eras.length === 0) {
+        throw new Error('No active era found')
+    }
+
+    return eras[0]
+}
+
+async function processEarlyBirdBonus(
+    ctx: CommonContext,
+    data: { collectionId: bigint; tokenId: bigint; recipient: string; amount: bigint },
+    item: EventItem
+): Promise<void> {
+    if (data.collectionId !== 1n) {
+        return
+    }
+
+    const [poolMember, pool, era] = await Promise.all([
+        ctx.store.findOneByOrFail<PoolMember>(PoolMember, {
+            id: `${data.tokenId}-${data.recipient}`,
+        }),
+        ctx.store.findOneByOrFail(NominationPool, { id: data.tokenId.toString() }),
+        getActiveEra(ctx),
+    ])
+
+    // Calculate the reward based on the pool rate
+    const reward = (data.amount * pool.rate) / 10n ** 18n
+
+    // Update accumulated rewards
+    poolMember.accumulatedRewards = (poolMember.accumulatedRewards ?? 0n) + reward
+
+    // Get or create PoolMemberRewards entry and add early bird reward
+    const pmr = await getOrCreatePoolMemberRewards(ctx, poolMember, pool, era)
+    pmr.rewards = (pmr.rewards || 0n) + reward
+    pmr.accumulatedRewards = poolMember.accumulatedRewards
+
+    // Create the early bird mint event
+    const earlyBirdMintEvent = new EarlyBirdMintEvent({
+        id: `${poolMember.id}-${era.index}`,
+        pool: pool,
+        poolMember: poolMember,
+        era: era,
+        amount: data.amount,
+        reward: reward,
+        eventId: item.id,
+        extrinsicId: item.extrinsic?.id,
+    })
+
+    if (!poolMember.isActive) {
+        poolMember.isActive = true
+        pool.totalMembers += 1
+    }
+
+    await Promise.all([
+        ctx.store.save(poolMember),
+        ctx.store.save(pmr),
+        ctx.store.save(earlyBirdMintEvent),
+        ctx.store.save(pool),
+    ])
+}
+
+function isEarlyBirdBonus(item: EventItem): boolean {
+    return !!(
+        item.extrinsic?.call?.subcalls &&
+        item.extrinsic.call.subcalls.length > 0 &&
+        item.extrinsic.call.subcalls.every((subcall) => subcall.name == calls.nominationPools.payEarlyBirdBonus.name)
+    )
+}
 
 export async function minted(
     ctx: CommonContext,
@@ -16,6 +104,11 @@ export async function minted(
     const data = mappings.multiTokens.events.minted(item)
     const issuer = await getOrCreateAccount(ctx, data.issuer)
     const recipient = await getOrCreateAccount(ctx, data.recipient)
+
+    // Process early bird bonus detection BEFORE any early returns
+    if (isEarlyBirdBonus(item)) {
+        await processEarlyBirdBonus(ctx, data, item)
+    }
 
     const token = await ctx.store.findOne(Token, {
         where: { id: `${data.collectionId}-${data.tokenId}` },
@@ -60,7 +153,6 @@ export async function minted(
     await ctx.store.save(tokenAccount)
 
     if (data.collectionId === 1n) {
-        // This means the user got sENJ in that case we should associate the tokenAccount to PoolMember again if it is not
         const poolMember = await ctx.store.findOneBy<PoolMember>(PoolMember, {
             id: `${data.tokenId}-${data.recipient}`,
         })
