@@ -17,6 +17,7 @@ import processorConfig from '~/util/config'
 import * as mappings from '~/pallet/index'
 import { TokenAccount } from '~/pallet/multi-tokens/storage/types'
 import { needEarlyBirdMerge } from '~/util/earlyBird'
+import { In } from 'typeorm'
 
 async function getMembersBalance(block: Block, poolId: number): Promise<Record<string, bigint>> {
     type StorageEntry = [k: [bigint, bigint, string], v: TokenAccount | undefined]
@@ -189,7 +190,10 @@ export async function eraRewardsProcessed(
 
     const members = await ctx.store.find(PoolMember, {
         relations: { account: true },
-        where: { pool: { id: pool.id }, isActive: true },
+        where: {
+            pool: { id: pool.id },
+            account: { id: In(Object.keys(memberBalances)) }, // NOTE: This is a workaround to include all accounts with balances, as some accounts may not be returned by isActive.
+        },
     })
 
     const totalPoolPoints = (pool.balance.active * 10n ** 18n) / pool.rate
