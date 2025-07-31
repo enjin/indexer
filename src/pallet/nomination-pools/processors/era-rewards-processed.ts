@@ -190,6 +190,9 @@ export async function eraRewardsProcessed(
 
     const memberIds = Object.keys(memberBalances).map((accountId) => `${pool.id}-${accountId}`)
     const members = await ctx.store.find(PoolMember, {
+        relations: {
+            account: true,
+        },
         where: {
             id: In(memberIds), // NOTE: This is a workaround to include all accounts with balances, as some accounts may not be returned by isActive.
         },
