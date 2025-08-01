@@ -2,7 +2,7 @@ import { nominationPools } from '~/type/events'
 import { EventItem } from '~/contexts'
 import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
-import { Event as EventModel, Extrinsic, NominationPoolsUnbonded, PoolState } from '~/model'
+import { Event as EventModel, Extrinsic, NominationPoolsUnbonded } from '~/model'
 import { Unbonded } from '~/pallet/nomination-pools/events/types'
 
 export function unbonded(event: EventItem): Unbonded {
@@ -17,12 +17,7 @@ export function unbonded(event: EventItem): Unbonded {
         })
 }
 
-export function unbondedEventModel(
-    item: EventItem,
-    data: Unbonded,
-    tokenId: bigint,
-    state: PoolState
-): EventModel | undefined {
+export function unbondedEventModel(item: EventItem, data: Unbonded): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: NominationPoolsUnbonded.name,

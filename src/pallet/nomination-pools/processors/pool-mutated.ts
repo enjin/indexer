@@ -90,5 +90,5 @@ export async function poolMutated(ctx: CommonContext, block: Block, item: EventI
         },
     })
 
-    return mappings.nominationPools.events.poolMutatedEventModel(item, data, pool)
+    return mappings.nominationPools.events.poolMutatedEventModel(item, data)
 }
