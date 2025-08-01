@@ -159,6 +159,9 @@ export async function tokenDestroyed(
     if (token.id.toString().startsWith('1')) {
         ctx.log.info(`[TokenDestroyed] Clearing pool members for token ${token.id}`)
         const tokenMembers = await ctx.store.find(PoolMember, {
+            relations: {
+                tokenAccount: true,
+            },
             where: {
                 tokenAccount: {
                     id: In(tokenAccounts.map((t) => t.id)),
