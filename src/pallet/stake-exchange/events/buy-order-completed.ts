@@ -58,9 +58,8 @@ export function buyOrderCompletedEventModel(
         name: StakeExchangeBuyOrderCompleted.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new StakeExchangeBuyOrderCompleted({
-            offerId,
+            offer: offerId.toString(),
             account: data.who,
-            tokenId: data.tokenId,
             amount: data.amount,
             rate,
             points: (data.amount * rate) / 10n ** 18n,

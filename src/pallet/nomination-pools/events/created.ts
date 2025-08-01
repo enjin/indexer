@@ -32,7 +32,6 @@ export function createdEventModel(item: EventItem, data: Created, tokenId: bigin
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new NominationPoolsCreated({
             pool: data.poolId.toString(),
-            tokenId: tokenId,
         }),
     })
 }

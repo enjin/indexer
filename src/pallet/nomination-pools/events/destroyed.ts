@@ -20,7 +20,6 @@ export function destroyed(event: EventItem): Destroyed {
 export function destroyedEventModel(
     item: EventItem,
     data: Destroyed,
-    tokenId: bigint,
     owner: string | undefined
 ): EventModel | undefined {
     return new EventModel({
@@ -29,9 +28,7 @@ export function destroyedEventModel(
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new NominationPoolsDestroyed({
             pool: data.poolId.toString(),
-            tokenId,
             account: owner,
-            state: PoolState.Destroyed,
         }),
     })
 }

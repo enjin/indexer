@@ -1,32 +1,30 @@
 import assert from "assert"
 import * as marshal from "./marshal"
+import {StakeExchangeOffer} from "./stakeExchangeOffer.model"
 import {Account} from "./account.model"
-import {StakeExchangeTokenFilter} from "./stakeExchangeTokenFilter.model"
 
 export class StakeExchangeOfferCompleted {
     public readonly isTypeOf = 'StakeExchangeOfferCompleted'
-    private _offerId!: bigint
+    private _offer!: string
     private _account!: string
-    private _tokenFilter!: string | undefined | null
     private _amount!: bigint
 
     constructor(props?: Partial<Omit<StakeExchangeOfferCompleted, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
         if (json != null) {
-            this._offerId = marshal.bigint.fromJSON(json.offerId)
+            this._offer = marshal.string.fromJSON(json.offer)
             this._account = marshal.string.fromJSON(json.account)
-            this._tokenFilter = json.tokenFilter == null ? undefined : marshal.string.fromJSON(json.tokenFilter)
             this._amount = marshal.bigint.fromJSON(json.amount)
         }
     }
 
-    get offerId(): bigint {
-        assert(this._offerId != null, 'uninitialized access')
-        return this._offerId
+    get offer(): string {
+        assert(this._offer != null, 'uninitialized access')
+        return this._offer
     }
 
-    set offerId(value: bigint) {
-        this._offerId = value
+    set offer(value: string) {
+        this._offer = value
     }
 
     get account(): string {
@@ -36,14 +34,6 @@ export class StakeExchangeOfferCompleted {
 
     set account(value: string) {
         this._account = value
-    }
-
-    get tokenFilter(): string | undefined | null {
-        return this._tokenFilter
-    }
-
-    set tokenFilter(value: string | undefined | null) {
-        this._tokenFilter = value
     }
 
     get amount(): bigint {
@@ -58,9 +48,8 @@ export class StakeExchangeOfferCompleted {
     toJSON(): object {
         return {
             isTypeOf: this.isTypeOf,
-            offerId: marshal.bigint.toJSON(this.offerId),
+            offer: this.offer,
             account: this.account,
-            tokenFilter: this.tokenFilter,
             amount: marshal.bigint.toJSON(this.amount),
         }
     }

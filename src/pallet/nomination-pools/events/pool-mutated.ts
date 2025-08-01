@@ -73,7 +73,6 @@ export function poolMutatedEventModel(
         data: new NominationPoolsPoolMutated({
             pool: data.poolId.toString(),
             mutation,
-            state: pool.state,
         }),
     })
 }

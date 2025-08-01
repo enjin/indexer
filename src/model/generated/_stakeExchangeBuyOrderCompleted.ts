@@ -1,12 +1,13 @@
 import assert from "assert"
 import * as marshal from "./marshal"
+import {StakeExchangeOffer} from "./stakeExchangeOffer.model"
 import {Account} from "./account.model"
+import {NominationPool} from "./nominationPool.model"
 
 export class StakeExchangeBuyOrderCompleted {
     public readonly isTypeOf = 'StakeExchangeBuyOrderCompleted'
-    private _offerId!: bigint
+    private _offer!: string
     private _account!: string
-    private _tokenId!: bigint
     private _amount!: bigint
     private _rate!: bigint
     private _points!: bigint
@@ -15,9 +16,8 @@ export class StakeExchangeBuyOrderCompleted {
     constructor(props?: Partial<Omit<StakeExchangeBuyOrderCompleted, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
         if (json != null) {
-            this._offerId = marshal.bigint.fromJSON(json.offerId)
+            this._offer = marshal.string.fromJSON(json.offer)
             this._account = marshal.string.fromJSON(json.account)
-            this._tokenId = marshal.bigint.fromJSON(json.tokenId)
             this._amount = marshal.bigint.fromJSON(json.amount)
             this._rate = marshal.bigint.fromJSON(json.rate)
             this._points = marshal.bigint.fromJSON(json.points)
@@ -25,13 +25,13 @@ export class StakeExchangeBuyOrderCompleted {
         }
     }
 
-    get offerId(): bigint {
-        assert(this._offerId != null, 'uninitialized access')
-        return this._offerId
+    get offer(): string {
+        assert(this._offer != null, 'uninitialized access')
+        return this._offer
     }
 
-    set offerId(value: bigint) {
-        this._offerId = value
+    set offer(value: string) {
+        this._offer = value
     }
 
     get account(): string {
@@ -41,15 +41,6 @@ export class StakeExchangeBuyOrderCompleted {
 
     set account(value: string) {
         this._account = value
-    }
-
-    get tokenId(): bigint {
-        assert(this._tokenId != null, 'uninitialized access')
-        return this._tokenId
-    }
-
-    set tokenId(value: bigint) {
-        this._tokenId = value
     }
 
     get amount(): bigint {
@@ -91,9 +82,8 @@ export class StakeExchangeBuyOrderCompleted {
     toJSON(): object {
         return {
             isTypeOf: this.isTypeOf,
-            offerId: marshal.bigint.toJSON(this.offerId),
+            offer: this.offer,
             account: this.account,
-            tokenId: marshal.bigint.toJSON(this.tokenId),
             amount: marshal.bigint.toJSON(this.amount),
             rate: marshal.bigint.toJSON(this.rate),
             points: marshal.bigint.toJSON(this.points),

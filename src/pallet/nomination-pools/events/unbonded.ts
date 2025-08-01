@@ -29,12 +29,10 @@ export function unbondedEventModel(
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new NominationPoolsUnbonded({
             pool: data.poolId.toString(),
-            tokenId: tokenId,
             account: data.member,
             unbondingPoints: data.points,
             balance: data.balance,
             era: data.era,
-            state: state,
         }),
     })
 }

@@ -29,12 +29,10 @@ export function withdrawnEventModel(
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new NominationPoolsWithdrawn({
             pool: data.poolId.toString(),
-            tokenId: tokenId,
             account: data.member,
             balance: data.balance,
             points: data.points,
             numSlashingSpans: 0, // data.numSlashingSpans,
-            state: state,
         }),
     })
 }

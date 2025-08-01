@@ -1,29 +1,30 @@
 import assert from "assert"
 import * as marshal from "./marshal"
+import {StakeExchangeOffer} from "./stakeExchangeOffer.model"
 import {Account} from "./account.model"
 
 export class StakeExchangeLiquidityAdded {
     public readonly isTypeOf = 'StakeExchangeLiquidityAdded'
-    private _offerId!: bigint
+    private _offer!: string
     private _account!: string
     private _amount!: bigint
 
     constructor(props?: Partial<Omit<StakeExchangeLiquidityAdded, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
         if (json != null) {
-            this._offerId = marshal.bigint.fromJSON(json.offerId)
+            this._offer = marshal.string.fromJSON(json.offer)
             this._account = marshal.string.fromJSON(json.account)
             this._amount = marshal.bigint.fromJSON(json.amount)
         }
     }
 
-    get offerId(): bigint {
-        assert(this._offerId != null, 'uninitialized access')
-        return this._offerId
+    get offer(): string {
+        assert(this._offer != null, 'uninitialized access')
+        return this._offer
     }
 
-    set offerId(value: bigint) {
-        this._offerId = value
+    set offer(value: string) {
+        this._offer = value
     }
 
     get account(): string {
@@ -47,7 +48,7 @@ export class StakeExchangeLiquidityAdded {
     toJSON(): object {
         return {
             isTypeOf: this.isTypeOf,
-            offerId: marshal.bigint.toJSON(this.offerId),
+            offer: this.offer,
             account: this.account,
             amount: marshal.bigint.toJSON(this.amount),
         }
