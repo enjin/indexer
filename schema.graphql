@@ -673,7 +673,7 @@ type Token @entity {
   offers: [Listing] @derivedFrom(field: "takeAssetId")
   traits: [TraitToken] @derivedFrom(field: "token")
   rarity: TokenRarity @derivedFrom(field: "token")
-  nominationPool: NominationPool @derivedFrom(field: "degenToken")
+  nominationPool: NominationPool
 
   bestListing: Listing
   recentListing: Listing
@@ -1404,7 +1404,7 @@ type NominationPool @entity {
   eraRewards: [EraReward]! @derivedFrom(field: "pool")
   slashes: [PoolSlash]!
   validators: [PoolValidator]! @derivedFrom(field: "pool")
-  degenToken: Token @unique
+  degenToken: Token!
   stakeExchangeOffers: [PoolsOffers]! @derivedFrom(field: "pool")
 
   # Computed by job

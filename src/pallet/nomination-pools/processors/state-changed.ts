@@ -40,7 +40,7 @@ export async function stateChanged(ctx: CommonContext, block: Block, item: Event
                 extrinsic: item.extrinsic.id,
                 name: pool.name,
                 tokenId: `2-${pool.tokenId}`,
-                owner: pool.degenToken?.tokenAccounts[0].account.id,
+                owner: pool.degenToken.tokenAccounts[0].account.id,
             },
         })
     }
