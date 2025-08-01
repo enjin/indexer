@@ -1,5 +1,6 @@
 import assert from "assert"
 import * as marshal from "./marshal"
+import {NominationPool} from "./nominationPool.model"
 
 export class NominationPoolsEarlyBirdSharesCaptured {
     public readonly isTypeOf = 'NominationPoolsEarlyBirdSharesCaptured'

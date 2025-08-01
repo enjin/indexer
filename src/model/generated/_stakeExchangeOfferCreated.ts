@@ -1,29 +1,37 @@
 import assert from "assert"
 import * as marshal from "./marshal"
+import {StakeExchangeOffer} from "./stakeExchangeOffer.model"
 import {Account} from "./account.model"
-import {StakeExchangeTokenFilter} from "./stakeExchangeTokenFilter.model"
 
 export class StakeExchangeOfferCreated {
     public readonly isTypeOf = 'StakeExchangeOfferCreated'
+    private _offer!: string | undefined | null
     private _offerId!: bigint
     private _account!: string
     private _total!: bigint
     private _rate!: bigint
     private _minAverageCommission!: number
     private _minAverageRewardRate!: bigint
-    private _tokenFilter!: string | undefined | null
 
     constructor(props?: Partial<Omit<StakeExchangeOfferCreated, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
         if (json != null) {
+            this._offer = json.offer == null ? undefined : marshal.string.fromJSON(json.offer)
             this._offerId = marshal.bigint.fromJSON(json.offerId)
             this._account = marshal.string.fromJSON(json.account)
             this._total = marshal.bigint.fromJSON(json.total)
             this._rate = marshal.bigint.fromJSON(json.rate)
             this._minAverageCommission = marshal.int.fromJSON(json.minAverageCommission)
             this._minAverageRewardRate = marshal.bigint.fromJSON(json.minAverageRewardRate)
-            this._tokenFilter = json.tokenFilter == null ? undefined : marshal.string.fromJSON(json.tokenFilter)
         }
+    }
+
+    get offer(): string | undefined | null {
+        return this._offer
+    }
+
+    set offer(value: string | undefined | null) {
+        this._offer = value
     }
 
     get offerId(): bigint {
@@ -80,24 +88,16 @@ export class StakeExchangeOfferCreated {
         this._minAverageRewardRate = value
     }
 
-    get tokenFilter(): string | undefined | null {
-        return this._tokenFilter
-    }
-
-    set tokenFilter(value: string | undefined | null) {
-        this._tokenFilter = value
-    }
-
     toJSON(): object {
         return {
             isTypeOf: this.isTypeOf,
+            offer: this.offer,
             offerId: marshal.bigint.toJSON(this.offerId),
             account: this.account,
             total: marshal.bigint.toJSON(this.total),
             rate: marshal.bigint.toJSON(this.rate),
             minAverageCommission: this.minAverageCommission,
             minAverageRewardRate: marshal.bigint.toJSON(this.minAverageRewardRate),
-            tokenFilter: this.tokenFilter,
         }
     }
 }

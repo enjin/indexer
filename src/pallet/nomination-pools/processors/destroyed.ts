@@ -66,10 +66,12 @@ export async function destroyed(ctx: CommonContext, block: Block, item: EventIte
     }
 
     nominationPool.state = PoolState.Destroyed
-    nominationPool.degenToken = null
     await ctx.store.save(nominationPool)
 
     const token = await ctx.store.findOneOrFail(Token, {
+        relations: {
+            nominationPool: true,
+        },
         where: {
             id: `2-${nominationPool.tokenId}`,
         },
@@ -91,5 +93,5 @@ export async function destroyed(ctx: CommonContext, block: Block, item: EventIte
         },
     })
 
-    return mappings.nominationPools.events.destroyedEventModel(item, eventData, nominationPool.tokenId, owner)
+    return mappings.nominationPools.events.destroyedEventModel(item, eventData, owner)
 }

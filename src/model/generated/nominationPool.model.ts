@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, StringColumn as StringColumn_, BigIntColumn as BigIntColumn_, FloatColumn as FloatColumn_, OneToMany as OneToMany_, OneToOne as OneToOne_, Index as Index_, JoinColumn as JoinColumn_, IntColumn as IntColumn_, DateTimeColumn as DateTimeColumn_} from "@subsquid/typeorm-store"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, StringColumn as StringColumn_, BigIntColumn as BigIntColumn_, FloatColumn as FloatColumn_, OneToMany as OneToMany_, ManyToOne as ManyToOne_, Index as Index_, IntColumn as IntColumn_, DateTimeColumn as DateTimeColumn_} from "@subsquid/typeorm-store"
 import * as marshal from "./marshal"
 import {PoolState} from "./_poolState"
 import {Commission} from "./_commission"
@@ -85,10 +85,9 @@ export class NominationPool {
     @OneToMany_(() => PoolValidator, e => e.pool)
     validators!: PoolValidator[]
 
-    @Index_({unique: true})
-    @OneToOne_(() => Token, {nullable: true})
-    @JoinColumn_()
-    degenToken!: Token | undefined | null
+    @Index_()
+    @ManyToOne_(() => Token, {nullable: true})
+    degenToken!: Token
 
     @OneToMany_(() => PoolsOffers, e => e.pool)
     stakeExchangeOffers!: PoolsOffers[]
