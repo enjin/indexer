@@ -1157,6 +1157,7 @@ type StakeExchangeBuyOrderCompleted {
   rate: BigInt!
   points: BigInt!
   pool: NominationPool!
+  tokenId: BigInt!
 }
 
 type StakeExchangeOfferCompleted {

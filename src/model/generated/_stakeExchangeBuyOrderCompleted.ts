@@ -13,6 +13,7 @@ export class StakeExchangeBuyOrderCompleted {
     private _rate!: bigint
     private _points!: bigint
     private _pool!: string
+    private _tokenId!: bigint
 
     constructor(props?: Partial<Omit<StakeExchangeBuyOrderCompleted, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
@@ -24,6 +25,7 @@ export class StakeExchangeBuyOrderCompleted {
             this._rate = marshal.bigint.fromJSON(json.rate)
             this._points = marshal.bigint.fromJSON(json.points)
             this._pool = marshal.string.fromJSON(json.pool)
+            this._tokenId = marshal.bigint.fromJSON(json.tokenId)
         }
     }
 
@@ -90,6 +92,15 @@ export class StakeExchangeBuyOrderCompleted {
         this._pool = value
     }
 
+    get tokenId(): bigint {
+        assert(this._tokenId != null, 'uninitialized access')
+        return this._tokenId
+    }
+
+    set tokenId(value: bigint) {
+        this._tokenId = value
+    }
+
     toJSON(): object {
         return {
             isTypeOf: this.isTypeOf,
@@ -100,6 +111,7 @@ export class StakeExchangeBuyOrderCompleted {
             rate: marshal.bigint.toJSON(this.rate),
             points: marshal.bigint.toJSON(this.points),
             pool: this.pool,
+            tokenId: marshal.bigint.toJSON(this.tokenId),
         }
     }
 }
