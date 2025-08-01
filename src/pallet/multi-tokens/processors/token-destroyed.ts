@@ -156,7 +156,7 @@ export async function tokenDestroyed(
     })
 
     // clear pool members if exists
-    if (token.tokenId === 1n) {
+    if (token.tokenId.toString().startsWith('1')) {
         const tokenMembers = await ctx.store.find(PoolMember, {
             where: {
                 tokenAccount: {
