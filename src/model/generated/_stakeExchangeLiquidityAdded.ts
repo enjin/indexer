@@ -5,7 +5,11 @@ import {Account} from "./account.model"
 
 export class StakeExchangeLiquidityAdded {
     public readonly isTypeOf = 'StakeExchangeLiquidityAdded'
+<<<<<<< HEAD
     private _offer!: string
+=======
+    private _offer!: string | undefined | null
+>>>>>>> 29c42ffa (add pool relation sync)
     private _offerId!: bigint
     private _account!: string
     private _amount!: bigint
@@ -13,19 +17,22 @@ export class StakeExchangeLiquidityAdded {
     constructor(props?: Partial<Omit<StakeExchangeLiquidityAdded, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
         if (json != null) {
+<<<<<<< HEAD
             this._offer = marshal.string.fromJSON(json.offer)
+=======
+            this._offer = json.offer == null ? undefined : marshal.string.fromJSON(json.offer)
+>>>>>>> 29c42ffa (add pool relation sync)
             this._offerId = marshal.bigint.fromJSON(json.offerId)
             this._account = marshal.string.fromJSON(json.account)
             this._amount = marshal.bigint.fromJSON(json.amount)
         }
     }
 
-    get offer(): string {
-        assert(this._offer != null, 'uninitialized access')
+    get offer(): string | undefined | null {
         return this._offer
     }
 
-    set offer(value: string) {
+    set offer(value: string | undefined | null) {
         this._offer = value
     }
 

@@ -673,7 +673,7 @@ type Token @entity {
   offers: [Listing] @derivedFrom(field: "takeAssetId")
   traits: [TraitToken] @derivedFrom(field: "token")
   rarity: TokenRarity @derivedFrom(field: "token")
-  nominationPool: NominationPool @derivedFrom(field: "degenToken")
+  nominationPool: NominationPool
 
   bestListing: Listing
   recentListing: Listing
@@ -1114,7 +1114,7 @@ type ValidatorPrefsSet {
 }
 
 type StakeExchangeOfferCreated {
-  offer: StakeExchangeOffer!
+  offer: StakeExchangeOffer
   offerId: BigInt!
   account: Account!
   total: BigInt!
@@ -1124,21 +1124,21 @@ type StakeExchangeOfferCreated {
 }
 
 type StakeExchangeOfferCancelled {
-  offer: StakeExchangeOffer!
+  offer: StakeExchangeOffer
   offerId: BigInt!
   total: BigInt!
   account: Account
 }
 
 type StakeExchangeLiquidityWithdrawn {
-  offer: StakeExchangeOffer!
+  offer: StakeExchangeOffer
   offerId: BigInt!
   account: Account!
   amount: BigInt!
 }
 
 type StakeExchangeLiquidityAdded {
-  offer: StakeExchangeOffer!
+  offer: StakeExchangeOffer
   offerId: BigInt!
   account: Account!
   amount: BigInt!
@@ -1150,7 +1150,7 @@ type StakeExchangeLiquidityConfigUpdated {
 }
 
 type StakeExchangeBuyOrderCompleted {
-  offer: StakeExchangeOffer!
+  offer: StakeExchangeOffer
   offerId: BigInt!
   account: Account!
   amount: BigInt!
@@ -1161,7 +1161,7 @@ type StakeExchangeBuyOrderCompleted {
 }
 
 type StakeExchangeOfferCompleted {
-  offer: StakeExchangeOffer!
+  offer: StakeExchangeOffer
   offerId: BigInt!
   account: Account!
   amount: BigInt!
@@ -1397,7 +1397,7 @@ type NominationPool @entity {
   eraRewards: [EraReward]! @derivedFrom(field: "pool")
   slashes: [PoolSlash]!
   validators: [PoolValidator]! @derivedFrom(field: "pool")
-  degenToken: Token @unique
+  degenToken: Token!
   stakeExchangeOffers: [PoolsOffers]! @derivedFrom(field: "pool")
 
   # Computed by job
