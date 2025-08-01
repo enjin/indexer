@@ -6,6 +6,7 @@ import {
     Listing,
     ListingSale,
     ListingStatus,
+    PoolMember,
     RoyaltyCurrency,
     Token,
     TokenAccount,
@@ -152,6 +153,24 @@ export async function tokenDestroyed(
         e.token = null
         return e
     })
+
+    // clear pool members if exists
+    if (token.tokenId === 1n) {
+        const tokenMembers = await ctx.store.find(PoolMember, {
+            where: {
+                tokenAccount: {
+                    token: {
+                        id: token.id,
+                    },
+                },
+            },
+        })
+
+        for (const member of tokenMembers) {
+            member.tokenAccount = null
+            await ctx.store.save(member)
+        }
+    }
 
     await Promise.all([
         ctx.store.save(events),
