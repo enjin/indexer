@@ -17,6 +17,7 @@ import { Block, CommonContext, EventItem } from '~/contexts'
 import { Sns } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
+import { In } from 'typeorm'
 
 export async function tokenDestroyed(
     ctx: CommonContext,
@@ -159,9 +160,7 @@ export async function tokenDestroyed(
         const tokenMembers = await ctx.store.find(PoolMember, {
             where: {
                 tokenAccount: {
-                    token: {
-                        id: token.id,
-                    },
+                    id: In(tokenAccounts.map((t) => t.id)),
                 },
             },
         })
