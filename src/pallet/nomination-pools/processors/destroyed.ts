@@ -69,6 +69,9 @@ export async function destroyed(ctx: CommonContext, block: Block, item: EventIte
     await ctx.store.save(nominationPool)
 
     const token = await ctx.store.findOneOrFail(Token, {
+        relations: {
+            nominationPool: true,
+        },
         where: {
             id: `2-${nominationPool.tokenId}`,
         },
