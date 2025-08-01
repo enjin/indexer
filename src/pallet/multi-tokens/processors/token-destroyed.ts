@@ -6,6 +6,7 @@ import {
     Listing,
     ListingSale,
     ListingStatus,
+    PoolMember,
     RoyaltyCurrency,
     Token,
     TokenAccount,
@@ -16,6 +17,7 @@ import { Block, CommonContext, EventItem } from '~/contexts'
 import { Sns } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
+import { In } from 'typeorm'
 
 export async function tokenDestroyed(
     ctx: CommonContext,
@@ -152,6 +154,33 @@ export async function tokenDestroyed(
         e.token = null
         return e
     })
+
+    // clear pool members if exists
+    if (token.id.toString().startsWith('1')) {
+        ctx.log.info(`[TokenDestroyed] Clearing pool members for token ${token.id}`)
+        const tokenMembers = await ctx.store.find(PoolMember, {
+            relations: {
+                tokenAccount: true,
+            },
+            where: {
+                tokenAccount: {
+                    id: In(tokenAccounts.map((t) => t.id)),
+                },
+            },
+        })
+
+        ctx.log.info(
+            `[TokenDestroyed] Found ${tokenMembers.length} pool members for token accounts ${tokenAccounts.map((t) => t.id).join(', ')}`
+        )
+
+        for (const member of tokenMembers) {
+            ctx.log.info(`[TokenDestroyed] Clearing pool member ${member.id}`)
+            if (member.tokenAccount) {
+                member.tokenAccount = null
+                await ctx.store.save(member)
+            }
+        }
+    }
 
     await Promise.all([
         ctx.store.save(events),
