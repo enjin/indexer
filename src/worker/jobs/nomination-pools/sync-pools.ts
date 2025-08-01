@@ -8,9 +8,6 @@ export async function syncPools(job: Job): Promise<void> {
     const em = await connectionManager()
 
     const pools = await em.find(NominationPool, {
-        where: {
-            state: Not(PoolState.Destroyed),
-        },
         relations: {
             members: true,
         },
