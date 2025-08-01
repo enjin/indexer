@@ -1115,6 +1115,7 @@ type ValidatorPrefsSet {
 
 type StakeExchangeOfferCreated {
   offer: StakeExchangeOffer!
+  offerId: BigInt!
   account: Account!
   total: BigInt!
   rate: BigInt!
@@ -1124,18 +1125,21 @@ type StakeExchangeOfferCreated {
 
 type StakeExchangeOfferCancelled {
   offer: StakeExchangeOffer!
+  offerId: BigInt!
   total: BigInt!
   account: Account
 }
 
 type StakeExchangeLiquidityWithdrawn {
   offer: StakeExchangeOffer!
+  offerId: BigInt!
   account: Account!
   amount: BigInt!
 }
 
 type StakeExchangeLiquidityAdded {
   offer: StakeExchangeOffer!
+  offerId: BigInt!
   account: Account!
   amount: BigInt!
 }
@@ -1147,6 +1151,7 @@ type StakeExchangeLiquidityConfigUpdated {
 
 type StakeExchangeBuyOrderCompleted {
   offer: StakeExchangeOffer!
+  offerId: BigInt!
   account: Account!
   amount: BigInt!
   rate: BigInt!
@@ -1156,6 +1161,7 @@ type StakeExchangeBuyOrderCompleted {
 
 type StakeExchangeOfferCompleted {
   offer: StakeExchangeOffer!
+  offerId: BigInt!
   account: Account!
   amount: BigInt!
 }

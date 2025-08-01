@@ -28,6 +28,7 @@ export function liquidityWithdrawnEventModel(
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new StakeExchangeLiquidityWithdrawn({
             offer: data.offerId.toString(),
+            offerId: data.offerId,
             account: data.who,
             amount,
         }),

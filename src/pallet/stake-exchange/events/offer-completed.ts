@@ -27,6 +27,7 @@ export function offerCompletedEventModel(
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new StakeExchangeOfferCompleted({
             offer: stakeExchangeOffer.id.toString(),
+            offerId: stakeExchangeOffer.offerId,
             amount: stakeExchangeOffer.amount ?? 0n,
             account: stakeExchangeOffer.account.id,
         }),

@@ -28,6 +28,7 @@ export function liquidityAddedEventModel(
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new StakeExchangeLiquidityAdded({
             offer: data.offerId.toString(),
+            offerId: data.offerId,
             account: data.who,
             amount,
         }),

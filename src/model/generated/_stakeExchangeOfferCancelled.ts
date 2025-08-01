@@ -6,6 +6,7 @@ import {Account} from "./account.model"
 export class StakeExchangeOfferCancelled {
     public readonly isTypeOf = 'StakeExchangeOfferCancelled'
     private _offer!: string
+    private _offerId!: bigint
     private _total!: bigint
     private _account!: string | undefined | null
 
@@ -13,6 +14,7 @@ export class StakeExchangeOfferCancelled {
         Object.assign(this, props)
         if (json != null) {
             this._offer = marshal.string.fromJSON(json.offer)
+            this._offerId = marshal.bigint.fromJSON(json.offerId)
             this._total = marshal.bigint.fromJSON(json.total)
             this._account = json.account == null ? undefined : marshal.string.fromJSON(json.account)
         }
@@ -25,6 +27,15 @@ export class StakeExchangeOfferCancelled {
 
     set offer(value: string) {
         this._offer = value
+    }
+
+    get offerId(): bigint {
+        assert(this._offerId != null, 'uninitialized access')
+        return this._offerId
+    }
+
+    set offerId(value: bigint) {
+        this._offerId = value
     }
 
     get total(): bigint {
@@ -48,6 +59,7 @@ export class StakeExchangeOfferCancelled {
         return {
             isTypeOf: this.isTypeOf,
             offer: this.offer,
+            offerId: marshal.bigint.toJSON(this.offerId),
             total: marshal.bigint.toJSON(this.total),
             account: this.account,
         }

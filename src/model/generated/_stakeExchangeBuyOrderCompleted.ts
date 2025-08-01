@@ -7,6 +7,7 @@ import {NominationPool} from "./nominationPool.model"
 export class StakeExchangeBuyOrderCompleted {
     public readonly isTypeOf = 'StakeExchangeBuyOrderCompleted'
     private _offer!: string
+    private _offerId!: bigint
     private _account!: string
     private _amount!: bigint
     private _rate!: bigint
@@ -17,6 +18,7 @@ export class StakeExchangeBuyOrderCompleted {
         Object.assign(this, props)
         if (json != null) {
             this._offer = marshal.string.fromJSON(json.offer)
+            this._offerId = marshal.bigint.fromJSON(json.offerId)
             this._account = marshal.string.fromJSON(json.account)
             this._amount = marshal.bigint.fromJSON(json.amount)
             this._rate = marshal.bigint.fromJSON(json.rate)
@@ -32,6 +34,15 @@ export class StakeExchangeBuyOrderCompleted {
 
     set offer(value: string) {
         this._offer = value
+    }
+
+    get offerId(): bigint {
+        assert(this._offerId != null, 'uninitialized access')
+        return this._offerId
+    }
+
+    set offerId(value: bigint) {
+        this._offerId = value
     }
 
     get account(): string {
@@ -83,6 +94,7 @@ export class StakeExchangeBuyOrderCompleted {
         return {
             isTypeOf: this.isTypeOf,
             offer: this.offer,
+            offerId: marshal.bigint.toJSON(this.offerId),
             account: this.account,
             amount: marshal.bigint.toJSON(this.amount),
             rate: marshal.bigint.toJSON(this.rate),

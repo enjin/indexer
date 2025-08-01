@@ -27,6 +27,7 @@ export function offerCancelledEventModel(
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new StakeExchangeOfferCancelled({
             offer: stakeExchangeOffer.id,
+            offerId: stakeExchangeOffer.offerId,
             total: stakeExchangeOffer.total,
             account: stakeExchangeOffer.account.id,
         }),
