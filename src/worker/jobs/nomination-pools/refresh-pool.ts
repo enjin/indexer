@@ -1,4 +1,4 @@
-import { EraReward, NominationPool } from '~/model'
+import { EraReward, NominationPool, PoolState, Token } from '~/model'
 import { connectionManager } from '~/contexts'
 import { Job } from 'bullmq'
 import Rpc from '~/util/rpc'
@@ -68,6 +68,16 @@ export async function refreshPool(job: Job, poolId: string) {
             pool.name = ''
         } else {
             pool.name = hexToString(name)
+        }
+    }
+
+    if (pool.state === PoolState.Destroyed) {
+        if (pool.degenToken === null) {
+            pool.degenToken = await em.findOneOrFail(Token, {
+                where: {
+                    id: `2-${pool.tokenId}`,
+                },
+            })
         }
     }
 
