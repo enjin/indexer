@@ -95,5 +95,5 @@ export async function created(ctx: CommonContext, block: Block, item: EventItem)
 
     QueueUtils.dispatchComputePoolOffers(pool.id.toString())
 
-    return mappings.nominationPools.events.createdEventModel(item, eventData, callData.tokenId)
+    return mappings.nominationPools.events.createdEventModel(item, eventData)
 }

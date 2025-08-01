@@ -93,5 +93,5 @@ export async function destroyed(ctx: CommonContext, block: Block, item: EventIte
         },
     })
 
-    return mappings.nominationPools.events.destroyedEventModel(item, eventData, nominationPool.tokenId, owner)
+    return mappings.nominationPools.events.destroyedEventModel(item, eventData, owner)
 }
