@@ -5,11 +5,7 @@ import {Account} from "./account.model"
 
 export class StakeExchangeOfferCancelled {
     public readonly isTypeOf = 'StakeExchangeOfferCancelled'
-<<<<<<< HEAD
-    private _offer!: string
-=======
     private _offer!: string | undefined | null
->>>>>>> 29c42ffa (add pool relation sync)
     private _offerId!: bigint
     private _total!: bigint
     private _account!: string | undefined | null
@@ -17,11 +13,7 @@ export class StakeExchangeOfferCancelled {
     constructor(props?: Partial<Omit<StakeExchangeOfferCancelled, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
         if (json != null) {
-<<<<<<< HEAD
-            this._offer = marshal.string.fromJSON(json.offer)
-=======
             this._offer = json.offer == null ? undefined : marshal.string.fromJSON(json.offer)
->>>>>>> 29c42ffa (add pool relation sync)
             this._offerId = marshal.bigint.fromJSON(json.offerId)
             this._total = marshal.bigint.fromJSON(json.total)
             this._account = json.account == null ? undefined : marshal.string.fromJSON(json.account)

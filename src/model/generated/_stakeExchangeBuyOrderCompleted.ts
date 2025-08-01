@@ -6,11 +6,7 @@ import {NominationPool} from "./nominationPool.model"
 
 export class StakeExchangeBuyOrderCompleted {
     public readonly isTypeOf = 'StakeExchangeBuyOrderCompleted'
-<<<<<<< HEAD
-    private _offer!: string
-=======
     private _offer!: string | undefined | null
->>>>>>> 29c42ffa (add pool relation sync)
     private _offerId!: bigint
     private _account!: string
     private _amount!: bigint
@@ -22,11 +18,7 @@ export class StakeExchangeBuyOrderCompleted {
     constructor(props?: Partial<Omit<StakeExchangeBuyOrderCompleted, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
         if (json != null) {
-<<<<<<< HEAD
-            this._offer = marshal.string.fromJSON(json.offer)
-=======
             this._offer = json.offer == null ? undefined : marshal.string.fromJSON(json.offer)
->>>>>>> 29c42ffa (add pool relation sync)
             this._offerId = marshal.bigint.fromJSON(json.offerId)
             this._account = marshal.string.fromJSON(json.account)
             this._amount = marshal.bigint.fromJSON(json.amount)
