@@ -156,7 +156,8 @@ export async function tokenDestroyed(
     })
 
     // clear pool members if exists
-    if (token.tokenId.toString().startsWith('1')) {
+    if (token.id.toString().startsWith('1')) {
+        ctx.log.info(`[TokenDestroyed] Clearing pool members for token ${token.id}`)
         const tokenMembers = await ctx.store.find(PoolMember, {
             where: {
                 tokenAccount: {
@@ -165,9 +166,16 @@ export async function tokenDestroyed(
             },
         })
 
+        ctx.log.info(
+            `[TokenDestroyed] Found ${tokenMembers.length} pool members for token accounts ${tokenAccounts.map((t) => t.id).join(', ')}`
+        )
+
         for (const member of tokenMembers) {
-            member.tokenAccount = null
-            await ctx.store.save(member)
+            ctx.log.info(`[TokenDestroyed] Clearing pool member ${member.id}`)
+            if (member.tokenAccount) {
+                member.tokenAccount = null
+                await ctx.store.save(member)
+            }
         }
     }
 
