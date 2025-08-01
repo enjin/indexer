@@ -91,7 +91,8 @@ export class Token {
     @OneToOne_(() => TokenRarity, e => e.token)
     rarity!: TokenRarity | undefined | null
 
-    @OneToOne_(() => NominationPool, e => e.degenToken)
+    @Index_()
+    @ManyToOne_(() => NominationPool, {nullable: true})
     nominationPool!: NominationPool | undefined | null
 
     @Index_()
