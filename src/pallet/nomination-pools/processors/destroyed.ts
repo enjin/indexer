@@ -21,7 +21,7 @@ export async function destroyed(ctx: CommonContext, block: Block, item: EventIte
         .where(':poolId = ANY(tokenFilter.value)', { poolId: eventData.poolId.toString() })
         .getMany()
 
-    const nominationPool = await ctx.store.findOneOrFail(NominationPool, {
+    const nominationPool = await ctx.store.findOne(NominationPool, {
         where: {
             id: eventData.poolId.toString(),
             degenToken: {
@@ -39,6 +39,8 @@ export async function destroyed(ctx: CommonContext, block: Block, item: EventIte
             },
         },
     })
+
+    if (!nominationPool) return undefined
 
     const owner = nominationPool.degenToken?.tokenAccounts[0].account.id
 
