@@ -20,7 +20,7 @@ export async function syncPools(job: Job): Promise<void> {
         QueueUtils.dispatchRefreshPool(pool.id)
         // QueueUtils.dispatchComputePoolRewards(pool.id)
         // for (const member of pool.members) {
-            // QueueUtils.dispatchComputePoolMemberRewards(member.id)
+        // QueueUtils.dispatchComputePoolMemberRewards(member.id)
         // }
     }
 

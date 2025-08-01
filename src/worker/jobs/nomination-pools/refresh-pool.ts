@@ -4,7 +4,6 @@ import { Job } from 'bullmq'
 import Rpc from '~/util/rpc'
 import { hexToString } from '@polkadot/util'
 
-
 export async function refreshPool(job: Job, poolId: string) {
     const em = await connectionManager()
 
