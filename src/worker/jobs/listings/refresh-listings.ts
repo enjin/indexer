@@ -1,20 +1,30 @@
-import { AuctionData, Listing, ListingType } from '~/model'
+import { AuctionData, AuctionState, Listing, ListingType } from '~/model'
 import { connectionManager } from '~/contexts'
 import { Job } from 'bullmq'
 import Rpc from '~/util/rpc'
+import { In } from 'typeorm'
 
 export async function refreshListings(job: Job, ids: string[]) {
     const em = await connectionManager()
     const { api } = await Rpc.getInstance()
 
-    for (const id of ids) {
-        const listingData = await api.query.marketplace.listings(`0x${id}`)
-        const listing = await em.findOneBy(Listing, { id })
-        let hasChanged = false
+    const listings = await em.find(Listing, {
+        where: { id: In(ids) },
+        relations: {
+            bids: {
+                bidder: true,
+            },
+        },
+        order: {
+            bids: {
+                price: 'DESC',
+            },
+        },
+    })
 
-        if (!listing) {
-            await job.log(`Listing ${id} not found`)
-        }
+    for (const listing of listings) {
+        const listingData = await api.query.marketplace.listings(`0x${listing.id}`)
+        let hasChanged = false
 
         if (listing?.data.isTypeOf === 'AuctionData') {
             const listingJson: any = listingData.toJSON()
@@ -26,9 +36,19 @@ export async function refreshListings(job: Job, ids: string[]) {
             hasChanged = true
         }
 
+        if (listing.state.isTypeOf === 'AuctionState') {
+            const highBid = listing.bids.length > 0 ? listing.bids[0].id : null
+            listing.state = new AuctionState({
+                listingType: ListingType.Auction,
+                highBid: highBid,
+                isExpired: listing.state.isExpired,
+            })
+            hasChanged = true
+        }
+
         if (hasChanged) {
             await em.save(listing)
-            await job.log(`Refreshed listing ${id}`)
+            await job.log(`Refreshed listing ${listing.id}`)
         }
     }
 
