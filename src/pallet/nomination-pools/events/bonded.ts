@@ -33,7 +33,6 @@ export function bondedEventModel(
     item: EventItem,
     data: Bonded,
     tokenId: bigint,
-    state: PoolState
 ): EventModel | undefined {
     return new EventModel({
         id: item.id,
@@ -41,10 +40,10 @@ export function bondedEventModel(
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new NominationPoolsBonded({
             pool: data.poolId.toString(),
+            poolId: data.poolId.toString(),
             tokenId: tokenId,
             account: data.member,
             bonded: data.bonded,
-            state: state,
         }),
     })
 }

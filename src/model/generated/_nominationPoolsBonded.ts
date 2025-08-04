@@ -1,15 +1,15 @@
 import assert from "assert"
 import * as marshal from "./marshal"
+import {NominationPool} from "./nominationPool.model"
 import {Account} from "./account.model"
-import {PoolState} from "./_poolState"
 
 export class NominationPoolsBonded {
     public readonly isTypeOf = 'NominationPoolsBonded'
     private _pool!: string
     private _account!: string
     private _bonded!: bigint
-    private _tokenId!: bigint | undefined | null
-    private _state!: PoolState
+    private _poolId!: string
+    private _tokenId!: bigint
 
     constructor(props?: Partial<Omit<NominationPoolsBonded, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
@@ -17,8 +17,8 @@ export class NominationPoolsBonded {
             this._pool = marshal.string.fromJSON(json.pool)
             this._account = marshal.string.fromJSON(json.account)
             this._bonded = marshal.bigint.fromJSON(json.bonded)
-            this._tokenId = json.tokenId == null ? undefined : marshal.bigint.fromJSON(json.tokenId)
-            this._state = marshal.enumFromJson(json.state, PoolState)
+            this._poolId = marshal.string.fromJSON(json.poolId)
+            this._tokenId = marshal.bigint.fromJSON(json.tokenId)
         }
     }
 
@@ -49,21 +49,22 @@ export class NominationPoolsBonded {
         this._bonded = value
     }
 
-    get tokenId(): bigint | undefined | null {
+    get poolId(): string {
+        assert(this._poolId != null, 'uninitialized access')
+        return this._poolId
+    }
+
+    set poolId(value: string) {
+        this._poolId = value
+    }
+
+    get tokenId(): bigint {
+        assert(this._tokenId != null, 'uninitialized access')
         return this._tokenId
     }
 
-    set tokenId(value: bigint | undefined | null) {
+    set tokenId(value: bigint) {
         this._tokenId = value
-    }
-
-    get state(): PoolState {
-        assert(this._state != null, 'uninitialized access')
-        return this._state
-    }
-
-    set state(value: PoolState) {
-        this._state = value
     }
 
     toJSON(): object {
@@ -72,8 +73,8 @@ export class NominationPoolsBonded {
             pool: this.pool,
             account: this.account,
             bonded: marshal.bigint.toJSON(this.bonded),
-            tokenId: this.tokenId == null ? undefined : marshal.bigint.toJSON(this.tokenId),
-            state: this.state,
+            poolId: this.poolId,
+            tokenId: marshal.bigint.toJSON(this.tokenId),
         }
     }
 }

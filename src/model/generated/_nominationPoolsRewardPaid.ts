@@ -1,5 +1,6 @@
 import assert from "assert"
 import * as marshal from "./marshal"
+import {NominationPool} from "./nominationPool.model"
 import {Account} from "./account.model"
 
 export class NominationPoolsRewardPaid {
@@ -9,6 +10,7 @@ export class NominationPoolsRewardPaid {
     private _validatorStash!: string
     private _reward!: bigint
     private _bonus!: bigint
+    private _poolId!: string
 
     constructor(props?: Partial<Omit<NominationPoolsRewardPaid, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
@@ -18,6 +20,7 @@ export class NominationPoolsRewardPaid {
             this._validatorStash = marshal.string.fromJSON(json.validatorStash)
             this._reward = marshal.bigint.fromJSON(json.reward)
             this._bonus = marshal.bigint.fromJSON(json.bonus)
+            this._poolId = marshal.string.fromJSON(json.poolId)
         }
     }
 
@@ -66,6 +69,15 @@ export class NominationPoolsRewardPaid {
         this._bonus = value
     }
 
+    get poolId(): string {
+        assert(this._poolId != null, 'uninitialized access')
+        return this._poolId
+    }
+
+    set poolId(value: string) {
+        this._poolId = value
+    }
+
     toJSON(): object {
         return {
             isTypeOf: this.isTypeOf,
@@ -74,6 +86,7 @@ export class NominationPoolsRewardPaid {
             validatorStash: this.validatorStash,
             reward: marshal.bigint.toJSON(this.reward),
             bonus: marshal.bigint.toJSON(this.bonus),
+            poolId: this.poolId,
         }
     }
 }
