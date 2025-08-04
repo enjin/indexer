@@ -14,6 +14,7 @@ export async function rewardPaid(ctx: CommonContext, block: Block, item: EventIt
         extrinsic: item.extrinsic.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new NominationPoolsRewardPaid({
             pool: eventData.poolId.toString(),
+            poolId: eventData.poolId.toString(),
             era: eventData.era,
             reward: eventData.reward,
             bonus: eventData.bonus,

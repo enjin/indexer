@@ -263,7 +263,7 @@ export async function eraRewardsProcessed(
         },
     })
 
-    return mappings.nominationPools.events.eraRewardsProcessedEventModel(item, data, pool.rate)
+    return mappings.nominationPools.events.eraRewardsProcessedEventModel(item, data, pool.rate, pool.tokenId)
 }
 
 export const discardEra = (apy: number, previousEraApy: number) => {

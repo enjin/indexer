@@ -27,6 +27,7 @@ export function earlyBirdSharesCapturedEventModel(
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new NominationPoolsEarlyBirdSharesCaptured({
             pool: data.poolId.toString(),
+            poolId: data.poolId.toString(),
             totalAccounts: data.totalAccounts,
         }),
     })

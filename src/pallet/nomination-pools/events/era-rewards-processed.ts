@@ -32,7 +32,8 @@ export function eraRewardsProcessed(event: EventItem): EraRewardsProcessed {
 export function eraRewardsProcessedEventModel(
     item: EventItem,
     data: EraRewardsProcessed,
-    rate: bigint = 0n
+    rate: bigint = 0n,
+    tokenId: bigint
 ): EventModel | undefined {
     return new EventModel({
         id: item.id,
@@ -40,6 +41,8 @@ export function eraRewardsProcessedEventModel(
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new NominationPoolsEraRewardsProcessed({
             pool: data.poolId.toString(),
+            poolId: data.poolId.toString(),
+            tokenId: tokenId,
             era: data.era,
             eraReward: `${data.poolId}-${data.era}`,
             rate,
