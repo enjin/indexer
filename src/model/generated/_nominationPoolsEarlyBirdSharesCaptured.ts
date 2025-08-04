@@ -1,16 +1,19 @@
 import assert from "assert"
 import * as marshal from "./marshal"
+import {NominationPool} from "./nominationPool.model"
 
 export class NominationPoolsEarlyBirdSharesCaptured {
     public readonly isTypeOf = 'NominationPoolsEarlyBirdSharesCaptured'
     private _pool!: string
     private _totalAccounts!: number
+    private _poolId!: string
 
     constructor(props?: Partial<Omit<NominationPoolsEarlyBirdSharesCaptured, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
         if (json != null) {
             this._pool = marshal.string.fromJSON(json.pool)
             this._totalAccounts = marshal.int.fromJSON(json.totalAccounts)
+            this._poolId = marshal.string.fromJSON(json.poolId)
         }
     }
 
@@ -32,11 +35,21 @@ export class NominationPoolsEarlyBirdSharesCaptured {
         this._totalAccounts = value
     }
 
+    get poolId(): string {
+        assert(this._poolId != null, 'uninitialized access')
+        return this._poolId
+    }
+
+    set poolId(value: string) {
+        this._poolId = value
+    }
+
     toJSON(): object {
         return {
             isTypeOf: this.isTypeOf,
             pool: this.pool,
             totalAccounts: this.totalAccounts,
+            poolId: this.poolId,
         }
     }
 }

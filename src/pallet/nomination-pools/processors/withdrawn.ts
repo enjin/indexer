@@ -107,5 +107,5 @@ export async function withdrawn(ctx: CommonContext, block: Block, item: EventIte
         })
     }
 
-    return mappings.nominationPools.events.withdrawnEventModel(item, data, pool.tokenId, pool.state)
+    return mappings.nominationPools.events.withdrawnEventModel(item, data, pool.tokenId)
 }

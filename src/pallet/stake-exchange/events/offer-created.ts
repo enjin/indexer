@@ -62,13 +62,13 @@ export function offerCreatedEventModel(
         name: StakeExchangeOfferCreated.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new StakeExchangeOfferCreated({
-            offerId: data.offerId,
+            offer: offer.id,
+            offerId: offer.offerId,
             account: data.offer.account,
             total: data.offer.total,
             minAverageCommission: 0,
             rate,
             minAverageRewardRate: rewardRateAsFixedu128,
-            tokenFilter: offer.id, // TokenFilter id is the same as the offer id
         }),
     })
 }

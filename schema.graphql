@@ -1114,29 +1114,31 @@ type ValidatorPrefsSet {
 }
 
 type StakeExchangeOfferCreated {
+  offer: StakeExchangeOffer!
   offerId: BigInt!
   account: Account!
   total: BigInt!
   rate: BigInt!
   minAverageCommission: Int! @deprecated
   minAverageRewardRate: BigInt!
-  tokenFilter: StakeExchangeTokenFilter
 }
 
 type StakeExchangeOfferCancelled {
+  offer: StakeExchangeOffer!
   offerId: BigInt!
   total: BigInt!
   account: Account
-  tokenFilter: StakeExchangeTokenFilter
 }
 
 type StakeExchangeLiquidityWithdrawn {
+  offer: StakeExchangeOffer!
   offerId: BigInt!
   account: Account!
   amount: BigInt!
 }
 
 type StakeExchangeLiquidityAdded {
+  offer: StakeExchangeOffer!
   offerId: BigInt!
   account: Account!
   amount: BigInt!
@@ -1148,91 +1150,99 @@ type StakeExchangeLiquidityConfigUpdated {
 }
 
 type StakeExchangeBuyOrderCompleted {
+  offer: StakeExchangeOffer!
   offerId: BigInt!
   account: Account!
-  tokenId: BigInt!
   amount: BigInt!
   rate: BigInt!
   points: BigInt!
-  pool: String!
+  pool: NominationPool!
+  poolId: String!
+  tokenId: BigInt!
 }
 
 type StakeExchangeOfferCompleted {
+  offer: StakeExchangeOffer!
   offerId: BigInt!
   account: Account!
-  tokenFilter: StakeExchangeTokenFilter
   amount: BigInt!
 }
 
 type NominationPoolsCreated {
-  pool: String!
-  tokenId: BigInt
+  pool: NominationPool!
+  poolId: String!
+  tokenId: BigInt!
 }
 
 type NominationPoolsDestroyed {
-  pool: String!
-  tokenId: BigInt
+  pool: NominationPool!
   account: Account!
-  state: PoolState!
+  poolId: String!
+  tokenId: BigInt!
 }
 
 type NominationPoolsPoolMutated {
-  pool: String!
+  pool: NominationPool!
   mutation: JSON!
-  state: PoolState!
+  poolId: String!
 }
 
 type NominationPoolsBonded {
-  pool: String!
+  pool: NominationPool!
   account: Account!
   bonded: BigInt!
-  tokenId: BigInt
-  state: PoolState!
+  poolId: String!
+  tokenId: BigInt!
 }
 
 type NominationPoolsUnbonded {
   account: Account!
   unbondingPoints: BigInt!
   balance: BigInt!
-  pool: String!
+  pool: NominationPool!
   era: Int!
-  tokenId: BigInt
-  state: PoolState!
+  poolId: String!
+  tokenId: BigInt!
 }
 
 type NominationPoolsWithdrawn {
+  pool: NominationPool!
   account: Account!
   balance: BigInt!
   points: BigInt!
   numSlashingSpans: Int
-  pool: String!
-  tokenId: BigInt
-  state: PoolState!
+  poolId: String!
+  tokenId: BigInt!
 }
 
 type NominationPoolsEraRewardsProcessed {
-  pool: String!
+  pool: NominationPool!
   era: Int!
   eraReward: EraReward!
   rate: BigInt!
+  poolId: String!
+  tokenId: BigInt!
 }
 
 type NominationPoolsRewardPaid {
-  pool: String!
+  pool: NominationPool!
   era: Int!
   validatorStash: Account!
   reward: BigInt!
   bonus: BigInt!
+  poolId: String!
 }
 
 type NominationPoolsPoolSlashed {
-  pool: String!
+  pool: NominationPool!
   balance: BigInt!
+  poolId: String!
 }
 
 type NominationPoolsNominated {
-  pool: String!
+  pool: NominationPool!
   validators: [String]!
+  poolId: String!
 }
 
 type NominationPoolsEarlyBirdBonusPaymentUnlocked {
@@ -1245,14 +1255,16 @@ type NominationPoolsEarlyBirdBonusCalculated {
 }
 
 type NominationPoolsEarlyBirdSharesCaptured {
-  pool: String!
+  pool: NominationPool!
   totalAccounts: Int!
+  poolId: String!
 }
 
 type NominationPoolsEarlyBirdBonusPaid {
-  pool: String!
+  pool: NominationPool!
   paymentId: Int!
   totalAccounts: Int!
+  poolId: String!
 }
 
 enum StakeExchangeTokenFilterType {

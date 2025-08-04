@@ -2,7 +2,7 @@ import { nominationPools } from '~/type/events'
 import { EventItem } from '~/contexts'
 import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
-import { Event as EventModel, Extrinsic, NominationPoolsDestroyed, PoolState } from '~/model'
+import { Event as EventModel, Extrinsic, NominationPoolsDestroyed } from '~/model'
 import { Destroyed } from '~/pallet/nomination-pools/events/types'
 
 export function destroyed(event: EventItem): Destroyed {
@@ -29,9 +29,9 @@ export function destroyedEventModel(
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new NominationPoolsDestroyed({
             pool: data.poolId.toString(),
-            tokenId,
+            poolId: data.poolId.toString(),
+            tokenId: tokenId,
             account: owner,
-            state: PoolState.Destroyed,
         }),
     })
 }
