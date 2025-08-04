@@ -17,11 +17,7 @@ export function withdrawn(event: EventItem): Withdrawn {
         })
 }
 
-export function withdrawnEventModel(
-    item: EventItem,
-    data: Withdrawn,
-    tokenId: bigint,
-): EventModel | undefined {
+export function withdrawnEventModel(item: EventItem, data: Withdrawn, tokenId: bigint): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: NominationPoolsWithdrawn.name,

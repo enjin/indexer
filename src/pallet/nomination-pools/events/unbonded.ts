@@ -17,11 +17,7 @@ export function unbonded(event: EventItem): Unbonded {
         })
 }
 
-export function unbondedEventModel(
-    item: EventItem,
-    data: Unbonded,
-    tokenId: bigint,
-): EventModel | undefined {
+export function unbondedEventModel(item: EventItem, data: Unbonded, tokenId: bigint): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: NominationPoolsUnbonded.name,
