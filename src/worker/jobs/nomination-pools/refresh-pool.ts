@@ -40,6 +40,17 @@ export async function refreshPool(job: Job, poolId: string) {
                 },
             })
         }
+    } else {
+        const token = await em.findOneOrFail(Token, {
+            where: {
+                id: `2-${pool.tokenId}`,
+            },
+        })
+
+        pool.degenToken = token
+        token.nominationPool = pool
+        await em.save(token)
+        await em.save(pool)
     }
 
     await em.save(pool)
