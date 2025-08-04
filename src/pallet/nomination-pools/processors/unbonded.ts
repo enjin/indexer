@@ -13,7 +13,7 @@ export async function unbonded(ctx: CommonContext, block: Block, item: EventItem
     const data: Unbonded = mappings.nominationPools.events.unbonded(item)
     // This event should never be emitted, but since it is, we are just going to ignore events with balance 0
     if (data.balance === 0n) {
-        return mappings.nominationPools.events.unbondedEventModel(item, data, 0n, PoolState.Open)
+        return mappings.nominationPools.events.unbondedEventModel(item, data, 0n)
     }
 
     const pool = await updatePool(ctx, block, data.poolId.toString())
@@ -76,5 +76,5 @@ export async function unbonded(ctx: CommonContext, block: Block, item: EventItem
         })
     }
 
-    return mappings.nominationPools.events.unbondedEventModel(item, data, pool.tokenId, pool.state)
+    return mappings.nominationPools.events.unbondedEventModel(item, data, pool.tokenId)
 }
