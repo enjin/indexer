@@ -71,5 +71,7 @@ export async function created(ctx: CommonContext, block: Block, item: EventItem)
 
     QueueUtils.dispatchComputePoolOffers(pool.id.toString())
 
-    return mappings.nominationPools.events.createdEventModel(item, eventData, callData.tokenId)
+    const owner: string = pool.degenToken.tokenAccounts[0].account.id
+
+    return mappings.nominationPools.events.createdEventModel(item, eventData, callData.tokenId, owner)
 }
