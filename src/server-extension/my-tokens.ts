@@ -31,7 +31,7 @@ registerEnumType(FreezeState, {
 })
 
 @ValidatorConstraint({ name: 'PublicKey', async: false })
-export class IsPublicKey implements ValidatorConstraintInterface {
+class IsPublicKey implements ValidatorConstraintInterface {
     validate(value: string): boolean {
         return isValidAddress(value)
     }

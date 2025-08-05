@@ -6,7 +6,7 @@ import { PoolMember, NominationPool, TokenAccount, EraReward, PoolMemberRewards 
 import { isValidAddress } from '~/util/tools'
 
 @ValidatorConstraint({ name: 'PublicKey', async: false })
-export class IsPublicKey implements ValidatorConstraintInterface {
+class IsPublicKey implements ValidatorConstraintInterface {
     validate(value: string) {
         return isValidAddress(value)
     }
