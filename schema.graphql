@@ -1170,6 +1170,7 @@ type StakeExchangeOfferCompleted {
 
 type NominationPoolsCreated {
   pool: NominationPool!
+  account: Account!
   poolId: String!
   tokenId: BigInt!
 }
@@ -1183,6 +1184,7 @@ type NominationPoolsDestroyed {
 
 type NominationPoolsPoolMutated {
   pool: NominationPool!
+  account: Account!
   mutation: JSON!
   poolId: String!
 }
@@ -1525,7 +1527,7 @@ type EarlyBirdMintEvent @entity {
   # Values
   amount: BigInt!  # sENJ amount minted
   reward: BigInt!  # Calculated reward to add
-  
+
   # Reference IDs
   eventId: String!
   extrinsicId: String

@@ -74,6 +74,8 @@ export async function poolMutated(ctx: CommonContext, block: Block, item: EventI
 
     await ctx.store.save(pool)
 
+    const owner: string = pool.degenToken.tokenAccounts[0].account.id
+
     await Sns.getInstance().send({
         id: item.id,
         name: item.name,
@@ -83,9 +85,9 @@ export async function poolMutated(ctx: CommonContext, block: Block, item: EventI
             extrinsic: item.extrinsic.id,
             name: pool.name,
             tokenId: `2-${pool.tokenId}`,
-            owner: pool.degenToken.tokenAccounts[0].account.id,
+            owner,
         },
     })
 
-    return mappings.nominationPools.events.poolMutatedEventModel(item, data)
+    return mappings.nominationPools.events.poolMutatedEventModel(item, data, owner)
 }

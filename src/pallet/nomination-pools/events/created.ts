@@ -25,7 +25,12 @@ export function created(event: EventItem): Created {
         })
 }
 
-export function createdEventModel(item: EventItem, data: Created, tokenId: bigint): EventModel | undefined {
+export function createdEventModel(
+    item: EventItem,
+    data: Created,
+    tokenId: bigint,
+    owner: string | undefined
+): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: NominationPoolsCreated.name,
@@ -34,6 +39,7 @@ export function createdEventModel(item: EventItem, data: Created, tokenId: bigin
             pool: data.poolId.toString(),
             poolId: data.poolId.toString(),
             tokenId: tokenId,
+            account: owner,
         }),
     })
 }
