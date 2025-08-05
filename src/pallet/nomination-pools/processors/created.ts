@@ -27,7 +27,12 @@ export async function created(ctx: CommonContext, block: Block, item: EventItem)
     }
 
     const token = await ctx.store.findOneOrFail(Token, {
-        where: { id: `2-${callData.tokenId}` },
+        where: { id: `2-${callData.tokenId}`, tokenAccounts: { balance: 1n } },
+        relations: {
+            tokenAccounts: {
+                account: true,
+            },
+        },
     })
 
     const pool = new NominationPool({
@@ -71,7 +76,7 @@ export async function created(ctx: CommonContext, block: Block, item: EventItem)
 
     QueueUtils.dispatchComputePoolOffers(pool.id.toString())
 
-    const owner: string = pool.degenToken.tokenAccounts[0].account.id
+    const owner: string = token.tokenAccounts[0].account.id
 
     return mappings.nominationPools.events.createdEventModel(item, eventData, callData.tokenId, owner)
 }
