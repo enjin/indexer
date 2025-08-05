@@ -26,13 +26,7 @@ export async function burned(
     }
 
     if (skipSave || data.amount === 0n) {
-        return mappings.multiTokens.events.burnedEventModel(
-            item,
-            data,
-            account,
-            token.collection ?? null,
-            token ?? null
-        )
+        return mappings.multiTokens.events.burnedEventModel(item, data, account, token.collection, token)
     }
 
     const tokenAccount = await ctx.store.findOne(TokenAccount, {
