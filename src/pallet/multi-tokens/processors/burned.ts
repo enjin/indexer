@@ -20,13 +20,14 @@ export async function burned(
         relations: { collection: true },
     })
 
-    if (!token) {
-        throwFatalError(`[Burned] We have not found token ${data.collectionId}-${data.tokenId}.`)
-        return
-    }
-
-    if (skipSave || data.amount === 0n) {
-        return mappings.multiTokens.events.burnedEventModel(item, data, account, token.collection, token)
+    if (skipSave || !token || data.amount === 0n) {
+        return mappings.multiTokens.events.burnedEventModel(
+            item,
+            data,
+            account,
+            token?.collection ?? null,
+            token ?? null
+        )
     }
 
     const tokenAccount = await ctx.store.findOne(TokenAccount, {
