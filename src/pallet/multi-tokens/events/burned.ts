@@ -50,10 +50,6 @@ export function burnedEventModel(
         }),
     })
 
-    if (!token) {
-        return event
-    }
-
     return [
         event,
         new AccountTokenEvent({
