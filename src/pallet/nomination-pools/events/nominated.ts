@@ -24,6 +24,7 @@ export function nominatedEventModel(item: EventItem, data: Nominated): EventMode
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new NominationPoolsNominated({
             pool: data.poolId.toString(),
+            poolId: data.poolId.toString(),
             validators: data.validators,
         }),
     })

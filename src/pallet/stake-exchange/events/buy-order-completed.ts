@@ -65,6 +65,7 @@ export function buyOrderCompletedEventModel(
             rate,
             points: (data.amount * rate) / 10n ** 18n,
             pool: poolId,
+            poolId: poolId,
             tokenId: data.tokenId,
         }),
     })
