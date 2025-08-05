@@ -19,6 +19,7 @@ export async function burned(
         where: { id: `${data.collectionId}-${data.tokenId}` },
         relations: { collection: true },
     })
+
     if (skipSave || !token || data.amount === 0n) {
         return mappings.multiTokens.events.burnedEventModel(
             item,

@@ -36,7 +36,7 @@ registerEnumType(AccountsTokensFreezeState, {
 })
 
 @ValidatorConstraint({ name: 'PublicKeyArray', async: false })
-export class IsPublicKeyArray implements ValidatorConstraintInterface {
+class IsPublicKeyArray implements ValidatorConstraintInterface {
     validate(value: string[]) {
         if (!Array.isArray(value)) return false
         return value.every((address) => isValidAddress(address))
