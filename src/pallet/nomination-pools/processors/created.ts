@@ -39,23 +39,9 @@ export async function created(ctx: CommonContext, block: Block, item: EventItem)
         throw new Error('Active era info is not provided')
     }
 
-    // TODO: Check if the destroyed event was never emitted before
-    const poolId = await ctx.store.findOneBy(NominationPool, { degenToken: { id: `2-${callData.tokenId}` } })
-    if (poolId) {
-        const earlyBirdShares = await ctx.store.findBy(EarlyBirdShares, { pool: { id: poolId.id } })
-        const poolMemberRewards = await ctx.store.findBy(PoolMemberRewards, { pool: { id: poolId.id } })
-        const poolMembers = await ctx.store.findBy(PoolMember, { pool: { id: poolId.id } })
-        const eraRewards = await ctx.store.findBy(EraReward, { pool: { id: poolId.id } })
-        const poolValidators = await ctx.store.findBy(PoolValidator, { pool: { id: poolId.id } })
-
-        if (earlyBirdShares.length) await ctx.store.remove(earlyBirdShares)
-        if (poolMemberRewards.length) await ctx.store.remove(poolMemberRewards)
-        if (poolMembers.length) await ctx.store.remove(poolMembers)
-        if (eraRewards.length) await ctx.store.remove(eraRewards)
-        if (poolValidators.length) await ctx.store.remove(poolValidators)
-
-        await ctx.store.remove(poolId)
-    }
+    const token = await ctx.store.findOneOrFail(Token, {
+        where: { id: `2-${callData.tokenId}` },
+    })
 
     const pool = new NominationPool({
         id: eventData.poolId.toString(),
@@ -92,6 +78,9 @@ export async function created(ctx: CommonContext, block: Block, item: EventItem)
     })
 
     await ctx.store.save(pool)
+
+    token.nominationPool = pool
+    await ctx.store.save(token)
 
     QueueUtils.dispatchComputePoolOffers(pool.id.toString())
 
