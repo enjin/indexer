@@ -1,9 +1,31 @@
-import { Field, ObjectType, Query, Resolver, Args, ArgsType } from 'type-graphql'
+import { Field, ObjectType, Query, Resolver, Args, ArgsType, registerEnumType } from 'type-graphql'
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
 import { Validate, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator'
 import { PoolMember, NominationPool, TokenAccount, EraReward, PoolMemberRewards } from '~/model'
 import { isValidAddress } from '~/util/tools'
+
+const stakingTimeFrameMap = {
+    DAY: '1 day',
+    WEEK: '7 days',
+    MONTH: '30 days',
+    YEAR: '365 days',
+    YTD: 'ytd',
+    ALL: '0',
+}
+
+enum StakingTimeframeInput {
+    DAY = 'DAY',
+    WEEK = 'WEEK',
+    MONTH = 'MONTH',
+    YEAR = 'YEAR',
+    YTD = 'YTD',
+    ALL = 'ALL',
+}
+
+registerEnumType(StakingTimeframeInput, {
+    name: 'StakingTimeframeInput',
+})
 
 @ValidatorConstraint({ name: 'PublicKey', async: false })
 class IsPublicKey implements ValidatorConstraintInterface {
@@ -21,6 +43,9 @@ class AccountStakingSummaryArgs {
     @Field(() => String)
     @Validate(IsPublicKey)
     accountId!: string
+
+    @Field(() => StakingTimeframeInput)
+    timeFrame!: StakingTimeframeInput
 }
 
 @ObjectType()
@@ -90,12 +115,9 @@ export class AccountStakingSummaryResolver {
 
     @Query(() => NominationPoolSummaryResponse)
     async accountStakingSummary(
-        @Args() { accountId }: AccountStakingSummaryArgs
+        @Args() { accountId, timeFrame }: AccountStakingSummaryArgs
     ): Promise<NominationPoolSummaryResponse> {
         const manager = await this.tx()
-
-        const thirtyDaysAgo = new Date()
-        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
         const poolData = await manager
             .getRepository(NominationPool)
@@ -122,7 +144,7 @@ export class AccountStakingSummaryResolver {
             }
         }
 
-        const rewardsData = await manager
+        const rewardsQueryBuilder = manager
             .getRepository(PoolMemberRewards)
             .createQueryBuilder('pmr')
             .innerJoin('pmr.reward', 'era_reward')
@@ -134,7 +156,16 @@ export class AccountStakingSummaryResolver {
             .addSelect('SUM(pmr.points)', 'totalPoints')
             .addSelect('SUM(pmr.rewards)', 'totalRewards')
             .where('pmr.member IN (:...memberIds)', { memberIds })
-            .andWhere('era.startAt >= :thirtyDaysAgo', { thirtyDaysAgo })
+
+        if (timeFrame !== StakingTimeframeInput.ALL) {
+            if (timeFrame === StakingTimeframeInput.YTD) {
+                rewardsQueryBuilder.andWhere(`era.startAt >= DATE_TRUNC('year', NOW())`)
+            } else {
+                rewardsQueryBuilder.andWhere(`era.startAt >= NOW() - INTERVAL '${stakingTimeFrameMap[timeFrame]}'`)
+            }
+        }
+
+        const rewardsData = await rewardsQueryBuilder
             .groupBy('era.index')
             .addGroupBy('era.startAt')
             .orderBy('era.index', 'ASC')
