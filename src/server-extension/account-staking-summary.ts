@@ -1,9 +1,31 @@
-import { Field, ObjectType, Query, Resolver, Args, ArgsType } from 'type-graphql'
+import { Field, ObjectType, Query, Resolver, Args, ArgsType, registerEnumType } from 'type-graphql'
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
 import { Validate, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator'
 import { PoolMember, NominationPool, TokenAccount, EraReward, PoolMemberRewards } from '~/model'
 import { isValidAddress } from '~/util/tools'
+
+const stakingTimeFrameMap = {
+    DAY: '1 day',
+    WEEK: '7 days',
+    MONTH: '30 days',
+    YEAR: '365 days',
+    YTD: 'ytd',
+    ALL: '0',
+}
+
+enum StakingTimeframeInput {
+    DAY = 'DAY',
+    WEEK = 'WEEK',
+    MONTH = 'MONTH',
+    YEAR = 'YEAR',
+    YTD = 'YTD',
+    ALL = 'ALL',
+}
+
+registerEnumType(StakingTimeframeInput, {
+    name: 'StakingTimeframeInput',
+})
 
 @ValidatorConstraint({ name: 'PublicKey', async: false })
 class IsPublicKey implements ValidatorConstraintInterface {
@@ -21,6 +43,9 @@ class AccountStakingSummaryArgs {
     @Field(() => String)
     @Validate(IsPublicKey)
     accountId!: string
+
+    @Field(() => StakingTimeframeInput)
+    timeFrame!: StakingTimeframeInput
 }
 
 @ObjectType()
@@ -40,8 +65,11 @@ export class PoolMemberReward {
     @Field(() => Number)
     apy!: number
 
-    @Field(() => String)
-    bonus!: string
+    @Field(() => Number)
+    averageApy!: number
+
+    @Field(() => BigInt)
+    rewards!: BigInt
 }
 
 @ObjectType()
@@ -51,9 +79,6 @@ export class NominationPoolSummary {
 
     @Field(() => String)
     name!: string
-
-    @Field(() => BigInt)
-    bonded!: BigInt
 
     @Field(() => BigInt)
     accumulatedRewards!: BigInt
@@ -90,12 +115,9 @@ export class AccountStakingSummaryResolver {
 
     @Query(() => NominationPoolSummaryResponse)
     async accountStakingSummary(
-        @Args() { accountId }: AccountStakingSummaryArgs
+        @Args() { accountId, timeFrame }: AccountStakingSummaryArgs
     ): Promise<NominationPoolSummaryResponse> {
         const manager = await this.tx()
-
-        const thirtyDaysAgo = new Date()
-        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
         const poolData = await manager
             .getRepository(NominationPool)
@@ -108,7 +130,6 @@ export class AccountStakingSummaryResolver {
             .addSelect('pool.apy', 'apy')
             .addSelect('pool.rate', 'rate')
             .addSelect('token_account.balance', 'balance')
-            .addSelect('pool_member.bonded', 'bonded')
             .addSelect('pool_member.accumulatedRewards', 'accumulatedRewards')
             .addSelect('pool_member.id', 'memberId')
             .where('pool_member.account = :accountId', { accountId })
@@ -123,7 +144,7 @@ export class AccountStakingSummaryResolver {
             }
         }
 
-        const rewardsData = await manager
+        const rewardsQueryBuilder = manager
             .getRepository(PoolMemberRewards)
             .createQueryBuilder('pmr')
             .innerJoin('pmr.reward', 'era_reward')
@@ -131,12 +152,20 @@ export class AccountStakingSummaryResolver {
             .select('era.index', 'era')
             .addSelect('era.startAt', 'eraStartAt')
             .addSelect('AVG(era_reward.apy)', 'apy')
-            .addSelect('AVG(era_reward.changeInRate)', 'changeInRate')
+            .addSelect('AVG(era_reward.averageApy)', 'averageApy')
             .addSelect('SUM(pmr.points)', 'totalPoints')
-            .addSelect('SUM(pmr.points * (era_reward.changeInRate / 1000000000000000000))', 'totalBonus')
-            .addSelect('COUNT(pmr.id)', 'rewardCount')
+            .addSelect('SUM(pmr.rewards)', 'totalRewards')
             .where('pmr.member IN (:...memberIds)', { memberIds })
-            .andWhere('era.startAt >= :thirtyDaysAgo', { thirtyDaysAgo })
+
+        if (timeFrame !== StakingTimeframeInput.ALL) {
+            if (timeFrame === StakingTimeframeInput.YTD) {
+                rewardsQueryBuilder.andWhere(`era.startAt >= DATE_TRUNC('year', NOW())`)
+            } else {
+                rewardsQueryBuilder.andWhere(`era.startAt >= NOW() - INTERVAL '${stakingTimeFrameMap[timeFrame]}'`)
+            }
+        }
+
+        const rewardsData = await rewardsQueryBuilder
             .groupBy('era.index')
             .addGroupBy('era.startAt')
             .orderBy('era.index', 'ASC')
@@ -148,8 +177,8 @@ export class AccountStakingSummaryResolver {
             era: reward.era,
             eraStartAt: reward.eraStartAt,
             apy: reward.apy,
-            changeInRate: BigInt(Math.floor(reward.changeInRate || 0)),
-            bonus: reward.totalBonus,
+            averageApy: reward.averageApy,
+            rewards: reward.totalRewards,
         }))
 
         const pools = poolData.map(
@@ -161,7 +190,6 @@ export class AccountStakingSummaryResolver {
                     apy: pool.apy,
                     rate: BigInt(pool.rate),
                     balance: BigInt(pool.balance),
-                    bonded: BigInt(pool.bonded),
                     accumulatedRewards: BigInt(pool.accumulatedRewards || '0'),
                 })
         )
