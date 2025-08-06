@@ -40,8 +40,11 @@ export class PoolMemberReward {
     @Field(() => Number)
     apy!: number
 
-    @Field(() => String)
-    bonus!: string
+    @Field(() => Number)
+    averageApy!: number
+
+    @Field(() => BigInt)
+    rewards!: BigInt
 }
 
 @ObjectType()
@@ -51,9 +54,6 @@ export class NominationPoolSummary {
 
     @Field(() => String)
     name!: string
-
-    @Field(() => BigInt)
-    bonded!: BigInt
 
     @Field(() => BigInt)
     accumulatedRewards!: BigInt
@@ -108,7 +108,6 @@ export class AccountStakingSummaryResolver {
             .addSelect('pool.apy', 'apy')
             .addSelect('pool.rate', 'rate')
             .addSelect('token_account.balance', 'balance')
-            .addSelect('pool_member.bonded', 'bonded')
             .addSelect('pool_member.accumulatedRewards', 'accumulatedRewards')
             .addSelect('pool_member.id', 'memberId')
             .where('pool_member.account = :accountId', { accountId })
@@ -131,10 +130,9 @@ export class AccountStakingSummaryResolver {
             .select('era.index', 'era')
             .addSelect('era.startAt', 'eraStartAt')
             .addSelect('AVG(era_reward.apy)', 'apy')
-            .addSelect('AVG(era_reward.changeInRate)', 'changeInRate')
+            .addSelect('AVG(era_reward.averageApy)', 'averageApy')
             .addSelect('SUM(pmr.points)', 'totalPoints')
-            .addSelect('SUM(pmr.points * (era_reward.changeInRate / 1000000000000000000))', 'totalBonus')
-            .addSelect('COUNT(pmr.id)', 'rewardCount')
+            .addSelect('SUM(pmr.rewards)', 'totalRewards')
             .where('pmr.member IN (:...memberIds)', { memberIds })
             .andWhere('era.startAt >= :thirtyDaysAgo', { thirtyDaysAgo })
             .groupBy('era.index')
@@ -148,8 +146,8 @@ export class AccountStakingSummaryResolver {
             era: reward.era,
             eraStartAt: reward.eraStartAt,
             apy: reward.apy,
-            changeInRate: BigInt(Math.floor(reward.changeInRate || 0)),
-            bonus: reward.totalBonus,
+            averageApy: reward.averageApy,
+            rewards: reward.totalRewards,
         }))
 
         const pools = poolData.map(
@@ -161,7 +159,6 @@ export class AccountStakingSummaryResolver {
                     apy: pool.apy,
                     rate: BigInt(pool.rate),
                     balance: BigInt(pool.balance),
-                    bonded: BigInt(pool.bonded),
                     accumulatedRewards: BigInt(pool.accumulatedRewards || '0'),
                 })
         )
