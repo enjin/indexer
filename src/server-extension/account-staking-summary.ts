@@ -30,6 +30,7 @@ registerEnumType(StakingTimeframeInput, {
 @ValidatorConstraint({ name: 'PublicKey', async: false })
 class IsPublicKey implements ValidatorConstraintInterface {
     validate(value: string) {
+        if (!value) return true
         return isValidAddress(value)
     }
 
@@ -38,11 +39,28 @@ class IsPublicKey implements ValidatorConstraintInterface {
     }
 }
 
+@ValidatorConstraint({ name: 'PublicKeyArray', async: false })
+class IsPublicKeyArray implements ValidatorConstraintInterface {
+    validate(value: string[]) {
+        if (!value) return true
+        if (!Array.isArray(value)) return false
+        return value.every((v) => isValidAddress(v))
+    }
+
+    defaultMessage() {
+        return 'Invalid public key array! All values must be valid addresses.'
+    }
+}
+
 @ArgsType()
 class AccountStakingSummaryArgs {
-    @Field(() => String)
+    @Field(() => String, { nullable: true })
     @Validate(IsPublicKey)
-    accountId!: string
+    accountId?: string
+
+    @Field(() => [String], { nullable: true })
+    @Validate(IsPublicKeyArray)
+    accountIds?: string[]
 
     @Field(() => StakingTimeframeInput)
     timeFrame!: StakingTimeframeInput
@@ -118,9 +136,26 @@ export class AccountStakingSummaryResolver {
 
     @Query(() => NominationPoolSummaryResponse)
     async accountStakingSummary(
-        @Args() { accountId, timeFrame }: AccountStakingSummaryArgs
+        @Args() { accountId, accountIds, timeFrame }: AccountStakingSummaryArgs
     ): Promise<NominationPoolSummaryResponse> {
         const manager = await this.tx()
+
+        // Merge accountId and accountIds into a single array
+        let accounts: string[] = []
+        if (accountId) {
+            accounts.push(accountId)
+        }
+        if (accountIds && accountIds.length > 0) {
+            accounts.push(...accountIds)
+        }
+
+        // Ensure we have at least one account (this is also validated at the Args level)
+        if (accounts.length === 0) {
+            throw new Error('Either accountId or accountIds must be provided')
+        }
+
+        // Remove duplicates
+        accounts = [...new Set(accounts)]
 
         const poolData = await manager
             .getRepository(NominationPool)
@@ -135,7 +170,7 @@ export class AccountStakingSummaryResolver {
             .addSelect('COALESCE(token_account.balance, 0)', 'balance')
             .addSelect('pool_member.accumulatedRewards', 'accumulatedRewards')
             .addSelect('pool_member.id', 'memberId')
-            .where('pool_member.account = :accountId', { accountId })
+            .where('pool_member.account IN (:...accounts)', { accounts: accounts })
             .getRawMany()
 
         const memberIds = poolData.map((pool) => pool.memberId)
