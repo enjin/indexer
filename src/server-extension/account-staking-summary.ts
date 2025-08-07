@@ -158,7 +158,7 @@ export class AccountStakingSummaryResolver {
             .addSelect('AVG(era_reward.averageApy)', 'averageApy')
             .addSelect('SUM(pmr.points)', 'totalPoints')
             .addSelect('SUM(pmr.rewards)', 'totalRewards')
-            .addSelect('SUM(pmr.accumulated_rewards)', 'totalAccumulatedRewards')
+            .addSelect('SUM(SUM(pmr.rewards)) OVER (ORDER BY era.index ASC)', 'totalAccumulatedRewards')
             .where('pmr.member IN (:...memberIds)', { memberIds })
 
         if (timeFrame !== StakingTimeframeInput.ALL) {
