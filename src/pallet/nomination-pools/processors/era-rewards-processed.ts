@@ -169,7 +169,8 @@ export async function eraRewardsProcessed(
         const currentApy = newBalance.div(previousBalance).pow(processorConfig.erasPerYear).sub(1).mul(100)
         reward.apy = currentApy.toNumber()
 
-        apy = computeEraApy(eraRewards, reward)
+        eraRewards.unshift(reward)
+        apy = computeEraApy(eraRewards, pool.apy)
     }
 
     if (
@@ -266,44 +267,21 @@ export async function eraRewardsProcessed(
     return mappings.nominationPools.events.eraRewardsProcessedEventModel(item, data, pool.rate, pool.tokenId)
 }
 
-export const discardEra = (apy: number, previousEraApy: number) => {
-    const apyDifferencePercent = Math.abs((apy - previousEraApy) / previousEraApy) * 100
+export const discardEra = (apy: number, totalApy: number) => {
+    if (totalApy === 0) {
+        return false
+    }
+    const apyDifferencePercent = Math.abs((apy - totalApy) / totalApy) * 100
     return apyDifferencePercent >= 50
 }
 
-export const computeEraApy = (eraRewards: EraReward[], reward: EraReward | undefined | null): Big => {
-    if (reward) {
-        eraRewards.unshift(reward)
-    }
-
+export const computeEraApy = (eraRewards: EraReward[], poolApy: number): Big => {
     if (eraRewards.length === 1) {
         return Big(eraRewards[0].apy)
     }
 
-    let sumOfApy: number
-    let previousCountedApy: number
+    const validApys = eraRewards.filter((era) => !discardEra(era.apy, poolApy))
+    const sumOfApy = validApys.reduce((acc, era) => acc + era.apy, 0)
 
-    if (!discardEra(eraRewards[0].apy, eraRewards[1].apy)) {
-        // First era is valid
-        sumOfApy = eraRewards[0].apy
-        previousCountedApy = eraRewards[0].apy
-    } else {
-        // First era is an outlier, use second era APY
-        sumOfApy = eraRewards[1].apy
-        previousCountedApy = eraRewards[1].apy
-    }
-
-    // Process remaining eras
-    for (let i = 1; i < eraRewards.length; i++) {
-        const era = eraRewards[i]
-
-        if (!discardEra(era.apy, previousCountedApy)) {
-            previousCountedApy = era.apy
-            sumOfApy += era.apy
-        } else {
-            sumOfApy += previousCountedApy
-        }
-    }
-
-    return Big(sumOfApy).div(eraRewards.length)
+    return Big(sumOfApy).div(validApys.length)
 }
