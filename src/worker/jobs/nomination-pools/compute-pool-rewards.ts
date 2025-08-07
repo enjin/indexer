@@ -1,4 +1,4 @@
-import { NominationPool } from '~/model'
+import { EraReward, NominationPool } from '~/model'
 import { dataHandlerContext } from '~/contexts'
 import { Job } from 'bullmq'
 import { computeEraApy } from '~/pallet/nomination-pools/processors'
@@ -34,7 +34,7 @@ export async function computePoolRewards(_job: Job, id?: string): Promise<void> 
         return
     }
 
-    const totalRewards = pool.eraRewards.reduce((acc, reward) => {
+    const totalRewards = pool.eraRewards.reduce((acc: bigint, reward: EraReward) => {
         return acc + (reward.commission?.amount ?? 0n)
     }, 0n)
 
@@ -42,7 +42,7 @@ export async function computePoolRewards(_job: Job, id?: string): Promise<void> 
 
     const eraRewards = pool.eraRewards.slice(0, 15)
 
-    pool.apy = computeEraApy(eraRewards, null).toNumber()
+    pool.apy = computeEraApy(eraRewards, pool.apy).toNumber()
 
     await ctx.store.save(pool)
 
