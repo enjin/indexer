@@ -70,6 +70,9 @@ export class PoolMemberReward {
 
     @Field(() => BigInt)
     rewards!: BigInt
+
+    @Field(() => BigInt)
+    accumulatedRewards!: BigInt
 }
 
 @ObjectType()
@@ -123,13 +126,13 @@ export class AccountStakingSummaryResolver {
             .getRepository(NominationPool)
             .createQueryBuilder('pool')
             .innerJoin(PoolMember, 'pool_member', 'pool.id = pool_member.pool')
-            .innerJoin(TokenAccount, 'token_account', 'token_account.id = pool_member.token_account_id')
+            .leftJoin(TokenAccount, 'token_account', 'token_account.id = pool_member.token_account_id')
             .select('pool.id', 'id')
             .addSelect('pool.name', 'name')
             .addSelect('pool.capacity', 'capacity')
             .addSelect('pool.apy', 'apy')
             .addSelect('pool.rate', 'rate')
-            .addSelect('token_account.balance', 'balance')
+            .addSelect('COALESCE(token_account.balance, 0)', 'balance')
             .addSelect('pool_member.accumulatedRewards', 'accumulatedRewards')
             .addSelect('pool_member.id', 'memberId')
             .where('pool_member.account = :accountId', { accountId })
@@ -155,6 +158,7 @@ export class AccountStakingSummaryResolver {
             .addSelect('AVG(era_reward.averageApy)', 'averageApy')
             .addSelect('SUM(pmr.points)', 'totalPoints')
             .addSelect('SUM(pmr.rewards)', 'totalRewards')
+            .addSelect('SUM(pmr.accumulated_rewards)', 'totalAccumulatedRewards')
             .where('pmr.member IN (:...memberIds)', { memberIds })
 
         if (timeFrame !== StakingTimeframeInput.ALL) {
@@ -179,6 +183,7 @@ export class AccountStakingSummaryResolver {
             apy: reward.apy,
             averageApy: reward.averageApy,
             rewards: reward.totalRewards,
+            accumulatedRewards: reward.totalAccumulatedRewards,
         }))
 
         const pools = poolData.map(
