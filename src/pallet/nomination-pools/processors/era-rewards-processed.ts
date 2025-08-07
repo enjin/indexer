@@ -283,5 +283,9 @@ export const computeEraApy = (eraRewards: EraReward[], poolApy: number): Big => 
     const validApys = eraRewards.filter((era) => !discardEra(era.apy, poolApy))
     const sumOfApy = validApys.reduce((acc, era) => acc + era.apy, 0)
 
+    if (validApys.length === 0) {
+        return Big(poolApy)
+    }
+
     return Big(sumOfApy).div(validApys.length)
 }
