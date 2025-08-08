@@ -18,7 +18,7 @@ export async function syncPools(job: Job): Promise<void> {
 
     for (const pool of pools) {
         QueueUtils.dispatchRefreshPool(pool.id)
-        // QueueUtils.dispatchComputePoolRewards(pool.id)
+        QueueUtils.dispatchComputePoolRewards(pool.id)
         // for (const member of pool.members) {
         // QueueUtils.dispatchComputePoolMemberRewards(member.id)
         // }
