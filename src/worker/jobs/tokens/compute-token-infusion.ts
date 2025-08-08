@@ -7,7 +7,7 @@ export async function computeTokenInfusion(_job: Job, id: string): Promise<void>
     const ctx = await dataHandlerContext()
     const { api } = await Rpc.getInstance()
 
-    const token = await ctx.store.findOneByOrFail<Token>(Token, { id })
+    const token = await ctx.store.findOneOrFail<Token>(Token, { where: { id }, relations: { collection: true } })
 
     const rpcToken = await api.query.multiTokens.tokens(token.collection.id, token.tokenId)
     const rpcTokenJson: any = rpcToken.toJSON()
