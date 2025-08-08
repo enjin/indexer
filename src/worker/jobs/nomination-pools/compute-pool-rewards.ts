@@ -37,7 +37,7 @@ export async function computePoolRewards(_job: Job, id?: string): Promise<void> 
         }
     }
 
-    pool.apy = computeEraApy(eraRewards, pool.apy).toNumber()
+    pool.apy = computeEraApy(eraRewards.slice(0, 15), pool.apy).toNumber()
 
     await ctx.store.save(pool)
 
