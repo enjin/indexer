@@ -58,9 +58,12 @@ async function bootstrap() {
             supportHotBlocks: true,
         }),
         async (ctx) => {
+            let flushBufferedWrites: (() => Promise<void>) | null = null
             try {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 ctx.log = logger as any
+
+                // Provide a function reference for final flush in case of error
 
                 if (ctx.blocks[0].header.height === 0) {
                     await startWarpSync(ctx, ctx.blocks[0].header)
@@ -87,10 +90,11 @@ async function bootstrap() {
                     ],
                 })
                 ctx.store = bufferedStore
+                flushBufferedWrites = flushBuffer
 
                 resetBuffer()
-
                 for (const block of ctx.blocks) {
+                    // Clear any leftover ops at the start of the block (safety)
                     const blockStart = Date.now()
                     if (block.header.height % 1000 === 0) {
                         ctx.log.info(
@@ -98,48 +102,61 @@ async function bootstrap() {
                         )
                     }
 
-                    const extrinsics: Extrinsic[] = []
-                    const signers = new Set<string>()
-                    const eventsCollection: Event[] = []
-                    const accountTokenEvents: AccountTokenEvent[] = []
+                    try {
+                        const extrinsics: Extrinsic[] = []
+                        const signers = new Set<string>()
+                        const eventsCollection: Event[] = []
+                        const accountTokenEvents: AccountTokenEvent[] = []
 
-                    // Clear any leftover ops at the start of the block (safety)
+                        for (const extrinsic of block.extrinsics) {
+                            const [s, e] = await processExtrinsics(ctx, block.header, block.events, extrinsic)
+                            if (s) signers.add(s)
+                            if (e) extrinsics.push(e)
+                        }
 
-                    for (const extrinsic of block.extrinsics) {
-                        const [s, e] = await processExtrinsics(ctx, block.header, block.events, extrinsic)
-                        if (s) signers.add(s)
-                        if (e) extrinsics.push(e)
-                    }
+                        for (const call of block.calls) {
+                            await callHandler(ctx, block.header, call)
+                        }
 
-                    for (const call of block.calls) {
-                        await callHandler(ctx, block.header, call)
-                    }
+                        for (const eventItem of block.events) {
+                            const [e, a] = await processEvents(
+                                ctx,
+                                block.header,
+                                eventItem,
+                                dataService.lastBlockNumber
+                            )
+                            if (e) eventsCollection.push(e)
+                            if (a) accountTokenEvents.push(a)
+                        }
 
-                    for (const eventItem of block.events) {
-                        const [e, a] = await processEvents(ctx, block.header, eventItem, dataService.lastBlockNumber)
-                        if (e) eventsCollection.push(e)
-                        if (a) accountTokenEvents.push(a)
-                    }
+                        if (block.header.height > dataService.lastBlockNumber) {
+                            p.balances.processors.addAccountsToSet(Array.from(signers))
+                            await p.balances.processors.saveAccounts(ctx, block.header)
+                        }
 
-                    if (block.header.height > dataService.lastBlockNumber) {
-                        p.balances.processors.addAccountsToSet(Array.from(signers))
-                        await p.balances.processors.saveAccounts(ctx, block.header)
-                    }
+                        for (const chunk of _.chunk(extrinsics, 1000)) {
+                            await ctx.store.save(chunk)
+                        }
+                        for (const chunk of _.chunk(eventsCollection, 1000)) {
+                            await ctx.store.save(chunk)
+                        }
+                        for (const chunk of _.chunk(accountTokenEvents, 1000)) {
+                            await ctx.store.save(chunk)
+                        }
 
-                    for (const chunk of _.chunk(extrinsics, 1000)) {
-                        await ctx.store.save(chunk)
-                    }
-                    for (const chunk of _.chunk(eventsCollection, 1000)) {
-                        await ctx.store.save(chunk)
-                    }
-                    for (const chunk of _.chunk(accountTokenEvents, 1000)) {
-                        await ctx.store.save(chunk)
-                    }
-
-                    const blockEnd = Date.now()
-                    const durationMs = blockEnd - blockStart
-                    if (durationMs > 1000) {
-                        ctx.log.warn(`Block ${block.header.height} took ${durationMs}ms to process`)
+                        const blockEnd = Date.now()
+                        const durationMs = blockEnd - blockStart
+                        if (durationMs > 1000) {
+                            ctx.log.warn(`Block ${block.header.height} took ${durationMs}ms to process`)
+                        }
+                    } catch (err) {
+                        // Best-effort persist current buffered writes before bubbling error
+                        try {
+                            await flushBuffer()
+                        } catch (e) {
+                            ctx.log.error(`Failed to flush buffered writes after error: ${String(e)}`)
+                        }
+                        throw err
                     }
                 }
 
@@ -169,6 +186,15 @@ async function bootstrap() {
             } catch (error) {
                 await QueueUtils.resumeQueue(QueuesEnum.COLLECTIONS)
                 await QueueUtils.resumeQueue(QueuesEnum.METADATA)
+
+                // Attempt a final flush to avoid losing buffered writes
+                try {
+                    if (flushBufferedWrites) {
+                        await flushBufferedWrites()
+                    }
+                } catch (e) {
+                    logger.error(`Final flush after error failed: ${String(e)}`)
+                }
 
                 logger.fatal(error)
                 Sentry.captureException(error)

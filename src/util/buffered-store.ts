@@ -215,9 +215,28 @@ export function createBufferedStore(
             if (id && res) cacheSet(entityClass, id, res)
             return res
         }
-        if (relationsRequested && ops.length > 0) {
-            // Ensure DB reflects buffered writes before relation-heavy reads
-            return doFlush().then(performDbRead)
+        // Do NOT flush here to avoid referential FK issues caused by partial flushes
+        if (where && typeof where === 'object') {
+            // Prefer pending upserts if they satisfy the where conditions (even when relations are requested)
+            const pendingMap = pendingUpsertsByClass.get(entityClass) || pendingUpsertsByName.get(entityClass.name)
+            if (pendingMap && pendingMap.size > 0) {
+                const entries = Array.from(pendingMap.values())
+                // id match already handled below; here handle non-id simple equality (e.g., offerId)
+                const keys = Object.keys(where).filter((k) => k !== 'id')
+                if (keys.length > 0) {
+                    for (const ent of entries) {
+                        let ok = true
+                        for (const k of keys) {
+                            // @ts-ignore
+                            if ((ent as any)[k] !== (where as any)[k]) {
+                                ok = false
+                                break
+                            }
+                        }
+                        if (ok) return Promise.resolve(ent)
+                    }
+                }
+            }
         }
         if (id) {
             if (
@@ -227,16 +246,17 @@ export function createBufferedStore(
                 if (method.endsWith('OrFail')) throw new Error('EntityNotFoundError: buffered delete')
                 return Promise.resolve(null)
             }
+            // Always prefer pending upserts for id lookups to see in-block writes
+            const pendingByClass = pendingUpsertsByClass.get(entityClass)?.get(id)
+            if (pendingByClass) return Promise.resolve(pendingByClass)
+            const pendingByName = pendingUpsertsByName.get(entityClass.name)?.get(id)
+            if (pendingByName) return Promise.resolve(pendingByName)
+            // When relations are requested, otherwise fetch from DB
             if (!relationsRequested) {
-                const pendingByClass = pendingUpsertsByClass.get(entityClass)?.get(id)
-                if (pendingByClass) return Promise.resolve(pendingByClass)
-                const pendingByName = pendingUpsertsByName.get(entityClass.name)?.get(id)
-                if (pendingByName) return Promise.resolve(pendingByName)
                 const cached = cacheGet(entityClass, id)
                 if (cached) return Promise.resolve(cached)
             }
         }
-        // Fallback to DB when relations are requested or not found in buffer/cache
         return performDbRead()
     }
 
