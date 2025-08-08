@@ -30,6 +30,7 @@ registerEnumType(StakingTimeframeInput, {
 @ValidatorConstraint({ name: 'PublicKey', async: false })
 class IsPublicKey implements ValidatorConstraintInterface {
     validate(value: string) {
+        if (!value) return true
         return isValidAddress(value)
     }
 
@@ -38,11 +39,28 @@ class IsPublicKey implements ValidatorConstraintInterface {
     }
 }
 
+@ValidatorConstraint({ name: 'PublicKeyArray', async: false })
+class IsPublicKeyArray implements ValidatorConstraintInterface {
+    validate(value: string[]) {
+        if (!value) return true
+        if (!Array.isArray(value)) return false
+        return value.every((v) => isValidAddress(v))
+    }
+
+    defaultMessage() {
+        return 'Invalid public key array! All values must be valid addresses.'
+    }
+}
+
 @ArgsType()
 class AccountStakingSummaryArgs {
-    @Field(() => String)
+    @Field(() => String, { nullable: true })
     @Validate(IsPublicKey)
-    accountId!: string
+    accountId?: string
+
+    @Field(() => [String], { nullable: true })
+    @Validate(IsPublicKeyArray)
+    accountIds?: string[]
 
     @Field(() => StakingTimeframeInput)
     timeFrame!: StakingTimeframeInput
@@ -62,6 +80,9 @@ export class PoolMemberReward {
     @Field(() => Date)
     eraStartAt!: Date
 
+    @Field(() => Date)
+    eraEndAt!: Date
+
     @Field(() => Number)
     apy!: number
 
@@ -70,6 +91,9 @@ export class PoolMemberReward {
 
     @Field(() => BigInt)
     rewards!: BigInt
+
+    @Field(() => BigInt)
+    accumulatedRewards!: BigInt
 }
 
 @ObjectType()
@@ -115,24 +139,41 @@ export class AccountStakingSummaryResolver {
 
     @Query(() => NominationPoolSummaryResponse)
     async accountStakingSummary(
-        @Args() { accountId, timeFrame }: AccountStakingSummaryArgs
+        @Args() { accountId, accountIds, timeFrame }: AccountStakingSummaryArgs
     ): Promise<NominationPoolSummaryResponse> {
         const manager = await this.tx()
+
+        // Merge accountId and accountIds into a single array
+        let accounts: string[] = []
+        if (accountId) {
+            accounts.push(accountId)
+        }
+        if (accountIds && accountIds.length > 0) {
+            accounts.push(...accountIds)
+        }
+
+        // Ensure we have at least one account (this is also validated at the Args level)
+        if (accounts.length === 0) {
+            throw new Error('Either accountId or accountIds must be provided')
+        }
+
+        // Remove duplicates
+        accounts = [...new Set(accounts)]
 
         const poolData = await manager
             .getRepository(NominationPool)
             .createQueryBuilder('pool')
             .innerJoin(PoolMember, 'pool_member', 'pool.id = pool_member.pool')
-            .innerJoin(TokenAccount, 'token_account', 'token_account.id = pool_member.token_account_id')
+            .leftJoin(TokenAccount, 'token_account', 'token_account.id = pool_member.token_account_id')
             .select('pool.id', 'id')
             .addSelect('pool.name', 'name')
             .addSelect('pool.capacity', 'capacity')
             .addSelect('pool.apy', 'apy')
             .addSelect('pool.rate', 'rate')
-            .addSelect('token_account.balance', 'balance')
+            .addSelect('COALESCE(token_account.balance, 0)', 'balance')
             .addSelect('pool_member.accumulatedRewards', 'accumulatedRewards')
             .addSelect('pool_member.id', 'memberId')
-            .where('pool_member.account = :accountId', { accountId })
+            .where('pool_member.account IN (:...accounts)', { accounts: accounts })
             .getRawMany()
 
         const memberIds = poolData.map((pool) => pool.memberId)
@@ -151,17 +192,20 @@ export class AccountStakingSummaryResolver {
             .innerJoin('era_reward.era', 'era')
             .select('era.index', 'era')
             .addSelect('era.startAt', 'eraStartAt')
+            .addSelect('era.endAt', 'eraEndAt')
             .addSelect('AVG(era_reward.apy)', 'apy')
             .addSelect('AVG(era_reward.averageApy)', 'averageApy')
             .addSelect('SUM(pmr.points)', 'totalPoints')
             .addSelect('SUM(pmr.rewards)', 'totalRewards')
+            .addSelect('SUM(SUM(pmr.rewards)) OVER (ORDER BY era.index ASC)', 'totalAccumulatedRewards')
             .where('pmr.member IN (:...memberIds)', { memberIds })
+            .andWhere('era.endAt IS NOT NULL')
 
         if (timeFrame !== StakingTimeframeInput.ALL) {
             if (timeFrame === StakingTimeframeInput.YTD) {
-                rewardsQueryBuilder.andWhere(`era.startAt >= DATE_TRUNC('year', NOW())`)
+                rewardsQueryBuilder.andWhere(`era.endAt >= DATE_TRUNC('year', NOW())`)
             } else {
-                rewardsQueryBuilder.andWhere(`era.startAt >= NOW() - INTERVAL '${stakingTimeFrameMap[timeFrame]}'`)
+                rewardsQueryBuilder.andWhere(`era.endAt >= NOW() - INTERVAL '${stakingTimeFrameMap[timeFrame]}'`)
             }
         }
 
@@ -176,9 +220,11 @@ export class AccountStakingSummaryResolver {
             points: BigInt(reward.totalPoints || '0'),
             era: reward.era,
             eraStartAt: reward.eraStartAt,
+            eraEndAt: reward.eraEndAt,
             apy: reward.apy,
             averageApy: reward.averageApy,
             rewards: reward.totalRewards,
+            accumulatedRewards: reward.totalAccumulatedRewards,
         }))
 
         const pools = poolData.map(
