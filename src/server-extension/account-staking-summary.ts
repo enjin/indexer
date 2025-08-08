@@ -212,6 +212,7 @@ export class AccountStakingSummaryResolver {
         const rewardsData = await rewardsQueryBuilder
             .groupBy('era.index')
             .addGroupBy('era.startAt')
+            .addGroupBy('era.endAt')
             .orderBy('era.index', 'ASC')
             .getRawMany()
 

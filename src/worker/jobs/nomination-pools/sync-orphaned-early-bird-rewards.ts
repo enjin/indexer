@@ -5,7 +5,7 @@ import { IsNull } from 'typeorm'
 
 /**
  * Syncs orphaned early bird rewards with their corresponding era rewards.
- * 
+ *
  * Early bird rewards create PoolMemberRewards entries with null reward_id when users
  * receive bonuses. If users unstake before era rewards are processed, these records
  * remain orphaned. This job links them to their EraReward once it becomes available.
