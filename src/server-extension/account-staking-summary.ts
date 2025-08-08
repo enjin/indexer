@@ -80,6 +80,9 @@ export class PoolMemberReward {
     @Field(() => Date)
     eraStartAt!: Date
 
+    @Field(() => Date)
+    eraEndAt!: Date
+
     @Field(() => Number)
     apy!: number
 
@@ -189,18 +192,20 @@ export class AccountStakingSummaryResolver {
             .innerJoin('era_reward.era', 'era')
             .select('era.index', 'era')
             .addSelect('era.startAt', 'eraStartAt')
+            .addSelect('era.endAt', 'eraEndAt')
             .addSelect('AVG(era_reward.apy)', 'apy')
             .addSelect('AVG(era_reward.averageApy)', 'averageApy')
             .addSelect('SUM(pmr.points)', 'totalPoints')
             .addSelect('SUM(pmr.rewards)', 'totalRewards')
             .addSelect('SUM(SUM(pmr.rewards)) OVER (ORDER BY era.index ASC)', 'totalAccumulatedRewards')
             .where('pmr.member IN (:...memberIds)', { memberIds })
+            .andWhere('era.endAt IS NOT NULL')
 
         if (timeFrame !== StakingTimeframeInput.ALL) {
             if (timeFrame === StakingTimeframeInput.YTD) {
-                rewardsQueryBuilder.andWhere(`era.startAt >= DATE_TRUNC('year', NOW())`)
+                rewardsQueryBuilder.andWhere(`era.endAt >= DATE_TRUNC('year', NOW())`)
             } else {
-                rewardsQueryBuilder.andWhere(`era.startAt >= NOW() - INTERVAL '${stakingTimeFrameMap[timeFrame]}'`)
+                rewardsQueryBuilder.andWhere(`era.endAt >= NOW() - INTERVAL '${stakingTimeFrameMap[timeFrame]}'`)
             }
         }
 
@@ -215,6 +220,7 @@ export class AccountStakingSummaryResolver {
             points: BigInt(reward.totalPoints || '0'),
             era: reward.era,
             eraStartAt: reward.eraStartAt,
+            eraEndAt: reward.eraEndAt,
             apy: reward.apy,
             averageApy: reward.averageApy,
             rewards: reward.totalRewards,
