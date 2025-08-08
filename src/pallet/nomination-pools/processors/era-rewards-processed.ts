@@ -271,8 +271,8 @@ export const discardEra = (apy: number, totalApy: number) => {
     if (totalApy === 0) {
         return false
     }
-    const apyDifferencePercent = Math.abs((apy - totalApy) / totalApy) * 100
-    return apyDifferencePercent >= 50
+
+    return Math.abs(apy - totalApy) >= 50
 }
 
 export const computeEraApy = (eraRewards: EraReward[], poolApy: number): Big => {
