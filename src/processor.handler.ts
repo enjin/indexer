@@ -17,6 +17,7 @@ import {
     imOnline,
 } from '~/type/events'
 import { calls } from '~/type'
+import { recordEventMetric } from '~/util/metrics-logger'
 
 export async function eventHandler(
     ctx: CommonContext,
@@ -24,8 +25,10 @@ export async function eventHandler(
     item: EventItem,
     skipSave = false
 ): Promise<Event | [Event, AccountTokenEvent] | undefined> {
-    return (
-        match(item.name)
+    const eventName = item.name
+    const start = Date.now()
+    try {
+        const result = match(item.name)
             .with(multiTokens.approved.name, () => p.multiTokens.processors.approved(ctx, item, skipSave))
             .with(multiTokens.attributeRemoved.name, () =>
                 p.multiTokens.processors.attributeRemoved(ctx, block, item, skipSave)
@@ -225,7 +228,12 @@ export async function eventHandler(
                 ctx.log.error(`Unsupported event on handle event: ${item.name}`)
                 return undefined
             })
-    )
+
+        return result
+    } finally {
+        const dur = Date.now() - start
+        recordEventMetric(eventName, dur)
+    }
 }
 
 export async function callHandler(ctx: CommonContext, block: Block, item: CallItem) {

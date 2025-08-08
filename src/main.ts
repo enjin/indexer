@@ -13,6 +13,10 @@ import {
     Listing,
     ListingType,
     OfferState,
+    Token,
+    Collection,
+    Account,
+    TokenAccount,
 } from '~/model'
 import { genesisData } from '~/genesis-data'
 import { chainState } from '~/chain-state'
@@ -32,6 +36,8 @@ import { QueuesEnum } from '~/queue/constants'
 import { Logger } from '~/util/logger'
 import { isRelay } from '~/util/tools'
 import { In } from 'typeorm'
+import { createBufferedStore } from '~/util/buffered-store'
+import { startBatchMetrics, endBatchMetrics } from '~/util/metrics-logger'
 
 const logger = new Logger('sqd:processor', config.logLevel)
 
@@ -60,20 +66,44 @@ async function bootstrap() {
                     await startWarpSync(ctx, ctx.blocks[0].header)
                 }
 
-                ctx.log.debug(
+                ctx.log.info(
                     `Processing batch of blocks from ${ctx.blocks[0].header.height} to ${ctx.blocks[ctx.blocks.length - 1].header.height}`
                 )
 
+                startBatchMetrics(ctx.blocks[0].header.height, ctx.blocks[ctx.blocks.length - 1].header.height)
+
+                // Wrap store with buffered proxy for this handler execution
+                const {
+                    store: bufferedStore,
+                    reset: resetBuffer,
+                    flush: flushBuffer,
+                } = createBufferedStore(ctx.store, {
+                    chunkSize: 1000,
+                    cacheClasses: [
+                        { cls: Token, maxEntries: 200000 },
+                        { cls: Collection, maxEntries: 100000 },
+                        { cls: Account, maxEntries: 100000 },
+                        { cls: TokenAccount, maxEntries: 100000 },
+                    ],
+                })
+                ctx.store = bufferedStore
+
+                resetBuffer()
+
                 for (const block of ctx.blocks) {
                     const blockStart = Date.now()
-                    ctx.log.debug(
-                        `Processing block ${block.header.height}, ${block.events.length} events, ${block.calls.length} calls to process`
-                    )
+                    if (block.header.height % 1000 === 0) {
+                        ctx.log.info(
+                            `Processing block ${block.header.height}, ${block.events.length} events, ${block.calls.length} calls to process`
+                        )
+                    }
 
                     const extrinsics: Extrinsic[] = []
                     const signers = new Set<string>()
                     const eventsCollection: Event[] = []
                     const accountTokenEvents: AccountTokenEvent[] = []
+
+                    // Clear any leftover ops at the start of the block (safety)
 
                     for (const extrinsic of block.extrinsics) {
                         const [s, e] = await processExtrinsics(ctx, block.header, block.events, extrinsic)
@@ -114,6 +144,11 @@ async function bootstrap() {
                 }
 
                 const lastBlock = ctx.blocks[ctx.blocks.length - 1].header
+
+                // Final flush at the end of the batch
+                await flushBuffer()
+
+                endBatchMetrics(logger)
 
                 if (lastBlock.height === dataService.lastBlockNumber) {
                     QueueUtils.dispatchComputeCollections()
