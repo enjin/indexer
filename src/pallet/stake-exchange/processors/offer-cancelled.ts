@@ -14,7 +14,6 @@ export async function offerCancelled(
             offerId: event.offerId,
         },
         relations: {
-            tokenFilter: true,
             account: true,
         },
     })
