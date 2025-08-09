@@ -92,9 +92,7 @@ async function bootstrap() {
                 ctx.store = bufferedStore
                 flushBufferedWrites = flushBuffer
 
-                resetBuffer()
                 for (const block of ctx.blocks) {
-                    // Clear any leftover ops at the start of the block (safety)
                     const blockStart = Date.now()
                     if (block.header.height % 1000 === 0) {
                         ctx.log.info(
@@ -119,6 +117,35 @@ async function bootstrap() {
                         }
 
                         for (const eventItem of block.events) {
+                            if (eventItem.name.startsWith('Balances.')) {
+                                // Collect balances accounts in-memory; no handler processing
+                                p.balances.processors.save(eventItem)
+                                continue
+                            }
+                            // if (
+                            //     eventItem.name === events.multiTokens.minted.name ||
+                            //     eventItem.name === events.multiTokens.transferred.name ||
+                            //     eventItem.name === events.multiTokens.burned.name ||
+                            //     eventItem.name === events.multiTokens.tokenAccountCreated.name ||
+                            //     eventItem.name === events.multiTokens.collectionAccountCreated.name
+                            // ) {
+                            //     // Collect MultiTokens deltas/creates; no handler processing
+                            //     p.multiTokens.processors.batch.collect(eventItem)
+                            //     continue
+                            // }
+                            // if (
+                            //     eventItem.name === events.nominationPools.bonded.name ||
+                            //     eventItem.name === events.nominationPools.unbonded.name ||
+                            //     eventItem.name === events.nominationPools.withdrawn.name
+                            // ) {
+                            //     p.nominationPools.processors.batch.collect(eventItem)
+                            //     continue
+                            // }
+                            // if (eventItem.name === events.stakeExchange.offerCreated.name) {
+                            //     // collect pools-offers pivot for batch write
+                            //     p.stakeExchange.processors.pivotBatch.collect(eventItem)
+                            //     continue
+                            // }
                             const [e, a] = await processEvents(
                                 ctx,
                                 block.header,
@@ -131,7 +158,6 @@ async function bootstrap() {
 
                         if (block.header.height > dataService.lastBlockNumber) {
                             p.balances.processors.addAccountsToSet(Array.from(signers))
-                            await p.balances.processors.saveAccounts(ctx, block.header)
                         }
 
                         for (const chunk of _.chunk(extrinsics, 1000)) {
@@ -142,6 +168,13 @@ async function bootstrap() {
                         }
                         for (const chunk of _.chunk(accountTokenEvents, 1000)) {
                             await ctx.store.save(chunk)
+                        }
+
+                        // Periodic flush+reset every N blocks to bound memory
+                        const N = 25
+                        if ((block.header.height - ctx.blocks[0].header.height) % N === 0) {
+                            await flushBuffer()
+                            resetBuffer()
                         }
 
                         const blockEnd = Date.now()
@@ -161,6 +194,20 @@ async function bootstrap() {
                 }
 
                 const lastBlock = ctx.blocks[ctx.blocks.length - 1].header
+
+                // Run balances batch pass once per batch (live mode only)
+                if (lastBlock.height > dataService.lastBlockNumber) {
+                    await p.balances.processors.saveAccounts(ctx, lastBlock)
+                }
+
+                // // Run MultiTokens batch pass once per batch
+                // await p.multiTokens.processors.batch.processBatch(ctx, lastBlock)
+
+                // // Run NominationPools batch pass once per batch
+                // await p.nominationPools.processors.batch.processBatch(ctx, lastBlock)
+
+                // // Run StakeExchange pivot batch
+                // await p.stakeExchange.processors.pivotBatch.processBatch(ctx, lastBlock)
 
                 // Final flush at the end of the batch
                 await flushBuffer()

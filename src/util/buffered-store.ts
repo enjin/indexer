@@ -1,4 +1,7 @@
 import { Store } from '@subsquid/typeorm-store'
+import { Logger } from '~/util/logger'
+import { In } from 'typeorm'
+import { PoolMember } from '~/model'
 
 interface EntityLikeWithId {
     id: string
@@ -20,6 +23,14 @@ export interface BufferedStoreController {
 export interface BufferedStoreOptions {
     chunkSize?: number
     cacheClasses?: Array<{ cls: Function; maxEntries?: number }>
+}
+
+function safeStringify(input: unknown): string {
+    try {
+        return JSON.stringify(input, (_k, v) => (typeof v === 'bigint' ? v.toString() : v))
+    } catch {
+        return '[Unserializable]'
+    }
 }
 
 function getCtor(obj: unknown): Function | undefined {
@@ -99,6 +110,7 @@ export function createBufferedStore(
     original: Store,
     optionsOrChunkSize?: number | BufferedStoreOptions
 ): BufferedStoreController {
+    const log = new Logger('sqd:buffered-store')
     const chunkSize =
         typeof optionsOrChunkSize === 'number' ? optionsOrChunkSize : (optionsOrChunkSize?.chunkSize ?? 1000)
     const cacheConfig =
@@ -201,6 +213,51 @@ export function createBufferedStore(
         }
     }
 
+    function needsRelationHydration(entity: any, relationsSpec: any): boolean {
+        if (!relationsSpec || typeof relationsSpec !== 'object') return false
+        for (const key of Object.keys(relationsSpec)) {
+            const spec = relationsSpec[key]
+            const cur = entity?.[key]
+            if (spec === true) {
+                if (cur == null) return true
+                continue
+            }
+            if (typeof spec === 'object') {
+                if (Array.isArray(cur)) {
+                    if (cur.length === 0) return true
+                    // check first element recursively
+                    if (needsRelationHydration(cur[0], spec)) return true
+                } else {
+                    if (cur == null) return true
+                    if (needsRelationHydration(cur, spec)) return true
+                }
+            }
+        }
+        return false
+    }
+
+    async function hydrateEntityFromDb(
+        method: 'findOne' | 'findOneBy' | 'findOneOrFail' | 'findOneByOrFail',
+        entityClass: Function,
+        whereOrOptions: any,
+        id: string,
+        current: any
+    ): Promise<any> {
+        try {
+            // @ts-ignore
+            const fresh = await (original as any)[method].call(original, entityClass, whereOrOptions)
+            if (fresh) {
+                // update caches and pending with hydrated entity
+                upsertIntoPending(entityClass.name, entityClass, fresh)
+                cacheSet(entityClass, id, fresh)
+                return fresh
+            }
+        } catch (e) {
+            // fall through to current
+        }
+        return current
+    }
+
     function bufferedFindOneLike(
         method: 'findOne' | 'findOneBy' | 'findOneOrFail' | 'findOneByOrFail',
         entityClass: Function,
@@ -210,6 +267,9 @@ export function createBufferedStore(
         const id: string | undefined = where?.id
         const relationsRequested = !method.includes('By') && Boolean(whereOrOptions?.relations)
         const performDbRead = async () => {
+            log.debug(
+                `DB ${String(method)} ${entityClass?.name} where=${safeStringify(whereOrOptions)} relations=${relationsRequested}`
+            )
             // @ts-ignore
             const res = await (original as any)[method].call(original, entityClass, whereOrOptions)
             if (id && res) cacheSet(entityClass, id, res)
@@ -233,7 +293,17 @@ export function createBufferedStore(
                                 break
                             }
                         }
-                        if (ok) return Promise.resolve(ent)
+                        if (ok) {
+                            log.debug(
+                                `BUFFER ${String(method)} ${entityClass?.name} matched by fields=${safeStringify(keys)} where=${safeStringify(where)}`
+                            )
+                            if (relationsRequested && id) {
+                                if (needsRelationHydration(ent, whereOrOptions?.relations)) {
+                                    return hydrateEntityFromDb(method, entityClass, whereOrOptions, id, ent)
+                                }
+                            }
+                            return Promise.resolve(ent)
+                        }
                     }
                 }
             }
@@ -243,69 +313,57 @@ export function createBufferedStore(
                 pendingDeletesByClass.get(entityClass)?.has(id) ||
                 pendingDeletesByName.get(entityClass.name)?.has(id)
             ) {
+                log.debug(`BUFFER tombstone hit for ${entityClass?.name} id=${id}`)
                 if (method.endsWith('OrFail')) throw new Error('EntityNotFoundError: buffered delete')
                 return Promise.resolve(null)
             }
             // Always prefer pending upserts for id lookups to see in-block writes
             const pendingByClass = pendingUpsertsByClass.get(entityClass)?.get(id)
-            if (pendingByClass) return Promise.resolve(pendingByClass)
+            if (pendingByClass) {
+                log.debug(`BUFFER ${String(method)} ${entityClass?.name} id=${id}`)
+                if (relationsRequested) {
+                    if (needsRelationHydration(pendingByClass, whereOrOptions?.relations)) {
+                        return hydrateEntityFromDb(method, entityClass, whereOrOptions, id, pendingByClass)
+                    }
+                }
+                return Promise.resolve(pendingByClass)
+            }
             const pendingByName = pendingUpsertsByName.get(entityClass.name)?.get(id)
-            if (pendingByName) return Promise.resolve(pendingByName)
+            if (pendingByName) {
+                log.debug(`BUFFER ${String(method)} ${entityClass?.name} id=${id}`)
+                if (relationsRequested) {
+                    if (needsRelationHydration(pendingByName, whereOrOptions?.relations)) {
+                        return hydrateEntityFromDb(method, entityClass, whereOrOptions, id, pendingByName)
+                    }
+                }
+                return Promise.resolve(pendingByName)
+            }
             // When relations are requested, otherwise fetch from DB
             if (!relationsRequested) {
                 const cached = cacheGet(entityClass, id)
-                if (cached) return Promise.resolve(cached)
+                if (cached) {
+                    log.debug(`CACHE ${String(method)} ${entityClass?.name} id=${id}`)
+                    return Promise.resolve(cached)
+                }
             }
         }
         return performDbRead()
     }
 
-    async function doFlush(): Promise<void> {
-        let i = 0
-        while (i < ops.length) {
-            const op = ops[i]
-            if ((op.method === 'save' || op.method === 'insert') && op.entityTypeKey) {
-                const runEntities: unknown[] = []
-                let j = i
-                while (
-                    j < ops.length &&
-                    ops[j].method === op.method &&
-                    ops[j].entityTypeKey &&
-                    ops[j].entityTypeKey === op.entityTypeKey
-                ) {
-                    const args0 = ops[j].args[0]
-                    if (Array.isArray(args0)) runEntities.push(...args0)
-                    else runEntities.push(args0)
-                    j++
-                }
-
-                const uniqueEntities = dedupeEntitiesById(runEntities)
-
-                for (let start = 0; start < uniqueEntities.length; start += chunkSize) {
-                    const chunk = uniqueEntities.slice(start, start + chunkSize)
-                    // @ts-ignore dynamic method
-                    await (original as any)[op.method](chunk)
-                }
-
-                i = j
-                continue
-            }
-
-            // @ts-ignore dynamic method
-            await (original as any)[op.method](...op.args)
-            i++
-        }
-
-        // After flushing, clear pending ops and per-block buffers
-        ops.length = 0
-        pendingUpsertsByName.clear()
-        pendingDeletesByName.clear()
-        pendingUpsertsByClass.clear()
-        pendingDeletesByClass.clear()
-    }
-
     const proxy = new Proxy(original as Store, {
         get(target, prop, receiver) {
+            // Exposed helpers for buffered access
+            if (prop === 'resolveFromBuffer') {
+                return (entityClass: Function, id: string) => {
+                    const fromClass = pendingUpsertsByClass.get(entityClass)?.get(id)
+                    if (fromClass) return fromClass
+                    const fromName = pendingUpsertsByName.get(entityClass.name)?.get(id)
+                    if (fromName) return fromName
+                    const cached = cacheGet(entityClass, id)
+                    return cached ?? undefined
+                }
+            }
+
             // Buffer writes
             if (prop === 'save' || prop === 'insert') {
                 return (...args: unknown[]) => {
@@ -328,6 +386,9 @@ export function createBufferedStore(
                     }
 
                     ops.push({ method, args, entityTypeKey })
+                    log.debug(
+                        `BUFFER enqueue ${method} ${entityTypeKey ?? 'unknown'} count=${Array.isArray(arg0) ? arg0.length : 1}`
+                    )
                     return Promise.resolve()
                 }
             }
@@ -338,6 +399,9 @@ export function createBufferedStore(
                     removeFromPending(typeKey, classKey, ids)
                     if (classKey && ids.length) ids.forEach((id) => cacheDelete(classKey, id))
                     ops.push({ method: 'remove', args, entityTypeKey: typeKey })
+                    log.debug(
+                        `BUFFER enqueue remove ${typeKey ?? classKey?.name ?? 'unknown'} ids=${ids.length > 3 ? ids.slice(0, 3).join(',') + '...' : ids.join(',')}`
+                    )
                     return Promise.resolve()
                 }
             }
@@ -361,6 +425,85 @@ export function createBufferedStore(
         pendingUpsertsByClass.clear()
         pendingDeletesByClass.clear()
         // do NOT clear hot cache here; it should persist across blocks
+        log.debug('BUFFER reset')
+    }
+
+    async function doFlush(): Promise<void> {
+        let i = 0
+        const deferredRemoves: BufferedOp[] = []
+        while (i < ops.length) {
+            const op = ops[i]
+            if ((op.method === 'save' || op.method === 'insert') && op.entityTypeKey) {
+                const runEntities: unknown[] = []
+                let j = i
+                while (
+                    j < ops.length &&
+                    (ops[j].method === 'save' || ops[j].method === 'insert') &&
+                    ops[j].entityTypeKey &&
+                    ops[j].entityTypeKey === op.entityTypeKey
+                ) {
+                    const args0 = ops[j].args[0]
+                    if (Array.isArray(args0)) runEntities.push(...args0)
+                    else runEntities.push(args0)
+                    j++
+                }
+
+                // Deduplicate by id to avoid ON CONFLICT DO UPDATE affecting same row twice
+                const uniqueEntities = dedupeEntitiesById(runEntities)
+                const targetMethod = 'save' // force upsert to be idempotent even if original op was insert
+                log.debug(`FLUSH ${targetMethod} ${op.entityTypeKey} x${uniqueEntities.length}`)
+
+                for (let start = 0; start < uniqueEntities.length; start += chunkSize) {
+                    const chunk = uniqueEntities.slice(start, start + chunkSize)
+                    // @ts-ignore dynamic method
+                    await (original as any)[targetMethod](chunk)
+                }
+
+                i = j
+                continue
+            }
+
+            if (op.method === 'remove') {
+                // Defer removes until after all saves/inserts to maintain FK safety
+                deferredRemoves.push(op)
+                i++
+                continue
+            }
+
+            log.debug(`FLUSH ${op.method}`)
+            // @ts-ignore dynamic method
+            await (original as any)[op.method](...op.args)
+            i++
+        }
+
+        // Now process deferred removes in original order
+        for (const rm of deferredRemoves) {
+            // FK safety: if removing TokenAccount(s), first null out PoolMember.tokenAccount for those ids
+            if (rm.entityTypeKey === 'TokenAccount') {
+                const { ids } = getIdsFromRemoveArgs(rm.args)
+                if (ids.length > 0) {
+                    const members = await (original as any).find(PoolMember, {
+                        where: { tokenAccount: { id: In(ids) } },
+                    })
+                    if (members.length > 0) {
+                        for (const m of members) m.tokenAccount = null
+                        await (original as any).save(members)
+                    }
+                }
+            }
+
+            log.debug(`FLUSH remove`)
+            // @ts-ignore dynamic method
+            await (original as any)[rm.method](...rm.args)
+        }
+
+        // After flushing, clear pending ops and per-block buffers
+        ops.length = 0
+        pendingUpsertsByName.clear()
+        pendingDeletesByName.clear()
+        pendingUpsertsByClass.clear()
+        pendingDeletesByClass.clear()
+        log.debug('BUFFER flushed')
     }
 
     async function flush(): Promise<void> {

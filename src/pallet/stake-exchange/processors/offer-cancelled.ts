@@ -13,9 +13,6 @@ export async function offerCancelled(
         where: {
             offerId: event.offerId,
         },
-        relations: {
-            account: true,
-        },
     })
 
     stakeExchangeOffer.state = StakeExchangeOfferState.Cancelled

@@ -26,14 +26,9 @@ export async function created(ctx: CommonContext, block: Block, item: EventItem)
         throw new Error('Active era info is not provided')
     }
 
-    const token = await ctx.store.findOneOrFail(Token, {
-        where: { id: `2-${callData.tokenId}`, tokenAccounts: { balance: 1n } },
-        relations: {
-            tokenAccounts: {
-                account: true,
-            },
-        },
-    })
+    // Find token by id only to avoid relation-heavy reads before flush
+    const tokenId = `2-${callData.tokenId}`
+    const token = await ctx.store.findOne(Token, { where: { id: tokenId } })
 
     const pool = new NominationPool({
         id: eventData.poolId.toString(),
@@ -43,7 +38,7 @@ export async function created(ctx: CommonContext, block: Block, item: EventItem)
         commission: new Commission(),
         deposit: callData.deposit,
         tokenId: callData.tokenId,
-        degenToken: new Token({ id: `2-${callData.tokenId}` }),
+        degenToken: new Token({ id: tokenId }),
         capacity: eventData.capacity,
         saturation: 0n,
         availableStakeAmount: eventData.capacity,
@@ -71,12 +66,13 @@ export async function created(ctx: CommonContext, block: Block, item: EventItem)
 
     await ctx.store.save(pool)
 
-    token.nominationPool = pool
-    await ctx.store.save(token)
+    if (token) {
+        token.nominationPool = pool
+        await ctx.store.save(token)
+    }
 
     QueueUtils.dispatchComputePoolOffers(pool.id.toString())
 
-    const owner: string = token.tokenAccounts[0].account.id
-
-    return mappings.nominationPools.events.createdEventModel(item, eventData, callData.tokenId, owner)
+    // Skip owner derivation here; resolve later in a background job if needed
+    return mappings.nominationPools.events.createdEventModel(item, eventData, callData.tokenId, '')
 }

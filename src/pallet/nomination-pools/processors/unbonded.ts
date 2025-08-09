@@ -57,7 +57,7 @@ export async function unbonded(ctx: CommonContext, block: Block, item: EventItem
             name: pool.name,
             tokenId: `2-${pool.tokenId}`,
             state: pool.state,
-            owner: owner?.account.id,
+            owner: owner?.account?.id,
         },
     })
 

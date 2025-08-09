@@ -29,7 +29,8 @@ export function offerCancelledEventModel(
             offer: stakeExchangeOffer.id,
             offerId: stakeExchangeOffer.offerId,
             total: stakeExchangeOffer.total,
-            account: stakeExchangeOffer.account.id,
+            account: '',
+            // account: stakeExchangeOffer.account.id,
         }),
     })
 }

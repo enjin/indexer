@@ -59,10 +59,10 @@ export async function buyOrderCompleted(
 
     const existingMember: PoolMember | undefined = await ctx.store.findOne<PoolMember>(PoolMember, {
         where: { id: `${event.tokenId}-${account.id}` },
-        relations: {
-            account: true,
-            tokenAccount: true,
-        },
+        // relations: {
+        //     account: true,
+        //     tokenAccount: true,
+        // },
     })
 
     if (!existingMember) {
@@ -90,17 +90,18 @@ export async function buyOrderCompleted(
     }
 
     let newMember: PoolMember | undefined = await ctx.store.findOneBy<PoolMember>(PoolMember, {
-        id: `${event.tokenId}-${offer.account.id}`,
+        id: `${event.tokenId}-${offer.account?.id ?? ''}`,
     })
 
     const bonded: bigint = event.amount
 
     if (!newMember) {
+        const tokenAccountId = `${offer.account?.id ?? ''}-1-${event.tokenId}`
         const tokenAccount: TokenAccount | undefined = await ctx.store.findOneBy<TokenAccount>(TokenAccount, {
-            id: `${offer.account.id}-1-${event.tokenId}`,
+            id: tokenAccountId,
         })
 
-        if (tokenAccount) {
+        if (tokenAccount && offer.account) {
             newMember = new PoolMember({
                 id: `${event.tokenId}-${offer.account.id}`,
                 pool,
