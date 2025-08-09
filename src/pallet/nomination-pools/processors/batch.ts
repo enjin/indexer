@@ -2,7 +2,7 @@ import { In } from 'typeorm'
 import { BlockHeader } from '@subsquid/substrate-processor'
 import { CommonContext, EventItem } from '~/contexts'
 import * as mappings from '~/pallet/index'
-import { Era, PoolMember, TokenAccount, UnbondingEras } from '~/model'
+import { Era, PoolMember, Token, TokenAccount, UnbondingEras, Collection, FreezeState } from '~/model'
 import { updatePool } from './pool'
 import { events } from '~/type'
 
@@ -78,6 +78,61 @@ export async function processBatch(ctx: CommonContext, lastBlock: BlockHeader): 
         ])
         const memberById = new Map(members.map((m) => [m.id, m]))
         const tokenAccountById = new Map(tokenAccounts.map((ta) => [ta.id, ta]))
+
+        // Ensure Token 1-poolId exists
+        const tokenId = `1-${poolId}`
+        let token = await ctx.store.findOne(Token, { where: { id: tokenId } })
+        if (!token) {
+            token = new Token({
+                id: tokenId,
+                tokenId: BigInt(poolId),
+                supply: 0n,
+                cap: null,
+                behavior: null,
+                isFrozen: false,
+                freezeState: null as unknown as FreezeState | null,
+                accountDepositCount: 0,
+                infusion: 0n,
+                anyoneCanInfuse: false,
+                minimumBalance: 1n,
+                unitPrice: null,
+                mintDeposit: 0n,
+                attributeCount: 0,
+                collection: new Collection({ id: '1' }),
+                metadata: null,
+                nonFungible: true,
+                // do not set nominationPool here
+                createdAt: new Date(),
+            })
+            await ctx.store.save(token)
+        }
+
+        // Ensure missing TokenAccounts exist
+        const toInsertTokenAccounts: TokenAccount[] = []
+        for (const s of specs) {
+            const taId = `${s.member}-1-${poolId}`
+            if (!tokenAccountById.has(taId)) {
+                const ta = new TokenAccount({
+                    id: taId,
+                    balance: 0n,
+                    totalBalance: 0n,
+                    reservedBalance: 0n,
+                    lockedBalance: 0n,
+                    namedReserves: null,
+                    locks: null,
+                    approvals: null,
+                    isFrozen: false,
+                    account: { id: s.member } as any,
+                    collection: new Collection({ id: '1' }),
+                    token: new Token({ id: tokenId }),
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                })
+                toInsertTokenAccounts.push(ta)
+                tokenAccountById.set(taId, ta)
+            }
+        }
+        if (toInsertTokenAccounts.length) await ctx.store.save(toInsertTokenAccounts)
 
         const toInsertMembers: PoolMember[] = []
         const toSaveMembers: PoolMember[] = []

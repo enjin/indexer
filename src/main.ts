@@ -133,14 +133,14 @@ async function bootstrap() {
                             //     p.multiTokens.processors.batch.collect(eventItem)
                             //     continue
                             // }
-                            // if (
-                            //     eventItem.name === events.nominationPools.bonded.name ||
-                            //     eventItem.name === events.nominationPools.unbonded.name ||
-                            //     eventItem.name === events.nominationPools.withdrawn.name
-                            // ) {
-                            //     p.nominationPools.processors.batch.collect(eventItem)
-                            //     continue
-                            // }
+                            if (
+                                eventItem.name === events.nominationPools.bonded.name ||
+                                eventItem.name === events.nominationPools.unbonded.name ||
+                                eventItem.name === events.nominationPools.withdrawn.name
+                            ) {
+                                p.nominationPools.processors.batch.collect(eventItem)
+                                continue
+                            }
                             // if (eventItem.name === events.stakeExchange.offerCreated.name) {
                             //     // collect pools-offers pivot for batch write
                             //     p.stakeExchange.processors.pivotBatch.collect(eventItem)
@@ -200,14 +200,8 @@ async function bootstrap() {
                     await p.balances.processors.saveAccounts(ctx, lastBlock)
                 }
 
-                // // Run MultiTokens batch pass once per batch
-                // await p.multiTokens.processors.batch.processBatch(ctx, lastBlock)
-
-                // // Run NominationPools batch pass once per batch
-                // await p.nominationPools.processors.batch.processBatch(ctx, lastBlock)
-
-                // // Run StakeExchange pivot batch
-                // await p.stakeExchange.processors.pivotBatch.processBatch(ctx, lastBlock)
+                // Run NominationPools batch pass once per batch
+                await p.nominationPools.processors.batch.processBatch(ctx, lastBlock)
 
                 // Final flush at the end of the batch
                 await flushBuffer()

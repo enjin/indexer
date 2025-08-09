@@ -66,10 +66,11 @@ export async function created(ctx: CommonContext, block: Block, item: EventItem)
 
     await ctx.store.save(pool)
 
-    if (token) {
-        token.nominationPool = pool
-        await ctx.store.save(token)
-    }
+    // Do not link token.nominationPool here to avoid FK violations under buffered flush; defer to background task
+    // if (token) {
+    //     token.nominationPool = pool
+    //     await ctx.store.save(token)
+    // }
 
     QueueUtils.dispatchComputePoolOffers(pool.id.toString())
 
