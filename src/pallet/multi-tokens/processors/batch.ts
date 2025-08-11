@@ -158,7 +158,27 @@ export async function processBatch(ctx: CommonContext, lastBlock: BlockHeader): 
         for (const id of ensureCollectionAccountIds) {
             if (existSet.has(id)) continue
             const spec = collectionAccountsToEnsure.get(id)!
-            const account = new Account({ id: spec.accountId })
+            // Ensure Account shell exists to satisfy FK
+            const account = await ctx.store.findOne(Account, { where: { id: spec.accountId } })
+            const accountEntity =
+                account ??
+                new Account({
+                    id: spec.accountId,
+                    address: spec.accountId,
+                    nonce: 0,
+                    verified: false,
+                    balance: {
+                        transferable: 0n,
+                        free: 0n,
+                        reserved: 0n,
+                        frozen: 0n,
+                        miscFrozen: 0n,
+                        feeFrozen: 0n,
+                    } as any,
+                })
+            if (!account) {
+                await ctx.store.save(accountEntity)
+            }
             const collection = collectionsById.get(spec.collectionId) ?? new Collection({ id: spec.collectionId })
             toInsert.push(
                 new CollectionAccount({
@@ -166,7 +186,7 @@ export async function processBatch(ctx: CommonContext, lastBlock: BlockHeader): 
                     isFrozen: false,
                     approvals: null,
                     accountCount: 0,
-                    account,
+                    account: accountEntity,
                     collection,
                     createdAt: new Date(spec.timestamp),
                     updatedAt: new Date(spec.timestamp),

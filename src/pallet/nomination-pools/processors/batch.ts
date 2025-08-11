@@ -2,7 +2,18 @@ import { In } from 'typeorm'
 import { BlockHeader } from '@subsquid/substrate-processor'
 import { CommonContext, EventItem } from '~/contexts'
 import * as mappings from '~/pallet/index'
-import { Era, PoolMember, Token, TokenAccount, UnbondingEras, Collection, FreezeState } from '~/model'
+import {
+    Era,
+    PoolMember,
+    Token,
+    TokenAccount,
+    UnbondingEras,
+    Collection,
+    FreezeState,
+    Event as EventModel,
+    Extrinsic,
+    NominationPoolsRewardPaid,
+} from '~/model'
 import { updatePool } from './pool'
 import { events } from '~/type'
 
@@ -22,10 +33,20 @@ interface WithdrawnSpec {
     poolId: string
     member: string
 }
+interface RewardPaidSpec {
+    id: string
+    extrinsicId?: string
+    poolId: string
+    era: number
+    reward: bigint
+    bonus: bigint
+    validatorStash: string
+}
 
 const bondedSpecs: BondedSpec[] = []
 const unbondedSpecs: UnbondedSpec[] = []
 const withdrawnSpecs: WithdrawnSpec[] = []
+const rewardPaidSpecs: RewardPaidSpec[] = []
 
 export function collect(eventItem: EventItem): void {
     try {
@@ -46,6 +67,19 @@ export function collect(eventItem: EventItem): void {
             withdrawnSpecs.push({ poolId: d.poolId.toString(), member: d.member })
             return
         }
+        if (eventItem.name === events.nominationPools.rewardPaid.name) {
+            const d = mappings.nominationPools.events.rewardPaid(eventItem)
+            rewardPaidSpecs.push({
+                id: eventItem.id,
+                extrinsicId: eventItem.extrinsic?.id,
+                poolId: d.poolId.toString(),
+                era: d.era,
+                reward: d.reward,
+                bonus: d.bonus,
+                validatorStash: d.validatorStash as string,
+            })
+            return
+        }
     } catch {}
 }
 
@@ -60,7 +94,13 @@ function groupByPool<T extends { poolId: string }>(arr: T[]): Map<string, T[]> {
 }
 
 export async function processBatch(ctx: CommonContext, lastBlock: BlockHeader): Promise<void> {
-    if (bondedSpecs.length === 0 && unbondedSpecs.length === 0 && withdrawnSpecs.length === 0) return
+    if (
+        bondedSpecs.length === 0 &&
+        unbondedSpecs.length === 0 &&
+        withdrawnSpecs.length === 0 &&
+        rewardPaidSpecs.length === 0
+    )
+        return
 
     // Load latest era for join timestamps
     const [activeEra]: [Era] = (await ctx.store.find(Era, { order: { index: 'DESC' }, take: 1 })) as any
@@ -222,7 +262,31 @@ export async function processBatch(ctx: CommonContext, lastBlock: BlockHeader): 
         await ctx.store.save(pool)
     }
 
+    // Process rewardPaid specs into Event models
+    if (rewardPaidSpecs.length > 0) {
+        const eventsToSave: EventModel[] = []
+        for (const s of rewardPaidSpecs) {
+            eventsToSave.push(
+                new EventModel({
+                    id: s.id,
+                    name: 'NominationPools.RewardPaid',
+                    extrinsic: s.extrinsicId ? new Extrinsic({ id: s.extrinsicId }) : null,
+                    data: new NominationPoolsRewardPaid({
+                        pool: s.poolId,
+                        poolId: s.poolId,
+                        era: s.era,
+                        reward: s.reward,
+                        bonus: s.bonus,
+                        validatorStash: s.validatorStash,
+                    }),
+                })
+            )
+        }
+        if (eventsToSave.length) await ctx.store.save(eventsToSave)
+    }
+
     bondedSpecs.length = 0
     unbondedSpecs.length = 0
     withdrawnSpecs.length = 0
+    rewardPaidSpecs.length = 0
 }
