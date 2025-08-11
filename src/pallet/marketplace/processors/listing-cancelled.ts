@@ -1,4 +1,12 @@
-import { AccountTokenEvent, Event as EventModel, Listing, ListingStatus, ListingStatusType, ListingType } from '~/model'
+import {
+    AccountTokenEvent,
+    Event as EventModel,
+    Listing,
+    ListingStatus,
+    ListingStatusType,
+    ListingType,
+    OfferState,
+} from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getBestListing, getOrCreateAccount } from '~/util/entities'
 import { Sns } from '~/util/sns'
@@ -42,6 +50,14 @@ export async function listingCancelled(
 
     listing.isActive = false
     listing.updatedAt = new Date(block.timestamp ?? 0)
+
+    if (listing.type === ListingType.Offer) {
+        listing.state = new OfferState({
+            listingType: ListingType.Offer,
+            counterOfferCount: (listing.state as OfferState).counterOfferCount,
+            isExpired: true,
+        })
+    }
 
     await ctx.store.save(listingStatus)
     await ctx.store.save(listing)
