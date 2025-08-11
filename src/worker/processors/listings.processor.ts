@@ -1,7 +1,7 @@
 import { Job } from 'bullmq'
 import { ProcessorDef } from '~/worker/processors/processor.def'
 import { JobsEnum } from '~/queue/constants'
-import { computeListings, syncOffers, refreshListings } from '~/worker/jobs'
+import { computeListings, syncOffers, refreshListings, syncCounterOffers } from '~/worker/jobs'
 import { logError, logInfo } from '~/worker/utils'
 
 export class ListingsProcessor implements ProcessorDef {
@@ -12,6 +12,9 @@ export class ListingsProcessor implements ProcessorDef {
                 break
             case JobsEnum.FETCH_OFFERS:
                 await syncOffers(job)
+                break
+            case JobsEnum.SYNC_COUNTER_OFFERS:
+                await syncCounterOffers(job)
                 break
             case JobsEnum.REFRESH_LISTINGS:
                 await refreshListings(job, job.data.ids)
