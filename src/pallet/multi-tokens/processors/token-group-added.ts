@@ -26,16 +26,23 @@ export async function tokenGroupAdded(
         token.tokenGroupTokens = []
     }
 
+    if (!tokenGroup.tokenGroupTokens) {
+        tokenGroup.tokenGroupTokens = []
+    }
+
     const tokenGroupToken = new TokenGroupToken({
         id: `${data.tokenId.toString()}-${data.tokenGroupId.toString()}`,
         token,
         tokenGroup,
     })
 
+    await ctx.store.save(tokenGroupToken)
+
     token.tokenGroupTokens.push(tokenGroupToken)
     tokenGroup.tokenGroupTokens.push(tokenGroupToken)
 
-    await ctx.store.save([token, tokenGroup])
+    await ctx.store.save(token)
+    await ctx.store.save(tokenGroup)
 
     return mappings.multiTokens.events.tokenGroupAddedEventModel(item, data)
 }

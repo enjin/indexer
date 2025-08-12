@@ -18,6 +18,8 @@ export async function tokenGroupCreated(
     const tokenGroup = new TokenGroup({
         id: data.tokenGroupId.toString(),
         collection,
+        attributes: [],
+        tokenGroupTokens: [],
     })
 
     if (!collection.tokenGroups) {

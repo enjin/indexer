@@ -46,7 +46,8 @@ export async function tokenGroupRemoved(
         (groupToken) => groupToken.id !== tokenGroupToken.id
     )
 
-    await ctx.store.save([token, tokenGroup])
+    await ctx.store.save(token)
+    await ctx.store.save(tokenGroup)
     await ctx.store.remove(tokenGroupToken)
 
     return mappings.multiTokens.events.tokenGroupRemovedEventModel(item, data)

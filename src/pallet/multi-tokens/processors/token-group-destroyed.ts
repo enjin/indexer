@@ -13,24 +13,6 @@ export async function tokenGroupDestroyed(
         where: {
             id: data.tokenGroupId.toString(),
         },
-        relations: {
-            tokenGroupTokens: {
-                token: true,
-            },
-        },
-    })
-
-    if (!tokenGroup.tokenGroupTokens) {
-        tokenGroup.tokenGroupTokens = []
-    }
-
-    tokenGroup.tokenGroupTokens.map(async (tokenGroupToken) => {
-        const token = tokenGroupToken.token
-        token.tokenGroupTokens = token.tokenGroupTokens.filter((groupToken) => groupToken.id !== tokenGroupToken.id)
-        await ctx.store.save(token)
-        await ctx.store.remove(tokenGroupToken)
-
-        return tokenGroupToken
     })
 
     await ctx.store.remove(tokenGroup)
