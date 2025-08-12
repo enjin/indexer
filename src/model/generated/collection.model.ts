@@ -11,6 +11,7 @@ import {TokenAccount} from "./tokenAccount.model"
 import {Attribute} from "./attribute.model"
 import {Trait} from "./trait.model"
 import {TokenRarity} from "./tokenRarity.model"
+import {TokenGroup} from "./tokenGroup.model"
 import {Metadata} from "./_metadata"
 import {CollectionFlags} from "./_collectionFlags"
 import {CollectionSocials} from "./_collectionSocials"
@@ -77,6 +78,9 @@ export class Collection {
 
     @OneToMany_(() => TokenRarity, e => e.collection)
     rarity!: TokenRarity[]
+
+    @OneToMany_(() => TokenGroup, e => e.collection)
+    tokenGroups!: TokenGroup[]
 
     @Index_()
     @StringColumn_({nullable: true})

@@ -1,6 +1,7 @@
 import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, StringColumn as StringColumn_, Index as Index_, BigIntColumn as BigIntColumn_, ManyToOne as ManyToOne_, DateTimeColumn as DateTimeColumn_} from "@subsquid/typeorm-store"
 import {Collection} from "./collection.model"
 import {Token} from "./token.model"
+import {TokenGroup} from "./tokenGroup.model"
 
 @Entity_()
 export class Attribute {
@@ -28,6 +29,10 @@ export class Attribute {
     @Index_()
     @ManyToOne_(() => Token, {nullable: true})
     token!: Token | undefined | null
+
+    @Index_()
+    @ManyToOne_(() => TokenGroup, {nullable: true})
+    tokenGroup!: TokenGroup | undefined | null
 
     @DateTimeColumn_({nullable: false})
     createdAt!: Date

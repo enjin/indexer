@@ -287,6 +287,11 @@ type MultiTokensTokenCreated {
   initialSupply: BigInt!
 }
 
+type MultiTokensTokenGroupCreated {
+  collectionId: BigInt!
+  tokenGroupId: BigInt!
+}
+
 type MultiTokensTokenDestroyed {
   collectionId: BigInt!
   tokenId: BigInt!
@@ -555,6 +560,7 @@ type Collection @entity {
   attributes: [Attribute] @derivedFrom(field: "collection")
   traits: [Trait] @derivedFrom(field: "collection")
   rarity: [TokenRarity] @derivedFrom(field: "collection")
+  tokenGroups: [TokenGroup] @derivedFrom(field: "collection")
 
   # Extras
   name: String @index
@@ -568,6 +574,19 @@ type Collection @entity {
 
   # Marketplace analytics
   stats: CollectionStats
+}
+
+type TokenGroupToken @entity @index(fields: ["token", "tokenGroup"], unique: true) {
+  id: ID!
+  token: Token! @index
+  tokenGroup: TokenGroup! @index
+}
+
+type TokenGroup @entity {
+  id: ID!
+  collection: Collection! @index
+  attributes: [Attribute] @derivedFrom(field: "tokenGroup")
+  tokenGroupTokens: [TokenGroupToken] @derivedFrom(field: "tokenGroup")
 }
 
 type CollectionApproval {
@@ -674,6 +693,7 @@ type Token @entity {
   traits: [TraitToken] @derivedFrom(field: "token")
   rarity: TokenRarity @derivedFrom(field: "token")
   nominationPool: NominationPool
+  tokenGroupTokens: [TokenGroupToken] @derivedFrom(field: "token")
 
   bestListing: Listing
   recentListing: Listing
@@ -778,6 +798,7 @@ type Attribute @entity {
   # Relations
   collection: Collection @index
   token: Token @index
+  tokenGroup: TokenGroup @index
 
   # Extras
   createdAt: DateTime!
@@ -1536,7 +1557,7 @@ type EarlyBirdMintEvent @entity {
 union EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiTokensAttributeSet | MultiTokensBurned
   | MultiTokensCollectionAccountCreated | MultiTokensCollectionAccountDestroyed | MultiTokensCollectionCreated
   | MultiTokensCollectionDestroyed | MultiTokensCollectionMutated | MultiTokensFrozen | MultiTokensMinted
-  | MultiTokensThawed | MultiTokensTokenAccountCreated | MultiTokensTokenAccountDestroyed | MultiTokensTokenCreated
+  | MultiTokensThawed | MultiTokensTokenAccountCreated | MultiTokensTokenAccountDestroyed | MultiTokensTokenCreated | MultiTokensTokenGroupCreated
   | MultiTokensTokenDestroyed | MultiTokensTokenMutated | MultiTokensTransferred | MultiTokensUnapproved
   | MarketplaceAuctionFinalized | MarketplaceBidPlaced | MarketplaceListingCancelled | MarketplaceListingCreated
   | MarketplaceListingFilled | MarketplaceCounterOfferPlaced | MarketplaceCounterOfferAnswered | MarketplaceCounterOfferRemoved

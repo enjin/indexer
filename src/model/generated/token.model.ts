@@ -11,6 +11,7 @@ import {Listing} from "./listing.model"
 import {TraitToken} from "./traitToken.model"
 import {TokenRarity} from "./tokenRarity.model"
 import {NominationPool} from "./nominationPool.model"
+import {TokenGroupToken} from "./tokenGroupToken.model"
 import {ListingSale} from "./listingSale.model"
 import {Metadata} from "./_metadata"
 
@@ -94,6 +95,9 @@ export class Token {
     @Index_()
     @ManyToOne_(() => NominationPool, {nullable: true})
     nominationPool!: NominationPool | undefined | null
+
+    @OneToMany_(() => TokenGroupToken, e => e.token)
+    tokenGroupTokens!: TokenGroupToken[]
 
     @Index_()
     @ManyToOne_(() => Listing, {nullable: true})
