@@ -74,6 +74,7 @@ export async function attributeSet(
             hidden: false,
             attributeCount: 0,
             totalDeposit: 0n,
+            tokenGroups: [],
             createdAt: new Date(block.timestamp ?? 0),
         })
         await ctx.store.save(collection)

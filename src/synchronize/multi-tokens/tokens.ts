@@ -76,6 +76,7 @@ export async function tokens(ctx: CommonContext, block: Block) {
                 accountDepositCount: 0,
                 anyoneCanInfuse: data.anyoneCanInfuse ?? false,
                 nativeMetadata: null,
+                tokenGroupTokens: [],
                 infusion: data.infusion,
                 createdAt: new Date(block.timestamp ?? 0),
             })

@@ -97,6 +97,7 @@ export async function collections(ctx: CommonContext, block: Block) {
                 attributePolicy: null,
                 attributeCount: data.attributeCount,
                 totalDeposit: data.totalDeposit,
+                tokenGroups: [],
                 createdAt: new Date(block.timestamp ?? 0),
                 collectionId: id,
             })
