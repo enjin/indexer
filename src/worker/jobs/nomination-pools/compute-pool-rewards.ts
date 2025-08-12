@@ -26,13 +26,15 @@ export async function computePoolRewards(_job: Job, id?: string): Promise<void> 
         throw new Error(`Pool not found: ${id}`)
     }
 
-    const eraRewards = pool.eraRewards.slice(0, 46)
+    const eraRewards = pool.eraRewards
+    let poolApy = pool.apy
 
     for (const [index, eraReward] of eraRewards.entries()) {
-        if (index < 30) {
+        if (index < pool.eraRewards.length - 15) {
             const rewardRange = eraRewards.slice(index, index + 15)
-            const apy = computeEraApy(rewardRange, pool.apy).toNumber()
+            const apy = computeEraApy(rewardRange, poolApy).toNumber()
             eraReward.averageApy = apy
+            poolApy = apy
             await ctx.store.save(eraReward)
         }
     }
