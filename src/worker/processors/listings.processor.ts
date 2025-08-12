@@ -1,7 +1,7 @@
 import { Job } from 'bullmq'
 import { ProcessorDef } from '~/worker/processors/processor.def'
 import { JobsEnum } from '~/queue/constants'
-import { computeListings, syncOffers, refreshListings, syncCounterOffers } from '~/worker/jobs'
+import { computeListings, syncOffers, refreshListings, syncCounterOffers, syncListings } from '~/worker/jobs'
 import { logError, logInfo } from '~/worker/utils'
 
 export class ListingsProcessor implements ProcessorDef {
@@ -18,6 +18,9 @@ export class ListingsProcessor implements ProcessorDef {
                 break
             case JobsEnum.REFRESH_LISTINGS:
                 await refreshListings(job, job.data.ids)
+                break
+            case JobsEnum.SYNC_LISTINGS:
+                await syncListings(job)
                 break
             default:
                 throw new Error(`${job.name} is not a valid job for this processor`)
