@@ -328,14 +328,14 @@ async function checkListingState(ctx: CommonContext, block: Block) {
             ) {
                 listing.state = new OfferState({
                     listingType: ListingType.Offer,
-                    counterOfferCount: (listing.state as OfferState).counterOfferCount,
+                    counterOfferCount: listing.state.counterOfferCount,
                     isExpired: true,
                 })
                 await ctx.store.save(listing)
             } else if (listing.state.isTypeOf === 'OfferState' && listing.state.isExpired === undefined) {
                 listing.state = new OfferState({
                     listingType: ListingType.Offer,
-                    counterOfferCount: (listing.state as OfferState).counterOfferCount,
+                    counterOfferCount: listing.state.counterOfferCount,
                     isExpired: false,
                 })
                 await ctx.store.save(listing)
