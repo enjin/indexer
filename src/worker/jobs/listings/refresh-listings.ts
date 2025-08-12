@@ -36,7 +36,6 @@ export async function refreshListings(job: Job, ids: string[]) {
                 hasChanged = true
             }
         } else if (listing.type === ListingType.Auction) {
-
             if (listing?.data.isTypeOf === 'AuctionData') {
                 const listingJson: any = listingData.toJSON()
                 const endHeight = listingJson.data.auction.endBlock
