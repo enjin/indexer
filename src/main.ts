@@ -323,8 +323,7 @@ async function checkListingState(ctx: CommonContext, block: Block) {
             const offerData = listing.data
             if (
                 listing.state.isTypeOf === 'OfferState' &&
-                offerData.expiration &&
-                offerData.expiration < block.height
+                ((offerData.expiration && offerData.expiration < block.height) || listing.state.isExpired === true)
             ) {
                 listing.state = new OfferState({
                     listingType: ListingType.Offer,
