@@ -127,6 +127,7 @@ export async function collectionCreated(
         attributePolicy: null,
         attributeCount: 0,
         totalDeposit: 0n, // TODO
+        tokenGroups: [],
         createdAt: new Date(block.timestamp ?? 0),
     })
 

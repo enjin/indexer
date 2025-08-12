@@ -89,6 +89,7 @@ async function tokenFromCall(
         anyoneCanInfuse: false,
         nativeMetadata: null,
         infusion: 0n, // Updated on `Infused event`
+        tokenGroupTokens: [],
         createdAt: new Date(block.timestamp ?? 0),
     })
 

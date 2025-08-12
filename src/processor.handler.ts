@@ -87,6 +87,25 @@ export async function eventHandler(
             .with(multiTokens.claimTokensCompleted.name, () =>
                 p.multiTokens.processors.claimTokensCompleted(ctx, block, item)
             )
+            .with(multiTokens.tokenGroupCreated.name, () =>
+                p.multiTokens.processors.tokenGroupCreated(ctx, block, item)
+            )
+            .with(multiTokens.tokenGroupAdded.name, () => p.multiTokens.processors.tokenGroupAdded(ctx, block, item))
+            .with(multiTokens.tokenGroupRemoved.name, () =>
+                p.multiTokens.processors.tokenGroupRemoved(ctx, block, item)
+            )
+            .with(multiTokens.tokenGroupDestroyed.name, () =>
+                p.multiTokens.processors.tokenGroupDestroyed(ctx, block, item)
+            )
+            .with(multiTokens.tokenGroupAttributeSet.name, () =>
+                p.multiTokens.processors.tokenGroupAttributeSet(ctx, block, item, skipSave)
+            )
+            .with(multiTokens.tokenGroupAttributeRemoved.name, () =>
+                p.multiTokens.processors.tokenGroupAttributeRemoved(ctx, block, item, skipSave)
+            )
+            .with(multiTokens.tokenGroupsUpdated.name, () =>
+                p.multiTokens.processors.tokenGroupUpdated(ctx, block, item)
+            )
             .with(balances.transfer.name, () => {
                 p.balances.processors.save(item)
                 return p.balances.processors.transfer(item)

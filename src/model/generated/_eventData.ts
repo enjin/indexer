@@ -13,10 +13,17 @@ import {MultiTokensThawed} from "./_multiTokensThawed"
 import {MultiTokensTokenAccountCreated} from "./_multiTokensTokenAccountCreated"
 import {MultiTokensTokenAccountDestroyed} from "./_multiTokensTokenAccountDestroyed"
 import {MultiTokensTokenCreated} from "./_multiTokensTokenCreated"
+import {MultiTokensTokenGroupCreated} from "./_multiTokensTokenGroupCreated"
 import {MultiTokensTokenDestroyed} from "./_multiTokensTokenDestroyed"
 import {MultiTokensTokenMutated} from "./_multiTokensTokenMutated"
 import {MultiTokensTransferred} from "./_multiTokensTransferred"
 import {MultiTokensUnapproved} from "./_multiTokensUnapproved"
+import {MultiTokensTokenGroupAdded} from "./_multiTokensTokenGroupAdded"
+import {MultiTokensTokenGroupRemoved} from "./_multiTokensTokenGroupRemoved"
+import {MultiTokensTokenGroupDestroyed} from "./_multiTokensTokenGroupDestroyed"
+import {MultiTokensTokenGroupAttributeSet} from "./_multiTokensTokenGroupAttributeSet"
+import {MultiTokensTokenGroupAttributeRemoved} from "./_multiTokensTokenGroupAttributeRemoved"
+import {MultiTokensTokenGroupsUpdated} from "./_multiTokensTokenGroupsUpdated"
 import {MarketplaceAuctionFinalized} from "./_marketplaceAuctionFinalized"
 import {MarketplaceBidPlaced} from "./_marketplaceBidPlaced"
 import {MarketplaceListingCancelled} from "./_marketplaceListingCancelled"
@@ -66,7 +73,7 @@ import {StakeExchangeLiquidityAdded} from "./_stakeExchangeLiquidityAdded"
 import {StakeExchangeBuyOrderCompleted} from "./_stakeExchangeBuyOrderCompleted"
 import {StakeExchangeOfferCompleted} from "./_stakeExchangeOfferCompleted"
 
-export type EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiTokensAttributeSet | MultiTokensBurned | MultiTokensCollectionAccountCreated | MultiTokensCollectionAccountDestroyed | MultiTokensCollectionCreated | MultiTokensCollectionDestroyed | MultiTokensCollectionMutated | MultiTokensFrozen | MultiTokensMinted | MultiTokensThawed | MultiTokensTokenAccountCreated | MultiTokensTokenAccountDestroyed | MultiTokensTokenCreated | MultiTokensTokenDestroyed | MultiTokensTokenMutated | MultiTokensTransferred | MultiTokensUnapproved | MarketplaceAuctionFinalized | MarketplaceBidPlaced | MarketplaceListingCancelled | MarketplaceListingCreated | MarketplaceListingFilled | MarketplaceCounterOfferPlaced | MarketplaceCounterOfferAnswered | MarketplaceCounterOfferRemoved | MarketplaceOfferCreated | MarketplaceOfferSettled | MarketplaceOfferCancelled | MarketplaceListingRemovedUnderMinimum | BalancesTransfer | TeleportBalanceWithdrawn | ClaimsClaimRequested | ClaimsClaimed | FuelTankCreated | FuelTankDestroyed | MultiTokensClaimedCollections | MultiTokensClaimTokensInitiated | MultiTokensClaimTokensCompleted | MultiTokensCollectionTransferred | MultiTokensCollectionTransferCancelled | MultiTokensInfused | StakingEraPaid | NominationPoolsBonded | NominationPoolsUnbonded | NominationPoolsEarlyBirdBonusPaymentUnlocked | NominationPoolsEarlyBirdBonusCalculated | NominationPoolsEarlyBirdSharesCaptured | NominationPoolsEarlyBirdBonusPaid | ImOnlineSomeOffline | ValidatorPrefsSet | NominationPoolsWithdrawn | NominationPoolsEraRewardsProcessed | NominationPoolsRewardPaid | NominationPoolsPoolSlashed | NominationPoolsNominated | NominationPoolsCreated | NominationPoolsDestroyed | NominationPoolsPoolMutated | StakeExchangeOfferCreated | StakeExchangeOfferCancelled | StakeExchangeLiquidityWithdrawn | StakeExchangeLiquidityConfigUpdated | StakeExchangeLiquidityAdded | StakeExchangeBuyOrderCompleted | StakeExchangeOfferCompleted
+export type EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiTokensAttributeSet | MultiTokensBurned | MultiTokensCollectionAccountCreated | MultiTokensCollectionAccountDestroyed | MultiTokensCollectionCreated | MultiTokensCollectionDestroyed | MultiTokensCollectionMutated | MultiTokensFrozen | MultiTokensMinted | MultiTokensThawed | MultiTokensTokenAccountCreated | MultiTokensTokenAccountDestroyed | MultiTokensTokenCreated | MultiTokensTokenGroupCreated | MultiTokensTokenDestroyed | MultiTokensTokenMutated | MultiTokensTransferred | MultiTokensUnapproved | MultiTokensTokenGroupAdded | MultiTokensTokenGroupRemoved | MultiTokensTokenGroupDestroyed | MultiTokensTokenGroupAttributeSet | MultiTokensTokenGroupAttributeRemoved | MultiTokensTokenGroupsUpdated | MarketplaceAuctionFinalized | MarketplaceBidPlaced | MarketplaceListingCancelled | MarketplaceListingCreated | MarketplaceListingFilled | MarketplaceCounterOfferPlaced | MarketplaceCounterOfferAnswered | MarketplaceCounterOfferRemoved | MarketplaceOfferCreated | MarketplaceOfferSettled | MarketplaceOfferCancelled | MarketplaceListingRemovedUnderMinimum | BalancesTransfer | TeleportBalanceWithdrawn | ClaimsClaimRequested | ClaimsClaimed | FuelTankCreated | FuelTankDestroyed | MultiTokensClaimedCollections | MultiTokensClaimTokensInitiated | MultiTokensClaimTokensCompleted | MultiTokensCollectionTransferred | MultiTokensCollectionTransferCancelled | MultiTokensInfused | StakingEraPaid | NominationPoolsBonded | NominationPoolsUnbonded | NominationPoolsEarlyBirdBonusPaymentUnlocked | NominationPoolsEarlyBirdBonusCalculated | NominationPoolsEarlyBirdSharesCaptured | NominationPoolsEarlyBirdBonusPaid | ImOnlineSomeOffline | ValidatorPrefsSet | NominationPoolsWithdrawn | NominationPoolsEraRewardsProcessed | NominationPoolsRewardPaid | NominationPoolsPoolSlashed | NominationPoolsNominated | NominationPoolsCreated | NominationPoolsDestroyed | NominationPoolsPoolMutated | StakeExchangeOfferCreated | StakeExchangeOfferCancelled | StakeExchangeLiquidityWithdrawn | StakeExchangeLiquidityConfigUpdated | StakeExchangeLiquidityAdded | StakeExchangeBuyOrderCompleted | StakeExchangeOfferCompleted
 
 export function fromJsonEventData(json: any): EventData {
     switch(json?.isTypeOf) {
@@ -85,10 +92,17 @@ export function fromJsonEventData(json: any): EventData {
         case 'MultiTokensTokenAccountCreated': return new MultiTokensTokenAccountCreated(undefined, json)
         case 'MultiTokensTokenAccountDestroyed': return new MultiTokensTokenAccountDestroyed(undefined, json)
         case 'MultiTokensTokenCreated': return new MultiTokensTokenCreated(undefined, json)
+        case 'MultiTokensTokenGroupCreated': return new MultiTokensTokenGroupCreated(undefined, json)
         case 'MultiTokensTokenDestroyed': return new MultiTokensTokenDestroyed(undefined, json)
         case 'MultiTokensTokenMutated': return new MultiTokensTokenMutated(undefined, json)
         case 'MultiTokensTransferred': return new MultiTokensTransferred(undefined, json)
         case 'MultiTokensUnapproved': return new MultiTokensUnapproved(undefined, json)
+        case 'MultiTokensTokenGroupAdded': return new MultiTokensTokenGroupAdded(undefined, json)
+        case 'MultiTokensTokenGroupRemoved': return new MultiTokensTokenGroupRemoved(undefined, json)
+        case 'MultiTokensTokenGroupDestroyed': return new MultiTokensTokenGroupDestroyed(undefined, json)
+        case 'MultiTokensTokenGroupAttributeSet': return new MultiTokensTokenGroupAttributeSet(undefined, json)
+        case 'MultiTokensTokenGroupAttributeRemoved': return new MultiTokensTokenGroupAttributeRemoved(undefined, json)
+        case 'MultiTokensTokenGroupsUpdated': return new MultiTokensTokenGroupsUpdated(undefined, json)
         case 'MarketplaceAuctionFinalized': return new MarketplaceAuctionFinalized(undefined, json)
         case 'MarketplaceBidPlaced': return new MarketplaceBidPlaced(undefined, json)
         case 'MarketplaceListingCancelled': return new MarketplaceListingCancelled(undefined, json)
