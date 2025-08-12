@@ -1,18 +1,21 @@
+import { In } from 'typeorm'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { Event as EventModel, Token, TokenGroup, TokenGroupToken } from '~/model'
 import * as mappings from '~/pallet/index'
 
-export async function tokenGroupAdded(
+export async function tokenGroupUpdated(
     ctx: CommonContext,
     block: Block,
     item: EventItem
 ): Promise<EventModel | undefined> {
-    const data = mappings.multiTokens.events.tokenGroupAdded(item)
+    const data = mappings.multiTokens.events.tokenGroupUpdated(item)
+
+    const tokenGroupIds = data.tokenGroups.map((tokenGroupId) => tokenGroupId.toString())
 
     const [tokenGroup, token] = await Promise.all([
         ctx.store.findOneOrFail(TokenGroup, {
             where: {
-                id: data.tokenGroupId.toString(),
+                id: In(tokenGroupIds),
             },
         }),
         ctx.store.findOneOrFail(Token, {
@@ -22,13 +25,15 @@ export async function tokenGroupAdded(
         }),
     ])
 
-    const tokenGroupToken = new TokenGroupToken({
-        id: `${data.tokenId.toString()}-${data.tokenGroupId.toString()}`,
-        token,
-        tokenGroup,
+    const tokenGroupTokens = tokenGroupIds.map((tokenGroupId) => {
+        return new TokenGroupToken({
+            id: `${data.tokenId.toString()}-${tokenGroupId}`,
+            token,
+            tokenGroup,
+        })
     })
 
-    await ctx.store.save(tokenGroupToken)
+    await ctx.store.save(tokenGroupTokens)
 
-    return mappings.multiTokens.events.tokenGroupAddedEventModel(item, data)
+    return mappings.multiTokens.events.tokenGroupUpdatedEventModel(item, data)
 }

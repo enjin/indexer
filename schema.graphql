@@ -319,6 +319,12 @@ type MultiTokensTokenGroupAttributeRemoved {
   key: String!
 }
 
+type MultiTokensTokenGroupsUpdated {
+  collectionId: BigInt!
+  tokenId: BigInt!
+  tokenGroups: [BigInt!]!
+}
+
 type MultiTokensTokenDestroyed {
   collectionId: BigInt!
   tokenId: BigInt!
@@ -1585,7 +1591,7 @@ union EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiToken
   | MultiTokensCollectionAccountCreated | MultiTokensCollectionAccountDestroyed | MultiTokensCollectionCreated
   | MultiTokensCollectionDestroyed | MultiTokensCollectionMutated | MultiTokensFrozen | MultiTokensMinted
   | MultiTokensThawed | MultiTokensTokenAccountCreated | MultiTokensTokenAccountDestroyed | MultiTokensTokenCreated | MultiTokensTokenGroupCreated
-  | MultiTokensTokenDestroyed | MultiTokensTokenMutated | MultiTokensTransferred | MultiTokensUnapproved | MultiTokensTokenGroupAdded | MultiTokensTokenGroupRemoved | MultiTokensTokenGroupDestroyed | MultiTokensTokenGroupAttributeSet | MultiTokensTokenGroupAttributeRemoved
+  | MultiTokensTokenDestroyed | MultiTokensTokenMutated | MultiTokensTransferred | MultiTokensUnapproved | MultiTokensTokenGroupAdded | MultiTokensTokenGroupRemoved | MultiTokensTokenGroupDestroyed | MultiTokensTokenGroupAttributeSet | MultiTokensTokenGroupAttributeRemoved | MultiTokensTokenGroupsUpdated
   | MarketplaceAuctionFinalized | MarketplaceBidPlaced | MarketplaceListingCancelled | MarketplaceListingCreated
   | MarketplaceListingFilled | MarketplaceCounterOfferPlaced | MarketplaceCounterOfferAnswered | MarketplaceCounterOfferRemoved
   | MarketplaceOfferCreated | MarketplaceOfferSettled | MarketplaceOfferCancelled | MarketplaceListingRemovedUnderMinimum

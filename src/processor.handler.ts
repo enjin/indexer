@@ -103,6 +103,9 @@ export async function eventHandler(
             .with(multiTokens.tokenGroupAttributeRemoved.name, () =>
                 p.multiTokens.processors.tokenGroupAttributeRemoved(ctx, block, item, skipSave)
             )
+            .with(multiTokens.tokenGroupsUpdated.name, () =>
+                p.multiTokens.processors.tokenGroupUpdated(ctx, block, item)
+            )
             .with(balances.transfer.name, () => {
                 p.balances.processors.save(item)
                 return p.balances.processors.transfer(item)
