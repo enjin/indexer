@@ -1,6 +1,5 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { Collection, Event as EventModel, TokenGroup } from '~/model'
-import { tokenGroupCreatedEventModel } from '../events/token-group-created'
 import * as mappings from '~/pallet/index'
 
 export async function tokenGroupCreated(
@@ -30,5 +29,5 @@ export async function tokenGroupCreated(
     await ctx.store.save(tokenGroup)
     await ctx.store.save(collection)
 
-    return tokenGroupCreatedEventModel(item, data)
+    return mappings.multiTokens.events.tokenGroupCreatedEventModel(item, data)
 }
