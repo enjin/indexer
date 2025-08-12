@@ -31,6 +31,7 @@ import { QueueUtils } from '~/queue'
 import { QueuesEnum } from '~/queue/constants'
 import { Logger } from '~/util/logger'
 import { isRelay } from '~/util/tools'
+import { In } from 'typeorm'
 
 const logger = new Logger('sqd:processor', config.logLevel)
 
@@ -296,7 +297,7 @@ function getParticipants(args: Json, _events: EventItem[], signer: string): stri
 
 async function checkListingState(ctx: CommonContext, block: Block) {
     const listings = await ctx.store.find(Listing, {
-        where: { type: ListingType.Auction, isActive: true },
+        where: { type: In([ListingType.Auction, ListingType.Offer]), isActive: true },
     })
     for (const listing of listings) {
         if (listing.data.isTypeOf === 'AuctionData') {
@@ -325,10 +326,18 @@ async function checkListingState(ctx: CommonContext, block: Block) {
                 offerData.expiration &&
                 offerData.expiration < block.height
             ) {
-                listing.state = new OfferState({ listingType: ListingType.Offer, isExpired: true })
+                listing.state = new OfferState({
+                    listingType: ListingType.Offer,
+                    counterOfferCount: (listing.state as OfferState).counterOfferCount,
+                    isExpired: true,
+                })
                 await ctx.store.save(listing)
             } else if (listing.state.isTypeOf === 'OfferState' && listing.state.isExpired === undefined) {
-                listing.state = new OfferState({ listingType: ListingType.Offer, isExpired: false })
+                listing.state = new OfferState({
+                    listingType: ListingType.Offer,
+                    counterOfferCount: (listing.state as OfferState).counterOfferCount,
+                    isExpired: false,
+                })
                 await ctx.store.save(listing)
             }
         }
