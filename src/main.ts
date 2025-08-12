@@ -310,6 +310,7 @@ async function checkListingState(ctx: CommonContext, block: Block) {
             ) {
                 const highBid = listing.state.highBid
                 listing.state = new AuctionState({ listingType: ListingType.Auction, highBid, isExpired: true })
+                listing.isActive = false
                 await ctx.store.save(listing)
             } else if (listing.state.isTypeOf === 'AuctionState' && listing.state.isExpired === undefined) {
                 const highBid = listing.state.highBid
@@ -322,7 +323,6 @@ async function checkListingState(ctx: CommonContext, block: Block) {
             const offerData = listing.data
             if (
                 listing.state.isTypeOf === 'OfferState' &&
-                listing.state.isExpired === false &&
                 offerData.expiration &&
                 offerData.expiration < block.height
             ) {
@@ -331,6 +331,7 @@ async function checkListingState(ctx: CommonContext, block: Block) {
                     counterOfferCount: listing.state.counterOfferCount,
                     isExpired: true,
                 })
+                listing.isActive = false
                 await ctx.store.save(listing)
             } else if (listing.state.isTypeOf === 'OfferState' && listing.state.isExpired === undefined) {
                 listing.state = new OfferState({
