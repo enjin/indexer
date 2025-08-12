@@ -46,6 +46,7 @@ export async function counterOfferPlaced(
     listing.state = new OfferState({
         listingType: listing.state.listingType,
         counterOfferCount: listing.state.counterOfferCount + 1,
+        isExpired: false,
     })
 
     await ctx.store.save(offer)

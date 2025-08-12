@@ -35,6 +35,7 @@ export async function counterOfferRemoved(
     listing.state = new OfferState({
         listingType: listing.state.listingType,
         counterOfferCount: listing.state.counterOfferCount - 1,
+        isExpired: false,
     })
 
     await ctx.store.save(listing)

@@ -172,6 +172,8 @@ export async function listingCreated(
 
     QueueUtils.dispatchComputeStats(makeAssetId.collection.id)
 
+    ctx.log.info(`Listing created: ${listing.id} event: ${item.id}`)
+
     return mappings.marketplace.events.listingCreatedEventModel(
         item.id,
         {
