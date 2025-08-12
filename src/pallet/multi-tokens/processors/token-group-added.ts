@@ -1,5 +1,5 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { Event as EventModel, Token, TokenAccount, TokenGroup, TokenGroupToken } from '~/model'
+import { Event as EventModel, Token, TokenGroup, TokenGroupToken } from '~/model'
 import * as mappings from '~/pallet/index'
 
 export async function tokenGroupAdded(
@@ -22,13 +22,10 @@ export async function tokenGroupAdded(
         }),
     ])
 
-    if (!token.tokenGroupTokens) {
-        token.tokenGroupTokens = []
-    }
-
-    if (!tokenGroup.tokenGroupTokens) {
-        tokenGroup.tokenGroupTokens = []
-    }
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (!token.tokenGroupTokens) token.tokenGroupTokens = []
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (!tokenGroup.tokenGroupTokens) tokenGroup.tokenGroupTokens = []
 
     const tokenGroupToken = new TokenGroupToken({
         id: `${data.tokenId.toString()}-${data.tokenGroupId.toString()}`,

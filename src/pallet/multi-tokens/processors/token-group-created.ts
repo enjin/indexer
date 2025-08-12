@@ -22,9 +22,8 @@ export async function tokenGroupCreated(
         tokenGroupTokens: [],
     })
 
-    if (!collection.tokenGroups) {
-        collection.tokenGroups = []
-    }
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (!collection.tokenGroups) collection.tokenGroups = []
 
     collection.tokenGroups.push(tokenGroup)
 

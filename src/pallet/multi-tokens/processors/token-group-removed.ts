@@ -33,14 +33,6 @@ export async function tokenGroupRemoved(
         }),
     ])
 
-    if (!token.tokenGroupTokens) {
-        token.tokenGroupTokens = []
-    }
-
-    if (!tokenGroup.tokenGroupTokens) {
-        tokenGroup.tokenGroupTokens = []
-    }
-
     token.tokenGroupTokens = token.tokenGroupTokens.filter((groupToken) => groupToken.id !== tokenGroupToken.id)
     tokenGroup.tokenGroupTokens = tokenGroup.tokenGroupTokens.filter(
         (groupToken) => groupToken.id !== tokenGroupToken.id
