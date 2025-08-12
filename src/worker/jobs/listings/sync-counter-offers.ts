@@ -16,14 +16,13 @@ export async function syncCounterOffers(job: Job): Promise<void> {
     const listings = await em.find(Listing, {
         where: {
             type: ListingType.Offer,
-            state: {
-                counterOfferCount: MoreThan(0),
-            },
             isActive: true,
         },
     })
 
     const promises: Promise<any>[] = []
+
+    await job.log(`Syncing ${listings.length} counter offers`)
 
     for (const listing of listings) {
         listing.state = new OfferState({
