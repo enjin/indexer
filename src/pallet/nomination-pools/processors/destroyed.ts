@@ -42,7 +42,7 @@ export async function destroyed(ctx: CommonContext, block: Block, item: EventIte
 
     if (!nominationPool) return undefined
 
-    const owner = nominationPool.degenToken.tokenAccounts[0].account.id
+    const owner = nominationPool.degenToken?.tokenAccounts?.[0]?.account?.id ?? ''
 
     if (stakeExchangeOffers.length) {
         for (const stakeExchangeOffer of stakeExchangeOffers) {

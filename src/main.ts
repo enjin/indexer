@@ -13,6 +13,10 @@ import {
     Listing,
     ListingType,
     OfferState,
+    Token,
+    Collection,
+    Account,
+    TokenAccount,
 } from '~/model'
 import { genesisData } from '~/genesis-data'
 import { chainState } from '~/chain-state'
@@ -32,6 +36,8 @@ import { QueuesEnum } from '~/queue/constants'
 import { Logger } from '~/util/logger'
 import { isRelay } from '~/util/tools'
 import { In } from 'typeorm'
+import { createBufferedStore } from '~/util/buffered-store'
+import { startBatchMetrics, endBatchMetrics, recordBatchPhase } from '~/util/metrics-logger'
 
 const logger = new Logger('sqd:processor', config.logLevel)
 
@@ -52,68 +58,181 @@ async function bootstrap() {
             supportHotBlocks: true,
         }),
         async (ctx) => {
+            let flushBufferedWrites: (() => Promise<void>) | null = null
             try {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 ctx.log = logger as any
+
+                // Provide a function reference for final flush in case of error
 
                 if (ctx.blocks[0].header.height === 0) {
                     await startWarpSync(ctx, ctx.blocks[0].header)
                 }
 
-                ctx.log.debug(
+                ctx.log.info(
                     `Processing batch of blocks from ${ctx.blocks[0].header.height} to ${ctx.blocks[ctx.blocks.length - 1].header.height}`
                 )
 
+                startBatchMetrics(ctx.blocks[0].header.height, ctx.blocks[ctx.blocks.length - 1].header.height)
+
+                // Wrap store with buffered proxy for this handler execution
+                const {
+                    store: bufferedStore,
+                    reset: resetBuffer,
+                    flush: flushBuffer,
+                } = createBufferedStore(ctx.store, {
+                    chunkSize: 1000,
+                    cacheClasses: [
+                        { cls: Token, maxEntries: 200000 },
+                        { cls: Collection, maxEntries: 100000 },
+                        { cls: Account, maxEntries: 100000 },
+                        { cls: TokenAccount, maxEntries: 100000 },
+                    ],
+                })
+                ctx.store = bufferedStore
+                flushBufferedWrites = flushBuffer
+
                 for (const block of ctx.blocks) {
                     const blockStart = Date.now()
-                    ctx.log.debug(
-                        `Processing block ${block.header.height}, ${block.events.length} events, ${block.calls.length} calls to process`
-                    )
-
-                    const extrinsics: Extrinsic[] = []
-                    const signers = new Set<string>()
-                    const eventsCollection: Event[] = []
-                    const accountTokenEvents: AccountTokenEvent[] = []
-
-                    for (const extrinsic of block.extrinsics) {
-                        const [s, e] = await processExtrinsics(ctx, block.header, block.events, extrinsic)
-                        if (s) signers.add(s)
-                        if (e) extrinsics.push(e)
+                    if (block.header.height % 1000 === 0) {
+                        ctx.log.info(
+                            `Processing block ${block.header.height}, ${block.events.length} events, ${block.calls.length} calls to process`
+                        )
                     }
 
-                    for (const call of block.calls) {
-                        await callHandler(ctx, block.header, call)
-                    }
+                    try {
+                        const extrinsics: Extrinsic[] = []
+                        const signers = new Set<string>()
+                        const eventsCollection: Event[] = []
+                        const accountTokenEvents: AccountTokenEvent[] = []
 
-                    for (const eventItem of block.events) {
-                        const [e, a] = await processEvents(ctx, block.header, eventItem, dataService.lastBlockNumber)
-                        if (e) eventsCollection.push(e)
-                        if (a) accountTokenEvents.push(a)
-                    }
+                        for (const extrinsic of block.extrinsics) {
+                            const [s, e] = await processExtrinsics(ctx, block.header, block.events, extrinsic)
+                            if (s) signers.add(s)
+                            if (e) extrinsics.push(e)
+                        }
 
-                    if (block.header.height > dataService.lastBlockNumber) {
-                        p.balances.processors.addAccountsToSet(Array.from(signers))
-                        await p.balances.processors.saveAccounts(ctx, block.header)
-                    }
+                        for (const call of block.calls) {
+                            await callHandler(ctx, block.header, call)
+                        }
 
-                    for (const chunk of _.chunk(extrinsics, 1000)) {
-                        await ctx.store.save(chunk)
-                    }
-                    for (const chunk of _.chunk(eventsCollection, 1000)) {
-                        await ctx.store.save(chunk)
-                    }
-                    for (const chunk of _.chunk(accountTokenEvents, 1000)) {
-                        await ctx.store.save(chunk)
-                    }
+                        for (const eventItem of block.events) {
+                            if (config.fastSync) {
+                                if (eventItem.name.startsWith('Balances.')) {
+                                    // Collect balances accounts in-memory; no handler processing
+                                    p.balances.processors.save(eventItem)
+                                    continue
+                                }
+                                if (
+                                    eventItem.name === events.multiTokens.minted.name ||
+                                    eventItem.name === events.multiTokens.transferred.name ||
+                                    eventItem.name === events.multiTokens.burned.name ||
+                                    eventItem.name === events.multiTokens.tokenAccountCreated.name ||
+                                    eventItem.name === events.multiTokens.collectionAccountCreated.name
+                                ) {
+                                    // Collect MultiTokens deltas/creates; no handler processing
+                                    p.multiTokens.processors.batch.collect(eventItem)
+                                    continue
+                                }
+                                if (
+                                    eventItem.name === events.nominationPools.bonded.name ||
+                                    eventItem.name === events.nominationPools.unbonded.name ||
+                                    eventItem.name === events.nominationPools.withdrawn.name ||
+                                    eventItem.name === events.nominationPools.rewardPaid.name ||
+                                    eventItem.name === events.nominationPools.eraRewardsProcessed.name
+                                ) {
+                                    p.nominationPools.processors.batch.collect(eventItem)
+                                    continue
+                                }
 
-                    const blockEnd = Date.now()
-                    const durationMs = blockEnd - blockStart
-                    if (durationMs > 1000) {
-                        ctx.log.warn(`Block ${block.header.height} took ${durationMs}ms to process`)
+                                if (eventItem.name === events.polkadotXcm.attempted.name) {
+                                    p.polkadotXcm.processors.batch.collect(eventItem)
+                                    continue
+                                }
+                                if (eventItem.name === events.xcmPallet.attempted.name) {
+                                    p.xcmPallet.processors.batch.collect(eventItem)
+                                    continue
+                                }
+                            }
+                            const [e, a] = await processEvents(
+                                ctx,
+                                block.header,
+                                eventItem,
+                                dataService.lastBlockNumber
+                            )
+                            if (e) eventsCollection.push(e)
+                            if (a) accountTokenEvents.push(a)
+                        }
+
+                        if (block.header.height > dataService.lastBlockNumber) {
+                            p.balances.processors.addAccountsToSet(Array.from(signers))
+                        }
+
+                        for (const chunk of _.chunk(extrinsics, 1000)) {
+                            await ctx.store.save(chunk)
+                        }
+                        for (const chunk of _.chunk(eventsCollection, 1000)) {
+                            await ctx.store.save(chunk)
+                        }
+                        for (const chunk of _.chunk(accountTokenEvents, 1000)) {
+                            await ctx.store.save(chunk)
+                        }
+
+                        // Periodic flush+reset every N blocks to bound memory
+                        const N = 25
+                        if ((block.header.height - ctx.blocks[0].header.height) % N === 0) {
+                            await flushBuffer()
+                            resetBuffer()
+                        }
+
+                        const blockEnd = Date.now()
+                        const durationMs = blockEnd - blockStart
+                        if (durationMs > 1000) {
+                            ctx.log.warn(`Block ${block.header.height} took ${durationMs}ms to process`)
+                        }
+                    } catch (err) {
+                        // Best-effort persist current buffered writes before bubbling error
+                        try {
+                            await flushBuffer()
+                        } catch (e) {
+                            ctx.log.error(`Failed to flush buffered writes after error: ${String(e)}`)
+                        }
+                        throw err
                     }
                 }
 
                 const lastBlock = ctx.blocks[ctx.blocks.length - 1].header
+
+                // Run balances batch pass once per batch (live mode only)
+                if (lastBlock.height > dataService.lastBlockNumber) {
+                    await p.balances.processors.saveAccounts(ctx, lastBlock)
+                }
+
+                if (config.fastSync) {
+                    const t0 = Date.now()
+                    await p.multiTokens.processors.batch.processBatch(ctx, lastBlock)
+                    recordBatchPhase('MultiTokens', Date.now() - t0)
+
+                    // Run NominationPools batch pass once per batch
+                    const t1 = Date.now()
+                    await p.nominationPools.processors.batch.processBatch(ctx, lastBlock)
+                    recordBatchPhase('NominationPools', Date.now() - t1)
+
+                    // Run PolkadotXcm batch pass once per batch
+                    const t2 = Date.now()
+                    await p.polkadotXcm.processors.batch.processBatch(ctx, lastBlock)
+                    recordBatchPhase('PolkadotXcm', Date.now() - t2)
+
+                    // Run XcmPallet batch pass once per batch
+                    const t3 = Date.now()
+                    await p.xcmPallet.processors.batch.processBatch(ctx, lastBlock)
+                    recordBatchPhase('XcmPallet', Date.now() - t3)
+                }
+
+                // Final flush at the end of the batch
+                await flushBuffer()
+
+                endBatchMetrics(logger)
 
                 if (lastBlock.height === dataService.lastBlockNumber) {
                     QueueUtils.dispatchComputeCollections()
@@ -134,6 +253,15 @@ async function bootstrap() {
             } catch (error) {
                 await QueueUtils.resumeQueue(QueuesEnum.COLLECTIONS)
                 await QueueUtils.resumeQueue(QueuesEnum.METADATA)
+
+                // Attempt a final flush to avoid losing buffered writes
+                try {
+                    if (flushBufferedWrites) {
+                        await flushBufferedWrites()
+                    }
+                } catch (e) {
+                    logger.error(`Final flush after error failed: ${String(e)}`)
+                }
 
                 logger.fatal(error)
                 Sentry.captureException(error)

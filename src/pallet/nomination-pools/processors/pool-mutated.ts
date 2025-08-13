@@ -74,7 +74,7 @@ export async function poolMutated(ctx: CommonContext, block: Block, item: EventI
 
     await ctx.store.save(pool)
 
-    const owner: string = pool.degenToken.tokenAccounts[0].account.id
+    const owner: string = pool.degenToken?.tokenAccounts?.[0]?.account?.id ?? ''
 
     await Sns.getInstance().send({
         id: item.id,

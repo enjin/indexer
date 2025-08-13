@@ -15,7 +15,6 @@ export async function offerCompleted(
         {
             where: { id: event.offerId.toString() },
             relations: {
-                tokenFilter: true,
                 account: true,
             },
         }
