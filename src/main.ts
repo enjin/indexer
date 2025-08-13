@@ -37,7 +37,7 @@ import { Logger } from '~/util/logger'
 import { isRelay } from '~/util/tools'
 import { In } from 'typeorm'
 import { createBufferedStore } from '~/util/buffered-store'
-import { startBatchMetrics, endBatchMetrics } from '~/util/metrics-logger'
+import { startBatchMetrics, endBatchMetrics, recordBatchPhase } from '~/util/metrics-logger'
 
 const logger = new Logger('sqd:processor', config.logLevel)
 
@@ -149,6 +149,10 @@ async function bootstrap() {
                                     p.polkadotXcm.processors.batch.collect(eventItem)
                                     continue
                                 }
+                                if (eventItem.name === events.xcmPallet.attempted.name) {
+                                    p.xcmPallet.processors.batch.collect(eventItem)
+                                    continue
+                                }
                             }
                             const [e, a] = await processEvents(
                                 ctx,
@@ -205,13 +209,24 @@ async function bootstrap() {
                 }
 
                 if (config.fastSync) {
+                    const t0 = Date.now()
                     await p.multiTokens.processors.batch.processBatch(ctx, lastBlock)
+                    recordBatchPhase('MultiTokens', Date.now() - t0)
 
                     // Run NominationPools batch pass once per batch
+                    const t1 = Date.now()
                     await p.nominationPools.processors.batch.processBatch(ctx, lastBlock)
+                    recordBatchPhase('NominationPools', Date.now() - t1)
 
                     // Run PolkadotXcm batch pass once per batch
+                    const t2 = Date.now()
                     await p.polkadotXcm.processors.batch.processBatch(ctx, lastBlock)
+                    recordBatchPhase('PolkadotXcm', Date.now() - t2)
+
+                    // Run XcmPallet batch pass once per batch
+                    const t3 = Date.now()
+                    await p.xcmPallet.processors.batch.processBatch(ctx, lastBlock)
+                    recordBatchPhase('XcmPallet', Date.now() - t3)
                 }
 
                 // Final flush at the end of the batch

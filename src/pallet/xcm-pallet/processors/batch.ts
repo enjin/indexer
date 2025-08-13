@@ -19,10 +19,10 @@ const attemptedSpecs: AttemptedSpec[] = []
 
 export function collect(eventItem: EventItem): void {
     try {
-        if (eventItem.name !== events.polkadotXcm.attempted.name) return
+        if (eventItem.name !== events.xcmPallet.attempted.name) return
         if (eventItem.call === undefined || !eventItem.extrinsic) return
 
-        const call = mappings.polkadotXcm.utils.anyTeleportAssets(eventItem.call)
+        const call = mappings.xcmPallet.utils.anyTeleportAssets(eventItem.call)
         if (!('dest' in call) || !('beneficiary' in call) || !('assets' in call)) return
 
         let destination: string | null = null

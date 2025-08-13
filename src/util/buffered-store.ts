@@ -1,7 +1,7 @@
 import { Store } from '@subsquid/typeorm-store'
 import { Logger } from '~/util/logger'
 import { In } from 'typeorm'
-import { PoolMember } from '~/model'
+import { PoolMember, Listing, Collection, Token, ListingSale } from '~/model'
 
 interface EntityLikeWithId {
     id: string
@@ -429,6 +429,84 @@ export function createBufferedStore(
     }
 
     async function doFlush(): Promise<void> {
+        // Pre-flush Accounts to satisfy FK dependencies (e.g., Collection.owner_id)
+        // Collect and remove all Account save/insert ops, flush them first
+        const preflushEntitiesByType = (typeName: string): unknown[] => {
+            const collected: unknown[] = []
+            const remaining: BufferedOp[] = []
+            for (const op of ops) {
+                if ((op.method === 'save' || op.method === 'insert') && op.entityTypeKey === typeName) {
+                    const arg0 = op.args[0]
+                    if (Array.isArray(arg0)) collected.push(...arg0)
+                    else collected.push(arg0)
+                    continue
+                }
+                remaining.push(op)
+            }
+            // replace ops with remaining
+            ops.length = 0
+            ops.push(...remaining)
+            return collected
+        }
+
+        const accountEntities = preflushEntitiesByType('Account')
+        if (accountEntities.length > 0) {
+            const uniqueAccounts = dedupeEntitiesById(accountEntities)
+            log.debug(`FLUSH save Account x${uniqueAccounts.length}`)
+            for (let start = 0; start < uniqueAccounts.length; start += chunkSize) {
+                const chunk = uniqueAccounts.slice(start, start + chunkSize)
+                // @ts-ignore dynamic method
+                await (original as any)['save'](chunk)
+            }
+        }
+
+        // Pre-flush Collections before Tokens to satisfy Token.collection FK
+        const collectionEntities = preflushEntitiesByType('Collection')
+        if (collectionEntities.length > 0) {
+            const uniqueCollections = dedupeEntitiesById(collectionEntities)
+            log.debug(`FLUSH save Collection x${uniqueCollections.length}`)
+            for (let start = 0; start < uniqueCollections.length; start += chunkSize) {
+                const chunk = uniqueCollections.slice(start, start + chunkSize)
+                // @ts-ignore dynamic method
+                await (original as any)['save'](chunk)
+            }
+        }
+
+        // Pre-flush Tokens without listing relations; defer setting best/recent listings until after Listings are saved
+        const tokenEntities = preflushEntitiesByType('Token') as Token[]
+        const deferredTokenListingUpdates: Array<{
+            id: string
+            bestId?: string
+            recentId?: string
+            lastSaleId?: string
+        }> = []
+        if (tokenEntities.length > 0) {
+            const uniqueTokens = dedupeEntitiesById(tokenEntities) as Token[]
+            for (const t of uniqueTokens) {
+                const bestId = (t as any)?.bestListing?.id as string | undefined
+                const recentId = (t as any)?.recentListing?.id as string | undefined
+                const lastSaleId = (t as any)?.lastSale?.id as string | undefined
+                if (bestId || recentId) {
+                    deferredTokenListingUpdates.push({ id: t.id, bestId, recentId, lastSaleId })
+                    ;(t as any).bestListing = undefined
+                    ;(t as any).recentListing = undefined
+                    ;(t as any).lastSale = undefined
+                }
+                // Also handle case when only lastSale is set
+                if (!bestId && !recentId && lastSaleId) {
+                    deferredTokenListingUpdates.push({ id: t.id, lastSaleId })
+                    ;(t as any).lastSale = undefined
+                }
+            }
+            log.debug(`FLUSH save Token (phase1) x${uniqueTokens.length}`)
+            for (let start = 0; start < uniqueTokens.length; start += chunkSize) {
+                const chunk = uniqueTokens.slice(start, start + chunkSize)
+                // @ts-ignore dynamic method
+                await (original as any)['save'](chunk)
+            }
+            // Re-enqueue token listing updates to be applied after main ops
+        }
+
         let i = 0
         const deferredRemoves: BufferedOp[] = []
         while (i < ops.length) {
@@ -495,6 +573,28 @@ export function createBufferedStore(
             log.debug(`FLUSH remove`)
             // @ts-ignore dynamic method
             await (original as any)[rm.method](...rm.args)
+        }
+
+        // After flushing main ops and removes, apply deferred token listing relations now that Listings are saved
+        if (typeof (original as any)['save'] === 'function' && deferredTokenListingUpdates.length > 0) {
+            const updates: Token[] = []
+            for (const upd of deferredTokenListingUpdates) {
+                // Load existing token to preserve required fields
+                const existing = await (original as any).findOneBy(Token, { id: upd.id })
+                if (!existing) continue
+                if (upd.bestId) (existing as any).bestListing = new Listing({ id: upd.bestId })
+                if (upd.recentId) (existing as any).recentListing = new Listing({ id: upd.recentId })
+                if (upd.lastSaleId) (existing as any).lastSale = new ListingSale({ id: upd.lastSaleId })
+                updates.push(existing)
+            }
+            if (updates.length > 0) {
+                log.debug(`FLUSH save Token (phase2 listings) x${updates.length}`)
+                for (let start = 0; start < updates.length; start += chunkSize) {
+                    const chunk = updates.slice(start, start + chunkSize)
+                    // @ts-ignore dynamic method
+                    await (original as any)['save'](chunk)
+                }
+            }
         }
 
         // After flushing, clear pending ops and per-block buffers

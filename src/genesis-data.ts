@@ -171,10 +171,13 @@ async function generateRelayData(ctx: CommonContext, block: Block) {
             throw new Error('Degen collection data not found')
         }
 
+        // Ensure owner account exists before creating the collection entity
+        const degenOwner = await getOrCreateAccount(ctx, degenCollectionData.owner)
+
         const degenCollection = new Collection({
             id: '2',
             collectionId: 2n,
-            owner: await getOrCreateAccount(ctx, degenCollectionData.owner),
+            owner: degenOwner,
             mintPolicy: new MintPolicy({
                 maxTokenCount: degenCollectionData.policy.mint.maxTokenCount,
                 maxTokenSupply: degenCollectionData.policy.mint.maxTokenSupply,

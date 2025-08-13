@@ -338,9 +338,15 @@ export async function processBatch(ctx: CommonContext, lastBlock: BlockHeader): 
 
     // Process rewardPaid specs into Event models
     if (rewardPaidSpecs.length > 0) {
+        // Pre-resolve unique validator stashes to reduce lookups
+        const uniqueStashes = Array.from(new Set(rewardPaidSpecs.map((s) => s.validatorStash)))
+        const resolved = await Promise.all(uniqueStashes.map((stash) => getOrCreateAccount(ctx, stash)))
+        const validatorByStash = new Map(resolved.map((a) => [a.id, a]))
+
         const eventsToSave: EventModel[] = []
         for (const s of rewardPaidSpecs) {
-            const validator = await getOrCreateAccount(ctx, s.validatorStash)
+            const validator =
+                validatorByStash.get(s.validatorStash) || (await getOrCreateAccount(ctx, s.validatorStash))
             eventsToSave.push(
                 new EventModel({
                     id: s.id,
@@ -361,191 +367,196 @@ export async function processBatch(ctx: CommonContext, lastBlock: BlockHeader): 
     }
 
     // Process EraRewardsProcessed specs (heavy path)
-    for (const s of eraRewardsProcessedSpecs) {
-        const pool = await updatePool(ctx, lastBlock as any, s.poolId)
+    const erpByPool = groupByPool(eraRewardsProcessedSpecs)
+    for (const [poolId, specs] of erpByPool) {
+        const pool = await updatePool(ctx, lastBlock as any, poolId)
+        const memberBalances = await getMembersBalance(lastBlock, Number(poolId))
+        // Sort specs by era to ensure sequential APY calculation is stable within batch
+        specs.sort((a, b) => a.era - b.era)
 
-        if (s.bonusCycleEnded) {
-            const poolInfo = await mappings.nominationPools.storage.bondedPools(lastBlock as any, Number(s.poolId))
-            if (poolInfo && poolInfo.bonusCycle !== undefined) {
-                pool.bonusCycle = new BonusCycle({
-                    start: poolInfo.bonusCycle.start,
-                    end: poolInfo.bonusCycle.end,
-                    previousStart: poolInfo.bonusCycle.previousStart,
-                    pendingDuration: poolInfo.bonusCycle.pendingDuration,
-                })
-                await ctx.store.save(pool)
-            }
-        }
-
-        const rewardId = `${s.poolId}-${s.era}`
-        const [existReward, memberBalances, era] = await Promise.all([
-            ctx.store.findOneBy(EraReward, { id: rewardId }),
-            getMembersBalance(lastBlock, Number(s.poolId)),
-            ctx.store.findOneBy(Era, { id: s.era.toString() }),
-        ])
-
-        if (existReward) {
-            existReward.bonus = s.bonus
-            existReward.commission = s.commission
-                ? new CommissionPayment({ beneficiary: s.commission.beneficiary, amount: s.commission.amount })
-                : null
-            existReward.reinvested = s.reinvested
-            existReward.rate = pool.rate
-            await ctx.store.save(existReward)
-            if (s.commission) await ctx.store.save(pool)
-            continue
-        }
-
-        if (!era) {
-            await ctx.store.save(
-                new Era({
-                    id: s.era.toString(),
-                    index: s.era,
-                    startAt: new Date((lastBlock as any).timestamp ?? 0),
-                    startBlock: lastBlock.height,
-                    nodeCount: 0,
-                })
-            )
-        }
-
-        if (pool.state === PoolState.Destroying) {
-            continue
-        }
-
-        const prevEraRewards = await ctx.store.find(EraReward, {
-            where: { pool: { id: pool.id } },
-            relations: { era: true },
-            order: { era: { index: 'desc' } },
-            take: 14,
-        })
-
-        const changeInRate =
-            prevEraRewards.length > 0
-                ? Big(pool.rate.toString()).minus(Big(prevEraRewards[0].rate.toString()))
-                : Big(pool.rate.toString()).minus(10 ** 18)
-
-        const reward = new EraReward({
-            id: rewardId,
-            era: new Era({ id: s.era.toString() }),
-            bonus: s.bonus,
-            rate: pool.rate,
-            commission: s.commission
-                ? new CommissionPayment({ beneficiary: s.commission.beneficiary, amount: s.commission.amount })
-                : null,
-            pool,
-            apy: 0,
-            averageApy: 0,
-            active: pool.balance.active,
-            changeInRate: BigInt(changeInRate.toString()),
-            reinvested: s.reinvested,
-        })
-
-        let apy: Big.Big
-        if (prevEraRewards.length === 0) {
-            const rate = Big(pool.rate.toString())
-            const decimals = Big(10).pow(18)
-            apy = rate.div(decimals).pow(processorConfig.erasPerYear).sub(1).mul(100)
-            reward.apy = apy.toNumber()
-        } else {
-            const previousBalance = Big(prevEraRewards[0].active.toString())
-            const newBalance = Big(reward.reinvested.toString()).plus(previousBalance)
-            const currentApy = newBalance.div(previousBalance).pow(processorConfig.erasPerYear).sub(1).mul(100)
-            reward.apy = currentApy.toNumber()
-            prevEraRewards.unshift(reward)
-            const validApys = prevEraRewards.filter((er) => Math.abs(er.apy - pool.apy) < 50)
-            const sumOfApy = validApys.reduce((acc, er) => acc + er.apy, 0)
-            apy = validApys.length === 0 ? Big(pool.apy) : Big(sumOfApy).div(validApys.length)
-        }
-
-        if (
-            apy.toNumber() < 0 ||
-            apy.toNumber() > 200 ||
-            (pool.apy > 1 && Big(apy).minus(pool.apy).times(2).div(Big(apy).plus(pool.apy)).times(100).abs().gt(50))
-        ) {
-            Sns.getInstance().send({
-                id: s.id,
-                name: 'NominationPools.EraRewardsProcessed',
-                body: {
-                    pool: s.poolId.toString(),
-                    era: s.era,
-                    rate: pool.rate,
-                    extrinsic: s.extrinsicId,
-                    name: pool.name,
-                    tokenId: `2-${pool.tokenId}`,
-                },
-            })
-        }
-
-        pool.apy = Math.max(apy.toNumber(), 0)
-        reward.averageApy = apy.toNumber()
-
-        if (s.commission) {
-            pool.accumulatedCommission = (pool.accumulatedCommission ?? 0n) + s.commission.amount
-        }
-
-        const memberIds = Object.keys(memberBalances).map((accountId) => `${pool.id}-${accountId}`)
-        const members = await ctx.store.find(PoolMember, {
-            relations: { account: true },
-            where: { id: In(memberIds) },
-        })
-
-        const totalPoolPoints = (pool.balance.active * 10n ** 18n) / pool.rate
-        const earlyBirdMergeNeeded = await needEarlyBirdMerge(ctx, s.era)
-
-        const inserts: PoolMemberRewards[] = []
-        const updates: PoolMemberRewards[] = []
-        for (const member of members) {
-            const points = memberBalances[member.account.id] ?? 0n
-            const eraRewards = (points * s.reinvested) / totalPoolPoints
-            const newAccumulated = (member.accumulatedRewards || 0n) + eraRewards
-            member.accumulatedRewards = newAccumulated
-            const pmrId = `${member.id}-${s.era}`
-            if (earlyBirdMergeNeeded) {
-                const existing = await ctx.store.findOneBy(PoolMemberRewards, { id: pmrId })
-                if (existing) {
-                    existing.reward = reward
-                    existing.points = points
-                    existing.rewards += eraRewards
-                    existing.accumulatedRewards = newAccumulated
-                    updates.push(existing)
-                    continue
+        for (const s of specs) {
+            if (s.bonusCycleEnded) {
+                const poolInfo = await mappings.nominationPools.storage.bondedPools(lastBlock as any, Number(poolId))
+                if (poolInfo && poolInfo.bonusCycle !== undefined) {
+                    pool.bonusCycle = new BonusCycle({
+                        start: poolInfo.bonusCycle.start,
+                        end: poolInfo.bonusCycle.end,
+                        previousStart: poolInfo.bonusCycle.previousStart,
+                        pendingDuration: poolInfo.bonusCycle.pendingDuration,
+                    })
+                    await ctx.store.save(pool)
                 }
             }
-            inserts.push(
-                new PoolMemberRewards({
-                    id: pmrId,
-                    pool,
-                    member,
-                    reward,
-                    points,
-                    rewards: eraRewards,
-                    accumulatedRewards: newAccumulated,
-                })
-            )
-        }
 
-        await ctx.store.insert(reward)
-        await Promise.all([
-            ctx.store.save(pool),
-            ctx.store.save(members),
-            inserts.length && ctx.store.insert(inserts as any),
-            updates.length && ctx.store.save(updates),
-        ])
+            const rewardId = `${poolId}-${s.era}`
+            const [existReward, era] = await Promise.all([
+                ctx.store.findOneBy(EraReward, { id: rewardId }),
+                ctx.store.findOneBy(Era, { id: s.era.toString() }),
+            ])
 
-        const ev = new EventModel({
-            id: s.id,
-            name: 'NominationPoolsEraRewardsProcessed',
-            extrinsic: s.extrinsicId ? new Extrinsic({ id: s.extrinsicId }) : null,
-            data: new NominationPoolsEraRewardsProcessed({
-                pool: s.poolId.toString(),
-                poolId: s.poolId.toString(),
-                tokenId: pool.tokenId,
-                era: s.era,
-                eraReward: rewardId,
+            if (existReward) {
+                existReward.bonus = s.bonus
+                existReward.commission = s.commission
+                    ? new CommissionPayment({ beneficiary: s.commission.beneficiary, amount: s.commission.amount })
+                    : null
+                existReward.reinvested = s.reinvested
+                existReward.rate = pool.rate
+                await ctx.store.save(existReward)
+                if (s.commission) await ctx.store.save(pool)
+                continue
+            }
+
+            if (!era) {
+                await ctx.store.save(
+                    new Era({
+                        id: s.era.toString(),
+                        index: s.era,
+                        startAt: new Date((lastBlock as any).timestamp ?? 0),
+                        startBlock: lastBlock.height,
+                        nodeCount: 0,
+                    })
+                )
+            }
+
+            if (pool.state === PoolState.Destroying) {
+                continue
+            }
+
+            const prevEraRewards = await ctx.store.find(EraReward, {
+                where: { pool: { id: pool.id } },
+                relations: { era: true },
+                order: { era: { index: 'desc' } },
+                take: 14,
+            })
+
+            const changeInRate =
+                prevEraRewards.length > 0
+                    ? Big(pool.rate.toString()).minus(Big(prevEraRewards[0].rate.toString()))
+                    : Big(pool.rate.toString()).minus(10 ** 18)
+
+            const reward = new EraReward({
+                id: rewardId,
+                era: new Era({ id: s.era.toString() }),
+                bonus: s.bonus,
                 rate: pool.rate,
-            }),
-        })
-        await ctx.store.save(ev)
+                commission: s.commission
+                    ? new CommissionPayment({ beneficiary: s.commission.beneficiary, amount: s.commission.amount })
+                    : null,
+                pool,
+                apy: 0,
+                averageApy: 0,
+                active: pool.balance.active,
+                changeInRate: BigInt(changeInRate.toString()),
+                reinvested: s.reinvested,
+            })
+
+            let apy: Big.Big
+            if (prevEraRewards.length === 0) {
+                const rate = Big(pool.rate.toString())
+                const decimals = Big(10).pow(18)
+                apy = rate.div(decimals).pow(processorConfig.erasPerYear).sub(1).mul(100)
+                reward.apy = apy.toNumber()
+            } else {
+                const previousBalance = Big(prevEraRewards[0].active.toString())
+                const newBalance = Big(reward.reinvested.toString()).plus(previousBalance)
+                const currentApy = newBalance.div(previousBalance).pow(processorConfig.erasPerYear).sub(1).mul(100)
+                reward.apy = currentApy.toNumber()
+                prevEraRewards.unshift(reward)
+                const validApys = prevEraRewards.filter((er) => Math.abs(er.apy - pool.apy) < 50)
+                const sumOfApy = validApys.reduce((acc, er) => acc + er.apy, 0)
+                apy = validApys.length === 0 ? Big(pool.apy) : Big(sumOfApy).div(validApys.length)
+            }
+
+            if (
+                apy.toNumber() < 0 ||
+                apy.toNumber() > 200 ||
+                (pool.apy > 1 && Big(apy).minus(pool.apy).times(2).div(Big(apy).plus(pool.apy)).times(100).abs().gt(50))
+            ) {
+                Sns.getInstance().send({
+                    id: s.id,
+                    name: 'NominationPools.EraRewardsProcessed',
+                    body: {
+                        pool: poolId.toString(),
+                        era: s.era,
+                        rate: pool.rate,
+                        extrinsic: s.extrinsicId,
+                        name: pool.name,
+                        tokenId: `2-${pool.tokenId}`,
+                    },
+                })
+            }
+
+            pool.apy = Math.max(apy.toNumber(), 0)
+            reward.averageApy = apy.toNumber()
+
+            if (s.commission) {
+                pool.accumulatedCommission = (pool.accumulatedCommission ?? 0n) + s.commission.amount
+            }
+
+            const memberIds = Object.keys(memberBalances).map((accountId) => `${pool.id}-${accountId}`)
+            const members = await ctx.store.find(PoolMember, {
+                relations: { account: true },
+                where: { id: In(memberIds) },
+            })
+
+            const totalPoolPoints = (pool.balance.active * 10n ** 18n) / pool.rate
+            const earlyBirdMergeNeeded = await needEarlyBirdMerge(ctx, s.era)
+
+            const inserts: PoolMemberRewards[] = []
+            const updates: PoolMemberRewards[] = []
+            for (const member of members) {
+                const points = memberBalances[member.account.id] ?? 0n
+                const eraRewards = (points * s.reinvested) / totalPoolPoints
+                const newAccumulated = (member.accumulatedRewards || 0n) + eraRewards
+                member.accumulatedRewards = newAccumulated
+                const pmrId = `${member.id}-${s.era}`
+                if (earlyBirdMergeNeeded) {
+                    const existing = await ctx.store.findOneBy(PoolMemberRewards, { id: pmrId })
+                    if (existing) {
+                        existing.reward = reward
+                        existing.points = points
+                        existing.rewards += eraRewards
+                        existing.accumulatedRewards = newAccumulated
+                        updates.push(existing)
+                        continue
+                    }
+                }
+                inserts.push(
+                    new PoolMemberRewards({
+                        id: pmrId,
+                        pool,
+                        member,
+                        reward,
+                        points,
+                        rewards: eraRewards,
+                        accumulatedRewards: newAccumulated,
+                    })
+                )
+            }
+
+            await ctx.store.insert(reward)
+            await Promise.all([
+                ctx.store.save(pool),
+                ctx.store.save(members),
+                inserts.length && ctx.store.insert(inserts as any),
+                updates.length && ctx.store.save(updates),
+            ])
+
+            const ev = new EventModel({
+                id: s.id,
+                name: 'NominationPoolsEraRewardsProcessed',
+                extrinsic: s.extrinsicId ? new Extrinsic({ id: s.extrinsicId }) : null,
+                data: new NominationPoolsEraRewardsProcessed({
+                    pool: poolId.toString(),
+                    poolId: poolId.toString(),
+                    tokenId: pool.tokenId,
+                    era: s.era,
+                    eraReward: rewardId,
+                    rate: pool.rate,
+                }),
+            })
+            await ctx.store.save(ev)
+        }
     }
 
     bondedSpecs.length = 0
