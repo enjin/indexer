@@ -117,35 +117,39 @@ async function bootstrap() {
                         }
 
                         for (const eventItem of block.events) {
-                            if (eventItem.name.startsWith('Balances.')) {
-                                // Collect balances accounts in-memory; no handler processing
-                                p.balances.processors.save(eventItem)
-                                continue
+                            if (config.fastSync) {
+                                if (eventItem.name.startsWith('Balances.')) {
+                                    // Collect balances accounts in-memory; no handler processing
+                                    p.balances.processors.save(eventItem)
+                                    continue
+                                }
+                                if (
+                                    eventItem.name === events.multiTokens.minted.name ||
+                                    eventItem.name === events.multiTokens.transferred.name ||
+                                    eventItem.name === events.multiTokens.burned.name ||
+                                    eventItem.name === events.multiTokens.tokenAccountCreated.name ||
+                                    eventItem.name === events.multiTokens.collectionAccountCreated.name
+                                ) {
+                                    // Collect MultiTokens deltas/creates; no handler processing
+                                    p.multiTokens.processors.batch.collect(eventItem)
+                                    continue
+                                }
+                                if (
+                                    eventItem.name === events.nominationPools.bonded.name ||
+                                    eventItem.name === events.nominationPools.unbonded.name ||
+                                    eventItem.name === events.nominationPools.withdrawn.name ||
+                                    eventItem.name === events.nominationPools.rewardPaid.name ||
+                                    eventItem.name === events.nominationPools.eraRewardsProcessed.name
+                                ) {
+                                    p.nominationPools.processors.batch.collect(eventItem)
+                                    continue
+                                }
+
+                                if (eventItem.name === events.polkadotXcm.attempted.name) {
+                                    p.polkadotXcm.processors.batch.collect(eventItem)
+                                    continue
+                                }
                             }
-                            if (
-                                eventItem.name === events.multiTokens.minted.name ||
-                                eventItem.name === events.multiTokens.transferred.name ||
-                                eventItem.name === events.multiTokens.burned.name ||
-                                eventItem.name === events.multiTokens.tokenAccountCreated.name ||
-                                eventItem.name === events.multiTokens.collectionAccountCreated.name
-                            ) {
-                                // Collect MultiTokens deltas/creates; no handler processing
-                                p.multiTokens.processors.batch.collect(eventItem)
-                                continue
-                            }
-                            if (
-                                eventItem.name === events.nominationPools.bonded.name ||
-                                eventItem.name === events.nominationPools.unbonded.name ||
-                                eventItem.name === events.nominationPools.withdrawn.name
-                            ) {
-                                p.nominationPools.processors.batch.collect(eventItem)
-                                continue
-                            }
-                            // if (eventItem.name === events.stakeExchange.offerCreated.name) {
-                            //     // collect pools-offers pivot for batch write
-                            //     p.stakeExchange.processors.pivotBatch.collect(eventItem)
-                            //     continue
-                            // }
                             const [e, a] = await processEvents(
                                 ctx,
                                 block.header,
@@ -200,11 +204,15 @@ async function bootstrap() {
                     await p.balances.processors.saveAccounts(ctx, lastBlock)
                 }
 
-                await p.multiTokens.processors.batch.processBatch(ctx, lastBlock)
-                
-                // Run NominationPools batch pass once per batch
-                await p.nominationPools.processors.batch.processBatch(ctx, lastBlock)
+                if (config.fastSync) {
+                    await p.multiTokens.processors.batch.processBatch(ctx, lastBlock)
 
+                    // Run NominationPools batch pass once per batch
+                    await p.nominationPools.processors.batch.processBatch(ctx, lastBlock)
+
+                    // Run PolkadotXcm batch pass once per batch
+                    await p.polkadotXcm.processors.batch.processBatch(ctx, lastBlock)
+                }
 
                 // Final flush at the end of the batch
                 await flushBuffer()

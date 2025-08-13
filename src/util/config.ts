@@ -40,6 +40,7 @@ export interface Config {
     truncateDatabase: boolean
     skipSync: boolean
     metricsLogFile?: string
+    fastSync: boolean
 }
 
 const config: Config = {
@@ -92,6 +93,7 @@ const config: Config = {
     truncateDatabase: process.env.TRUNCATE_DATABASE === 'true',
     skipSync: process.env.SKIP_SYNC === 'true',
     metricsLogFile: process.env.METRICS_LOG_FILE,
+    fastSync: process.env.FAST_SYNC === 'true',
 }
 
 export default config

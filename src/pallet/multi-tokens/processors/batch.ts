@@ -269,7 +269,7 @@ export async function processBatch(ctx: CommonContext, lastBlock: BlockHeader): 
         const token = tokensById.get(id)
         if (!token) continue
         token.supply = (token.supply ?? 0n) + delta
-        token.nonFungible = isNonFungible(token)
+        // token.nonFungible = isNonFungible(token)
         tokensToSave.push(token)
     }
 

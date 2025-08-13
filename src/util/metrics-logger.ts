@@ -34,11 +34,10 @@ export function endBatchMetrics(log: Logger) {
     const entries = Array.from(statsByEvent.entries())
     const totalEvents = entries.reduce((sum, [, s]) => sum + s.count, 0)
 
-    const topByCountArr = entries.sort((a, b) => b[1].count - a[1].count).slice(0, 5)
+    const topByCountArr = entries.sort((a, b) => b[1].count - a[1].count)
     const topByAvgArr = entries
-        .map(([name, s]) => ({ name, avg: s.totalMs / Math.max(1, s.count) }))
+        .map(([name, s]) => ({ name, avg: s.totalMs }))
         .sort((a, b) => b.avg - a.avg)
-        .slice(0, 5)
 
     const topByCount = topByCountArr.map(([name, s]) => `${name}:${s.count}`).join(', ')
     const topByAvg = topByAvgArr.map(({ name, avg }) => `${name}:${avg.toFixed(1)}ms`).join(', ')
