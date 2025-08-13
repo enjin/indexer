@@ -202,13 +202,77 @@ export async function processBatch(ctx: CommonContext, lastBlock: BlockHeader): 
         const existing = await ctx.store.find(TokenAccount, { where: { id: In(ensureTokenAccountIds) } })
         const existSet = new Set(existing.map((e) => e.id))
         const toInsert: TokenAccount[] = []
+        const tokensToInsert: Token[] = []
+        const collectionsToInsert: Collection[] = []
         for (const id of ensureTokenAccountIds) {
             if (existSet.has(id)) continue
             const spec = tokenAccountsToEnsure.get(id)!
             const account = new Account({ id: spec.accountId })
-            const token =
-                tokensById.get(`${spec.collectionId}-${spec.tokenId}`) ??
-                new Token({ id: `${spec.collectionId}-${spec.tokenId}` })
+            const tokenIdStr = `${spec.collectionId}-${spec.tokenId}`
+            let token = tokensById.get(tokenIdStr)
+            if (!token) {
+                // Ensure collection exists (minimal stub) for the token FK
+                const existingCollection = collectionsById.get(spec.collectionId)
+                let collectionForToken = existingCollection
+                if (!collectionForToken) {
+                    collectionForToken = new Collection({
+                        id: spec.collectionId,
+                        collectionId: BigInt(spec.collectionId),
+                        owner: new Account({
+                            id: '0x0000000000000000000000000000000000000000000000000000000000000000',
+                        }),
+                        mintPolicy: null as any,
+                        marketPolicy: null as any,
+                        transferPolicy: null as any,
+                        attributeCount: 0,
+                        totalDeposit: 0n,
+                        isTransferPending: false,
+                        name: null as any,
+                        metadata: null as any,
+                        createdAt: new Date(spec.timestamp),
+                        flags: { featured: false, hiddenForLegalReasons: false } as any,
+                        socials: {
+                            discord: null,
+                            twitter: null,
+                            instagram: null,
+                            medium: null,
+                            tiktok: null,
+                            website: null,
+                        } as any,
+                        hidden: false,
+                        stats: null as any,
+                    })
+                    collectionsById.set(spec.collectionId, collectionForToken)
+                    collectionsToInsert.push(collectionForToken)
+                }
+                // Create minimal Token stub to satisfy FK; will be updated later by token processors
+                token = new Token({
+                    id: tokenIdStr,
+                    tokenId: BigInt(spec.tokenId),
+                    supply: 0n,
+                    isFrozen: false,
+                    freezeState: null as any,
+                    cap: null as any,
+                    behavior: null as any,
+                    listingForbidden: false,
+                    nativeMetadata: null as any,
+                    unitPrice: null,
+                    minimumBalance: 1n,
+                    mintDeposit: 0n,
+                    attributeCount: 0,
+                    accountDepositCount: 0,
+                    anyoneCanInfuse: false,
+                    infusion: 0n,
+                    name: null as any,
+                    nonFungible: false,
+                    metadata: null as any,
+                    updatedAt: null as any,
+                    createdAt: new Date(spec.timestamp),
+                    collection: new Collection({ id: spec.collectionId }),
+                })
+                tokensById.set(tokenIdStr, token)
+                tokensToInsert.push(token)
+            }
             const collection = new Collection({ id: spec.collectionId })
             toInsert.push(
                 new TokenAccount({
@@ -229,6 +293,10 @@ export async function processBatch(ctx: CommonContext, lastBlock: BlockHeader): 
                 })
             )
         }
+        // Persist created collections then tokens to satisfy FK
+        if (collectionsToInsert.length > 0) await ctx.store.save(collectionsToInsert)
+        // Persist created tokens first to satisfy FK
+        if (tokensToInsert.length > 0) await ctx.store.save(tokensToInsert)
         if (toInsert.length > 0) await ctx.store.save(toInsert)
     }
 

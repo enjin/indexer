@@ -1,7 +1,7 @@
 import { Store } from '@subsquid/typeorm-store'
 import { Logger } from '~/util/logger'
 import { In } from 'typeorm'
-import { PoolMember, Listing, Collection, Token, ListingSale } from '~/model'
+import { PoolMember, Listing, Collection, Token, ListingSale, FuelTankRuleSet } from '~/model'
 
 interface EntityLikeWithId {
     id: string
@@ -482,6 +482,61 @@ export function createBufferedStore(
         }> = []
         if (tokenEntities.length > 0) {
             const uniqueTokens = dedupeEntitiesById(tokenEntities) as Token[]
+            // Ensure referenced collections exist before saving tokens
+            const colIds = Array.from(
+                new Set(
+                    uniqueTokens
+                        .map((t) => (t as any)?.collection?.id as string | undefined)
+                        .filter((v): v is string => typeof v === 'string' && v.length > 0)
+                )
+            )
+            if (colIds.length > 0) {
+                const existingCols = await (original as any).find(Collection, { where: { id: In(colIds) } })
+                const existingSet = new Set((existingCols as Array<any>).map((c) => c.id))
+                const toCreate: Collection[] = []
+                for (const id of colIds) {
+                    if (existingSet.has(id)) continue
+                    // Minimal stub
+                    toCreate.push(
+                        new Collection({
+                            id,
+                            collectionId: BigInt(id),
+                            // owner omitted intentionally; nullable
+                            mintPolicy: null as any,
+                            marketPolicy: null as any,
+                            transferPolicy: null as any,
+                            attributeCount: 0,
+                            totalDeposit: 0n,
+                            isTransferPending: false,
+                            name: null as any,
+                            metadata: null as any,
+                            createdAt: new Date(),
+                            flags: new (await import('~/model')).CollectionFlags({
+                                featured: false,
+                                hiddenForLegalReasons: false,
+                            }) as any,
+                            socials: new (await import('~/model')).CollectionSocials({
+                                discord: null,
+                                twitter: null,
+                                instagram: null,
+                                medium: null,
+                                tiktok: null,
+                                website: null,
+                            }) as any,
+                            hidden: false,
+                            stats: null as any,
+                        })
+                    )
+                }
+                if (toCreate.length > 0) {
+                    log.debug(`FLUSH save Collection (ensure for Tokens) x${toCreate.length}`)
+                    for (let start = 0; start < toCreate.length; start += chunkSize) {
+                        const chunk = toCreate.slice(start, start + chunkSize)
+                        // @ts-ignore
+                        await (original as any)['save'](chunk)
+                    }
+                }
+            }
             for (const t of uniqueTokens) {
                 const bestId = (t as any)?.bestListing?.id as string | undefined
                 const recentId = (t as any)?.recentListing?.id as string | undefined
@@ -566,6 +621,34 @@ export function createBufferedStore(
                     if (members.length > 0) {
                         for (const m of members) m.tokenAccount = null
                         await (original as any).save(members)
+                    }
+                }
+            }
+
+            // FK safety: deleting FuelTank requires deleting dependent FuelTankRuleSet rows first
+            if (rm.entityTypeKey === 'FuelTank') {
+                const { ids } = getIdsFromRemoveArgs(rm.args)
+                if (ids.length > 0) {
+                    // Find rule sets referencing these tanks and remove them
+                    const ruleSets = await (original as any).find(FuelTankRuleSet as any, {
+                        where: { tank: { id: In(ids) } },
+                    })
+                    if (ruleSets.length > 0) {
+                        await (original as any).remove(ruleSets)
+                    }
+                }
+            }
+
+            // FK safety: deleting Token requires disassociating Attributes first
+            if (rm.entityTypeKey === 'Token') {
+                const { ids } = getIdsFromRemoveArgs(rm.args)
+                if (ids.length > 0) {
+                    const attrs = await (original as any).find((await import('~/model')).Attribute, {
+                        where: { token: { id: In(ids) } },
+                    })
+                    if (attrs.length > 0) {
+                        for (const a of attrs) (a as any).token = null
+                        await (original as any).save(attrs)
                     }
                 }
             }
