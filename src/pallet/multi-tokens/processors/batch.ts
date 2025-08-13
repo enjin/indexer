@@ -2,9 +2,10 @@ import { In } from 'typeorm'
 import { BlockHeader } from '@subsquid/substrate-processor'
 import { CommonContext, EventItem } from '~/contexts'
 import * as mappings from '~/pallet/index'
-import { Account, Collection, CollectionAccount, Token, TokenAccount } from '~/model'
+import { Account, Balance, Collection, CollectionAccount, Token, TokenAccount } from '~/model'
 import { events } from '~/type'
 import { isNonFungible } from '~/util/helpers'
+import { encodeAddress } from '~/util/tools'
 
 // Keys: token `${collectionId}-${tokenId}`; tokenAccount `${accountId}-${collectionId}-${tokenId}`
 const tokenSupplyDelta = new Map<string, bigint>()
@@ -159,24 +160,24 @@ export async function processBatch(ctx: CommonContext, lastBlock: BlockHeader): 
             if (existSet.has(id)) continue
             const spec = collectionAccountsToEnsure.get(id)!
             // Ensure Account shell exists to satisfy FK
-            const account = await ctx.store.findOne(Account, { where: { id: spec.accountId } })
+            const existingAccount = await ctx.store.findOne(Account, { where: { id: spec.accountId } })
             const accountEntity =
-                account ??
+                existingAccount ??
                 new Account({
                     id: spec.accountId,
-                    address: spec.accountId,
+                    address: encodeAddress(spec.accountId),
                     nonce: 0,
                     verified: false,
-                    balance: {
+                    balance: new Balance({
                         transferable: 0n,
                         free: 0n,
                         reserved: 0n,
                         frozen: 0n,
                         miscFrozen: 0n,
                         feeFrozen: 0n,
-                    } as any,
+                    }),
                 })
-            if (!account) {
+            if (!existingAccount) {
                 await ctx.store.save(accountEntity)
             }
             const collection = collectionsById.get(spec.collectionId) ?? new Collection({ id: spec.collectionId })
@@ -268,7 +269,7 @@ export async function processBatch(ctx: CommonContext, lastBlock: BlockHeader): 
         const token = tokensById.get(id)
         if (!token) continue
         token.supply = (token.supply ?? 0n) + delta
-        // token.nonFungible = isNonFungible(token)
+        token.nonFungible = isNonFungible(token)
         tokensToSave.push(token)
     }
 
