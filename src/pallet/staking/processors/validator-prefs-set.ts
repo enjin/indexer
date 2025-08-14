@@ -21,6 +21,7 @@ export async function validatorPrefsSet(ctx: CommonContext, block: Block, item: 
             peerCommission28d: [],
             slashes84d: [],
             grade: null,
+            accumulatedRewards: 0n,
         })
 
         await ctx.store.insert(newValidator)
