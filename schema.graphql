@@ -1181,7 +1181,7 @@ type StakeExchangeOfferCancelled {
   offer: StakeExchangeOffer!
   offerId: BigInt!
   total: BigInt!
-  account: Account
+  account: Account!
 }
 
 type StakeExchangeLiquidityWithdrawn {
