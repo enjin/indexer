@@ -15,7 +15,7 @@ export async function syncStakeExchangeOffersEvents(job: Job): Promise<void> {
     const promises: Promise<any>[] = []
 
     const events: Event[] = await em.find(Event, {
-        select: ['data', 'name'],
+        select: ['id', 'data', 'name'],
         where: {
             name: In([
                 StakeExchangeOfferCancelled.name,
@@ -27,20 +27,22 @@ export async function syncStakeExchangeOffersEvents(job: Job): Promise<void> {
     })
 
     for (const event of events) {
-        if (event.data && typeof event.data === 'object') {
-            const data = event.data as Record<string, any>
-
+        if (
+            event.data &&
+            (event.data instanceof StakeExchangeOfferCancelled ||
+                event.data instanceof StakeExchangeOfferCreated ||
+                event.data instanceof StakeExchangeOfferCompleted ||
+                event.data instanceof StakeExchangeBuyOrderCompleted)
+        ) {
             const offer: StakeExchangeOffer | null = await em.findOne(StakeExchangeOffer, {
                 select: ['rate'],
                 where: {
-                    offerId: data.offerId,
+                    offerId: event.data.offerId,
                 },
             })
-
             if (offer) {
-                data.rate = offer.rate
-
-                promises.push(em.save(Event, { ...offer, data }))
+                event.data.rate = offer.rate
+                promises.push(em.save(event))
             }
         }
     }
