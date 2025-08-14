@@ -8,6 +8,7 @@ import * as matrixV500 from '../matrixV500'
 import * as matrixV602 from '../matrixV602'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV604 from '../matrixV604'
+import * as matrixV1030 from '../matrixV1030'
 
 export const scheduled = {
     name: 'Scheduler.Scheduled',
@@ -162,6 +163,20 @@ export const dispatched = {
             result: sts.result(
                 () => sts.unit(),
                 () => v105.DispatchError
+            ),
+        })
+    ),
+    /**
+     * Dispatched some task.
+     */
+    matrixV1030: new EventType(
+        'Scheduler.Dispatched',
+        sts.struct({
+            task: sts.tuple(() => [sts.number(), sts.number()]),
+            id: sts.option(() => sts.bytes()),
+            result: sts.result(
+                () => sts.unit(),
+                () => matrixV1030.DispatchError
             ),
         })
     ),

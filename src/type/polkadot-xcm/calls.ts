@@ -6,6 +6,7 @@ import * as matrixV1004 from '../matrixV1004'
 import * as matrixV1010 from '../matrixV1010'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 import * as matrixEnjinV1022 from '../matrixEnjinV1022'
+import * as matrixV1030 from '../matrixV1030'
 
 export const send = {
     name: 'PolkadotXcm.send',
@@ -35,6 +36,13 @@ export const send = {
         sts.struct({
             dest: matrixV1010.VersionedLocation,
             message: matrixV1010.VersionedXcm,
+        })
+    ),
+    matrixV1030: new CallType(
+        'PolkadotXcm.send',
+        sts.struct({
+            dest: matrixV1030.VersionedLocation,
+            message: matrixV1030.VersionedXcm,
         })
     ),
 }
@@ -148,6 +156,35 @@ export const teleportAssets = {
             dest: matrixV1010.VersionedLocation,
             beneficiary: matrixV1010.VersionedLocation,
             assets: matrixV1010.VersionedAssets,
+            feeAssetItem: sts.number(),
+        })
+    ),
+    /**
+     * Teleport some assets from the local chain to some destination chain.
+     *
+     * **This function is deprecated: Use `limited_teleport_assets` instead.**
+     *
+     * Fee payment on the destination side is made from the asset in the `assets` vector of
+     * index `fee_asset_item`. The weight limit for fees is not provided and thus is unlimited,
+     * with all fees taken as needed from the asset.
+     *
+     * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
+     * - `dest`: Destination context for the assets. Will typically be `[Parent,
+     *   Parachain(..)]` to send from parachain to parachain, or `[Parachain(..)]` to send from
+     *   relay to parachain.
+     * - `beneficiary`: A beneficiary location for the assets in the context of `dest`. Will
+     *   generally be an `AccountId32` value.
+     * - `assets`: The assets to be withdrawn. This should include the assets used to pay the
+     *   fee on the `dest` chain.
+     * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
+     *   fees.
+     */
+    matrixV1030: new CallType(
+        'PolkadotXcm.teleport_assets',
+        sts.struct({
+            dest: matrixV1030.VersionedLocation,
+            beneficiary: matrixV1030.VersionedLocation,
+            assets: matrixV1030.VersionedAssets,
             feeAssetItem: sts.number(),
         })
     ),
@@ -291,6 +328,47 @@ export const reserveTransferAssets = {
             feeAssetItem: sts.number(),
         })
     ),
+    /**
+     * Transfer some assets from the local chain to the destination chain through their local,
+     * destination or remote reserve.
+     *
+     * `assets` must have same reserve location and may not be teleportable to `dest`.
+     *  - `assets` have local reserve: transfer assets to sovereign account of destination
+     *    chain and forward a notification XCM to `dest` to mint and deposit reserve-based
+     *    assets to `beneficiary`.
+     *  - `assets` have destination reserve: burn local assets and forward a notification to
+     *    `dest` chain to withdraw the reserve assets from this chain's sovereign account and
+     *    deposit them to `beneficiary`.
+     *  - `assets` have remote reserve: burn local assets, forward XCM to reserve chain to move
+     *    reserves from this chain's SA to `dest` chain's SA, and forward another XCM to `dest`
+     *    to mint and deposit reserve-based assets to `beneficiary`.
+     *
+     * **This function is deprecated: Use `limited_reserve_transfer_assets` instead.**
+     *
+     * Fee payment on the destination side is made from the asset in the `assets` vector of
+     * index `fee_asset_item`. The weight limit for fees is not provided and thus is unlimited,
+     * with all fees taken as needed from the asset.
+     *
+     * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
+     * - `dest`: Destination context for the assets. Will typically be `[Parent,
+     *   Parachain(..)]` to send from parachain to parachain, or `[Parachain(..)]` to send from
+     *   relay to parachain.
+     * - `beneficiary`: A beneficiary location for the assets in the context of `dest`. Will
+     *   generally be an `AccountId32` value.
+     * - `assets`: The assets to be withdrawn. This should include the assets used to pay the
+     *   fee on the `dest` (and possibly reserve) chains.
+     * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
+     *   fees.
+     */
+    matrixV1030: new CallType(
+        'PolkadotXcm.reserve_transfer_assets',
+        sts.struct({
+            dest: matrixV1030.VersionedLocation,
+            beneficiary: matrixV1030.VersionedLocation,
+            assets: matrixV1030.VersionedAssets,
+            feeAssetItem: sts.number(),
+        })
+    ),
 }
 
 export const execute = {
@@ -367,6 +445,23 @@ export const execute = {
         sts.struct({
             message: matrixV1010.Type_414,
             maxWeight: matrixV1010.Weight,
+        })
+    ),
+    /**
+     * Execute an XCM message from a local, signed, origin.
+     *
+     * An event is deposited indicating whether `msg` could be executed completely or only
+     * partially.
+     *
+     * No more than `max_weight` will be used in its attempted execution. If this is less than
+     * the maximum amount of weight that the message could take to be executed, then no
+     * execution attempt will be made.
+     */
+    matrixV1030: new CallType(
+        'PolkadotXcm.execute',
+        sts.struct({
+            message: matrixV1030.Type_476,
+            maxWeight: matrixV1030.Weight,
         })
     ),
 }
@@ -453,6 +548,21 @@ export const forceXcmVersion = {
             version: sts.number(),
         })
     ),
+    /**
+     * Extoll that a particular destination can be communicated with through a particular
+     * version of XCM.
+     *
+     * - `origin`: Must be an origin specified by AdminOrigin.
+     * - `location`: The destination that is being described.
+     * - `xcm_version`: The latest version of XCM that `location` supports.
+     */
+    matrixV1030: new CallType(
+        'PolkadotXcm.force_xcm_version',
+        sts.struct({
+            location: matrixV1030.V5Location,
+            version: sts.number(),
+        })
+    ),
 }
 
 export const forceDefaultXcmVersion = {
@@ -522,6 +632,18 @@ export const forceSubscribeVersionNotify = {
             location: matrixV1010.VersionedLocation,
         })
     ),
+    /**
+     * Ask a location to notify us regarding their XCM version and any changes to it.
+     *
+     * - `origin`: Must be an origin specified by AdminOrigin.
+     * - `location`: The location to which we should subscribe for XCM version notifications.
+     */
+    matrixV1030: new CallType(
+        'PolkadotXcm.force_subscribe_version_notify',
+        sts.struct({
+            location: matrixV1030.VersionedLocation,
+        })
+    ),
 }
 
 export const forceUnsubscribeVersionNotify = {
@@ -580,6 +702,20 @@ export const forceUnsubscribeVersionNotify = {
         'PolkadotXcm.force_unsubscribe_version_notify',
         sts.struct({
             location: matrixV1010.VersionedLocation,
+        })
+    ),
+    /**
+     * Require that a particular destination should no longer notify us regarding any XCM
+     * version changes.
+     *
+     * - `origin`: Must be an origin specified by AdminOrigin.
+     * - `location`: The location to which we are currently subscribed for XCM version
+     *   notifications which we no longer desire.
+     */
+    matrixV1030: new CallType(
+        'PolkadotXcm.force_unsubscribe_version_notify',
+        sts.struct({
+            location: matrixV1030.VersionedLocation,
         })
     ),
 }
@@ -730,6 +866,48 @@ export const limitedReserveTransferAssets = {
             weightLimit: matrixV1010.V3WeightLimit,
         })
     ),
+    /**
+     * Transfer some assets from the local chain to the destination chain through their local,
+     * destination or remote reserve.
+     *
+     * `assets` must have same reserve location and may not be teleportable to `dest`.
+     *  - `assets` have local reserve: transfer assets to sovereign account of destination
+     *    chain and forward a notification XCM to `dest` to mint and deposit reserve-based
+     *    assets to `beneficiary`.
+     *  - `assets` have destination reserve: burn local assets and forward a notification to
+     *    `dest` chain to withdraw the reserve assets from this chain's sovereign account and
+     *    deposit them to `beneficiary`.
+     *  - `assets` have remote reserve: burn local assets, forward XCM to reserve chain to move
+     *    reserves from this chain's SA to `dest` chain's SA, and forward another XCM to `dest`
+     *    to mint and deposit reserve-based assets to `beneficiary`.
+     *
+     * Fee payment on the destination side is made from the asset in the `assets` vector of
+     * index `fee_asset_item`, up to enough to pay for `weight_limit` of weight. If more weight
+     * is needed than `weight_limit`, then the operation will fail and the sent assets may be
+     * at risk.
+     *
+     * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
+     * - `dest`: Destination context for the assets. Will typically be `[Parent,
+     *   Parachain(..)]` to send from parachain to parachain, or `[Parachain(..)]` to send from
+     *   relay to parachain.
+     * - `beneficiary`: A beneficiary location for the assets in the context of `dest`. Will
+     *   generally be an `AccountId32` value.
+     * - `assets`: The assets to be withdrawn. This should include the assets used to pay the
+     *   fee on the `dest` (and possibly reserve) chains.
+     * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
+     *   fees.
+     * - `weight_limit`: The remote-side weight limit, if any, for the XCM fee purchase.
+     */
+    matrixV1030: new CallType(
+        'PolkadotXcm.limited_reserve_transfer_assets',
+        sts.struct({
+            dest: matrixV1030.VersionedLocation,
+            beneficiary: matrixV1030.VersionedLocation,
+            assets: matrixV1030.VersionedAssets,
+            feeAssetItem: sts.number(),
+            weightLimit: matrixV1030.V3WeightLimit,
+        })
+    ),
 }
 
 export const limitedTeleportAssets = {
@@ -852,6 +1030,36 @@ export const limitedTeleportAssets = {
             weightLimit: matrixV1010.V3WeightLimit,
         })
     ),
+    /**
+     * Teleport some assets from the local chain to some destination chain.
+     *
+     * Fee payment on the destination side is made from the asset in the `assets` vector of
+     * index `fee_asset_item`, up to enough to pay for `weight_limit` of weight. If more weight
+     * is needed than `weight_limit`, then the operation will fail and the sent assets may be
+     * at risk.
+     *
+     * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
+     * - `dest`: Destination context for the assets. Will typically be `[Parent,
+     *   Parachain(..)]` to send from parachain to parachain, or `[Parachain(..)]` to send from
+     *   relay to parachain.
+     * - `beneficiary`: A beneficiary location for the assets in the context of `dest`. Will
+     *   generally be an `AccountId32` value.
+     * - `assets`: The assets to be withdrawn. This should include the assets used to pay the
+     *   fee on the `dest` chain.
+     * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
+     *   fees.
+     * - `weight_limit`: The remote-side weight limit, if any, for the XCM fee purchase.
+     */
+    matrixV1030: new CallType(
+        'PolkadotXcm.limited_teleport_assets',
+        sts.struct({
+            dest: matrixV1030.VersionedLocation,
+            beneficiary: matrixV1030.VersionedLocation,
+            assets: matrixV1030.VersionedAssets,
+            feeAssetItem: sts.number(),
+            weightLimit: matrixV1030.V3WeightLimit,
+        })
+    ),
 }
 
 export const forceSuspension = {
@@ -917,6 +1125,51 @@ export const transferAssets = {
             weightLimit: matrixEnjinV1012.V3WeightLimit,
         })
     ),
+    /**
+     * Transfer some assets from the local chain to the destination chain through their local,
+     * destination or remote reserve, or through teleports.
+     *
+     * Fee payment on the destination side is made from the asset in the `assets` vector of
+     * index `fee_asset_item` (hence referred to as `fees`), up to enough to pay for
+     * `weight_limit` of weight. If more weight is needed than `weight_limit`, then the
+     * operation will fail and the sent assets may be at risk.
+     *
+     * `assets` (excluding `fees`) must have same reserve location or otherwise be teleportable
+     * to `dest`, no limitations imposed on `fees`.
+     *  - for local reserve: transfer assets to sovereign account of destination chain and
+     *    forward a notification XCM to `dest` to mint and deposit reserve-based assets to
+     *    `beneficiary`.
+     *  - for destination reserve: burn local assets and forward a notification to `dest` chain
+     *    to withdraw the reserve assets from this chain's sovereign account and deposit them
+     *    to `beneficiary`.
+     *  - for remote reserve: burn local assets, forward XCM to reserve chain to move reserves
+     *    from this chain's SA to `dest` chain's SA, and forward another XCM to `dest` to mint
+     *    and deposit reserve-based assets to `beneficiary`.
+     *  - for teleports: burn local assets and forward XCM to `dest` chain to mint/teleport
+     *    assets and deposit them to `beneficiary`.
+     *
+     * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
+     * - `dest`: Destination context for the assets. Will typically be `X2(Parent,
+     *   Parachain(..))` to send from parachain to parachain, or `X1(Parachain(..))` to send
+     *   from relay to parachain.
+     * - `beneficiary`: A beneficiary location for the assets in the context of `dest`. Will
+     *   generally be an `AccountId32` value.
+     * - `assets`: The assets to be withdrawn. This should include the assets used to pay the
+     *   fee on the `dest` (and possibly reserve) chains.
+     * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
+     *   fees.
+     * - `weight_limit`: The remote-side weight limit, if any, for the XCM fee purchase.
+     */
+    matrixV1030: new CallType(
+        'PolkadotXcm.transfer_assets',
+        sts.struct({
+            dest: matrixV1030.VersionedLocation,
+            beneficiary: matrixV1030.VersionedLocation,
+            assets: matrixV1030.VersionedAssets,
+            feeAssetItem: sts.number(),
+            weightLimit: matrixV1030.V3WeightLimit,
+        })
+    ),
 }
 
 export const claimAssets = {
@@ -934,6 +1187,21 @@ export const claimAssets = {
         sts.struct({
             assets: matrixEnjinV1012.VersionedAssets,
             beneficiary: matrixEnjinV1012.VersionedLocation,
+        })
+    ),
+    /**
+     * Claims assets trapped on this pallet because of leftover assets during XCM execution.
+     *
+     * - `origin`: Anyone can call this extrinsic.
+     * - `assets`: The exact assets that were trapped. Use the version to specify what version
+     * was the latest when they were trapped.
+     * - `beneficiary`: The location/account where the claimed assets will be deposited.
+     */
+    matrixV1030: new CallType(
+        'PolkadotXcm.claim_assets',
+        sts.struct({
+            assets: matrixV1030.VersionedAssets,
+            beneficiary: matrixV1030.VersionedLocation,
         })
     ),
 }
@@ -1000,6 +1268,68 @@ export const transferAssetsUsingTypeAndThen = {
             feesTransferType: matrixEnjinV1022.TransferType,
             customXcmOnDest: matrixEnjinV1022.VersionedXcm,
             weightLimit: matrixEnjinV1022.V3WeightLimit,
+        })
+    ),
+    /**
+     * Transfer assets from the local chain to the destination chain using explicit transfer
+     * types for assets and fees.
+     *
+     * `assets` must have same reserve location or may be teleportable to `dest`. Caller must
+     * provide the `assets_transfer_type` to be used for `assets`:
+     *  - `TransferType::LocalReserve`: transfer assets to sovereign account of destination
+     *    chain and forward a notification XCM to `dest` to mint and deposit reserve-based
+     *    assets to `beneficiary`.
+     *  - `TransferType::DestinationReserve`: burn local assets and forward a notification to
+     *    `dest` chain to withdraw the reserve assets from this chain's sovereign account and
+     *    deposit them to `beneficiary`.
+     *  - `TransferType::RemoteReserve(reserve)`: burn local assets, forward XCM to `reserve`
+     *    chain to move reserves from this chain's SA to `dest` chain's SA, and forward another
+     *    XCM to `dest` to mint and deposit reserve-based assets to `beneficiary`. Typically
+     *    the remote `reserve` is Asset Hub.
+     *  - `TransferType::Teleport`: burn local assets and forward XCM to `dest` chain to
+     *    mint/teleport assets and deposit them to `beneficiary`.
+     *
+     * On the destination chain, as well as any intermediary hops, `BuyExecution` is used to
+     * buy execution using transferred `assets` identified by `remote_fees_id`.
+     * Make sure enough of the specified `remote_fees_id` asset is included in the given list
+     * of `assets`. `remote_fees_id` should be enough to pay for `weight_limit`. If more weight
+     * is needed than `weight_limit`, then the operation will fail and the sent assets may be
+     * at risk.
+     *
+     * `remote_fees_id` may use different transfer type than rest of `assets` and can be
+     * specified through `fees_transfer_type`.
+     *
+     * The caller needs to specify what should happen to the transferred assets once they reach
+     * the `dest` chain. This is done through the `custom_xcm_on_dest` parameter, which
+     * contains the instructions to execute on `dest` as a final step.
+     *   This is usually as simple as:
+     *   `Xcm(vec![DepositAsset { assets: Wild(AllCounted(assets.len())), beneficiary }])`,
+     *   but could be something more exotic like sending the `assets` even further.
+     *
+     * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
+     * - `dest`: Destination context for the assets. Will typically be `[Parent,
+     *   Parachain(..)]` to send from parachain to parachain, or `[Parachain(..)]` to send from
+     *   relay to parachain, or `(parents: 2, (GlobalConsensus(..), ..))` to send from
+     *   parachain across a bridge to another ecosystem destination.
+     * - `assets`: The assets to be withdrawn. This should include the assets used to pay the
+     *   fee on the `dest` (and possibly reserve) chains.
+     * - `assets_transfer_type`: The XCM `TransferType` used to transfer the `assets`.
+     * - `remote_fees_id`: One of the included `assets` to be used to pay fees.
+     * - `fees_transfer_type`: The XCM `TransferType` used to transfer the `fees` assets.
+     * - `custom_xcm_on_dest`: The XCM to be executed on `dest` chain as the last step of the
+     *   transfer, which also determines what happens to the assets on the destination chain.
+     * - `weight_limit`: The remote-side weight limit, if any, for the XCM fee purchase.
+     */
+    matrixV1030: new CallType(
+        'PolkadotXcm.transfer_assets_using_type_and_then',
+        sts.struct({
+            dest: matrixV1030.VersionedLocation,
+            assets: matrixV1030.VersionedAssets,
+            assetsTransferType: matrixV1030.TransferType,
+            remoteFeesId: matrixV1030.VersionedAssetId,
+            feesTransferType: matrixV1030.TransferType,
+            customXcmOnDest: matrixV1030.VersionedXcm,
+            weightLimit: matrixV1030.V3WeightLimit,
         })
     ),
 }

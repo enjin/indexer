@@ -3,6 +3,7 @@ import * as matrixV500 from '../matrixV500'
 import * as matrixV602 from '../matrixV602'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV604 from '../matrixV604'
+import * as matrixV1030 from '../matrixV1030'
 
 export const proposed = {
     name: 'Council.Proposed',
@@ -119,6 +120,19 @@ export const executed = {
             ),
         })
     ),
+    /**
+     * A motion was executed; result will be `Ok` if it returned without error.
+     */
+    matrixV1030: new EventType(
+        'Council.Executed',
+        sts.struct({
+            proposalHash: matrixV1030.H256,
+            result: sts.result(
+                () => sts.unit(),
+                () => matrixV1030.DispatchError
+            ),
+        })
+    ),
 }
 
 export const memberExecuted = {
@@ -175,6 +189,19 @@ export const memberExecuted = {
             ),
         })
     ),
+    /**
+     * A single member did some action; result will be `Ok` if it returned without error.
+     */
+    matrixV1030: new EventType(
+        'Council.MemberExecuted',
+        sts.struct({
+            proposalHash: matrixV1030.H256,
+            result: sts.result(
+                () => sts.unit(),
+                () => matrixV1030.DispatchError
+            ),
+        })
+    ),
 }
 
 export const closed = {
@@ -188,6 +215,47 @@ export const closed = {
             proposalHash: matrixEnjinV603.H256,
             yes: sts.number(),
             no: sts.number(),
+        })
+    ),
+}
+
+export const killed = {
+    name: 'Council.Killed',
+    /**
+     * A proposal was killed.
+     */
+    matrixV1030: new EventType(
+        'Council.Killed',
+        sts.struct({
+            proposalHash: matrixV1030.H256,
+        })
+    ),
+}
+
+export const proposalCostBurned = {
+    name: 'Council.ProposalCostBurned',
+    /**
+     * Some cost for storing a proposal was burned.
+     */
+    matrixV1030: new EventType(
+        'Council.ProposalCostBurned',
+        sts.struct({
+            proposalHash: matrixV1030.H256,
+            who: matrixV1030.AccountId32,
+        })
+    ),
+}
+
+export const proposalCostReleased = {
+    name: 'Council.ProposalCostReleased',
+    /**
+     * Some cost for storing a proposal was released.
+     */
+    matrixV1030: new EventType(
+        'Council.ProposalCostReleased',
+        sts.struct({
+            proposalHash: matrixV1030.H256,
+            who: matrixV1030.AccountId32,
         })
     ),
 }

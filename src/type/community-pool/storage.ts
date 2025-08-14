@@ -154,3 +154,23 @@ export interface SpendsMatrixEnjinV1012 {
         key: number
     ): AsyncIterable<[k: number, v: matrixEnjinV1012.SpendStatus | undefined][]>
 }
+
+export const lastSpendPeriod = {
+    /**
+     *  The blocknumber for the last triggered spend period.
+     */
+    matrixV1030: new StorageType(
+        'CommunityPool.LastSpendPeriod',
+        'Optional',
+        [],
+        sts.number()
+    ) as LastSpendPeriodMatrixV1030,
+}
+
+/**
+ *  The blocknumber for the last triggered spend period.
+ */
+export interface LastSpendPeriodMatrixV1030 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block): Promise<number | undefined>
+}

@@ -1,5 +1,6 @@
 import { sts, Block, Bytes, Option, Result, CallType, RuntimeCtx } from '../support'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
+import * as matrixV1030 from '../matrixV1030'
 
 export const proposeBounty = {
     name: 'Bounties.propose_bounty',
@@ -195,6 +196,31 @@ export const extendBountyExpiry = {
         sts.struct({
             bountyId: sts.number(),
             remark: sts.bytes(),
+        })
+    ),
+}
+
+export const approveBountyWithCurator = {
+    name: 'Bounties.approve_bounty_with_curator',
+    /**
+     * Approve bountry and propose a curator simultaneously.
+     * This call is a shortcut to calling `approve_bounty` and `propose_curator` separately.
+     *
+     * May only be called from `T::SpendOrigin`.
+     *
+     * - `bounty_id`: Bounty ID to approve.
+     * - `curator`: The curator account whom will manage this bounty.
+     * - `fee`: The curator fee.
+     *
+     * ## Complexity
+     * - O(1).
+     */
+    matrixV1030: new CallType(
+        'Bounties.approve_bounty_with_curator',
+        sts.struct({
+            bountyId: sts.number(),
+            curator: matrixV1030.MultiAddress,
+            fee: sts.bigint(),
         })
     ),
 }

@@ -3,6 +3,7 @@ import * as enjinV100 from '../enjinV100'
 import * as v100 from '../v100'
 import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
+import * as v1060 from '../v1060'
 
 export const enter = {
     name: 'ParaInherent.enter',
@@ -40,6 +41,15 @@ export const enter = {
         'ParaInherent.enter',
         sts.struct({
             data: v1030.V6InherentData,
+        })
+    ),
+    /**
+     * Enter the paras inherent. This will process bitfields and backed candidates.
+     */
+    v1060: new CallType(
+        'ParaInherent.enter',
+        sts.struct({
+            data: v1060.InherentData,
         })
     ),
 }
