@@ -1,6 +1,7 @@
 import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
+import * as matrixV1030 from '../matrixV1030'
 
 export const transferredMultiAssets = {
     name: 'XTokens.TransferredMultiAssets',
@@ -30,6 +31,18 @@ export const transferredAssets = {
             assets: sts.array(() => matrixEnjinV1012.V4Asset),
             fee: matrixEnjinV1012.V4Asset,
             dest: matrixEnjinV1012.V4Location,
+        })
+    ),
+    /**
+     * Transferred `Asset` with fee.
+     */
+    matrixV1030: new EventType(
+        'XTokens.TransferredAssets',
+        sts.struct({
+            sender: matrixV1030.AccountId32,
+            assets: sts.array(() => matrixV1030.V5Asset),
+            fee: matrixV1030.V5Asset,
+            dest: matrixV1030.V5Location,
         })
     ),
 }

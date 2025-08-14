@@ -5,6 +5,7 @@ import * as matrixV604 from '../matrixV604'
 import * as matrixV1010 from '../matrixV1010'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 import * as matrixEnjinV1022 from '../matrixEnjinV1022'
+import * as matrixV1030 from '../matrixV1030'
 
 export const queryCounter = {
     /**
@@ -64,6 +65,15 @@ export const queries = {
         [sts.bigint()],
         matrixV1010.QueryStatus
     ) as QueriesMatrixV1010,
+    /**
+     *  The ongoing queries.
+     */
+    matrixV1030: new StorageType(
+        'PolkadotXcm.Queries',
+        'Optional',
+        [sts.bigint()],
+        matrixV1030.QueryStatus
+    ) as QueriesMatrixV1030,
 }
 
 /**
@@ -154,6 +164,27 @@ export interface QueriesMatrixV1010 {
         block: Block,
         key: bigint
     ): AsyncIterable<[k: bigint, v: matrixV1010.QueryStatus | undefined][]>
+}
+
+/**
+ *  The ongoing queries.
+ */
+export interface QueriesMatrixV1030 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: bigint): Promise<matrixV1030.QueryStatus | undefined>
+    getMany(block: Block, keys: bigint[]): Promise<(matrixV1030.QueryStatus | undefined)[]>
+    getKeys(block: Block): Promise<bigint[]>
+    getKeys(block: Block, key: bigint): Promise<bigint[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<bigint[]>
+    getKeysPaged(pageSize: number, block: Block, key: bigint): AsyncIterable<bigint[]>
+    getPairs(block: Block): Promise<[k: bigint, v: matrixV1030.QueryStatus | undefined][]>
+    getPairs(block: Block, key: bigint): Promise<[k: bigint, v: matrixV1030.QueryStatus | undefined][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: bigint, v: matrixV1030.QueryStatus | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: bigint
+    ): AsyncIterable<[k: bigint, v: matrixV1030.QueryStatus | undefined][]>
 }
 
 export const assetTraps = {
@@ -255,6 +286,15 @@ export const supportedVersion = {
         [sts.number(), matrixV1010.VersionedLocation],
         sts.number()
     ) as SupportedVersionMatrixV1010,
+    /**
+     *  The Latest versions that we know various locations support.
+     */
+    matrixV1030: new StorageType(
+        'PolkadotXcm.SupportedVersion',
+        'Optional',
+        [sts.number(), matrixV1030.VersionedLocation],
+        sts.number()
+    ) as SupportedVersionMatrixV1030,
 }
 
 /**
@@ -462,6 +502,52 @@ export interface SupportedVersionMatrixV1010 {
     ): AsyncIterable<[k: [number, matrixV1010.VersionedLocation], v: number | undefined][]>
 }
 
+/**
+ *  The Latest versions that we know various locations support.
+ */
+export interface SupportedVersionMatrixV1030 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key1: number, key2: matrixV1030.VersionedLocation): Promise<number | undefined>
+    getMany(block: Block, keys: [number, matrixV1030.VersionedLocation][]): Promise<(number | undefined)[]>
+    getKeys(block: Block): Promise<[number, matrixV1030.VersionedLocation][]>
+    getKeys(block: Block, key1: number): Promise<[number, matrixV1030.VersionedLocation][]>
+    getKeys(
+        block: Block,
+        key1: number,
+        key2: matrixV1030.VersionedLocation
+    ): Promise<[number, matrixV1030.VersionedLocation][]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[number, matrixV1030.VersionedLocation][]>
+    getKeysPaged(pageSize: number, block: Block, key1: number): AsyncIterable<[number, matrixV1030.VersionedLocation][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: number,
+        key2: matrixV1030.VersionedLocation
+    ): AsyncIterable<[number, matrixV1030.VersionedLocation][]>
+    getPairs(block: Block): Promise<[k: [number, matrixV1030.VersionedLocation], v: number | undefined][]>
+    getPairs(block: Block, key1: number): Promise<[k: [number, matrixV1030.VersionedLocation], v: number | undefined][]>
+    getPairs(
+        block: Block,
+        key1: number,
+        key2: matrixV1030.VersionedLocation
+    ): Promise<[k: [number, matrixV1030.VersionedLocation], v: number | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: [number, matrixV1030.VersionedLocation], v: number | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: number
+    ): AsyncIterable<[k: [number, matrixV1030.VersionedLocation], v: number | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: number,
+        key2: matrixV1030.VersionedLocation
+    ): AsyncIterable<[k: [number, matrixV1030.VersionedLocation], v: number | undefined][]>
+}
+
 export const versionNotifiers = {
     /**
      *  All locations that we have requested version notifications from.
@@ -499,6 +585,15 @@ export const versionNotifiers = {
         [sts.number(), matrixV1010.VersionedLocation],
         sts.bigint()
     ) as VersionNotifiersMatrixV1010,
+    /**
+     *  All locations that we have requested version notifications from.
+     */
+    matrixV1030: new StorageType(
+        'PolkadotXcm.VersionNotifiers',
+        'Optional',
+        [sts.number(), matrixV1030.VersionedLocation],
+        sts.bigint()
+    ) as VersionNotifiersMatrixV1030,
 }
 
 /**
@@ -706,6 +801,52 @@ export interface VersionNotifiersMatrixV1010 {
     ): AsyncIterable<[k: [number, matrixV1010.VersionedLocation], v: bigint | undefined][]>
 }
 
+/**
+ *  All locations that we have requested version notifications from.
+ */
+export interface VersionNotifiersMatrixV1030 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key1: number, key2: matrixV1030.VersionedLocation): Promise<bigint | undefined>
+    getMany(block: Block, keys: [number, matrixV1030.VersionedLocation][]): Promise<(bigint | undefined)[]>
+    getKeys(block: Block): Promise<[number, matrixV1030.VersionedLocation][]>
+    getKeys(block: Block, key1: number): Promise<[number, matrixV1030.VersionedLocation][]>
+    getKeys(
+        block: Block,
+        key1: number,
+        key2: matrixV1030.VersionedLocation
+    ): Promise<[number, matrixV1030.VersionedLocation][]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[number, matrixV1030.VersionedLocation][]>
+    getKeysPaged(pageSize: number, block: Block, key1: number): AsyncIterable<[number, matrixV1030.VersionedLocation][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: number,
+        key2: matrixV1030.VersionedLocation
+    ): AsyncIterable<[number, matrixV1030.VersionedLocation][]>
+    getPairs(block: Block): Promise<[k: [number, matrixV1030.VersionedLocation], v: bigint | undefined][]>
+    getPairs(block: Block, key1: number): Promise<[k: [number, matrixV1030.VersionedLocation], v: bigint | undefined][]>
+    getPairs(
+        block: Block,
+        key1: number,
+        key2: matrixV1030.VersionedLocation
+    ): Promise<[k: [number, matrixV1030.VersionedLocation], v: bigint | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: [number, matrixV1030.VersionedLocation], v: bigint | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: number
+    ): AsyncIterable<[k: [number, matrixV1030.VersionedLocation], v: bigint | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: number,
+        key2: matrixV1030.VersionedLocation
+    ): AsyncIterable<[k: [number, matrixV1030.VersionedLocation], v: bigint | undefined][]>
+}
+
 export const versionNotifyTargets = {
     /**
      *  The target locations that are subscribed to our version changes, as well as the most recent
@@ -747,6 +888,16 @@ export const versionNotifyTargets = {
         [sts.number(), matrixV1010.VersionedLocation],
         sts.tuple(() => [sts.bigint(), matrixV1010.Weight, sts.number()])
     ) as VersionNotifyTargetsMatrixV1010,
+    /**
+     *  The target locations that are subscribed to our version changes, as well as the most recent
+     *  of our versions we informed them of.
+     */
+    matrixV1030: new StorageType(
+        'PolkadotXcm.VersionNotifyTargets',
+        'Optional',
+        [sts.number(), matrixV1030.VersionedLocation],
+        sts.tuple(() => [sts.bigint(), matrixV1030.Weight, sts.number()])
+    ) as VersionNotifyTargetsMatrixV1030,
 }
 
 /**
@@ -1033,6 +1184,71 @@ export interface VersionNotifyTargetsMatrixV1010 {
     >
 }
 
+/**
+ *  The target locations that are subscribed to our version changes, as well as the most recent
+ *  of our versions we informed them of.
+ */
+export interface VersionNotifyTargetsMatrixV1030 {
+    is(block: RuntimeCtx): boolean
+    get(
+        block: Block,
+        key1: number,
+        key2: matrixV1030.VersionedLocation
+    ): Promise<[bigint, matrixV1030.Weight, number] | undefined>
+    getMany(
+        block: Block,
+        keys: [number, matrixV1030.VersionedLocation][]
+    ): Promise<([bigint, matrixV1030.Weight, number] | undefined)[]>
+    getKeys(block: Block): Promise<[number, matrixV1030.VersionedLocation][]>
+    getKeys(block: Block, key1: number): Promise<[number, matrixV1030.VersionedLocation][]>
+    getKeys(
+        block: Block,
+        key1: number,
+        key2: matrixV1030.VersionedLocation
+    ): Promise<[number, matrixV1030.VersionedLocation][]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[number, matrixV1030.VersionedLocation][]>
+    getKeysPaged(pageSize: number, block: Block, key1: number): AsyncIterable<[number, matrixV1030.VersionedLocation][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: number,
+        key2: matrixV1030.VersionedLocation
+    ): AsyncIterable<[number, matrixV1030.VersionedLocation][]>
+    getPairs(
+        block: Block
+    ): Promise<[k: [number, matrixV1030.VersionedLocation], v: [bigint, matrixV1030.Weight, number] | undefined][]>
+    getPairs(
+        block: Block,
+        key1: number
+    ): Promise<[k: [number, matrixV1030.VersionedLocation], v: [bigint, matrixV1030.Weight, number] | undefined][]>
+    getPairs(
+        block: Block,
+        key1: number,
+        key2: matrixV1030.VersionedLocation
+    ): Promise<[k: [number, matrixV1030.VersionedLocation], v: [bigint, matrixV1030.Weight, number] | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<
+        [k: [number, matrixV1030.VersionedLocation], v: [bigint, matrixV1030.Weight, number] | undefined][]
+    >
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: number
+    ): AsyncIterable<
+        [k: [number, matrixV1030.VersionedLocation], v: [bigint, matrixV1030.Weight, number] | undefined][]
+    >
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: number,
+        key2: matrixV1030.VersionedLocation
+    ): AsyncIterable<
+        [k: [number, matrixV1030.VersionedLocation], v: [bigint, matrixV1030.Weight, number] | undefined][]
+    >
+}
+
 export const versionDiscoveryQueue = {
     /**
      *  Destinations whose latest XCM version we would like to know. Duplicates not allowed, and
@@ -1078,6 +1294,17 @@ export const versionDiscoveryQueue = {
         [],
         sts.array(() => sts.tuple(() => [matrixV1010.VersionedLocation, sts.number()]))
     ) as VersionDiscoveryQueueMatrixV1010,
+    /**
+     *  Destinations whose latest XCM version we would like to know. Duplicates not allowed, and
+     *  the `u32` counter is the number of times that a send to the destination has been attempted,
+     *  which is used as a prioritization.
+     */
+    matrixV1030: new StorageType(
+        'PolkadotXcm.VersionDiscoveryQueue',
+        'Default',
+        [],
+        sts.array(() => sts.tuple(() => [matrixV1030.VersionedLocation, sts.number()]))
+    ) as VersionDiscoveryQueueMatrixV1030,
 }
 
 /**
@@ -1122,6 +1349,17 @@ export interface VersionDiscoveryQueueMatrixV1010 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): [matrixV1010.VersionedLocation, number][]
     get(block: Block): Promise<[matrixV1010.VersionedLocation, number][] | undefined>
+}
+
+/**
+ *  Destinations whose latest XCM version we would like to know. Duplicates not allowed, and
+ *  the `u32` counter is the number of times that a send to the destination has been attempted,
+ *  which is used as a prioritization.
+ */
+export interface VersionDiscoveryQueueMatrixV1030 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): [matrixV1030.VersionedLocation, number][]
+    get(block: Block): Promise<[matrixV1030.VersionedLocation, number][] | undefined>
 }
 
 export const currentMigration = {
@@ -1190,6 +1428,15 @@ export const remoteLockedFungibles = {
         [sts.number(), matrixV1010.AccountId32, matrixV1010.VersionedAssetId],
         matrixV1010.RemoteLockedFungibleRecord
     ) as RemoteLockedFungiblesMatrixV1010,
+    /**
+     *  Fungible assets which we know are locked on a remote chain.
+     */
+    matrixV1030: new StorageType(
+        'PolkadotXcm.RemoteLockedFungibles',
+        'Optional',
+        [sts.number(), matrixV1030.AccountId32, matrixV1030.VersionedAssetId],
+        matrixV1030.RemoteLockedFungibleRecord
+    ) as RemoteLockedFungiblesMatrixV1030,
 }
 
 /**
@@ -1858,6 +2105,138 @@ export interface RemoteLockedFungiblesMatrixV1010 {
     >
 }
 
+/**
+ *  Fungible assets which we know are locked on a remote chain.
+ */
+export interface RemoteLockedFungiblesMatrixV1030 {
+    is(block: RuntimeCtx): boolean
+    get(
+        block: Block,
+        key1: number,
+        key2: matrixV1030.AccountId32,
+        key3: matrixV1030.VersionedAssetId
+    ): Promise<matrixV1030.RemoteLockedFungibleRecord | undefined>
+    getMany(
+        block: Block,
+        keys: [number, matrixV1030.AccountId32, matrixV1030.VersionedAssetId][]
+    ): Promise<(matrixV1030.RemoteLockedFungibleRecord | undefined)[]>
+    getKeys(block: Block): Promise<[number, matrixV1030.AccountId32, matrixV1030.VersionedAssetId][]>
+    getKeys(block: Block, key1: number): Promise<[number, matrixV1030.AccountId32, matrixV1030.VersionedAssetId][]>
+    getKeys(
+        block: Block,
+        key1: number,
+        key2: matrixV1030.AccountId32
+    ): Promise<[number, matrixV1030.AccountId32, matrixV1030.VersionedAssetId][]>
+    getKeys(
+        block: Block,
+        key1: number,
+        key2: matrixV1030.AccountId32,
+        key3: matrixV1030.VersionedAssetId
+    ): Promise<[number, matrixV1030.AccountId32, matrixV1030.VersionedAssetId][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[number, matrixV1030.AccountId32, matrixV1030.VersionedAssetId][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: number
+    ): AsyncIterable<[number, matrixV1030.AccountId32, matrixV1030.VersionedAssetId][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: number,
+        key2: matrixV1030.AccountId32
+    ): AsyncIterable<[number, matrixV1030.AccountId32, matrixV1030.VersionedAssetId][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: number,
+        key2: matrixV1030.AccountId32,
+        key3: matrixV1030.VersionedAssetId
+    ): AsyncIterable<[number, matrixV1030.AccountId32, matrixV1030.VersionedAssetId][]>
+    getPairs(
+        block: Block
+    ): Promise<
+        [
+            k: [number, matrixV1030.AccountId32, matrixV1030.VersionedAssetId],
+            v: matrixV1030.RemoteLockedFungibleRecord | undefined,
+        ][]
+    >
+    getPairs(
+        block: Block,
+        key1: number
+    ): Promise<
+        [
+            k: [number, matrixV1030.AccountId32, matrixV1030.VersionedAssetId],
+            v: matrixV1030.RemoteLockedFungibleRecord | undefined,
+        ][]
+    >
+    getPairs(
+        block: Block,
+        key1: number,
+        key2: matrixV1030.AccountId32
+    ): Promise<
+        [
+            k: [number, matrixV1030.AccountId32, matrixV1030.VersionedAssetId],
+            v: matrixV1030.RemoteLockedFungibleRecord | undefined,
+        ][]
+    >
+    getPairs(
+        block: Block,
+        key1: number,
+        key2: matrixV1030.AccountId32,
+        key3: matrixV1030.VersionedAssetId
+    ): Promise<
+        [
+            k: [number, matrixV1030.AccountId32, matrixV1030.VersionedAssetId],
+            v: matrixV1030.RemoteLockedFungibleRecord | undefined,
+        ][]
+    >
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<
+        [
+            k: [number, matrixV1030.AccountId32, matrixV1030.VersionedAssetId],
+            v: matrixV1030.RemoteLockedFungibleRecord | undefined,
+        ][]
+    >
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: number
+    ): AsyncIterable<
+        [
+            k: [number, matrixV1030.AccountId32, matrixV1030.VersionedAssetId],
+            v: matrixV1030.RemoteLockedFungibleRecord | undefined,
+        ][]
+    >
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: number,
+        key2: matrixV1030.AccountId32
+    ): AsyncIterable<
+        [
+            k: [number, matrixV1030.AccountId32, matrixV1030.VersionedAssetId],
+            v: matrixV1030.RemoteLockedFungibleRecord | undefined,
+        ][]
+    >
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: number,
+        key2: matrixV1030.AccountId32,
+        key3: matrixV1030.VersionedAssetId
+    ): AsyncIterable<
+        [
+            k: [number, matrixV1030.AccountId32, matrixV1030.VersionedAssetId],
+            v: matrixV1030.RemoteLockedFungibleRecord | undefined,
+        ][]
+    >
+}
+
 export const lockedFungibles = {
     /**
      *  Fungible assets which we know are locked on this chain.
@@ -1895,6 +2274,15 @@ export const lockedFungibles = {
         [matrixV1010.AccountId32],
         sts.array(() => sts.tuple(() => [sts.bigint(), matrixV1010.VersionedLocation]))
     ) as LockedFungiblesMatrixV1010,
+    /**
+     *  Fungible assets which we know are locked on this chain.
+     */
+    matrixV1030: new StorageType(
+        'PolkadotXcm.LockedFungibles',
+        'Optional',
+        [matrixV1030.AccountId32],
+        sts.array(() => sts.tuple(() => [sts.bigint(), matrixV1030.VersionedLocation]))
+    ) as LockedFungiblesMatrixV1030,
 }
 
 /**
@@ -2043,6 +2431,38 @@ export interface LockedFungiblesMatrixV1010 {
     ): AsyncIterable<[k: matrixV1010.AccountId32, v: [bigint, matrixV1010.VersionedLocation][] | undefined][]>
 }
 
+/**
+ *  Fungible assets which we know are locked on this chain.
+ */
+export interface LockedFungiblesMatrixV1030 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: matrixV1030.AccountId32): Promise<[bigint, matrixV1030.VersionedLocation][] | undefined>
+    getMany(
+        block: Block,
+        keys: matrixV1030.AccountId32[]
+    ): Promise<([bigint, matrixV1030.VersionedLocation][] | undefined)[]>
+    getKeys(block: Block): Promise<matrixV1030.AccountId32[]>
+    getKeys(block: Block, key: matrixV1030.AccountId32): Promise<matrixV1030.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<matrixV1030.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block, key: matrixV1030.AccountId32): AsyncIterable<matrixV1030.AccountId32[]>
+    getPairs(
+        block: Block
+    ): Promise<[k: matrixV1030.AccountId32, v: [bigint, matrixV1030.VersionedLocation][] | undefined][]>
+    getPairs(
+        block: Block,
+        key: matrixV1030.AccountId32
+    ): Promise<[k: matrixV1030.AccountId32, v: [bigint, matrixV1030.VersionedLocation][] | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: matrixV1030.AccountId32, v: [bigint, matrixV1030.VersionedLocation][] | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: matrixV1030.AccountId32
+    ): AsyncIterable<[k: matrixV1030.AccountId32, v: [bigint, matrixV1030.VersionedLocation][] | undefined][]>
+}
+
 export const xcmExecutionSuspended = {
     /**
      *  Global suspension state of the XCM executor.
@@ -2112,6 +2532,20 @@ export const recordedXcm = {
         [],
         sts.array(() => matrixEnjinV1022.V4Instruction)
     ) as RecordedXcmMatrixEnjinV1022,
+    /**
+     *  If [`ShouldRecordXcm`] is set to true, then the last XCM program executed locally
+     *  will be stored here.
+     *  Runtime APIs can fetch the XCM that was executed by accessing this value.
+     *
+     *  Only relevant if this pallet is being used as the [`xcm_executor::traits::RecordXcm`]
+     *  implementation in the XCM executor configuration.
+     */
+    matrixV1030: new StorageType(
+        'PolkadotXcm.RecordedXcm',
+        'Optional',
+        [],
+        sts.array(() => matrixV1030.V5Instruction)
+    ) as RecordedXcmMatrixV1030,
 }
 
 /**
@@ -2125,4 +2559,17 @@ export const recordedXcm = {
 export interface RecordedXcmMatrixEnjinV1022 {
     is(block: RuntimeCtx): boolean
     get(block: Block): Promise<matrixEnjinV1022.V4Instruction[] | undefined>
+}
+
+/**
+ *  If [`ShouldRecordXcm`] is set to true, then the last XCM program executed locally
+ *  will be stored here.
+ *  Runtime APIs can fetch the XCM that was executed by accessing this value.
+ *
+ *  Only relevant if this pallet is being used as the [`xcm_executor::traits::RecordXcm`]
+ *  implementation in the XCM executor configuration.
+ */
+export interface RecordedXcmMatrixV1030 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block): Promise<matrixV1030.V5Instruction[] | undefined>
 }

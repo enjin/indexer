@@ -10,6 +10,7 @@ import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 import * as matrixV1020 from '../matrixV1020'
 import * as matrixEnjinV1022 from '../matrixEnjinV1022'
 import * as v1030 from '../v1030'
+import * as matrixV1030 from '../matrixV1030'
 import * as v1031 from '../v1031'
 import * as enjinV1032 from '../enjinV1032'
 import * as enjinV1050 from '../enjinV1050'
@@ -169,6 +170,15 @@ export const listings = {
      *  Listings by ID (real storage)
      */
     v1050: new StorageType('Marketplace.Listings', 'Optional', [v1050.H256], v1050.Listing) as ListingsV1050,
+    /**
+     *  Listings by ID (real storage)
+     */
+    matrixV1030: new StorageType(
+        'Marketplace.Listings',
+        'Optional',
+        [matrixV1030.H256],
+        matrixV1030.Listing
+    ) as ListingsMatrixV1030,
 }
 
 /**
@@ -502,6 +512,30 @@ export interface ListingsV1050 {
         block: Block,
         key: v1050.H256
     ): AsyncIterable<[k: v1050.H256, v: v1050.Listing | undefined][]>
+}
+
+/**
+ *  Listings by ID (real storage)
+ */
+export interface ListingsMatrixV1030 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: matrixV1030.H256): Promise<matrixV1030.Listing | undefined>
+    getMany(block: Block, keys: matrixV1030.H256[]): Promise<(matrixV1030.Listing | undefined)[]>
+    getKeys(block: Block): Promise<matrixV1030.H256[]>
+    getKeys(block: Block, key: matrixV1030.H256): Promise<matrixV1030.H256[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<matrixV1030.H256[]>
+    getKeysPaged(pageSize: number, block: Block, key: matrixV1030.H256): AsyncIterable<matrixV1030.H256[]>
+    getPairs(block: Block): Promise<[k: matrixV1030.H256, v: matrixV1030.Listing | undefined][]>
+    getPairs(block: Block, key: matrixV1030.H256): Promise<[k: matrixV1030.H256, v: matrixV1030.Listing | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: matrixV1030.H256, v: matrixV1030.Listing | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: matrixV1030.H256
+    ): AsyncIterable<[k: matrixV1030.H256, v: matrixV1030.Listing | undefined][]>
 }
 
 export const counterOffers = {
