@@ -45,9 +45,7 @@ export async function syncStakeExchangeOffersEvents(job: Job): Promise<void> {
         }
     }
 
-    // Wait for all save operations to complete
     await Promise.all(promises)
 
-    // Log success
     await job.log(`Synced stake exchange offer rates`)
 }
