@@ -10,6 +10,7 @@ import {
     syncPoolMembers,
     syncPools,
     syncOrphanedEarlyBirdRewards,
+    syncStakeExchangeOffersEvents,
 } from '~/worker/jobs'
 
 export class NominationPoolsProcessor implements ProcessorDef {
@@ -35,6 +36,9 @@ export class NominationPoolsProcessor implements ProcessorDef {
                 break
             case JobsEnum.SYNC_ORPHANED_EARLY_BIRD_REWARDS:
                 await syncOrphanedEarlyBirdRewards(job)
+                break
+            case JobsEnum.SYNC_STAKE_EXCHANGE_OFFERS_EVENT:
+                await syncStakeExchangeOffersEvents(job)
                 break
             default:
                 throw new Error(`${job.name} is not a valid job for this processor`)

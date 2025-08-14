@@ -1182,6 +1182,7 @@ type StakeExchangeOfferCancelled {
   offerId: BigInt!
   total: BigInt!
   account: Account!
+  rate: BigInt
 }
 
 type StakeExchangeLiquidityWithdrawn {
@@ -1220,6 +1221,7 @@ type StakeExchangeOfferCompleted {
   offerId: BigInt!
   account: Account!
   amount: BigInt!
+  rate: BigInt
 }
 
 type NominationPoolsCreated {

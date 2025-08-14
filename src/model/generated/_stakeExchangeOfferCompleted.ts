@@ -9,6 +9,7 @@ export class StakeExchangeOfferCompleted {
     private _offerId!: bigint
     private _account!: string
     private _amount!: bigint
+    private _rate!: bigint | undefined | null
 
     constructor(props?: Partial<Omit<StakeExchangeOfferCompleted, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
@@ -17,6 +18,7 @@ export class StakeExchangeOfferCompleted {
             this._offerId = marshal.bigint.fromJSON(json.offerId)
             this._account = marshal.string.fromJSON(json.account)
             this._amount = marshal.bigint.fromJSON(json.amount)
+            this._rate = json.rate == null ? undefined : marshal.bigint.fromJSON(json.rate)
         }
     }
 
@@ -56,6 +58,14 @@ export class StakeExchangeOfferCompleted {
         this._amount = value
     }
 
+    get rate(): bigint | undefined | null {
+        return this._rate
+    }
+
+    set rate(value: bigint | undefined | null) {
+        this._rate = value
+    }
+
     toJSON(): object {
         return {
             isTypeOf: this.isTypeOf,
@@ -63,6 +73,7 @@ export class StakeExchangeOfferCompleted {
             offerId: marshal.bigint.toJSON(this.offerId),
             account: this.account,
             amount: marshal.bigint.toJSON(this.amount),
+            rate: this.rate == null ? undefined : marshal.bigint.toJSON(this.rate),
         }
     }
 }
