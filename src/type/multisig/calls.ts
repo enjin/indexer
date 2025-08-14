@@ -37,11 +37,13 @@ import * as v1023 from '../v1023'
 import * as enjinV1026 from '../enjinV1026'
 import * as v1026 from '../v1026'
 import * as v1030 from '../v1030'
+import * as matrixV1030 from '../matrixV1030'
 import * as v1031 from '../v1031'
 import * as enjinV1032 from '../enjinV1032'
 import * as v1032 from '../v1032'
 import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
+import * as v1060 from '../v1060'
 
 export const asMultiThreshold1 = {
     name: 'Multisig.as_multi_threshold_1',
@@ -892,6 +894,48 @@ export const asMultiThreshold1 = {
         sts.struct({
             otherSignatories: sts.array(() => v1050.AccountId32),
             call: v1050.Call,
+        })
+    ),
+    /**
+     * Immediately dispatch a multi-signature call using a single approval from the caller.
+     *
+     * The dispatch origin for this call must be _Signed_.
+     *
+     * - `other_signatories`: The accounts (other than the sender) who are part of the
+     * multi-signature, but do not participate in the approval process.
+     * - `call`: The call to be executed.
+     *
+     * Result is equivalent to the dispatched result.
+     *
+     * ## Complexity
+     * O(Z + C) where Z is the length of the call and C its execution weight.
+     */
+    matrixV1030: new CallType(
+        'Multisig.as_multi_threshold_1',
+        sts.struct({
+            otherSignatories: sts.array(() => matrixV1030.AccountId32),
+            call: matrixV1030.Call,
+        })
+    ),
+    /**
+     * Immediately dispatch a multi-signature call using a single approval from the caller.
+     *
+     * The dispatch origin for this call must be _Signed_.
+     *
+     * - `other_signatories`: The accounts (other than the sender) who are part of the
+     * multi-signature, but do not participate in the approval process.
+     * - `call`: The call to be executed.
+     *
+     * Result is equivalent to the dispatched result.
+     *
+     * ## Complexity
+     * O(Z + C) where Z is the length of the call and C its execution weight.
+     */
+    v1060: new CallType(
+        'Multisig.as_multi_threshold_1',
+        sts.struct({
+            otherSignatories: sts.array(() => v1060.AccountId32),
+            call: v1060.Call,
         })
     ),
 }
@@ -2879,6 +2923,108 @@ export const asMulti = {
             maybeTimepoint: sts.option(() => v1050.Timepoint),
             call: v1050.Call,
             maxWeight: v1050.Weight,
+        })
+    ),
+    /**
+     * Register approval for a dispatch to be made from a deterministic composite account if
+     * approved by a total of `threshold - 1` of `other_signatories`.
+     *
+     * If there are enough, then dispatch the call.
+     *
+     * Payment: `DepositBase` will be reserved if this is the first approval, plus
+     * `threshold` times `DepositFactor`. It is returned once this dispatch happens or
+     * is cancelled.
+     *
+     * The dispatch origin for this call must be _Signed_.
+     *
+     * - `threshold`: The total number of approvals for this dispatch before it is executed.
+     * - `other_signatories`: The accounts (other than the sender) who can approve this
+     * dispatch. May not be empty.
+     * - `maybe_timepoint`: If this is the first approval, then this must be `None`. If it is
+     * not the first approval, then it must be `Some`, with the timepoint (block number and
+     * transaction index) of the first approval transaction.
+     * - `call`: The call to be executed.
+     *
+     * NOTE: Unless this is the final approval, you will generally want to use
+     * `approve_as_multi` instead, since it only requires a hash of the call.
+     *
+     * Result is equivalent to the dispatched result if `threshold` is exactly `1`. Otherwise
+     * on success, result is `Ok` and the result from the interior call, if it was executed,
+     * may be found in the deposited `MultisigExecuted` event.
+     *
+     * ## Complexity
+     * - `O(S + Z + Call)`.
+     * - Up to one balance-reserve or unreserve operation.
+     * - One passthrough operation, one insert, both `O(S)` where `S` is the number of
+     *   signatories. `S` is capped by `MaxSignatories`, with weight being proportional.
+     * - One call encode & hash, both of complexity `O(Z)` where `Z` is tx-len.
+     * - One encode & hash, both of complexity `O(S)`.
+     * - Up to one binary search and insert (`O(logS + S)`).
+     * - I/O: 1 read `O(S)`, up to 1 mutate `O(S)`. Up to one remove.
+     * - One event.
+     * - The weight of the `call`.
+     * - Storage: inserts one item, value size bounded by `MaxSignatories`, with a deposit
+     *   taken for its lifetime of `DepositBase + threshold * DepositFactor`.
+     */
+    matrixV1030: new CallType(
+        'Multisig.as_multi',
+        sts.struct({
+            threshold: sts.number(),
+            otherSignatories: sts.array(() => matrixV1030.AccountId32),
+            maybeTimepoint: sts.option(() => matrixV1030.Timepoint),
+            call: matrixV1030.Call,
+            maxWeight: matrixV1030.Weight,
+        })
+    ),
+    /**
+     * Register approval for a dispatch to be made from a deterministic composite account if
+     * approved by a total of `threshold - 1` of `other_signatories`.
+     *
+     * If there are enough, then dispatch the call.
+     *
+     * Payment: `DepositBase` will be reserved if this is the first approval, plus
+     * `threshold` times `DepositFactor`. It is returned once this dispatch happens or
+     * is cancelled.
+     *
+     * The dispatch origin for this call must be _Signed_.
+     *
+     * - `threshold`: The total number of approvals for this dispatch before it is executed.
+     * - `other_signatories`: The accounts (other than the sender) who can approve this
+     * dispatch. May not be empty.
+     * - `maybe_timepoint`: If this is the first approval, then this must be `None`. If it is
+     * not the first approval, then it must be `Some`, with the timepoint (block number and
+     * transaction index) of the first approval transaction.
+     * - `call`: The call to be executed.
+     *
+     * NOTE: Unless this is the final approval, you will generally want to use
+     * `approve_as_multi` instead, since it only requires a hash of the call.
+     *
+     * Result is equivalent to the dispatched result if `threshold` is exactly `1`. Otherwise
+     * on success, result is `Ok` and the result from the interior call, if it was executed,
+     * may be found in the deposited `MultisigExecuted` event.
+     *
+     * ## Complexity
+     * - `O(S + Z + Call)`.
+     * - Up to one balance-reserve or unreserve operation.
+     * - One passthrough operation, one insert, both `O(S)` where `S` is the number of
+     *   signatories. `S` is capped by `MaxSignatories`, with weight being proportional.
+     * - One call encode & hash, both of complexity `O(Z)` where `Z` is tx-len.
+     * - One encode & hash, both of complexity `O(S)`.
+     * - Up to one binary search and insert (`O(logS + S)`).
+     * - I/O: 1 read `O(S)`, up to 1 mutate `O(S)`. Up to one remove.
+     * - One event.
+     * - The weight of the `call`.
+     * - Storage: inserts one item, value size bounded by `MaxSignatories`, with a deposit
+     *   taken for its lifetime of `DepositBase + threshold * DepositFactor`.
+     */
+    v1060: new CallType(
+        'Multisig.as_multi',
+        sts.struct({
+            threshold: sts.number(),
+            otherSignatories: sts.array(() => v1060.AccountId32),
+            maybeTimepoint: sts.option(() => v1060.Timepoint),
+            call: v1060.Call,
+            maxWeight: v1060.Weight,
         })
     ),
 }

@@ -3,6 +3,7 @@ import * as enjinV100 from '../enjinV100'
 import * as v104 from '../v104'
 import * as matrixV500 from '../matrixV500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
+import * as matrixV1030 from '../matrixV1030'
 
 export const claimRequested = {
     name: 'Claims.ClaimRequested',
@@ -62,6 +63,35 @@ export const claimRequested = {
              * If the claim requested is for early bird
              */
             isEarlyBird: sts.boolean(),
+        })
+    ),
+    /**
+     * Claim has been requested by an account through the Relayer. `[who, amount,
+     * transaction_hash, is_efi_token]`
+     */
+    matrixV1030: new EventType(
+        'Claims.ClaimRequested',
+        sts.struct({
+            /**
+             * The account which requests the claim through the Relayer
+             */
+            who: matrixV1030.H160,
+            /**
+             * The amount of burned tokens
+             */
+            amountBurned: sts.bigint(),
+            /**
+             * Hash of the transaction in which the tokens were burnt
+             */
+            transactionHash: matrixV1030.H256,
+            /**
+             * If the burnt token is EFI or not
+             */
+            isEfiToken: sts.boolean(),
+            /**
+             * ENJ amount claimable
+             */
+            amountClaimable: sts.bigint(),
         })
     ),
 }

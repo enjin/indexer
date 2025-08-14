@@ -5,6 +5,7 @@ import * as enjinV101 from '../enjinV101'
 import * as v105 from '../v105'
 import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
+import * as v1060 from '../v1060'
 
 export const referendumCount = {
     /**
@@ -77,6 +78,15 @@ export const referendumInfoFor = {
         [sts.number()],
         v1030.ReferendumInfo
     ) as ReferendumInfoForV1030,
+    /**
+     *  Information concerning any given referendum.
+     */
+    v1060: new StorageType(
+        'Referenda.ReferendumInfoFor',
+        'Optional',
+        [sts.number()],
+        v1060.ReferendumInfo
+    ) as ReferendumInfoForV1060,
 }
 
 /**
@@ -206,6 +216,27 @@ export interface ReferendumInfoForV1030 {
         block: Block,
         key: number
     ): AsyncIterable<[k: number, v: v1030.ReferendumInfo | undefined][]>
+}
+
+/**
+ *  Information concerning any given referendum.
+ */
+export interface ReferendumInfoForV1060 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: number): Promise<v1060.ReferendumInfo | undefined>
+    getMany(block: Block, keys: number[]): Promise<(v1060.ReferendumInfo | undefined)[]>
+    getKeys(block: Block): Promise<number[]>
+    getKeys(block: Block, key: number): Promise<number[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<number[]>
+    getKeysPaged(pageSize: number, block: Block, key: number): AsyncIterable<number[]>
+    getPairs(block: Block): Promise<[k: number, v: v1060.ReferendumInfo | undefined][]>
+    getPairs(block: Block, key: number): Promise<[k: number, v: v1060.ReferendumInfo | undefined][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: number, v: v1060.ReferendumInfo | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: number
+    ): AsyncIterable<[k: number, v: v1060.ReferendumInfo | undefined][]>
 }
 
 export const trackQueue = {

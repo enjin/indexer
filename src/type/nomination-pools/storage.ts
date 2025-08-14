@@ -19,6 +19,7 @@ import * as enjinV1023 from '../enjinV1023'
 import * as v1023 from '../v1023'
 import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
+import * as v1060 from '../v1060'
 
 export const minJoinBond = {
     /**
@@ -234,6 +235,15 @@ export const bondedPools = {
         [sts.number()],
         v1023.BondedPoolInner
     ) as BondedPoolsV1023,
+    /**
+     *  Storage for bonded pools.
+     */
+    v1060: new StorageType(
+        'NominationPools.BondedPools',
+        'Optional',
+        [sts.number()],
+        v1060.BondedPoolInner
+    ) as BondedPoolsV1060,
 }
 
 /**
@@ -498,6 +508,27 @@ export interface BondedPoolsV1023 {
         block: Block,
         key: number
     ): AsyncIterable<[k: number, v: v1023.BondedPoolInner | undefined][]>
+}
+
+/**
+ *  Storage for bonded pools.
+ */
+export interface BondedPoolsV1060 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: number): Promise<v1060.BondedPoolInner | undefined>
+    getMany(block: Block, keys: number[]): Promise<(v1060.BondedPoolInner | undefined)[]>
+    getKeys(block: Block): Promise<number[]>
+    getKeys(block: Block, key: number): Promise<number[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<number[]>
+    getKeysPaged(pageSize: number, block: Block, key: number): AsyncIterable<number[]>
+    getPairs(block: Block): Promise<[k: number, v: v1060.BondedPoolInner | undefined][]>
+    getPairs(block: Block, key: number): Promise<[k: number, v: v1060.BondedPoolInner | undefined][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: number, v: v1060.BondedPoolInner | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: number
+    ): AsyncIterable<[k: number, v: v1060.BondedPoolInner | undefined][]>
 }
 
 export const counterForBondedPools = {

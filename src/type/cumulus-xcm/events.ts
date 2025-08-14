@@ -3,6 +3,7 @@ import * as matrixV500 from '../matrixV500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV1010 from '../matrixV1010'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
+import * as matrixV1030 from '../matrixV1030'
 
 export const invalidFormat = {
     name: 'CumulusXcm.InvalidFormat',
@@ -47,4 +48,9 @@ export const executedDownward = {
      * \[ id, outcome \]
      */
     matrixV1010: new EventType('CumulusXcm.ExecutedDownward', sts.tuple([sts.bytes(), matrixV1010.V4Outcome])),
+    /**
+     * Downward message executed with the given outcome.
+     * \[ id, outcome \]
+     */
+    matrixV1030: new EventType('CumulusXcm.ExecutedDownward', sts.tuple([sts.bytes(), matrixV1030.V5Outcome])),
 }

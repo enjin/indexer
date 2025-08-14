@@ -6,6 +6,7 @@ import * as v105 from '../v105'
 import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
 import * as enjinV1050 from '../enjinV1050'
+import * as v1060 from '../v1060'
 
 export const bond = {
     name: 'Staking.bond',
@@ -995,6 +996,24 @@ export const restoreLedger = {
             maybeController: sts.option(() => enjinV1050.AccountId32),
             maybeTotal: sts.option(() => sts.bigint()),
             maybeUnlocking: sts.option(() => sts.array(() => enjinV1050.UnlockChunk)),
+        })
+    ),
+}
+
+export const withdrawOverstake = {
+    name: 'Staking.withdraw_overstake',
+    /**
+     * Adjusts the staking ledger by withdrawing any excess staked amount.
+     *
+     * This function corrects cases where a user's recorded stake in the ledger
+     * exceeds their actual staked funds. This situation can arise due to cases such as
+     * external slashing by another pallet, leading to an inconsistency between the ledger
+     * and the actual stake.
+     */
+    v1060: new CallType(
+        'Staking.withdraw_overstake',
+        sts.struct({
+            stash: v1060.AccountId32,
         })
     ),
 }

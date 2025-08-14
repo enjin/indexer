@@ -19,9 +19,11 @@ import * as v1021 from '../v1021'
 import * as matrixEnjinV1022 from '../matrixEnjinV1022'
 import * as matrixV1023 from '../matrixV1023'
 import * as v1030 from '../v1030'
+import * as matrixV1030 from '../matrixV1030'
 import * as enjinV1032 from '../enjinV1032'
 import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
+import * as v1060 from '../v1060'
 
 export const collectionCreated = {
     name: 'MultiTokens.CollectionCreated',
@@ -1082,6 +1084,62 @@ export const reserved = {
             reserveId: v1050.RuntimeHoldReason,
         })
     ),
+    /**
+     * Token units were reserved
+     */
+    matrixV1030: new EventType(
+        'MultiTokens.Reserved',
+        sts.struct({
+            /**
+             * The collection in which token was reserved
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token that was reserved
+             */
+            tokenId: sts.bigint(),
+            /**
+             * The account that reserved the tokens
+             */
+            accountId: matrixV1030.AccountId32,
+            /**
+             * The amount that was reserved
+             */
+            amount: sts.bigint(),
+            /**
+             * The identifier of the reserves
+             */
+            reserveId: matrixV1030.RuntimeHoldReason,
+        })
+    ),
+    /**
+     * Token units were reserved
+     */
+    v1060: new EventType(
+        'MultiTokens.Reserved',
+        sts.struct({
+            /**
+             * The collection in which token was reserved
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token that was reserved
+             */
+            tokenId: sts.bigint(),
+            /**
+             * The account that reserved the tokens
+             */
+            accountId: v1060.AccountId32,
+            /**
+             * The amount that was reserved
+             */
+            amount: sts.bigint(),
+            /**
+             * The identifier of the reserves
+             */
+            reserveId: v1060.RuntimeHoldReason,
+        })
+    ),
 }
 
 export const unreserved = {
@@ -1336,6 +1394,62 @@ export const unreserved = {
              * The identifier of the unreserved tokens
              */
             reserveId: v1050.RuntimeHoldReason,
+        })
+    ),
+    /**
+     * Token units were unreserved
+     */
+    matrixV1030: new EventType(
+        'MultiTokens.Unreserved',
+        sts.struct({
+            /**
+             * The collection id in which token was unreserved
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token id that was unreserved
+             */
+            tokenId: sts.bigint(),
+            /**
+             * The account that unreserved the tokens
+             */
+            accountId: matrixV1030.AccountId32,
+            /**
+             * The amount that was unreserved
+             */
+            amount: sts.bigint(),
+            /**
+             * The identifier of the unreserved tokens
+             */
+            reserveId: matrixV1030.RuntimeHoldReason,
+        })
+    ),
+    /**
+     * Token units were unreserved
+     */
+    v1060: new EventType(
+        'MultiTokens.Unreserved',
+        sts.struct({
+            /**
+             * The collection id in which token was unreserved
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token id that was unreserved
+             */
+            tokenId: sts.bigint(),
+            /**
+             * The account that unreserved the tokens
+             */
+            accountId: v1060.AccountId32,
+            /**
+             * The amount that was unreserved
+             */
+            amount: sts.bigint(),
+            /**
+             * The identifier of the unreserved tokens
+             */
+            reserveId: v1060.RuntimeHoldReason,
         })
     ),
 }
@@ -1630,6 +1744,70 @@ export const movedReserves = {
             reserveId: v1050.RuntimeHoldReason,
         })
     ),
+    /**
+     * Reserved token units were moved
+     */
+    matrixV1030: new EventType(
+        'MultiTokens.MovedReserves',
+        sts.struct({
+            /**
+             * The collection id in which token was moved
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token id that was moved
+             */
+            tokenId: sts.bigint(),
+            /**
+             * The account that reserves were moved from
+             */
+            source: matrixV1030.AccountId32,
+            /**
+             * The account that received the moved reserves
+             */
+            destination: matrixV1030.AccountId32,
+            /**
+             * The amount that was moved
+             */
+            amount: sts.bigint(),
+            /**
+             * The identifier of the moved reserves
+             */
+            reserveId: matrixV1030.RuntimeHoldReason,
+        })
+    ),
+    /**
+     * Reserved token units were moved
+     */
+    v1060: new EventType(
+        'MultiTokens.MovedReserves',
+        sts.struct({
+            /**
+             * The collection id in which token was moved
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token id that was moved
+             */
+            tokenId: sts.bigint(),
+            /**
+             * The account that reserves were moved from
+             */
+            source: v1060.AccountId32,
+            /**
+             * The account that received the moved reserves
+             */
+            destination: v1060.AccountId32,
+            /**
+             * The amount that was moved
+             */
+            amount: sts.bigint(),
+            /**
+             * The identifier of the moved reserves
+             */
+            reserveId: v1060.RuntimeHoldReason,
+        })
+    ),
 }
 
 export const reserveRepatriated = {
@@ -1920,6 +2098,70 @@ export const reserveRepatriated = {
              * The identifier of the moved reserves
              */
             reserveId: v1050.RuntimeHoldReason,
+        })
+    ),
+    /**
+     * Reserved token units were transferred
+     */
+    matrixV1030: new EventType(
+        'MultiTokens.ReserveRepatriated',
+        sts.struct({
+            /**
+             * The collection id in which token was moved
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token id that was moved
+             */
+            tokenId: sts.bigint(),
+            /**
+             * The account that reserves were moved from
+             */
+            source: matrixV1030.AccountId32,
+            /**
+             * The account that received the moved reserves
+             */
+            destination: matrixV1030.AccountId32,
+            /**
+             * The amount that was moved
+             */
+            amount: sts.bigint(),
+            /**
+             * The identifier of the moved reserves
+             */
+            reserveId: matrixV1030.RuntimeHoldReason,
+        })
+    ),
+    /**
+     * Reserved token units were transferred
+     */
+    v1060: new EventType(
+        'MultiTokens.ReserveRepatriated',
+        sts.struct({
+            /**
+             * The collection id in which token was moved
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token id that was moved
+             */
+            tokenId: sts.bigint(),
+            /**
+             * The account that reserves were moved from
+             */
+            source: v1060.AccountId32,
+            /**
+             * The account that received the moved reserves
+             */
+            destination: v1060.AccountId32,
+            /**
+             * The amount that was moved
+             */
+            amount: sts.bigint(),
+            /**
+             * The identifier of the moved reserves
+             */
+            reserveId: v1060.RuntimeHoldReason,
         })
     ),
 }
@@ -2234,6 +2476,22 @@ export const collectionUpdated = {
             value: sts.option(() => v1050.Collection),
         })
     ),
+    /**
+     * Collection storage was set to `value`
+     */
+    matrixV1030: new EventType(
+        'MultiTokens.CollectionUpdated',
+        sts.struct({
+            /**
+             * The collection id for which the value is set
+             */
+            collectionId: sts.bigint(),
+            /**
+             * new value of Collection storage
+             */
+            value: sts.option(() => matrixV1030.Collection),
+        })
+    ),
 }
 
 export const tokenUpdated = {
@@ -2516,6 +2774,26 @@ export const tokenUpdated = {
              * new value of Token storage
              */
             value: sts.option(() => v1050.Token),
+        })
+    ),
+    /**
+     * Token storage was set to `value`
+     */
+    matrixV1030: new EventType(
+        'MultiTokens.TokenUpdated',
+        sts.struct({
+            /**
+             * The collection id for which the value is set
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token id for which the value is set
+             */
+            tokenId: sts.bigint(),
+            /**
+             * new value of Token storage
+             */
+            value: sts.option(() => matrixV1030.Token),
         })
     ),
 }
@@ -2869,6 +3147,54 @@ export const tokenAccountUpdated = {
              * new value of TokenAccount storage
              */
             value: sts.option(() => v1050.TokenAccount),
+        })
+    ),
+    /**
+     * TokenAccount storage was set to `value`
+     */
+    matrixV1030: new EventType(
+        'MultiTokens.TokenAccountUpdated',
+        sts.struct({
+            /**
+             * The collection id for which the value is set
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token id of the updated account
+             */
+            tokenId: sts.bigint(),
+            /**
+             * The account id that owned the token account
+             */
+            accountId: matrixV1030.AccountId32,
+            /**
+             * new value of TokenAccount storage
+             */
+            value: sts.option(() => matrixV1030.TokenAccount),
+        })
+    ),
+    /**
+     * TokenAccount storage was set to `value`
+     */
+    v1060: new EventType(
+        'MultiTokens.TokenAccountUpdated',
+        sts.struct({
+            /**
+             * The collection id for which the value is set
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token id of the updated account
+             */
+            tokenId: sts.bigint(),
+            /**
+             * The account id that owned the token account
+             */
+            accountId: v1060.AccountId32,
+            /**
+             * new value of TokenAccount storage
+             */
+            value: sts.option(() => v1060.TokenAccount),
         })
     ),
 }
@@ -3374,6 +3700,31 @@ export const infused = {
              * The amount that was infused
              */
             amount: sts.bigint(),
+        })
+    ),
+    /**
+     * The token was infused with ENJ
+     */
+    matrixV1030: new EventType(
+        'MultiTokens.Infused',
+        sts.struct({
+            /**
+             * The collection that was infused
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token that was infused
+             */
+            tokenId: sts.bigint(),
+            /**
+             * The account that infused the token
+             */
+            accountId: matrixV1030.RootOrSigned,
+            /**
+             * The amount that was infused. This is the total infusion that was added, not the per
+             * unit amount.
+             */
+            totalAmount: sts.bigint(),
         })
     ),
 }

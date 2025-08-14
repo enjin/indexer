@@ -3,6 +3,7 @@ import * as matrixV500 from '../matrixV500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV1010 from '../matrixV1010'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
+import * as matrixV1030 from '../matrixV1030'
 
 export const selfLocation = {
     /**
@@ -21,6 +22,10 @@ export const selfLocation = {
      *  Self chain location.
      */
     matrixV1010: new ConstantType('XTokens.SelfLocation', matrixV1010.V4Location),
+    /**
+     *  Self chain location.
+     */
+    matrixV1030: new ConstantType('XTokens.SelfLocation', matrixV1030.V5Location),
 }
 
 export const baseXcmWeight = {

@@ -1,5 +1,6 @@
 import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
+import * as matrixV1030 from '../matrixV1030'
 
 export const batchDispatched = {
     name: 'MatrixUtility.BatchDispatched',
@@ -19,6 +20,14 @@ export const batchPartiallyDispatched = {
         'MatrixUtility.BatchPartiallyDispatched',
         sts.array(() => sts.tuple(() => [sts.number(), matrixEnjinV603.DispatchError]))
     ),
+    /**
+     * Batch of calls dispatched, but some calls resulted in error.
+     * Indexes and errors of failing dispatch calls are provided.
+     */
+    matrixV1030: new EventType(
+        'MatrixUtility.BatchPartiallyDispatched',
+        sts.array(() => sts.tuple(() => [sts.number(), matrixV1030.DispatchError]))
+    ),
 }
 
 export const batchFailed = {
@@ -32,6 +41,17 @@ export const batchFailed = {
         sts.struct({
             index: sts.number(),
             error: matrixEnjinV603.DispatchError,
+        })
+    ),
+    /**
+     * Batch of calls did not disptach completely.
+     * Index and error of the failing dispatch call is provided.
+     */
+    matrixV1030: new EventType(
+        'MatrixUtility.BatchFailed',
+        sts.struct({
+            index: sts.number(),
+            error: matrixV1030.DispatchError,
         })
     ),
 }

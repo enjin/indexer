@@ -3,6 +3,7 @@ import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV604 from '../matrixV604'
 import * as matrixV1010 from '../matrixV1010'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
+import * as matrixV1030 from '../matrixV1030'
 
 export const transferToParachain = {
     name: 'MatrixXcm.transfer_to_parachain',
@@ -139,6 +140,17 @@ export const forceSetMinimumWeight = {
         sts.struct({
             xcmCall: matrixV1010.XcmOperation,
             xcmWeightFeeMisc: matrixV1010.MinimumWeightFeePair,
+        })
+    ),
+    /**
+     * Used by governance/sudo in order to set the minimum weight for an [XcmOperation](https://s3.ap-southeast-1.amazonaws.com/docs.rust.dev.efinity.io/efinity_pallet_xcm/enum.XcmOperation.html).
+     * Primarily used for chains like Statemint when transferring multiple assets as a way to determine the correct fee for the fee-payment asset. Emits the [`MinimumWeightUpdated`](https://s3.ap-southeast-1.amazonaws.com/docs.rust.dev.efinity.io/efinity_pallet_xcm/pallet/enum.Event.html#variant.MinimumWeightUpdated) event.
+     */
+    matrixV1030: new CallType(
+        'MatrixXcm.force_set_minimum_weight',
+        sts.struct({
+            xcmCall: matrixV1030.XcmOperation,
+            xcmWeightFeeMisc: matrixV1030.MinimumWeightFeePair,
         })
     ),
 }

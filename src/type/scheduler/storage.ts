@@ -8,7 +8,9 @@ import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV1010 from '../matrixV1010'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 import * as v1030 from '../v1030'
+import * as matrixV1030 from '../matrixV1030'
 import * as enjinV1032 from '../enjinV1032'
+import * as v1060 from '../v1060'
 
 export const incompleteSince = {
     matrixEnjinV603: new StorageType(
@@ -115,6 +117,24 @@ export const agenda = {
         [sts.number()],
         sts.array(() => sts.option(() => v1030.Scheduled))
     ) as AgendaV1030,
+    /**
+     *  Items to be executed, indexed by the block number that they should be executed on.
+     */
+    matrixV1030: new StorageType(
+        'Scheduler.Agenda',
+        'Default',
+        [sts.number()],
+        sts.array(() => sts.option(() => matrixV1030.Scheduled))
+    ) as AgendaMatrixV1030,
+    /**
+     *  Items to be executed, indexed by the block number that they should be executed on.
+     */
+    v1060: new StorageType(
+        'Scheduler.Agenda',
+        'Default',
+        [sts.number()],
+        sts.array(() => sts.option(() => v1060.Scheduled))
+    ) as AgendaV1060,
 }
 
 /**
@@ -371,6 +391,56 @@ export interface AgendaV1030 {
         block: Block,
         key: number
     ): AsyncIterable<[k: number, v: (v1030.Scheduled | undefined)[] | undefined][]>
+}
+
+/**
+ *  Items to be executed, indexed by the block number that they should be executed on.
+ */
+export interface AgendaMatrixV1030 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): (matrixV1030.Scheduled | undefined)[]
+    get(block: Block, key: number): Promise<(matrixV1030.Scheduled | undefined)[] | undefined>
+    getMany(block: Block, keys: number[]): Promise<((matrixV1030.Scheduled | undefined)[] | undefined)[]>
+    getKeys(block: Block): Promise<number[]>
+    getKeys(block: Block, key: number): Promise<number[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<number[]>
+    getKeysPaged(pageSize: number, block: Block, key: number): AsyncIterable<number[]>
+    getPairs(block: Block): Promise<[k: number, v: (matrixV1030.Scheduled | undefined)[] | undefined][]>
+    getPairs(block: Block, key: number): Promise<[k: number, v: (matrixV1030.Scheduled | undefined)[] | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: number, v: (matrixV1030.Scheduled | undefined)[] | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: number
+    ): AsyncIterable<[k: number, v: (matrixV1030.Scheduled | undefined)[] | undefined][]>
+}
+
+/**
+ *  Items to be executed, indexed by the block number that they should be executed on.
+ */
+export interface AgendaV1060 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): (v1060.Scheduled | undefined)[]
+    get(block: Block, key: number): Promise<(v1060.Scheduled | undefined)[] | undefined>
+    getMany(block: Block, keys: number[]): Promise<((v1060.Scheduled | undefined)[] | undefined)[]>
+    getKeys(block: Block): Promise<number[]>
+    getKeys(block: Block, key: number): Promise<number[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<number[]>
+    getKeysPaged(pageSize: number, block: Block, key: number): AsyncIterable<number[]>
+    getPairs(block: Block): Promise<[k: number, v: (v1060.Scheduled | undefined)[] | undefined][]>
+    getPairs(block: Block, key: number): Promise<[k: number, v: (v1060.Scheduled | undefined)[] | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: number, v: (v1060.Scheduled | undefined)[] | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: number
+    ): AsyncIterable<[k: number, v: (v1060.Scheduled | undefined)[] | undefined][]>
 }
 
 export const lookup = {
