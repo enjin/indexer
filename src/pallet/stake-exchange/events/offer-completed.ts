@@ -30,6 +30,7 @@ export function offerCompletedEventModel(
             offerId: stakeExchangeOffer.offerId,
             amount: stakeExchangeOffer.amount ?? 0n,
             account: stakeExchangeOffer.account.id,
+            rate: stakeExchangeOffer.rate,
         }),
     })
 }

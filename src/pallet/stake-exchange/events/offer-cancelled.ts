@@ -30,6 +30,7 @@ export function offerCancelledEventModel(
             offerId: stakeExchangeOffer.offerId,
             total: stakeExchangeOffer.total,
             account: stakeExchangeOffer.account.id,
+            rate: stakeExchangeOffer.rate,
         }),
     })
 }
