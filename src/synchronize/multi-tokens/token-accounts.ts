@@ -34,7 +34,7 @@ export async function tokenAccounts(ctx: CommonContext, block: Block) {
             }
 
             let locks = null
-            if (data.locks.length > 0) {
+            if (data.locks && data.locks.length > 0) {
                 locks = data.locks.map((lock) => {
                     return new TokenLock({
                         pallet: lock[0],

@@ -85,6 +85,10 @@ export async function tokenAccounts(
             () => getTokenAccounts(multiTokens.tokenAccounts.matrixEnjinV603)
         )
         .when(
+            () => multiTokens.tokenAccounts.matrixV1030.is(block),
+            () => getTokenAccounts(multiTokens.tokenAccounts.matrixV1030)
+        )
+        .when(
             () => multiTokens.tokenAccounts.matrixV1020.is(block),
             () => getTokenAccounts(multiTokens.tokenAccounts.matrixV1020)
         )
@@ -107,6 +111,10 @@ export async function tokenAccounts(
         .when(
             () => multiTokens.tokenAccounts.enjinV100.is(block),
             () => getTokenAccounts(multiTokens.tokenAccounts.enjinV100)
+        )
+        .when(
+            () => multiTokens.tokenAccounts.v1060.is(block),
+            () => getTokenAccounts(multiTokens.tokenAccounts.v1060)
         )
         .when(
             () => multiTokens.tokenAccounts.v1050.is(block),
