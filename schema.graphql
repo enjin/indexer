@@ -1413,6 +1413,7 @@ type Validator @entity {
   slashes84d: [Boolean!]!
   peerCommission28d: [Int!]!
   grade: ScoreGrade
+  nominatorsCount: Int
 
   accumulatedRewards: BigInt
 

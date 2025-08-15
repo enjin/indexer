@@ -40,6 +40,9 @@ export class Validator {
     @Column_("varchar", {length: 1, nullable: true})
     grade!: ScoreGrade | undefined | null
 
+    @IntColumn_({nullable: true})
+    nominatorsCount!: number | undefined | null
+
     @BigIntColumn_({nullable: true})
     accumulatedRewards!: bigint | undefined | null
 
