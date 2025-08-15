@@ -474,7 +474,6 @@ export type RuntimeHoldReason =
     | HoldReason_SafeMode
     | HoldReason_StakeExchange
     | HoldReason_CollatorStaking
-    | HoldReason_StakeExchange // Added on v1060
     | HoldReason_Council // Added on matrixV1030
     | HoldReason_TechnicalCommittee // Added on matrixV1030
 
