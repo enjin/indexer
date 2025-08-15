@@ -3,6 +3,7 @@ import * as matrixV500 from '../matrixV500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV1010 from '../matrixV1010'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
+import * as matrixV1030 from '../matrixV1030'
 
 export const sendAsSovereign = {
     name: 'OrmlXcm.send_as_sovereign',
@@ -44,6 +45,16 @@ export const sendAsSovereign = {
         sts.struct({
             dest: matrixV1010.VersionedLocation,
             message: matrixV1010.VersionedXcm,
+        })
+    ),
+    /**
+     * Send an XCM message as parachain sovereign.
+     */
+    matrixV1030: new CallType(
+        'OrmlXcm.send_as_sovereign',
+        sts.struct({
+            dest: matrixV1030.VersionedLocation,
+            message: matrixV1030.VersionedXcm,
         })
     ),
 }

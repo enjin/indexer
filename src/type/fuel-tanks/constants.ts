@@ -134,3 +134,17 @@ export const levy = {
      */
     matrixEnjinV603: new ConstantType('FuelTanks.Levy', matrixEnjinV603.Perbill),
 }
+
+export const maxDestroyableFuelTanks = {
+    /**
+     *  Max number of accounts in `DestroyedTanks`
+     */
+    matrixV1030: new ConstantType('FuelTanks.MaxDestroyableFuelTanks', sts.number()),
+}
+
+export const removeExpiredAccountsInterval = {
+    /**
+     *  Number of blocks the offchain worker waits in between removing expired accounts
+     */
+    matrixV1030: new ConstantType('FuelTanks.RemoveExpiredAccountsInterval', sts.number()),
+}

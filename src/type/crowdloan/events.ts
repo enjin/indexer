@@ -4,6 +4,7 @@ import * as v100 from '../v100'
 import * as enjinV101 from '../enjinV101'
 import * as v104 from '../v104'
 import * as v105 from '../v105'
+import * as v1060 from '../v1060'
 
 export const created = {
     name: 'Crowdloan.Created',
@@ -152,6 +153,19 @@ export const handleBidResult = {
             result: sts.result(
                 () => sts.unit(),
                 () => v105.DispatchError
+            ),
+        })
+    ),
+    /**
+     * The result of trying to submit a new bid to the Slots pallet.
+     */
+    v1060: new EventType(
+        'Crowdloan.HandleBidResult',
+        sts.struct({
+            paraId: v1060.Id,
+            result: sts.result(
+                () => sts.unit(),
+                () => v1060.DispatchError
             ),
         })
     ),

@@ -5,6 +5,7 @@ import * as enjinV101 from '../enjinV101'
 import * as v105 from '../v105'
 import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
+import * as v1060 from '../v1060'
 
 export const submit = {
     name: 'Referenda.submit',
@@ -120,6 +121,25 @@ export const submit = {
             proposalOrigin: v1030.OriginCaller,
             proposal: v1030.Bounded,
             enactmentMoment: v1030.DispatchTime,
+        })
+    ),
+    /**
+     * Propose a referendum on a privileged action.
+     *
+     * - `origin`: must be `SubmitOrigin` and the account must have `SubmissionDeposit` funds
+     *   available.
+     * - `proposal_origin`: The origin from which the proposal should be executed.
+     * - `proposal`: The proposal.
+     * - `enactment_moment`: The moment that the proposal should be enacted.
+     *
+     * Emits `Submitted`.
+     */
+    v1060: new CallType(
+        'Referenda.submit',
+        sts.struct({
+            proposalOrigin: v1060.OriginCaller,
+            proposal: v1060.Bounded,
+            enactmentMoment: v1060.DispatchTime,
         })
     ),
 }

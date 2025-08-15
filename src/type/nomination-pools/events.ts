@@ -10,6 +10,7 @@ import * as enjinV110 from '../enjinV110'
 import * as v110 from '../v110'
 import * as enjinV1023 from '../enjinV1023'
 import * as v1023 from '../v1023'
+import * as v1060 from '../v1060'
 
 export const created = {
     name: 'NominationPools.Created',
@@ -409,6 +410,34 @@ export const rewardPaid = {
             bonus: sts.bigint(),
         })
     ),
+    /**
+     * Rewards were paid to a pool
+     */
+    v1060: new EventType(
+        'NominationPools.RewardPaid',
+        sts.struct({
+            /**
+             * The id of the pool
+             */
+            poolId: sts.number(),
+            /**
+             * The era that was processed.
+             */
+            era: sts.number(),
+            /**
+             * The validator that the payment was received from
+             */
+            validatorStash: v1060.AccountId32,
+            /**
+             * The amount added to the pool's reward account
+             */
+            reward: sts.bigint(),
+            /**
+             * The commission that was paid
+             */
+            commission: sts.option(() => v1060.CommissionPayment),
+        })
+    ),
 }
 
 export const poolMutated = {
@@ -491,6 +520,16 @@ export const poolMutated = {
         sts.struct({
             poolId: sts.number(),
             mutation: v1023.PoolMutation,
+        })
+    ),
+    /**
+     * Pool has been mutated.
+     */
+    v1060: new EventType(
+        'NominationPools.PoolMutated',
+        sts.struct({
+            poolId: sts.number(),
+            mutation: v1060.PoolMutation,
         })
     ),
 }
@@ -776,6 +815,26 @@ export const rewardReinvested = {
         sts.struct({
             poolId: sts.number(),
             amount: sts.bigint(),
+        })
+    ),
+}
+
+export const unbondingMemberRemoved = {
+    name: 'NominationPools.UnbondingMemberRemoved',
+    /**
+     * An item was removed from the `UnbondingMembers` storage
+     */
+    v1060: new EventType(
+        'NominationPools.UnbondingMemberRemoved',
+        sts.struct({
+            /**
+             * The pool id that was removed
+             */
+            poolId: sts.number(),
+            /**
+             * The member that was removed
+             */
+            member: v1060.AccountId32,
         })
     ),
 }
