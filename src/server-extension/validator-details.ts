@@ -62,17 +62,12 @@ export class ValidatorDetailsResolver {
             .leftJoin(Registration, 'registration', 'registration.id = identity.id')
             .select([
                 'validator.id as id',
+                'validator.nominatorsCount as nominatorsCount',
                 'account.address as address',
                 'registration.image as image',
                 "(CASE WHEN identity.isSub = FALSE THEN registration.display WHEN identity.isSub = TRUE THEN CONCAT(registration.display,'/',identity.name) ELSE NULL END) as name",
             ])
             .addSelect('100', 'uptime30d')
-            .addSelect((subQuery) => {
-                return subQuery
-                    .select('COUNT(*)::int')
-                    .from('pool_validator', 'pool_validator')
-                    .where('pool_validator.validator_id = validator.id')
-            }, 'nominatorsCount')
             .addSelect((subquery) => {
                 return subquery
                     .select('COUNT(*)::int')

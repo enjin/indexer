@@ -1157,6 +1157,7 @@ type StakingEraPaid {
   eraIndex: Int!
   validatorPayout: BigInt!
   remainder: BigInt!
+  validator: String
 }
 
 type ImOnlineSomeOffline {
@@ -1172,7 +1173,7 @@ type StakeExchangeOfferCreated {
   offerId: BigInt!
   account: Account!
   total: BigInt!
-  rate: BigInt!
+  rate: BigInt
   minAverageCommission: Int! @deprecated
   minAverageRewardRate: BigInt!
 }
@@ -1209,7 +1210,7 @@ type StakeExchangeBuyOrderCompleted {
   offerId: BigInt!
   account: Account!
   amount: BigInt!
-  rate: BigInt!
+  rate: BigInt
   points: BigInt!
   pool: NominationPool!
   poolId: String!
@@ -1277,7 +1278,7 @@ type NominationPoolsEraRewardsProcessed {
   pool: NominationPool!
   era: Int!
   eraReward: EraReward!
-  rate: BigInt!
+  rate: BigInt
   poolId: String!
   tokenId: BigInt!
 }
@@ -1412,6 +1413,9 @@ type Validator @entity {
   slashes84d: [Boolean!]!
   peerCommission28d: [Int!]!
   grade: ScoreGrade
+  nominatorsCount: Int
+
+  accumulatedRewards: BigInt
 
   # Relationships
   pools: [PoolValidator]! @derivedFrom(field: "validator")

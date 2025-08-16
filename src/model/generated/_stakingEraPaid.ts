@@ -6,6 +6,7 @@ export class StakingEraPaid {
     private _eraIndex!: number
     private _validatorPayout!: bigint
     private _remainder!: bigint
+    private _validator!: string | undefined | null
 
     constructor(props?: Partial<Omit<StakingEraPaid, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
@@ -13,6 +14,7 @@ export class StakingEraPaid {
             this._eraIndex = marshal.int.fromJSON(json.eraIndex)
             this._validatorPayout = marshal.bigint.fromJSON(json.validatorPayout)
             this._remainder = marshal.bigint.fromJSON(json.remainder)
+            this._validator = json.validator == null ? undefined : marshal.string.fromJSON(json.validator)
         }
     }
 
@@ -43,12 +45,21 @@ export class StakingEraPaid {
         this._remainder = value
     }
 
+    get validator(): string | undefined | null {
+        return this._validator
+    }
+
+    set validator(value: string | undefined | null) {
+        this._validator = value
+    }
+
     toJSON(): object {
         return {
             isTypeOf: this.isTypeOf,
             eraIndex: this.eraIndex,
             validatorPayout: marshal.bigint.toJSON(this.validatorPayout),
             remainder: marshal.bigint.toJSON(this.remainder),
+            validator: this.validator,
         }
     }
 }

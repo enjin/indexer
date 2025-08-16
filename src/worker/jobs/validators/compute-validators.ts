@@ -2,6 +2,7 @@ import { EntityManager } from 'typeorm'
 import { Era, Identity, JudgementType, Registration, ScoreGrade, Validator } from '~/model'
 import { connectionManager } from '~/contexts'
 import { Job } from 'bullmq'
+import Rpc from '~/util/rpc'
 
 function getJudgement(identity: Identity | null | undefined): JudgementType {
     if (identity === undefined || identity === null) return JudgementType.Unknown
@@ -11,6 +12,7 @@ function getJudgement(identity: Identity | null | undefined): JudgementType {
 
 export async function computeValidators(job: Job) {
     const em = await connectionManager()
+    const { api } = await Rpc.getInstance()
 
     const validators = await em
         .getRepository(Validator)
@@ -32,6 +34,16 @@ export async function computeValidators(job: Job) {
     const era = await em.getRepository(Era).createQueryBuilder('era').addOrderBy('index', 'DESC').getOneOrFail()
     era.nodeCount = nodeCount
     await em.save<Era>(era)
+
+    const rpcNominators = await api.query.staking.nominators.entries()
+    const nominatorsCount = new Map<string, number>()
+
+    for (const [storageKey, nominations] of rpcNominators) {
+        const targets = JSON.parse(nominations.toString()).targets
+        for (const target of targets) {
+            nominatorsCount.set(target, (nominatorsCount.get(target) ?? 0) + 1)
+        }
+    }
 
     for (const validator of validators) {
         try {
@@ -59,6 +71,7 @@ export async function computeValidators(job: Job) {
             validator.slashes84d = [...validator.slashes84d, details.slashedBlocks84h ?? false].slice(-84)
             validator.nodeCount28d = [...validator.nodeCount28d, nodeCount].slice(-28)
             validator.peerCommission28d = [...validator.peerCommission28d, peerCommission].slice(-28)
+            validator.nominatorsCount = nominatorsCount.get(validator.account.address) ?? 0
 
             const score = computeValidatorScore({
                 nodeUptimePercentage: details.uptime30d,
@@ -73,7 +86,6 @@ export async function computeValidators(job: Job) {
             })
 
             validator.grade = score != null ? ScoreGrade[score] : null
-            await job.log(JSON.stringify(validator))
             await job.log(`Validator ${validator.id} score: ${score}`)
 
             await em.save<Validator>(validator)
