@@ -9,7 +9,7 @@ export class StakeExchangeOfferCreated {
     private _offerId!: bigint
     private _account!: string
     private _total!: bigint
-    private _rate!: bigint
+    private _rate!: bigint | undefined | null
     private _minAverageCommission!: number
     private _minAverageRewardRate!: bigint
 
@@ -20,7 +20,7 @@ export class StakeExchangeOfferCreated {
             this._offerId = marshal.bigint.fromJSON(json.offerId)
             this._account = marshal.string.fromJSON(json.account)
             this._total = marshal.bigint.fromJSON(json.total)
-            this._rate = marshal.bigint.fromJSON(json.rate)
+            this._rate = json.rate == null ? undefined : marshal.bigint.fromJSON(json.rate)
             this._minAverageCommission = marshal.int.fromJSON(json.minAverageCommission)
             this._minAverageRewardRate = marshal.bigint.fromJSON(json.minAverageRewardRate)
         }
@@ -62,12 +62,11 @@ export class StakeExchangeOfferCreated {
         this._total = value
     }
 
-    get rate(): bigint {
-        assert(this._rate != null, 'uninitialized access')
+    get rate(): bigint | undefined | null {
         return this._rate
     }
 
-    set rate(value: bigint) {
+    set rate(value: bigint | undefined | null) {
         this._rate = value
     }
 
@@ -96,7 +95,7 @@ export class StakeExchangeOfferCreated {
             offerId: marshal.bigint.toJSON(this.offerId),
             account: this.account,
             total: marshal.bigint.toJSON(this.total),
-            rate: marshal.bigint.toJSON(this.rate),
+            rate: this.rate == null ? undefined : marshal.bigint.toJSON(this.rate),
             minAverageCommission: this.minAverageCommission,
             minAverageRewardRate: marshal.bigint.toJSON(this.minAverageRewardRate),
         }
