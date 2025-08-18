@@ -23,17 +23,6 @@ export async function eraPaid(ctx: CommonContext, block: Block, item: EventItem)
     era.endBlock = block.height
     await ctx.store.save(era)
 
-    // const chainInfo = await ctx.store.findOneByOrFail<ChainInfo>(ChainInfo, { blockNumber: block.height })
-
-    // if (chainInfo.validator) {
-    //     const validator = await ctx.store.findOneByOrFail<Validator>(Validator, { id: chainInfo.validator })
-    //     if (!validator.accumulatedRewards) {
-    //         validator.accumulatedRewards = 0n
-    //     }
-    //     validator.accumulatedRewards += event.validatorPayout
-    //     await ctx.store.save(validator)
-    // }
-
     const newEra = new Era({
         id: `${event.eraIndex + 1}`,
         index: event.eraIndex + 1,

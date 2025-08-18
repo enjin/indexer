@@ -183,7 +183,7 @@ export class AccountStakingSummaryResolver {
             .getRepository(NominationPool)
             .createQueryBuilder('pool')
             .select('COUNT(pool.id)', 'totalPools')
-            .addSelect("SUM(pool.points)", 'totalStaked')
+            .addSelect('SUM(pool.points)', 'totalStaked')
             .where('pool.state != :state', { state: PoolState.Destroyed })
 
         const totalSupplyQueryBuilder = manager

@@ -1,4 +1,4 @@
-import { Identity, Validator } from '~/model'
+import { Validator } from '~/model'
 import { connectionManager } from '~/contexts'
 import { Job } from 'bullmq'
 import Rpc from '~/util/rpc'
