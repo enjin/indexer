@@ -1169,6 +1169,17 @@ type StakingBonded {
   amount: BigInt!
 }
 
+type StakingUnbonded {
+  validator: String!
+  amount: BigInt!
+}
+
+type StakingWithdrawn {
+  validator: String!
+  amount: BigInt!
+}
+
+
 type ImOnlineSomeOffline {
   validators: [String]!
 }
@@ -1616,7 +1627,7 @@ union EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiToken
   | BalancesTransfer | TeleportBalanceWithdrawn | ClaimsClaimRequested | ClaimsClaimed
   | FuelTankCreated | FuelTankDestroyed | MultiTokensClaimedCollections | MultiTokensClaimTokensInitiated
   | MultiTokensClaimTokensCompleted | MultiTokensCollectionTransferred | MultiTokensCollectionTransferCancelled | MultiTokensInfused
-  | StakingEraPaid | NominationPoolsBonded | NominationPoolsUnbonded | StakingChilled | StakingBonded
+  | StakingEraPaid | NominationPoolsBonded | NominationPoolsUnbonded | StakingChilled | StakingBonded | StakingUnbonded | StakingWithdrawn
   | NominationPoolsEarlyBirdBonusPaymentUnlocked | NominationPoolsEarlyBirdBonusCalculated
   | NominationPoolsEarlyBirdSharesCaptured | NominationPoolsEarlyBirdBonusPaid | ImOnlineSomeOffline | ValidatorPrefsSet
   | NominationPoolsWithdrawn | NominationPoolsEraRewardsProcessed | NominationPoolsRewardPaid | NominationPoolsPoolSlashed

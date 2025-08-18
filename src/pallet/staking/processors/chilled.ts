@@ -4,7 +4,7 @@ import { getOrCreateAccount } from '~/util/entities'
 import * as mappings from '~/pallet/index'
 import { chilledEventModel } from '../events'
 
-export async function chill(ctx: CommonContext, block: Block, item: EventItem) {
+export async function chilled(ctx: CommonContext, block: Block, item: EventItem) {
     const event = mappings.staking.events.chilled(item)
     const stash = await getOrCreateAccount(ctx, event.stash)
 

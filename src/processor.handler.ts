@@ -219,6 +219,10 @@ export async function eventHandler(
             .with(stakeExchange.offerCompleted.name, () => p.stakeExchange.processors.offerCompleted(ctx, block, item))
             .with(staking.eraPaid.name, () => p.staking.processors.eraPaid(ctx, block, item))
             .with(staking.validatorPrefsSet.name, () => p.staking.processors.validatorPrefsSet(ctx, block, item))
+            .with(staking.chilled.name, () => p.staking.processors.chilled(ctx, block, item))
+            .with(staking.bonded.name, () => p.staking.processors.bonded(ctx, block, item))
+            .with(staking.unbonded.name, () => p.staking.processors.unbonded(ctx, block, item))
+            .with(staking.withdrawn.name, () => p.staking.processors.withdrawn(ctx, block, item))
             .with(xcmPallet.attempted.name, () => p.xcmPallet.processors.attempted(ctx, block, item))
             .with(imOnline.someOffline.name, () => p.imOnline.processors.someOffline(ctx, block, item))
             .otherwise(() => {
