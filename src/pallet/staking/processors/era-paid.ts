@@ -23,16 +23,16 @@ export async function eraPaid(ctx: CommonContext, block: Block, item: EventItem)
     era.endBlock = block.height
     await ctx.store.save(era)
 
-    const chainInfo = await ctx.store.findOneByOrFail<ChainInfo>(ChainInfo, { blockNumber: block.height })
+    // const chainInfo = await ctx.store.findOneByOrFail<ChainInfo>(ChainInfo, { blockNumber: block.height })
 
-    if (chainInfo.validator) {
-        const validator = await ctx.store.findOneByOrFail<Validator>(Validator, { id: chainInfo.validator })
-        if (!validator.accumulatedRewards) {
-            validator.accumulatedRewards = 0n
-        }
-        validator.accumulatedRewards += event.validatorPayout
-        await ctx.store.save(validator)
-    }
+    // if (chainInfo.validator) {
+    //     const validator = await ctx.store.findOneByOrFail<Validator>(Validator, { id: chainInfo.validator })
+    //     if (!validator.accumulatedRewards) {
+    //         validator.accumulatedRewards = 0n
+    //     }
+    //     validator.accumulatedRewards += event.validatorPayout
+    //     await ctx.store.save(validator)
+    // }
 
     const newEra = new Era({
         id: `${event.eraIndex + 1}`,
@@ -46,7 +46,7 @@ export async function eraPaid(ctx: CommonContext, block: Block, item: EventItem)
     await QueueUtils.dispatchComputeValidators()
     await dispatchStakePoolsEvents(ctx, newEra.index, item)
 
-    return mappings.staking.events.eraPaidEventModel(item, event, chainInfo.validator)
+    return mappings.staking.events.eraPaidEventModel(item, event)
 }
 
 async function dispatchStakePoolsEvents(ctx: CommonContext, eraIndex: number, item: EventItem) {
