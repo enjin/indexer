@@ -1,0 +1,36 @@
+import { Block, CommonContext, EventItem } from '~/contexts'
+import { Validator } from '~/model'
+import { getOrCreateAccount } from '~/util/entities'
+import * as mappings from '~/pallet/index'
+import { bondedEventModel } from '../events'
+
+export async function bonded(ctx: CommonContext, block: Block, item: EventItem) {
+    const event = mappings.staking.events.bonded(item)
+    const stash = await getOrCreateAccount(ctx, event.stash)
+
+    const validator = await ctx.store.findOneBy<Validator>(Validator, { account: { id: stash.id } })
+
+    if (!validator) {
+        const newValidator = new Validator({
+            id: stash.id,
+            account: stash,
+            nodeCount28d: [],
+            commission28d: [],
+            blockProduction28d: [],
+            peerCommission28d: [],
+            slashes84d: [],
+            grade: null,
+            isActive: false,
+            bonded: event.amount,
+            accumulatedRewards: 0n,
+        })
+
+        await ctx.store.insert(newValidator)
+    } else {
+        validator.bonded = event.amount
+
+        await ctx.store.save(validator)
+    }
+
+    return bondedEventModel(item, event)
+}

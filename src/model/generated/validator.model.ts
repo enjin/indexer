@@ -43,6 +43,12 @@ export class Validator {
     @IntColumn_({nullable: true})
     nominatorsCount!: number | undefined | null
 
+    @BooleanColumn_({nullable: true})
+    isActive!: boolean | undefined | null
+
+    @BigIntColumn_({nullable: true})
+    bonded!: bigint | undefined | null
+
     @BigIntColumn_({nullable: true})
     accumulatedRewards!: bigint | undefined | null
 

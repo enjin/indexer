@@ -1,10 +1,11 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { Event as EventModel, Extrinsic, Validator, ValidatorPrefsSet } from '~/model'
+import { Validator } from '~/model'
 import { getOrCreateAccount } from '~/util/entities'
 import * as mappings from '~/pallet/index'
+import { chilledEventModel } from '../events'
 
-export async function validatorPrefsSet(ctx: CommonContext, block: Block, item: EventItem) {
-    const event = mappings.staking.events.validatorPrefsSet(item)
+export async function chill(ctx: CommonContext, block: Block, item: EventItem) {
+    const event = mappings.staking.events.chilled(item)
     const stash = await getOrCreateAccount(ctx, event.stash)
 
     const validator = await ctx.store.findOneBy<Validator>(Validator, { account: { id: stash.id } })
@@ -13,34 +14,23 @@ export async function validatorPrefsSet(ctx: CommonContext, block: Block, item: 
         const newValidator = new Validator({
             id: stash.id,
             account: stash,
-            commission: event.prefs.commission,
-            blocked: event.prefs.blocked,
             nodeCount28d: [],
             commission28d: [],
             blockProduction28d: [],
             peerCommission28d: [],
             slashes84d: [],
             grade: null,
-            isActive: true,
+            isActive: false,
             bonded: 0n,
             accumulatedRewards: 0n,
         })
 
         await ctx.store.insert(newValidator)
     } else {
-        validator.commission = event.prefs.commission
-        validator.blocked = event.prefs.blocked
-        validator.isActive = true
+        validator.isActive = false
 
         await ctx.store.save(validator)
     }
 
-    return new EventModel({
-        id: item.id,
-        name: ValidatorPrefsSet.name,
-        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-        data: new ValidatorPrefsSet({
-            validator: stash.id,
-        }),
-    })
+    return chilledEventModel(item, event)
 }

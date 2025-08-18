@@ -3,6 +3,7 @@ import { ProcessorDef } from '~/worker/processors/processor.def'
 import { JobsEnum } from '~/queue/constants'
 import { computeValidators, syncValidators, syncChain } from '~/worker/jobs'
 import { logDebug, logError } from '~/worker/utils'
+import { syncActiveValidators } from '../jobs/validators/sync-active-validators'
 
 export class ValidatorsProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {
@@ -15,6 +16,9 @@ export class ValidatorsProcessor implements ProcessorDef {
                 break
             case JobsEnum.SYNC_CHAIN:
                 await syncChain(job, job.data.fromBlock, job.data.toBlock)
+                break
+            case JobsEnum.SYNC_ACTIVE_VALIDATORS:
+                await syncActiveValidators(job)
                 break
             default:
                 throw new Error(`${job.name} is not a valid job for this processor`)

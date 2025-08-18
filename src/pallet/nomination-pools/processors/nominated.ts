@@ -27,6 +27,7 @@ export async function nominated(ctx: CommonContext, block: Block, item: EventIte
                     peerCommission28d: [],
                     slashes84d: [],
                     grade: null,
+                    isActive: true,
                 })
             )
         }

@@ -1160,6 +1160,15 @@ type StakingEraPaid {
   validator: String
 }
 
+type StakingChilled {
+  validator: String!
+}
+
+type StakingBonded {
+  validator: String!
+  amount: BigInt!
+}
+
 type ImOnlineSomeOffline {
   validators: [String]!
 }
@@ -1415,6 +1424,9 @@ type Validator @entity {
   grade: ScoreGrade
   nominatorsCount: Int
 
+  isActive: Boolean
+
+  bonded: BigInt
   accumulatedRewards: BigInt
 
   # Relationships
@@ -1604,7 +1616,7 @@ union EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiToken
   | BalancesTransfer | TeleportBalanceWithdrawn | ClaimsClaimRequested | ClaimsClaimed
   | FuelTankCreated | FuelTankDestroyed | MultiTokensClaimedCollections | MultiTokensClaimTokensInitiated
   | MultiTokensClaimTokensCompleted | MultiTokensCollectionTransferred | MultiTokensCollectionTransferCancelled | MultiTokensInfused
-  | StakingEraPaid | NominationPoolsBonded | NominationPoolsUnbonded
+  | StakingEraPaid | NominationPoolsBonded | NominationPoolsUnbonded | StakingChilled | StakingBonded
   | NominationPoolsEarlyBirdBonusPaymentUnlocked | NominationPoolsEarlyBirdBonusCalculated
   | NominationPoolsEarlyBirdSharesCaptured | NominationPoolsEarlyBirdBonusPaid | ImOnlineSomeOffline | ValidatorPrefsSet
   | NominationPoolsWithdrawn | NominationPoolsEraRewardsProcessed | NominationPoolsRewardPaid | NominationPoolsPoolSlashed
