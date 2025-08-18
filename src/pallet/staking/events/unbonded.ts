@@ -3,7 +3,7 @@ import { EventItem } from '~/contexts'
 import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
 import { Unbonded } from '~/pallet/staking/events/types'
-import { Event as EventModel, Extrinsic, StakingBonded, StakingUnbonded } from '~/model'
+import { Event as EventModel, Extrinsic, StakingUnbonded } from '~/model'
 
 export function unbonded(event: EventItem): Unbonded {
     return match(event)
