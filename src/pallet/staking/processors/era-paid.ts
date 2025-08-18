@@ -1,6 +1,6 @@
 import { Not } from 'typeorm'
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { ChainInfo, Era, NominationPool, PoolState, TokenAccount, Validator } from '~/model'
+import { Era, NominationPool, PoolState, TokenAccount } from '~/model'
 import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
 import { Sns } from '~/util/sns'

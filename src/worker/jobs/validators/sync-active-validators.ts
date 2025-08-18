@@ -17,10 +17,10 @@ export async function syncActiveValidators(job: Job) {
         return
     }
 
-    const resValidators = await api.query.staking.validators.entries()
+    const rpcValidators = await api.query.staking.validators.entries()
     const activeValidators = []
 
-    for (const [key, value] of resValidators) {
+    for (const [key, value] of rpcValidators) {
         const rpcValidator = key.args[0].toString()
         activeValidators.push(rpcValidator)
     }
