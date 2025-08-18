@@ -17,7 +17,7 @@ export function eraPaid(event: EventItem): EraPaid {
         })
 }
 
-export function eraPaidEventModel(item: EventItem, event: EraPaid): EventModel {
+export function eraPaidEventModel(item: EventItem, event: EraPaid, validator?: string | null): EventModel {
     return new EventModel({
         id: item.id,
         name: StakingEraPaid.name,
@@ -26,6 +26,7 @@ export function eraPaidEventModel(item: EventItem, event: EraPaid): EventModel {
             eraIndex: event.eraIndex,
             validatorPayout: event.validatorPayout,
             remainder: event.remainder,
+            validator: validator ?? null,
         }),
     })
 }

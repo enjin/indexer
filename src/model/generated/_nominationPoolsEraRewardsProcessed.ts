@@ -8,7 +8,7 @@ export class NominationPoolsEraRewardsProcessed {
     private _pool!: string
     private _era!: number
     private _eraReward!: string
-    private _rate!: bigint
+    private _rate!: bigint | undefined | null
     private _poolId!: string
     private _tokenId!: bigint
 
@@ -18,7 +18,7 @@ export class NominationPoolsEraRewardsProcessed {
             this._pool = marshal.string.fromJSON(json.pool)
             this._era = marshal.int.fromJSON(json.era)
             this._eraReward = marshal.string.fromJSON(json.eraReward)
-            this._rate = marshal.bigint.fromJSON(json.rate)
+            this._rate = json.rate == null ? undefined : marshal.bigint.fromJSON(json.rate)
             this._poolId = marshal.string.fromJSON(json.poolId)
             this._tokenId = marshal.bigint.fromJSON(json.tokenId)
         }
@@ -51,12 +51,11 @@ export class NominationPoolsEraRewardsProcessed {
         this._eraReward = value
     }
 
-    get rate(): bigint {
-        assert(this._rate != null, 'uninitialized access')
+    get rate(): bigint | undefined | null {
         return this._rate
     }
 
-    set rate(value: bigint) {
+    set rate(value: bigint | undefined | null) {
         this._rate = value
     }
 
@@ -84,7 +83,7 @@ export class NominationPoolsEraRewardsProcessed {
             pool: this.pool,
             era: this.era,
             eraReward: this.eraReward,
-            rate: marshal.bigint.toJSON(this.rate),
+            rate: this.rate == null ? undefined : marshal.bigint.toJSON(this.rate),
             poolId: this.poolId,
             tokenId: marshal.bigint.toJSON(this.tokenId),
         }
