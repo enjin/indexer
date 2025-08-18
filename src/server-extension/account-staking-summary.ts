@@ -2,7 +2,7 @@ import { Field, ObjectType, Query, Resolver, Args, ArgsType, registerEnumType } 
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
 import { Validate, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator'
-import { PoolMember, NominationPool, TokenAccount, EraReward, PoolMemberRewards } from '~/model'
+import { PoolMember, NominationPool, TokenAccount, EraReward, PoolMemberRewards, PoolState, Token } from '~/model'
 import { isValidAddress } from '~/util/tools'
 
 const stakingTimeFrameMap = {
@@ -125,12 +125,31 @@ export class NominationPoolSummary {
 }
 
 @ObjectType()
+export class NominationPoolSummaryGlobal {
+    @Field(() => BigInt)
+    totalPools!: BigInt
+
+    @Field(() => BigInt)
+    totalSupply!: BigInt
+
+    @Field(() => BigInt)
+    totalStaked!: BigInt
+
+    constructor(props: Partial<NominationPoolSummaryGlobal>) {
+        Object.assign(this, props)
+    }
+}
+
+@ObjectType()
 export class NominationPoolSummaryResponse {
     @Field(() => [NominationPoolSummary])
     pools!: NominationPoolSummary[]
 
     @Field(() => [PoolMemberReward])
     rewards!: PoolMemberReward[]
+
+    @Field(() => NominationPoolSummaryGlobal)
+    global!: NominationPoolSummaryGlobal
 }
 
 @Resolver()
@@ -160,6 +179,28 @@ export class AccountStakingSummaryResolver {
         // Remove duplicates
         accounts = [...new Set(accounts)]
 
+        const globalQueryBuilder = manager
+            .getRepository(NominationPool)
+            .createQueryBuilder('pool')
+            .select('COUNT(pool.id)', 'totalPools')
+            .addSelect("SUM(pool.points)", 'totalStaked')
+            .where('pool.state != :state', { state: PoolState.Destroyed })
+
+        const totalSupplyQueryBuilder = manager
+            .getRepository(Token)
+            .createQueryBuilder('token')
+            .select('SUM(token.supply)', 'totalSupply')
+            .where('token.id = :id', { id: '0-0' })
+
+        const totalSupplyData = await totalSupplyQueryBuilder.getRawOne()
+
+        const globalData = await globalQueryBuilder.getRawOne()
+        const global = new NominationPoolSummaryGlobal({
+            totalPools: BigInt(globalData.totalPools || '0'),
+            totalStaked: BigInt(globalData.totalStaked || '0'),
+            totalSupply: BigInt(totalSupplyData.totalSupply || '0'),
+        })
+
         const poolData = await manager
             .getRepository(NominationPool)
             .createQueryBuilder('pool')
@@ -182,6 +223,7 @@ export class AccountStakingSummaryResolver {
             return {
                 pools: [],
                 rewards: [],
+                global,
             }
         }
 
@@ -244,6 +286,7 @@ export class AccountStakingSummaryResolver {
         return {
             pools,
             rewards,
+            global,
         }
     }
 }
