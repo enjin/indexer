@@ -6,8 +6,6 @@ const floorQuery = `SELECT MIN("listing"."highest_price") AS floor_price FROM "l
 
 const activeListingsAmountQuery = `SELECT COALESCE(SUM("listing"."amount"), 0) AS active_listings_amount FROM "listing" AS "listing" INNER JOIN "token" "token" ON (("token"."id" = "listing"."make_asset_id_id" AND "listing"."make_asset_id_id" != '0-0') OR ("token"."id" = "listing"."take_asset_id_id" AND "listing"."take_asset_id_id" != '0-0')) INNER JOIN "collection" "collection" ON "collection"."id" = "token"."collection_id" WHERE "collection"."id" = $1 AND "listing"."is_active" = TRUE AND "token"."is_frozen" = FALSE AND "token"."listing_forbidden" = FALSE;`
 
-const totalInfusedQuery = `SELECT COALESCE(SUM("token"."infusion"), 0) AS total_infused FROM "token" AS "token" INNER JOIN "collection" "collection" ON "collection"."id" = "token"."collection_id" WHERE "collection"."id" = $1 AND "token"."is_frozen" = FALSE AND "token"."listing_forbidden" = FALSE;`
-
 export async function computeStats(_job: Job, collectionId: string) {
     const em = await connectionManager()
 
@@ -50,10 +48,18 @@ export async function computeStats(_job: Job, collectionId: string) {
             .addSelect('SUM(token.supply)', 'supply')
             .where('token.collection = :collectionId', { collectionId })
             .getRawOne(),
-        em.query(totalInfusedQuery, [collectionId]),
+        em
+            .getRepository(Token)
+            .createQueryBuilder('token')
+            .select('SUM(token.infusion)', 'total_infused')
+            .where('token.collection = :collectionId', { collectionId })
+            .getRawOne(),
     ]
 
-    const [sales, [{ floor_price }], [{ active_listings_amount }], { tokenCount, supply }, { total_infused }] = await Promise.all(promises)
+    const [sales, [{ floor_price }], [{ active_listings_amount }], { tokenCount, supply }, { total_infused }] =
+        await Promise.all(promises)
+
+    await _job.log(`Collection stats computed: ${total_infused}`)
 
     const stats = new CollectionStats({
         tokenCount: Number(tokenCount),
