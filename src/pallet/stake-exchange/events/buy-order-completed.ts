@@ -50,7 +50,7 @@ export function buyOrderCompletedEventModel(
     data: BuyOrderCompleted,
     offerId: bigint,
     poolId: string | undefined
-): EventModel | undefined {
+): EventModel {
     const rate: bigint = typeof data.rate === 'bigint' ? data.rate : BigInt(data.rate * 10 ** 9)
 
     return new EventModel({

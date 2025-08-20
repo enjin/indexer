@@ -20,7 +20,7 @@ export function collectionTransferCancelled(event: EventItem): CollectionTransfe
 export function collectionTransferCancelledEventModel(
     item: EventItem,
     data: CollectionTransferCancelled
-): EventModel | undefined {
+): EventModel {
     return new EventModel({
         id: item.id,
         name: MultiTokensCollectionTransferCancelled.name,

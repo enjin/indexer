@@ -22,7 +22,7 @@ export function destroyedEventModel(
     data: Destroyed,
     tokenId: bigint,
     owner: string | undefined
-): EventModel | undefined {
+): EventModel {
     return new EventModel({
         id: item.id,
         name: NominationPoolsDestroyed.name,

@@ -32,6 +32,7 @@ import { QueuesEnum } from '~/queue/constants'
 import { Logger } from '~/util/logger'
 import { isRelay } from '~/util/tools'
 import { In } from 'typeorm'
+import { isSnsEvent, Sns, SnsEvent } from './util/sns'
 
 const logger = new Logger('sqd:processor', config.logLevel)
 
@@ -74,6 +75,7 @@ async function bootstrap() {
                     const signers = new Set<string>()
                     const eventsCollection: Event[] = []
                     const accountTokenEvents: AccountTokenEvent[] = []
+                    const snsEvents: SnsEvent[] = []
 
                     for (const extrinsic of block.extrinsics) {
                         const [s, e] = await processExtrinsics(ctx, block.header, block.events, extrinsic)
@@ -86,9 +88,10 @@ async function bootstrap() {
                     }
 
                     for (const eventItem of block.events) {
-                        const [e, a] = await processEvents(ctx, block.header, eventItem, dataService.lastBlockNumber)
+                        const [e, a, s] = await processEvents(ctx, block.header, eventItem, dataService.lastBlockNumber)
                         if (e) eventsCollection.push(e)
                         if (a) accountTokenEvents.push(a)
+                        if (s) snsEvents.push(s)
                     }
 
                     if (block.header.height > dataService.lastBlockNumber) {
@@ -104,6 +107,13 @@ async function bootstrap() {
                     }
                     for (const chunk of _.chunk(accountTokenEvents, 1000)) {
                         await ctx.store.save(chunk)
+                    }
+
+                    if (snsEvents.length > 0) {
+                        for (const snsEvent of snsEvents) {
+                            await Sns.getInstance().send(snsEvent)
+                        }
+                        snsEvents.length = 0
                     }
 
                     const blockEnd = Date.now()
@@ -165,18 +175,21 @@ async function processEvents(
     block: Block,
     eventItem: EventItem,
     lastBlockNumber: number
-): Promise<[Event | undefined, AccountTokenEvent | undefined]> {
+): Promise<[Event | undefined, AccountTokenEvent | undefined, SnsEvent | undefined]> {
     const event = await eventHandler(ctx, block, eventItem, block.height <= lastBlockNumber)
 
     if (event) {
         if (Array.isArray(event)) {
-            return [event[0], event[1]]
+            const tokenAccountEvent = event[1] instanceof AccountTokenEvent ? event[1] : undefined
+            const snsEvent = event[2] ? event[2] : isSnsEvent(event[1]) ? event[1] : undefined
+
+            return [event[0], tokenAccountEvent, snsEvent]
         } else {
-            return [event, undefined]
+            return [event, undefined, undefined]
         }
     }
 
-    return [undefined, undefined]
+    return [undefined, undefined, undefined]
 }
 
 async function processExtrinsics(

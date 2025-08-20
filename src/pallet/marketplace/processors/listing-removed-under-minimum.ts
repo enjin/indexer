@@ -1,7 +1,7 @@
 import { AccountTokenEvent, Event as EventModel, Listing, ListingStatus, ListingStatusType, ListingType } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getBestListing, getOrCreateAccount } from '~/util/entities'
-import { Sns } from '~/util/sns'
+import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
 
@@ -9,7 +9,7 @@ export async function listingRemovedUnderMinimum(
     ctx: CommonContext,
     block: Block,
     item: EventItem
-): Promise<[EventModel, AccountTokenEvent] | undefined> {
+): Promise<[EventModel, AccountTokenEvent, SnsEvent | undefined] | undefined> {
     const event = mappings.marketplace.events.listingRemovedUnderMinimum(item)
     const listingId = event.listingId.substring(2)
 
@@ -56,36 +56,37 @@ export async function listingRemovedUnderMinimum(
     await ctx.store.insert(listingStatus)
     await ctx.store.save(listing)
 
-    if (item.extrinsic) {
-        await Sns.getInstance().send({
-            id: item.id,
-            name: item.name,
-            body: {
-                listing: {
-                    id: listing.id,
-                    price: listing.price.toString(),
-                    amount: listing.amount.toString(),
-                    highestPrice: listing.highestPrice.toString(),
-                    seller: {
-                        id: seller.id,
-                    },
-                    type: listing.type.toString(),
-                    data: listing.data.toJSON(),
-                    state: listing.state.toJSON(),
+    const snsEvent: SnsEvent = {
+        id: item.id,
+        name: item.name,
+        body: {
+            listing: {
+                id: listing.id,
+                price: listing.price.toString(),
+                amount: listing.amount.toString(),
+                highestPrice: listing.highestPrice.toString(),
+                seller: {
+                    id: seller.id,
                 },
-                token: isOffer ? takeAssetId.id : makeAssetId.id,
-                extrinsic: item.extrinsic.id,
+                type: listing.type.toString(),
+                data: listing.data.toJSON(),
+                state: listing.state.toJSON(),
             },
-        })
+            token: isOffer ? takeAssetId.id : makeAssetId.id,
+            extrinsic: item.extrinsic?.id,
+        },
     }
 
     QueueUtils.dispatchComputeStats(makeAssetId.collection.id)
 
-    return mappings.marketplace.events.listingRemovedUnderMinimumEventModel(
-        item,
-        listing,
-        seller,
-        isOffer ? takeAssetId.collection : makeAssetId.collection,
-        isOffer ? takeAssetId : makeAssetId
-    )
+    return [
+        ...mappings.marketplace.events.listingRemovedUnderMinimumEventModel(
+            item,
+            listing,
+            seller,
+            isOffer ? takeAssetId.collection : makeAssetId.collection,
+            isOffer ? takeAssetId : makeAssetId
+        ),
+        item.extrinsic ? snsEvent : undefined,
+    ]
 }

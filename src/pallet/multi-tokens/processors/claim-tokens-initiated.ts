@@ -1,14 +1,14 @@
-import { Event as EventModel, Extrinsic, MultiTokensClaims, MultiTokensClaimTokensInitiated } from '~/model'
+import { AccountTokenEvent, Event as EventModel, Extrinsic, MultiTokensClaims, MultiTokensClaimTokensInitiated } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
-import { Sns } from '~/util/sns'
+import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 
 export async function claimTokensInitiated(
     ctx: CommonContext,
     block: Block,
     item: EventItem
-): Promise<EventModel | undefined> {
+): Promise<[EventModel, AccountTokenEvent | SnsEvent | undefined]> {
     const data = mappings.multiTokens.events.claimTokensInitiated(item)
     const account = await getOrCreateAccount(ctx, data.accountId)
     const claimExists = await ctx.store.findOne(MultiTokensClaims, {
@@ -25,27 +25,28 @@ export async function claimTokensInitiated(
         })
 
         await ctx.store.save(claim)
-
-        if (item.extrinsic) {
-            await Sns.getInstance().send({
-                id: item.id,
-                name: item.name,
-                body: {
-                    account: data.accountId,
-                    ethAccount: data.ethereumAddress,
-                    extrinsic: item.extrinsic.id,
-                },
-            })
-        }
     }
 
-    return new EventModel({
+    const snsEvent: SnsEvent = {
         id: item.id,
-        name: MultiTokensClaimTokensInitiated.name,
-        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-        data: new MultiTokensClaimTokensInitiated({
+        name: item.name,
+        body: {
             account: data.accountId,
             ethAccount: data.ethereumAddress,
+            extrinsic: item.extrinsic?.id,
+        },
+    }
+
+    return [
+        new EventModel({
+            id: item.id,
+            name: MultiTokensClaimTokensInitiated.name,
+            extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
+            data: new MultiTokensClaimTokensInitiated({
+                account: data.accountId,
+                ethAccount: data.ethereumAddress,
+            }),
         }),
-    })
+        !claimExists ? snsEvent : undefined,
+    ]
 }

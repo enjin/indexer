@@ -1,6 +1,6 @@
 import { AccountTokenEvent, AuctionState, Bid, Event as EventModel, Listing, ListingType } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { Sns } from '~/util/sns'
+import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { getBestListing, getOrCreateAccount } from '~/util/entities'
 import { QueueUtils } from '~/queue'
@@ -9,7 +9,7 @@ export async function bidPlaced(
     ctx: CommonContext,
     block: Block,
     item: EventItem
-): Promise<[EventModel, AccountTokenEvent] | undefined> {
+): Promise<[EventModel, AccountTokenEvent, SnsEvent | undefined] | undefined> {
     const event = mappings.marketplace.events.bidPlaced(item)
     const listingId = event.listingId.substring(2)
 
@@ -59,51 +59,52 @@ export async function bidPlaced(
     }
     await ctx.store.save(makeAssetId)
 
-    if (item.extrinsic) {
-        await Sns.getInstance().send({
-            id: item.id,
-            name: item.name,
-            body: {
-                listing: {
-                    seller: {
-                        id: listing.seller.id,
-                    },
-                    id: listing.id,
-                    highestPrice: listing.highestPrice.toString(),
-                    amount: listing.amount.toString(),
-                    price: listing.price.toString(),
-                    data: listing.data.toJSON(),
+    const snsEvent: SnsEvent = {
+        id: item.id,
+        name: item.name,
+        body: {
+            listing: {
+                seller: {
+                    id: listing.seller.id,
                 },
-                lastBid: previousBid
-                    ? {
-                          id: previousBid.id,
-                          price: previousBid.price.toString(),
-                          bidder: {
-                              id: previousBid.bidder.id,
-                          },
-                      }
-                    : null,
-                bid: {
-                    id: bid.id,
-                    price: bid.price.toString(),
-                    bidder: {
-                        id: bid.bidder.id,
-                    },
-                },
-                token: makeAssetId.id,
-                extrinsic: item.extrinsic.id,
+                id: listing.id,
+                highestPrice: listing.highestPrice.toString(),
+                amount: listing.amount.toString(),
+                price: listing.price.toString(),
+                data: listing.data.toJSON(),
             },
-        })
+            lastBid: previousBid
+                ? {
+                      id: previousBid.id,
+                      price: previousBid.price.toString(),
+                      bidder: {
+                          id: previousBid.bidder.id,
+                      },
+                  }
+                : null,
+            bid: {
+                id: bid.id,
+                price: bid.price.toString(),
+                bidder: {
+                    id: bid.bidder.id,
+                },
+            },
+            token: makeAssetId.id,
+            extrinsic: item.extrinsic?.id,
+        },
     }
 
     QueueUtils.dispatchComputeStats(makeAssetId.collection.id)
 
-    return mappings.marketplace.events.bidPlacedEventModel(
-        item,
-        event,
-        listing,
-        currentBidder,
-        makeAssetId.collection,
-        makeAssetId
-    )
+    return [
+        ...mappings.marketplace.events.bidPlacedEventModel(
+            item,
+            event,
+            listing,
+            currentBidder,
+            makeAssetId.collection,
+            makeAssetId
+        ),
+        item.extrinsic ? snsEvent : undefined,
+    ]
 }

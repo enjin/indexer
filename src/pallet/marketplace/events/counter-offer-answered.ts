@@ -54,7 +54,7 @@ export function counterOfferAnsweredEventModel(
     creator: Account,
     collection: Collection,
     token: Token
-): [EventModel, AccountTokenEvent] | undefined {
+): [EventModel, AccountTokenEvent] {
     let response: CounterOfferResponse
 
     switch (data.response?.__kind) {

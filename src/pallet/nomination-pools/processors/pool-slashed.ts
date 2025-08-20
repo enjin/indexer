@@ -1,10 +1,14 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { Event as EventModel, PoolSlash } from '~/model'
-import { Sns } from '~/util/sns'
+import { AccountTokenEvent, Event as EventModel, PoolSlash } from '~/model'
+import { SnsEvent } from '~/util/sns'
 import { updatePool } from '~/pallet/nomination-pools/processors/pool'
 import * as mappings from '~/pallet/index'
 
-export async function poolSlashed(ctx: CommonContext, block: Block, item: EventItem): Promise<EventModel | undefined> {
+export async function poolSlashed(
+    ctx: CommonContext,
+    block: Block,
+    item: EventItem
+): Promise<[EventModel, AccountTokenEvent | SnsEvent | undefined] | undefined> {
     if (!item.extrinsic) return undefined
 
     const data = mappings.nominationPools.events.poolSlashed(item)
@@ -19,7 +23,7 @@ export async function poolSlashed(ctx: CommonContext, block: Block, item: EventI
     pool.slashes.push(slash)
     await ctx.store.save(pool)
 
-    await Sns.getInstance().send({
+    const snsEvent: SnsEvent = {
         id: item.id,
         name: item.name,
         body: {
@@ -27,7 +31,7 @@ export async function poolSlashed(ctx: CommonContext, block: Block, item: EventI
             balance: data.balance,
             extrinsic: item.extrinsic.id,
         },
-    })
+    }
 
-    return mappings.nominationPools.events.poolSlashedEventModel(item, data)
+    return [mappings.nominationPools.events.poolSlashedEventModel(item, data), snsEvent]
 }

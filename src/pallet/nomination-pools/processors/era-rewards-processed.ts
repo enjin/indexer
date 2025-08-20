@@ -1,6 +1,7 @@
 import Big from 'big.js'
 import * as Sentry from '@sentry/node'
 import {
+    AccountTokenEvent,
     BonusCycle,
     CommissionPayment,
     Era,
@@ -12,7 +13,7 @@ import {
 } from '~/model'
 import { updatePool } from '~/pallet/nomination-pools/processors/pool'
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { Sns } from '~/util/sns'
+import { SnsEvent } from '~/util/sns'
 import processorConfig from '~/util/config'
 import * as mappings from '~/pallet/index'
 import { TokenAccount } from '~/pallet/multi-tokens/storage/types'
@@ -57,7 +58,7 @@ export async function eraRewardsProcessed(
     ctx: CommonContext,
     block: Block,
     item: EventItem
-): Promise<EventModel | undefined> {
+): Promise<[EventModel, AccountTokenEvent | SnsEvent | undefined] | undefined> {
     if (!item.extrinsic) return undefined
 
     const data = mappings.nominationPools.events.eraRewardsProcessed(item)
@@ -251,7 +252,7 @@ export async function eraRewardsProcessed(
         updates.length && ctx.store.save(updates),
     ])
 
-    await Sns.getInstance().send({
+    const snsEvent: SnsEvent = {
         id: item.id,
         name: item.name,
         body: {
@@ -262,9 +263,12 @@ export async function eraRewardsProcessed(
             name: pool.name,
             tokenId: `2-${pool.tokenId}`,
         },
-    })
+    }
 
-    return mappings.nominationPools.events.eraRewardsProcessedEventModel(item, data, pool.rate, pool.tokenId)
+    return [
+        mappings.nominationPools.events.eraRewardsProcessedEventModel(item, data, pool.rate, pool.tokenId),
+        snsEvent,
+    ]
 }
 
 export const discardEra = (apy: number, totalApy: number) => {

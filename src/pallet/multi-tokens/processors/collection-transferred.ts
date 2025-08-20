@@ -1,8 +1,8 @@
 import { throwFatalError } from '~/util/errors'
-import { Collection, Event as EventModel } from '~/model'
+import { AccountTokenEvent, Collection, Event as EventModel } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
-import { Sns } from '~/util/sns'
+import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 
 export async function collectionTransferred(
@@ -10,9 +10,9 @@ export async function collectionTransferred(
     block: Block,
     item: EventItem,
     skipSave: boolean
-): Promise<EventModel | undefined> {
+): Promise<[EventModel, AccountTokenEvent | SnsEvent | undefined] | undefined> {
     const data = mappings.multiTokens.events.collectionTransferred(item)
-    if (skipSave) return mappings.multiTokens.events.collectionTransferredEventModel(item, data)
+    if (skipSave) return [mappings.multiTokens.events.collectionTransferredEventModel(item, data), undefined]
 
     const collection = await ctx.store.findOne<Collection>(Collection, {
         where: { id: data.collectionId.toString() },
@@ -20,7 +20,7 @@ export async function collectionTransferred(
 
     if (!collection) {
         throwFatalError(`[CollectionTransferred] We have not found collection ${data.collectionId.toString()}`)
-        return mappings.multiTokens.events.collectionTransferredEventModel(item, data)
+        return [mappings.multiTokens.events.collectionTransferredEventModel(item, data), undefined]
     }
 
     collection.owner = await getOrCreateAccount(ctx, data.newOwner)
@@ -29,17 +29,19 @@ export async function collectionTransferred(
 
     await ctx.store.save(collection)
 
-    if (item.extrinsic) {
-        await Sns.getInstance().send({
+    const snsEvent: SnsEvent = {
+        id: item.id,
+        name: item.name,
+        body: {
             id: item.id,
             name: item.name,
             body: {
                 collectionId: data.collectionId,
                 owner: data.newOwner,
-                extrinsic: item.extrinsic.id,
+                extrinsic: item.extrinsic?.id,
             },
-        })
+        },
     }
 
-    return mappings.multiTokens.events.collectionTransferredEventModel(item, data)
+    return [mappings.multiTokens.events.collectionTransferredEventModel(item, data), snsEvent]
 }

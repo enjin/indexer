@@ -10,11 +10,12 @@ import {
     CollectionStats,
     MarketPolicy,
     RoyaltyBeneficiary,
+    AccountTokenEvent,
 } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
 import * as mappings from '~/pallet/index'
-import { Sns } from '~/util/sns'
+import { SnsEvent } from '~/util/sns'
 import { matrixUtility } from '~/type/calls'
 import { DefaultRoyalty as DefaultRoyalty1020 } from '~/type/matrixV1020'
 import { DefaultRoyalty as DefaultRoyalty500 } from '~/type/matrixV500'
@@ -51,7 +52,7 @@ export async function collectionCreated(
     block: Block,
     item: EventItem,
     skipSave: boolean
-): Promise<EventModel | undefined> {
+): Promise<[EventModel, AccountTokenEvent | SnsEvent | undefined] | undefined> {
     if (!item.call) return undefined
     const eventData = mappings.multiTokens.events.collectionCreated(item)
 
@@ -65,7 +66,7 @@ export async function collectionCreated(
             await ctx.store.save(collection)
         }
 
-        return mappings.multiTokens.events.collectionCreatedEventModel(item, eventData)
+        return [mappings.multiTokens.events.collectionCreatedEventModel(item, eventData), undefined]
     }
 
     // TODO: Refactor this later
@@ -146,17 +147,15 @@ export async function collectionCreated(
 
     await Promise.all(royaltyPromises)
 
-    if (item.extrinsic) {
-        await Sns.getInstance().send({
-            id: item.id,
-            name: item.name,
-            body: {
-                collectionId: eventData.collectionId,
-                owner: eventData.owner,
-                extrinsic: item.extrinsic.id,
-            },
-        })
+    const snsEvent: SnsEvent = {
+        id: item.id,
+        name: item.name,
+        body: {
+            collectionId: eventData.collectionId,
+            owner: eventData.owner,
+            extrinsic: item.extrinsic?.id,
+        },
     }
 
-    return mappings.multiTokens.events.collectionCreatedEventModel(item, eventData)
+    return [mappings.multiTokens.events.collectionCreatedEventModel(item, eventData), snsEvent]
 }

@@ -17,13 +17,19 @@ import {
     imOnline,
 } from '~/type/events'
 import { calls } from '~/type'
+import { SnsEvent } from './util/sns'
 
 export async function eventHandler(
     ctx: CommonContext,
     block: Block,
     item: EventItem,
     skipSave = false
-): Promise<Event | [Event, AccountTokenEvent] | undefined> {
+): Promise<
+    | Event
+    | [Event, AccountTokenEvent | SnsEvent | undefined]
+    | [Event, AccountTokenEvent | SnsEvent | undefined, SnsEvent | undefined]
+    | undefined
+> {
     return (
         match(item.name)
             .with(multiTokens.approved.name, () => p.multiTokens.processors.approved(ctx, item, skipSave))

@@ -1,6 +1,6 @@
 import { AccountTokenEvent, CounterOffer, Event as EventModel, Listing, ListingType, OfferState } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { Sns } from '~/util/sns'
+import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { getOrCreateAccount, unwrapSigner } from '~/util/entities'
 
@@ -8,7 +8,7 @@ export async function counterOfferAnswered(
     ctx: CommonContext,
     block: Block,
     item: EventItem
-): Promise<[EventModel, AccountTokenEvent] | undefined> {
+): Promise<[EventModel, AccountTokenEvent, SnsEvent | undefined] | undefined> {
     const event = mappings.marketplace.events.counterOfferAnswered(item)
     const listingId = event.listingId.substring(2)
 
@@ -52,7 +52,7 @@ export async function counterOfferAnswered(
     listing.updatedAt = new Date(block.timestamp ?? 0)
     await ctx.store.save(listing)
 
-    await Sns.getInstance().send({
+    const snsEvent: SnsEvent = {
         id: item.id,
         name: item.name,
         body: {
@@ -77,14 +77,17 @@ export async function counterOfferAnswered(
             extrinsic: item.extrinsic.id,
             token: takeAssetId.id,
         },
-    })
+    }
 
-    return mappings.marketplace.events.counterOfferAnsweredEventModel(
-        item,
-        event,
-        listing,
-        creator,
-        takeAssetId.collection,
-        takeAssetId
-    )
+    return [
+        ...mappings.marketplace.events.counterOfferAnsweredEventModel(
+            item,
+            event,
+            listing,
+            creator,
+            takeAssetId.collection,
+            takeAssetId
+        ),
+        snsEvent,
+    ]
 }

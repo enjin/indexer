@@ -20,7 +20,7 @@ export function offerCompleted(event: EventItem): OfferCompleted {
 export function offerCompletedEventModel(
     item: EventItem,
     stakeExchangeOffer: StakeExchangeOffer
-): EventModel | undefined {
+): EventModel {
     return new EventModel({
         id: item.id,
         name: StakeExchangeOfferCompleted.name,

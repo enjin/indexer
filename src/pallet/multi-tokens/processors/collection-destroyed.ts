@@ -7,7 +7,7 @@ import {
     RoyaltyCurrency,
     Trait,
 } from '~/model'
-import { Sns } from '~/util/sns'
+import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { Block, CommonContext, EventItem } from '~/contexts'
 
@@ -16,15 +16,15 @@ export async function collectionDestroyed(
     block: Block,
     item: EventItem,
     skipSave: boolean
-): Promise<EventModel | undefined> {
+): Promise<[EventModel, AccountTokenEvent | SnsEvent | undefined] | undefined> {
     const data = mappings.multiTokens.events.collectionDestroyed(item)
-    if (skipSave) return mappings.multiTokens.events.collectionDestroyedEventModel(item, data)
+    if (skipSave) return [mappings.multiTokens.events.collectionDestroyedEventModel(item, data), undefined]
 
     const collectionId = data.collectionId.toString()
     const collection = await ctx.store.findOneBy(Collection, { id: collectionId })
 
     if (!collection) {
-        return mappings.multiTokens.events.collectionDestroyedEventModel(item, data)
+        return [mappings.multiTokens.events.collectionDestroyedEventModel(item, data), undefined]
     }
 
     const [accountTokenEvents, collectionAccounts, traits, royaltyCurrencies, attributes] = await Promise.all([
@@ -61,17 +61,15 @@ export async function collectionDestroyed(
         ctx.store.remove(collection),
     ])
 
-    if (item.extrinsic) {
-        await Sns.getInstance().send({
-            id: item.id,
-            name: item.name,
-            body: {
-                collectionId: data.collectionId,
-                caller: data.caller,
-                extrinsic: item.extrinsic.id,
-            },
-        })
+    const snsEvent: SnsEvent = {
+        id: item.id,
+        name: item.name,
+        body: {
+            collectionId: data.collectionId,
+            caller: data.caller,
+            extrinsic: item.extrinsic?.id,
+        },
     }
 
-    return mappings.multiTokens.events.collectionDestroyedEventModel(item, data)
+    return [mappings.multiTokens.events.collectionDestroyedEventModel(item, data), snsEvent]
 }

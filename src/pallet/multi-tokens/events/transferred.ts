@@ -31,7 +31,7 @@ export function transferredEventModel(
     to: Account,
     collection: Collection | null,
     token: Token | null
-): [EventModel, AccountTokenEvent] | EventModel | undefined {
+): [EventModel, AccountTokenEvent] {
     const collectionId = collection ? collection.id : data.collectionId.toString()
     const tokenId = token ? token.id : `${collectionId}-${data.tokenId}`
 

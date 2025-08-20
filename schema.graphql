@@ -1304,6 +1304,12 @@ type NominationPoolsEraRewardsProcessed {
   tokenId: BigInt!
 }
 
+type NominationPoolsStateChanged {
+  pool: NominationPool!
+  state: String!
+  poolId: String!
+}
+
 type NominationPoolsRewardPaid {
   pool: NominationPool!
   era: Int!
@@ -1629,7 +1635,7 @@ union EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiToken
   | FuelTankCreated | FuelTankDestroyed | MultiTokensClaimedCollections | MultiTokensClaimTokensInitiated
   | MultiTokensClaimTokensCompleted | MultiTokensCollectionTransferred | MultiTokensCollectionTransferCancelled | MultiTokensInfused
   | StakingEraPaid | NominationPoolsBonded | NominationPoolsUnbonded | StakingChilled | StakingBonded | StakingUnbonded | StakingWithdrawn
-  | NominationPoolsEarlyBirdBonusPaymentUnlocked | NominationPoolsEarlyBirdBonusCalculated
+  | NominationPoolsEarlyBirdBonusPaymentUnlocked | NominationPoolsEarlyBirdBonusCalculated | NominationPoolsStateChanged
   | NominationPoolsEarlyBirdSharesCaptured | NominationPoolsEarlyBirdBonusPaid | ImOnlineSomeOffline | ValidatorPrefsSet
   | NominationPoolsWithdrawn | NominationPoolsEraRewardsProcessed | NominationPoolsRewardPaid | NominationPoolsPoolSlashed
   | NominationPoolsNominated | NominationPoolsCreated | NominationPoolsDestroyed | NominationPoolsPoolMutated

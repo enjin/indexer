@@ -21,7 +21,7 @@ export function liquidityWithdrawnEventModel(
     item: EventItem,
     data: LiquidityWithdrawn,
     amount: bigint
-): EventModel | undefined {
+): EventModel {
     return new EventModel({
         id: item.id,
         name: StakeExchangeLiquidityWithdrawn.name,

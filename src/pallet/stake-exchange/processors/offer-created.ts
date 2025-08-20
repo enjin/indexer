@@ -1,6 +1,7 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
 import {
     Account,
+    AccountTokenEvent,
     Event as EventModel,
     NominationPool,
     PoolsOffers,
@@ -11,7 +12,7 @@ import {
     StakeExchangeTokenFilterType,
 } from '~/model'
 import { getOrCreateAccount } from '~/util/entities'
-import { Sns } from '~/util/sns'
+import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { TokenFilter } from '~/pallet/common/types'
 import { OfferCreated } from '~/pallet/stake-exchange/events/types'
@@ -82,7 +83,11 @@ async function savePoolsOffersForStakeExchange(
     }
 }
 
-export async function offerCreated(ctx: CommonContext, block: Block, item: EventItem): Promise<EventModel | undefined> {
+export async function offerCreated(
+    ctx: CommonContext,
+    block: Block,
+    item: EventItem
+): Promise<[EventModel, AccountTokenEvent | SnsEvent | undefined] | undefined> {
     const event: OfferCreated = mappings.stakeExchange.events.offerCreated(item)
 
     let rewardRate: bigint
@@ -122,7 +127,7 @@ export async function offerCreated(ctx: CommonContext, block: Block, item: Event
         await savePoolsOffersForStakeExchange(event, ctx, offer)
     }
 
-    await Sns.getInstance().send({
+    const snsEvent: SnsEvent = {
         id: item.id,
         name: item.name,
         body: {
@@ -133,7 +138,7 @@ export async function offerCreated(ctx: CommonContext, block: Block, item: Event
             minAverageCommission: 0,
             minAverageRewardRate: rewardRate.toString(),
         },
-    })
+    }
 
-    return mappings.stakeExchange.events.offerCreatedEventModel(item, event, rewardRate, offer)
+    return [mappings.stakeExchange.events.offerCreatedEventModel(item, event, rewardRate, offer), snsEvent]
 }

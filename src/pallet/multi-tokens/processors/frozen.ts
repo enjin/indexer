@@ -1,5 +1,6 @@
 import { throwFatalError } from '~/util/errors'
 import {
+    AccountTokenEvent,
     Collection,
     CollectionAccount,
     Event as EventModel,
@@ -9,7 +10,7 @@ import {
     TransferPolicy,
 } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { Sns } from '~/util/sns'
+import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { match } from 'ts-pattern'
 import { QueueUtils } from '~/queue'
@@ -20,9 +21,11 @@ export async function frozen(
     block: Block,
     item: EventItem,
     skipSave: boolean
-): Promise<EventModel | undefined> {
+): Promise<[EventModel, AccountTokenEvent | SnsEvent | undefined] | undefined> {
     const event = mappings.multiTokens.events.frozen(item)
-    if (skipSave) return mappings.multiTokens.events.frozenEventModel(item, event)
+    if (skipSave) return [mappings.multiTokens.events.frozenEventModel(item, event), undefined]
+
+    let snsEvent: SnsEvent | undefined = undefined
 
     if (event.freezeType.__kind === 'TokenAccount') {
         const address = event.freezeType.accountId
@@ -34,7 +37,7 @@ export async function frozen(
             throwFatalError(
                 `[Frozen] We have not found collection ${address}-${event.collectionId}-${event.freezeType.tokenId}`
             )
-            return mappings.multiTokens.events.frozenEventModel(item, event)
+            return [mappings.multiTokens.events.frozenEventModel(item, event), undefined]
         }
 
         tokenAccount.isFrozen = true
@@ -48,7 +51,7 @@ export async function frozen(
 
         if (!collectionAccount) {
             throwFatalError(`[Frozen] We have not found collection ${event.collectionId}-${address}`)
-            return mappings.multiTokens.events.frozenEventModel(item, event)
+            return [mappings.multiTokens.events.frozenEventModel(item, event), undefined]
         }
 
         collectionAccount.isFrozen = true
@@ -61,7 +64,7 @@ export async function frozen(
 
         if (!token) {
             throwFatalError(`[Frozen] We have not found collection ${event.collectionId}-${event.freezeType.tokenId}`)
-            return mappings.multiTokens.events.frozenEventModel(item, event)
+            return [mappings.multiTokens.events.frozenEventModel(item, event), undefined]
         }
 
         switch (event.freezeType.freezeState?.__kind) {
@@ -89,7 +92,7 @@ export async function frozen(
 
         if (!collection) {
             throwFatalError(`[Frozen] We have not found collection ${event.collectionId.toString()}`)
-            return mappings.multiTokens.events.frozenEventModel(item, event)
+            return [mappings.multiTokens.events.frozenEventModel(item, event), undefined]
         }
 
         collection.transferPolicy = new TransferPolicy({ isFrozen: true })
@@ -104,7 +107,7 @@ export async function frozen(
             .with({ __kind: 'Token' }, (t) => ({ address: null, tokenId: t.tokenId }))
             .otherwise(() => ({ address: null, tokenId: null }))
 
-        await Sns.getInstance().send({
+        snsEvent = {
             id: item.id,
             name: item.name,
             body: {
@@ -115,11 +118,10 @@ export async function frozen(
                 token: tokenId ? `${event.collectionId}-${tokenId}` : null,
                 extrinsic: item.extrinsic.id,
             },
-        })
+        }
     }
 
-    // console.log('Dispatching from frozen')
     QueueUtils.dispatchComputeStats(event.collectionId.toString())
 
-    return mappings.multiTokens.events.frozenEventModel(item, event)
+    return [mappings.multiTokens.events.frozenEventModel(item, event), snsEvent]
 }

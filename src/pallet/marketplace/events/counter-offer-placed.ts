@@ -49,7 +49,7 @@ export function counterOfferPlacedEventModel(
     account: Account,
     collection: Collection,
     token: Token
-): [EventModel, AccountTokenEvent] | undefined {
+): [EventModel, AccountTokenEvent] {
     const event = new EventModel({
         id: item.id,
         name: MarketplaceCounterOfferPlaced.name,
