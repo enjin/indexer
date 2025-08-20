@@ -48,9 +48,18 @@ export async function computeStats(_job: Job, collectionId: string) {
             .addSelect('SUM(token.supply)', 'supply')
             .where('token.collection = :collectionId', { collectionId })
             .getRawOne(),
+        em
+            .getRepository(Token)
+            .createQueryBuilder('token')
+            .select('SUM(token.infusion)', 'total_infused')
+            .where('token.collection = :collectionId', { collectionId })
+            .getRawOne(),
     ]
 
-    const [sales, [{ floor_price }], [{ active_listings_amount }], { tokenCount, supply }] = await Promise.all(promises)
+    const [sales, [{ floor_price }], [{ active_listings_amount }], { tokenCount, supply }, { total_infused }] =
+        await Promise.all(promises)
+
+    await _job.log(`Collection stats computed: ${total_infused}`)
 
     const stats = new CollectionStats({
         tokenCount: Number(tokenCount),
@@ -62,6 +71,7 @@ export async function computeStats(_job: Job, collectionId: string) {
         lastSale: sales?.last_sale ?? null,
         highestSale: sales?.highest_sale ?? null,
         activeListingsAmount: BigInt(active_listings_amount ?? 0n),
+        totalInfused: BigInt(total_infused ?? 0n),
     })
 
     await em.update(Collection, { id: collectionId }, { stats })

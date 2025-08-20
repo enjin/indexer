@@ -18,6 +18,7 @@ export async function syncTokens(job: Job) {
 
         await job.log(`Dispatched sync for token ${id}`)
         QueueUtils.dispatchComputeTokenInfusion(id)
+        QueueUtils.dispatchComputeTokenSupply(id)
         count++
     })
 
