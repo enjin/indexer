@@ -1,22 +1,11 @@
-import {
-    AccountTokenEvent,
-    Event as EventModel,
-    NominationPool,
-    PoolState,
-    StakeExchangeOffer,
-    StakeExchangeOfferState,
-    Token,
-} from '~/model'
+import { NominationPool, PoolState, StakeExchangeOffer, StakeExchangeOfferState, Token } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { connectionManager } from '~/contexts'
 import * as mappings from '~/pallet/index'
 import { SnsEvent } from '~/util/sns'
+import { EventHandlerResult } from '~/processor.handler'
 
-export async function destroyed(
-    ctx: CommonContext,
-    block: Block,
-    item: EventItem
-): Promise<[EventModel, AccountTokenEvent | SnsEvent | undefined] | undefined> {
+export async function destroyed(ctx: CommonContext, block: Block, item: EventItem): Promise<EventHandlerResult> {
     const eventData = mappings.nominationPools.events.destroyed(item)
     const em = await connectionManager()
 

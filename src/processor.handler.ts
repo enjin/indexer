@@ -19,17 +19,18 @@ import {
 import { calls } from '~/type'
 import { SnsEvent } from './util/sns'
 
+export type EventHandlerResult =
+    | Event
+    | [Event, AccountTokenEvent | SnsEvent | undefined]
+    | [Event, AccountTokenEvent | SnsEvent | undefined, SnsEvent | undefined]
+    | undefined
+
 export async function eventHandler(
     ctx: CommonContext,
     block: Block,
     item: EventItem,
     skipSave = false
-): Promise<
-    | Event
-    | [Event, AccountTokenEvent | SnsEvent | undefined]
-    | [Event, AccountTokenEvent | SnsEvent | undefined, SnsEvent | undefined]
-    | undefined
-> {
+): Promise<EventHandlerResult> {
     return (
         match(item.name)
             .with(multiTokens.approved.name, () => p.multiTokens.processors.approved(ctx, item, skipSave))

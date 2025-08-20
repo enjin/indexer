@@ -1,5 +1,4 @@
 import {
-    Event as EventModel,
     Collection,
     MintPolicy,
     TransferPolicy,
@@ -10,7 +9,6 @@ import {
     CollectionStats,
     MarketPolicy,
     RoyaltyBeneficiary,
-    AccountTokenEvent,
 } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
@@ -19,6 +17,7 @@ import { SnsEvent } from '~/util/sns'
 import { matrixUtility } from '~/type/calls'
 import { DefaultRoyalty as DefaultRoyalty1020 } from '~/type/matrixV1020'
 import { DefaultRoyalty as DefaultRoyalty500 } from '~/type/matrixV500'
+import { EventHandlerResult } from '~/processor.handler'
 
 type DefaultRoyalty = DefaultRoyalty500 | DefaultRoyalty1020
 
@@ -52,7 +51,7 @@ export async function collectionCreated(
     block: Block,
     item: EventItem,
     skipSave: boolean
-): Promise<[EventModel, AccountTokenEvent | SnsEvent | undefined] | undefined> {
+): Promise<EventHandlerResult> {
     if (!item.call) return undefined
     const eventData = mappings.multiTokens.events.collectionCreated(item)
 

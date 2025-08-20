@@ -1,14 +1,11 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { AccountTokenEvent, CommissionChangeRate, Event as EventModel, NominationPool } from '~/model'
+import { CommissionChangeRate, NominationPool } from '~/model'
 import { SnsEvent } from '~/util/sns'
 import { hexToString } from '@polkadot/util'
 import * as mappings from '~/pallet/index'
+import { EventHandlerResult } from '~/processor.handler'
 
-export async function poolMutated(
-    ctx: CommonContext,
-    block: Block,
-    item: EventItem
-): Promise<[EventModel, AccountTokenEvent | SnsEvent | undefined] | undefined> {
+export async function poolMutated(ctx: CommonContext, block: Block, item: EventItem): Promise<EventHandlerResult> {
     if (!item.extrinsic) return undefined
 
     const data = mappings.nominationPools.events.poolMutated(item)

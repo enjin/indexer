@@ -1,27 +1,19 @@
 import { throwFatalError } from '~/util/errors'
-import {
-    AccountTokenEvent,
-    Collection,
-    CollectionAccount,
-    Event as EventModel,
-    FreezeState,
-    Token,
-    TokenAccount,
-    TransferPolicy,
-} from '~/model'
+import { Collection, CollectionAccount, FreezeState, Token, TokenAccount, TransferPolicy } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { match } from 'ts-pattern'
 import { QueueUtils } from '~/queue'
 import { isTokenFrozen } from '~/synchronize/common'
+import { EventHandlerResult } from '~/processor.handler'
 
 export async function frozen(
     ctx: CommonContext,
     block: Block,
     item: EventItem,
     skipSave: boolean
-): Promise<[EventModel, AccountTokenEvent | SnsEvent | undefined] | undefined> {
+): Promise<EventHandlerResult> {
     const event = mappings.multiTokens.events.frozen(item)
     if (skipSave) return [mappings.multiTokens.events.frozenEventModel(item, event), undefined]
 

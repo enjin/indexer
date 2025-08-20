@@ -1,13 +1,10 @@
 import { SnsEvent } from '~/util/sns'
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { Event as EventModel, NominationPool, PoolState } from '~/model'
+import { NominationPool, PoolState } from '~/model'
 import * as mappings from '~/pallet/index'
+import { EventHandlerResult } from '~/processor.handler'
 
-export async function stateChanged(
-    ctx: CommonContext,
-    block: Block,
-    item: EventItem
-): Promise<[EventModel, SnsEvent | undefined] | undefined> {
+export async function stateChanged(ctx: CommonContext, block: Block, item: EventItem): Promise<EventHandlerResult> {
     if (!item.extrinsic) return undefined
 
     const data = mappings.nominationPools.events.stateChanged(item)

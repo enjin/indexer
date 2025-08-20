@@ -1,8 +1,6 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
 import {
     Account,
-    AccountTokenEvent,
-    Event as EventModel,
     NominationPool,
     PoolsOffers,
     PoolState,
@@ -17,6 +15,7 @@ import * as mappings from '~/pallet/index'
 import { TokenFilter } from '~/pallet/common/types'
 import { OfferCreated } from '~/pallet/stake-exchange/events/types'
 import { In, Not } from 'typeorm'
+import { EventHandlerResult } from '~/processor.handler'
 
 function getFilterFromType(tokenFilter: TokenFilter | undefined) {
     let entity: StakeExchangeTokenFilter | null = null
@@ -83,11 +82,7 @@ async function savePoolsOffersForStakeExchange(
     }
 }
 
-export async function offerCreated(
-    ctx: CommonContext,
-    block: Block,
-    item: EventItem
-): Promise<[EventModel, AccountTokenEvent | SnsEvent | undefined] | undefined> {
+export async function offerCreated(ctx: CommonContext, block: Block, item: EventItem): Promise<EventHandlerResult> {
     const event: OfferCreated = mappings.stakeExchange.events.offerCreated(item)
 
     let rewardRate: bigint

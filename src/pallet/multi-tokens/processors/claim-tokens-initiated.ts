@@ -1,14 +1,15 @@
-import { AccountTokenEvent, Event as EventModel, Extrinsic, MultiTokensClaims, MultiTokensClaimTokensInitiated } from '~/model'
+import { Event as EventModel, Extrinsic, MultiTokensClaims, MultiTokensClaimTokensInitiated } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
 import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
+import { EventHandlerResult } from '~/processor.handler'
 
 export async function claimTokensInitiated(
     ctx: CommonContext,
     block: Block,
     item: EventItem
-): Promise<[EventModel, AccountTokenEvent | SnsEvent | undefined]> {
+): Promise<EventHandlerResult> {
     const data = mappings.multiTokens.events.claimTokensInitiated(item)
     const account = await getOrCreateAccount(ctx, data.accountId)
     const claimExists = await ctx.store.findOne(MultiTokensClaims, {

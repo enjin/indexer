@@ -1,17 +1,18 @@
 import { throwFatalError } from '~/util/errors'
-import { AccountTokenEvent, Event as EventModel, Token, TokenAccount } from '~/model'
+import { Token, TokenAccount } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { getOrCreateAccount } from '~/util/entities'
 import { QueueUtils } from '~/queue'
+import { EventHandlerResult } from '~/processor.handler'
 
 export async function burned(
     ctx: CommonContext,
     block: Block,
     item: EventItem,
     skipSave: boolean
-): Promise<[EventModel, AccountTokenEvent | undefined, SnsEvent | undefined] | undefined> {
+): Promise<EventHandlerResult> {
     const data = mappings.multiTokens.events.burned(item)
     const account = await getOrCreateAccount(ctx, data.accountId)
 

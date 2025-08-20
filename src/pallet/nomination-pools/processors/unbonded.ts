@@ -1,17 +1,14 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { AccountTokenEvent, Event as EventModel, PoolMember, PoolState, TokenAccount, UnbondingEras } from '~/model'
+import { PoolMember, PoolState, TokenAccount, UnbondingEras } from '~/model'
 import { getOrCreateAccount } from '~/util/entities'
 import { updatePool } from '~/pallet/nomination-pools/processors/pool'
 import { Sns, SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { MoreThan } from 'typeorm'
 import { Unbonded } from '~/pallet/nomination-pools/events'
+import { EventHandlerResult } from '~/processor.handler'
 
-export async function unbonded(
-    ctx: CommonContext,
-    block: Block,
-    item: EventItem
-): Promise<[EventModel, AccountTokenEvent | SnsEvent | undefined] | undefined> {
+export async function unbonded(ctx: CommonContext, block: Block, item: EventItem): Promise<EventHandlerResult> {
     if (!item.extrinsic || !item.extrinsic.call) return undefined
 
     const data: Unbonded = mappings.nominationPools.events.unbonded(item)

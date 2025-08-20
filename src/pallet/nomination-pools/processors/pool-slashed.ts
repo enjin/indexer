@@ -1,14 +1,11 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { AccountTokenEvent, Event as EventModel, PoolSlash } from '~/model'
+import { PoolSlash } from '~/model'
 import { SnsEvent } from '~/util/sns'
 import { updatePool } from '~/pallet/nomination-pools/processors/pool'
 import * as mappings from '~/pallet/index'
+import { EventHandlerResult } from '~/processor.handler'
 
-export async function poolSlashed(
-    ctx: CommonContext,
-    block: Block,
-    item: EventItem
-): Promise<[EventModel, AccountTokenEvent | SnsEvent | undefined] | undefined> {
+export async function poolSlashed(ctx: CommonContext, block: Block, item: EventItem): Promise<EventHandlerResult> {
     if (!item.extrinsic) return undefined
 
     const data = mappings.nominationPools.events.poolSlashed(item)

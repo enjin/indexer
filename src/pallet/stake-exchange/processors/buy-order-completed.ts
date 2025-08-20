@@ -1,19 +1,11 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
-import {
-    Account,
-    AccountTokenEvent,
-    Era,
-    Event as EventModel,
-    NominationPool,
-    PoolMember,
-    StakeExchangeOffer,
-    TokenAccount,
-} from '~/model'
+import { Account, Era, NominationPool, PoolMember, StakeExchangeOffer, TokenAccount } from '~/model'
 import { getOrCreateAccount } from '~/util/entities'
 import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { BuyOrderCompleted } from '~/pallet/stake-exchange/events/types'
 import { Buy } from '~/pallet/stake-exchange/calls'
+import { EventHandlerResult } from '~/processor.handler'
 
 function getActiveEra(ctx: CommonContext) {
     return ctx.store.find(Era, {
@@ -28,7 +20,7 @@ export async function buyOrderCompleted(
     ctx: CommonContext,
     block: Block,
     item: EventItem
-): Promise<[EventModel, AccountTokenEvent | SnsEvent | undefined] | undefined> {
+): Promise<EventHandlerResult> {
     if (!item.extrinsic || !item.extrinsic.call) return undefined
 
     const event: BuyOrderCompleted = mappings.stakeExchange.events.buyOrderCompleted(item)

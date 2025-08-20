@@ -2,7 +2,6 @@ import { throwFatalError } from '~/util/errors'
 import {
     AccountTokenEvent,
     Attribute,
-    Event as EventModel,
     Listing,
     ListingSale,
     ListingStatus,
@@ -18,13 +17,14 @@ import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
 import { In } from 'typeorm'
+import { EventHandlerResult } from '~/processor.handler'
 
 export async function tokenDestroyed(
     ctx: CommonContext,
     _block: Block,
     item: EventItem,
     skipSave: boolean
-): Promise<[EventModel, AccountTokenEvent | SnsEvent | undefined] | undefined> {
+): Promise<EventHandlerResult> {
     const data = mappings.multiTokens.events.tokenDestroyed(item)
 
     if (skipSave) return [mappings.multiTokens.events.tokenDestroyedEventModel(item, data), undefined]

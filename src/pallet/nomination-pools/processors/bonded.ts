@@ -1,9 +1,10 @@
-import { AccountTokenEvent, Collection, Era, Event as EventModel, PoolMember, Token, TokenAccount } from '~/model'
+import { Collection, Era, PoolMember, Token, TokenAccount } from '~/model'
 import { SnsEvent } from '~/util/sns'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
 import { updatePool } from '~/pallet/nomination-pools/processors/pool'
 import * as mappings from '~/pallet/index'
+import { EventHandlerResult } from '~/processor.handler'
 
 export function getActiveEra(ctx: CommonContext) {
     return ctx.store.find(Era, {
@@ -14,11 +15,7 @@ export function getActiveEra(ctx: CommonContext) {
     })
 }
 
-export async function bonded(
-    ctx: CommonContext,
-    block: Block,
-    item: EventItem
-): Promise<[EventModel, AccountTokenEvent | SnsEvent | undefined] | undefined> {
+export async function bonded(ctx: CommonContext, block: Block, item: EventItem): Promise<EventHandlerResult> {
     if (!item.extrinsic) return undefined
 
     const eventData = mappings.nominationPools.events.bonded(item)

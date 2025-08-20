@@ -1,15 +1,16 @@
 import { throwFatalError } from '~/util/errors'
-import { AccountTokenEvent, Collection, Event as EventModel } from '~/model'
+import { Collection } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
+import { EventHandlerResult } from '~/processor.handler'
 
 export async function collectionTransferCancelled(
     ctx: CommonContext,
     block: Block,
     item: EventItem,
     skipSave: boolean
-): Promise<[EventModel, AccountTokenEvent | SnsEvent | undefined] | undefined> {
+): Promise<EventHandlerResult> {
     const data = mappings.multiTokens.events.collectionTransferCancelled(item)
     if (skipSave) return [mappings.multiTokens.events.collectionTransferCancelledEventModel(item, data), undefined]
 

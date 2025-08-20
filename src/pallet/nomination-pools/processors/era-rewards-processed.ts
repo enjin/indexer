@@ -1,16 +1,6 @@
 import Big from 'big.js'
 import * as Sentry from '@sentry/node'
-import {
-    AccountTokenEvent,
-    BonusCycle,
-    CommissionPayment,
-    Era,
-    EraReward,
-    Event as EventModel,
-    PoolMember,
-    PoolMemberRewards,
-    PoolState,
-} from '~/model'
+import { BonusCycle, CommissionPayment, Era, EraReward, PoolMember, PoolMemberRewards, PoolState } from '~/model'
 import { updatePool } from '~/pallet/nomination-pools/processors/pool'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { SnsEvent } from '~/util/sns'
@@ -19,6 +9,7 @@ import * as mappings from '~/pallet/index'
 import { TokenAccount } from '~/pallet/multi-tokens/storage/types'
 import { needEarlyBirdMerge } from '~/util/earlyBird'
 import { In } from 'typeorm'
+import { EventHandlerResult } from '~/processor.handler'
 
 async function getMembersBalance(block: Block, poolId: number): Promise<Record<string, bigint>> {
     type StorageEntry = [k: [bigint, bigint, string], v: TokenAccount | undefined]
@@ -58,7 +49,7 @@ export async function eraRewardsProcessed(
     ctx: CommonContext,
     block: Block,
     item: EventItem
-): Promise<[EventModel, AccountTokenEvent | SnsEvent | undefined] | undefined> {
+): Promise<EventHandlerResult> {
     if (!item.extrinsic) return undefined
 
     const data = mappings.nominationPools.events.eraRewardsProcessed(item)

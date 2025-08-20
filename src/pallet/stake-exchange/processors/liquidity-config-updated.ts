@@ -1,6 +1,5 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
 import {
-    AccountTokenEvent,
     Event as EventModel,
     Extrinsic,
     StakeExchangeLiquidityConfigUpdated,
@@ -11,6 +10,7 @@ import { getOrCreateAccount } from '~/util/entities'
 import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { TokenFilter } from '~/pallet/common/types'
+import { EventHandlerResult } from '~/processor.handler'
 
 export function getFilterFromType(tokenFilter: TokenFilter) {
     let entity: StakeExchangeTokenFilter | null = null
@@ -44,7 +44,7 @@ export async function liquidityConfigUpdated(
     ctx: CommonContext,
     block: Block,
     item: EventItem
-): Promise<[EventModel, AccountTokenEvent | SnsEvent | undefined] | undefined> {
+): Promise<EventHandlerResult> {
     if (!item.extrinsic) return undefined
 
     const event = mappings.stakeExchange.events.liquidityConfigUpdated(item)

@@ -5,8 +5,14 @@ import { QueueUtils } from '~/queue'
 import { throwFatalError } from '~/util/errors'
 import * as mappings from '~/pallet/index'
 import { match, P } from 'ts-pattern'
+import { EventHandlerResult } from '~/processor.handler'
 
-export async function reserved(ctx: CommonContext, block: Block, item: EventItem, skipSave: boolean) {
+export async function reserved(
+    ctx: CommonContext,
+    block: Block,
+    item: EventItem,
+    skipSave: boolean
+): Promise<EventHandlerResult> {
     const data = mappings.multiTokens.events.reserved(item)
     if (skipSave) return undefined
 

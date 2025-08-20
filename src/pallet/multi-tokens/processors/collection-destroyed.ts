@@ -1,22 +1,15 @@
-import {
-    AccountTokenEvent,
-    Attribute,
-    Collection,
-    CollectionAccount,
-    Event as EventModel,
-    RoyaltyCurrency,
-    Trait,
-} from '~/model'
+import { AccountTokenEvent, Attribute, Collection, CollectionAccount, RoyaltyCurrency, Trait } from '~/model'
 import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { Block, CommonContext, EventItem } from '~/contexts'
+import { EventHandlerResult } from '~/processor.handler'
 
 export async function collectionDestroyed(
     ctx: CommonContext,
     block: Block,
     item: EventItem,
     skipSave: boolean
-): Promise<[EventModel, AccountTokenEvent | SnsEvent | undefined] | undefined> {
+): Promise<EventHandlerResult> {
     const data = mappings.multiTokens.events.collectionDestroyed(item)
     if (skipSave) return [mappings.multiTokens.events.collectionDestroyedEventModel(item, data), undefined]
 

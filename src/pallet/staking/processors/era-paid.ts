@@ -1,11 +1,12 @@
 import { Not } from 'typeorm'
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { Era, Event as EventModel, NominationPool, PoolState, TokenAccount } from '~/model'
+import { Era, NominationPool, PoolState, TokenAccount } from '~/model'
 import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
 import { Sns } from '~/util/sns'
+import { EventHandlerResult } from '~/processor.handler'
 
-export async function eraPaid(ctx: CommonContext, block: Block, item: EventItem): Promise<EventModel | undefined> {
+export async function eraPaid(ctx: CommonContext, block: Block, item: EventItem): Promise<EventHandlerResult> {
     const event = mappings.staking.events.eraPaid(item)
 
     const lastEra = await ctx.store.find<Era>(Era, {

@@ -1,15 +1,5 @@
 import { throwFatalError } from '~/util/errors'
-import {
-    AccountTokenEvent,
-    Event as EventModel,
-    Extrinsic,
-    NominationPool,
-    PoolMember,
-    Token,
-    TokenAccount,
-    EarlyBirdMintEvent,
-    Era,
-} from '~/model'
+import { Extrinsic, NominationPool, PoolMember, Token, TokenAccount, EarlyBirdMintEvent, Era } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
 import { SnsEvent } from '~/util/sns'
@@ -18,6 +8,7 @@ import { isNonFungible } from '~/util/helpers'
 import { QueueUtils } from '~/queue'
 import { calls } from '~/type'
 import { getOrCreatePoolMemberRewards } from '~/util/earlyBird'
+import { EventHandlerResult } from '~/processor.handler'
 
 export async function getActiveEra(ctx: CommonContext) {
     const eras = await ctx.store.find(Era, {
@@ -100,7 +91,7 @@ export async function minted(
     block: Block,
     item: EventItem,
     skipSave: boolean
-): Promise<[EventModel, AccountTokenEvent, SnsEvent | undefined] | undefined> {
+): Promise<EventHandlerResult> {
     const data = mappings.multiTokens.events.minted(item)
     const issuer = await getOrCreateAccount(ctx, data.issuer)
     const recipient = await getOrCreateAccount(ctx, data.recipient)

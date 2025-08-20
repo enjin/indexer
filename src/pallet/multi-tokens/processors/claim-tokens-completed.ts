@@ -1,13 +1,14 @@
-import { AccountTokenEvent, Event as EventModel, Extrinsic, MultiTokensClaims, MultiTokensClaimTokensCompleted } from '~/model'
+import { Event as EventModel, Extrinsic, MultiTokensClaims, MultiTokensClaimTokensCompleted } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
+import { EventHandlerResult } from '~/processor.handler'
 
 export async function claimTokensCompleted(
     ctx: CommonContext,
     block: Block,
     item: EventItem
-): Promise<[EventModel, AccountTokenEvent | SnsEvent | undefined]> {
+): Promise<EventHandlerResult> {
     const data = mappings.multiTokens.events.claimTokensCompleted(item)
     const claim = await ctx.store.findOneByOrFail(MultiTokensClaims, {
         id: `${data.destination}-${data.ethereumAddress}`,

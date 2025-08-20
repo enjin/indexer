@@ -1,10 +1,11 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { AccountTokenEvent, Era, Event as EventModel, PoolMember, PoolState, TokenAccount } from '~/model'
+import { Era, PoolMember, PoolState, TokenAccount } from '~/model'
 import { getOrCreateAccount } from '~/util/entities'
 import { updatePool } from '~/pallet/nomination-pools/processors/pool'
 import { Sns, SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { IsNull, Not } from 'typeorm'
+import { EventHandlerResult } from '~/processor.handler'
 
 function getActiveEra(ctx: CommonContext) {
     return ctx.store.find(Era, {
@@ -15,11 +16,7 @@ function getActiveEra(ctx: CommonContext) {
     })
 }
 
-export async function withdrawn(
-    ctx: CommonContext,
-    block: Block,
-    item: EventItem
-): Promise<[EventModel, AccountTokenEvent | SnsEvent | undefined] | undefined> {
+export async function withdrawn(ctx: CommonContext, block: Block, item: EventItem): Promise<EventHandlerResult> {
     if (!item.extrinsic || !item.extrinsic.call) return undefined
 
     const data = mappings.nominationPools.events.withdrawn(item)

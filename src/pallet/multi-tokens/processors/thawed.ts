@@ -1,25 +1,18 @@
 import { throwFatalError } from '~/util/errors'
-import {
-    AccountTokenEvent,
-    Collection,
-    CollectionAccount,
-    Event as EventModel,
-    Token,
-    TokenAccount,
-    TransferPolicy,
-} from '~/model'
+import { Collection, CollectionAccount, Token, TokenAccount, TransferPolicy } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { match } from 'ts-pattern'
 import { QueueUtils } from '~/queue'
+import { EventHandlerResult } from '~/processor.handler'
 
 export async function thawed(
     ctx: CommonContext,
     block: Block,
     item: EventItem,
     skipSave: boolean
-): Promise<[EventModel, AccountTokenEvent | SnsEvent | undefined] | undefined> {
+): Promise<EventHandlerResult> {
     const event = mappings.multiTokens.events.thawed(item)
 
     if (skipSave) return [mappings.multiTokens.events.thawedEventModel(item, event), undefined]

@@ -1,9 +1,10 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { Event as EventModel, NominationPool, PoolValidator, Validator } from '~/model'
+import { NominationPool, PoolValidator, Validator } from '~/model'
 import { getOrCreateAccount } from '~/util/entities'
 import * as mappings from '~/pallet/index'
+import { EventHandlerResult } from '~/processor.handler'
 
-export async function nominated(ctx: CommonContext, block: Block, item: EventItem): Promise<EventModel | undefined> {
+export async function nominated(ctx: CommonContext, block: Block, item: EventItem): Promise<EventHandlerResult> {
     if (!item.extrinsic) return undefined
 
     const data = mappings.nominationPools.events.nominated(item)

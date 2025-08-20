@@ -1,14 +1,11 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { AccountTokenEvent, Event as EventModel, StakeExchangeOffer, StakeExchangeOfferState } from '~/model'
+import { StakeExchangeOffer, StakeExchangeOfferState } from '~/model'
 import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { OfferCompleted } from '~/pallet/stake-exchange/events/types'
+import { EventHandlerResult } from '~/processor.handler'
 
-export async function offerCompleted(
-    ctx: CommonContext,
-    block: Block,
-    item: EventItem
-): Promise<[EventModel, AccountTokenEvent | SnsEvent | undefined] | undefined> {
+export async function offerCompleted(ctx: CommonContext, block: Block, item: EventItem): Promise<EventHandlerResult> {
     const event: OfferCompleted = mappings.stakeExchange.events.offerCompleted(item)
     const stakeExchangeOffer: StakeExchangeOffer = await ctx.store.findOneOrFail<StakeExchangeOffer>(
         StakeExchangeOffer,

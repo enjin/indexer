@@ -17,10 +17,7 @@ export function offerCompleted(event: EventItem): OfferCompleted {
         })
 }
 
-export function offerCompletedEventModel(
-    item: EventItem,
-    stakeExchangeOffer: StakeExchangeOffer
-): EventModel {
+export function offerCompletedEventModel(item: EventItem, stakeExchangeOffer: StakeExchangeOffer): EventModel {
     return new EventModel({
         id: item.id,
         name: StakeExchangeOfferCompleted.name,

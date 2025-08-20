@@ -1,20 +1,12 @@
 import { throwFatalError } from '~/util/errors'
-import {
-    AccountTokenEvent,
-    Collection,
-    Event as EventModel,
-    Listing,
-    MarketPolicy,
-    RoyaltyBeneficiary,
-    RoyaltyCurrency,
-    Token,
-} from '~/model'
+import { Collection, Listing, MarketPolicy, RoyaltyBeneficiary, RoyaltyCurrency, Token } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
 import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { DefaultRoyalty as DefaultRoyalty1020 } from '~/type/matrixV1020'
 import { DefaultRoyalty as DefaultRoyalty500 } from '~/type/matrixV500'
+import { EventHandlerResult } from '~/processor.handler'
 
 type DefaultRoyalty = DefaultRoyalty500 | DefaultRoyalty1020
 
@@ -48,7 +40,7 @@ export async function collectionMutated(
     block: Block,
     item: EventItem,
     skipSave: boolean
-): Promise<[EventModel, AccountTokenEvent | SnsEvent | undefined] | undefined> {
+): Promise<EventHandlerResult> {
     const data = mappings.multiTokens.events.collectionMutated(item)
     if (skipSave) return [mappings.multiTokens.events.collectionMutatedEventModel(item, data), undefined]
 

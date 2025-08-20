@@ -1,14 +1,15 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { AccountTokenEvent, EarlyBirdBonus, Event as EventModel } from '~/model'
+import { EarlyBirdBonus } from '~/model'
 import { updateEarlyBirdInfo, updatePool } from '~/pallet/nomination-pools/processors/pool'
 import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
+import { EventHandlerResult } from '~/processor.handler'
 
 export async function earlyBirdBonusPaid(
     ctx: CommonContext,
     block: Block,
     item: EventItem
-): Promise<[EventModel, AccountTokenEvent | SnsEvent | undefined] | undefined> {
+): Promise<EventHandlerResult> {
     if (!item.extrinsic) return undefined
 
     const data = mappings.nominationPools.events.earlyBirdBonusPaid(item)

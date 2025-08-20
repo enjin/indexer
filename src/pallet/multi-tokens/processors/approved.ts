@@ -1,15 +1,12 @@
 import { throwFatalError } from '~/util/errors'
-import { AccountTokenEvent, CollectionAccount, CollectionApproval, Event as EventModel, TokenAccount, TokenApproval } from '~/model'
+import { CollectionAccount, CollectionApproval, TokenAccount, TokenApproval } from '~/model'
 import { SnsEvent } from '~/util/sns'
 import { CommonContext, EventItem } from '~/contexts'
 import * as mappings from '~/pallet/index'
 import { encodeAddress } from '~/util/tools'
+import { EventHandlerResult } from '~/processor.handler'
 
-export async function approved(
-    ctx: CommonContext,
-    item: EventItem,
-    skipSave: boolean
-): Promise<[EventModel, AccountTokenEvent | SnsEvent | undefined] | undefined> {
+export async function approved(ctx: CommonContext, item: EventItem, skipSave: boolean): Promise<EventHandlerResult> {
     const data = mappings.multiTokens.events.approved(item)
 
     if (skipSave) return [mappings.multiTokens.events.approvedEventModel(item, data), undefined]

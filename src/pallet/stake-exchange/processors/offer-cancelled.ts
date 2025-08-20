@@ -1,13 +1,10 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { AccountTokenEvent, Event as EventModel, StakeExchangeOffer, StakeExchangeOfferState } from '~/model'
+import { StakeExchangeOffer, StakeExchangeOfferState } from '~/model'
 import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
+import { EventHandlerResult } from '~/processor.handler'
 
-export async function offerCancelled(
-    ctx: CommonContext,
-    block: Block,
-    item: EventItem
-): Promise<[EventModel, AccountTokenEvent | SnsEvent | undefined] | undefined> {
+export async function offerCancelled(ctx: CommonContext, block: Block, item: EventItem): Promise<EventHandlerResult> {
     const event = mappings.stakeExchange.events.offerCancelled(item)
     const stakeExchangeOffer = await ctx.store.findOneOrFail<StakeExchangeOffer>(StakeExchangeOffer, {
         where: {

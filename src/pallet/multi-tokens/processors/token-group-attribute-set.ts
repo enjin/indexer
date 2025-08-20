@@ -1,15 +1,16 @@
 import { hexToString } from '@polkadot/util'
-import { Attribute, Event as EventModel, TokenGroup } from '~/model'
+import { Attribute, TokenGroup } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import * as mappings from '~/pallet/index'
 import { safeString } from '~/util/tools'
+import { EventHandlerResult } from '~/processor.handler'
 
 export async function tokenGroupAttributeSet(
     ctx: CommonContext,
     block: Block,
     item: EventItem,
     skipSave: boolean
-): Promise<EventModel | undefined> {
+): Promise<EventHandlerResult> {
     const data = mappings.multiTokens.events.tokenGroupAttributeSet(item)
 
     if (skipSave) return mappings.multiTokens.events.tokenGroupAttributeSetEventModel(item, data)

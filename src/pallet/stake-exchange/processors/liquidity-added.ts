@@ -1,13 +1,10 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { AccountTokenEvent, Event as EventModel, StakeExchangeOffer } from '~/model'
+import { StakeExchangeOffer } from '~/model'
 import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
+import { EventHandlerResult } from '~/processor.handler'
 
-export async function liquidityAdded(
-    ctx: CommonContext,
-    block: Block,
-    item: EventItem
-): Promise<[EventModel, AccountTokenEvent | SnsEvent | undefined] | undefined> {
+export async function liquidityAdded(ctx: CommonContext, block: Block, item: EventItem): Promise<EventHandlerResult> {
     if (!item.extrinsic || !item.extrinsic.call) return undefined
 
     const event = mappings.stakeExchange.events.liquidityAdded(item)
