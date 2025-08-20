@@ -109,8 +109,7 @@ async function bootstrap() {
                         await ctx.store.save(chunk)
                     }
 
-                    ctx.log.info(`Processing ${snsEvents.length} SNS events for block head: ${ctx.isHead}`)
-                    if (snsEvents.length > 0) {
+                    if (ctx.isHead && snsEvents.length > 0) {
                         for (const snsEvent of snsEvents) {
                             await Sns.getInstance().send(snsEvent)
                         }
