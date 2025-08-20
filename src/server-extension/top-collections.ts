@@ -245,8 +245,8 @@ export class TopCollectionResolver {
                             .addSelect('collection.category AS category')
                         if (timeFrame === TopCollectionTimeframeInput.ALL) {
                             inBuilder
-                                .addSelect(`SUM(sale.amount * sale.price) AS volume_last_duration`)
-                                .addSelect(`COUNT(sale.id)::int AS sales_last_duration`)
+                                .addSelect(`COALESCE(SUM(sale.amount * sale.price), 0) AS volume_last_duration`)
+                                .addSelect(`COALESCE(COUNT(sale.id)::int, 0) AS sales_last_duration`)
                                 .addSelect(`0 AS volume_previous_duration`)
                                 .addSelect(`1 AS last_avg_sale`)
                                 .addSelect(`1 AS previous_avg_sale`)
@@ -268,7 +268,10 @@ export class TopCollectionResolver {
                                 .addSelect(
                                     `AVG(CASE WHEN sale.created_at >= NOW() - INTERVAL '${timeFrameMap[timeFrame].p}' AND sale.created_at <= NOW() - INTERVAL '${timeFrameMap[timeFrame].c}' THEN sale.price ELSE 0 END) AS previous_avg_sale`
                                 )
-                                .where(`sale.created_at >= NOW() - INTERVAL '${timeFrameMap[timeFrame].p}'`)
+
+                            if (orderBy !== TopCollectionOrderByInput.CREATED_AT) {
+                                inBuilder.where(`sale.created_at >= NOW() - INTERVAL '${timeFrameMap[timeFrame].p}'`)
+                            }
                         }
 
                         if (category.length > 0) {
@@ -280,14 +283,14 @@ export class TopCollectionResolver {
                         }
 
                         inBuilder
-                            .from(ListingSale, 'sale')
-                            .innerJoin(Listing, 'listing', 'listing.id = sale.listing')
-                            .innerJoin(
-                                Token,
-                                'token',
+                            .from(Collection, 'collection')
+                            .leftJoin(Token, 'token', 'token.collection = collection.id')
+                            .leftJoin(
+                                Listing,
+                                'listing',
                                 "(listing.make_asset_id_id = token.id AND listing.make_asset_id_id != '0-0') OR (listing.take_asset_id_id = token.id AND listing.take_asset_id_id != '0-0')"
                             )
-                            .innerJoin(Collection, 'collection', 'token.collection = collection.id')
+                            .leftJoin(ListingSale, 'sale', 'sale.listing = listing.id')
                             .leftJoin(
                                 ListingStatus,
                                 'status',
