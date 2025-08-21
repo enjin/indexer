@@ -19,6 +19,7 @@ import * as Sentry from '@sentry/node'
 import { In, LessThan } from 'typeorm'
 import { Sns } from '~/util/sns'
 import { nominationPools } from '~/type/events'
+import { computeEraApy } from './era-rewards-processed'
 
 async function getMembersBalance(block: Block, poolId: number): Promise<Record<string, bigint>> {
     type StorageEntry = [k: [bigint, bigint, string], v: TokenAccount | undefined]
@@ -255,27 +256,4 @@ export async function rewardPaid(ctx: CommonContext, block: Block, item: EventIt
     })
 
     return rewardPaidEventModel(item, eventData, stashValidator.id)
-}
-
-export const discardEra = (apy: number, totalApy: number) => {
-    if (totalApy === 0) {
-        return false
-    }
-
-    return Math.abs(apy - totalApy) >= 50
-}
-
-export const computeEraApy = (eraRewards: EraReward[], poolApy: number): Big => {
-    if (eraRewards.length === 1) {
-        return Big(eraRewards[0].apy)
-    }
-
-    const validApys = eraRewards.filter((era) => !discardEra(era.apy, poolApy))
-    const sumOfApy = validApys.reduce((acc, era) => acc + era.apy, 0)
-
-    if (validApys.length === 0) {
-        return Big(poolApy)
-    }
-
-    return Big(sumOfApy).div(validApys.length)
 }
