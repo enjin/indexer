@@ -164,7 +164,7 @@ export async function eraRewardsProcessed(
     } else {
         // Calculate APY based on balance change from previous era
         const previousBalance = Big(eraRewards[0].active.toString())
-        const newBalance = Big(reward.reinvested?.toString() ?? '0').plus(previousBalance)
+        const newBalance = Big(reward.reinvested.toString()).plus(previousBalance)
 
         const currentApy = newBalance.div(previousBalance).pow(processorConfig.erasPerYear).sub(1).mul(100)
         reward.apy = currentApy.toNumber()

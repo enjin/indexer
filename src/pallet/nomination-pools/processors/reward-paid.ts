@@ -17,7 +17,6 @@ import Big from 'big.js'
 import processorConfig from '~/util/config'
 import * as Sentry from '@sentry/node'
 import { In, LessThan } from 'typeorm'
-import { needEarlyBirdMerge } from '~/util/earlyBird'
 import { Sns } from '~/util/sns'
 import { nominationPools } from '~/type/events'
 
