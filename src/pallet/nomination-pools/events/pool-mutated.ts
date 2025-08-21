@@ -37,6 +37,10 @@ export function poolMutated(event: EventItem): PoolMutated {
             () => nominationPools.poolMutated.v102.is(event),
             () => nominationPools.poolMutated.v102.decode(event)
         )
+        .when(
+            () => nominationPools.poolMutated.v1060.is(event),
+            () => nominationPools.poolMutated.v1060.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

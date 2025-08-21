@@ -36,6 +36,10 @@ export const create = withDispatchCheck((call: CallItem): CreatePool => {
             () => calls.nominationPools.create.v101.is(call),
             () => calls.nominationPools.create.v101.decode(call)
         )
+        .when(
+            () => calls.nominationPools.create.v1060.is(call),
+            () => calls.nominationPools.create.v1060.decode(call)
+        )
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })
