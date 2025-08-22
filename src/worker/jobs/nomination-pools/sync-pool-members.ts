@@ -7,7 +7,7 @@ export async function syncPoolMembers(job: Job): Promise<void> {
     const em = await connectionManager()
     const promises: Promise<any>[] = []
 
-    let count = 0;
+    let count = 0
 
     const pools = await em.find(NominationPool, {
         select: ['id', 'name', 'members'],
