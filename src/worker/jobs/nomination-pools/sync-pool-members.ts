@@ -1,28 +1,41 @@
 import { connectionManager } from '~/contexts'
 import { Job } from 'bullmq'
 import { NominationPool } from '~/model'
+import { IsNull } from 'typeorm'
 
 export async function syncPoolMembers(job: Job): Promise<void> {
     const em = await connectionManager()
     const promises: Promise<any>[] = []
 
+    let count = 0
+
     const pools = await em.find(NominationPool, {
-        select: ['id', 'name', 'degenToken', 'members'],
+        select: ['id', 'name', 'members'],
         relations: {
-            degenToken: true,
-            members: true,
+            members: {
+                tokenAccount: true,
+            },
+        },
+        where: {
+            members: {
+                tokenAccount: IsNull(),
+                isActive: true,
+                unbondingEras: IsNull(),
+            },
         },
     })
 
     for (const pool of pools) {
-        const member = pool.members.find((member) => member.bonded === 2500000000000000000000n)
-        if (member) {
-            member.isStash = true
-            promises.push(em.save(member))
+        for (const member of pool.members) {
+            if (member.isActive && member.tokenAccount === null && member.unbondingEras === null) {
+                member.isActive = false
+                promises.push(em.save(member))
+                count++
+            }
         }
     }
 
     await Promise.all(promises)
 
-    await job.log(`Synced ${pools.length} pools`)
+    await job.log(`Synced ${count} members`)
 }
