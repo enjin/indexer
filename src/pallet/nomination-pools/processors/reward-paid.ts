@@ -4,6 +4,7 @@ import {
     Era,
     EraReward,
     Event as EventModel,
+    NominationPool,
     PoolMember,
     PoolMemberRewards,
     PoolState,
@@ -55,30 +56,13 @@ async function getMembersBalance(block: Block, poolId: number): Promise<Record<s
     return accountMap
 }
 
-export async function rewardPaid(ctx: CommonContext, block: Block, item: EventItem): Promise<EventModel | undefined> {
-    if (!item.extrinsic) return undefined
-
-    const eventData = mappings.nominationPools.events.rewardPaid(item)
-
-    const stashValidator = await getOrCreateAccount(ctx, eventData.validatorStash)
-
-    if (!nominationPools.rewardPaid.v1060.is(item)) {
-        return rewardPaidEventModel(item, eventData, stashValidator.id)
-    }
-
-    let reward: EraReward | undefined = undefined
-
-    const [existReward, memberBalances, era] = await Promise.all([
-        ctx.store.findOneBy(EraReward, { id: `${eventData.poolId}-${eventData.era}` }),
-        getMembersBalance(block, eventData.poolId),
-        ctx.store.findOneBy(Era, { id: eventData.era.toString() }),
-    ])
-
-    const pool = await updatePool(ctx, block, eventData.poolId.toString())
-
-    if (pool.state === PoolState.Destroying) {
-        return undefined
-    }
+async function getReward(
+    ctx: CommonContext,
+    existReward: EraReward | undefined,
+    eventData: any,
+    pool: NominationPool
+): Promise<EraReward> {
+    let reward: EraReward
 
     if (existReward) {
         const newCommission = eventData.commission
@@ -122,19 +106,72 @@ export async function rewardPaid(ctx: CommonContext, block: Block, item: EventIt
         })
     }
 
-    if (!era) {
-        await ctx.store.save(
-            new Era({
-                id: eventData.era.toString(),
-                index: eventData.era,
-                startAt: new Date(block.timestamp ?? 0),
-                startBlock: block.height,
-                nodeCount: 0,
-            })
-        )
+    return reward
+}
+
+async function calculateMemberRewards(
+    ctx: CommonContext,
+    eventData: any,
+    pool: NominationPool,
+    memberBalances: Record<string, bigint>,
+    reward: EraReward
+) {
+    const memberIds = Object.keys(memberBalances).map((accountId) => `${pool.id}-${accountId}`)
+    const members = await ctx.store.find(PoolMember, {
+        relations: {
+            account: true,
+        },
+        where: {
+            id: In(memberIds), // NOTE: This is a workaround to include all accounts with balances, as some accounts may not be returned by isActive.
+        },
+    })
+
+    const totalPoolPoints = (pool.balance.active * 10n ** 18n) / pool.rate
+
+    const inserts: PoolMemberRewards[] = []
+
+    for (const member of members) {
+        // The previous reward is needed in case of duplicate rewards (there could be 2 events of RewardPaid from 2 validators or more)
+        // therefore the previous reward need to be eliminated from the accumulated rewards
+        let previousReward: bigint = 0n
+        const pmrId = `${member.id}-${eventData.era}`
+
+        const existingReward = await ctx.store.findOneBy(PoolMemberRewards, {
+            id: pmrId,
+        })
+
+        if (existingReward) {
+            previousReward = existingReward.rewards
+        }
+
+        const points = memberBalances[member.account.id] ?? 0n
+        const eraRewards = (points * reward.reinvested) / totalPoolPoints
+        const newAccumulated = (member.accumulatedRewards || 0n) + eraRewards - previousReward
+
+        member.accumulatedRewards = newAccumulated
+
+        const pmrData = {
+            id: pmrId,
+            pool,
+            member,
+            reward,
+            points,
+            rewards: eraRewards,
+            accumulatedRewards: newAccumulated,
+        }
+
+        inserts.push(new PoolMemberRewards(pmrData))
     }
 
-    // Query for previous era rewards BEFORE inserting the new one to avoid race condition
+    return { inserts, members }
+}
+
+async function updatePoolApy(
+    ctx: CommonContext,
+    eventData: any,
+    pool: NominationPool,
+    reward: EraReward
+): Promise<{ pool: NominationPool; reward: EraReward }> {
     const eraRewards = await ctx.store.find(EraReward, {
         where: {
             pool: { id: pool.id },
@@ -190,52 +227,54 @@ export async function rewardPaid(ctx: CommonContext, block: Block, item: EventIt
         pool.accumulatedCommission = (pool.accumulatedCommission ?? 0n) + eventData.commission.amount
     }
 
-    const memberIds = Object.keys(memberBalances).map((accountId) => `${pool.id}-${accountId}`)
-    const members = await ctx.store.find(PoolMember, {
-        relations: {
-            account: true,
-        },
-        where: {
-            id: In(memberIds), // NOTE: This is a workaround to include all accounts with balances, as some accounts may not be returned by isActive.
-        },
-    })
+    return { pool, reward }
+}
 
-    const totalPoolPoints = (pool.balance.active * 10n ** 18n) / pool.rate
+export async function rewardPaid(ctx: CommonContext, block: Block, item: EventItem): Promise<EventModel | undefined> {
+    if (!item.extrinsic) return undefined
 
-    const inserts: PoolMemberRewards[] = []
+    const eventData = mappings.nominationPools.events.rewardPaid(item)
 
-    for (const member of members) {
-        // The previous reward is needed in case of duplicate rewards (there could be 2 events of RewardPaid from 2 validators or more)
-        // therefore the previous reward need to be eliminated from the accumulated rewards
-        let previousReward: bigint = 0n
-        const pmrId = `${member.id}-${eventData.era}`
+    const stashValidator = await getOrCreateAccount(ctx, eventData.validatorStash)
 
-        const existingReward = await ctx.store.findOneBy(PoolMemberRewards, {
-            id: pmrId,
-        })
-
-        if (existingReward) {
-            previousReward = existingReward.rewards
-        }
-
-        const points = memberBalances[member.account.id] ?? 0n
-        const eraRewards = (points * reward.reinvested) / totalPoolPoints
-        const newAccumulated = (member.accumulatedRewards || 0n) + eraRewards - previousReward
-
-        member.accumulatedRewards = newAccumulated
-
-        const pmrData = {
-            id: pmrId,
-            pool,
-            member,
-            reward,
-            points,
-            rewards: eraRewards,
-            accumulatedRewards: newAccumulated,
-        }
-
-        inserts.push(new PoolMemberRewards(pmrData))
+    if (!nominationPools.rewardPaid.v1060.is(item)) {
+        return rewardPaidEventModel(item, eventData, stashValidator.id)
     }
+
+    let reward: EraReward | undefined = undefined
+
+    const [existReward, memberBalances, era] = await Promise.all([
+        ctx.store.findOneBy(EraReward, { id: `${eventData.poolId}-${eventData.era}` }),
+        getMembersBalance(block, eventData.poolId),
+        ctx.store.findOneBy(Era, { id: eventData.era.toString() }),
+    ])
+
+    let pool = await updatePool(ctx, block, eventData.poolId.toString())
+
+    if (pool.state === PoolState.Destroying) {
+        return undefined
+    }
+
+    reward = await getReward(ctx, existReward, eventData, pool)
+
+    if (!era) {
+        await ctx.store.save(
+            new Era({
+                id: eventData.era.toString(),
+                index: eventData.era,
+                startAt: new Date(block.timestamp ?? 0),
+                startBlock: block.height,
+                nodeCount: 0,
+            })
+        )
+    }
+
+    const poolApyRes = await updatePoolApy(ctx, eventData, pool, reward)
+
+    pool = poolApyRes.pool
+    reward = poolApyRes.reward
+
+    const { inserts, members } = await calculateMemberRewards(ctx, eventData, pool, memberBalances, reward)
 
     // Save the reward first is necessary for pmr
     await ctx.store.insert(reward)
