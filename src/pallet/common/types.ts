@@ -400,7 +400,7 @@ export interface ShouldMutate_AccountId32_SomeMutation {
 }
 
 export type PoolMutation = {
-    duration?: number
+    duration?: number // Removed on v1060
     newCommission?: ShouldMutate_Perbill
     maxCommission?: Perbill
     changeRate?: CommissionChangeRate

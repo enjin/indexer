@@ -22,6 +22,12 @@ export async function created(ctx: CommonContext, block: Block, item: EventItem)
 
     const currentEraInfo = await getCurrentEra(ctx, block)
 
+    let duration = 300
+
+    if (callData.duration) {
+        duration = callData.duration // 300 era is the default duration // changed in v1060
+    }
+
     if (!currentEraInfo) {
         throw new Error('Active era info is not provided')
     }
@@ -57,7 +63,7 @@ export async function created(ctx: CommonContext, block: Block, item: EventItem)
         }),
         bonusCycle: new BonusCycle({
             start: currentEraInfo,
-            end: currentEraInfo + callData.duration,
+            end: currentEraInfo + duration,
         }),
         apy: 0,
         rate: 1000_000_000_000_000_000n,
