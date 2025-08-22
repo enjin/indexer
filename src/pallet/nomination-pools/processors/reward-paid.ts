@@ -20,7 +20,8 @@ import * as Sentry from '@sentry/node'
 import { In, LessThan } from 'typeorm'
 import { Sns } from '~/util/sns'
 import { nominationPools } from '~/type/events'
-import { computeEraApy } from './era-rewards-processed'
+import { computeEraApy } from '~/pallet/nomination-pools/processors/era-rewards-processed'
+import { RewardPaid } from '~/pallet/nomination-pools/events/types'
 
 async function getMembersBalance(block: Block, poolId: number): Promise<Record<string, bigint>> {
     type StorageEntry = [k: [bigint, bigint, string], v: TokenAccount | undefined]
@@ -59,7 +60,7 @@ async function getMembersBalance(block: Block, poolId: number): Promise<Record<s
 async function getReward(
     ctx: CommonContext,
     existReward: EraReward | undefined,
-    eventData: any,
+    eventData: RewardPaid,
     pool: NominationPool
 ): Promise<EraReward> {
     let reward: EraReward
@@ -111,7 +112,7 @@ async function getReward(
 
 async function calculateMemberRewards(
     ctx: CommonContext,
-    eventData: any,
+    eventData: RewardPaid,
     pool: NominationPool,
     memberBalances: Record<string, bigint>,
     reward: EraReward
@@ -168,7 +169,7 @@ async function calculateMemberRewards(
 
 async function updatePoolApy(
     ctx: CommonContext,
-    eventData: any,
+    eventData: RewardPaid,
     pool: NominationPool,
     reward: EraReward
 ): Promise<{ pool: NominationPool; reward: EraReward }> {
