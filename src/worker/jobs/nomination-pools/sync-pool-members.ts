@@ -1,6 +1,6 @@
 import { connectionManager } from '~/contexts'
 import { Job } from 'bullmq'
-import { NominationPool } from '~/model'
+import { PoolMember } from '~/model'
 import { IsNull } from 'typeorm'
 
 export async function syncPoolMembers(job: Job): Promise<void> {
@@ -9,29 +9,21 @@ export async function syncPoolMembers(job: Job): Promise<void> {
 
     let count = 0
 
-    const pools = await em.find(NominationPool, {
-        select: ['id', 'name', 'members'],
+    const members = await em.find(PoolMember, {
         relations: {
-            members: {
-                tokenAccount: true,
-            },
+            tokenAccount: true,
         },
         where: {
-            members: {
-                tokenAccount: IsNull(),
-                isActive: true,
-                unbondingEras: IsNull(),
-            },
+            tokenAccount: IsNull(),
+            isActive: true,
         },
     })
 
-    for (const pool of pools) {
-        for (const member of pool.members) {
-            if (member.isActive && member.tokenAccount === null && member.unbondingEras === null) {
-                member.isActive = false
-                promises.push(em.save(member))
-                count++
-            }
+    for (const member of members) {
+        if (member.isActive && member.tokenAccount === null && member.unbondingEras === undefined) {
+            member.isActive = false
+            promises.push(em.save(member))
+            count++
         }
     }
 
