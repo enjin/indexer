@@ -1,19 +1,20 @@
 import { throwFatalError } from '~/util/errors'
-import { CollectionAccount, Event as EventModel, TokenAccount } from '~/model'
-import { Sns } from '~/util/sns'
+import { CollectionAccount, TokenAccount } from '~/model'
+import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { encodeAddress } from '~/util/tools'
+import { EventHandlerResult } from '~/processor.handler'
 
 export async function unapproved(
     ctx: CommonContext,
     block: Block,
     item: EventItem,
     skipSave: boolean
-): Promise<EventModel | undefined> {
+): Promise<EventHandlerResult> {
     const data = mappings.multiTokens.events.unapproved(item)
 
-    if (skipSave) return mappings.multiTokens.events.unapprovedEventModel(item, data)
+    if (skipSave) return [mappings.multiTokens.events.unapprovedEventModel(item, data), undefined]
 
     const address = data.owner
 
@@ -51,21 +52,19 @@ export async function unapproved(
         }
     }
 
-    if (item.extrinsic) {
-        await Sns.getInstance().send({
-            id: item.id,
-            name: item.name,
-            body: {
-                kind: data.tokenId !== undefined ? 'token' : 'collection',
-                address,
-                operator: data.operator,
-                collectionId: data.collectionId.toString(),
-                tokenId: data.tokenId ?? null,
-                token: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
-                extrinsic: item.extrinsic.id,
-            },
-        })
+    const snsEvent: SnsEvent = {
+        id: item.id,
+        name: item.name,
+        body: {
+            kind: data.tokenId !== undefined ? 'token' : 'collection',
+            address,
+            operator: data.operator,
+            collectionId: data.collectionId.toString(),
+            tokenId: data.tokenId ?? null,
+            token: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
+            extrinsic: item.extrinsic?.id,
+        },
     }
 
-    return mappings.multiTokens.events.unapprovedEventModel(item, data)
+    return [mappings.multiTokens.events.unapprovedEventModel(item, data), snsEvent]
 }

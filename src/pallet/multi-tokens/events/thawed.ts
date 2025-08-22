@@ -17,7 +17,7 @@ export function thawed(event: EventItem): Freeze {
         })
 }
 
-export function thawedEventModel(item: EventItem, data: Freeze): EventModel | undefined {
+export function thawedEventModel(item: EventItem, data: Freeze): EventModel {
     let tokenId: null | string = null
     if (data.freezeType.__kind !== 'Collection' && data.freezeType.__kind !== 'CollectionAccount') {
         tokenId = `${data.collectionId}-${data.freezeType.tokenId}`

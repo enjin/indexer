@@ -34,7 +34,7 @@ export function eraRewardsProcessedEventModel(
     data: EraRewardsProcessed,
     rate: bigint = 0n,
     tokenId: bigint
-): EventModel | undefined {
+): EventModel {
     return new EventModel({
         id: item.id,
         name: NominationPoolsEraRewardsProcessed.name,

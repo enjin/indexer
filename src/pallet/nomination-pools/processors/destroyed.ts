@@ -1,17 +1,11 @@
-import {
-    Event as EventModel,
-    NominationPool,
-    PoolState,
-    StakeExchangeOffer,
-    StakeExchangeOfferState,
-    Token,
-} from '~/model'
+import { NominationPool, PoolState, StakeExchangeOffer, StakeExchangeOfferState, Token } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { connectionManager } from '~/contexts'
 import * as mappings from '~/pallet/index'
-import { Sns } from '~/util/sns'
+import { SnsEvent } from '~/util/sns'
+import { EventHandlerResult } from '~/processor.handler'
 
-export async function destroyed(ctx: CommonContext, block: Block, item: EventItem): Promise<EventModel | undefined> {
+export async function destroyed(ctx: CommonContext, block: Block, item: EventItem): Promise<EventHandlerResult> {
     const eventData = mappings.nominationPools.events.destroyed(item)
     const em = await connectionManager()
 
@@ -80,7 +74,7 @@ export async function destroyed(ctx: CommonContext, block: Block, item: EventIte
     token.nominationPool = null
     await ctx.store.save(token)
 
-    await Sns.getInstance().send({
+    const snsEvent: SnsEvent = {
         id: item.id,
         name: item.name,
         body: {
@@ -91,7 +85,10 @@ export async function destroyed(ctx: CommonContext, block: Block, item: EventIte
             owner,
             amount: nominationPool.deposit,
         },
-    })
+    }
 
-    return mappings.nominationPools.events.destroyedEventModel(item, eventData, nominationPool.tokenId, owner)
+    return [
+        mappings.nominationPools.events.destroyedEventModel(item, eventData, nominationPool.tokenId, owner),
+        snsEvent,
+    ]
 }

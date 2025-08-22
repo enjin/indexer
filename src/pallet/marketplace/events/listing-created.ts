@@ -93,7 +93,7 @@ export function listingCreatedEventModel(
         token: Token
         toAccount: Account | undefined
     }
-): [EventModel, AccountTokenEvent] | undefined {
+): [EventModel, AccountTokenEvent] {
     const event = new EventModel({
         id: eventId,
         name: data.isOffer ? MarketplaceOfferCreated.name : MarketplaceListingCreated.name,

@@ -1,9 +1,14 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { Account, EarlyBirdShares, NominationPool } from '~/model'
-import { Sns } from '~/util/sns'
+import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
+import { EventHandlerResult } from '~/processor.handler'
 
-export async function earlyBirdSharesCaptured(ctx: CommonContext, block: Block, item: EventItem) {
+export async function earlyBirdSharesCaptured(
+    ctx: CommonContext,
+    block: Block,
+    item: EventItem
+): Promise<EventHandlerResult> {
     if (!item.extrinsic) return undefined
     const eventData = mappings.nominationPools.events.earlyBirdSharesCaptured(item)
 
@@ -20,7 +25,7 @@ export async function earlyBirdSharesCaptured(ctx: CommonContext, block: Block, 
 
     await ctx.store.save(toSave)
 
-    await Sns.getInstance().send({
+    const snsEvent: SnsEvent = {
         id: item.id,
         name: item.name,
         body: {
@@ -28,7 +33,7 @@ export async function earlyBirdSharesCaptured(ctx: CommonContext, block: Block, 
             totalAccounts: eventData.totalAccounts,
             extrinsic: item.extrinsic.id,
         },
-    })
+    }
 
-    return mappings.nominationPools.events.earlyBirdSharesCapturedEventModel(item, eventData)
+    return [mappings.nominationPools.events.earlyBirdSharesCapturedEventModel(item, eventData), snsEvent]
 }

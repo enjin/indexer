@@ -6,7 +6,6 @@ import {
     CollectionFlags,
     CollectionSocials,
     CollectionStats,
-    Event as EventModel,
     Metadata,
     MintPolicy,
     Token,
@@ -16,13 +15,14 @@ import { getOrCreateAccount } from '~/util/entities'
 import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
 import { safeString } from '~/util/tools'
+import { EventHandlerResult } from '~/processor.handler'
 
 export async function attributeSet(
     ctx: CommonContext,
     block: Block,
     item: EventItem,
     skipSave: boolean
-): Promise<EventModel | undefined> {
+): Promise<EventHandlerResult> {
     const data = mappings.multiTokens.events.attributeSet(item)
 
     if (skipSave) return mappings.multiTokens.events.attributeSetEventModel(item, data)

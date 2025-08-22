@@ -1,13 +1,14 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { Event as EventModel, StakeExchangeOffer } from '~/model'
-import { Sns } from '~/util/sns'
+import { StakeExchangeOffer } from '~/model'
+import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
+import { EventHandlerResult } from '~/processor.handler'
 
 export async function liquidityWithdrawn(
     ctx: CommonContext,
     block: Block,
     item: EventItem
-): Promise<EventModel | undefined> {
+): Promise<EventHandlerResult> {
     if (!item.extrinsic || !item.extrinsic.call) return undefined
 
     const event = mappings.stakeExchange.events.liquidityWithdrawn(item)
@@ -21,7 +22,7 @@ export async function liquidityWithdrawn(
 
     await ctx.store.save(offer)
 
-    await Sns.getInstance().send({
+    const snsEvent: SnsEvent = {
         id: item.id,
         name: item.name,
         body: {
@@ -29,7 +30,7 @@ export async function liquidityWithdrawn(
             amount: call.amount,
             account: event.who,
         },
-    })
+    }
 
-    return mappings.stakeExchange.events.liquidityWithdrawnEventModel(item, event, call.amount)
+    return [mappings.stakeExchange.events.liquidityWithdrawnEventModel(item, event, call.amount), snsEvent]
 }

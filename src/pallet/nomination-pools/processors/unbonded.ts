@@ -1,19 +1,20 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { Event as EventModel, PoolMember, PoolState, TokenAccount, UnbondingEras } from '~/model'
+import { PoolMember, PoolState, TokenAccount, UnbondingEras } from '~/model'
 import { getOrCreateAccount } from '~/util/entities'
 import { updatePool } from '~/pallet/nomination-pools/processors/pool'
-import { Sns } from '~/util/sns'
+import { Sns, SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { MoreThan } from 'typeorm'
 import { Unbonded } from '~/pallet/nomination-pools/events'
+import { EventHandlerResult } from '~/processor.handler'
 
-export async function unbonded(ctx: CommonContext, block: Block, item: EventItem): Promise<EventModel | undefined> {
+export async function unbonded(ctx: CommonContext, block: Block, item: EventItem): Promise<EventHandlerResult> {
     if (!item.extrinsic || !item.extrinsic.call) return undefined
 
     const data: Unbonded = mappings.nominationPools.events.unbonded(item)
     // This event should never be emitted, but since it is, we are just going to ignore events with balance 0
     if (data.balance === 0n) {
-        return mappings.nominationPools.events.unbondedEventModel(item, data, 0n)
+        return [mappings.nominationPools.events.unbondedEventModel(item, data, 0n), undefined]
     }
 
     const pool = await updatePool(ctx, block, data.poolId.toString())
@@ -45,7 +46,7 @@ export async function unbonded(ctx: CommonContext, block: Block, item: EventItem
         where: { pool: { id: pool.id }, bonded: MoreThan(0n), isStash: false },
     })
 
-    await Sns.getInstance().send({
+    const snsEvent: SnsEvent = {
         id: item.id,
         name: poolMember.isStash ? 'NominationPools.DepositUnbond' : 'NominationPools.Unbond',
         body: {
@@ -59,7 +60,7 @@ export async function unbonded(ctx: CommonContext, block: Block, item: EventItem
             state: pool.state,
             owner: owner?.account.id,
         },
-    })
+    }
 
     if (!poolMember.isStash && bondedMembers.length === 0 && pool.state === PoolState.Destroying) {
         await Sns.getInstance().send({
@@ -76,5 +77,5 @@ export async function unbonded(ctx: CommonContext, block: Block, item: EventItem
         })
     }
 
-    return mappings.nominationPools.events.unbondedEventModel(item, data, pool.tokenId)
+    return [mappings.nominationPools.events.unbondedEventModel(item, data, pool.tokenId), snsEvent]
 }

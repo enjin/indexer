@@ -1,9 +1,10 @@
-import { Sns } from '~/util/sns'
+import { SnsEvent } from '~/util/sns'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { NominationPool, PoolState } from '~/model'
 import * as mappings from '~/pallet/index'
+import { EventHandlerResult } from '~/processor.handler'
 
-export async function stateChanged(ctx: CommonContext, block: Block, item: EventItem) {
+export async function stateChanged(ctx: CommonContext, block: Block, item: EventItem): Promise<EventHandlerResult> {
     if (!item.extrinsic) return undefined
 
     const data = mappings.nominationPools.events.stateChanged(item)
@@ -31,7 +32,7 @@ export async function stateChanged(ctx: CommonContext, block: Block, item: Event
     await ctx.store.save(pool)
 
     if (data.newState.__kind === PoolState.Destroying) {
-        await Sns.getInstance().send({
+        const snsEvent: SnsEvent = {
             id: item.id,
             name: 'NominationPools.Destroy',
             body: {
@@ -42,6 +43,7 @@ export async function stateChanged(ctx: CommonContext, block: Block, item: Event
                 tokenId: `2-${pool.tokenId}`,
                 owner: pool.degenToken.tokenAccounts[0].account.id,
             },
-        })
+        }
+        return [mappings.nominationPools.events.stateChangedEventModel(item, data), snsEvent]
     }
 }

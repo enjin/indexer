@@ -1,10 +1,11 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { Era, Event as EventModel, PoolMember, PoolState, TokenAccount } from '~/model'
+import { Era, PoolMember, PoolState, TokenAccount } from '~/model'
 import { getOrCreateAccount } from '~/util/entities'
 import { updatePool } from '~/pallet/nomination-pools/processors/pool'
-import { Sns } from '~/util/sns'
+import { Sns, SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { IsNull, Not } from 'typeorm'
+import { EventHandlerResult } from '~/processor.handler'
 
 function getActiveEra(ctx: CommonContext) {
     return ctx.store.find(Era, {
@@ -15,7 +16,7 @@ function getActiveEra(ctx: CommonContext) {
     })
 }
 
-export async function withdrawn(ctx: CommonContext, block: Block, item: EventItem): Promise<EventModel | undefined> {
+export async function withdrawn(ctx: CommonContext, block: Block, item: EventItem): Promise<EventHandlerResult> {
     if (!item.extrinsic || !item.extrinsic.call) return undefined
 
     const data = mappings.nominationPools.events.withdrawn(item)
@@ -74,7 +75,7 @@ export async function withdrawn(ctx: CommonContext, block: Block, item: EventIte
         where: { pool: { id: pool.id }, unbondingEras: Not(IsNull()), isStash: false },
     })
 
-    await Sns.getInstance().send({
+    const snsEvent: SnsEvent = {
         id: item.id,
         name: isStashWithdrawing ? 'NominationPools.DepositWithdrawn' : item.name,
         body: {
@@ -89,7 +90,7 @@ export async function withdrawn(ctx: CommonContext, block: Block, item: EventIte
             state: pool.state,
             owner: owner?.account.id,
         },
-    })
+    }
 
     if (!isStashWithdrawing && unbondingMembers.length === 0 && pool.state === PoolState.Destroying) {
         await Sns.getInstance().send({
@@ -107,5 +108,5 @@ export async function withdrawn(ctx: CommonContext, block: Block, item: EventIte
         })
     }
 
-    return mappings.nominationPools.events.withdrawnEventModel(item, data, pool.tokenId)
+    return [mappings.nominationPools.events.withdrawnEventModel(item, data, pool.tokenId), snsEvent]
 }

@@ -1,18 +1,11 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
-import {
-    Account,
-    Era,
-    Event as EventModel,
-    NominationPool,
-    PoolMember,
-    StakeExchangeOffer,
-    TokenAccount,
-} from '~/model'
+import { Account, Era, NominationPool, PoolMember, StakeExchangeOffer, TokenAccount } from '~/model'
 import { getOrCreateAccount } from '~/util/entities'
-import { Sns } from '~/util/sns'
+import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { BuyOrderCompleted } from '~/pallet/stake-exchange/events/types'
 import { Buy } from '~/pallet/stake-exchange/calls'
+import { EventHandlerResult } from '~/processor.handler'
 
 function getActiveEra(ctx: CommonContext) {
     return ctx.store.find(Era, {
@@ -27,7 +20,7 @@ export async function buyOrderCompleted(
     ctx: CommonContext,
     block: Block,
     item: EventItem
-): Promise<EventModel | undefined> {
+): Promise<EventHandlerResult> {
     if (!item.extrinsic || !item.extrinsic.call) return undefined
 
     const event: BuyOrderCompleted = mappings.stakeExchange.events.buyOrderCompleted(item)
@@ -127,7 +120,7 @@ export async function buyOrderCompleted(
 
     await ctx.store.save(pool)
 
-    await Sns.getInstance().send({
+    const snsEvent: SnsEvent = {
         id: item.id,
         name: item.name,
         body: {
@@ -139,7 +132,7 @@ export async function buyOrderCompleted(
             extrinsic: item.extrinsic.id,
             points,
         },
-    })
+    }
 
-    return mappings.stakeExchange.events.buyOrderCompletedEventModel(item, event, offerId, pool.id)
+    return [mappings.stakeExchange.events.buyOrderCompletedEventModel(item, event, offerId, pool.id), snsEvent]
 }

@@ -1,10 +1,15 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { EarlyBirdBonus } from '~/model'
 import { updateEarlyBirdInfo, updatePool } from '~/pallet/nomination-pools/processors/pool'
-import { Sns } from '~/util/sns'
+import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
+import { EventHandlerResult } from '~/processor.handler'
 
-export async function earlyBirdBonusPaid(ctx: CommonContext, block: Block, item: EventItem) {
+export async function earlyBirdBonusPaid(
+    ctx: CommonContext,
+    block: Block,
+    item: EventItem
+): Promise<EventHandlerResult> {
     if (!item.extrinsic) return undefined
 
     const data = mappings.nominationPools.events.earlyBirdBonusPaid(item)
@@ -24,7 +29,7 @@ export async function earlyBirdBonusPaid(ctx: CommonContext, block: Block, item:
 
     await ctx.store.save(pool)
 
-    await Sns.getInstance().send({
+    const snsEvent: SnsEvent = {
         id: item.id,
         name: item.name,
         body: {
@@ -32,7 +37,7 @@ export async function earlyBirdBonusPaid(ctx: CommonContext, block: Block, item:
             paymentId: data.paymentId,
             extrinsic: item.extrinsic.id,
         },
-    })
+    }
 
-    return mappings.nominationPools.events.earlyBirdBonusPaidEventModel(item, data)
+    return [mappings.nominationPools.events.earlyBirdBonusPaidEventModel(item, data), snsEvent]
 }

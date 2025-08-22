@@ -34,7 +34,7 @@ export function listingCancelledEventModel(
     account: Account,
     collection: Collection,
     token: Token
-): [EventModel, AccountTokenEvent] | undefined {
+): [EventModel, AccountTokenEvent] {
     let event: EventModel = new EventModel({
         id: item.id,
         name: MarketplaceListingCancelled.name,

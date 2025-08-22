@@ -1,23 +1,15 @@
 import Big from 'big.js'
 import * as Sentry from '@sentry/node'
-import {
-    BonusCycle,
-    CommissionPayment,
-    Era,
-    EraReward,
-    Event as EventModel,
-    PoolMember,
-    PoolMemberRewards,
-    PoolState,
-} from '~/model'
+import { BonusCycle, CommissionPayment, Era, EraReward, PoolMember, PoolMemberRewards, PoolState } from '~/model'
 import { updatePool } from '~/pallet/nomination-pools/processors/pool'
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { Sns } from '~/util/sns'
+import { SnsEvent } from '~/util/sns'
 import processorConfig from '~/util/config'
 import * as mappings from '~/pallet/index'
 import { TokenAccount } from '~/pallet/multi-tokens/storage/types'
 import { needEarlyBirdMerge } from '~/util/earlyBird'
 import { In } from 'typeorm'
+import { EventHandlerResult } from '~/processor.handler'
 
 async function getMembersBalance(block: Block, poolId: number): Promise<Record<string, bigint>> {
     type StorageEntry = [k: [bigint, bigint, string], v: TokenAccount | undefined]
@@ -57,7 +49,7 @@ export async function eraRewardsProcessed(
     ctx: CommonContext,
     block: Block,
     item: EventItem
-): Promise<EventModel | undefined> {
+): Promise<EventHandlerResult> {
     if (!item.extrinsic) return undefined
 
     const data = mappings.nominationPools.events.eraRewardsProcessed(item)
@@ -251,7 +243,7 @@ export async function eraRewardsProcessed(
         updates.length && ctx.store.save(updates),
     ])
 
-    await Sns.getInstance().send({
+    const snsEvent: SnsEvent = {
         id: item.id,
         name: item.name,
         body: {
@@ -262,9 +254,12 @@ export async function eraRewardsProcessed(
             name: pool.name,
             tokenId: `2-${pool.tokenId}`,
         },
-    })
+    }
 
-    return mappings.nominationPools.events.eraRewardsProcessedEventModel(item, data, pool.rate, pool.tokenId)
+    return [
+        mappings.nominationPools.events.eraRewardsProcessedEventModel(item, data, pool.rate, pool.tokenId),
+        snsEvent,
+    ]
 }
 
 export const discardEra = (apy: number, totalApy: number) => {

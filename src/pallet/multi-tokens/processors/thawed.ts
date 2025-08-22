@@ -1,20 +1,23 @@
 import { throwFatalError } from '~/util/errors'
-import { Collection, CollectionAccount, Event as EventModel, Token, TokenAccount, TransferPolicy } from '~/model'
+import { Collection, CollectionAccount, Token, TokenAccount, TransferPolicy } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { Sns } from '~/util/sns'
+import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { match } from 'ts-pattern'
 import { QueueUtils } from '~/queue'
+import { EventHandlerResult } from '~/processor.handler'
 
 export async function thawed(
     ctx: CommonContext,
     block: Block,
     item: EventItem,
     skipSave: boolean
-): Promise<EventModel | undefined> {
+): Promise<EventHandlerResult> {
     const event = mappings.multiTokens.events.thawed(item)
 
-    if (skipSave) return mappings.multiTokens.events.thawedEventModel(item, event)
+    if (skipSave) return [mappings.multiTokens.events.thawedEventModel(item, event), undefined]
+
+    let snsEvent: SnsEvent | undefined = undefined
 
     if (event.freezeType.__kind === 'TokenAccount') {
         const tokenAccount = await ctx.store.findOne<TokenAccount>(TokenAccount, {
@@ -25,7 +28,7 @@ export async function thawed(
             throwFatalError(
                 `[Thawed] We have not found token account ${event.freezeType.accountId}-${event.collectionId}-${event.freezeType.tokenId}.`
             )
-            return mappings.multiTokens.events.thawedEventModel(item, event)
+            return [mappings.multiTokens.events.thawedEventModel(item, event), undefined]
         }
 
         tokenAccount.isFrozen = false
@@ -39,7 +42,7 @@ export async function thawed(
 
         if (!collectionAccount) {
             throwFatalError(`[Thawed] We have not found collection account ${event.collectionId}-${address}.`)
-            return mappings.multiTokens.events.thawedEventModel(item, event)
+            return [mappings.multiTokens.events.thawedEventModel(item, event), undefined]
         }
 
         collectionAccount.isFrozen = false
@@ -54,7 +57,7 @@ export async function thawed(
             throwFatalError(
                 `[Thawed] We have not found collection account ${event.collectionId}-${event.freezeType.tokenId}.`
             )
-            return mappings.multiTokens.events.thawedEventModel(item, event)
+            return [mappings.multiTokens.events.thawedEventModel(item, event), undefined]
         }
 
         token.isFrozen = false
@@ -66,7 +69,7 @@ export async function thawed(
 
         if (!collection) {
             throwFatalError(`[Thawed] We have not found collection ${event.collectionId.toString()}.`)
-            return mappings.multiTokens.events.thawedEventModel(item, event)
+            return [mappings.multiTokens.events.thawedEventModel(item, event), undefined]
         }
 
         collection.transferPolicy = new TransferPolicy({ isFrozen: false })
@@ -81,7 +84,7 @@ export async function thawed(
             .with({ __kind: 'Token' }, (t) => ({ address: null, tokenId: t.tokenId }))
             .otherwise(() => ({ address: null, tokenId: null }))
 
-        await Sns.getInstance().send({
+        snsEvent = {
             id: item.id,
             name: item.name,
             body: {
@@ -92,11 +95,11 @@ export async function thawed(
                 token: tokenId ? `${event.collectionId}-${tokenId}` : null,
                 extrinsic: item.extrinsic.id,
             },
-        })
+        }
     }
 
     // console.log('Dispatching from thawed')
     QueueUtils.dispatchComputeStats(event.collectionId.toString())
 
-    return mappings.multiTokens.events.thawedEventModel(item, event)
+    return [mappings.multiTokens.events.thawedEventModel(item, event), snsEvent]
 }

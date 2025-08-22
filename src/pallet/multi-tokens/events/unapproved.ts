@@ -17,7 +17,7 @@ export function unapproved(event: EventItem): Unapproved {
         })
 }
 
-export function unapprovedEventModel(item: EventItem, data: Unapproved): EventModel | undefined {
+export function unapprovedEventModel(item: EventItem, data: Unapproved): EventModel {
     return new EventModel({
         id: item.id,
         name: MultiTokensUnapproved.name,

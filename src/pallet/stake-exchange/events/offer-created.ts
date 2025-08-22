@@ -54,7 +54,7 @@ export function offerCreatedEventModel(
     data: OfferCreated,
     rewardRateAsFixedu128: bigint,
     offer: StakeExchangeOffer
-): EventModel | undefined {
+): EventModel {
     const rate: bigint = typeof data.offer.rate === 'bigint' ? data.offer.rate : BigInt(data.offer.rate * 10 ** 9)
 
     return new EventModel({

@@ -1,19 +1,12 @@
 import { throwFatalError } from '~/util/errors'
-import {
-    Collection,
-    Event as EventModel,
-    Listing,
-    MarketPolicy,
-    RoyaltyBeneficiary,
-    RoyaltyCurrency,
-    Token,
-} from '~/model'
+import { Collection, Listing, MarketPolicy, RoyaltyBeneficiary, RoyaltyCurrency, Token } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
-import { Sns } from '~/util/sns'
+import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { DefaultRoyalty as DefaultRoyalty1020 } from '~/type/matrixV1020'
 import { DefaultRoyalty as DefaultRoyalty500 } from '~/type/matrixV500'
+import { EventHandlerResult } from '~/processor.handler'
 
 type DefaultRoyalty = DefaultRoyalty500 | DefaultRoyalty1020
 
@@ -47,17 +40,19 @@ export async function collectionMutated(
     block: Block,
     item: EventItem,
     skipSave: boolean
-): Promise<EventModel | undefined> {
+): Promise<EventHandlerResult> {
     const data = mappings.multiTokens.events.collectionMutated(item)
-    if (skipSave) return mappings.multiTokens.events.collectionMutatedEventModel(item, data)
+    if (skipSave) return [mappings.multiTokens.events.collectionMutatedEventModel(item, data), undefined]
 
     const collection = await ctx.store.findOne<Collection>(Collection, {
         where: { id: data.collectionId.toString() },
     })
 
+    let snsEvent: SnsEvent | undefined = undefined
+
     if (!collection) {
         throwFatalError(`[CollectionMutated] We have not found collection ${data.collectionId.toString()}`)
-        return mappings.multiTokens.events.collectionMutatedEventModel(item, data)
+        return [mappings.multiTokens.events.collectionMutatedEventModel(item, data), undefined]
     }
 
     if (data.mutation.owner) {
@@ -116,7 +111,7 @@ export async function collectionMutated(
                     return listing
                 })
 
-                await Sns.getInstance().send({
+                snsEvent = {
                     id: item.id,
                     name: 'Marketplace.RoyaltyIncreased',
                     body: {
@@ -126,7 +121,7 @@ export async function collectionMutated(
                         sellers: listings.map((listing) => listing.seller.address),
                         listings: listings.map((listing) => listing.id),
                     },
-                })
+                }
 
                 await ctx.store.save(mutatedListings)
             }
@@ -175,5 +170,5 @@ export async function collectionMutated(
 
     await ctx.store.save(collection)
 
-    return mappings.multiTokens.events.collectionMutatedEventModel(item, data)
+    return [mappings.multiTokens.events.collectionMutatedEventModel(item, data), snsEvent]
 }
