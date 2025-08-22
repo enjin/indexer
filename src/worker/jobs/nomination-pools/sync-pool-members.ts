@@ -20,13 +20,14 @@ export async function syncPoolMembers(job: Job): Promise<void> {
             members: {
                 tokenAccount: IsNull(),
                 isActive: true,
+                unbondingEras: IsNull(),
             },
         },
     })
 
     for (const pool of pools) {
         for (const member of pool.members) {
-            if (member.isActive && member.tokenAccount === null) {
+            if (member.isActive && member.tokenAccount === null && member.unbondingEras === null) {
                 member.isActive = false
                 promises.push(em.save(member))
                 count++
