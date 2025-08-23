@@ -104,7 +104,7 @@ export function listingFilledEventModel(
         new AccountTokenEvent({
             id: item.id,
             from: account,
-            to: new Account({ id: data.buyer }),
+            to: listing.data.listingType === ListingType.Offer ? listing.seller : new Account({ id:  data.buyer }),
             event,
             token,
             collection,

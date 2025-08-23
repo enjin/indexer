@@ -1,4 +1,5 @@
 import {
+    Account,
     AccountTokenEvent,
     Event as EventModel,
     FixedPriceState,
@@ -13,16 +14,17 @@ import { getBestListing, getOrCreateAccount } from '~/util/entities'
 import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
+import { ListingFilled } from '~/pallet/marketplace/events';
 
 export async function listingFilled(
     ctx: CommonContext,
     block: Block,
     item: EventItem
 ): Promise<[EventModel, AccountTokenEvent, SnsEvent | undefined] | undefined> {
-    const event = mappings.marketplace.events.listingFilled(item)
-    const listingId = event.listingId.substring(2)
+    const event: ListingFilled = mappings.marketplace.events.listingFilled(item)
+    const listingId: string = event.listingId.substring(2)
 
-    const listing = await ctx.store.findOne<Listing>(Listing, {
+    const listing: Listing | undefined = await ctx.store.findOne<Listing>(Listing, {
         where: { id: listingId },
         relations: {
             seller: true,
@@ -39,9 +41,9 @@ export async function listingFilled(
 
     const makeAssetId = listing.makeAssetId
     const takeAssetId = listing.takeAssetId
-    const buyer = await getOrCreateAccount(ctx, event.buyer)
-    const seller = await getOrCreateAccount(ctx, listing.seller.id)
-    const isOffer = listing.type === ListingType.Offer
+    const buyer: Account = await getOrCreateAccount(ctx, event.buyer)
+    const seller: Account = await getOrCreateAccount(ctx, listing.seller.id)
+    const isOffer: boolean = listing.type === ListingType.Offer
 
     const sale = new ListingSale({
         id: `${listingId}-${item.id}`,
