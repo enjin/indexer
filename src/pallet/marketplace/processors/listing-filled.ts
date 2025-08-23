@@ -14,7 +14,7 @@ import { getBestListing, getOrCreateAccount } from '~/util/entities'
 import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
-import { ListingFilled } from '~/pallet/marketplace/events';
+import { ListingFilled } from '~/pallet/marketplace/events'
 
 export async function listingFilled(
     ctx: CommonContext,
