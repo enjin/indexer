@@ -39,7 +39,7 @@ export function mintedEventModel(
         collection: Collection | undefined
         token: Token | undefined
     }
-): [EventModel, AccountTokenEvent] {
+): [EventModel, AccountTokenEvent] | EventModel | undefined {
     const event = new EventModel({
         id: eventId,
         name: MultiTokensMinted.name,

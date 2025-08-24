@@ -1,6 +1,7 @@
 import { throwFatalError } from '~/util/errors'
 import {
     Collection,
+    Event as EventModel,
     NativeTokenMetadata,
     RoyaltyBeneficiary,
     Token,
@@ -17,7 +18,6 @@ import { TokenMarketBehavior as TokenMarketBehavior500 } from '~/type/matrixV500
 import { TokenMarketBehavior as TokenMarketBehavior1020 } from '~/type/matrixV1020'
 import { getOrCreateAccount } from '~/util/entities'
 import { getCapType, getFreezeState, isTokenFrozen } from '~/synchronize/common'
-import { EventHandlerResult } from '~/processor.handler'
 
 type TokenMarketBehavior = TokenMarketBehavior500 | TokenMarketBehavior1020
 
@@ -159,7 +159,7 @@ export async function tokenCreated(
     block: Block,
     item: EventItem,
     skipSave: boolean
-): Promise<EventHandlerResult> {
+): Promise<EventModel | undefined> {
     const event = mappings.multiTokens.events.tokenCreated(item)
 
     if (skipSave && item.call) {

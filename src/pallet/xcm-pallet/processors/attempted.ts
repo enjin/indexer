@@ -3,9 +3,8 @@ import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount, unwrapSigner } from '~/util/entities'
 import processorConfig from '~/util/config'
 import * as mappings from '~/pallet/index'
-import { EventHandlerResult } from '~/processor.handler'
 
-export async function attempted(ctx: CommonContext, block: Block, item: EventItem): Promise<EventHandlerResult> {
+export async function attempted(ctx: CommonContext, block: Block, item: EventItem): Promise<EventModel | undefined> {
     if (item.call === undefined || !item.extrinsic) return undefined
 
     const call = mappings.xcmPallet.utils.anyTeleportAssets(item.call)

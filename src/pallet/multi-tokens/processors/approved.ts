@@ -1,15 +1,18 @@
 import { throwFatalError } from '~/util/errors'
-import { CollectionAccount, CollectionApproval, TokenAccount, TokenApproval } from '~/model'
-import { SnsEvent } from '~/util/sns'
+import { CollectionAccount, CollectionApproval, Event as EventModel, TokenAccount, TokenApproval } from '~/model'
+import { Sns } from '~/util/sns'
 import { CommonContext, EventItem } from '~/contexts'
 import * as mappings from '~/pallet/index'
 import { encodeAddress } from '~/util/tools'
-import { EventHandlerResult } from '~/processor.handler'
 
-export async function approved(ctx: CommonContext, item: EventItem, skipSave: boolean): Promise<EventHandlerResult> {
+export async function approved(
+    ctx: CommonContext,
+    item: EventItem,
+    skipSave: boolean
+): Promise<EventModel | undefined> {
     const data = mappings.multiTokens.events.approved(item)
 
-    if (skipSave) return [mappings.multiTokens.events.approvedEventModel(item, data), undefined]
+    if (skipSave) return mappings.multiTokens.events.approvedEventModel(item, data)
 
     const address = data.owner
 
@@ -22,7 +25,7 @@ export async function approved(ctx: CommonContext, item: EventItem, skipSave: bo
             throwFatalError(
                 `[Approved] We have not found token account ${address}-${data.collectionId}-${data.tokenId}.`
             )
-            return [mappings.multiTokens.events.approvedEventModel(item, data), undefined]
+            return mappings.multiTokens.events.approvedEventModel(item, data)
         }
 
         const approvals = tokenAccount.approvals ?? []
@@ -44,7 +47,7 @@ export async function approved(ctx: CommonContext, item: EventItem, skipSave: bo
 
         if (!collectionAccount) {
             throwFatalError(`[Approved] We have not found collection account ${data.collectionId}-${address}.`)
-            return [mappings.multiTokens.events.approvedEventModel(item, data), undefined]
+            return mappings.multiTokens.events.approvedEventModel(item, data)
         }
 
         const approvals = collectionAccount.approvals ?? []
@@ -60,19 +63,21 @@ export async function approved(ctx: CommonContext, item: EventItem, skipSave: bo
         await ctx.store.save(collectionAccount)
     }
 
-    const snsEvent: SnsEvent = {
-        id: item.id,
-        name: item.name,
-        body: {
-            kind: data.tokenId !== undefined ? 'token' : 'collection',
-            address,
-            operator: data.operator,
-            collectionId: data.collectionId.toString(),
-            tokenId: data.tokenId ?? null,
-            token: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
-            extrinsic: item.extrinsic?.id,
-        },
+    if (item.extrinsic) {
+        await Sns.getInstance().send({
+            id: item.id,
+            name: item.name,
+            body: {
+                kind: data.tokenId !== undefined ? 'token' : 'collection',
+                address,
+                operator: data.operator,
+                collectionId: data.collectionId.toString(),
+                tokenId: data.tokenId ?? null,
+                token: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
+                extrinsic: item.extrinsic.id,
+            },
+        })
     }
 
-    return [mappings.multiTokens.events.approvedEventModel(item, data), snsEvent]
+    return mappings.multiTokens.events.approvedEventModel(item, data)
 }

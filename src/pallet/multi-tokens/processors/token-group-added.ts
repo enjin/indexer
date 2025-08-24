@@ -1,9 +1,12 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { Token, TokenGroup, TokenGroupToken } from '~/model'
+import { Event as EventModel, Token, TokenGroup, TokenGroupToken } from '~/model'
 import * as mappings from '~/pallet/index'
-import { EventHandlerResult } from '~/processor.handler'
 
-export async function tokenGroupAdded(ctx: CommonContext, block: Block, item: EventItem): Promise<EventHandlerResult> {
+export async function tokenGroupAdded(
+    ctx: CommonContext,
+    block: Block,
+    item: EventItem
+): Promise<EventModel | undefined> {
     const data = mappings.multiTokens.events.tokenGroupAdded(item)
 
     const [tokenGroup, token] = await Promise.all([

@@ -10,7 +10,7 @@ import {
 } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getBestListing, getOrCreateAccount } from '~/util/entities'
-import { SnsEvent } from '~/util/sns'
+import { Sns } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
 
@@ -18,7 +18,7 @@ export async function listingFilled(
     ctx: CommonContext,
     block: Block,
     item: EventItem
-): Promise<[EventModel, AccountTokenEvent, SnsEvent | undefined] | undefined> {
+): Promise<[EventModel, AccountTokenEvent] | undefined> {
     const event = mappings.marketplace.events.listingFilled(item)
     const listingId = event.listingId.substring(2)
 
@@ -92,46 +92,45 @@ export async function listingFilled(
         await ctx.store.save(makeAssetId)
     }
 
-    const snsEvent: SnsEvent = {
-        id: item.id,
-        name: item.name,
-        body: {
-            listing: {
-                id: listing.id,
-                price: listing.price.toString(),
-                amount: listing.amount.toString(),
-                highestPrice: listing.highestPrice.toString(),
-                seller: {
-                    id: seller.id,
+    if (item.extrinsic) {
+        await Sns.getInstance().send({
+            id: item.id,
+            name: item.name,
+            body: {
+                listing: {
+                    id: listing.id,
+                    price: listing.price.toString(),
+                    amount: listing.amount.toString(),
+                    highestPrice: listing.highestPrice.toString(),
+                    seller: {
+                        id: seller.id,
+                    },
+                    type: listing.type.toString(),
+                    data: listing.data.toJSON(),
+                    state: listing.state.toJSON(),
                 },
-                type: listing.type.toString(),
-                data: listing.data.toJSON(),
-                state: listing.state.toJSON(),
+                token: isOffer ? takeAssetId.id : makeAssetId.id,
+                buyer: {
+                    id: buyer.id,
+                },
+                amountFilled: event.amountFilled,
+                price: 'price' in event ? (event.price as bigint) : listing.highestPrice,
+                amountRemaining: event.amountRemaining,
+                protocolFee: event.protocolFee,
+                royalty: event.royalty,
+                extrinsic: item.extrinsic.id,
             },
-            token: isOffer ? takeAssetId.id : makeAssetId.id,
-            buyer: {
-                id: buyer.id,
-            },
-            amountFilled: event.amountFilled,
-            price: 'price' in event ? (event.price as bigint) : listing.highestPrice,
-            amountRemaining: event.amountRemaining,
-            protocolFee: event.protocolFee,
-            royalty: event.royalty,
-            extrinsic: item.extrinsic?.id,
-        },
+        })
     }
 
     QueueUtils.dispatchComputeStats(isOffer ? takeAssetId.collection.id : makeAssetId.collection.id)
 
-    return [
-        ...mappings.marketplace.events.listingFilledEventModel(
-            item,
-            event,
-            listing,
-            isOffer ? buyer : seller,
-            isOffer ? takeAssetId.collection : makeAssetId.collection,
-            isOffer ? takeAssetId : makeAssetId
-        ),
-        item.extrinsic ? snsEvent : undefined,
-    ]
+    return mappings.marketplace.events.listingFilledEventModel(
+        item,
+        event,
+        listing,
+        isOffer ? buyer : seller,
+        isOffer ? takeAssetId.collection : makeAssetId.collection,
+        isOffer ? takeAssetId : makeAssetId
+    )
 }

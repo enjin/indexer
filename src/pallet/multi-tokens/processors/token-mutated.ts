@@ -1,5 +1,6 @@
 import { throwFatalError } from '~/util/errors'
 import {
+    Event as EventModel,
     NativeTokenMetadata,
     RoyaltyBeneficiary,
     Token,
@@ -14,7 +15,6 @@ import { QueueUtils } from '~/queue'
 import { getOrCreateAccount } from '~/util/entities'
 import { TokenMarketBehavior as TokenMarketBehavior500 } from '~/type/matrixV500'
 import { TokenMarketBehavior as TokenMarketBehavior1020 } from '~/type/matrixV1020'
-import { EventHandlerResult } from '~/processor.handler'
 
 type TokenMarketBehavior = TokenMarketBehavior500 | TokenMarketBehavior1020
 
@@ -57,7 +57,7 @@ export async function tokenMutated(
     block: Block,
     item: EventItem,
     skipSave: boolean
-): Promise<EventHandlerResult> {
+): Promise<EventModel | undefined> {
     const data = mappings.multiTokens.events.tokenMutated(item)
     if (skipSave) return mappings.multiTokens.events.tokenMutatedEventModel(item, data)
 

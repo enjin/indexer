@@ -1,6 +1,6 @@
 import { AccountTokenEvent, CounterOffer, Event as EventModel, Listing, OfferState } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { SnsEvent } from '~/util/sns'
+import { Sns } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { getOrCreateAccount } from '~/util/entities'
 
@@ -8,7 +8,7 @@ export async function counterOfferRemoved(
     ctx: CommonContext,
     block: Block,
     item: EventItem
-): Promise<[EventModel, AccountTokenEvent, SnsEvent | undefined] | undefined> {
+): Promise<[EventModel, AccountTokenEvent] | undefined> {
     const event = mappings.marketplace.events.counterOfferRemoved(item)
     const listingId = event.listingId.substring(2)
 
@@ -40,38 +40,37 @@ export async function counterOfferRemoved(
 
     await ctx.store.save(listing)
 
-    const snsEvent: SnsEvent = {
-        id: item.id,
-        name: item.name,
-        body: {
-            listing: {
-                id: listing.id,
-                price: listing.price.toString(),
-                amount: listing.amount.toString(),
-                highestPrice: listing.highestPrice.toString(),
-                seller: {
-                    id: listing.seller.id,
+    if (item.extrinsic) {
+        await Sns.getInstance().send({
+            id: item.id,
+            name: item.name,
+            body: {
+                listing: {
+                    id: listing.id,
+                    price: listing.price.toString(),
+                    amount: listing.amount.toString(),
+                    highestPrice: listing.highestPrice.toString(),
+                    seller: {
+                        id: listing.seller.id,
+                    },
+                    data: listing.data.toJSON(),
+                    state: listing.state.toJSON(),
+                    type: listing.type.toString(),
+                    takeAssetId: takeAssetId.id,
                 },
-                data: listing.data.toJSON(),
-                state: listing.state.toJSON(),
-                type: listing.type.toString(),
-                takeAssetId: takeAssetId.id,
+                account: { id: creator.id },
+                extrinsic: item.extrinsic.id,
+                token: takeAssetId.id,
             },
-            account: { id: creator.id },
-            extrinsic: item.extrinsic?.id,
-            token: takeAssetId.id,
-        },
+        })
     }
 
-    return [
-        ...mappings.marketplace.events.counterOfferRemovedEventModel(
-            item,
-            event,
-            listing,
-            creator,
-            takeAssetId.collection,
-            takeAssetId
-        ),
-        item.extrinsic ? snsEvent : undefined,
-    ]
+    return mappings.marketplace.events.counterOfferRemovedEventModel(
+        item,
+        event,
+        listing,
+        creator,
+        takeAssetId.collection,
+        takeAssetId
+    )
 }

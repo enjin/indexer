@@ -17,7 +17,7 @@ export function approved(event: EventItem): Approved {
         })
 }
 
-export function approvedEventModel(item: EventItem, data: Approved): EventModel {
+export function approvedEventModel(item: EventItem, data: Approved): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: MultiTokensApproved.name,

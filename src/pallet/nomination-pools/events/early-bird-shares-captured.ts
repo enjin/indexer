@@ -17,7 +17,10 @@ export function earlyBirdSharesCaptured(event: EventItem): EarlyBirdSharesCaptur
         })
 }
 
-export function earlyBirdSharesCapturedEventModel(item: EventItem, data: EarlyBirdSharesCaptured): EventModel {
+export function earlyBirdSharesCapturedEventModel(
+    item: EventItem,
+    data: EarlyBirdSharesCaptured
+): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: NominationPoolsEarlyBirdSharesCaptured.name,

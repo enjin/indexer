@@ -1,17 +1,24 @@
 import { throwFatalError } from '~/util/errors'
-import { Collection, CollectionAccount, NominationPool, PoolMember, Token, TokenAccount } from '~/model'
+import {
+    Collection,
+    CollectionAccount,
+    Event as EventModel,
+    NominationPool,
+    PoolMember,
+    Token,
+    TokenAccount,
+} from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
 import * as mappings from '~/pallet/index'
 import { getActiveEra } from '~/pallet/nomination-pools/processors/bonded'
-import { EventHandlerResult } from '~/processor.handler'
 
 export async function tokenAccountCreated(
     ctx: CommonContext,
     block: Block,
     item: EventItem,
     skipSave: boolean
-): Promise<EventHandlerResult> {
+): Promise<EventModel | undefined> {
     const data = mappings.multiTokens.events.tokenAccountCreated(item)
 
     if (skipSave && data.collectionId.toString() != '1') {

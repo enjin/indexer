@@ -32,7 +32,7 @@ export function listingRemovedUnderMinimumEventModel(
     account: Account,
     collection: Collection,
     token: Token
-): [EventModel, AccountTokenEvent] {
+): [EventModel, AccountTokenEvent] | undefined {
     const event = new EventModel({
         id: item.id,
         name: MarketplaceListingRemovedUnderMinimum.name,

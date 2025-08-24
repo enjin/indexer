@@ -1,16 +1,15 @@
 import { throwFatalError } from '~/util/errors'
-import { Attribute, Collection, Token } from '~/model'
+import { Attribute, Collection, Event as EventModel, Token } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
-import { EventHandlerResult } from '~/processor.handler'
 
 export async function attributeRemoved(
     ctx: CommonContext,
     block: Block,
     item: EventItem,
     skipSave: boolean
-): Promise<EventHandlerResult> {
+): Promise<EventModel | undefined> {
     const data = mappings.multiTokens.events.attributeRemoved(item)
 
     if (skipSave) return mappings.multiTokens.events.attributeRemovedEventModel(item, data)

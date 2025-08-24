@@ -1,18 +1,17 @@
 import { throwFatalError } from '~/util/errors'
-import { Token, TokenAccount } from '~/model'
+import { AccountTokenEvent, Event as EventModel, Token, TokenAccount } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { SnsEvent } from '~/util/sns'
+import { Sns } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { getOrCreateAccount } from '~/util/entities'
 import { QueueUtils } from '~/queue'
-import { EventHandlerResult } from '~/processor.handler'
 
 export async function burned(
     ctx: CommonContext,
     block: Block,
     item: EventItem,
     skipSave: boolean
-): Promise<EventHandlerResult> {
+): Promise<[EventModel, AccountTokenEvent] | undefined | EventModel> {
     const data = mappings.multiTokens.events.burned(item)
     const account = await getOrCreateAccount(ctx, data.accountId)
 
@@ -22,16 +21,13 @@ export async function burned(
     })
 
     if (skipSave || !token || data.amount === 0n) {
-        return [
-            ...mappings.multiTokens.events.burnedEventModel(
-                item,
-                data,
-                account,
-                token?.collection ?? null,
-                token ?? null
-            ),
-            undefined,
-        ]
+        return mappings.multiTokens.events.burnedEventModel(
+            item,
+            data,
+            account,
+            token?.collection ?? null,
+            token ?? null
+        )
     }
 
     const tokenAccount = await ctx.store.findOne(TokenAccount, {
@@ -59,21 +55,23 @@ export async function burned(
 
     await ctx.store.save(token)
 
-    const snsEvent: SnsEvent = {
-        id: item.id,
-        name: item.name,
-        body: {
-            collectionId: data.collectionId,
-            tokenId: data.tokenId,
-            token: `${data.collectionId}-${data.tokenId}`,
-            account: data.accountId,
-            amount: data.amount,
-            extrinsic: item.extrinsic?.id,
-        },
+    if (item.extrinsic) {
+        await Sns.getInstance().send({
+            id: item.id,
+            name: item.name,
+            body: {
+                collectionId: data.collectionId,
+                tokenId: data.tokenId,
+                token: `${data.collectionId}-${data.tokenId}`,
+                account: data.accountId,
+                amount: data.amount,
+                extrinsic: item.extrinsic.id,
+            },
+        })
     }
 
     QueueUtils.dispatchComputeStats(data.collectionId.toString())
     QueueUtils.dispatchComputeTraits(data.collectionId.toString())
 
-    return [...mappings.multiTokens.events.burnedEventModel(item, data, account, token.collection, token), snsEvent]
+    return mappings.multiTokens.events.burnedEventModel(item, data, account, token.collection, token)
 }

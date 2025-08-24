@@ -17,7 +17,7 @@ export function earlyBirdBonusPaid(event: EventItem): EarlyBirdBonusPaid {
         })
 }
 
-export function earlyBirdBonusPaidEventModel(item: EventItem, data: EarlyBirdBonusPaid): EventModel {
+export function earlyBirdBonusPaidEventModel(item: EventItem, data: EarlyBirdBonusPaid): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: NominationPoolsEarlyBirdBonusPaid.name,

@@ -17,7 +17,7 @@ export function tokenDestroyed(event: EventItem): TokenDestroyed {
         })
 }
 
-export function tokenDestroyedEventModel(item: EventItem, data: TokenDestroyed): EventModel {
+export function tokenDestroyedEventModel(item: EventItem, data: TokenDestroyed): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: MultiTokensTokenDestroyed.name,

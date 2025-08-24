@@ -9,7 +9,7 @@ import {
 } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getBestListing } from '~/util/entities'
-import { SnsEvent } from '~/util/sns'
+import { Sns } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
 
@@ -17,7 +17,7 @@ export async function auctionFinalized(
     ctx: CommonContext,
     block: Block,
     item: EventItem
-): Promise<[EventModel, AccountTokenEvent, SnsEvent | undefined] | undefined> {
+): Promise<[EventModel, AccountTokenEvent] | undefined> {
     const data = mappings.marketplace.events.auctionFinalized(item)
     const listingId = data.listingId.substring(2)
 
@@ -69,45 +69,44 @@ export async function auctionFinalized(
 
     await ctx.store.save(makeAssetId)
 
-    const snsEvent: SnsEvent = {
-        id: item.id,
-        name: item.name,
-        body: {
-            listing: {
-                seller: {
-                    id: listing.seller.id,
+    if (item.extrinsic) {
+        await Sns.getInstance().send({
+            id: item.id,
+            name: item.name,
+            body: {
+                listing: {
+                    seller: {
+                        id: listing.seller.id,
+                    },
+                    id: listing.id,
+                    highestPrice: listing.highestPrice.toString(),
+                    amount: listing.amount.toString(),
+                    price: listing.price.toString(),
+                    data: listing.data.toJSON(),
                 },
-                id: listing.id,
-                highestPrice: listing.highestPrice.toString(),
-                amount: listing.amount.toString(),
-                price: listing.price.toString(),
-                data: listing.data.toJSON(),
+                winningBid: data.winningBid
+                    ? {
+                          bidder: {
+                              id: data.winningBid.bidder,
+                          },
+                          price: data.winningBid.price.toString(),
+                      }
+                    : null,
+                protocolFee: data.protocolFee,
+                royalty: data.royalty,
+                token: listing.makeAssetId.id,
+                extrinsic: item.extrinsic.id,
             },
-            winningBid: data.winningBid
-                ? {
-                      bidder: {
-                          id: data.winningBid.bidder,
-                      },
-                      price: data.winningBid.price.toString(),
-                  }
-                : null,
-            protocolFee: data.protocolFee,
-            royalty: data.royalty,
-            token: listing.makeAssetId.id,
-            extrinsic: item.extrinsic?.id,
-        },
+        })
     }
 
     QueueUtils.dispatchComputeStats(makeAssetId.collection.id)
 
-    return [
-        ...mappings.marketplace.events.auctionFinalizedEventModel(
-            item,
-            data,
-            listing,
-            makeAssetId.collection,
-            makeAssetId
-        ),
-        item.extrinsic ? snsEvent : undefined,
-    ]
+    return mappings.marketplace.events.auctionFinalizedEventModel(
+        item,
+        data,
+        listing,
+        makeAssetId.collection,
+        makeAssetId
+    )
 }

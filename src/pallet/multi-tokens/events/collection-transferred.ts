@@ -17,7 +17,7 @@ export function collectionTransferred(event: EventItem): CollectionTransferred {
         })
 }
 
-export function collectionTransferredEventModel(item: EventItem, data: CollectionTransferred): EventModel {
+export function collectionTransferredEventModel(item: EventItem, data: CollectionTransferred): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: MultiTokensCollectionTransferred.name,

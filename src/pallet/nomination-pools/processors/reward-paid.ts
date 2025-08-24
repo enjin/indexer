@@ -2,9 +2,8 @@ import { Block, CommonContext, EventItem } from '~/contexts'
 import { Event as EventModel, Extrinsic, NominationPoolsRewardPaid } from '~/model'
 import { getOrCreateAccount } from '~/util/entities'
 import * as mappings from '~/pallet/index'
-import { EventHandlerResult } from '~/processor.handler'
 
-export async function rewardPaid(ctx: CommonContext, block: Block, item: EventItem): Promise<EventHandlerResult> {
+export async function rewardPaid(ctx: CommonContext, block: Block, item: EventItem): Promise<EventModel | undefined> {
     if (!item.extrinsic) return undefined
 
     const eventData = mappings.nominationPools.events.rewardPaid(item)

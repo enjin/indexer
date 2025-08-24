@@ -29,7 +29,7 @@ export function bonded(event: EventItem): Bonded {
         })
 }
 
-export function bondedEventModel(item: EventItem, data: Bonded, tokenId: bigint): EventModel {
+export function bondedEventModel(item: EventItem, data: Bonded, tokenId: bigint): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: NominationPoolsBonded.name,

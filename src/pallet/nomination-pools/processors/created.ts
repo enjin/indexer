@@ -1,11 +1,10 @@
 import { hexToString } from '@polkadot/util'
-import { BonusCycle, Commission, NominationPool, PoolBalance, PoolState, Token } from '~/model'
+import { BonusCycle, Commission, Event as EventModel, NominationPool, PoolBalance, PoolState, Token } from '~/model'
 import { storage } from '~/type'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import * as mappings from '~/pallet/index'
 import { UnsupportedStorageError } from '~/util/errors'
 import { QueueUtils } from '~/queue'
-import { EventHandlerResult } from '~/processor.handler'
 
 function getCurrentEra(ctx: CommonContext, block: Block) {
     if (storage.staking.currentEra.enjinV100.is(block)) {
@@ -15,7 +14,7 @@ function getCurrentEra(ctx: CommonContext, block: Block) {
     throw new UnsupportedStorageError('Staking.CurrentEra')
 }
 
-export async function created(ctx: CommonContext, block: Block, item: EventItem): Promise<EventHandlerResult> {
+export async function created(ctx: CommonContext, block: Block, item: EventItem): Promise<EventModel | undefined> {
     if (!item.extrinsic || !item.call) return undefined
 
     const eventData = mappings.nominationPools.events.created(item)

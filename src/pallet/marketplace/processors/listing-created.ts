@@ -19,7 +19,7 @@ import {
 } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getBestListing, getOrCreateAccount } from '~/util/entities'
-import { SnsEvent } from '~/util/sns'
+import { Sns } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
 import { match } from 'ts-pattern'
@@ -28,7 +28,7 @@ export async function listingCreated(
     ctx: CommonContext,
     block: Block,
     item: EventItem
-): Promise<[EventModel, AccountTokenEvent, SnsEvent | undefined] | undefined> {
+): Promise<[EventModel, AccountTokenEvent] | undefined> {
     const data = mappings.marketplace.events.listingCreated(item)
     const listingId = data.listingId.substring(2)
 
@@ -132,10 +132,8 @@ export async function listingCreated(
         await ctx.store.save(makeAssetId)
     }
 
-    const snsEvent: SnsEvent = {
-        id: item.id,
-        name: item.name,
-        body: {
+    if (item.extrinsic) {
+        await Sns.getInstance().send({
             id: item.id,
             name: item.name,
             body: {
@@ -154,9 +152,9 @@ export async function listingCreated(
                     takeAssetId: takeAssetId.id,
                 },
                 token: isOffer ? takeAssetId.id : makeAssetId.id,
-                extrinsic: item.extrinsic?.id,
+                extrinsic: item.extrinsic.id,
             },
-        },
+        })
     }
 
     let toAccount: Account | undefined
@@ -174,23 +172,22 @@ export async function listingCreated(
 
     QueueUtils.dispatchComputeStats(makeAssetId.collection.id)
 
-    return [
-        ...mappings.marketplace.events.listingCreatedEventModel(
-            item.id,
-            {
-                collectionId: isOffer ? data.listing.takeAssetId.collectionId : data.listing.makeAssetId.collectionId,
-                tokenId: isOffer ? data.listing.takeAssetId.tokenId : data.listing.makeAssetId.tokenId,
-                listingId,
-                isOffer,
-            },
-            {
-                extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : undefined,
-                fromAccount: listingCreator,
-                collection: isOffer ? takeAssetId.collection : makeAssetId.collection,
-                token: isOffer ? takeAssetId : makeAssetId,
-                toAccount,
-            }
-        ),
-        item.extrinsic ? snsEvent : undefined,
-    ]
+    ctx.log.info(`Listing created: ${listing.id} event: ${item.id}`)
+
+    return mappings.marketplace.events.listingCreatedEventModel(
+        item.id,
+        {
+            collectionId: isOffer ? data.listing.takeAssetId.collectionId : data.listing.makeAssetId.collectionId,
+            tokenId: isOffer ? data.listing.takeAssetId.tokenId : data.listing.makeAssetId.tokenId,
+            listingId,
+            isOffer,
+        },
+        {
+            extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : undefined,
+            fromAccount: listingCreator,
+            collection: isOffer ? takeAssetId.collection : makeAssetId.collection,
+            token: isOffer ? takeAssetId : makeAssetId,
+            toAccount,
+        }
+    )
 }

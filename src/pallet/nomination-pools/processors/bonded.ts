@@ -1,10 +1,9 @@
-import { Collection, Era, PoolMember, Token, TokenAccount } from '~/model'
-import { SnsEvent } from '~/util/sns'
+import { Collection, Era, Event as EventModel, PoolMember, Token, TokenAccount } from '~/model'
+import { Sns } from '~/util/sns'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
 import { updatePool } from '~/pallet/nomination-pools/processors/pool'
 import * as mappings from '~/pallet/index'
-import { EventHandlerResult } from '~/processor.handler'
 
 export function getActiveEra(ctx: CommonContext) {
     return ctx.store.find(Era, {
@@ -15,7 +14,7 @@ export function getActiveEra(ctx: CommonContext) {
     })
 }
 
-export async function bonded(ctx: CommonContext, block: Block, item: EventItem): Promise<EventHandlerResult> {
+export async function bonded(ctx: CommonContext, block: Block, item: EventItem): Promise<EventModel | undefined> {
     if (!item.extrinsic) return undefined
 
     const eventData = mappings.nominationPools.events.bonded(item)
@@ -109,7 +108,7 @@ export async function bonded(ctx: CommonContext, block: Block, item: EventItem):
 
     await ctx.store.save(pool)
 
-    const snsEvent: SnsEvent = {
+    await Sns.getInstance().send({
         id: item.id,
         name: item.name,
         body: {
@@ -121,7 +120,7 @@ export async function bonded(ctx: CommonContext, block: Block, item: EventItem):
             tokenId: `2-${pool.tokenId}`,
             state: pool.state,
         },
-    }
+    })
 
-    return [mappings.nominationPools.events.bondedEventModel(item, eventData, pool.tokenId), snsEvent]
+    return mappings.nominationPools.events.bondedEventModel(item, eventData, pool.tokenId)
 }

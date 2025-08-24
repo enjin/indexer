@@ -3,9 +3,8 @@ import { Validator } from '~/model'
 import { getOrCreateAccount } from '~/util/entities'
 import * as mappings from '~/pallet/index'
 import { chilledEventModel } from '../events'
-import { EventHandlerResult } from '~/processor.handler'
 
-export async function chilled(ctx: CommonContext, block: Block, item: EventItem): Promise<EventHandlerResult> {
+export async function chilled(ctx: CommonContext, block: Block, item: EventItem) {
     const event = mappings.staking.events.chilled(item)
     const stash = await getOrCreateAccount(ctx, event.stash)
 

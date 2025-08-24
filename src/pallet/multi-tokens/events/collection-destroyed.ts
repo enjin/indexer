@@ -17,7 +17,7 @@ export function collectionDestroyed(event: EventItem): CollectionDestroyed {
         })
 }
 
-export function collectionDestroyedEventModel(item: EventItem, data: CollectionDestroyed): EventModel {
+export function collectionDestroyedEventModel(item: EventItem, data: CollectionDestroyed): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: MultiTokensCollectionDestroyed.name,

@@ -1,15 +1,14 @@
 import { throwFatalError } from '~/util/errors'
-import { CollectionAccount } from '~/model'
+import { CollectionAccount, Event as EventModel } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import * as mappings from '~/pallet/index'
-import { EventHandlerResult } from '~/processor.handler'
 
 export async function collectionAccountDestroyed(
     ctx: CommonContext,
     block: Block,
     item: EventItem,
     skipSave: boolean
-): Promise<EventHandlerResult> {
+): Promise<EventModel | undefined> {
     const data = mappings.multiTokens.events.collectionAccountDestroyed(item)
     if (skipSave) return mappings.multiTokens.events.collectionAccountDestroyedEventModel(item, data)
 

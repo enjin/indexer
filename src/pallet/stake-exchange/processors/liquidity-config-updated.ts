@@ -7,10 +7,9 @@ import {
     StakeExchangeTokenFilterType,
 } from '~/model'
 import { getOrCreateAccount } from '~/util/entities'
-import { SnsEvent } from '~/util/sns'
+import { Sns } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { TokenFilter } from '~/pallet/common/types'
-import { EventHandlerResult } from '~/processor.handler'
 
 export function getFilterFromType(tokenFilter: TokenFilter) {
     let entity: StakeExchangeTokenFilter | null = null
@@ -44,7 +43,7 @@ export async function liquidityConfigUpdated(
     ctx: CommonContext,
     block: Block,
     item: EventItem
-): Promise<EventHandlerResult> {
+): Promise<EventModel | undefined> {
     if (!item.extrinsic) return undefined
 
     const event = mappings.stakeExchange.events.liquidityConfigUpdated(item)
@@ -56,25 +55,22 @@ export async function liquidityConfigUpdated(
 
     await ctx.store.save(tokenFilter)
 
-    const snsEvent: SnsEvent = {
+    await Sns.getInstance().send({
         id: item.id,
         name: item.name,
         body: {
             account: account.id,
             tokenFilter: tokenFilter.id,
         },
-    }
+    })
 
-    return [
-        new EventModel({
-            id: item.id,
-            name: StakeExchangeLiquidityConfigUpdated.name,
-            extrinsic: item.extrinsic.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-            data: new StakeExchangeLiquidityConfigUpdated({
-                account: account.id,
-                tokenFilter: tokenFilter.id,
-            }),
+    return new EventModel({
+        id: item.id,
+        name: StakeExchangeLiquidityConfigUpdated.name,
+        extrinsic: item.extrinsic.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
+        data: new StakeExchangeLiquidityConfigUpdated({
+            account: account.id,
+            tokenFilter: tokenFilter.id,
         }),
-        snsEvent,
-    ]
+    })
 }

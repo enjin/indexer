@@ -1,15 +1,14 @@
-import { Collection, CollectionAccount } from '~/model'
+import { Collection, CollectionAccount, Event as EventModel } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
 import * as mappings from '~/pallet/index'
-import { EventHandlerResult } from '~/processor.handler'
 
 export async function collectionAccountCreated(
     ctx: CommonContext,
     block: Block,
     item: EventItem,
     skipSave: boolean
-): Promise<EventHandlerResult> {
+): Promise<EventModel | undefined> {
     const data = mappings.multiTokens.events.collectionAccountCreated(item)
 
     if (skipSave) {

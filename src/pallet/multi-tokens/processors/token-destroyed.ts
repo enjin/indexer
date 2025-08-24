@@ -2,6 +2,7 @@ import { throwFatalError } from '~/util/errors'
 import {
     AccountTokenEvent,
     Attribute,
+    Event as EventModel,
     Listing,
     ListingSale,
     ListingStatus,
@@ -13,21 +14,20 @@ import {
     TraitToken,
 } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { SnsEvent } from '~/util/sns'
+import { Sns } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
 import { In } from 'typeorm'
-import { EventHandlerResult } from '~/processor.handler'
 
 export async function tokenDestroyed(
     ctx: CommonContext,
     _block: Block,
     item: EventItem,
     skipSave: boolean
-): Promise<EventHandlerResult> {
+): Promise<EventModel | undefined> {
     const data = mappings.multiTokens.events.tokenDestroyed(item)
 
-    if (skipSave) return [mappings.multiTokens.events.tokenDestroyedEventModel(item, data), undefined]
+    if (skipSave) return mappings.multiTokens.events.tokenDestroyedEventModel(item, data)
 
     const token = await ctx.store.findOneBy<Token>(Token, {
         id: `${data.collectionId}-${data.tokenId}`,
@@ -35,7 +35,7 @@ export async function tokenDestroyed(
 
     if (!token) {
         throwFatalError(`[TokenDestroyed] We have not found token ${data.collectionId}-${data.tokenId}.`)
-        return [mappings.multiTokens.events.tokenDestroyedEventModel(item, data), undefined]
+        return mappings.multiTokens.events.tokenDestroyedEventModel(item, data)
     }
 
     token.bestListing = null
@@ -190,20 +190,22 @@ export async function tokenDestroyed(
         ctx.store.remove(token),
     ])
 
-    const snsEvent: SnsEvent = {
-        id: item.id,
-        name: item.name,
-        body: {
-            collectionId: data.collectionId,
-            tokenId: data.tokenId,
-            token: `${data.collectionId}-${data.tokenId}`,
-            caller: data.caller,
-            extrinsic: item.extrinsic?.id,
-        },
+    if (item.extrinsic) {
+        await Sns.getInstance().send({
+            id: item.id,
+            name: item.name,
+            body: {
+                collectionId: data.collectionId,
+                tokenId: data.tokenId,
+                token: `${data.collectionId}-${data.tokenId}`,
+                caller: data.caller,
+                extrinsic: item.extrinsic.id,
+            },
+        })
     }
 
     QueueUtils.dispatchComputeStats(data.collectionId.toString())
     QueueUtils.dispatchComputeTraits(data.collectionId.toString())
 
-    return [mappings.multiTokens.events.tokenDestroyedEventModel(item, data), snsEvent]
+    return mappings.multiTokens.events.tokenDestroyedEventModel(item, data)
 }

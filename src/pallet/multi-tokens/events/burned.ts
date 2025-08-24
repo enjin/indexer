@@ -31,7 +31,7 @@ export function burnedEventModel(
     account: Account,
     collection: Collection | null,
     token: Token | null
-): [EventModel, AccountTokenEvent | undefined] {
+): [EventModel, AccountTokenEvent] | undefined | EventModel {
     const collectionId = collection ? collection.id : data.collectionId.toString()
     const tokenId = token ? token.id : `${collectionId}-${data.tokenId}`
 
@@ -51,7 +51,7 @@ export function burnedEventModel(
     })
 
     if (!token) {
-        return [event, undefined]
+        return event
     }
 
     return [

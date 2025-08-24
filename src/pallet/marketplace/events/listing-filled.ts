@@ -63,7 +63,7 @@ export function listingFilledEventModel(
     account: Account,
     collection: Collection,
     token: Token
-): [EventModel, AccountTokenEvent] {
+): [EventModel, AccountTokenEvent] | undefined {
     let event: EventModel
 
     event = new EventModel({

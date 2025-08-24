@@ -3,16 +3,6 @@ import config from '~/util/config'
 import { safeJsonString } from '~/util/tools'
 import { DataService } from '~/util/data'
 
-export interface SnsEvent {
-    id: string
-    name: string
-    body: Record<string, unknown>
-}
-
-export function isSnsEvent(v: unknown): v is SnsEvent {
-    return !!v && typeof v === 'object' && 'id' in v && 'name' in v && 'body' in v
-}
-
 export class Sns {
     private static instance: Sns | undefined = undefined
     private static client: SNSClient | undefined = undefined

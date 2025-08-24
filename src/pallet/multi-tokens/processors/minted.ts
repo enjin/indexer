@@ -1,14 +1,23 @@
 import { throwFatalError } from '~/util/errors'
-import { Extrinsic, NominationPool, PoolMember, Token, TokenAccount, EarlyBirdMintEvent, Era } from '~/model'
+import {
+    AccountTokenEvent,
+    Event as EventModel,
+    Extrinsic,
+    NominationPool,
+    PoolMember,
+    Token,
+    TokenAccount,
+    EarlyBirdMintEvent,
+    Era,
+} from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
-import { SnsEvent } from '~/util/sns'
+import { Sns } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { isNonFungible } from '~/util/helpers'
 import { QueueUtils } from '~/queue'
 import { calls } from '~/type'
 import { getOrCreatePoolMemberRewards } from '~/util/earlyBird'
-import { EventHandlerResult } from '~/processor.handler'
 
 export async function getActiveEra(ctx: CommonContext) {
     const eras = await ctx.store.find(Era, {
@@ -91,7 +100,7 @@ export async function minted(
     block: Block,
     item: EventItem,
     skipSave: boolean
-): Promise<EventHandlerResult> {
+): Promise<[EventModel, AccountTokenEvent] | EventModel | undefined> {
     const data = mappings.multiTokens.events.minted(item)
     const issuer = await getOrCreateAccount(ctx, data.issuer)
     const recipient = await getOrCreateAccount(ctx, data.recipient)
@@ -108,16 +117,13 @@ export async function minted(
         },
     })
     if (skipSave || !token || data.amount === 0n) {
-        return [
-            ...mappings.multiTokens.events.mintedEventModel(item.id, data, {
-                extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : undefined,
-                issuer,
-                recipient,
-                collection: token?.collection,
-                token: token,
-            }),
-            undefined,
-        ]
+        return mappings.multiTokens.events.mintedEventModel(item.id, data, {
+            extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : undefined,
+            issuer,
+            recipient,
+            collection: token?.collection,
+            token: token,
+        })
     }
 
     token.supply += data.amount
@@ -132,16 +138,13 @@ export async function minted(
         throwFatalError(
             `[Minted] We have not found token account ${data.recipient}-${data.collectionId}-${data.tokenId}.`
         )
-        return [
-            ...mappings.multiTokens.events.mintedEventModel(item.id, data, {
-                extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : undefined,
-                issuer,
-                recipient,
-                collection: token.collection,
-                token: token,
-            }),
-            undefined,
-        ]
+        return mappings.multiTokens.events.mintedEventModel(item.id, data, {
+            extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : undefined,
+            issuer,
+            recipient,
+            collection: token.collection,
+            token: token,
+        })
     }
 
     tokenAccount.balance += data.amount
@@ -160,31 +163,30 @@ export async function minted(
         }
     }
 
-    const snsEvent: SnsEvent = {
-        id: item.id,
-        name: item.name,
-        body: {
-            collectionId: data.collectionId,
-            tokenId: data.tokenId,
-            token: token.id,
-            issuer: issuer.id,
-            recipient: recipient.id,
-            amount: data.amount,
-            extrinsic: item.extrinsic?.id,
-        },
+    if (item.extrinsic) {
+        await Sns.getInstance().send({
+            id: item.id,
+            name: item.name,
+            body: {
+                collectionId: data.collectionId,
+                tokenId: data.tokenId,
+                token: token.id,
+                issuer: issuer.id,
+                recipient: recipient.id,
+                amount: data.amount,
+                extrinsic: item.extrinsic.id,
+            },
+        })
     }
 
     QueueUtils.dispatchComputeMetadata({ id: token.id, type: 'token', traits: true })
     QueueUtils.dispatchComputeStats(data.collectionId.toString())
 
-    return [
-        ...mappings.multiTokens.events.mintedEventModel(item.id, data, {
-            extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : undefined,
-            issuer,
-            recipient,
-            collection: token.collection,
-            token: token,
-        }),
-        snsEvent,
-    ]
+    return mappings.multiTokens.events.mintedEventModel(item.id, data, {
+        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : undefined,
+        issuer,
+        recipient,
+        collection: token.collection,
+        token: token,
+    })
 }

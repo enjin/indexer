@@ -1,11 +1,10 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { CommissionChangeRate, NominationPool } from '~/model'
-import { SnsEvent } from '~/util/sns'
+import { Sns } from '~/util/sns'
 import { hexToString } from '@polkadot/util'
 import * as mappings from '~/pallet/index'
-import { EventHandlerResult } from '~/processor.handler'
 
-export async function poolMutated(ctx: CommonContext, block: Block, item: EventItem): Promise<EventHandlerResult> {
+export async function poolMutated(ctx: CommonContext, block: Block, item: EventItem) {
     if (!item.extrinsic) return undefined
 
     const data = mappings.nominationPools.events.poolMutated(item)
@@ -77,7 +76,7 @@ export async function poolMutated(ctx: CommonContext, block: Block, item: EventI
 
     const owner: string = pool.degenToken.tokenAccounts[0].account.id
 
-    const snsEvent: SnsEvent = {
+    await Sns.getInstance().send({
         id: item.id,
         name: item.name,
         body: {
@@ -88,7 +87,7 @@ export async function poolMutated(ctx: CommonContext, block: Block, item: EventI
             tokenId: `2-${pool.tokenId}`,
             owner,
         },
-    }
+    })
 
-    return [mappings.nominationPools.events.poolMutatedEventModel(item, data, owner), snsEvent]
+    return mappings.nominationPools.events.poolMutatedEventModel(item, data, owner)
 }

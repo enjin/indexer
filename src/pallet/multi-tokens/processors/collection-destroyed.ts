@@ -1,23 +1,30 @@
-import { AccountTokenEvent, Attribute, Collection, CollectionAccount, RoyaltyCurrency, Trait } from '~/model'
-import { SnsEvent } from '~/util/sns'
+import {
+    AccountTokenEvent,
+    Attribute,
+    Collection,
+    CollectionAccount,
+    Event as EventModel,
+    RoyaltyCurrency,
+    Trait,
+} from '~/model'
+import { Sns } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { EventHandlerResult } from '~/processor.handler'
 
 export async function collectionDestroyed(
     ctx: CommonContext,
     block: Block,
     item: EventItem,
     skipSave: boolean
-): Promise<EventHandlerResult> {
+): Promise<EventModel | undefined> {
     const data = mappings.multiTokens.events.collectionDestroyed(item)
-    if (skipSave) return [mappings.multiTokens.events.collectionDestroyedEventModel(item, data), undefined]
+    if (skipSave) return mappings.multiTokens.events.collectionDestroyedEventModel(item, data)
 
     const collectionId = data.collectionId.toString()
     const collection = await ctx.store.findOneBy(Collection, { id: collectionId })
 
     if (!collection) {
-        return [mappings.multiTokens.events.collectionDestroyedEventModel(item, data), undefined]
+        return mappings.multiTokens.events.collectionDestroyedEventModel(item, data)
     }
 
     const [accountTokenEvents, collectionAccounts, traits, royaltyCurrencies, attributes] = await Promise.all([
@@ -54,15 +61,17 @@ export async function collectionDestroyed(
         ctx.store.remove(collection),
     ])
 
-    const snsEvent: SnsEvent = {
-        id: item.id,
-        name: item.name,
-        body: {
-            collectionId: data.collectionId,
-            caller: data.caller,
-            extrinsic: item.extrinsic?.id,
-        },
+    if (item.extrinsic) {
+        await Sns.getInstance().send({
+            id: item.id,
+            name: item.name,
+            body: {
+                collectionId: data.collectionId,
+                caller: data.caller,
+                extrinsic: item.extrinsic.id,
+            },
+        })
     }
 
-    return [mappings.multiTokens.events.collectionDestroyedEventModel(item, data), snsEvent]
+    return mappings.multiTokens.events.collectionDestroyedEventModel(item, data)
 }

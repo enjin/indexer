@@ -33,7 +33,7 @@ export function bidPlacedEventModel(
     bidder: Account,
     collection: Collection,
     token: Token
-): [EventModel, AccountTokenEvent] {
+): [EventModel, AccountTokenEvent] | undefined {
     const event = new EventModel({
         id: item.id,
         name: MarketplaceBidPlaced.name,
