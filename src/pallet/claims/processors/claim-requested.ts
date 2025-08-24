@@ -54,6 +54,8 @@ export async function claimRequested(
 
     return [
         new EventModel({
+            id: item.id,
+            name: ClaimsClaimRequested.name,
             extrinsic: item.extrinsic.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
             data: new ClaimsClaimRequested({
                 who,
