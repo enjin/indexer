@@ -13,7 +13,7 @@ export function transfer(item: EventItem): [EventModel, AccountTokenEvent | SnsE
             from: data.from,
             to: data.to,
             amount: data.amount,
-            extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
+            extrinsic: item.extrinsic?.id,
             callName: item.call?.name ?? item.extrinsic?.call?.name ?? null,
         },
     }
