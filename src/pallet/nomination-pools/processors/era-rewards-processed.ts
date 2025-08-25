@@ -276,13 +276,14 @@ export const computeEraApy = (eraRewards: EraReward[], poolApy: number): Big => 
     }
 
     const validApys = eraRewards.filter((reward) => !discardEra(reward.apy, poolApy))
+    const validApysLength = validApys.slice(0, 15).length
     const sumOfApy = validApys.slice(0, 15).reduce((acc, reward) => acc + reward.apy, 0)
 
     if (validApys.length === 0) {
         return Big(poolApy)
     }
 
-    const finalApy = Big(sumOfApy).div(validApys.length)
+    const finalApy = Big(sumOfApy).div(validApysLength)
 
     if (finalApy.minus(poolApy).gt(50)) {
         return Big(validApys[0].averageApy)
