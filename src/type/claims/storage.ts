@@ -5,6 +5,7 @@ import * as v102 from '../v102'
 import * as matrixV500 from '../matrixV500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV604 from '../matrixV604'
+import * as matrixV1030 from '../matrixV1030'
 
 export const claims = {
     /**
@@ -53,6 +54,15 @@ export const claims = {
         [v102.Account],
         sts.array(() => v102.ClaimData)
     ) as ClaimsV102,
+    /**
+     *  This stores claims. Maps an ethereum address to the vec of claim data.
+     */
+    matrixV1030: new StorageType(
+        'Claims.Claims',
+        'Optional',
+        [matrixV1030.H160],
+        sts.array(() => matrixV1030.ClaimData)
+    ) as ClaimsMatrixV1030,
 }
 
 /**
@@ -198,6 +208,33 @@ export interface ClaimsV102 {
     ): AsyncIterable<[k: v102.Account, v: v102.ClaimData[] | undefined][]>
 }
 
+/**
+ *  This stores claims. Maps an ethereum address to the vec of claim data.
+ */
+export interface ClaimsMatrixV1030 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: matrixV1030.H160): Promise<matrixV1030.ClaimData[] | undefined>
+    getMany(block: Block, keys: matrixV1030.H160[]): Promise<(matrixV1030.ClaimData[] | undefined)[]>
+    getKeys(block: Block): Promise<matrixV1030.H160[]>
+    getKeys(block: Block, key: matrixV1030.H160): Promise<matrixV1030.H160[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<matrixV1030.H160[]>
+    getKeysPaged(pageSize: number, block: Block, key: matrixV1030.H160): AsyncIterable<matrixV1030.H160[]>
+    getPairs(block: Block): Promise<[k: matrixV1030.H160, v: matrixV1030.ClaimData[] | undefined][]>
+    getPairs(
+        block: Block,
+        key: matrixV1030.H160
+    ): Promise<[k: matrixV1030.H160, v: matrixV1030.ClaimData[] | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: matrixV1030.H160, v: matrixV1030.ClaimData[] | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: matrixV1030.H160
+    ): AsyncIterable<[k: matrixV1030.H160, v: matrixV1030.ClaimData[] | undefined][]>
+}
+
 export const transactionHashLookup = {
     /**
      *  This stores transaction hash. Is used to check if transaction hash is already present
@@ -217,6 +254,15 @@ export const transactionHashLookup = {
         [sts.tuple(() => [enjinV100.H256, sts.option(() => sts.number())])],
         sts.unit()
     ) as TransactionHashLookupEnjinV100,
+    /**
+     *  This stores transaction hash. Is used to check if transaction hash is already present
+     */
+    matrixV1030: new StorageType(
+        'Claims.TransactionHashLookup',
+        'Optional',
+        [matrixV1030.H256],
+        sts.unit()
+    ) as TransactionHashLookupMatrixV1030,
 }
 
 /**
@@ -269,6 +315,27 @@ export interface TransactionHashLookupEnjinV100 {
         block: Block,
         key: [enjinV100.H256, number | undefined]
     ): AsyncIterable<[k: [enjinV100.H256, number | undefined], v: null | undefined][]>
+}
+
+/**
+ *  This stores transaction hash. Is used to check if transaction hash is already present
+ */
+export interface TransactionHashLookupMatrixV1030 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: matrixV1030.H256): Promise<null | undefined>
+    getMany(block: Block, keys: matrixV1030.H256[]): Promise<(null | undefined)[]>
+    getKeys(block: Block): Promise<matrixV1030.H256[]>
+    getKeys(block: Block, key: matrixV1030.H256): Promise<matrixV1030.H256[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<matrixV1030.H256[]>
+    getKeysPaged(pageSize: number, block: Block, key: matrixV1030.H256): AsyncIterable<matrixV1030.H256[]>
+    getPairs(block: Block): Promise<[k: matrixV1030.H256, v: null | undefined][]>
+    getPairs(block: Block, key: matrixV1030.H256): Promise<[k: matrixV1030.H256, v: null | undefined][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: matrixV1030.H256, v: null | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: matrixV1030.H256
+    ): AsyncIterable<[k: matrixV1030.H256, v: null | undefined][]>
 }
 
 export const totalUnclaimedAmount = {
@@ -353,6 +420,16 @@ export const latestBlockNumber = {
         [],
         enjinV100.TrackedBlockNumbers
     ) as LatestBlockNumberEnjinV100,
+    /**
+     *  Latest block numbers for Ethereum for which requests claim has been made by the
+     *  relayer.
+     */
+    matrixV1030: new StorageType(
+        'Claims.LatestBlockNumber',
+        'Optional',
+        [],
+        sts.number()
+    ) as LatestBlockNumberMatrixV1030,
 }
 
 /**
@@ -389,6 +466,15 @@ export interface LatestBlockNumberMatrixV604 {
 export interface LatestBlockNumberEnjinV100 {
     is(block: RuntimeCtx): boolean
     get(block: Block): Promise<enjinV100.TrackedBlockNumbers | undefined>
+}
+
+/**
+ *  Latest block numbers for Ethereum for which requests claim has been made by the
+ *  relayer.
+ */
+export interface LatestBlockNumberMatrixV1030 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block): Promise<number | undefined>
 }
 
 export const exchangeRate = {

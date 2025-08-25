@@ -136,3 +136,18 @@ export interface SpendsEnjinV1032 {
         key: number
     ): AsyncIterable<[k: number, v: enjinV1032.SpendStatus | undefined][]>
 }
+
+export const lastSpendPeriod = {
+    /**
+     *  The blocknumber for the last triggered spend period.
+     */
+    v1060: new StorageType('Treasury.LastSpendPeriod', 'Optional', [], sts.number()) as LastSpendPeriodV1060,
+}
+
+/**
+ *  The blocknumber for the last triggered spend period.
+ */
+export interface LastSpendPeriodV1060 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block): Promise<number | undefined>
+}
