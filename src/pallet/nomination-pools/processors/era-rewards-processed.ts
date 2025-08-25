@@ -116,7 +116,7 @@ export async function eraRewardsProcessed(
             era: true,
         },
         order: { era: { index: 'desc' } },
-        take: 14,
+        take: 30,
     })
 
     // Calculate changeInRate consistently: current rate - previous rate
@@ -276,7 +276,7 @@ export const computeEraApy = (eraRewards: EraReward[], poolApy: number): Big => 
     }
 
     const validApys = eraRewards.filter((reward) => !discardEra(reward.apy, poolApy))
-    const sumOfApy = validApys.reduce((acc, reward) => acc + reward.apy, 0)
+    const sumOfApy = validApys.slice(0, 15).reduce((acc, reward) => acc + reward.apy, 0)
 
     if (validApys.length === 0) {
         return Big(poolApy)
