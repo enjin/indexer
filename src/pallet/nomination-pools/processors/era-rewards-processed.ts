@@ -284,7 +284,7 @@ export const computeEraApy = (eraRewards: EraReward[], poolApy: number): Big => 
 
     const finalApy = Big(sumOfApy).div(validApys.length)
 
-    if (finalApy.minus(poolApy).abs().gt(50)) {
+    if (finalApy.minus(poolApy).gt(50)) {
         return Big(validApys[0].averageApy)
     }
 
