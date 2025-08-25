@@ -1,4 +1,4 @@
-import { EraReward, NominationPool } from '~/model'
+import { NominationPool } from '~/model'
 import { dataHandlerContext } from '~/contexts'
 import { Job } from 'bullmq'
 import { computeEraApy } from '~/pallet/nomination-pools/processors'
@@ -16,7 +16,7 @@ export async function computePoolRewards(_job: Job, id?: string): Promise<void> 
         order: {
             eraRewards: {
                 era: {
-                    index: 'DESC',
+                    index: 'ASC',
                 },
             },
         },
@@ -27,19 +27,20 @@ export async function computePoolRewards(_job: Job, id?: string): Promise<void> 
     }
 
     const eraRewards = pool.eraRewards
-    let poolApy = pool.apy
+    let poolApy = 0
 
     for (const [index, eraReward] of eraRewards.entries()) {
-        if (index < pool.eraRewards.length - 15) {
-            const rewardRange = eraRewards.slice(index, index + 15)
-            const apy = computeEraApy(rewardRange, poolApy).toNumber()
-            eraReward.averageApy = apy
-            poolApy = apy
+        if (index > 30) {
+            poolApy = eraRewards[index - 1].averageApy
+            const rewardRange = eraRewards.slice(index - 30, index)
+            const apy = computeEraApy(rewardRange, poolApy)
+            eraReward.averageApy = apy.toNumber()
+            poolApy = apy.toNumber()
             await ctx.store.save(eraReward)
         }
     }
 
-    pool.apy = computeEraApy(eraRewards.slice(0, 15), pool.apy).toNumber()
+    pool.apy = poolApy
 
     await ctx.store.save(pool)
 
