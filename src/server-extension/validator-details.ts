@@ -62,11 +62,11 @@ export class ValidatorDetailsResolver {
             .leftJoin(Registration, 'registration', 'registration.id = identity.id')
             .select([
                 'validator.id as id',
-                'validator.nominatorsCount as nominatorsCount',
                 'account.address as address',
                 'registration.image as image',
                 "(CASE WHEN identity.isSub = FALSE THEN registration.display WHEN identity.isSub = TRUE THEN CONCAT(registration.display,'/',identity.name) ELSE NULL END) as name",
             ])
+            .addSelect('validator.nominatorsCount', 'nominatorsCount')
             .addSelect('100', 'uptime30d')
             .addSelect((subquery) => {
                 return subquery
