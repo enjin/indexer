@@ -16,7 +16,7 @@ export async function computePoolRewards(_job: Job, id?: string): Promise<void> 
         order: {
             eraRewards: {
                 era: {
-                    index: 'DESC',
+                    index: 'ASC',
                 },
             },
         },
@@ -27,11 +27,12 @@ export async function computePoolRewards(_job: Job, id?: string): Promise<void> 
     }
 
     const eraRewards = pool.eraRewards
-    let poolApy = pool.apy
+    let poolApy = eraRewards[15].averageApy
 
     for (const [index, eraReward] of eraRewards.entries()) {
-        if (index < pool.eraRewards.length - 15) {
-            const rewardRange = eraRewards.slice(index, index + 15)
+        if (index > 15) {
+            poolApy = eraRewards[index].apy
+            const rewardRange = eraRewards.slice(index - 15, index)
             const apy = computeEraApy(rewardRange, poolApy).toNumber()
             eraReward.averageApy = apy
             poolApy = apy
@@ -39,7 +40,7 @@ export async function computePoolRewards(_job: Job, id?: string): Promise<void> 
         }
     }
 
-    pool.apy = computeEraApy(eraRewards.slice(0, 15), pool.apy).toNumber()
+    pool.apy = poolApy
 
     await ctx.store.save(pool)
 
