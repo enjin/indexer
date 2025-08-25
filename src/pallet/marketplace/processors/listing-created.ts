@@ -136,26 +136,22 @@ export async function listingCreated(
         id: item.id,
         name: item.name,
         body: {
-            id: item.id,
-            name: item.name,
-            body: {
-                listing: {
-                    id: listing.id,
-                    price: listing.price.toString(),
-                    amount: listing.amount.toString(),
-                    highestPrice: listing.highestPrice.toString(),
-                    seller: {
-                        id: listingCreator.id,
-                    },
-                    data: listing.data.toJSON(),
-                    state: listing.state.toJSON(),
-                    type: listing.type.toString(),
-                    makeAssetId: makeAssetId.id,
-                    takeAssetId: takeAssetId.id,
+            listing: {
+                id: listing.id,
+                price: listing.price.toString(),
+                amount: listing.amount.toString(),
+                highestPrice: listing.highestPrice.toString(),
+                seller: {
+                    id: listingCreator.id,
                 },
-                token: isOffer ? takeAssetId.id : makeAssetId.id,
-                extrinsic: item.extrinsic?.id,
+                data: listing.data.toJSON(),
+                state: listing.state.toJSON(),
+                type: listing.type.toString(),
+                makeAssetId: makeAssetId.id,
+                takeAssetId: takeAssetId.id,
             },
+            token: isOffer ? takeAssetId.id : makeAssetId.id,
+            extrinsic: item.extrinsic?.id,
         },
     }
 
