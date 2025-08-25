@@ -31,7 +31,7 @@ export async function computePoolRewards(_job: Job, id?: string): Promise<void> 
 
     for (const [index, eraReward] of eraRewards.entries()) {
         if (index > 15) {
-            poolApy = eraReward.averageApy
+            poolApy = eraRewards[index - 1].averageApy
             await _job.log(`Pool APY: ${poolApy} Index: ${index} Era: ${eraReward.era.index}`)
             const rewardRange = eraRewards.slice(index - 15, index)
             const apy = await computeEraApy(rewardRange, poolApy, _job)
