@@ -86,6 +86,11 @@ export async function computeValidators(job: Job) {
             })
 
             validator.grade = score != null ? ScoreGrade[score] : null
+
+            if (validator.blocked && details.producedBlocks24h > 0) {
+                validator.blocked = false
+            }
+
             await job.log(`Validator ${validator.id} score: ${score}`)
 
             await em.save<Validator>(validator)
