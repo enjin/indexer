@@ -22,16 +22,13 @@ export async function syncActiveValidators(job: Job) {
 
     for (const [key, value] of rpcValidators) {
         const rpcValidator = key.args[0].toString()
-        const validator = validators.find((v) => v.account.address === rpcValidator)
-        if (validator) {
-            const val = value.toJSON() as { blocked: boolean }
-            await job.log(`Validator: ${val.blocked} Blocked: ${validator.blocked}`)
-            validator.blocked = val.blocked ?? false
-        }
         activeValidators.push(rpcValidator)
     }
 
     for (const validator of validators) {
+        const rpcSingleValidator = await api.query.staking.validators(validator.account.address)
+        const val = rpcSingleValidator.toJSON() as { blocked: boolean }
+        validator.blocked = val.blocked ?? false
         validator.isActive = activeValidators.includes(validator.account.address)
     }
 
