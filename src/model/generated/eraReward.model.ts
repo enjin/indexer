@@ -34,8 +34,8 @@ export class EraReward {
     @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new CommissionPayment(undefined, obj)}, nullable: true})
     commission!: CommissionPayment | undefined | null
 
-    @BigIntColumn_({nullable: false})
-    bonus!: bigint
+    @BigIntColumn_({nullable: true})
+    bonus!: bigint | undefined | null
 
     @BigIntColumn_({nullable: false})
     reinvested!: bigint
