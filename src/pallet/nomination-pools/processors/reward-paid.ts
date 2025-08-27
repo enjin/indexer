@@ -19,7 +19,7 @@ import Big from 'big.js'
 import processorConfig from '~/util/config'
 import * as Sentry from '@sentry/node'
 import { In, LessThan } from 'typeorm'
-import { Sns } from '~/util/sns'
+import { Sns, SnsEvent } from '~/util/sns'
 import { nominationPools } from '~/type/events'
 import { computeEraApy } from '~/pallet/nomination-pools/processors/era-rewards-processed'
 import { RewardPaid } from '~/pallet/nomination-pools/events/types'
@@ -232,7 +232,6 @@ async function updatePoolApy(
     return { pool, reward }
 }
 
-export async function rewardPaid(ctx: CommonContext, block: Block, item: EventItem): Promise<EventModel | undefined> {
 export async function rewardPaid(ctx: CommonContext, block: Block, item: EventItem): Promise<EventHandlerResult> {
     if (!item.extrinsic) return undefined
 
@@ -284,7 +283,7 @@ export async function rewardPaid(ctx: CommonContext, block: Block, item: EventIt
 
     await Promise.all([ctx.store.save(pool), ctx.store.save(members), inserts.length && ctx.store.insert(inserts)])
 
-    await Sns.getInstance().send({
+    const snsEvent: SnsEvent = {
         id: item.id,
         name: item.name,
         body: {
@@ -295,7 +294,7 @@ export async function rewardPaid(ctx: CommonContext, block: Block, item: EventIt
             name: pool.name,
             tokenId: `2-${pool.tokenId}`,
         },
-    })
+    }
 
-    return rewardPaidEventModel(item, eventData, stashValidator.id)
+    return [rewardPaidEventModel(item, eventData, stashValidator.id), snsEvent]
 }
