@@ -2,6 +2,7 @@ import assert from "assert"
 import * as marshal from "./marshal"
 import {NominationPool} from "./nominationPool.model"
 import {Account} from "./account.model"
+import {CommissionPayment} from "./_commissionPayment"
 
 export class NominationPoolsRewardPaid {
     public readonly isTypeOf = 'NominationPoolsRewardPaid'
@@ -9,8 +10,9 @@ export class NominationPoolsRewardPaid {
     private _era!: number
     private _validatorStash!: string
     private _reward!: bigint
-    private _bonus!: bigint
+    private _bonus!: bigint | undefined | null
     private _poolId!: string
+    private _commission!: CommissionPayment | undefined | null
 
     constructor(props?: Partial<Omit<NominationPoolsRewardPaid, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
@@ -19,8 +21,9 @@ export class NominationPoolsRewardPaid {
             this._era = marshal.int.fromJSON(json.era)
             this._validatorStash = marshal.string.fromJSON(json.validatorStash)
             this._reward = marshal.bigint.fromJSON(json.reward)
-            this._bonus = marshal.bigint.fromJSON(json.bonus)
+            this._bonus = json.bonus == null ? undefined : marshal.bigint.fromJSON(json.bonus)
             this._poolId = marshal.string.fromJSON(json.poolId)
+            this._commission = json.commission == null ? undefined : new CommissionPayment(undefined, json.commission)
         }
     }
 
@@ -60,12 +63,11 @@ export class NominationPoolsRewardPaid {
         this._reward = value
     }
 
-    get bonus(): bigint {
-        assert(this._bonus != null, 'uninitialized access')
+    get bonus(): bigint | undefined | null {
         return this._bonus
     }
 
-    set bonus(value: bigint) {
+    set bonus(value: bigint | undefined | null) {
         this._bonus = value
     }
 
@@ -78,6 +80,14 @@ export class NominationPoolsRewardPaid {
         this._poolId = value
     }
 
+    get commission(): CommissionPayment | undefined | null {
+        return this._commission
+    }
+
+    set commission(value: CommissionPayment | undefined | null) {
+        this._commission = value
+    }
+
     toJSON(): object {
         return {
             isTypeOf: this.isTypeOf,
@@ -85,8 +95,9 @@ export class NominationPoolsRewardPaid {
             era: this.era,
             validatorStash: this.validatorStash,
             reward: marshal.bigint.toJSON(this.reward),
-            bonus: marshal.bigint.toJSON(this.bonus),
+            bonus: this.bonus == null ? undefined : marshal.bigint.toJSON(this.bonus),
             poolId: this.poolId,
+            commission: this.commission == null ? undefined : this.commission.toJSON(),
         }
     }
 }
