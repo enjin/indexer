@@ -39,7 +39,9 @@ export async function tokenAccountDestroyed(
         })
         for (const member of poolMembers) {
             member.tokenAccount = null
-            member.isActive = false
+            if (member.unbondingEras === null) {
+                member.isActive = false
+            }
         }
 
         await ctx.store.save(poolMembers)
