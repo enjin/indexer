@@ -50,6 +50,7 @@ export function safeJsonString(data: Record<string, unknown>): string {
 }
 
 export function getEventCacheKey(data: Record<string, unknown>): string {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { extrinsic, ...rest } = data
     const json = safeJsonString(rest)
     const hash = createHash('md5').update(json).digest('hex')
