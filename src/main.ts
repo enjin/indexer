@@ -33,6 +33,7 @@ import { Logger } from '~/util/logger'
 import { isRelay, safeJsonString } from '~/util/tools'
 import { In } from 'typeorm'
 import { isSnsEvent, Sns, SnsEvent } from '~/util/sns'
+import Rpc from '~/util/rpc'
 
 const logger = new Logger('sqd:processor', config.logLevel)
 
@@ -46,6 +47,10 @@ async function bootstrap() {
     await dataService.initialize()
 
     logger.info(`last block number on config: ${dataService.lastBlockNumber}`)
+
+    const { api } = await Rpc.getInstance()
+
+    const snsEvents: Record<string, SnsEvent[]> = {}
 
     processorConfig.run(
         new TypeormDatabase({
@@ -65,6 +70,10 @@ async function bootstrap() {
                     `Processing batch of blocks from ${ctx.blocks[0].header.height} to ${ctx.blocks[ctx.blocks.length - 1].header.height}`
                 )
 
+                const finalizedHash = await api.rpc.chain.getFinalizedHead()
+                const finalizedHeader = await api.rpc.chain.getHeader(finalizedHash)
+                const batchFinalizedHeight = finalizedHeader.number.toNumber()
+
                 for (const block of ctx.blocks) {
                     const blockStart = Date.now()
                     ctx.log.debug(
@@ -75,7 +84,6 @@ async function bootstrap() {
                     const signers = new Set<string>()
                     const eventsCollection: Event[] = []
                     const accountTokenEvents: AccountTokenEvent[] = []
-                    const snsEvents: SnsEvent[] = []
 
                     for (const extrinsic of block.extrinsics) {
                         const [s, e] = await processExtrinsics(ctx, block.header, block.events, extrinsic)
@@ -91,7 +99,12 @@ async function bootstrap() {
                         const [e, a, s] = await processEvents(ctx, block.header, eventItem, dataService.lastBlockNumber)
                         if (e) eventsCollection.push(e)
                         if (a) accountTokenEvents.push(a)
-                        if (s) snsEvents.push(s)
+                        if (s) {
+                            if (!snsEvents[block.header.height]) {
+                                snsEvents[block.header.height] = []
+                            }
+                            snsEvents[block.header.height].push(s)
+                        }
                     }
 
                     if (block.header.height > dataService.lastBlockNumber) {
@@ -109,8 +122,13 @@ async function bootstrap() {
                         await ctx.store.save(chunk)
                     }
 
-                    if (snsEvents.length > 0) {
-                        for (const snsEvent of snsEvents) {
+                    const snsEventsFinalized = snsEvents[batchFinalizedHeight]
+
+                    if (snsEventsFinalized?.length > 0) {
+                        ctx.log.info(
+                            `Sending ${snsEventsFinalized.length} SNS messages for block ${batchFinalizedHeight}`
+                        )
+                        for (const snsEvent of snsEventsFinalized) {
                             if (await isValidEvent(ctx, snsEvent.id)) {
                                 ctx.log.info(
                                     `Sending SNS message ${snsEvent.id} ${snsEvent.name}  ${safeJsonString(snsEvent.body)}`
@@ -120,7 +138,8 @@ async function bootstrap() {
                                 ctx.log.warn(`Event ${snsEvent.id} is not valid, skipping`)
                             }
                         }
-                        snsEvents.length = 0
+                        ctx.log.info(`----------------- Clearing snsEvents -----------------`)
+                        snsEvents[batchFinalizedHeight] = []
                     }
 
                     const blockEnd = Date.now()
