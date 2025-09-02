@@ -30,10 +30,9 @@ import { calls, events } from '~/type'
 import { QueueUtils } from '~/queue'
 import { QueuesEnum } from '~/queue/constants'
 import { Logger } from '~/util/logger'
-import { isRelay, safeJsonString } from '~/util/tools'
+import { getEventCacheKey, isRelay, safeJsonString } from '~/util/tools'
 import { In } from 'typeorm'
 import { isSnsEvent, Sns, SnsEvent } from '~/util/sns'
-import Rpc from '~/util/rpc'
 
 const logger = new Logger('sqd:processor', config.logLevel)
 
@@ -48,9 +47,8 @@ async function bootstrap() {
 
     logger.info(`last block number on config: ${dataService.lastBlockNumber}`)
 
-    const { api } = await Rpc.getInstance()
-
-    const snsEvents: Record<string, SnsEvent[]> = {}
+    const snsEvents: SnsEvent[] = []
+    let snsEventsCache: Map<string, { value: SnsEvent; expiresAt: number }> = new Map()
 
     processorConfig.run(
         new TypeormDatabase({
@@ -69,10 +67,6 @@ async function bootstrap() {
                 ctx.log.debug(
                     `Processing batch of blocks from ${ctx.blocks[0].header.height} to ${ctx.blocks[ctx.blocks.length - 1].header.height}`
                 )
-
-                const finalizedHash = await api.rpc.chain.getFinalizedHead()
-                const finalizedHeader = await api.rpc.chain.getHeader(finalizedHash)
-                const batchFinalizedHeight = finalizedHeader.number.toNumber()
 
                 for (const block of ctx.blocks) {
                     const blockStart = Date.now()
@@ -100,10 +94,19 @@ async function bootstrap() {
                         if (e) eventsCollection.push(e)
                         if (a) accountTokenEvents.push(a)
                         if (s) {
-                            if (!snsEvents[block.header.height]) {
-                                snsEvents[block.header.height] = []
+                            const cachedSnsEvent = getEventCacheKey(s.body)
+                            if (cachedSnsEvent && !snsEventsCache.has(cachedSnsEvent)) {
+                                snsEventsCache.set(cachedSnsEvent, { value: s, expiresAt: Date.now() + 120_000 })
+                                snsEvents.push(s)
+                            } else {
+                                snsEvents.push({
+                                    ...s,
+                                    body: {
+                                        ...s.body,
+                                        duplicate: true,
+                                    },
+                                })
                             }
-                            snsEvents[block.header.height].push(s)
                         }
                     }
 
@@ -122,24 +125,14 @@ async function bootstrap() {
                         await ctx.store.save(chunk)
                     }
 
-                    const snsEventsFinalized = snsEvents[batchFinalizedHeight]
-
-                    if (snsEventsFinalized?.length > 0) {
-                        ctx.log.info(
-                            `Sending ${snsEventsFinalized.length} SNS messages for block ${batchFinalizedHeight}`
-                        )
-                        for (const snsEvent of snsEventsFinalized) {
+                    if (snsEvents.length > 0) {
+                        for (const snsEvent of snsEvents) {
                             if (await isValidEvent(ctx, snsEvent.id)) {
-                                ctx.log.info(
-                                    `Sending SNS message ${snsEvent.id} ${snsEvent.name}  ${safeJsonString(snsEvent.body)}`
-                                )
                                 await Sns.getInstance().send(snsEvent)
-                            } else {
-                                ctx.log.warn(`Event ${snsEvent.id} is not valid, skipping`)
                             }
                         }
-                        ctx.log.info(`----------------- Clearing snsEvents -----------------`)
-                        snsEvents[batchFinalizedHeight] = []
+                        snsEventsCache = clearExpiredCache(snsEventsCache)
+                        snsEvents.length = 0
                     }
 
                     const blockEnd = Date.now()
@@ -186,6 +179,16 @@ async function isValidEvent(ctx: CommonContext, id: string): Promise<boolean> {
     })
 
     return event !== undefined
+}
+
+function clearExpiredCache(snsEventsCache: Map<string, { value: SnsEvent; expiresAt: number }>) {
+    snsEventsCache.forEach((value: { value: SnsEvent; expiresAt: number }, key: string) => {
+        if (value.expiresAt < Date.now()) {
+            snsEventsCache.delete(key)
+        }
+    })
+
+    return snsEventsCache
 }
 
 async function startWarpSync(ctx: CommonContext, block: Block) {
