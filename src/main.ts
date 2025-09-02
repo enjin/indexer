@@ -30,7 +30,7 @@ import { calls, events } from '~/type'
 import { QueueUtils } from '~/queue'
 import { QueuesEnum } from '~/queue/constants'
 import { Logger } from '~/util/logger'
-import { getEventCacheKey, isRelay, safeJsonString } from '~/util/tools'
+import { getEventCacheKey, isRelay } from '~/util/tools'
 import { In } from 'typeorm'
 import { isSnsEvent, Sns, SnsEvent } from '~/util/sns'
 
