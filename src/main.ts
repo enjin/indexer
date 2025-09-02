@@ -30,7 +30,7 @@ import { calls, events } from '~/type'
 import { QueueUtils } from '~/queue'
 import { QueuesEnum } from '~/queue/constants'
 import { Logger } from '~/util/logger'
-import { isRelay } from '~/util/tools'
+import { getEventCacheKey, isRelay } from '~/util/tools'
 import { In } from 'typeorm'
 import { isSnsEvent, Sns, SnsEvent } from '~/util/sns'
 
@@ -46,6 +46,9 @@ async function bootstrap() {
     await dataService.initialize()
 
     logger.info(`last block number on config: ${dataService.lastBlockNumber}`)
+
+    const snsEvents: SnsEvent[] = []
+    let snsEventsCache: Map<string, { value: SnsEvent; expiresAt: number }> = new Map()
 
     processorConfig.run(
         new TypeormDatabase({
@@ -75,7 +78,6 @@ async function bootstrap() {
                     const signers = new Set<string>()
                     const eventsCollection: Event[] = []
                     const accountTokenEvents: AccountTokenEvent[] = []
-                    const snsEvents: SnsEvent[] = []
 
                     for (const extrinsic of block.extrinsics) {
                         const [s, e] = await processExtrinsics(ctx, block.header, block.events, extrinsic)
@@ -91,7 +93,21 @@ async function bootstrap() {
                         const [e, a, s] = await processEvents(ctx, block.header, eventItem, dataService.lastBlockNumber)
                         if (e) eventsCollection.push(e)
                         if (a) accountTokenEvents.push(a)
-                        if (s) snsEvents.push(s)
+                        if (s) {
+                            const cachedSnsEvent = getEventCacheKey(s.body)
+                            if (cachedSnsEvent && !snsEventsCache.has(cachedSnsEvent)) {
+                                snsEventsCache.set(cachedSnsEvent, { value: s, expiresAt: Date.now() + 120_000 })
+                                snsEvents.push(s)
+                            } else {
+                                snsEvents.push({
+                                    ...s,
+                                    body: {
+                                        ...s.body,
+                                        isReorganized: true,
+                                    },
+                                })
+                            }
+                        }
                     }
 
                     if (block.header.height > dataService.lastBlockNumber) {
@@ -109,10 +125,13 @@ async function bootstrap() {
                         await ctx.store.save(chunk)
                     }
 
-                    if (ctx.isHead && snsEvents.length > 0) {
+                    if (snsEvents.length > 0) {
                         for (const snsEvent of snsEvents) {
-                            await Sns.getInstance().send(snsEvent)
+                            if (await isValidEvent(ctx, snsEvent.id)) {
+                                await Sns.getInstance().send(snsEvent)
+                            }
                         }
+                        snsEventsCache = clearExpiredCache(snsEventsCache)
                         snsEvents.length = 0
                     }
 
@@ -152,6 +171,24 @@ async function bootstrap() {
             }
         }
     )
+}
+
+async function isValidEvent(ctx: CommonContext, id: string): Promise<boolean> {
+    const event = await ctx.store.findOne(Event, {
+        where: { id },
+    })
+
+    return event !== undefined
+}
+
+function clearExpiredCache(snsEventsCache: Map<string, { value: SnsEvent; expiresAt: number }>) {
+    snsEventsCache.forEach((value: { value: SnsEvent; expiresAt: number }, key: string) => {
+        if (value.expiresAt < Date.now()) {
+            snsEventsCache.delete(key)
+        }
+    })
+
+    return snsEventsCache
 }
 
 async function startWarpSync(ctx: CommonContext, block: Block) {
