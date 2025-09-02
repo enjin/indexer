@@ -132,8 +132,6 @@ export async function listingCreated(
         await ctx.store.save(makeAssetId)
     }
 
-    ctx.log.info(`Listing created: ${listing.id} event: ${item.id}`)
-
     const snsEvent: SnsEvent = {
         id: item.id,
         name: item.name,

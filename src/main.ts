@@ -30,7 +30,7 @@ import { calls, events } from '~/type'
 import { QueueUtils } from '~/queue'
 import { QueuesEnum } from '~/queue/constants'
 import { Logger } from '~/util/logger'
-import { isRelay } from '~/util/tools'
+import { isRelay, safeJsonString } from '~/util/tools'
 import { In } from 'typeorm'
 import { isSnsEvent, Sns, SnsEvent } from '~/util/sns'
 
@@ -111,7 +111,14 @@ async function bootstrap() {
 
                     if (ctx.isHead && snsEvents.length > 0) {
                         for (const snsEvent of snsEvents) {
-                            await Sns.getInstance().send(snsEvent)
+                            if (await isValidEvent(ctx, snsEvent.id)) {
+                                ctx.log.info(
+                                    `Sending SNS message ${snsEvent.id} ${snsEvent.name}  ${safeJsonString(snsEvent.body)}`
+                                )
+                                await Sns.getInstance().send(snsEvent)
+                            } else {
+                                ctx.log.warn(`Event ${snsEvent.id} is not valid, skipping`)
+                            }
                         }
                         snsEvents.length = 0
                     }
@@ -152,6 +159,14 @@ async function bootstrap() {
             }
         }
     )
+}
+
+async function isValidEvent(ctx: CommonContext, id: string): Promise<boolean> {
+    const event = await ctx.store.findOne(Event, {
+        where: { id },
+    })
+
+    return event !== undefined
 }
 
 async function startWarpSync(ctx: CommonContext, block: Block) {
