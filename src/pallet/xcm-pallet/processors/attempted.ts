@@ -21,8 +21,8 @@ export async function attempted(ctx: CommonContext, block: Block, item: EventIte
     const beneficiaryInterior = call.beneficiary.value.interior
     const assetInterior = call.assets.value.at(0)
 
-    if (destInterior.__kind === 'Here') {
-        destination = processorConfig.chainName.startsWith('canary') ? 'canary-relaychain' : 'enjin-relaychain'
+    if (destInterior.__kind === 'X1') {
+        destination = processorConfig.chainName.startsWith('canary') ? 'canary-matrixchain' : 'enjin-matrixchain'
     }
 
     if (
