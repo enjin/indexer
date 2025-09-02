@@ -109,7 +109,7 @@ async function bootstrap() {
                         await ctx.store.save(chunk)
                     }
 
-                    if (ctx.isHead && snsEvents.length > 0) {
+                    if (snsEvents.length > 0) {
                         for (const snsEvent of snsEvents) {
                             if (await isValidEvent(ctx, snsEvent.id)) {
                                 ctx.log.info(
