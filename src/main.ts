@@ -103,7 +103,7 @@ async function bootstrap() {
                                     ...s,
                                     body: {
                                         ...s.body,
-                                        duplicate: true,
+                                        isReorganized: true,
                                     },
                                 })
                             }
