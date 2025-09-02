@@ -92,9 +92,9 @@ export async function listingCancelled(
         },
     }
 
-    QueueUtils.dispatchComputeStats(makeAssetId.collection.id)
+    const isOffer: boolean = listing.type === ListingType.Offer
 
-    const isOffer = listing.type === ListingType.Offer
+    QueueUtils.dispatchComputeStats(isOffer ? takeAssetId.collection.id : makeAssetId.collection.id)
 
     return [
         ...mappings.marketplace.events.listingCancelledEventModel(

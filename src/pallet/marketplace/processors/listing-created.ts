@@ -172,7 +172,7 @@ export async function listingCreated(
         }
     }
 
-    QueueUtils.dispatchComputeStats(makeAssetId.collection.id)
+    QueueUtils.dispatchComputeStats(isOffer ? takeAssetId.collection.id : makeAssetId.collection.id)
 
     return [
         ...mappings.marketplace.events.listingCreatedEventModel(
