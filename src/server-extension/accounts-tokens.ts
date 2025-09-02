@@ -247,56 +247,19 @@ export class AccountsTokensResolver {
             return new AccountsTokensResponse({ data: [], count })
         }
 
+        const metadataKeys = ['name', 'description', 'fallback_image', 'banner_image', 'media', 'uri', 'external_url']
+
         const tokens = await manager
             .getRepository(Token)
             .createQueryBuilder('token')
-            .select([
-                'token.id',
-                'token.tokenId',
-                'token.supply',
-                'token.isFrozen',
-                'token.freezeState',
-                'token.metadata',
-                'token.nonFungible',
-                'token.createdAt',
-            ])
-            .innerJoinAndMapOne('token.collection', Collection, 'collection', 'token.collection = collection.id')
-            .addSelect(['collection.id', 'collection.collectionId', 'collection.metadata', 'collection.stats'])
-            .leftJoinAndMapMany(
-                'token.attributes',
-                'token.attributes',
-                'tokenAttrs',
-                'tokenAttrs.key IN (:...tokenMetadataKeys)',
-                {
-                    tokenMetadataKeys: [
-                        'name',
-                        'description',
-                        'fallback_image',
-                        'banner_image',
-                        'media',
-                        'uri',
-                        'external_url',
-                    ],
-                }
-            )
-            .leftJoinAndMapMany(
-                'token.collection.attributes',
+            .leftJoinAndSelect('token.collection', 'collection')
+            .leftJoinAndSelect('token.attributes', 'tokenAttrs', 'tokenAttrs.key IN (:...metadataKeys)')
+            .leftJoinAndSelect(
                 'collection.attributes',
                 'collectionAttrs',
-                'collectionAttrs.token_id IS NULL AND collectionAttrs.key IN (:...collectionMetadataKeys)',
-                {
-                    collectionMetadataKeys: [
-                        'name',
-                        'description',
-                        'fallback_image',
-                        'banner_image',
-                        'media',
-                        'uri',
-                        'external_url',
-                    ],
-                }
+                'collectionAttrs.token IS NULL AND collectionAttrs.key IN (:...metadataKeys)'
             )
-            .where('token.id IN (:...tokenIds)', { tokenIds: tokenIds })
+            .where('token.id IN (:...tokenIds)', { tokenIds, metadataKeys })
             .orderBy(orderBy, order, 'NULLS LAST')
             .addOrderBy('token.id', order, 'NULLS LAST')
             .getMany()
