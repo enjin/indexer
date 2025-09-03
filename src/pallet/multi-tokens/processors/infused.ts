@@ -4,6 +4,7 @@ import { Token } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
 import { EventHandlerResult } from '~/processor.handler'
+import { QueueUtils } from '~/queue'
 
 export async function infused(
     ctx: CommonContext,
@@ -44,6 +45,8 @@ export async function infused(
         token.infusion = storage.infusion ?? 0n
         await ctx.store.save(token)
     }
+
+    QueueUtils.dispatchComputeStats(data.collectionId.toString())
 
     const snsEvent: SnsEvent = {
         id: item.id,

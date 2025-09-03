@@ -51,7 +51,7 @@ export async function computeStats(_job: Job, collectionId: string) {
         em
             .getRepository(Token)
             .createQueryBuilder('token')
-            .select('SUM(token.infusion)', 'total_infused')
+            .select('SUM(token.infusion * token.supply)', 'total_infused')
             .where('token.collection = :collectionId', { collectionId })
             .getRawOne(),
     ]
