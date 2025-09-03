@@ -94,9 +94,10 @@ async function bootstrap() {
                         if (e) eventsCollection.push(e)
                         if (a) accountTokenEvents.push(a)
                         if (s) {
-                            const cachedSnsEvent = getEventCacheKey(s.body)
-                            if (cachedSnsEvent && !snsEventsCache.has(cachedSnsEvent)) {
-                                snsEventsCache.set(cachedSnsEvent, { value: s, expiresAt: Date.now() + 120_000 })
+                            const eventCacheKey = getEventCacheKey(s.body)
+                            const cachedSnsEvent = snsEventsCache.get(eventCacheKey)
+                            if (eventCacheKey && !cachedSnsEvent) {
+                                snsEventsCache.set(eventCacheKey, { value: s, expiresAt: Date.now() + 120_000 })
                                 snsEvents.push(s)
                             } else {
                                 snsEvents.push({
@@ -104,6 +105,7 @@ async function bootstrap() {
                                     body: {
                                         ...s.body,
                                         isReorganized: true,
+                                        reorganizedId: cachedSnsEvent?.value.id,
                                     },
                                 })
                             }
