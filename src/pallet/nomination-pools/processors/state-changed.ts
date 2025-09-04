@@ -12,11 +12,6 @@ export async function stateChanged(ctx: CommonContext, block: Block, item: Event
     const pool = await ctx.store.findOne(NominationPool, {
         where: {
             id: data.poolId.toString(),
-            degenToken: {
-                tokenAccounts: {
-                    balance: 1n,
-                },
-            },
         },
         relations: {
             degenToken: {

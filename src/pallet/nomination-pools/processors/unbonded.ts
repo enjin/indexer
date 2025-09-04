@@ -35,7 +35,7 @@ export async function unbonded(ctx: CommonContext, block: Block, item: EventItem
     ])
 
     const owner = await ctx.store.findOne(TokenAccount, {
-        where: { token: { id: `2-${pool.tokenId}` }, balance: 1n },
+        where: { token: { id: `2-${pool.tokenId}` } },
         relations: { account: true },
     })
 

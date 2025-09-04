@@ -14,11 +14,6 @@ export async function poolMutated(ctx: CommonContext, block: Block, item: EventI
     const pool = await ctx.store.findOne<NominationPool>(NominationPool, {
         where: {
             id: data.poolId.toString(),
-            degenToken: {
-                tokenAccounts: {
-                    balance: 1n,
-                },
-            },
         },
         relations: {
             degenToken: {
