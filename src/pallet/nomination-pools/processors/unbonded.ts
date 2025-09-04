@@ -7,6 +7,7 @@ import * as mappings from '~/pallet/index'
 import { MoreThan } from 'typeorm'
 import { Unbonded } from '~/pallet/nomination-pools/events'
 import { EventHandlerResult } from '~/processor.handler'
+import { safeJsonString } from '~/util/tools'
 
 export async function unbonded(ctx: CommonContext, block: Block, item: EventItem): Promise<EventHandlerResult> {
     if (!item.extrinsic || !item.extrinsic.call) return undefined
@@ -61,6 +62,8 @@ export async function unbonded(ctx: CommonContext, block: Block, item: EventItem
             owner: owner?.account.id,
         },
     }
+
+    ctx.log.info(`Created SNS event ${snsEvent.id} ${snsEvent.name} ${safeJsonString(snsEvent.body)}`)
 
     if (!poolMember.isStash && bondedMembers.length === 0 && pool.state === PoolState.Destroying) {
         await Sns.getInstance().send({

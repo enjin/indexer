@@ -225,6 +225,9 @@ async function processEvents(
         if (Array.isArray(event)) {
             const tokenAccountEvent = event[1] instanceof AccountTokenEvent ? event[1] : undefined
             const snsEvent = event[2] ? event[2] : isSnsEvent(event[1]) ? event[1] : undefined
+            if (snsEvent) {
+                ctx.log.info(`Received SNS event ${snsEvent.id} ${snsEvent.name} ${safeJsonString(snsEvent.body)}`)
+            }
 
             return [event[0], tokenAccountEvent, snsEvent]
         } else {
