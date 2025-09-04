@@ -18,11 +18,6 @@ export async function destroyed(ctx: CommonContext, block: Block, item: EventIte
     const nominationPool = await ctx.store.findOne(NominationPool, {
         where: {
             id: eventData.poolId.toString(),
-            degenToken: {
-                tokenAccounts: {
-                    balance: 1n,
-                },
-            },
         },
         relations: {
             members: true,
