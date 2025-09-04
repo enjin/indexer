@@ -58,31 +58,19 @@ export class BestPoolsResolver {
             .createQueryBuilder('account')
             .where('account.id = :accountId', { accountId })
             .getOne()
+        const amount = account?.balance.free ?? 0n
 
         const pools = await manager
             .getRepository(NominationPool)
             .createQueryBuilder('pool')
             .where('pool.state = :state', { state: PoolState.Open })
+            .andWhere('pool.availableStakePoints >= :amount', { amount })
+            .andWhere('COALESCE(jsonb_array_length(pool.slashes), 0) = 0')
             .getMany()
-
-        const amount = account?.balance.free ?? 0n
 
         if (pools.length === 0) return []
 
-        const spaceFiltered = pools.filter((p) => {
-            const remainingCapacity = p.capacity - p.points
-            return remainingCapacity > 0n && remainingCapacity >= amount
-        })
-
-        if (spaceFiltered.length === 0) return []
-
-        const notSlashed = spaceFiltered.filter((p) => !p.slashes || p.slashes.length === 0)
-
-        if (notSlashed.length === 0) return []
-
-        // Compute average reward rate of all remaining pools (weighted by member stakes if available, else simple)
-        // We will use pool.rate (bigint, 1e18 fixed point) and weight by pool.points (sENJ supply)
-        const poolsWithRate = notSlashed.filter((p) => p.rate != null)
+        const poolsWithRate = pools.filter((p) => p.rate != null)
 
         let thresholdRate: bigint | null = null
         if (poolsWithRate.length > 0) {
@@ -96,8 +84,7 @@ export class BestPoolsResolver {
             }
         }
 
-        // Keep only pools with rate >= 80% avg; if a pool has no rate set, keep it
-        const rateFiltered = notSlashed.filter((p) => {
+        const rateFiltered = pools.filter((p) => {
             if (thresholdRate == null) return true
             if (p.rate == null) return true
             return p.rate >= thresholdRate
