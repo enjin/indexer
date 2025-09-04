@@ -1,9 +1,9 @@
 import { Field, ObjectType, Query, Resolver, Args, ArgsType, registerEnumType } from 'type-graphql'
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
-import { Validate, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator'
+import { Validate } from 'class-validator'
 import { PoolMember, NominationPool, TokenAccount, EraReward, PoolMemberRewards, PoolState, Token } from '~/model'
-import { isValidAddress } from '~/util/tools'
+import { IsPublicKey, IsPublicKeyArray } from './helpers'
 
 const stakingTimeFrameMap = {
     DAY: '1 day',
@@ -26,31 +26,6 @@ enum StakingTimeframeInput {
 registerEnumType(StakingTimeframeInput, {
     name: 'StakingTimeframeInput',
 })
-
-@ValidatorConstraint({ name: 'PublicKey', async: false })
-class IsPublicKey implements ValidatorConstraintInterface {
-    validate(value: string) {
-        if (!value) return true
-        return isValidAddress(value)
-    }
-
-    defaultMessage() {
-        return 'Invalid public key!'
-    }
-}
-
-@ValidatorConstraint({ name: 'PublicKeyArray', async: false })
-class IsPublicKeyArray implements ValidatorConstraintInterface {
-    validate(value: string[]) {
-        if (!value) return true
-        if (!Array.isArray(value)) return false
-        return value.every((v) => isValidAddress(v))
-    }
-
-    defaultMessage() {
-        return 'Invalid public key array! All values must be valid addresses.'
-    }
-}
 
 @ArgsType()
 class AccountStakingSummaryArgs {

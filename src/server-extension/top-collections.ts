@@ -18,26 +18,7 @@ import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
 import { Collection, Listing, ListingSale, ListingStatus, Token } from '~/model'
 import { DateTimeColumn as DateTimeColumn_ } from '@subsquid/typeorm-store/lib/decorators/columns/DateTimeColumn'
-
-const timeFrameMap = {
-    HOUR: { c: '1 hour', p: '2 hours' },
-    HOUR_6: { c: '6 hours', p: '12 hours' },
-    HOUR_24: { c: '24 hours', p: '48 hours' },
-    WEEK: { c: '7 days', p: '14 days' },
-    MONTH: { c: '30 days', p: '60 days' },
-    YEAR: { c: '365 days', p: '730 days' },
-    ALL: { c: '0', p: '0' },
-}
-
-enum TopCollectionTimeframeInput {
-    HOUR = 'HOUR',
-    HOUR_6 = 'HOUR_6',
-    HOUR_24 = 'HOUR_24',
-    WEEK = 'WEEK',
-    MONTH = 'MONTH',
-    YEAR = 'YEAR',
-    ALL = 'ALL',
-}
+import { OrderInput, TimeframeInput, timeFrameMap } from './types'
 
 enum TopCollectionOrderByInput {
     CREATED_AT = '"createdAt"',
@@ -50,12 +31,7 @@ enum TopCollectionOrderByInput {
     TOP = '"topScore"',
 }
 
-enum TopCollectionOrderInput {
-    ASC = 'ASC',
-    DESC = 'DESC',
-}
-
-registerEnumType(TopCollectionTimeframeInput, {
+registerEnumType(TimeframeInput, {
     name: 'TopCollectionTimeframeInput',
 })
 
@@ -63,7 +39,7 @@ registerEnumType(TopCollectionOrderByInput, {
     name: 'TopCollectionOrderByInput',
 })
 
-registerEnumType(TopCollectionOrderInput, {
+registerEnumType(OrderInput, {
     name: 'TopCollectionOrderInput',
 })
 
@@ -163,8 +139,8 @@ class CollectionAttributeWhereInput {
 
 @ArgsType()
 export class TopCollectionArgs {
-    @Field(() => TopCollectionTimeframeInput)
-    timeFrame!: TopCollectionTimeframeInput
+    @Field(() => TimeframeInput)
+    timeFrame!: TimeframeInput
 
     @Field(() => TopCollectionOrderByInput)
     orderBy!: TopCollectionOrderByInput
@@ -175,8 +151,8 @@ export class TopCollectionArgs {
     @Field(() => String, { nullable: true, description: 'Search by collection name' })
     query!: string
 
-    @Field(() => TopCollectionOrderInput)
-    order!: TopCollectionOrderInput
+    @Field(() => OrderInput)
+    order!: OrderInput
 
     @Field(() => Int)
     offset: number = 0
@@ -210,7 +186,7 @@ export class TopCollectionResolver {
             .addFrom((mqb) => {
                 mqb.addSelect('collectionId AS id')
                     .addSelect(
-                        `(SELECT COUNT(*)::int FROM collection_account a WHERE a.collection_id = l.collectionId ${timeFrame !== TopCollectionTimeframeInput.ALL ? `AND "createdAt" >= NOW() - INTERVAL '${timeFrameMap[timeFrame].c}'` : ''} ) AS users`
+                        `(SELECT COUNT(*)::int FROM collection_account a WHERE a.collection_id = l.collectionId ${timeFrame !== TimeframeInput.ALL ? `AND "createdAt" >= NOW() - INTERVAL '${timeFrameMap[timeFrame].c}'` : ''} ) AS users`
                     )
                     .addSelect('metadata AS metadata')
                     .addSelect('stats AS stats')
@@ -243,7 +219,7 @@ export class TopCollectionResolver {
                             .addSelect('collection.verified_at AS "verifiedAt"')
                             .addSelect('collection.created_at AS "createdAt"')
                             .addSelect('collection.category AS category')
-                        if (timeFrame === TopCollectionTimeframeInput.ALL) {
+                        if (timeFrame === TimeframeInput.ALL) {
                             inBuilder
                                 .addSelect(`COALESCE(SUM(sale.amount * sale.price), 0) AS volume_last_duration`)
                                 .addSelect(`COALESCE(COUNT(sale.id)::int, 0) AS sales_last_duration`)

@@ -2,21 +2,9 @@ import { Field, ObjectType, Query, Resolver, Args, ArgsType } from 'type-graphql
 import { BigInteger } from '@subsquid/graphql-server'
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
-import { Validate, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator'
+import { Validate } from 'class-validator'
 import { TokenAccount, Token, Collection } from '~/model'
-import { isValidAddress } from '~/util/tools'
-
-@ValidatorConstraint({ name: 'PublicKeyArray', async: false })
-class IsPublicKeyArray implements ValidatorConstraintInterface {
-    validate(value: string[]) {
-        if (!Array.isArray(value)) return false
-        return value.every((address) => isValidAddress(address))
-    }
-
-    defaultMessage() {
-        return 'One or more invalid public keys in the array!'
-    }
-}
+import { IsPublicKeyArray } from './helpers'
 
 @ArgsType()
 class AccountsNftSummaryArgs {
