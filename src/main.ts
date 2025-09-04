@@ -30,7 +30,7 @@ import { calls, events } from '~/type'
 import { QueueUtils } from '~/queue'
 import { QueuesEnum } from '~/queue/constants'
 import { Logger } from '~/util/logger'
-import { getEventCacheKey, isRelay } from '~/util/tools'
+import { getEventCacheKey, isRelay, safeJsonString } from '~/util/tools'
 import { In } from 'typeorm'
 import { isSnsEvent, Sns, SnsEvent } from '~/util/sns'
 
@@ -99,7 +99,11 @@ async function bootstrap() {
                             if (eventCacheKey && !cachedSnsEvent) {
                                 snsEventsCache.set(eventCacheKey, { value: s, expiresAt: Date.now() + 120_000 })
                                 snsEvents.push(s)
+                                ctx.log.info(`Adding SNS event ${s.id} to cache ${s.name} ${safeJsonString(s.body)}`)
                             } else {
+                                ctx.log.info(
+                                    `Reorganizing SNS event ${s.id} with cached event ${cachedSnsEvent?.value.id} ${s.name} ${safeJsonString(s.body)}`
+                                )
                                 snsEvents.push({
                                     ...s,
                                     body: {
