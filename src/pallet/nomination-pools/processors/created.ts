@@ -28,7 +28,7 @@ export async function created(ctx: CommonContext, block: Block, item: EventItem)
     }
 
     const token = await ctx.store.findOneOrFail(Token, {
-        where: { id: `2-${callData.tokenId}`, tokenAccounts: { balance: 1n } },
+        where: { id: `2-${callData.tokenId}` },
         relations: {
             tokenAccounts: {
                 account: true,

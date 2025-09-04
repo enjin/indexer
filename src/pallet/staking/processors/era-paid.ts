@@ -100,7 +100,6 @@ async function dispatchStakePoolsEvents(ctx: CommonContext, eraIndex: number, it
             if (unbondingComplete) {
                 const owner = await ctx.store.findOne(TokenAccount, {
                     where: {
-                        balance: 1n,
                         token: {
                             id: `2-${pool.tokenId}`,
                         },

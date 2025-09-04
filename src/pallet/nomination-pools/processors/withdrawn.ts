@@ -67,7 +67,7 @@ export async function withdrawn(ctx: CommonContext, block: Block, item: EventIte
     }
 
     const owner = await ctx.store.findOne(TokenAccount, {
-        where: { token: { id: `2-${pool.tokenId}` }, balance: 1n },
+        where: { token: { id: `2-${pool.tokenId}` } },
         relations: { account: true },
     })
 
