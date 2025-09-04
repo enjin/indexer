@@ -13,6 +13,7 @@ import {
     ValidatorDetailsResolver,
     AccountStakingSummaryResolver,
     BestPoolsResolver,
+    RefreshEntityResolver,
 } from '~/server-extension'
 
 export {
@@ -30,4 +31,5 @@ export {
     ValidatorDetailsResolver,
     AccountStakingSummaryResolver,
     BestPoolsResolver,
+    RefreshEntityResolver,
 }
