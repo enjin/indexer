@@ -3,16 +3,12 @@ import { BigInteger } from '@subsquid/graphql-server'
 import { Listing, Token, TokenAccount, Account } from '~/model'
 import 'reflect-metadata'
 import { EntityManager } from 'typeorm'
+import { OrderInput } from './types'
 
 enum ListingType {
     FixedPrice = 'FixedPrice',
     Auction = 'Auction',
     Offer = 'Offer',
-}
-
-enum ListingOrderInput {
-    ASC = 'ASC',
-    DESC = 'DESC',
 }
 
 enum ListingOrderByInput {
@@ -24,7 +20,7 @@ registerEnumType(ListingType, {
     name: 'ListingType',
 })
 
-registerEnumType(ListingOrderInput, {
+registerEnumType(OrderInput, {
     name: 'ListingOrderInput',
 })
 
@@ -181,8 +177,8 @@ export class TokenListingsResolver {
         @Arg('hiddenListingId', () => String, { nullable: true }) hiddenListingId: string,
         @Arg('orderBy', () => ListingOrderByInput, { nullable: true, defaultValue: ListingOrderByInput.PRICE })
         orderBy: ListingOrderByInput,
-        @Arg('order', () => ListingOrderInput, { nullable: true, defaultValue: ListingOrderInput.ASC })
-        order: ListingOrderInput,
+        @Arg('order', () => OrderInput, { nullable: true, defaultValue: OrderInput.ASC })
+        order: OrderInput,
         @Arg('limit', () => Int, { nullable: true, defaultValue: 10 }) limit: number,
         @Arg('offset', () => Int, { nullable: true, defaultValue: 0 }) offset: number
     ): Promise<TokenListings> {

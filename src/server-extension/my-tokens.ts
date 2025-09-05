@@ -2,9 +2,9 @@ import { Field, ObjectType, Query, Resolver, ID, Int, registerEnumType, ArgsType
 import { Json, BigInteger } from '@subsquid/graphql-server'
 import 'reflect-metadata'
 import { type EntityManager, SelectQueryBuilder } from 'typeorm'
-import { Validate, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator'
+import { Validate } from 'class-validator'
 import { Collection, FreezeState, Listing, Token, TokenAccount } from '~/model'
-import { isValidAddress } from '~/util/tools'
+import { IsPublicKey } from './helpers'
 
 enum MyTokensOrderByInput {
     COLLECTION_NAME = "collection.metadata->>'name'",
@@ -29,17 +29,6 @@ registerEnumType(MyTokensOrderInput, {
 registerEnumType(FreezeState, {
     name: 'MyTokensFreezeStateInput',
 })
-
-@ValidatorConstraint({ name: 'PublicKey', async: false })
-class IsPublicKey implements ValidatorConstraintInterface {
-    validate(value: string): boolean {
-        return isValidAddress(value)
-    }
-
-    defaultMessage(): string {
-        return 'Invalid public key!'
-    }
-}
 
 @ArgsType()
 class MyTokenArgs {
