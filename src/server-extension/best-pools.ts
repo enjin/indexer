@@ -101,7 +101,7 @@ export class BestPoolsResolver {
                         weight: p.totalStake / allStakes,
                     }
                 })
-                .reduce((acc, p) => acc + BigInt(p.apy) * BigInt(p.weight), 0n)
+                .reduce((acc, p) => acc + p.apy * BigInt(p.weight), 0n)
 
             thresholdRate = (thresholdRate * 8n) / 10n
         } else {
