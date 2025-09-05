@@ -8,6 +8,7 @@ import * as matrixV500 from '../matrixV500'
 import * as matrixV602 from '../matrixV602'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV604 from '../matrixV604'
+import * as matrixV1030 from '../matrixV1030'
 
 export const batchInterrupted = {
     name: 'Utility.BatchInterrupted',
@@ -108,6 +109,17 @@ export const batchInterrupted = {
         sts.struct({
             index: sts.number(),
             error: v105.DispatchError,
+        })
+    ),
+    /**
+     * Batch of dispatches did not complete fully. Index of first failing dispatch given, as
+     * well as the error.
+     */
+    matrixV1030: new EventType(
+        'Utility.BatchInterrupted',
+        sts.struct({
+            index: sts.number(),
+            error: matrixV1030.DispatchError,
         })
     ),
 }
@@ -219,6 +231,15 @@ export const itemFailed = {
             error: v105.DispatchError,
         })
     ),
+    /**
+     * A single item within a Batch of dispatches has completed with error.
+     */
+    matrixV1030: new EventType(
+        'Utility.ItemFailed',
+        sts.struct({
+            error: matrixV1030.DispatchError,
+        })
+    ),
 }
 
 export const dispatchedAs = {
@@ -328,6 +349,18 @@ export const dispatchedAs = {
             result: sts.result(
                 () => sts.unit(),
                 () => v105.DispatchError
+            ),
+        })
+    ),
+    /**
+     * A call was dispatched.
+     */
+    matrixV1030: new EventType(
+        'Utility.DispatchedAs',
+        sts.struct({
+            result: sts.result(
+                () => sts.unit(),
+                () => matrixV1030.DispatchError
             ),
         })
     ),

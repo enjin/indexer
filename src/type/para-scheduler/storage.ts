@@ -3,6 +3,7 @@ import * as enjinV100 from '../enjinV100'
 import * as v100 from '../v100'
 import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
+import * as v1060 from '../v1060'
 
 export const validatorGroups = {
     /**
@@ -286,6 +287,16 @@ export const claimQueue = {
         [],
         sts.array(() => sts.tuple(() => [enjinV1032.V6CoreIndex, sts.array(() => enjinV1032.ParasEntry)]))
     ) as ClaimQueueEnjinV1032,
+    /**
+     *  One entry for each availability core. The `VecDeque` represents the assignments to be
+     *  scheduled on that core.
+     */
+    v1060: new StorageType(
+        'ParaScheduler.ClaimQueue',
+        'Default',
+        [],
+        sts.array(() => sts.tuple(() => [v1060.V8CoreIndex, sts.array(() => v1060.Assignment)]))
+    ) as ClaimQueueV1060,
 }
 
 /**
@@ -297,4 +308,14 @@ export interface ClaimQueueEnjinV1032 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): [enjinV1032.V6CoreIndex, enjinV1032.ParasEntry[]][]
     get(block: Block): Promise<[enjinV1032.V6CoreIndex, enjinV1032.ParasEntry[]][] | undefined>
+}
+
+/**
+ *  One entry for each availability core. The `VecDeque` represents the assignments to be
+ *  scheduled on that core.
+ */
+export interface ClaimQueueV1060 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): [v1060.V8CoreIndex, v1060.Assignment[]][]
+    get(block: Block): Promise<[v1060.V8CoreIndex, v1060.Assignment[]][] | undefined>
 }

@@ -9,6 +9,7 @@ import * as matrixV602 from '../matrixV602'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV604 from '../matrixV604'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
+import * as matrixV1030 from '../matrixV1030'
 
 export const extrinsicSuccess = {
     name: 'System.ExtrinsicSuccess',
@@ -113,6 +114,16 @@ export const extrinsicFailed = {
         sts.struct({
             dispatchError: v105.DispatchError,
             dispatchInfo: v105.DispatchInfo,
+        })
+    ),
+    /**
+     * An extrinsic failed.
+     */
+    matrixV1030: new EventType(
+        'System.ExtrinsicFailed',
+        sts.struct({
+            dispatchError: matrixV1030.DispatchError,
+            dispatchInfo: matrixV1030.DispatchEventInfo,
         })
     ),
 }
