@@ -35,6 +35,9 @@ class BestPool {
     availableStakeAmount!: BigInt
 
     @Field(() => BigInt)
+    totalStake!: BigInt
+
+    @Field(() => BigInt)
     availableStakePoints!: BigInt
 
     @Field(() => Date)
@@ -63,48 +66,70 @@ export class BestPoolsResolver {
         const pools = await manager
             .getRepository(NominationPool)
             .createQueryBuilder('pool')
+            .leftJoin('pool.members', 'member')
+            .leftJoin('member.tokenAccount', 'ta')
+            .select([
+                'pool.id AS id',
+                'pool.name AS name',
+                'pool.rate AS rate',
+                'pool.apy AS apy',
+                'pool.points AS points',
+                'pool.capacity AS capacity',
+                'pool.availableStakeAmount AS "availableStakeAmount"',
+                'pool.availableStakePoints AS "availableStakePoints"',
+                'pool.createdAt AS "createdAt"',
+            ])
+            .addSelect('COALESCE(SUM(ta.balance), 0)', 'totalStake')
             .where('pool.state = :state', { state: PoolState.Open })
             .andWhere('pool.availableStakePoints >= :amount', { amount })
             .andWhere('COALESCE(jsonb_array_length(pool.slashes), 0) = 0')
-            .getMany()
+            .groupBy('pool.id')
+            .getRawMany()
 
         if (pools.length === 0) return []
 
-        const poolsWithRate = pools.filter((p) => p.rate != null)
+        const poolsWithRate = pools.filter((p) => p.apy != null)
 
         let thresholdRate: bigint | null = null
         if (poolsWithRate.length > 0) {
-            const totalWeight = poolsWithRate.reduce((acc, p) => acc + (p.points ?? 0n), 0n)
-            if (totalWeight > 0n) {
-                const weightedSum = poolsWithRate.reduce((acc, p) => acc + p.rate * (p.points ?? 0n), 0n)
-                thresholdRate = (weightedSum * 8n) / (10n * totalWeight) // 80% of weighted average
-            } else {
-                const simpleAvg = poolsWithRate.reduce((acc, p) => acc + p.rate, 0n) / BigInt(poolsWithRate.length)
-                thresholdRate = (simpleAvg * 8n) / 10n
-            }
+            const allStakes = poolsWithRate.reduce((acc, p) => acc + p.totalStake, 0n)
+            thresholdRate = poolsWithRate
+                .filter((p) => p.totalStake > 0n)
+                .map((p) => {
+                    return {
+                        apy: p.apy,
+                        weight: p.totalStake / allStakes,
+                    }
+                })
+                .reduce((acc, p) => acc + BigInt(p.apy) * BigInt(p.weight), 0n)
+
+            thresholdRate = (thresholdRate * 8n) / 10n
+        } else {
+            const simpleAvg = poolsWithRate.reduce((acc, p) => acc + p.apy, 0n) / BigInt(poolsWithRate.length)
+            thresholdRate = (simpleAvg * 8n) / 10n
         }
 
         const rateFiltered = pools.filter((p) => {
             if (thresholdRate == null) return true
-            if (p.rate == null) return true
-            return p.rate >= thresholdRate
+            if (p.apy == 0) return true
+            return p.apy >= thresholdRate
         })
 
         if (rateFiltered.length === 0) return []
 
-        const allZeroRewards = rateFiltered.every((p) => !p.rate || p.rate === 0n)
+        const allZeroRewards = rateFiltered.every((p) => !p.apy || p.apy === 0n)
         if (allZeroRewards) {
             rateFiltered.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
         } else {
             rateFiltered.sort((a, b) => {
-                const ar = a.rate ?? 0n
-                const br = b.rate ?? 0n
+                const ar = a.apy ?? 0n
+                const br = b.apy ?? 0n
                 if (ar === br) return a.createdAt.getTime() - b.createdAt.getTime()
                 return br > ar ? 1 : -1
             })
         }
 
-        return rateFiltered.slice(0, 5).map(
+        return pools.slice(0, 5).map(
             (p) =>
                 new BestPool({
                     id: p.id,
@@ -113,6 +138,7 @@ export class BestPoolsResolver {
                     apy: p.apy,
                     points: p.points,
                     capacity: p.capacity,
+                    totalStake: p.totalStake,
                     availableStakeAmount: p.availableStakeAmount,
                     availableStakePoints: p.availableStakePoints,
                     createdAt: p.createdAt,
