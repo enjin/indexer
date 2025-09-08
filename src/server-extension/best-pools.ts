@@ -3,6 +3,7 @@ import type { EntityManager } from 'typeorm'
 import { Account, NominationPool, PoolState } from '~/model'
 import { Validate } from 'class-validator'
 import { IsPublicKey } from './helpers'
+import { Big } from 'big.js'
 
 @ArgsType()
 class BestPoolsArgs {
@@ -35,6 +36,9 @@ class BestPool {
     availableStakeAmount!: BigInt
 
     @Field(() => BigInt)
+    totalStake!: BigInt
+
+    @Field(() => BigInt)
     availableStakePoints!: BigInt
 
     @Field(() => Date)
@@ -58,60 +62,68 @@ export class BestPoolsResolver {
             .createQueryBuilder('account')
             .where('account.id = :accountId', { accountId })
             .getOne()
+        const amount = account?.balance.free ?? 0n
 
         const pools = await manager
             .getRepository(NominationPool)
             .createQueryBuilder('pool')
+            .leftJoin('pool.members', 'member')
+            .leftJoin('member.tokenAccount', 'ta')
+            .select([
+                'pool.id AS id',
+                'pool.name AS name',
+                'pool.rate AS rate',
+                'pool.apy AS apy',
+                'pool.points AS points',
+                'pool.capacity AS capacity',
+                'pool.availableStakeAmount AS "availableStakeAmount"',
+                'pool.availableStakePoints AS "availableStakePoints"',
+                'pool.createdAt AS "createdAt"',
+            ])
+            .addSelect('COALESCE(SUM(ta.balance), 0)', 'totalStake')
             .where('pool.state = :state', { state: PoolState.Open })
-            .getMany()
-
-        const amount = account?.balance.free ?? 0n
+            .andWhere('pool.availableStakePoints >= :amount', { amount })
+            .andWhere('COALESCE(jsonb_array_length(pool.slashes), 0) = 0')
+            .groupBy('pool.id')
+            .getRawMany()
 
         if (pools.length === 0) return []
 
-        const spaceFiltered = pools.filter((p) => {
-            const remainingCapacity = p.capacity - p.points
-            return remainingCapacity > 0n && remainingCapacity >= amount
-        })
+        const poolsWithRate = pools.filter((p) => p.apy > 0)
 
-        if (spaceFiltered.length === 0) return []
-
-        const notSlashed = spaceFiltered.filter((p) => !p.slashes || p.slashes.length === 0)
-
-        if (notSlashed.length === 0) return []
-
-        // Compute average reward rate of all remaining pools (weighted by member stakes if available, else simple)
-        // We will use pool.rate (bigint, 1e18 fixed point) and weight by pool.points (sENJ supply)
-        const poolsWithRate = notSlashed.filter((p) => p.rate != null)
-
-        let thresholdRate: bigint | null = null
+        let thresholdRate: Big | null = Big(0)
         if (poolsWithRate.length > 0) {
-            const totalWeight = poolsWithRate.reduce((acc, p) => acc + (p.points ?? 0n), 0n)
-            if (totalWeight > 0n) {
-                const weightedSum = poolsWithRate.reduce((acc, p) => acc + p.rate * (p.points ?? 0n), 0n)
-                thresholdRate = (weightedSum * 8n) / (10n * totalWeight) // 80% of weighted average
-            } else {
-                const simpleAvg = poolsWithRate.reduce((acc, p) => acc + p.rate, 0n) / BigInt(poolsWithRate.length)
-                thresholdRate = (simpleAvg * 8n) / 10n
-            }
+            const allStakes = poolsWithRate.reduce((acc, p) => acc.add(Big(p.totalStake)), Big(0))
+            thresholdRate = poolsWithRate
+                .filter((p) => Big(p.totalStake).gt(0))
+                .map((p) => {
+                    return {
+                        apy: p.apy,
+                        weight: Big(p.totalStake).div(allStakes),
+                    }
+                })
+                .reduce((acc, p) => Big(acc).add(Big(p.apy).mul(p.weight)), Big(0))
+
+            thresholdRate = thresholdRate.mul(8).div(10)
+        } else {
+            const simpleAvg = poolsWithRate.reduce((acc, p) => acc.add(Big(p.apy)), Big(0)).div(poolsWithRate.length)
+            thresholdRate = simpleAvg.mul(8).div(10)
         }
 
-        // Keep only pools with rate >= 80% avg; if a pool has no rate set, keep it
-        const rateFiltered = notSlashed.filter((p) => {
+        const rateFiltered = poolsWithRate.filter((p) => {
             if (thresholdRate == null) return true
-            if (p.rate == null) return true
-            return p.rate >= thresholdRate
+            return p.apy >= thresholdRate
         })
 
         if (rateFiltered.length === 0) return []
 
-        const allZeroRewards = rateFiltered.every((p) => !p.rate || p.rate === 0n)
+        const allZeroRewards = rateFiltered.every((p) => !p.apy || p.apy === 0)
         if (allZeroRewards) {
             rateFiltered.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
         } else {
             rateFiltered.sort((a, b) => {
-                const ar = a.rate ?? 0n
-                const br = b.rate ?? 0n
+                const ar = a.apy ?? 0
+                const br = b.apy ?? 0
                 if (ar === br) return a.createdAt.getTime() - b.createdAt.getTime()
                 return br > ar ? 1 : -1
             })
@@ -126,6 +138,7 @@ export class BestPoolsResolver {
                     apy: p.apy,
                     points: p.points,
                     capacity: p.capacity,
+                    totalStake: p.totalStake,
                     availableStakeAmount: p.availableStakeAmount,
                     availableStakePoints: p.availableStakePoints,
                     createdAt: p.createdAt,
