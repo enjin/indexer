@@ -1,4 +1,4 @@
-import { Query, Resolver, Args, ArgsType, Field, ObjectType, ID } from 'type-graphql'
+import { Query, Resolver, Args, ArgsType, Field, ObjectType, ID, InputType } from 'type-graphql'
 import type { EntityManager } from 'typeorm'
 import { Account, NominationPool, PoolState } from '~/model'
 import { Validate } from 'class-validator'
@@ -12,6 +12,24 @@ class BestPoolsArgs {
     @Field(() => String, { nullable: true })
     @Validate(IsPublicKey)
     accountId?: string
+}
+
+@InputType()
+class TokenFilterCondition {
+    @Field(() => Boolean, { nullable: true })
+    token_isNull?: boolean
+
+    @Field(() => String, { nullable: true })
+    key_eq?: string
+
+    @Field(() => [String], { nullable: true })
+    key_in?: string[]
+}
+
+@InputType()
+class TokenAttributeWhereInput {
+    @Field(() => [TokenFilterCondition], { nullable: true })
+    AND?: TokenFilterCondition[]
 }
 
 @ObjectType()
@@ -36,12 +54,49 @@ class TokenAttribute {
 }
 
 @ObjectType()
+class DegenCollectionAttribute {
+    @Field(() => ID)
+    id!: string
+
+    @Field({ nullable: false })
+    key!: string
+
+    @Field({ nullable: false })
+    value!: string
+
+    @Field(() => BigInteger)
+    deposit!: typeof BigInteger
+
+    @DateTimeColumn_({ nullable: false })
+    createdAt!: Date
+
+    @DateTimeColumn_({ nullable: false })
+    updatedAt!: Date
+}
+
+@ObjectType()
+class DegenCollection {
+    @Field(() => ID)
+    id!: string
+
+    @Field(() => [DegenCollectionAttribute], { nullable: true })
+    attributes!: DegenCollectionAttribute[]
+
+    constructor(props: Partial<DegenCollection>) {
+        Object.assign(this, props)
+    }
+}
+
+@ObjectType()
 class DegenToken {
     @Field(() => String)
     id!: string
 
     @Field(() => [TokenAttribute], { nullable: true })
     attributes!: TokenAttribute[]
+
+    @Field(() => DegenCollection)
+    collection!: DegenCollection
 
     constructor(props: Partial<DegenToken>) {
         Object.assign(this, props)
@@ -88,7 +143,7 @@ class BestPool {
     }
 }
 
-@Resolver()
+@Resolver(() => BestPool)
 export class BestPoolsResolver {
     constructor(private tx: () => Promise<EntityManager>) {}
 
@@ -109,7 +164,6 @@ export class BestPoolsResolver {
             .leftJoin('pool.members', 'member')
             .leftJoin('member.tokenAccount', 'ta')
             .leftJoin('pool.degenToken', 'token')
-            .leftJoin('token.attributes', 'tokenAttributes')
             .select([
                 'pool.id AS id',
                 'pool.name AS name',
@@ -121,14 +175,23 @@ export class BestPoolsResolver {
                 'pool.availableStakePoints AS "availableStakePoints"',
                 'pool.createdAt AS "createdAt"',
                 'token.id AS "tokenId"',
-                'tokenAttributes',
             ])
+            .addSelect(
+                `(SELECT json_agg(json_build_object('id', attr.id, 'key', attr.key, 'value', attr.value, 'deposit', attr.deposit)) 
+                          FROM attribute attr 
+                          WHERE attr.token_id = token.id) AS "tokenAttributes"`
+            )
+            .addSelect(
+                `(SELECT json_agg(json_build_object('id', attr.id, 'key', attr.key, 'value', attr.value, 'deposit', attr.deposit)) 
+                          FROM attribute attr 
+                          WHERE attr.collection_id = token.collection_id) AS "collectionAttributes"`
+            )
+            .addSelect('token.collection_id AS "collectionId"')
             .addSelect('COALESCE(SUM(ta.balance), 0)', 'totalStake')
             .where('pool.state = :state', { state: PoolState.Open })
             .andWhere('pool.availableStakePoints >= :amount', { amount })
             .groupBy('pool.id')
             .addGroupBy('token.id')
-            .addGroupBy('tokenAttributes.id')
             .getRawMany()
 
         if (pools.length === 0) return []
@@ -188,7 +251,18 @@ export class BestPoolsResolver {
                     createdAt: p.createdAt,
                     degenToken: new DegenToken({
                         id: p.tokenId,
-                        attributes: p.tokenAttributes ?? [],
+                        attributes: (() => {
+                            if (typeof p.tokenAttributes === 'string') {
+                                return JSON.parse(p.tokenAttributes)
+                            }
+                            return p.tokenAttributes ?? []
+                        })(),
+                        collection: new DegenCollection({
+                            id: p.collectionId,
+                            attributes: (() => {
+                                return p.collectionAttributes ?? []
+                            })(),
+                        }),
                     }),
                 })
         )
