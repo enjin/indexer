@@ -1,15 +1,51 @@
-import { Query, Resolver, Args, ArgsType, Field, ObjectType } from 'type-graphql'
+import { Query, Resolver, Args, ArgsType, Field, ObjectType, ID } from 'type-graphql'
 import type { EntityManager } from 'typeorm'
 import { Account, NominationPool, PoolState } from '~/model'
 import { Validate } from 'class-validator'
 import { IsPublicKey } from './helpers'
 import { Big } from 'big.js'
+import { DateTimeColumn as DateTimeColumn_ } from '@subsquid/typeorm-store/lib/decorators/columns/DateTimeColumn'
+import { BigInteger } from '@subsquid/graphql-server'
 
 @ArgsType()
 class BestPoolsArgs {
     @Field(() => String, { nullable: true })
     @Validate(IsPublicKey)
     accountId?: string
+}
+
+@ObjectType()
+class TokenAttribute {
+    @Field(() => ID)
+    id!: string
+
+    @Field({ nullable: false })
+    key!: string
+
+    @Field({ nullable: false })
+    value!: string
+
+    @Field(() => BigInteger)
+    deposit!: typeof BigInteger
+
+    @DateTimeColumn_({ nullable: false })
+    createdAt!: Date
+
+    @DateTimeColumn_({ nullable: false })
+    updatedAt!: Date
+}
+
+@ObjectType()
+class DegenToken {
+    @Field(() => String)
+    id!: string
+
+    @Field(() => [TokenAttribute], { nullable: true })
+    attributes!: TokenAttribute[]
+
+    constructor(props: Partial<DegenToken>) {
+        Object.assign(this, props)
+    }
 }
 
 @ObjectType()
@@ -31,6 +67,9 @@ class BestPool {
 
     @Field(() => BigInt)
     capacity!: BigInt
+
+    @Field(() => DegenToken)
+    degenToken!: DegenToken
 
     @Field(() => BigInt)
     availableStakeAmount!: BigInt
@@ -69,6 +108,8 @@ export class BestPoolsResolver {
             .createQueryBuilder('pool')
             .leftJoin('pool.members', 'member')
             .leftJoin('member.tokenAccount', 'ta')
+            .leftJoin('pool.degenToken', 'token')
+            .leftJoin('token.attributes', 'tokenAttributes')
             .select([
                 'pool.id AS id',
                 'pool.name AS name',
@@ -79,12 +120,15 @@ export class BestPoolsResolver {
                 'pool.availableStakeAmount AS "availableStakeAmount"',
                 'pool.availableStakePoints AS "availableStakePoints"',
                 'pool.createdAt AS "createdAt"',
+                'token.id AS "tokenId"',
+                'tokenAttributes',
             ])
             .addSelect('COALESCE(SUM(ta.balance), 0)', 'totalStake')
             .where('pool.state = :state', { state: PoolState.Open })
             .andWhere('pool.availableStakePoints >= :amount', { amount })
-            .andWhere('COALESCE(jsonb_array_length(pool.slashes), 0) = 0')
             .groupBy('pool.id')
+            .addGroupBy('token.id')
+            .addGroupBy('tokenAttributes.id')
             .getRawMany()
 
         if (pools.length === 0) return []
@@ -142,6 +186,10 @@ export class BestPoolsResolver {
                     availableStakeAmount: p.availableStakeAmount,
                     availableStakePoints: p.availableStakePoints,
                     createdAt: p.createdAt,
+                    degenToken: new DegenToken({
+                        id: p.tokenId,
+                        attributes: p.tokenAttributes ?? [],
+                    }),
                 })
         )
     }

@@ -2,9 +2,8 @@ import { Field, ObjectType, Query, Resolver, ID, Int, registerEnumType, ArgsType
 import { Json, BigInteger } from '@subsquid/graphql-server'
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
-import { Validate, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator'
+import { Validate } from 'class-validator'
 import { Collection, Listing, Token, TokenAccount } from '~/model'
-import { isValidAddress } from '~/util/tools'
 import { IsPublicKeyArray } from './helpers'
 
 enum AccountsTokensOrderByInput {
