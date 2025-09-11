@@ -18,7 +18,7 @@ import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
 import { Collection, Listing, ListingSale, ListingStatus, Token } from '~/model'
 import { DateTimeColumn as DateTimeColumn_ } from '@subsquid/typeorm-store/lib/decorators/columns/DateTimeColumn'
-import { OrderInput, TimeframeInput, timeFrameMap } from './types'
+import { timeFrameMap } from './types'
 
 enum TopCollectionOrderByInput {
     CREATED_AT = '"createdAt"',
@@ -31,7 +31,22 @@ enum TopCollectionOrderByInput {
     TOP = '"topScore"',
 }
 
-registerEnumType(TimeframeInput, {
+enum TopCollectionOrderInput {
+    ASC = 'ASC',
+    DESC = 'DESC',
+}
+
+enum TopCollectionTimeframeInput {
+    HOUR = 'HOUR',
+    HOUR_6 = 'HOUR_6',
+    HOUR_24 = 'HOUR_24',
+    WEEK = 'WEEK',
+    MONTH = 'MONTH',
+    YEAR = 'YEAR',
+    ALL = 'ALL',
+}
+
+registerEnumType(TopCollectionTimeframeInput, {
     name: 'TopCollectionTimeframeInput',
 })
 
@@ -39,7 +54,7 @@ registerEnumType(TopCollectionOrderByInput, {
     name: 'TopCollectionOrderByInput',
 })
 
-registerEnumType(OrderInput, {
+registerEnumType(TopCollectionOrderInput, {
     name: 'TopCollectionOrderInput',
 })
 
@@ -139,8 +154,8 @@ class CollectionAttributeWhereInput {
 
 @ArgsType()
 export class TopCollectionArgs {
-    @Field(() => TimeframeInput)
-    timeFrame!: TimeframeInput
+    @Field(() => TopCollectionTimeframeInput)
+    timeFrame!: TopCollectionTimeframeInput
 
     @Field(() => TopCollectionOrderByInput)
     orderBy!: TopCollectionOrderByInput
@@ -151,8 +166,8 @@ export class TopCollectionArgs {
     @Field(() => String, { nullable: true, description: 'Search by collection name' })
     query!: string
 
-    @Field(() => OrderInput)
-    order!: OrderInput
+    @Field(() => TopCollectionOrderInput)
+    order!: TopCollectionOrderInput
 
     @Field(() => Int)
     offset: number = 0
@@ -186,7 +201,7 @@ export class TopCollectionResolver {
             .addFrom((mqb) => {
                 mqb.addSelect('collectionId AS id')
                     .addSelect(
-                        `(SELECT COUNT(*)::int FROM collection_account a WHERE a.collection_id = l.collectionId ${timeFrame !== TimeframeInput.ALL ? `AND "createdAt" >= NOW() - INTERVAL '${timeFrameMap[timeFrame].c}'` : ''} ) AS users`
+                        `(SELECT COUNT(*)::int FROM collection_account a WHERE a.collection_id = l.collectionId ${timeFrame !== TopCollectionTimeframeInput.ALL ? `AND "createdAt" >= NOW() - INTERVAL '${timeFrameMap[timeFrame].c}'` : ''} ) AS users`
                     )
                     .addSelect('metadata AS metadata')
                     .addSelect('stats AS stats')
@@ -219,7 +234,7 @@ export class TopCollectionResolver {
                             .addSelect('collection.verified_at AS "verifiedAt"')
                             .addSelect('collection.created_at AS "createdAt"')
                             .addSelect('collection.category AS category')
-                        if (timeFrame === TimeframeInput.ALL) {
+                        if (timeFrame === TopCollectionTimeframeInput.ALL) {
                             inBuilder
                                 .addSelect(`COALESCE(SUM(sale.amount * sale.price), 0) AS volume_last_duration`)
                                 .addSelect(`COALESCE(COUNT(sale.id)::int, 0) AS sales_last_duration`)
