@@ -10,14 +10,14 @@ enum ListingType {
     Offer = 'Offer',
 }
 
-enum ListingOrderInput {
-    ASC = 'ASC',
-    DESC = 'DESC',
-}
-
 enum ListingOrderByInput {
     AMOUNT = 'amount',
     PRICE = 'price',
+}
+
+enum ListingOrderInput {
+    ASC = 'ASC',
+    DESC = 'DESC',
 }
 
 registerEnumType(ListingType, {

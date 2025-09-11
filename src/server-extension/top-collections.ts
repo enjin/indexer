@@ -18,26 +18,7 @@ import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
 import { Collection, Listing, ListingSale, ListingStatus, Token } from '~/model'
 import { DateTimeColumn as DateTimeColumn_ } from '@subsquid/typeorm-store/lib/decorators/columns/DateTimeColumn'
-
-const timeFrameMap = {
-    HOUR: { c: '1 hour', p: '2 hours' },
-    HOUR_6: { c: '6 hours', p: '12 hours' },
-    HOUR_24: { c: '24 hours', p: '48 hours' },
-    WEEK: { c: '7 days', p: '14 days' },
-    MONTH: { c: '30 days', p: '60 days' },
-    YEAR: { c: '365 days', p: '730 days' },
-    ALL: { c: '0', p: '0' },
-}
-
-enum TopCollectionTimeframeInput {
-    HOUR = 'HOUR',
-    HOUR_6 = 'HOUR_6',
-    HOUR_24 = 'HOUR_24',
-    WEEK = 'WEEK',
-    MONTH = 'MONTH',
-    YEAR = 'YEAR',
-    ALL = 'ALL',
-}
+import { timeFrameMap } from './types'
 
 enum TopCollectionOrderByInput {
     CREATED_AT = '"createdAt"',
@@ -53,6 +34,16 @@ enum TopCollectionOrderByInput {
 enum TopCollectionOrderInput {
     ASC = 'ASC',
     DESC = 'DESC',
+}
+
+enum TopCollectionTimeframeInput {
+    HOUR = 'HOUR',
+    HOUR_6 = 'HOUR_6',
+    HOUR_24 = 'HOUR_24',
+    WEEK = 'WEEK',
+    MONTH = 'MONTH',
+    YEAR = 'YEAR',
+    ALL = 'ALL',
 }
 
 registerEnumType(TopCollectionTimeframeInput, {

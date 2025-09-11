@@ -2,9 +2,9 @@ import { Field, ObjectType, Query, Resolver, ID, Int, registerEnumType, ArgsType
 import { Json, BigInteger } from '@subsquid/graphql-server'
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
-import { Validate, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator'
+import { Validate } from 'class-validator'
 import { Collection, Listing, Token, TokenAccount } from '~/model'
-import { isValidAddress } from '~/util/tools'
+import { IsPublicKeyArray } from './helpers'
 
 enum AccountsTokensOrderByInput {
     COLLECTION_NAME = 'collection.name',
@@ -34,18 +34,6 @@ registerEnumType(AccountsTokensOrderInput, {
 registerEnumType(AccountsTokensFreezeState, {
     name: 'AccountsTokensFreezeState',
 })
-
-@ValidatorConstraint({ name: 'PublicKeyArray', async: false })
-class IsPublicKeyArray implements ValidatorConstraintInterface {
-    validate(value: string[]) {
-        if (!Array.isArray(value)) return false
-        return value.every((address) => isValidAddress(address))
-    }
-
-    defaultMessage() {
-        return 'One or more invalid public keys in the array!'
-    }
-}
 
 @ArgsType()
 class AccountsTokensArgs {
