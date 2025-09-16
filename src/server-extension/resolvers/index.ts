@@ -14,6 +14,10 @@ import {
     AccountStakingSummaryResolver,
     BestPoolsResolver,
     RefreshEntityResolver,
+    RefreshAccountsResolver,
+    RefreshBalancesResolver,
+    RefreshCollectionsResolver,
+    RefreshListingsResolver,
 } from '~/server-extension'
 
 export {
@@ -32,4 +36,8 @@ export {
     AccountStakingSummaryResolver,
     BestPoolsResolver,
     RefreshEntityResolver,
+    RefreshAccountsResolver,
+    RefreshBalancesResolver,
+    RefreshCollectionsResolver,
+    RefreshListingsResolver,
 }
