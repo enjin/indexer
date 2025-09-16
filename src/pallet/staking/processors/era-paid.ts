@@ -1,6 +1,7 @@
 import { Not } from 'typeorm'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { Era, NominationPool, PoolState, TokenAccount } from '~/model'
+import { CustomStakingEvent } from '~/pallet/common/types'
 import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
 import { Sns } from '~/util/sns'
@@ -71,7 +72,7 @@ async function dispatchStakePoolsEvents(ctx: CommonContext, eraIndex: number, it
 
                     await Sns.getInstance().send({
                         id: `${pool.id}-${eraIndex}`,
-                        name: 'NominationPools.MemberUnbonded',
+                        name: CustomStakingEvent.MemberUnbonded,
                         body: {
                             pool: pool.id,
                             member: member.account.id,
@@ -112,8 +113,8 @@ async function dispatchStakePoolsEvents(ctx: CommonContext, eraIndex: number, it
                     throw new Error('Owner not found')
                 }
                 const eventName = unbondingMembers.find((member) => member.isStash)
-                    ? 'NominationPools.DepositUnbonded'
-                    : 'NominationPools.AllMembersUnbonded'
+                    ? CustomStakingEvent.DepositUnbonded
+                    : CustomStakingEvent.AllMembersUnbonded
 
                 await Sns.getInstance().send({
                     id: `${pool.id}-${eraIndex}`,
