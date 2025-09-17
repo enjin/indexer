@@ -3,6 +3,7 @@ import * as matrixV500 from '../matrixV500'
 import * as matrixV602 from '../matrixV602'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV604 from '../matrixV604'
+import * as matrixV1030 from '../matrixV1030'
 
 export const newMultisig = {
     name: 'Multisig.NewMultisig',
@@ -98,6 +99,22 @@ export const multisigExecuted = {
             result: sts.result(
                 () => sts.unit(),
                 () => matrixV604.DispatchError
+            ),
+        })
+    ),
+    /**
+     * A multisig operation has been executed.
+     */
+    matrixV1030: new EventType(
+        'Multisig.MultisigExecuted',
+        sts.struct({
+            approving: matrixV1030.AccountId32,
+            timepoint: matrixV1030.Timepoint,
+            multisig: matrixV1030.AccountId32,
+            callHash: sts.bytes(),
+            result: sts.result(
+                () => sts.unit(),
+                () => matrixV1030.DispatchError
             ),
         })
     ),

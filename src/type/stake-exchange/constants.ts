@@ -20,3 +20,10 @@ export const offerDeposit = {
      */
     enjinV120: new ConstantType('StakeExchange.OfferDeposit', sts.bigint()),
 }
+
+export const buyDustThreshold = {
+    /**
+     *  When buying, if less than this amount is staked, it will send the remaining balance
+     */
+    v1060: new ConstantType('StakeExchange.BuyDustThreshold', sts.bigint()),
+}

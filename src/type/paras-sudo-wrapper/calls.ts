@@ -3,6 +3,7 @@ import * as enjinV100 from '../enjinV100'
 import * as v100 from '../v100'
 import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
+import * as v1060 from '../v1060'
 
 export const sudoScheduleParaInitialize = {
     name: 'ParasSudoWrapper.sudo_schedule_para_initialize',
@@ -109,6 +110,19 @@ export const sudoQueueDownwardXcm = {
         sts.struct({
             id: v1030.Id,
             xcm: v1030.VersionedXcm,
+        })
+    ),
+    /**
+     * Send a downward XCM to the given para.
+     *
+     * The given parachain should exist and the payload should not exceed the preconfigured
+     * size `config.max_downward_message_size`.
+     */
+    v1060: new CallType(
+        'ParasSudoWrapper.sudo_queue_downward_xcm',
+        sts.struct({
+            id: v1060.Id,
+            xcm: v1060.VersionedXcm,
         })
     ),
 }
