@@ -21,6 +21,7 @@ import * as matrixV1020 from '../matrixV1020'
 import * as enjinV1021 from '../enjinV1021'
 import * as v1021 from '../v1021'
 import * as matrixEnjinV1022 from '../matrixEnjinV1022'
+import * as matrixV1023 from '../matrixV1023'
 import * as enjinV1023 from '../enjinV1023'
 import * as v1023 from '../v1023'
 import * as v1030 from '../v1030'
@@ -3717,6 +3718,18 @@ export const forceSetTokenAccount = {
             tokenId: sts.bigint(),
             accountId: matrixV1020.MultiAddress,
             value: sts.option(() => matrixV1020.TokenAccount),
+        })
+    ),
+    /**
+     * Set the TokenAccounts storage to the given `value`, origin must be root
+     */
+    matrixV1023: new CallType(
+        'MultiTokens.force_set_token_account',
+        sts.struct({
+            collectionId: sts.bigint(),
+            tokenId: sts.bigint(),
+            accountId: matrixV1023.MultiAddress,
+            value: sts.option(() => matrixV1023.TokenAccount),
         })
     ),
     /**

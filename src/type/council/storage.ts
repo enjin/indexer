@@ -20,6 +20,7 @@ import * as matrixV1012 from '../matrixV1012'
 import * as matrixV1020 from '../matrixV1020'
 import * as matrixEnjinV1022 from '../matrixEnjinV1022'
 import * as matrixV1022 from '../matrixV1022'
+import * as matrixV1023 from '../matrixV1023'
 
 export const proposals = {
     /**
@@ -232,6 +233,15 @@ export const proposalOf = {
         [matrixV1022.H256],
         matrixV1022.Call
     ) as ProposalOfMatrixV1022,
+    /**
+     *  Actual proposal for a given hash, if it's current.
+     */
+    matrixV1023: new StorageType(
+        'Council.ProposalOf',
+        'Optional',
+        [matrixV1023.H256],
+        matrixV1023.Call
+    ) as ProposalOfMatrixV1023,
 }
 
 /**
@@ -742,6 +752,30 @@ export interface ProposalOfMatrixV1022 {
         block: Block,
         key: matrixV1022.H256
     ): AsyncIterable<[k: matrixV1022.H256, v: matrixV1022.Call | undefined][]>
+}
+
+/**
+ *  Actual proposal for a given hash, if it's current.
+ */
+export interface ProposalOfMatrixV1023 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: matrixV1023.H256): Promise<matrixV1023.Call | undefined>
+    getMany(block: Block, keys: matrixV1023.H256[]): Promise<(matrixV1023.Call | undefined)[]>
+    getKeys(block: Block): Promise<matrixV1023.H256[]>
+    getKeys(block: Block, key: matrixV1023.H256): Promise<matrixV1023.H256[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<matrixV1023.H256[]>
+    getKeysPaged(pageSize: number, block: Block, key: matrixV1023.H256): AsyncIterable<matrixV1023.H256[]>
+    getPairs(block: Block): Promise<[k: matrixV1023.H256, v: matrixV1023.Call | undefined][]>
+    getPairs(block: Block, key: matrixV1023.H256): Promise<[k: matrixV1023.H256, v: matrixV1023.Call | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: matrixV1023.H256, v: matrixV1023.Call | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: matrixV1023.H256
+    ): AsyncIterable<[k: matrixV1023.H256, v: matrixV1023.Call | undefined][]>
 }
 
 export const voting = {

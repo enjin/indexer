@@ -38,7 +38,7 @@
     "schema:hasura": "pnpm exec squid-hasura-configuration apply",
     "schema:regenerate": "pnpm exec squid-hasura-configuration regenerate",
     "metadata:init": "pnpm run metadata:fetch && pnpm run metadata:typegen",
-    "metadata:typegen": "pnpm excec metadata:merge && pnpm exec squid-substrate-typegen typegen/typegen.json",
+    "metadata:typegen": "pnpm run metadata:merge && pnpm exec squid-substrate-typegen typegen/typegen.json",
     "metadata:merge": "rm -rf typegen/chain-specs.jsonl && cat typegen/enjin-matrixchain.jsonl typegen/canary-matrixchain.jsonl typegen/enjin-relaychain.jsonl typegen/canary-relaychain.jsonl > typegen/chain-specs.jsonl",
     "metadata:fetch": "pnpm run metadata:matrix && pnpm run metadata:relay",
     "metadata:matrix": "pnpm run metadata:enjin-matrix && pnpm run metadata:canary-matrix",

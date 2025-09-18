@@ -37,6 +37,7 @@ import * as matrixEnjinV1022 from '../matrixEnjinV1022'
 import * as matrixV1022 from '../matrixV1022'
 import * as enjinV1022 from '../enjinV1022'
 import * as v1022 from '../v1022'
+import * as matrixV1023 from '../matrixV1023'
 import * as enjinV1023 from '../enjinV1023'
 import * as v1023 from '../v1023'
 import * as enjinV1026 from '../enjinV1026'
@@ -720,6 +721,21 @@ export const events = {
         [],
         sts.array(() => matrixV1022.EventRecord)
     ) as EventsMatrixV1022,
+    /**
+     *  Events deposited for the current block.
+     *
+     *  NOTE: The item is unbound and should therefore never be read on chain.
+     *  It could otherwise inflate the PoV size of a block.
+     *
+     *  Events have a large in-memory size. Box the events to not go out-of-memory
+     *  just in case someone still reads them from within the runtime.
+     */
+    matrixV1023: new StorageType(
+        'System.Events',
+        'Default',
+        [],
+        sts.array(() => matrixV1023.EventRecord)
+    ) as EventsMatrixV1023,
     /**
      *  Events deposited for the current block.
      *
@@ -1470,6 +1486,21 @@ export interface EventsMatrixV1022 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): matrixV1022.EventRecord[]
     get(block: Block): Promise<matrixV1022.EventRecord[] | undefined>
+}
+
+/**
+ *  Events deposited for the current block.
+ *
+ *  NOTE: The item is unbound and should therefore never be read on chain.
+ *  It could otherwise inflate the PoV size of a block.
+ *
+ *  Events have a large in-memory size. Box the events to not go out-of-memory
+ *  just in case someone still reads them from within the runtime.
+ */
+export interface EventsMatrixV1023 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): matrixV1023.EventRecord[]
+    get(block: Block): Promise<matrixV1023.EventRecord[] | undefined>
 }
 
 /**

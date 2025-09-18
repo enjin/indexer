@@ -37,6 +37,10 @@ export const batchAll = withDispatchCheck((call: CallItem): Batch => {
             () => calls.utility.batchAll.matrixEnjinV603.decode(call)
         )
         .when(
+            () => calls.utility.batchAll.matrixV1023.is(call),
+            () => calls.utility.batchAll.matrixV1023.decode(call)
+        )
+        .when(
             () => calls.utility.batchAll.matrixV1022.is(call),
             () => calls.utility.batchAll.matrixV1022.decode(call)
         )
