@@ -16,6 +16,7 @@ import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 import * as matrixV1020 from '../matrixV1020'
 import * as matrixV1021 from '../matrixV1021'
 import * as matrixEnjinV1022 from '../matrixEnjinV1022'
+import * as matrixV1023 from '../matrixV1023'
 import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
 import * as enjinV1050 from '../enjinV1050'
@@ -76,6 +77,15 @@ export const tokenAccounts = {
         [sts.bigint(), sts.bigint(), matrixV1020.AccountId32],
         matrixV1020.TokenAccount
     ) as TokenAccountsMatrixV1020,
+    /**
+     *  Accounts per token (real storage)
+     */
+    matrixV1023: new StorageType(
+        'MultiTokens.TokenAccounts',
+        'Optional',
+        [sts.bigint(), sts.bigint(), matrixV1023.AccountId32],
+        matrixV1023.TokenAccount
+    ) as TokenAccountsMatrixV1023,
     /**
      *  Accounts per token
      */
@@ -665,6 +675,91 @@ export interface TokenAccountsMatrixV1020 {
         key2: bigint,
         key3: matrixV1020.AccountId32
     ): AsyncIterable<[k: [bigint, bigint, matrixV1020.AccountId32], v: matrixV1020.TokenAccount | undefined][]>
+}
+
+/**
+ *  Accounts per token (real storage)
+ */
+export interface TokenAccountsMatrixV1023 {
+    is(block: RuntimeCtx): boolean
+    get(
+        block: Block,
+        key1: bigint,
+        key2: bigint,
+        key3: matrixV1023.AccountId32
+    ): Promise<matrixV1023.TokenAccount | undefined>
+    getMany(
+        block: Block,
+        keys: [bigint, bigint, matrixV1023.AccountId32][]
+    ): Promise<(matrixV1023.TokenAccount | undefined)[]>
+    getKeys(block: Block): Promise<[bigint, bigint, matrixV1023.AccountId32][]>
+    getKeys(block: Block, key1: bigint): Promise<[bigint, bigint, matrixV1023.AccountId32][]>
+    getKeys(block: Block, key1: bigint, key2: bigint): Promise<[bigint, bigint, matrixV1023.AccountId32][]>
+    getKeys(
+        block: Block,
+        key1: bigint,
+        key2: bigint,
+        key3: matrixV1023.AccountId32
+    ): Promise<[bigint, bigint, matrixV1023.AccountId32][]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[bigint, bigint, matrixV1023.AccountId32][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint
+    ): AsyncIterable<[bigint, bigint, matrixV1023.AccountId32][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint,
+        key2: bigint
+    ): AsyncIterable<[bigint, bigint, matrixV1023.AccountId32][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint,
+        key2: bigint,
+        key3: matrixV1023.AccountId32
+    ): AsyncIterable<[bigint, bigint, matrixV1023.AccountId32][]>
+    getPairs(
+        block: Block
+    ): Promise<[k: [bigint, bigint, matrixV1023.AccountId32], v: matrixV1023.TokenAccount | undefined][]>
+    getPairs(
+        block: Block,
+        key1: bigint
+    ): Promise<[k: [bigint, bigint, matrixV1023.AccountId32], v: matrixV1023.TokenAccount | undefined][]>
+    getPairs(
+        block: Block,
+        key1: bigint,
+        key2: bigint
+    ): Promise<[k: [bigint, bigint, matrixV1023.AccountId32], v: matrixV1023.TokenAccount | undefined][]>
+    getPairs(
+        block: Block,
+        key1: bigint,
+        key2: bigint,
+        key3: matrixV1023.AccountId32
+    ): Promise<[k: [bigint, bigint, matrixV1023.AccountId32], v: matrixV1023.TokenAccount | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: [bigint, bigint, matrixV1023.AccountId32], v: matrixV1023.TokenAccount | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint
+    ): AsyncIterable<[k: [bigint, bigint, matrixV1023.AccountId32], v: matrixV1023.TokenAccount | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint,
+        key2: bigint
+    ): AsyncIterable<[k: [bigint, bigint, matrixV1023.AccountId32], v: matrixV1023.TokenAccount | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint,
+        key2: bigint,
+        key3: matrixV1023.AccountId32
+    ): AsyncIterable<[k: [bigint, bigint, matrixV1023.AccountId32], v: matrixV1023.TokenAccount | undefined][]>
 }
 
 /**

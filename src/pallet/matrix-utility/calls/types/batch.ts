@@ -28,6 +28,7 @@ import { Call as CallMatrixV1011 } from 'src/type/matrixV1011'
 import { Call as CallMatrixV1012 } from 'src/type/matrixV1012'
 import { Call as CallMatrixV1020 } from 'src/type/matrixV1020'
 import { Call as CallMatrixV1022 } from 'src/type/matrixV1022'
+import { Call as CallMatrixV1023 } from 'src/type/matrixV1023'
 import { Call as CallV100 } from 'src/type/v100'
 import { Call as CallV101 } from 'src/type/v101'
 import { Call as CallV102 } from 'src/type/v102'
@@ -77,6 +78,7 @@ type Call =
     | CallMatrixV1012
     | CallMatrixV1020
     | CallMatrixV1022
+    | CallMatrixV1023
     | CallV100
     | CallV101
     | CallV102

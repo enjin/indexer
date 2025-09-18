@@ -37,6 +37,7 @@ import * as matrixEnjinV1022 from '../matrixEnjinV1022'
 import * as matrixV1022 from '../matrixV1022'
 import * as enjinV1022 from '../enjinV1022'
 import * as v1022 from '../v1022'
+import * as matrixV1023 from '../matrixV1023'
 import * as enjinV1023 from '../enjinV1023'
 import * as v1023 from '../v1023'
 import * as enjinV1026 from '../enjinV1026'
@@ -529,6 +530,32 @@ export const batch = {
         'Utility.batch',
         sts.struct({
             calls: sts.array(() => matrixV1022.Call),
+        })
+    ),
+    /**
+     * Send a batch of dispatch calls.
+     *
+     * May be called from any origin except `None`.
+     *
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     *
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     *
+     * ## Complexity
+     * - O(C) where C is the number of calls to be batched.
+     *
+     * This will return `Ok` in all circumstances. To determine the success of the batch, an
+     * event is deposited. If a call failed and the batch was interrupted, then the
+     * `BatchInterrupted` event is deposited, along with the number of successful calls made
+     * and the error of the failed call. If all were successful, then the `BatchCompleted`
+     * event is deposited.
+     */
+    matrixV1023: new CallType(
+        'Utility.batch',
+        sts.struct({
+            calls: sts.array(() => matrixV1023.Call),
         })
     ),
     /**
@@ -1636,6 +1663,28 @@ export const asDerivative = {
      *
      * The dispatch origin for this call must be _Signed_.
      */
+    matrixV1023: new CallType(
+        'Utility.as_derivative',
+        sts.struct({
+            index: sts.number(),
+            call: matrixV1023.Call,
+        })
+    ),
+    /**
+     * Send a call through an indexed pseudonym of the sender.
+     *
+     * Filter from origin are passed along. The call will be dispatched with an origin which
+     * use the same filter as the origin of this call.
+     *
+     * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
+     * because you expect `proxy` to have been used prior in the call stack and you do not want
+     * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
+     * in the Multisig pallet instead.
+     *
+     * NOTE: Prior to version *12, this was called `as_limited_sub`.
+     *
+     * The dispatch origin for this call must be _Signed_.
+     */
     enjinV100: new CallType(
         'Utility.as_derivative',
         sts.struct({
@@ -2606,6 +2655,27 @@ export const batchAll = {
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
+    matrixV1023: new CallType(
+        'Utility.batch_all',
+        sts.struct({
+            calls: sts.array(() => matrixV1023.Call),
+        })
+    ),
+    /**
+     * Send a batch of dispatch calls and atomically execute them.
+     * The whole transaction will rollback and fail if any of the calls failed.
+     *
+     * May be called from any origin except `None`.
+     *
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     *
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     *
+     * ## Complexity
+     * - O(C) where C is the number of calls to be batched.
+     */
     enjinV100: new CallType(
         'Utility.batch_all',
         sts.struct({
@@ -3457,6 +3527,21 @@ export const dispatchAs = {
      * ## Complexity
      * - O(1).
      */
+    matrixV1023: new CallType(
+        'Utility.dispatch_as',
+        sts.struct({
+            asOrigin: matrixV1023.OriginCaller,
+            call: matrixV1023.Call,
+        })
+    ),
+    /**
+     * Dispatches a function call with a provided origin.
+     *
+     * The dispatch origin for this call must be _Root_.
+     *
+     * ## Complexity
+     * - O(1).
+     */
     enjinV100: new CallType(
         'Utility.dispatch_as',
         sts.struct({
@@ -4258,6 +4343,27 @@ export const forceBatch = {
         'Utility.force_batch',
         sts.struct({
             calls: sts.array(() => matrixV1022.Call),
+        })
+    ),
+    /**
+     * Send a batch of dispatch calls.
+     * Unlike `batch`, it allows errors and won't interrupt.
+     *
+     * May be called from any origin except `None`.
+     *
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     *
+     * If origin is root then the calls are dispatch without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     *
+     * ## Complexity
+     * - O(C) where C is the number of calls to be batched.
+     */
+    matrixV1023: new CallType(
+        'Utility.force_batch',
+        sts.struct({
+            calls: sts.array(() => matrixV1023.Call),
         })
     ),
     /**
@@ -5104,6 +5210,21 @@ export const withWeight = {
         sts.struct({
             call: matrixV1022.Call,
             weight: matrixV1022.Weight,
+        })
+    ),
+    /**
+     * Dispatch a function call with a specified weight.
+     *
+     * This function does not check the weight of the call, and instead allows the
+     * Root origin to specify the weight of the call.
+     *
+     * The dispatch origin for this call must be _Root_.
+     */
+    matrixV1023: new CallType(
+        'Utility.with_weight',
+        sts.struct({
+            call: matrixV1023.Call,
+            weight: matrixV1023.Weight,
         })
     ),
     /**

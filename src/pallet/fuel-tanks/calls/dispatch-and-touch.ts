@@ -36,6 +36,10 @@ export function dispatchAndTouch(call: CallItem): DispatchAndTouch {
             () => calls.fuelTanks.dispatchAndTouch.matrixEnjinV603.decode(call)
         )
         .when(
+            () => calls.fuelTanks.dispatchAndTouch.matrixV1023.is(call),
+            () => calls.fuelTanks.dispatchAndTouch.matrixV1023.decode(call)
+        )
+        .when(
             () => calls.fuelTanks.dispatchAndTouch.matrixV1022.is(call),
             () => calls.fuelTanks.dispatchAndTouch.matrixV1022.decode(call)
         )
