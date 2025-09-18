@@ -458,6 +458,10 @@ type HoldReason_CollatorStaking = {
     __kind: 'CollatorStaking'
 }
 
+type HoldReason_StateTrieMigration = {
+    __kind: 'StateTrieMigration'
+}
+
 export type RuntimeHoldReason =
     | HoldReason_FuelTanks
     | HoldReason_Marketplace
@@ -466,6 +470,7 @@ export type RuntimeHoldReason =
     | HoldReason_SafeMode
     | HoldReason_StakeExchange
     | HoldReason_CollatorStaking
+    | HoldReason_StateTrieMigration
 
 type Root = {
     __kind: 'Root'
