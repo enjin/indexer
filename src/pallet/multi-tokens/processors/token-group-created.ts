@@ -21,6 +21,7 @@ export async function tokenGroupCreated(
         collection,
         attributes: [],
         tokenGroupTokens: [],
+        createdAt: new Date(block.timestamp ?? 0),
     })
 
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition

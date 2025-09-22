@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, OneToMany as OneToMany_} from "@subsquid/typeorm-store"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, OneToMany as OneToMany_, DateTimeColumn as DateTimeColumn_} from "@subsquid/typeorm-store"
 import {Collection} from "./collection.model"
 import {Attribute} from "./attribute.model"
 import {TokenGroupToken} from "./tokenGroupToken.model"
@@ -21,4 +21,7 @@ export class TokenGroup {
 
     @OneToMany_(() => TokenGroupToken, e => e.tokenGroup)
     tokenGroupTokens!: TokenGroupToken[]
+
+    @DateTimeColumn_({nullable: false})
+    createdAt!: Date
 }

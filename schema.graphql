@@ -621,6 +621,7 @@ type TokenGroup @entity {
   collection: Collection! @index
   attributes: [Attribute] @derivedFrom(field: "tokenGroup")
   tokenGroupTokens: [TokenGroupToken] @derivedFrom(field: "tokenGroup")
+  createdAt: DateTime
 }
 
 type CollectionApproval {
