@@ -2,7 +2,7 @@ import { Field, ObjectType, Query, Resolver, ArgsType, Args, Int } from 'type-gr
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
 import { Validate } from 'class-validator'
-import { Collection, Listing, Token, TokenAccount } from '~/model'
+import { Collection, Listing, Token, TokenAccount, TokenGroupToken } from '~/model'
 import { IsPublicKeyArray, encodeCursor, decodeCursor } from './helpers'
 import { PageInfo } from './types'
 import { AccountsTokensOrderByInput, AccountsTokensOrderInput, AccountsTokensToken } from './accounts-tokens'
@@ -30,6 +30,9 @@ class AccountsTokensConnectionArgs {
 
     @Field(() => String, { nullable: true })
     collectionId?: string
+
+    @Field(() => String, { nullable: true })
+    tokenGroupId?: string
 }
 
 @ObjectType()
@@ -71,7 +74,7 @@ export class AccountsTokensConnectionResolver {
     @Query(() => AccountsTokensConnection)
     async accountsTokensConnection(
         @Args()
-        { accountIds, collectionId, first, after, order, orderBy, query }: AccountsTokensConnectionArgs
+        { accountIds, collectionId, tokenGroupId, first, after, order, orderBy, query }: AccountsTokensConnectionArgs
     ): Promise<AccountsTokensConnection> {
         const manager = await this.tx()
 
@@ -97,6 +100,13 @@ export class AccountsTokensConnectionResolver {
 
         if (collectionId) {
             baseQuery.andWhere('collection.collectionId = :collectionId', { collectionId })
+        }
+
+        if (tokenGroupId) {
+            baseQuery
+                .innerJoin('token.tokenGroupTokens', 'tgt')
+                .innerJoin('tgt.tokenGroup', 'tg')
+                .andWhere('tg.id = :tokenGroupId', { tokenGroupId })
         }
 
         if (query) {
