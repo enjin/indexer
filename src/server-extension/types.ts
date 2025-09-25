@@ -13,25 +13,6 @@ export class PageInfo {
     }
 }
 
-export class Edge<TNode> {
-    cursor!: string
-    node!: TNode
-
-    constructor(props: Partial<Edge<TNode>>) {
-        Object.assign(this, props)
-    }
-}
-
-export class Connection<TNode> {
-    edges!: Edge<TNode>[]
-    pageInfo!: PageInfo
-    totalCount!: number
-
-    constructor(props: Partial<Connection<TNode>>) {
-        Object.assign(this, props)
-    }
-}
-
 export const timeFrameMap = {
     HOUR: { c: '1 hour', p: '2 hours' },
     HOUR_6: { c: '6 hours', p: '12 hours' },
