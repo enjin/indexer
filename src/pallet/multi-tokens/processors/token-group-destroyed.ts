@@ -10,11 +10,15 @@ export async function tokenGroupDestroyed(
 ): Promise<EventHandlerResult> {
     const data = mappings.multiTokens.events.tokenGroupDestroyed(item)
 
-    const tokenGroup = await ctx.store.findOneOrFail(TokenGroup, {
+    const tokenGroup = await ctx.store.findOne(TokenGroup, {
         where: {
             id: data.tokenGroupId.toString(),
         },
     })
+
+    if (!tokenGroup) {
+        return mappings.multiTokens.events.tokenGroupDestroyedEventModel(item, data)
+    }
 
     await ctx.store.remove(tokenGroup)
 
