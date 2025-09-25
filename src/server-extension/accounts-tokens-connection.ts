@@ -32,11 +32,9 @@ class AccountsTokensConnectionArgs {
     collectionId?: string
 }
 
-// Node type for connection (extends the base AccountsTokensToken)
 @ObjectType()
 export class AccountsTokensNode extends AccountsTokensToken {}
 
-// Concrete Edge and Connection classes for GraphQL
 @ObjectType()
 export class AccountsTokensEdge {
     @Field(() => String)
