@@ -6,18 +6,18 @@ import { Validate } from 'class-validator'
 import { Collection, Listing, Token, TokenAccount } from '~/model'
 import { IsPublicKeyArray } from './helpers'
 
-enum AccountsTokensOrderByInput {
+export enum AccountsTokensOrderByInput {
     COLLECTION_NAME = 'collection.name',
     TOKEN_NAME = 'token.name',
     DATE = 'token.createdAt',
 }
 
-enum AccountsTokensOrderInput {
+export enum AccountsTokensOrderInput {
     ASC = 'ASC',
     DESC = 'DESC',
 }
 
-enum AccountsTokensFreezeState {
+export enum AccountsTokensFreezeState {
     Permanent = 'Permanent',
     Temporary = 'Temporary',
     Never = 'Never',
@@ -61,7 +61,7 @@ class AccountsTokensArgs {
 }
 
 @ObjectType()
-class AccountsTokensListing {
+export class AccountsTokensListing {
     @Field(() => ID)
     id!: string
 
@@ -79,7 +79,7 @@ class AccountsTokensListing {
 }
 
 @ObjectType()
-class AccountsTokensOwner {
+export class AccountsTokensOwner {
     @Field(() => ID)
     id!: string
 
@@ -106,7 +106,7 @@ class AccountsTokensOwner {
 }
 
 @ObjectType()
-class AccountsTokensAttribute {
+export class AccountsTokensAttribute {
     @Field(() => String)
     key!: string
 
@@ -115,7 +115,7 @@ class AccountsTokensAttribute {
 }
 
 @ObjectType()
-class AccountsTokensCollection {
+export class AccountsTokensCollection {
     @Field(() => ID)
     id!: string
 
