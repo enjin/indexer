@@ -1,4 +1,4 @@
-import { Field, ObjectType, Int } from 'type-graphql'
+import { Field, ObjectType } from 'type-graphql'
 
 @ObjectType()
 export class PageInfo {
@@ -6,7 +6,7 @@ export class PageInfo {
     hasNextPage!: boolean
 
     @Field(() => String, { nullable: true })
-    endCursor?: string
+    endCursor!: string | null
 
     constructor(props: Partial<PageInfo> = {}) {
         Object.assign(this, props)

@@ -156,7 +156,7 @@ export class AccountsTokensConnectionResolver {
                 edges: [],
                 pageInfo: new PageInfo({
                     hasNextPage: false,
-                    endCursor: undefined,
+                    endCursor: null,
                 }),
                 totalCount,
             })
@@ -287,7 +287,7 @@ export class AccountsTokensConnectionResolver {
         })
 
         // Determine page info
-        const endCursor = edges.length > 0 ? edges[edges.length - 1].cursor : undefined
+        const endCursor = edges.length > 0 ? edges[edges.length - 1].cursor : null
 
         return new AccountsTokensConnection({
             edges,
