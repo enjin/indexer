@@ -13,8 +13,8 @@ export async function tokenGroupUpdated(
 
     const tokenGroupIds = data.tokenGroups.map((tokenGroupId) => tokenGroupId.toString())
 
-    const [tokenGroup, token] = await Promise.all([
-        ctx.store.findOneOrFail(TokenGroup, {
+    const [tokenGroups, token] = await Promise.all([
+        ctx.store.find(TokenGroup, {
             where: {
                 id: In(tokenGroupIds),
             },
@@ -24,25 +24,16 @@ export async function tokenGroupUpdated(
                 id: `${data.collectionId.toString()}-${data.tokenId.toString()}`,
             },
             relations: {
-                tokenGroupTokens: {
-                    tokenGroup: true,
-                },
+                tokenGroupTokens: true,
             },
         }),
     ])
-
-    const promises = []
-    for (const tokenGroupToken of token.tokenGroupTokens) {
-        ctx.log.info(`[TokenGroupUpdated] Removing token group token ${tokenGroupToken.id}`)
-        promises.push(ctx.store.remove(tokenGroupToken))
-    }
-    await Promise.all(promises)
 
     const tokenGroupTokens = tokenGroupIds.map((tokenGroupId) => {
         return new TokenGroupToken({
             id: `${data.tokenId.toString()}-${tokenGroupId}`,
             token,
-            tokenGroup,
+            tokenGroup: tokenGroups.find((tokenGroup) => tokenGroup.id === tokenGroupId),
         })
     })
 
