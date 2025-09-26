@@ -16,11 +16,14 @@ export async function tokenGroupAdded(ctx: CommonContext, block: Block, item: Ev
             where: {
                 id: `${data.collectionId.toString()}-${data.tokenId.toString()}`,
             },
+            relations: {
+                tokenGroupTokens: true,
+            },
         }),
     ])
 
     const tokenGroupToken = new TokenGroupToken({
-        id: `${data.tokenId.toString()}-${data.tokenGroupId.toString()}`,
+        id: `${data.tokenId.toString()}-${token.tokenGroupTokens.length}-${data.tokenGroupId.toString()}`,
         token,
         tokenGroup,
     })
