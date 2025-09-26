@@ -31,7 +31,7 @@ export async function tokenGroupUpdated(
         }),
     ])
 
-    if (token.tokenGroupTokens?.length > 0) {
+    if (token.tokenGroupTokens.length > 0) {
         const promises = []
         for (const tokenGroupToken of token.tokenGroupTokens) {
             promises.push(ctx.store.remove(tokenGroupToken))
