@@ -37,7 +37,7 @@ export async function tokenGroupUpdated(
 
     const tokenGroupTokens = tokenGroupIds.map((tokenGroupId, index) => {
         return new TokenGroupToken({
-            id: `${data.tokenId.toString()}-${index + 1}-${tokenGroupId}`,
+            id: `${data.tokenId.toString()}-${index}-${tokenGroupId}`,
             token,
             tokenGroup: tokenGroups.find((tokenGroup) => tokenGroup.id === tokenGroupId),
         })
