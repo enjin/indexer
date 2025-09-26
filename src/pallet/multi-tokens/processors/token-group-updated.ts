@@ -36,8 +36,10 @@ export async function tokenGroupUpdated(
     await Promise.all(promises)
 
     const tokenGroupTokens = tokenGroupIds.map((tokenGroupId, index) => {
+        const seq = String(index).padStart(6, '0')
+
         return new TokenGroupToken({
-            id: `${data.tokenId.toString()}-${index}-${tokenGroupId}`,
+            id: `${data.tokenId.toString()}-${seq}-${tokenGroupId}`,
             token,
             tokenGroup: tokenGroups.find((tokenGroup) => tokenGroup.id === tokenGroupId),
         })
