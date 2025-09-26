@@ -29,6 +29,12 @@ export async function tokenGroupUpdated(
         }),
     ])
 
+    const promises = []
+    for (const tokenGroupToken of token.tokenGroupTokens) {
+        promises.push(ctx.store.remove(tokenGroupToken))
+    }
+    await Promise.all(promises)
+
     const tokenGroupTokens = tokenGroupIds.map((tokenGroupId) => {
         return new TokenGroupToken({
             id: `${data.tokenId.toString()}-${tokenGroupId}`,
@@ -37,8 +43,7 @@ export async function tokenGroupUpdated(
         })
     })
 
-    token.tokenGroupTokens = tokenGroupTokens
-    await ctx.store.save(token)
+    await ctx.store.save(tokenGroupTokens)
 
     return mappings.multiTokens.events.tokenGroupUpdatedEventModel(item, data)
 }
