@@ -31,21 +31,21 @@ export async function tokenGroupUpdated(
         }),
     ])
 
-    const promises = []
-    for (const tokenGroupToken of token.tokenGroupTokens) {
-        promises.push(ctx.store.remove(tokenGroupToken))
+    if (token.tokenGroupTokens?.length > 0) {
+        const promises = []
+        for (const tokenGroupToken of token.tokenGroupTokens) {
+            promises.push(ctx.store.remove(tokenGroupToken))
+        }
+        await Promise.all(promises)
     }
 
-    await Promise.all(promises)
-
-    const tokenGroupTokens = tokenGroupIds
-        .map((tokenGroupId) => {
-            return new TokenGroupToken({
-                id: `${data.tokenId.toString()}-${tokenGroupId}`,
-                token,
-                tokenGroup,
-            })
+    const tokenGroupTokens = tokenGroupIds.map((tokenGroupId) => {
+        return new TokenGroupToken({
+            id: `${data.tokenId.toString()}-${tokenGroupId}`,
+            token,
+            tokenGroup,
         })
+    })
 
     await ctx.store.save(tokenGroupTokens)
 
