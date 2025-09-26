@@ -23,18 +23,38 @@ export async function tokenGroupUpdated(
             where: {
                 id: `${data.collectionId.toString()}-${data.tokenId.toString()}`,
             },
+            relations: {
+                tokenGroupTokens: {
+                    tokenGroup: true,
+                },
+            },
         }),
     ])
 
-    const tokenGroupTokens = tokenGroupIds.map((tokenGroupId) => {
-        return new TokenGroupToken({
-            id: `${data.tokenId.toString()}-${tokenGroupId}`,
-            token,
-            tokenGroup,
+    const existingIds = token.tokenGroupTokens.map((tokenGroupToken) => tokenGroupToken.tokenGroup.id)
+
+    const tokenGroupTokens = tokenGroupIds
+        .filter((tokenGroupId) => !existingIds.includes(tokenGroupId))
+        .map((tokenGroupId) => {
+            return new TokenGroupToken({
+                id: `${data.tokenId.toString()}-${tokenGroupId}`,
+                token,
+                tokenGroup,
+            })
         })
-    })
 
     await ctx.store.save(tokenGroupTokens)
+
+    const newTokenGroupTokensOrder = []
+    const existingTokenGroupTokensOrder = [...token.tokenGroupTokens, ...tokenGroupTokens]
+    for (const tokenGroupId of tokenGroupIds) {
+        newTokenGroupTokensOrder.push(
+            existingTokenGroupTokensOrder.find((tokenGroupToken) => tokenGroupToken.tokenGroup.id === tokenGroupId)
+        )
+    }
+    token.tokenGroupTokens = newTokenGroupTokensOrder.filter((tokenGroupToken) => tokenGroupToken !== undefined)
+
+    await ctx.store.save(token)
 
     return mappings.multiTokens.events.tokenGroupUpdatedEventModel(item, data)
 }
