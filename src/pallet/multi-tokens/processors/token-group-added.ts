@@ -23,7 +23,7 @@ export async function tokenGroupAdded(ctx: CommonContext, block: Block, item: Ev
     ])
 
     const tokenGroupToken = new TokenGroupToken({
-        id: `${data.tokenId.toString()}-${token.tokenGroupTokens.length}-${data.tokenGroupId.toString()}`,
+        id: `${data.tokenId.toString()}-${token.tokenGroupTokens.length - 1}-${data.tokenGroupId.toString()}`,
         token,
         tokenGroup,
     })
