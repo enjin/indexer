@@ -11,7 +11,7 @@ export async function tokenGroupRemoved(
     const data = mappings.multiTokens.events.tokenGroupRemoved(item)
 
     const [tokenGroupToken, tokenGroup, token] = await Promise.all([
-        ctx.store.findOne(TokenGroupToken, {
+        ctx.store.findOneOrFail(TokenGroupToken, {
             where: {
                 id: `${data.tokenId.toString()}-${data.tokenGroupId.toString()}`,
             },
@@ -34,17 +34,14 @@ export async function tokenGroupRemoved(
         }),
     ])
 
-    if (tokenGroupToken) {
-        token.tokenGroupTokens = token.tokenGroupTokens.filter((groupToken) => groupToken.id !== tokenGroupToken.id)
-        tokenGroup.tokenGroupTokens = tokenGroup.tokenGroupTokens.filter(
-            (groupToken) => groupToken.id !== tokenGroupToken.id
-        )
-
-        await ctx.store.remove(tokenGroupToken)
-    }
+    token.tokenGroupTokens = token.tokenGroupTokens.filter((groupToken) => groupToken.id !== tokenGroupToken.id)
+    tokenGroup.tokenGroupTokens = tokenGroup.tokenGroupTokens.filter(
+        (groupToken) => groupToken.id !== tokenGroupToken.id
+    )
 
     await ctx.store.save(token)
     await ctx.store.save(tokenGroup)
+    await ctx.store.remove(tokenGroupToken)
 
     return mappings.multiTokens.events.tokenGroupRemovedEventModel(item, data)
 }

@@ -1,5 +1,5 @@
 import { Job } from 'bullmq'
-import { connectionManager, dataHandlerContext } from '~/contexts'
+import { dataHandlerContext } from '~/contexts'
 import { TokenGroup, TokenGroupToken } from '~/model'
 
 export async function syncTokenGroupPositions(job: Job) {
@@ -14,9 +14,7 @@ export async function syncTokenGroupPositions(job: Job) {
     })
 
     for (const tokenGroup of tokenGroups) {
-        await job.log(`Syncing token group position for ${tokenGroup.id}`)
         for (const [index, tokenGroupToken] of tokenGroup.tokenGroupTokens.entries()) {
-            await job.log(`--- Syncing token group token position for ${tokenGroupToken.id}`)
             if (tokenGroupToken.id !== `${tokenGroupToken.token.tokenId}-${tokenGroup.id}`) {
                 const token = tokenGroupToken.token
                 await ctx.store.remove(tokenGroupToken)
@@ -28,12 +26,10 @@ export async function syncTokenGroupPositions(job: Job) {
                     position: index,
                 })
                 await ctx.store.save(newTokenGroupToken)
-                await job.log(`--- --- Updating token group token id for ${tokenGroupToken.id}`)
             } else {
                 tokenGroupToken.position = index
                 await ctx.store.save(tokenGroupToken)
             }
-            await job.log(`>>>>>>>>>>>>>>>>> Token group token position synced for ${tokenGroupToken.id}`)
         }
     }
 
