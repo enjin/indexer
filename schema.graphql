@@ -623,6 +623,7 @@ type TokenGroupToken @entity @index(fields: ["token", "tokenGroup"], unique: tru
   id: ID!
   token: Token! @index
   tokenGroup: TokenGroup! @index
+  position: Int
 }
 
 type TokenGroup @entity {
