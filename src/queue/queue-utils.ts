@@ -433,7 +433,7 @@ export function dispatchComputePoolOffers(id: string): void {
 
 export async function dispatchComputeAccountStats(id: string): Promise<void> {
     const job = await AccountsQueue.getJob(`accounts.compute-stats.${id}`)
-    if (job) {
+    if (job && job.id) {
         await AccountsQueue.remove(job.id)
     }
     AccountsQueue.add(
