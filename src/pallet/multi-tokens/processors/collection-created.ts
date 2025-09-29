@@ -9,6 +9,7 @@ import {
     CollectionStats,
     MarketPolicy,
     RoyaltyBeneficiary,
+    AccountStats,
 } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
@@ -132,6 +133,17 @@ export async function collectionCreated(
     })
 
     await ctx.store.save(collection)
+
+    if (!account.stats) {
+        account.stats = new AccountStats({
+            totalCollections: 0,
+            totalTokens: 0,
+            volume: 0n,
+        })
+    }
+
+    account.stats.totalCollections++
+    await ctx.store.save(account)
 
     const royaltyPromises = callData.descriptor.explicitRoyaltyCurrencies
         .map((currency: { collectionId: bigint; tokenId: bigint }) => {

@@ -22,6 +22,6 @@ export class TokenGroup {
     @OneToMany_(() => TokenGroupToken, e => e.tokenGroup)
     tokenGroupTokens!: TokenGroupToken[]
 
-    @DateTimeColumn_({nullable: false})
-    createdAt!: Date
+    @DateTimeColumn_({nullable: true})
+    createdAt!: Date | undefined | null
 }

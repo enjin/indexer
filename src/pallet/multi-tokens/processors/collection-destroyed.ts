@@ -1,4 +1,12 @@
-import { AccountTokenEvent, Attribute, Collection, CollectionAccount, RoyaltyCurrency, Trait } from '~/model'
+import {
+    AccountStats,
+    AccountTokenEvent,
+    Attribute,
+    Collection,
+    CollectionAccount,
+    RoyaltyCurrency,
+    Trait,
+} from '~/model'
 import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { Block, CommonContext, EventItem } from '~/contexts'
@@ -14,7 +22,7 @@ export async function collectionDestroyed(
     if (skipSave) return [mappings.multiTokens.events.collectionDestroyedEventModel(item, data), undefined]
 
     const collectionId = data.collectionId.toString()
-    const collection = await ctx.store.findOneBy(Collection, { id: collectionId })
+    const collection = await ctx.store.findOne(Collection, { where: { id: collectionId }, relations: { owner: true } })
 
     if (!collection) {
         return [mappings.multiTokens.events.collectionDestroyedEventModel(item, data), undefined]
@@ -53,6 +61,18 @@ export async function collectionDestroyed(
         ctx.store.remove(attributes),
         ctx.store.remove(collection),
     ])
+
+    const account = collection.owner
+    if (!account.stats) {
+        account.stats = new AccountStats({
+            totalCollections: 0,
+            totalTokens: 0,
+            volume: 0n,
+        })
+    }
+
+    account.stats.totalCollections--
+    await ctx.store.save(account)
 
     const snsEvent: SnsEvent = {
         id: item.id,

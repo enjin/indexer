@@ -1,5 +1,5 @@
 import { throwFatalError } from '~/util/errors'
-import { Collection, CollectionAccount, NominationPool, PoolMember, Token, TokenAccount } from '~/model'
+import { AccountStats, Collection, CollectionAccount, NominationPool, PoolMember, Token, TokenAccount } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
 import * as mappings from '~/pallet/index'
@@ -76,6 +76,17 @@ export async function tokenAccountCreated(
     })
 
     await ctx.store.save(tokenAccount)
+
+    if (!account.stats) {
+        account.stats = new AccountStats({
+            totalCollections: 0,
+            totalTokens: 0,
+            volume: 0n,
+        })
+    }
+
+    account.stats.totalTokens++
+    await ctx.store.save(account)
 
     // for relay chain
     if (data.collectionId.toString() === '1') {
