@@ -236,7 +236,7 @@ export function dispatchSyncCollectionTransfer(id: string): void {
 
 export async function dispatchComputeValidators(): Promise<void> {
     const job = await ValidatorsQueue.getJob('validators.all')
-    if (job) {
+    if (job && job.id) {
         await ValidatorsQueue.remove(job.id)
     }
     ValidatorsQueue.add(
@@ -253,7 +253,7 @@ export async function dispatchComputeValidators(): Promise<void> {
 
 export async function dispatchSyncTokens(): Promise<void> {
     const job = await TokensQueue.getJob('tokens.supply.all')
-    if (job) {
+    if (job && job.id) {
         await TokensQueue.remove(job.id)
     }
     TokensQueue.add(
@@ -296,7 +296,7 @@ export function dispatchRefreshPool(id: string): void {
 
 export async function dispatchSyncValidators(): Promise<void> {
     const job = await ValidatorsQueue.getJob('validators.sync.all')
-    if (job) {
+    if (job && job.id) {
         await ValidatorsQueue.remove(job.id)
     }
     ValidatorsQueue.add(
