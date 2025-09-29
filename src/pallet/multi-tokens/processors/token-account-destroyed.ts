@@ -44,7 +44,7 @@ export async function tokenAccountDestroyed(
             })
         }
 
-        account.stats!.totalTokens--
+        account.stats.totalTokens--
         await ctx.store.save(account)
     }
 
