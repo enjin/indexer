@@ -22,21 +22,6 @@ export async function tokenGroupAdded(ctx: CommonContext, block: Block, item: Ev
         }),
     ])
 
-    const exists = await ctx.store.findOne(TokenGroupToken, {
-        where: {
-            tokenGroup: {
-                id: data.tokenGroupId.toString(),
-            },
-            token: {
-                tokenId: data.tokenId,
-            },
-        },
-    })
-
-    if (exists) {
-        return mappings.multiTokens.events.tokenGroupAddedEventModel(item, data)
-    }
-
     const tokenGroupToken = new TokenGroupToken({
         id: `${data.tokenId.toString()}-${data.tokenGroupId.toString()}`,
         token,
