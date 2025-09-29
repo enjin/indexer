@@ -1,5 +1,6 @@
 import {
     Account,
+    AccountStats,
     AccountTokenEvent,
     Event as EventModel,
     Listing,
@@ -8,7 +9,7 @@ import {
     ListingStatusType,
 } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { getBestListing } from '~/util/entities'
+import { getBestListing, getOrCreateAccount } from '~/util/entities'
 import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
@@ -43,17 +44,28 @@ export async function auctionFinalized(
     await ctx.store.save(status)
 
     if (data.winningBid) {
+        const buyer = await getOrCreateAccount(ctx, data.winningBid.bidder)
         const sale = new ListingSale({
             id: `${listingId}-${item.id}`,
             amount: listing.amount,
             price: data.winningBid.price,
-            buyer: new Account({ id: data.winningBid.bidder }),
+            buyer,
             listing,
             createdAt: new Date(block.timestamp ?? 0),
         })
 
         await ctx.store.save(sale)
         makeAssetId.lastSale = sale
+
+        if (!buyer.stats) {
+            buyer.stats = new AccountStats({
+                totalCollections: 0,
+                totalTokens: 0,
+                volume: 0n,
+            })
+        }
+        buyer.stats.volume += sale.amount * sale.price
+        await ctx.store.save(buyer)
     }
 
     listing.isActive = false
