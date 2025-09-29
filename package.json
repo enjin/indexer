@@ -51,7 +51,7 @@
     "metadata:canary-relay": "rm -rf typegen/canary-relaychain.jsonl && pnpm exec squid-substrate-metadata-explorer --rpc wss://archive.relay.canary.enjin.io --out typegen/canary-relaychain.jsonl"
   },
   "dependencies": {
-    "@aws-sdk/client-sns": "^3.821.0",
+    "@aws-sdk/client-sns": "^3.883.0",
     "@bull-board/api": "^6.9.6",
     "@bull-board/express": "^6.9.6",
     "@logtail/node": "^0.5.5",
