@@ -11,6 +11,7 @@ import {EarlyBirdShares} from "./earlyBirdShares.model"
 import {StakeExchangeTokenFilter} from "./stakeExchangeTokenFilter.model"
 import {Identity} from "./identity.model"
 import {IdentityRegistrar} from "./identityRegistrar.model"
+import {AccountStats} from "./_accountStats"
 
 @Entity_()
 export class Account {
@@ -63,6 +64,9 @@ export class Account {
 
     @IntColumn_({nullable: true})
     lastUpdateBlock!: number | undefined | null
+
+    @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new AccountStats(undefined, obj)}, nullable: true})
+    stats!: AccountStats | undefined | null
 
     @StringColumn_({nullable: true})
     username!: string | undefined | null

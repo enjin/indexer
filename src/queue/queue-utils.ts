@@ -430,3 +430,20 @@ export function dispatchComputePoolOffers(id: string): void {
         Logger.error('Failed to dispatch compute pool offers', LOGGER_NAMESPACE)
     })
 }
+
+export async function dispatchComputeAccountStats(id: string): Promise<void> {
+    const job = await AccountsQueue.getJob(`accounts.compute-stats.${id}`)
+    if (job) {
+        await AccountsQueue.remove(job.id)
+    }
+    AccountsQueue.add(
+        JobsEnum.COMPUTE_ACCOUNT_STATS,
+        { id },
+        {
+            delay: 6000,
+            jobId: `accounts.compute-stats.${id}`,
+        }
+    ).catch(() => {
+        Logger.error('Failed to dispatch compute account stats', LOGGER_NAMESPACE)
+    })
+}

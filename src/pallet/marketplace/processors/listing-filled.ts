@@ -1,5 +1,6 @@
 import {
     Account,
+    AccountStats,
     AccountTokenEvent,
     Event as EventModel,
     FixedPriceState,
@@ -54,6 +55,16 @@ export async function listingFilled(
         createdAt: new Date(block.timestamp ?? 0),
     })
     await ctx.store.save(sale)
+
+    if (!buyer.stats) {
+        buyer.stats = new AccountStats({
+            totalCollections: 0,
+            totalTokens: 0,
+            volume: 0n,
+        })
+    }
+    buyer.stats.volume += sale.amount * sale.price
+    await ctx.store.save(buyer)
 
     if (isOffer) {
         takeAssetId.lastSale = sale

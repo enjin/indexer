@@ -500,11 +500,20 @@ type Account @entity {
   # Extras
   lastUpdateBlock: Int
 
+  # stats
+  stats: AccountStats
+
   # profile
   username: String
   verifiedAt: DateTime
   verified: Boolean!
   image: String
+}
+
+type AccountStats {
+    totalCollections: Int!
+    totalTokens: Int!
+    volume: BigInt!
 }
 
 type MintPolicy {

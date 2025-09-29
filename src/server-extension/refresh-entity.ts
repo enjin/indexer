@@ -19,6 +19,7 @@ export enum EntityType {
     SYNC_OFFERS = 'sync_offers',
     SYNC_VALIDATORS = 'sync_validators',
     SYNC_METADATA = 'sync_metadata',
+    COMPUTE_ACCOUNT_STATS = 'compute_account_stats',
 }
 
 registerEnumType(EntityType, {
@@ -101,6 +102,11 @@ export class RefreshEntityResolver {
                 break
             case EntityType.LISTING:
                 QueueUtils.dispatchRefreshListings(args.ids)
+                break
+            case EntityType.COMPUTE_ACCOUNT_STATS:
+                for (const id of args.ids) {
+                    QueueUtils.dispatchComputeAccountStats(id)
+                }
                 break
         }
 

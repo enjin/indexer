@@ -1,6 +1,6 @@
 import { Job } from 'bullmq'
 import { ProcessorDef } from '~/worker/processors/processor.def'
-import { syncAccounts, syncAllAccounts } from '~/worker/jobs'
+import { computeAccountStats, syncAccounts, syncAccountsStats, syncAllAccounts } from '~/worker/jobs'
 import { JobsEnum } from '~/queue/constants'
 import { logDebug, logError } from '~/worker/utils'
 
@@ -12,6 +12,12 @@ export class AccountsProcessor implements ProcessorDef {
                 break
             case JobsEnum.SYNC_ALL_ACCOUNTS:
                 await syncAllAccounts(job)
+                break
+            case JobsEnum.COMPUTE_ACCOUNT_STATS:
+                await computeAccountStats(job)
+                break
+            case JobsEnum.SYNC_ACCOUNTS_STATS:
+                await syncAccountsStats(job)
                 break
             default:
                 throw new Error(`${job.name} is not a valid job for this processor`)
