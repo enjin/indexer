@@ -22,11 +22,11 @@ export async function tokenGroupAdded(ctx: CommonContext, block: Block, item: Ev
         }),
     ])
 
-    const seq = String(token.tokenGroupTokens.length - 1).padStart(6, '0')
     const tokenGroupToken = new TokenGroupToken({
-        id: `${data.tokenId.toString()}-${seq}-${data.tokenGroupId.toString()}`,
+        id: `${data.tokenId.toString()}-${data.tokenGroupId.toString()}`,
         token,
         tokenGroup,
+        position: token.tokenGroupTokens.length,
     })
 
     await ctx.store.save(tokenGroupToken)

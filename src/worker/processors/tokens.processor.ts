@@ -7,6 +7,7 @@ import {
     computeTokenSupply,
     computeTokenBestListing,
     computeTokenInfusion,
+    syncTokenGroupPositions,
 } from '~/worker/jobs'
 import { logDebug, logError } from '~/worker/utils'
 
@@ -27,6 +28,9 @@ export class TokensProcessor implements ProcessorDef {
                 break
             case JobsEnum.COMPUTE_TOKEN_INFUSION:
                 await computeTokenInfusion(job, job.data.id)
+                break
+            case JobsEnum.SYNC_TOKEN_GROUP_POSITIONS:
+                await syncTokenGroupPositions(job)
                 break
             default:
                 throw new Error(`${job.name} is not a valid job for this processor`)
