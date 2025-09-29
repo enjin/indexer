@@ -22,11 +22,26 @@ export async function tokenGroupAdded(ctx: CommonContext, block: Block, item: Ev
         }),
     ])
 
-    const seq = String(token.tokenGroupTokens.length - 1).padStart(6, '0')
+    const exists = await ctx.store.findOne(TokenGroupToken, {
+        where: {
+            tokenGroup: {
+                id: data.tokenGroupId.toString(),
+            },
+            token: {
+                tokenId: data.tokenId,
+            },
+        },
+    })
+
+    if (exists) {
+        return mappings.multiTokens.events.tokenGroupAddedEventModel(item, data)
+    }
+
     const tokenGroupToken = new TokenGroupToken({
-        id: `${data.tokenId.toString()}-${seq}-${data.tokenGroupId.toString()}`,
+        id: `${data.tokenId.toString()}-${data.tokenGroupId.toString()}`,
         token,
         tokenGroup,
+        position: token.tokenGroupTokens.length,
     })
 
     await ctx.store.save(tokenGroupToken)
