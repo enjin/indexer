@@ -1,5 +1,5 @@
 import { throwFatalError } from '~/util/errors'
-import { AccountStats, Collection } from '~/model'
+import { Collection } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
 import { SnsEvent } from '~/util/sns'

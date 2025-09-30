@@ -9,7 +9,6 @@ import {
     CollectionStats,
     MarketPolicy,
     RoyaltyBeneficiary,
-    AccountStats,
 } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'

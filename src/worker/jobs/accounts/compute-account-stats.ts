@@ -1,7 +1,6 @@
 import { Job } from 'bullmq'
-import { Not } from 'typeorm'
-import { connectionManager, dataHandlerContext } from '~/contexts'
-import { Account, AccountStats, Collection, ListingSale, TokenAccount } from '~/model'
+import { connectionManager } from '~/contexts'
+import { Account, AccountStats } from '~/model'
 
 export async function computeAccountStats(job: Job) {
     const em = await connectionManager()

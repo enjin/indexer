@@ -1,5 +1,5 @@
 import { throwFatalError } from '~/util/errors'
-import { AccountStats, CollectionAccount, PoolMember, TokenAccount } from '~/model'
+import { CollectionAccount, PoolMember, TokenAccount } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import * as mappings from '~/pallet/index'
 import { EventHandlerResult } from '~/processor.handler'

@@ -1,12 +1,4 @@
-import {
-    AccountStats,
-    AccountTokenEvent,
-    Attribute,
-    Collection,
-    CollectionAccount,
-    RoyaltyCurrency,
-    Trait,
-} from '~/model'
+import { AccountTokenEvent, Attribute, Collection, CollectionAccount, RoyaltyCurrency, Trait } from '~/model'
 import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { Block, CommonContext, EventItem } from '~/contexts'

@@ -1,6 +1,5 @@
 import {
     Account,
-    AccountStats,
     AccountTokenEvent,
     Event as EventModel,
     FixedPriceState,
