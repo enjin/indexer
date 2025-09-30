@@ -37,7 +37,7 @@ export async function tokenAccountDestroyed(
 
     const account = tokenAccount?.account
     if (account) {
-        dispatchComputeAccountStats(account.id)
+        await dispatchComputeAccountStats(account.id)
     }
 
     if (tokenAccount) {

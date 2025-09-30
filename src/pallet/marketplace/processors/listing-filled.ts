@@ -56,7 +56,7 @@ export async function listingFilled(
     })
     await ctx.store.save(sale)
 
-    dispatchComputeAccountStats(buyer.id)
+    await dispatchComputeAccountStats(buyer.id)
 
     if (isOffer) {
         takeAssetId.lastSale = sale

@@ -134,7 +134,7 @@ export async function collectionCreated(
 
     await ctx.store.save(collection)
 
-    dispatchComputeAccountStats(account.id)
+    await dispatchComputeAccountStats(account.id)
 
     const royaltyPromises = callData.descriptor.explicitRoyaltyCurrencies
         .map((currency: { collectionId: bigint; tokenId: bigint }) => {

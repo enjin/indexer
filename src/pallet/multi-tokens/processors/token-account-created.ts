@@ -76,7 +76,7 @@ export async function tokenAccountCreated(
         updatedAt: new Date(block.timestamp ?? 0),
     })
 
-    dispatchComputeAccountStats(account.id)
+    await dispatchComputeAccountStats(account.id)
 
     await ctx.store.save(tokenAccount)
 

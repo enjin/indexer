@@ -56,7 +56,7 @@ export async function collectionDestroyed(
     ])
 
     const account = collection.owner
-    dispatchComputeAccountStats(account.id)
+    await dispatchComputeAccountStats(account.id)
 
     const snsEvent: SnsEvent = {
         id: item.id,

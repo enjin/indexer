@@ -31,8 +31,8 @@ export async function collectionTransferred(
     await ctx.store.save(collection)
 
     const newOwner = collection.owner
-    dispatchComputeAccountStats(newOwner.id)
-    dispatchComputeAccountStats(oldOwner.id)
+    await dispatchComputeAccountStats(newOwner.id)
+    await dispatchComputeAccountStats(oldOwner.id)
 
     const snsEvent: SnsEvent = {
         id: item.id,
