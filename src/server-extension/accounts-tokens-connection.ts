@@ -19,11 +19,11 @@ class AccountsTokensConnectionArgs {
     @Field(() => String, { nullable: true })
     after?: string
 
-    @Field(() => AccountsTokensOrderByInput, { defaultValue: AccountsTokensOrderByInput.DATE })
-    orderBy: AccountsTokensOrderByInput = AccountsTokensOrderByInput.DATE
+    @Field(() => AccountsTokensOrderByInput, { defaultValue: AccountsTokensOrderByInput.TOKEN_NAME })
+    orderBy: AccountsTokensOrderByInput = AccountsTokensOrderByInput.TOKEN_NAME
 
-    @Field(() => AccountsTokensOrderInput, { defaultValue: AccountsTokensOrderInput.DESC })
-    order: AccountsTokensOrderInput = AccountsTokensOrderInput.DESC
+    @Field(() => AccountsTokensOrderInput, { defaultValue: AccountsTokensOrderInput.ASC })
+    order: AccountsTokensOrderInput = AccountsTokensOrderInput.ASC
 
     @Field(() => String, { nullable: true })
     query?: string
@@ -90,7 +90,7 @@ export class AccountsTokensConnectionResolver {
         const baseQuery = manager
             .getRepository(Token)
             .createQueryBuilder('token')
-            .innerJoinAndMapOne('token.collection', Collection, 'collection', 'token.collection = collection.id')
+            .innerJoin('token.collection', 'collection')
             .innerJoin(
                 TokenAccount,
                 'token_account',
@@ -115,54 +115,63 @@ export class AccountsTokensConnectionResolver {
             })
         }
 
-        // Handle after cursor
+        const totalCount = await baseQuery.clone().select('token.id').distinct(true).getCount()
+
+        const paginationQuery = baseQuery.clone()
+
         if (after) {
-            const afterCursor = decodeCursor(after)
-            if (order === AccountsTokensOrderInput.ASC) {
-                baseQuery.andWhere(`(${orderBy} > :afterValue OR (${orderBy} = :afterValue AND token.id > :afterId))`, {
-                    afterValue: afterCursor.orderValue,
-                    afterId: afterCursor.id,
-                })
+            const { id: afterId, orderValue: afterValue } = decodeCursor(after)
+
+            const comparison = order === AccountsTokensOrderInput.ASC ? '>' : '<'
+
+            // Handle NULL values (encoded as empty string)
+            if (afterValue === '') {
+                paginationQuery.andWhere(`(${orderBy} IS NULL AND token.id ${comparison} :afterId)`, { afterId })
             } else {
-                baseQuery.andWhere(`(${orderBy} < :afterValue OR (${orderBy} = :afterValue AND token.id > :afterId))`, {
-                    afterValue: afterCursor.orderValue,
-                    afterId: afterCursor.id,
-                })
+                paginationQuery.andWhere(
+                    `(${orderBy} ${comparison} :afterValue OR (${orderBy} = :afterValue AND token.id ${comparison} :afterId))`,
+                    { afterValue, afterId }
+                )
             }
         }
 
-        // Get total count
-        const totalCount = await baseQuery.select('token.id').distinct(true).getCount()
-
-        // Get one extra to determine if there are more pages
-        const tokenData = await baseQuery
-            .select(`token.id, ${orderBy} as orderValue`)
-            .distinctOn(['token.id', orderBy])
+        // Get one extra to check hasNextPage
+        const rawRows = await paginationQuery
+            .select('token.id', 'token_id')
+            .addSelect(orderBy, 'order_value')
+            .distinctOn([orderBy, 'token.id'])
             .orderBy(orderBy, order, 'NULLS LAST')
             .addOrderBy('token.id', order, 'NULLS LAST')
             .limit(limit + 1)
             .getRawMany()
 
+        const tokenData = rawRows.map((row) => ({
+            id: String(row.token_id),
+            orderValue: row.order_value?.toString() || '',
+        }))
+
         // Check if we have more pages
         const hasNextPage = tokenData.length > limit
         if (hasNextPage) {
-            tokenData.pop() // Remove the extra item
+            tokenData.pop() // Remove the extra item used in the pagination
         }
 
         const tokenIds = tokenData.map((row) => row.id)
+        const orderValueMap = new Map(tokenData.map((td) => [td.id, td.orderValue]))
 
         if (tokenIds.length === 0) {
             return new AccountsTokensConnection({
                 edges: [],
                 pageInfo: new PageInfo({
                     hasNextPage: false,
-                    endCursor: null,
+                    hasPreviousPage: false,
+                    startCursor: '',
+                    endCursor: '',
                 }),
                 totalCount,
             })
         }
 
-        // Fetch full token data
         const metadataKeys = ['name', 'description', 'fallback_image', 'banner_image', 'media', 'uri', 'external_url']
 
         const tokens = await manager
@@ -176,11 +185,9 @@ export class AccountsTokensConnectionResolver {
                 'collectionAttrs.token IS NULL AND collectionAttrs.key IN (:...metadataKeys)'
             )
             .where('token.id IN (:...tokenIds)', { tokenIds, metadataKeys })
+            .orderBy(orderBy, order, 'NULLS LAST')
+            .addOrderBy('token.id', order, 'NULLS LAST')
             .getMany()
-
-        // Create a map for ordering
-        const tokenMap = new Map(tokens.map((t) => [t.id, t]))
-        const orderedTokens = tokenIds.map((id) => tokenMap.get(id)).filter(Boolean) as Token[]
 
         // Fetch related data
         const tokenAccounts = await manager
@@ -230,7 +237,7 @@ export class AccountsTokensConnectionResolver {
         )
 
         // Create edges
-        const edges = orderedTokens.map((token, index) => {
+        const edges = tokens.map((token, index) => {
             const node = new AccountsTokensNode({
                 id: token.id.toString(),
                 tokenId: token.tokenId as any,
@@ -281,18 +288,21 @@ export class AccountsTokensConnectionResolver {
                 }
             })
 
-            const cursor = encodeCursor(token.id, tokenData[index].orderValue)
+            const cursor = encodeCursor(token.id, orderValueMap.get(token.id.toString()) || '')
 
             return new AccountsTokensEdge({ cursor, node })
         })
 
         // Determine page info
-        const endCursor = edges.length > 0 ? edges[edges.length - 1].cursor : null
+        const startCursor = edges.length > 0 ? edges[0].cursor : ''
+        const endCursor = edges.length > 0 ? edges[edges.length - 1].cursor : ''
 
         return new AccountsTokensConnection({
             edges,
             pageInfo: new PageInfo({
                 hasNextPage,
+                hasPreviousPage: !!after,
+                startCursor,
                 endCursor,
             }),
             totalCount,

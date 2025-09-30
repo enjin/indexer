@@ -5,8 +5,14 @@ export class PageInfo {
     @Field(() => Boolean)
     hasNextPage!: boolean
 
-    @Field(() => String, { nullable: true })
-    endCursor!: string | null
+    @Field(() => Boolean)
+    hasPreviousPage!: boolean
+
+    @Field(() => String)
+    startCursor!: string
+
+    @Field(() => String)
+    endCursor!: string
 
     constructor(props: Partial<PageInfo> = {}) {
         Object.assign(this, props)
