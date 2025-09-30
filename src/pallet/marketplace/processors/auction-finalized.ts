@@ -1,11 +1,4 @@
-import {
-    AccountTokenEvent,
-    Event as EventModel,
-    Listing,
-    ListingSale,
-    ListingStatus,
-    ListingStatusType,
-} from '~/model'
+import { AccountTokenEvent, Event as EventModel, Listing, ListingSale, ListingStatus, ListingStatusType } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getBestListing, getOrCreateAccount } from '~/util/entities'
 import { SnsEvent } from '~/util/sns'
