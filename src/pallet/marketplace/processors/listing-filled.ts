@@ -16,6 +16,7 @@ import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
 import { ListingFilled } from '~/pallet/marketplace/events'
+import { dispatchComputeAccountStats } from '~/queue/queue-utils'
 
 export async function listingFilled(
     ctx: CommonContext,
@@ -56,15 +57,7 @@ export async function listingFilled(
     })
     await ctx.store.save(sale)
 
-    if (!buyer.stats) {
-        buyer.stats = new AccountStats({
-            totalCollections: 0,
-            totalTokens: 0,
-            volume: 0n,
-        })
-    }
-    buyer.stats.volume += sale.amount * sale.price
-    await ctx.store.save(buyer)
+    dispatchComputeAccountStats(buyer.id)
 
     if (isOffer) {
         takeAssetId.lastSale = sale

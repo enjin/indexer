@@ -12,6 +12,7 @@ import { getBestListing, getOrCreateAccount } from '~/util/entities'
 import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
+import { dispatchComputeAccountStats } from '~/queue/queue-utils'
 
 export async function auctionFinalized(
     ctx: CommonContext,
@@ -56,15 +57,7 @@ export async function auctionFinalized(
         await ctx.store.save(sale)
         makeAssetId.lastSale = sale
 
-        if (!buyer.stats) {
-            buyer.stats = new AccountStats({
-                totalCollections: 0,
-                totalTokens: 0,
-                volume: 0n,
-            })
-        }
-        buyer.stats.volume += sale.amount * sale.price
-        await ctx.store.save(buyer)
+        dispatchComputeAccountStats(buyer.id)
     }
 
     listing.isActive = false

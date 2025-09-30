@@ -11,6 +11,7 @@ import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { EventHandlerResult } from '~/processor.handler'
+import { dispatchComputeAccountStats } from '~/queue/queue-utils'
 
 export async function collectionDestroyed(
     ctx: CommonContext,
@@ -63,16 +64,7 @@ export async function collectionDestroyed(
     ])
 
     const account = collection.owner
-    if (!account.stats) {
-        account.stats = new AccountStats({
-            totalCollections: 0,
-            totalTokens: 0,
-            volume: 0n,
-        })
-    }
-
-    account.stats.totalCollections--
-    await ctx.store.save(account)
+    dispatchComputeAccountStats(account.id)
 
     const snsEvent: SnsEvent = {
         id: item.id,

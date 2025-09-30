@@ -19,6 +19,7 @@ import { matrixUtility } from '~/type/calls'
 import { DefaultRoyalty as DefaultRoyalty1020 } from '~/type/matrixV1020'
 import { DefaultRoyalty as DefaultRoyalty500 } from '~/type/matrixV500'
 import { EventHandlerResult } from '~/processor.handler'
+import { dispatchComputeAccountStats } from '~/queue/queue-utils'
 
 type DefaultRoyalty = DefaultRoyalty500 | DefaultRoyalty1020
 
@@ -134,16 +135,7 @@ export async function collectionCreated(
 
     await ctx.store.save(collection)
 
-    if (!account.stats) {
-        account.stats = new AccountStats({
-            totalCollections: 0,
-            totalTokens: 0,
-            volume: 0n,
-        })
-    }
-
-    account.stats.totalCollections++
-    await ctx.store.save(account)
+    dispatchComputeAccountStats(account.id)
 
     const royaltyPromises = callData.descriptor.explicitRoyaltyCurrencies
         .map((currency: { collectionId: bigint; tokenId: bigint }) => {

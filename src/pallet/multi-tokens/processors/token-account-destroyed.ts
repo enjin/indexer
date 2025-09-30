@@ -3,6 +3,7 @@ import { AccountStats, CollectionAccount, PoolMember, TokenAccount } from '~/mod
 import { Block, CommonContext, EventItem } from '~/contexts'
 import * as mappings from '~/pallet/index'
 import { EventHandlerResult } from '~/processor.handler'
+import { dispatchComputeAccountStats } from '~/queue/queue-utils'
 
 export async function tokenAccountDestroyed(
     ctx: CommonContext,
@@ -36,16 +37,7 @@ export async function tokenAccountDestroyed(
 
     const account = tokenAccount?.account
     if (account) {
-        if (!account.stats) {
-            account.stats = new AccountStats({
-                totalCollections: 0,
-                totalTokens: 0,
-                volume: 0n,
-            })
-        }
-
-        account.stats.totalTokens--
-        await ctx.store.save(account)
+        dispatchComputeAccountStats(account.id)
     }
 
     if (tokenAccount) {
