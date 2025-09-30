@@ -50,6 +50,7 @@ export async function auctionFinalized(
         makeAssetId.lastSale = sale
 
         await dispatchComputeAccountStats(buyer.id)
+        await dispatchComputeAccountStats(listing.seller.id)
     }
 
     listing.isActive = false
