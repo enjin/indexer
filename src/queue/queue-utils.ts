@@ -448,7 +448,7 @@ export async function dispatchComputeAccountStats(id: string): Promise<void> {
         JobsEnum.COMPUTE_ACCOUNT_STATS,
         { id },
         {
-            delay: 6000,
+            delay: 24000,
             jobId: `accounts.compute-stats.${id}`,
         }
     ).catch(() => {
