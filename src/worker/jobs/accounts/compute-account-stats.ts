@@ -1,4 +1,5 @@
 import { Job } from 'bullmq'
+import { Not } from 'typeorm'
 import { dataHandlerContext } from '~/contexts'
 import { Account, AccountStats, Collection, ListingSale, TokenAccount } from '~/model'
 
@@ -30,7 +31,7 @@ export async function computeAccountStats(job: Job) {
     await job.log(`Computed total collections ${collections.length}`)
 
     const tokens = await ctx.store.find(TokenAccount, {
-        where: { account: { id: accountId } },
+        where: { account: { id: accountId }, collection: { id: Not('1') } },
     })
     account.stats.totalTokens = tokens.length
     await job.log(`Computed total tokens ${tokens.length}`)
