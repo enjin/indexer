@@ -8,6 +8,7 @@ import {
     ListingStatus,
     ListingStatusType,
     ListingType,
+    TokenAccount,
 } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getBestListing, getOrCreateAccount } from '~/util/entities'
@@ -58,6 +59,17 @@ export async function listingFilled(
 
     await dispatchComputeAccountStats(buyer.id)
     await dispatchComputeAccountStats(seller.id)
+    const tokenOwners = await ctx.store.find<TokenAccount>(TokenAccount, {
+        where: { token: { id: makeAssetId.id } },
+        relations: {
+            account: true,
+        },
+    })
+    if (tokenOwners.length > 0) {
+        for (const tokenOwner of tokenOwners) {
+            await QueueUtils.dispatchComputeAccountStats(tokenOwner.account.id)
+        }
+    }
 
     if (isOffer) {
         takeAssetId.lastSale = sale

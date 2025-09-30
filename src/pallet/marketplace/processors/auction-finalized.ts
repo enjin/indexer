@@ -1,4 +1,12 @@
-import { AccountTokenEvent, Event as EventModel, Listing, ListingSale, ListingStatus, ListingStatusType } from '~/model'
+import {
+    AccountTokenEvent,
+    Event as EventModel,
+    Listing,
+    ListingSale,
+    ListingStatus,
+    ListingStatusType,
+    TokenAccount,
+} from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getBestListing, getOrCreateAccount } from '~/util/entities'
 import { SnsEvent } from '~/util/sns'
@@ -51,6 +59,17 @@ export async function auctionFinalized(
 
         await dispatchComputeAccountStats(buyer.id)
         await dispatchComputeAccountStats(listing.seller.id)
+        const tokenOwners = await ctx.store.find<TokenAccount>(TokenAccount, {
+            where: { token: { id: makeAssetId.id } },
+            relations: {
+                account: true,
+            },
+        })
+        if (tokenOwners.length > 0) {
+            for (const tokenOwner of tokenOwners) {
+                await QueueUtils.dispatchComputeAccountStats(tokenOwner.account.id)
+            }
+        }
     }
 
     listing.isActive = false
