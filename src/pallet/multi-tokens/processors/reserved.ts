@@ -50,6 +50,5 @@ export async function reserved(
         )
     }
 
-    // console.log('Dispatching from reserved')
-    QueueUtils.dispatchComputeStats(data.collectionId.toString())
+    await QueueUtils.dispatchComputeStats(data.collectionId.toString())
 }

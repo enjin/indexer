@@ -98,8 +98,7 @@ export async function thawed(
         }
     }
 
-    // console.log('Dispatching from thawed')
-    QueueUtils.dispatchComputeStats(event.collectionId.toString())
+    await QueueUtils.dispatchComputeStats(event.collectionId.toString())
 
     return [mappings.multiTokens.events.thawedEventModel(item, event), snsEvent]
 }

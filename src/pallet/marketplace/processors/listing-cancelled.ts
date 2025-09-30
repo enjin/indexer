@@ -94,7 +94,7 @@ export async function listingCancelled(
 
     const isOffer: boolean = listing.type === ListingType.Offer
 
-    QueueUtils.dispatchComputeStats(isOffer ? takeAssetId.collection.id : makeAssetId.collection.id)
+    await QueueUtils.dispatchComputeStats(isOffer ? takeAssetId.collection.id : makeAssetId.collection.id)
     await QueueUtils.dispatchComputeAccountStats(seller.id)
 
     return [

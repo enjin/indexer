@@ -79,7 +79,7 @@ export async function transferred(
         },
     }
 
-    QueueUtils.dispatchComputeStats(data.collectionId.toString())
+    await QueueUtils.dispatchComputeStats(data.collectionId.toString())
     await QueueUtils.dispatchComputeAccountStats(data.from.toString())
     await QueueUtils.dispatchComputeAccountStats(data.to.toString())
 

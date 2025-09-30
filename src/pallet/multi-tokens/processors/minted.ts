@@ -175,7 +175,7 @@ export async function minted(
     }
 
     QueueUtils.dispatchComputeMetadata({ id: token.id, type: 'token', traits: true })
-    QueueUtils.dispatchComputeStats(data.collectionId.toString())
+    await QueueUtils.dispatchComputeStats(data.collectionId.toString())
 
     return [
         ...mappings.multiTokens.events.mintedEventModel(item.id, data, {

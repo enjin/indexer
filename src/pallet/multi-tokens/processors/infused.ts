@@ -46,7 +46,7 @@ export async function infused(
         await ctx.store.save(token)
     }
 
-    QueueUtils.dispatchComputeStats(data.collectionId.toString())
+    await QueueUtils.dispatchComputeStats(data.collectionId.toString())
 
     const snsEvent: SnsEvent = {
         id: item.id,

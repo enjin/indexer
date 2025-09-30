@@ -202,8 +202,8 @@ export async function tokenDestroyed(
         },
     }
 
-    QueueUtils.dispatchComputeStats(data.collectionId.toString())
-    QueueUtils.dispatchComputeTraits(data.collectionId.toString())
+    await QueueUtils.dispatchComputeStats(data.collectionId.toString())
+    await QueueUtils.dispatchComputeTraits(data.collectionId.toString())
 
     return [mappings.multiTokens.events.tokenDestroyedEventModel(item, data), snsEvent]
 }

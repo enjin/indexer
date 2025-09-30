@@ -131,7 +131,11 @@ export function dispatchComputeCollections(): void {
     })
 }
 
-export function dispatchComputeStats(id: string): void {
+export async function dispatchComputeStats(id: string): Promise<void> {
+    const job = await CollectionsQueue.getJob(`collections.stats.${id}`)
+    if (job && job.id) {
+        await CollectionsQueue.remove(job.id)
+    }
     CollectionsQueue.add(
         JobsEnum.COMPUTE_STATS,
         { id },
@@ -157,7 +161,11 @@ export function dispatchComputeRarity({ id, delay = 6000 }: { id: string; delay?
     })
 }
 
-export function dispatchComputeTraits(id: string): void {
+export async function dispatchComputeTraits(id: string): Promise<void> {
+    const job = await TraitsQueue.getJob(`traits.${id}`)
+    if (job && job.id) {
+        await TraitsQueue.remove(job.id)
+    }
     TraitsQueue.add(
         JobsEnum.COMPUTE_TRAITS,
         { id },
