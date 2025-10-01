@@ -88,11 +88,21 @@ export class AccountsTokensConnectionResolver {
 
         // Build the base query
         const baseQuery = manager
-            .getRepository(TokenAccount)
-            .createQueryBuilder('token_account')
-            .innerJoin('token_account.token', 'token')
+            .getRepository(Token)
+            .createQueryBuilder('token')
             .innerJoin('token.collection', 'collection')
-            .where('token_account.account IN (:...accountIds)', { accountIds })
+            .where((qb) => {
+                const subQuery = qb
+                    .subQuery()
+                    .select('1')
+                    .from(TokenAccount, 'ta')
+                    .where('ta.token = token.id')
+                    .andWhere('ta.account IN (:...accountIds)')
+                    .getQuery()
+
+                return `EXISTS ${subQuery}`
+            })
+            .setParameter('accountIds', accountIds)
 
         if (collectionId) {
             baseQuery.andWhere('collection.collectionId = :collectionId', { collectionId })
@@ -111,7 +121,7 @@ export class AccountsTokensConnectionResolver {
             })
         }
 
-        const totalCount = await baseQuery.clone().select('token.id').distinct(true).getCount()
+        const totalCount = await baseQuery.clone().getCount()
 
         const paginationQuery = baseQuery.clone()
 
@@ -135,7 +145,6 @@ export class AccountsTokensConnectionResolver {
         const rawRows = await paginationQuery
             .select('token.id', 'token_id')
             .addSelect(orderBy, 'order_value')
-            .distinctOn([orderBy, 'token.id'])
             .orderBy(orderBy, order, 'NULLS LAST')
             .addOrderBy('token.id', order, 'NULLS LAST')
             .limit(limit + 1)
