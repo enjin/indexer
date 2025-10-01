@@ -1,0 +1,113 @@
+name: PR Build Trigger
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  check-permissions:
+    if: github.event.issue.pull_request && contains(github.event.comment.body, '/build')
+    runs-on: ubuntu-latest
+    outputs:
+      allowed: ${{ steps.check.outputs.allowed }}
+
+    steps:
+      - name: Check if user is a maintainer
+        id: check
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const maintainers = ['zlayine', 'tallesborges'];
+            const user = context.actor;
+
+            console.log(`User ${user} requested build`);
+
+            if (maintainers.includes(user)) {
+              console.log(`✅ User ${user} is a maintainer`);
+              core.setOutput('allowed', 'true');
+            } else {
+              console.log(`❌ User ${user} is not a maintainer`);
+              core.setOutput('allowed', 'false');
+
+              await github.rest.reactions.createForIssueComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: context.payload.comment.id,
+                content: '-1'
+              });
+            }
+
+  trigger-build:
+    needs: check-permissions
+    if: needs.check-permissions.outputs.allowed == 'true'
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pull-requests: write
+      actions: write
+
+    steps:
+      - name: Get PR details
+        id: pr
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            });
+            core.setOutput('number', pr.data.number);
+            core.setOutput('sha', pr.data.head.sha);
+            core.setOutput('ref', pr.data.head.ref);
+
+      - name: React to comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.reactions.createForIssueComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: context.payload.comment.id,
+              content: 'rocket'
+            });
+
+      - name: Trigger ECR build workflow
+        id: trigger
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'publish-ecr.yml',
+              ref: '${{ steps.pr.outputs.ref }}'
+            });
+
+            const workflowUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/workflows/publish-ecr.yml`;
+            core.setOutput('workflow-url', workflowUrl);
+
+      - name: Post build started comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const workflowUrl = '${{ steps.trigger.outputs.workflow-url }}';
+
+            const comment = `🚀 **ECR Build Triggered**
+
+            Building image for PR #${{ steps.pr.outputs.number }} (commit: \`${{ steps.pr.outputs.sha }}\`)
+
+            **For Kubernetes deployment:**
+            \`\`\`
+            ${{ steps.pr.outputs.sha }}
+            \`\`\`
+
+            [View build progress](${workflowUrl}) • Branch: \`${{ steps.pr.outputs.ref }}\``;
+
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: ${{ steps.pr.outputs.number }},
+              body: comment
+            });
