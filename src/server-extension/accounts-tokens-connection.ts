@@ -88,15 +88,11 @@ export class AccountsTokensConnectionResolver {
 
         // Build the base query
         const baseQuery = manager
-            .getRepository(Token)
-            .createQueryBuilder('token')
+            .getRepository(TokenAccount)
+            .createQueryBuilder('token_account')
+            .innerJoin('token_account.token', 'token')
             .innerJoin('token.collection', 'collection')
-            .innerJoin(
-                TokenAccount,
-                'token_account',
-                'token_account.token = token.id AND token_account.account IN (:...accountIds)',
-                { accountIds }
-            )
+            .where('token_account.account IN (:...accountIds)', { accountIds })
 
         if (collectionId) {
             baseQuery.andWhere('collection.collectionId = :collectionId', { collectionId })
@@ -178,13 +174,16 @@ export class AccountsTokensConnectionResolver {
             .getRepository(Token)
             .createQueryBuilder('token')
             .leftJoinAndSelect('token.collection', 'collection')
-            .leftJoinAndSelect('token.attributes', 'tokenAttrs', 'tokenAttrs.key IN (:...metadataKeys)')
+            .leftJoinAndSelect('token.attributes', 'tokenAttrs', 'tokenAttrs.key IN (:...metadataKeys)', {
+                metadataKeys,
+            })
             .leftJoinAndSelect(
                 'collection.attributes',
                 'collectionAttrs',
-                'collectionAttrs.token IS NULL AND collectionAttrs.key IN (:...metadataKeys)'
+                'collectionAttrs.token IS NULL AND collectionAttrs.key IN (:...metadataKeys)',
+                { metadataKeys }
             )
-            .where('token.id IN (:...tokenIds)', { tokenIds, metadataKeys })
+            .where('token.id IN (:...tokenIds)', { tokenIds })
             .orderBy(orderBy, order, 'NULLS LAST')
             .addOrderBy('token.id', order, 'NULLS LAST')
             .getMany()
