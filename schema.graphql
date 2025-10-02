@@ -514,6 +514,7 @@ type AccountStats {
     totalCollections: Int!
     totalTokens: Int!
     volume: BigInt!
+    tokensValue: BigInt!
 }
 
 type MintPolicy {

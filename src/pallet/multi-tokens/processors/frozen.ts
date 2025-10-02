@@ -113,7 +113,7 @@ export async function frozen(
         }
     }
 
-    QueueUtils.dispatchComputeStats(event.collectionId.toString())
+    await QueueUtils.dispatchComputeStats(event.collectionId.toString())
 
     return [mappings.multiTokens.events.frozenEventModel(item, event), snsEvent]
 }

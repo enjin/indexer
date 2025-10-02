@@ -6,6 +6,7 @@ import {
     ListingStatusType,
     ListingType,
     OfferState,
+    TokenAccount,
 } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getBestListing, getOrCreateAccount } from '~/util/entities'
@@ -94,7 +95,20 @@ export async function listingCancelled(
 
     const isOffer: boolean = listing.type === ListingType.Offer
 
-    QueueUtils.dispatchComputeStats(isOffer ? takeAssetId.collection.id : makeAssetId.collection.id)
+    await QueueUtils.dispatchComputeStats(isOffer ? takeAssetId.collection.id : makeAssetId.collection.id)
+
+    const tokenOwners = await ctx.store.find<TokenAccount>(TokenAccount, {
+        where: { token: { id: makeAssetId.id } },
+        relations: {
+            account: true,
+        },
+    })
+    if (tokenOwners.length > 0) {
+        for (const tokenOwner of tokenOwners) {
+            await QueueUtils.dispatchComputeAccountStats(tokenOwner.account.id)
+        }
+    }
+    await QueueUtils.dispatchComputeAccountStats(seller.id)
 
     return [
         ...mappings.marketplace.events.listingCancelledEventModel(

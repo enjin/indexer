@@ -1,10 +1,11 @@
 import { throwFatalError } from '~/util/errors'
-import { AccountStats, Collection } from '~/model'
+import { Collection } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
 import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { EventHandlerResult } from '~/processor.handler'
+import { dispatchComputeAccountStats } from '~/queue/queue-utils'
 
 export async function collectionTransferred(
     ctx: CommonContext,
@@ -25,33 +26,13 @@ export async function collectionTransferred(
     }
 
     const oldOwner = collection.owner
-
     collection.owner = await getOrCreateAccount(ctx, data.newOwner)
-
     collection.isTransferPending = false
-
     await ctx.store.save(collection)
 
     const newOwner = collection.owner
-    if (!newOwner.stats) {
-        newOwner.stats = new AccountStats({
-            totalCollections: 0,
-            totalTokens: 0,
-            volume: 0n,
-        })
-    }
-    newOwner.stats.totalCollections++
-    await ctx.store.save(newOwner)
-
-    if (!oldOwner.stats) {
-        oldOwner.stats = new AccountStats({
-            totalCollections: 0,
-            totalTokens: 0,
-            volume: 0n,
-        })
-    }
-    oldOwner.stats.totalCollections--
-    await ctx.store.save(oldOwner)
+    await dispatchComputeAccountStats(newOwner.id)
+    await dispatchComputeAccountStats(oldOwner.id)
 
     const snsEvent: SnsEvent = {
         id: item.id,

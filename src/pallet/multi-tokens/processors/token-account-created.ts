@@ -1,10 +1,11 @@
 import { throwFatalError } from '~/util/errors'
-import { AccountStats, Collection, CollectionAccount, NominationPool, PoolMember, Token, TokenAccount } from '~/model'
+import { Collection, CollectionAccount, NominationPool, PoolMember, Token, TokenAccount } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
 import * as mappings from '~/pallet/index'
 import { getActiveEra } from '~/pallet/nomination-pools/processors/bonded'
 import { EventHandlerResult } from '~/processor.handler'
+import { dispatchComputeAccountStats } from '~/queue/queue-utils'
 
 export async function tokenAccountCreated(
     ctx: CommonContext,
@@ -75,18 +76,9 @@ export async function tokenAccountCreated(
         updatedAt: new Date(block.timestamp ?? 0),
     })
 
+    await dispatchComputeAccountStats(account.id)
+
     await ctx.store.save(tokenAccount)
-
-    if (!account.stats) {
-        account.stats = new AccountStats({
-            totalCollections: 0,
-            totalTokens: 0,
-            volume: 0n,
-        })
-    }
-
-    account.stats.totalTokens++
-    await ctx.store.save(account)
 
     // for relay chain
     if (data.collectionId.toString() === '1') {

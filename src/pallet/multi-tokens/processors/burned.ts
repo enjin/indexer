@@ -72,8 +72,8 @@ export async function burned(
         },
     }
 
-    QueueUtils.dispatchComputeStats(data.collectionId.toString())
-    QueueUtils.dispatchComputeTraits(data.collectionId.toString())
+    await QueueUtils.dispatchComputeStats(data.collectionId.toString())
+    await QueueUtils.dispatchComputeTraits(data.collectionId.toString())
 
     return [...mappings.multiTokens.events.burnedEventModel(item, data, account, token.collection, token), snsEvent]
 }

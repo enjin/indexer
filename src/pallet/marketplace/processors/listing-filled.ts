@@ -1,6 +1,5 @@
 import {
     Account,
-    AccountStats,
     AccountTokenEvent,
     Event as EventModel,
     FixedPriceState,
@@ -9,6 +8,7 @@ import {
     ListingStatus,
     ListingStatusType,
     ListingType,
+    TokenAccount,
 } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getBestListing, getOrCreateAccount } from '~/util/entities'
@@ -16,6 +16,7 @@ import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
 import { ListingFilled } from '~/pallet/marketplace/events'
+import { dispatchComputeAccountStats } from '~/queue/queue-utils'
 
 export async function listingFilled(
     ctx: CommonContext,
@@ -56,15 +57,19 @@ export async function listingFilled(
     })
     await ctx.store.save(sale)
 
-    if (!buyer.stats) {
-        buyer.stats = new AccountStats({
-            totalCollections: 0,
-            totalTokens: 0,
-            volume: 0n,
-        })
+    await dispatchComputeAccountStats(buyer.id)
+    await dispatchComputeAccountStats(seller.id)
+    const tokenOwners = await ctx.store.find<TokenAccount>(TokenAccount, {
+        where: { token: { id: makeAssetId.id } },
+        relations: {
+            account: true,
+        },
+    })
+    if (tokenOwners.length > 0) {
+        for (const tokenOwner of tokenOwners) {
+            await QueueUtils.dispatchComputeAccountStats(tokenOwner.account.id)
+        }
     }
-    buyer.stats.volume += sale.amount * sale.price
-    await ctx.store.save(buyer)
 
     if (isOffer) {
         takeAssetId.lastSale = sale
@@ -134,7 +139,7 @@ export async function listingFilled(
         },
     }
 
-    QueueUtils.dispatchComputeStats(isOffer ? takeAssetId.collection.id : makeAssetId.collection.id)
+    await QueueUtils.dispatchComputeStats(isOffer ? takeAssetId.collection.id : makeAssetId.collection.id)
 
     return [
         ...mappings.marketplace.events.listingFilledEventModel(

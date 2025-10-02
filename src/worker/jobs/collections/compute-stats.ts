@@ -59,8 +59,6 @@ export async function computeStats(_job: Job, collectionId: string) {
     const [sales, [{ floor_price }], [{ active_listings_amount }], { tokenCount, supply }, { total_infused }] =
         await Promise.all(promises)
 
-    await _job.log(`Collection stats computed: ${total_infused}`)
-
     const stats = new CollectionStats({
         tokenCount: Number(tokenCount),
         supply: BigInt(supply ?? 0n),

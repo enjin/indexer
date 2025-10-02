@@ -77,7 +77,7 @@ export async function listingRemovedUnderMinimum(
         },
     }
 
-    QueueUtils.dispatchComputeStats(makeAssetId.collection.id)
+    await QueueUtils.dispatchComputeStats(makeAssetId.collection.id)
 
     return [
         ...mappings.marketplace.events.listingRemovedUnderMinimumEventModel(

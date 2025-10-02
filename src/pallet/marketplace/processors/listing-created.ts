@@ -165,10 +165,22 @@ export async function listingCreated(
         })
         if (tokenOwner) {
             toAccount = tokenOwner.account
+            await QueueUtils.dispatchComputeAccountStats(toAccount.id)
         }
     }
 
-    QueueUtils.dispatchComputeStats(isOffer ? takeAssetId.collection.id : makeAssetId.collection.id)
+    await QueueUtils.dispatchComputeStats(isOffer ? takeAssetId.collection.id : makeAssetId.collection.id)
+
+    const tokenOwners = await ctx.store.find<TokenAccount>(TokenAccount, {
+        where: { token: { id: makeAssetId.id } },
+        relations: {
+            account: true,
+        },
+    })
+    for (const tokenOwner of tokenOwners) {
+        await QueueUtils.dispatchComputeAccountStats(tokenOwner.account.id)
+    }
+    await QueueUtils.dispatchComputeAccountStats(listingCreator.id)
 
     return [
         ...mappings.marketplace.events.listingCreatedEventModel(
