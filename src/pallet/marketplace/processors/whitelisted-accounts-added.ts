@@ -30,6 +30,7 @@ export async function whitelistedAccountsAdded(
             })
     )
     await ctx.store.save(newWhitelistedAccounts)
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (listing.whitelistedAccounts) {
         listing.whitelistedAccounts = [...listing.whitelistedAccounts, ...newWhitelistedAccounts]
     } else {
