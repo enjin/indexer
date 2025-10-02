@@ -30,11 +30,7 @@ export async function whitelistedAccountsAdded(
             })
     )
     await ctx.store.save(newWhitelistedAccounts)
-    if (listing.whitelistedAccounts) {
-        listing.whitelistedAccounts.push(...newWhitelistedAccounts)
-    } else {
-        listing.whitelistedAccounts = newWhitelistedAccounts
-    }
+    listing.whitelistedAccounts.push(...newWhitelistedAccounts)
     await ctx.store.save(listing)
 
     const snsEvent: SnsEvent = {
