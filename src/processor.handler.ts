@@ -147,6 +147,12 @@ export async function eventHandler(
             .with(marketplace.listingCreated.name, () => p.marketplace.processors.listingCreated(ctx, block, item))
             .with(marketplace.listingCancelled.name, () => p.marketplace.processors.listingCancelled(ctx, block, item))
             .with(marketplace.listingFilled.name, () => p.marketplace.processors.listingFilled(ctx, block, item))
+            .with(marketplace.whitelistedAccountsAdded.name, () =>
+                p.marketplace.processors.whitelistedAccountsAdded(ctx, block, item)
+            )
+            .with(marketplace.whitelistedAccountsRemoved.name, () =>
+                p.marketplace.processors.whitelistedAccountsRemoved(ctx, block, item)
+            )
             .with(marketplace.bidPlaced.name, () => p.marketplace.processors.bidPlaced(ctx, block, item))
             .with(marketplace.auctionFinalized.name, () => p.marketplace.processors.auctionFinalized(ctx, block, item))
             .with(marketplace.counterOfferPlaced.name, () =>

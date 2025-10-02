@@ -9,6 +9,7 @@ import {
     ListingStatusType,
     ListingType,
     TokenAccount,
+    WhitelistedAccount,
 } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getBestListing, getOrCreateAccount } from '~/util/entities'
@@ -56,6 +57,17 @@ export async function listingFilled(
         createdAt: new Date(block.timestamp ?? 0),
     })
     await ctx.store.save(sale)
+
+    if (listing.usesWhitelist) {
+        const whitelistAccount = await ctx.store.findOne<WhitelistedAccount>(WhitelistedAccount, {
+            where: { listing: { id: listingId }, account: { id: buyer.id } },
+        })
+
+        if (whitelistAccount) {
+            whitelistAccount.amountUsed += Number(event.amountFilled)
+            await ctx.store.save(whitelistAccount)
+        }
+    }
 
     await dispatchComputeAccountStats(buyer.id)
     await dispatchComputeAccountStats(seller.id)

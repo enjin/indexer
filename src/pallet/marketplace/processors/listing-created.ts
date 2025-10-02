@@ -105,6 +105,7 @@ export async function listingCreated(
         startBlock,
         type: listingData.listingType,
         usesWhitelist,
+        whitelistedAccounts: [],
         creationBlock: block.height,
         createdAt: new Date(block.timestamp ?? 0),
         updatedAt: new Date(block.timestamp ?? 0),

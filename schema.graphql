@@ -187,6 +187,16 @@ type MarketplaceOfferCancelled {
   listing: Listing!
 }
 
+type MarketplaceWhitelistedAccountsAdded {
+  listing: Listing!
+  accounts: [String]!
+}
+
+type MarketplaceWhitelistedAccountsRemoved {
+  listing: Listing!
+  accounts: [String]!
+}
+
 type MultiTokensApproved {
   collectionId: BigInt!
   tokenId: BigInt
@@ -1643,7 +1653,8 @@ union EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiToken
   | MarketplaceAuctionFinalized | MarketplaceBidPlaced | MarketplaceListingCancelled | MarketplaceListingCreated
   | MarketplaceListingFilled | MarketplaceCounterOfferPlaced | MarketplaceCounterOfferAnswered | MarketplaceCounterOfferRemoved
   | MarketplaceOfferCreated | MarketplaceOfferSettled | MarketplaceOfferCancelled | MarketplaceListingRemovedUnderMinimum
-  | BalancesTransfer | TeleportBalanceWithdrawn | ClaimsClaimRequested | ClaimsClaimed
+  | BalancesTransfer | TeleportBalanceWithdrawn | ClaimsClaimRequested | ClaimsClaimed | MarketplaceWhitelistedAccountsAdded
+  | MarketplaceWhitelistedAccountsRemoved
   | FuelTankCreated | FuelTankDestroyed | MultiTokensClaimedCollections | MultiTokensClaimTokensInitiated
   | MultiTokensClaimTokensCompleted | MultiTokensCollectionTransferred | MultiTokensCollectionTransferCancelled | MultiTokensInfused
   | StakingEraPaid | NominationPoolsBonded | NominationPoolsUnbonded | StakingChilled | StakingBonded | StakingUnbonded | StakingWithdrawn

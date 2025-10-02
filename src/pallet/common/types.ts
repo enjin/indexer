@@ -992,3 +992,13 @@ export enum CustomStakingEvent {
     AllMembersUnbonded = 'NominationPools.AllMembersUnbonded',
     MemberUnbonded = 'NominationPools.MemberUnbonded',
 }
+
+export type WhitelistAddAccount = {
+    accountId: AccountId32
+    allowance?: bigint | undefined
+}
+
+export type WhitelistRemoveAccount = {
+    accountId: AccountId32
+    allowance?: bigint | undefined
+}
