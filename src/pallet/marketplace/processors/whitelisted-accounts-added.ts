@@ -19,7 +19,7 @@ export async function whitelistedAccountsAdded(
     const newWhitelistedAccounts = event.accounts.map(
         (account) =>
             new WhitelistedAccount({
-                id: `${listingId}-${account}`,
+                id: `${listingId}-${account.accountId}`,
                 listing,
                 account: new Account({ id: account.accountId }),
                 allowance: Number(account.allowance ?? 0n),
