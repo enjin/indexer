@@ -25,6 +25,8 @@ export async function whitelistedAccountsAdded(
                 allowance: Number(account.allowance ?? 0n),
                 amountUsed: 0,
                 deposit: 0n,
+                createdAt: new Date(block.timestamp ?? 0),
+                updatedAt: new Date(block.timestamp ?? 0),
             })
     )
     await ctx.store.save(newWhitelistedAccounts)
