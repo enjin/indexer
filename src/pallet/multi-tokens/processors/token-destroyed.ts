@@ -187,8 +187,9 @@ export async function tokenDestroyed(
         ctx.store.remove(traitTokens),
         ctx.store.remove(tokenRarity),
         ctx.store.remove(attributes),
-        ctx.store.remove(token),
     ])
+
+    await ctx.store.remove(token)
 
     const snsEvent: SnsEvent = {
         id: item.id,
