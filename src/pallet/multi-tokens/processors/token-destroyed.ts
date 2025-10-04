@@ -176,10 +176,8 @@ export async function tokenDestroyed(
         }
     }
 
-    // First, delete traitTokens to avoid foreign key constraint violation
     await ctx.store.remove(traitTokens)
 
-    // Then delete all other related records in parallel
     await Promise.all([
         ctx.store.save(events),
         ctx.store.remove(tokenAccounts),
@@ -192,7 +190,6 @@ export async function tokenDestroyed(
         ctx.store.remove(attributes),
     ])
 
-    // Finally, delete the token itself after all foreign key references are removed
     await ctx.store.remove(token)
 
     const snsEvent: SnsEvent = {
