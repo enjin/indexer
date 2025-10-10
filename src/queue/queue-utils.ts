@@ -205,7 +205,7 @@ export function dispatchComputeMetadata({
 
 export function dispatchSyncAllMetadata(): void {
     MetadataQueue.add(
-        JobsEnum.FETCH_COLLECTIONS,
+        JobsEnum.SYNC_METADATA,
         {},
         {
             delay: 6000,

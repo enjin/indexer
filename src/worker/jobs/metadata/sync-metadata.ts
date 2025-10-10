@@ -19,15 +19,6 @@ export async function syncMetadata(job: Job) {
         .stream()
 
     processAttribute(job, collectionStream)
-
-    const tokenStream = await em
-        .getRepository(Attribute)
-        .createQueryBuilder('attr')
-        .select('DISTINCT attr.token_id')
-        .where('attr.token_id IS NOT NULL')
-        .stream()
-
-    processAttribute(job, tokenStream)
 }
 
 function processAttribute(job: Job, stream: ReadStream) {
@@ -45,7 +36,7 @@ function processAttribute(job: Job, stream: ReadStream) {
                 return
             }
 
-            QueueUtils.dispatchComputeMetadata({ id: resourceId, type: resourceType })
+            QueueUtils.dispatchComputeMetadata({ id: resourceId, type: resourceType, allTokens: true })
             count++
         } catch (error) {
             console.error('Failed to process attribute stream data:', error)
@@ -53,8 +44,8 @@ function processAttribute(job: Job, stream: ReadStream) {
     })
 
     stream.on('end', async () => {
-        console.log(`Dispatched computeMetadata for ${count} assets`)
-        await job.log(`Dispatched computeMetadata for ${count} assets`)
+        console.log(`Dispatched computeMetadata for ${count} collections`)
+        await job.log(`Dispatched computeMetadata for ${count} collections`)
     })
 
     stream.on('error', (error) => {

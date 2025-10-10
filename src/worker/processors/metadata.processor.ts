@@ -10,7 +10,7 @@ export class MetadataProcessor implements ProcessorDef {
             case JobsEnum.COMPUTE_METADATA:
                 await computeMetadata(job)
                 break
-            case JobsEnum.FETCH_COLLECTIONS:
+            case JobsEnum.SYNC_METADATA:
                 await syncMetadata(job)
                 break
             case JobsEnum.SYNC_FUEL_TANKS:
