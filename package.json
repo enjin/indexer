@@ -60,7 +60,7 @@
     "@polkadot/util": "^13.5.1",
     "@polkadot/util-crypto": "^13.5.1",
     "@sentry/node": "^9.46.0",
-    "@subsquid/cli": "^3.0.4",
+    "@subsquid/cli": "^3.2.3",
     "@subsquid/graphql-server": "^4.10.0",
     "@subsquid/hasura-configuration": "^2.0.0",
     "@subsquid/logger": "^1.4.0",
