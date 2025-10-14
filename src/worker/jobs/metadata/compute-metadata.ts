@@ -84,22 +84,10 @@ export async function computeMetadata(job: Job) {
 
         let uriAttribute = null
 
-        if (collectionUriAttribute) {
-            if (collectionUriAttribute.value.includes('{id}')) {
-                uriAttribute = {
-                    ...collectionUriAttribute,
-                    value: collectionUriAttribute.value.replace('{id}', resource.id),
-                }
-            }
-
-            if (
-                collectionUriAttribute.value.startsWith('http://platform.production.enjinusercontent.com/') &&
-                collectionUriAttribute.value.includes('%s')
-            ) {
-                uriAttribute = {
-                    ...collectionUriAttribute,
-                    value: collectionUriAttribute.value.replace('%s', resource.id),
-                }
+        if (collectionUriAttribute && collectionUriAttribute.value.includes('{id}')) {
+            uriAttribute = {
+                ...collectionUriAttribute,
+                value: collectionUriAttribute.value.replace('{id}', resource.id),
             }
         }
 
@@ -108,17 +96,8 @@ export async function computeMetadata(job: Job) {
         }
 
         // Check if a token / collection has {id} placeholder in its own attribute
-        if (uriAttribute) {
-            if (uriAttribute.value.includes('{id}')) {
-                uriAttribute = { ...uriAttribute, value: uriAttribute.value.replace('{id}', resource.id) }
-            }
-
-            if (
-                uriAttribute.value.startsWith('http://platform.production.enjinusercontent.com/') &&
-                uriAttribute.value.includes('%s')
-            ) {
-                uriAttribute = { ...uriAttribute, value: uriAttribute.value.replace('%s', resource.id) }
-            }
+        if (uriAttribute && uriAttribute.value.includes('{id}')) {
+            uriAttribute = { ...uriAttribute, value: uriAttribute.value.replace('{id}', resource.id) }
         }
 
         let externalMetadata: any = {}
