@@ -17,6 +17,15 @@ export async function syncActiveValidators(job: Job) {
         return
     }
 
+    const derived = await api.derive.staking.electedInfo({ withExposureMeta: true })
+    const totalStaked = new Map<string, bigint>()
+    for (const validator of derived.info) {
+        totalStaked.set(
+            validator.accountId.toString(),
+            BigInt(validator.exposureMeta?.unwrap().total.toString() ?? '0')
+        )
+    }
+
     const rpcValidators = await api.query.staking.validators.entries()
     const activeValidators = []
 
@@ -29,6 +38,7 @@ export async function syncActiveValidators(job: Job) {
         const rpcSingleValidator = await api.query.staking.validators(validator.account.address)
         const val = rpcSingleValidator.toJSON() as { blocked: boolean }
         validator.blocked = val.blocked ?? false
+        validator.bonded = totalStaked.get(validator.account.address) ?? 0n
         validator.isActive = activeValidators.includes(validator.account.address)
     }
 
