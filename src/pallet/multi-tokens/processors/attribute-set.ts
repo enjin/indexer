@@ -105,7 +105,12 @@ export async function attributeSet(
                 collection.metadata = new Metadata()
             }
             await ctx.store.save(collection)
-            await QueueUtils.dispatchComputeMetadata({ id: collection.id, type: 'collection', allTokens: true, traits: true })
+            await QueueUtils.dispatchComputeMetadata({
+                id: collection.id,
+                type: 'collection',
+                allTokens: true,
+                traits: true,
+            })
         }
         await ctx.store.save(attribute)
     } else {
@@ -135,7 +140,12 @@ export async function attributeSet(
             }
             collection.attributeCount += 1
             await ctx.store.save(collection)
-            await QueueUtils.dispatchComputeMetadata({ id: collection.id, type: 'collection', allTokens: true, traits: true })
+            await QueueUtils.dispatchComputeMetadata({
+                id: collection.id,
+                type: 'collection',
+                allTokens: true,
+                traits: true,
+            })
         }
     }
 
