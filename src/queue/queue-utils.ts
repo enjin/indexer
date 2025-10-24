@@ -148,7 +148,11 @@ export async function dispatchComputeStats(id: string): Promise<void> {
     })
 }
 
-export function dispatchComputeRarity({ id, delay = 6000 }: { id: string; delay?: number }): void {
+export async function dispatchComputeRarity({ id, delay = 6000 }: { id: string; delay?: number }): Promise<void> {
+    const job = await TokensQueue.getJob(`tokens.rarity.${id}`)
+    if (job && job.id) {
+        await TokensQueue.remove(job.id)
+    }
     TokensQueue.add(
         JobsEnum.COMPUTE_RARITY,
         { id },
@@ -178,7 +182,7 @@ export async function dispatchComputeTraits(id: string): Promise<void> {
     })
 }
 
-export function dispatchComputeMetadata({
+export async function dispatchComputeMetadata({
     id,
     type,
     force = false,
@@ -190,7 +194,11 @@ export function dispatchComputeMetadata({
     force?: boolean
     allTokens?: boolean
     traits?: boolean
-}): void {
+}) {
+    const job = await MetadataQueue.getJob(`metadata.${id}`)
+    if (job && job.id) {
+        await MetadataQueue.remove(job.id)
+    }
     MetadataQueue.add(
         JobsEnum.COMPUTE_METADATA,
         { id, type, force, allTokens, traits },
