@@ -571,6 +571,7 @@ type Trait @entity {
   tokens: [TraitToken] @derivedFrom(field: "trait")
 }
 
+# This entity is with cascade delete on token delete
 type TraitToken @entity {
   id: ID!
   trait: Trait!
