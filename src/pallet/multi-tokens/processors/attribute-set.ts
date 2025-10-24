@@ -99,13 +99,13 @@ export async function attributeSet(
                 token.metadata = new Metadata()
             }
             await ctx.store.save(token)
-            QueueUtils.dispatchComputeMetadata({ id: token.id, type: 'token', traits: true })
+            await QueueUtils.dispatchComputeMetadata({ id: token.id, type: 'token', traits: true })
         } else {
             if (!collection.metadata) {
                 collection.metadata = new Metadata()
             }
             await ctx.store.save(collection)
-            QueueUtils.dispatchComputeMetadata({ id: collection.id, type: 'collection', allTokens: true, traits: true })
+            await QueueUtils.dispatchComputeMetadata({ id: collection.id, type: 'collection', allTokens: true, traits: true })
         }
         await ctx.store.save(attribute)
     } else {
@@ -128,14 +128,14 @@ export async function attributeSet(
             }
             token.attributeCount += 1
             await ctx.store.save(token)
-            QueueUtils.dispatchComputeMetadata({ id: token.id, type: 'token', traits: true })
+            await QueueUtils.dispatchComputeMetadata({ id: token.id, type: 'token', traits: true })
         } else {
             if (!collection.metadata) {
                 collection.metadata = new Metadata()
             }
             collection.attributeCount += 1
             await ctx.store.save(collection)
-            QueueUtils.dispatchComputeMetadata({ id: collection.id, type: 'collection', allTokens: true, traits: true })
+            await QueueUtils.dispatchComputeMetadata({ id: collection.id, type: 'collection', allTokens: true, traits: true })
         }
     }
 
