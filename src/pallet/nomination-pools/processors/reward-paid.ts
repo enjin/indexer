@@ -3,7 +3,6 @@ import {
     CommissionPayment,
     Era,
     EraReward,
-    Event as EventModel,
     NominationPool,
     PoolMember,
     PoolMemberRewards,
@@ -19,7 +18,7 @@ import Big from 'big.js'
 import processorConfig from '~/util/config'
 import * as Sentry from '@sentry/node'
 import { In, LessThan } from 'typeorm'
-import { Sns, SnsEvent } from '~/util/sns'
+import { SnsEvent } from '~/util/sns'
 import { nominationPools } from '~/type/events'
 import { computeEraApy } from '~/pallet/nomination-pools/processors/era-rewards-processed'
 import { RewardPaid } from '~/pallet/nomination-pools/events/types'
