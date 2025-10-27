@@ -11,6 +11,7 @@ import * as matrixV1010 from '../matrixV1010'
 import * as matrixV1030 from '../matrixV1030'
 import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
+import * as v1060 from '../v1060'
 
 export const sudid = {
     name: 'Sudo.Sudid',
@@ -47,6 +48,21 @@ export const sudid = {
             sudoResult: sts.result(
                 () => sts.unit(),
                 () => matrixV1000.DispatchError
+            ),
+        })
+    ),
+    /**
+     * A sudo call just took place.
+     */
+    matrixV1030: new EventType(
+        'Sudo.Sudid',
+        sts.struct({
+            /**
+             * The result of the call made by the sudo user.
+             */
+            sudoResult: sts.result(
+                () => sts.unit(),
+                () => matrixV1030.DispatchError
             ),
         })
     ),
@@ -113,7 +129,7 @@ export const sudid = {
     /**
      * A sudo call just took place.
      */
-    matrixV1030: new EventType(
+    v1060: new EventType(
         'Sudo.Sudid',
         sts.struct({
             /**
@@ -121,7 +137,7 @@ export const sudid = {
              */
             sudoResult: sts.result(
                 () => sts.unit(),
-                () => matrixV1030.DispatchError
+                () => v1060.DispatchError
             ),
         })
     ),
@@ -245,6 +261,21 @@ export const sudoAsDone = {
         })
     ),
     /**
+     * A [sudo_as](Pallet::sudo_as) call just took place.
+     */
+    matrixV1030: new EventType(
+        'Sudo.SudoAsDone',
+        sts.struct({
+            /**
+             * The result of the call made by the sudo user.
+             */
+            sudoResult: sts.result(
+                () => sts.unit(),
+                () => matrixV1030.DispatchError
+            ),
+        })
+    ),
+    /**
      * A sudo just took place. \[result\]
      */
     enjinV100: new EventType(
@@ -307,7 +338,7 @@ export const sudoAsDone = {
     /**
      * A [sudo_as](Pallet::sudo_as) call just took place.
      */
-    matrixV1030: new EventType(
+    v1060: new EventType(
         'Sudo.SudoAsDone',
         sts.struct({
             /**
@@ -315,7 +346,7 @@ export const sudoAsDone = {
              */
             sudoResult: sts.result(
                 () => sts.unit(),
-                () => matrixV1030.DispatchError
+                () => v1060.DispatchError
             ),
         })
     ),

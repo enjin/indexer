@@ -148,3 +148,12 @@ export const minerMaxVotesPerVoter = {
 export const minerMaxWinners = {
     enjinV100: new ConstantType('ElectionProviderMultiPhase.MinerMaxWinners', sts.number()),
 }
+
+export const maxBackersPerWinner = {
+    /**
+     *  Maximum number of voters that can support a winner in an election solution.
+     *
+     *  This is needed to ensure election computation is bounded.
+     */
+    v1060: new ConstantType('ElectionProviderMultiPhase.MaxBackersPerWinner', sts.number()),
+}

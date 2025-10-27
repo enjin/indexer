@@ -620,9 +620,9 @@ export const setConfigs = {
     v1060: new CallType(
         'NominationPools.set_configs',
         sts.struct({
-            minJoinBond: v1060.Type_337,
-            minCreateBond: v1060.Type_337,
-            globalMaxCommission: v1060.Type_338,
+            minJoinBond: v1060.Type_332,
+            minCreateBond: v1060.Type_332,
+            globalMaxCommission: v1060.Type_333,
         })
     ),
 }
@@ -1243,6 +1243,60 @@ export const removeEmptyUnbondingMembers = {
         'NominationPools.remove_empty_unbonding_members',
         sts.struct({
             limit: sts.number(),
+        })
+    ),
+}
+
+export const payoutRewardsUnsigned = {
+    name: 'NominationPools.payout_rewards_unsigned',
+    /**
+     * Unsigned transaction to pay rewards to a validator and distribute to pools
+     */
+    v1060: new CallType(
+        'NominationPools.payout_rewards_unsigned',
+        sts.struct({
+            payload: v1060.PayoutRewardsPayload,
+            signature: v1060.MultiSignature,
+        })
+    ),
+}
+
+export const payoutValidatorBonus = {
+    name: 'NominationPools.payout_validator_bonus',
+    /**
+     * Pay out the validator bonus according to the config stored at [`ValidatorBonusInfo`]. It
+     * can only be called at least `cycle_duration` after `last_paid_era`. To receive the
+     * payment, the validators must have a `KnownGood` or `Reasonable` judgement, they must
+     * meet the `performance_threshold`, and they must have participated in
+     * `minimum_good_eras`.
+     *
+     * The payment that is sent is set in `bonus_amounts`, and the actual amount sent varies
+     * according to how many sub-identities the validator has.
+     */
+    v1060: new CallType(
+        'NominationPools.payout_validator_bonus',
+        sts.struct({
+            era: sts.number(),
+            validatorCount: sts.number(),
+        })
+    ),
+}
+
+export const setValidatorBonusConfig = {
+    name: 'NominationPools.set_validator_bonus_config',
+    /**
+     * Sets config values for validator bonuses stored in [`ValidatorBonusInfo`]. The
+     * `last_paid_era` will be set to `0` if `reset_last_paid_era` is true.
+     */
+    v1060: new CallType(
+        'NominationPools.set_validator_bonus_config',
+        sts.struct({
+            cycleDuration: sts.option(() => sts.number()),
+            performanceThreshold: sts.option(() => v1060.Perbill),
+            minimumGoodEras: sts.option(() => sts.number()),
+            payoutAccount: sts.option(() => v1060.AccountId32),
+            bonusAmounts: sts.option(() => sts.array(() => sts.bigint())),
+            resetLastPaidEra: sts.boolean(),
         })
     ),
 }

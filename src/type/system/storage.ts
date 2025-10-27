@@ -42,8 +42,8 @@ import * as enjinV1023 from '../enjinV1023'
 import * as v1023 from '../v1023'
 import * as enjinV1026 from '../enjinV1026'
 import * as v1026 from '../v1026'
-import * as v1030 from '../v1030'
 import * as matrixV1030 from '../matrixV1030'
+import * as v1030 from '../v1030'
 import * as v1031 from '../v1031'
 import * as enjinV1032 from '../enjinV1032'
 import * as v1032 from '../v1032'
@@ -747,6 +747,21 @@ export const events = {
      *  Events have a large in-memory size. Box the events to not go out-of-memory
      *  just in case someone still reads them from within the runtime.
      */
+    matrixV1030: new StorageType(
+        'System.Events',
+        'Default',
+        [],
+        sts.array(() => matrixV1030.EventRecord)
+    ) as EventsMatrixV1030,
+    /**
+     *  Events deposited for the current block.
+     *
+     *  NOTE: The item is unbound and should therefore never be read on chain.
+     *  It could otherwise inflate the PoV size of a block.
+     *
+     *  Events have a large in-memory size. Box the events to not go out-of-memory
+     *  just in case someone still reads them from within the runtime.
+     */
     enjinV100: new StorageType(
         'System.Events',
         'Default',
@@ -1182,21 +1197,6 @@ export const events = {
      *  Events have a large in-memory size. Box the events to not go out-of-memory
      *  just in case someone still reads them from within the runtime.
      */
-    matrixV1030: new StorageType(
-        'System.Events',
-        'Default',
-        [],
-        sts.array(() => matrixV1030.EventRecord)
-    ) as EventsMatrixV1030,
-    /**
-     *  Events deposited for the current block.
-     *
-     *  NOTE: The item is unbound and should therefore never be read on chain.
-     *  It could otherwise inflate the PoV size of a block.
-     *
-     *  Events have a large in-memory size. Box the events to not go out-of-memory
-     *  just in case someone still reads them from within the runtime.
-     */
     v1060: new StorageType(
         'System.Events',
         'Default',
@@ -1533,6 +1533,21 @@ export interface EventsMatrixV1023 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): matrixV1023.EventRecord[]
     get(block: Block): Promise<matrixV1023.EventRecord[] | undefined>
+}
+
+/**
+ *  Events deposited for the current block.
+ *
+ *  NOTE: The item is unbound and should therefore never be read on chain.
+ *  It could otherwise inflate the PoV size of a block.
+ *
+ *  Events have a large in-memory size. Box the events to not go out-of-memory
+ *  just in case someone still reads them from within the runtime.
+ */
+export interface EventsMatrixV1030 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): matrixV1030.EventRecord[]
+    get(block: Block): Promise<matrixV1030.EventRecord[] | undefined>
 }
 
 /**
@@ -1979,21 +1994,6 @@ export interface EventsV1050 {
  *  Events have a large in-memory size. Box the events to not go out-of-memory
  *  just in case someone still reads them from within the runtime.
  */
-export interface EventsMatrixV1030 {
-    is(block: RuntimeCtx): boolean
-    getDefault(block: Block): matrixV1030.EventRecord[]
-    get(block: Block): Promise<matrixV1030.EventRecord[] | undefined>
-}
-
-/**
- *  Events deposited for the current block.
- *
- *  NOTE: The item is unbound and should therefore never be read on chain.
- *  It could otherwise inflate the PoV size of a block.
- *
- *  Events have a large in-memory size. Box the events to not go out-of-memory
- *  just in case someone still reads them from within the runtime.
- */
 export interface EventsV1060 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): v1060.EventRecord[]
@@ -2197,4 +2197,37 @@ export const authorizedUpgrade = {
 export interface AuthorizedUpgradeMatrixEnjinV1012 {
     is(block: RuntimeCtx): boolean
     get(block: Block): Promise<matrixEnjinV1012.CodeUpgradeAuthorization | undefined>
+}
+
+export const extrinsicWeightReclaimed = {
+    /**
+     *  The weight reclaimed for the extrinsic.
+     *
+     *  This information is available until the end of the extrinsic execution.
+     *  More precisely this information is removed in `note_applied_extrinsic`.
+     *
+     *  Logic doing some post dispatch weight reduction must update this storage to avoid duplicate
+     *  reduction.
+     */
+    matrixV1030: new StorageType(
+        'System.ExtrinsicWeightReclaimed',
+        'Default',
+        [],
+        matrixV1030.Weight
+    ) as ExtrinsicWeightReclaimedMatrixV1030,
+}
+
+/**
+ *  The weight reclaimed for the extrinsic.
+ *
+ *  This information is available until the end of the extrinsic execution.
+ *  More precisely this information is removed in `note_applied_extrinsic`.
+ *
+ *  Logic doing some post dispatch weight reduction must update this storage to avoid duplicate
+ *  reduction.
+ */
+export interface ExtrinsicWeightReclaimedMatrixV1030 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): matrixV1030.Weight
+    get(block: Block): Promise<matrixV1030.Weight | undefined>
 }

@@ -251,6 +251,49 @@ export interface LatestStateMachineHeightMatrixV1030 {
     ): AsyncIterable<[k: matrixV1030.StateMachineId, v: bigint | undefined][]>
 }
 
+export const previousStateMachineHeight = {
+    /**
+     *  The previous verified height for a state machine
+     */
+    matrixV1030: new StorageType(
+        'Ismp.PreviousStateMachineHeight',
+        'Optional',
+        [matrixV1030.StateMachineId],
+        sts.bigint()
+    ) as PreviousStateMachineHeightMatrixV1030,
+}
+
+/**
+ *  The previous verified height for a state machine
+ */
+export interface PreviousStateMachineHeightMatrixV1030 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: matrixV1030.StateMachineId): Promise<bigint | undefined>
+    getMany(block: Block, keys: matrixV1030.StateMachineId[]): Promise<(bigint | undefined)[]>
+    getKeys(block: Block): Promise<matrixV1030.StateMachineId[]>
+    getKeys(block: Block, key: matrixV1030.StateMachineId): Promise<matrixV1030.StateMachineId[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<matrixV1030.StateMachineId[]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key: matrixV1030.StateMachineId
+    ): AsyncIterable<matrixV1030.StateMachineId[]>
+    getPairs(block: Block): Promise<[k: matrixV1030.StateMachineId, v: bigint | undefined][]>
+    getPairs(
+        block: Block,
+        key: matrixV1030.StateMachineId
+    ): Promise<[k: matrixV1030.StateMachineId, v: bigint | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: matrixV1030.StateMachineId, v: bigint | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: matrixV1030.StateMachineId
+    ): AsyncIterable<[k: matrixV1030.StateMachineId, v: bigint | undefined][]>
+}
+
 export const consensusClientUpdateTime = {
     /**
      *  Holds the timestamp at which a consensus client was recently updated.

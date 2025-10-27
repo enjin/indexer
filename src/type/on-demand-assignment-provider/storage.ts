@@ -143,3 +143,37 @@ export interface RevenueV1060 {
     getDefault(block: Block): bigint[]
     get(block: Block): Promise<bigint[] | undefined>
 }
+
+export const credits = {
+    /**
+     *  Keeps track of credits owned by each account.
+     */
+    v1060: new StorageType(
+        'OnDemandAssignmentProvider.Credits',
+        'Default',
+        [v1060.AccountId32],
+        sts.bigint()
+    ) as CreditsV1060,
+}
+
+/**
+ *  Keeps track of credits owned by each account.
+ */
+export interface CreditsV1060 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): bigint
+    get(block: Block, key: v1060.AccountId32): Promise<bigint | undefined>
+    getMany(block: Block, keys: v1060.AccountId32[]): Promise<(bigint | undefined)[]>
+    getKeys(block: Block): Promise<v1060.AccountId32[]>
+    getKeys(block: Block, key: v1060.AccountId32): Promise<v1060.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v1060.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block, key: v1060.AccountId32): AsyncIterable<v1060.AccountId32[]>
+    getPairs(block: Block): Promise<[k: v1060.AccountId32, v: bigint | undefined][]>
+    getPairs(block: Block, key: v1060.AccountId32): Promise<[k: v1060.AccountId32, v: bigint | undefined][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: v1060.AccountId32, v: bigint | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: v1060.AccountId32
+    ): AsyncIterable<[k: v1060.AccountId32, v: bigint | undefined][]>
+}

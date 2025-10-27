@@ -28,3 +28,17 @@ export const spotPriceSet = {
         })
     ),
 }
+
+export const accountCredited = {
+    name: 'OnDemandAssignmentProvider.AccountCredited',
+    /**
+     * An account was given credits.
+     */
+    v1060: new EventType(
+        'OnDemandAssignmentProvider.AccountCredited',
+        sts.struct({
+            who: v1060.AccountId32,
+            amount: sts.bigint(),
+        })
+    ),
+}

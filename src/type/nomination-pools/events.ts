@@ -838,3 +838,27 @@ export const unbondingMemberRemoved = {
         })
     ),
 }
+
+export const validatorBonusPaid = {
+    name: 'NominationPools.ValidatorBonusPaid',
+    /**
+     * A bonus was paid to validators
+     */
+    v1060: new EventType(
+        'NominationPools.ValidatorBonusPaid',
+        sts.struct({
+            /**
+             * The era for the payment
+             */
+            era: sts.number(),
+            /**
+             * The total amount rewarded
+             */
+            total: sts.bigint(),
+            /**
+             * The bonuses rewarded to individual validators
+             */
+            rewards: sts.array(() => sts.tuple(() => [v1060.AccountId32, sts.bigint()])),
+        })
+    ),
+}

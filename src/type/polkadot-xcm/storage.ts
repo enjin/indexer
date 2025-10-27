@@ -2573,3 +2573,55 @@ export interface RecordedXcmMatrixV1030 {
     is(block: RuntimeCtx): boolean
     get(block: Block): Promise<matrixV1030.V5Instruction[] | undefined>
 }
+
+export const authorizedAliases = {
+    /**
+     *  Map of authorized aliasers of local origins. Each local location can authorize a list of
+     *  other locations to alias into it. Each aliaser is only valid until its inner `expiry`
+     *  block number.
+     */
+    matrixV1030: new StorageType(
+        'PolkadotXcm.AuthorizedAliases',
+        'Optional',
+        [matrixV1030.VersionedLocation],
+        matrixV1030.AuthorizedAliasesEntry
+    ) as AuthorizedAliasesMatrixV1030,
+}
+
+/**
+ *  Map of authorized aliasers of local origins. Each local location can authorize a list of
+ *  other locations to alias into it. Each aliaser is only valid until its inner `expiry`
+ *  block number.
+ */
+export interface AuthorizedAliasesMatrixV1030 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: matrixV1030.VersionedLocation): Promise<matrixV1030.AuthorizedAliasesEntry | undefined>
+    getMany(
+        block: Block,
+        keys: matrixV1030.VersionedLocation[]
+    ): Promise<(matrixV1030.AuthorizedAliasesEntry | undefined)[]>
+    getKeys(block: Block): Promise<matrixV1030.VersionedLocation[]>
+    getKeys(block: Block, key: matrixV1030.VersionedLocation): Promise<matrixV1030.VersionedLocation[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<matrixV1030.VersionedLocation[]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key: matrixV1030.VersionedLocation
+    ): AsyncIterable<matrixV1030.VersionedLocation[]>
+    getPairs(
+        block: Block
+    ): Promise<[k: matrixV1030.VersionedLocation, v: matrixV1030.AuthorizedAliasesEntry | undefined][]>
+    getPairs(
+        block: Block,
+        key: matrixV1030.VersionedLocation
+    ): Promise<[k: matrixV1030.VersionedLocation, v: matrixV1030.AuthorizedAliasesEntry | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: matrixV1030.VersionedLocation, v: matrixV1030.AuthorizedAliasesEntry | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: matrixV1030.VersionedLocation
+    ): AsyncIterable<[k: matrixV1030.VersionedLocation, v: matrixV1030.AuthorizedAliasesEntry | undefined][]>
+}

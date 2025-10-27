@@ -73,3 +73,18 @@ export const updateAssetPrecision = {
         })
     ),
 }
+
+export const registerAssetLocally = {
+    name: 'TokenGateway.register_asset_locally',
+    /**
+     * Registers a multi-chain ERC6160 asset without sending any dispatch request.
+     * You should use register_asset_locally when you want to enable token gateway transfers
+     * for an asset that already exists on an external chain.
+     */
+    matrixV1030: new CallType(
+        'TokenGateway.register_asset_locally',
+        sts.struct({
+            asset: matrixV1030.AssetRegistration,
+        })
+    ),
+}

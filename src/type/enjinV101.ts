@@ -16953,13 +16953,6 @@ export const MultiAddress: sts.Type<MultiAddress> = sts.closedEnum(() => {
     }
 })
 
-export const Timepoint: sts.Type<Timepoint> = sts.struct(() => {
-    return {
-        height: sts.number(),
-        index: sts.number(),
-    }
-})
-
 export const OriginCaller: sts.Type<OriginCaller> = sts.closedEnum(() => {
     return {
         Origins: Type_412,
@@ -19708,6 +19701,13 @@ export const CollectionIdPair: sts.Type<CollectionIdPair> = sts.struct(() => {
 })
 
 export const H160 = sts.bytes()
+
+export const Timepoint: sts.Type<Timepoint> = sts.struct(() => {
+    return {
+        height: sts.number(),
+        index: sts.number(),
+    }
+})
 
 export const AccountId32 = sts.bytes()
 

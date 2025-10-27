@@ -1244,3 +1244,24 @@ export interface LastPoolIdV100 {
     getDefault(block: Block): number
     get(block: Block): Promise<number | undefined>
 }
+
+export const validatorBonusInfo = {
+    /**
+     *  Configuration for the validator bonus payout
+     */
+    v1060: new StorageType(
+        'NominationPools.ValidatorBonusInfo',
+        'Default',
+        [],
+        v1060.ValidatorBonusInformation
+    ) as ValidatorBonusInfoV1060,
+}
+
+/**
+ *  Configuration for the validator bonus payout
+ */
+export interface ValidatorBonusInfoV1060 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): v1060.ValidatorBonusInformation
+    get(block: Block): Promise<v1060.ValidatorBonusInformation | undefined>
+}

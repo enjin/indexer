@@ -224,3 +224,30 @@ export const approveBountyWithCurator = {
         })
     ),
 }
+
+export const pokeDeposit = {
+    name: 'Bounties.poke_deposit',
+    /**
+     * Poke the deposit reserved for creating a bounty proposal.
+     *
+     * This can be used by accounts to update their reserved amount.
+     *
+     * The dispatch origin for this call must be _Signed_.
+     *
+     * Parameters:
+     * - `bounty_id`: The bounty id for which to adjust the deposit.
+     *
+     * If the deposit is updated, the difference will be reserved/unreserved from the
+     * proposer's account.
+     *
+     * The transaction is made free if the deposit is updated and paid otherwise.
+     *
+     * Emits `DepositPoked` if the deposit is updated.
+     */
+    matrixV1030: new CallType(
+        'Bounties.poke_deposit',
+        sts.struct({
+            bountyId: sts.number(),
+        })
+    ),
+}

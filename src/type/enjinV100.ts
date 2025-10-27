@@ -79,6 +79,30 @@ export const PalletId = sts.bytes()
 
 export const Permill = sts.number()
 
+export const RuntimeVersion: sts.Type<RuntimeVersion> = sts.struct(() => {
+    return {
+        specName: sts.string(),
+        implName: sts.string(),
+        authoringVersion: sts.number(),
+        specVersion: sts.number(),
+        implVersion: sts.number(),
+        apis: sts.array(() => sts.tuple(() => [sts.bytes(), sts.number()])),
+        transactionVersion: sts.number(),
+        stateVersion: sts.number(),
+    }
+})
+
+export interface RuntimeVersion {
+    specName: string
+    implName: string
+    authoringVersion: number
+    specVersion: number
+    implVersion: number
+    apis: [Bytes, number][]
+    transactionVersion: number
+    stateVersion: number
+}
+
 export type Type_940 =
     | Type_940_Approved
     | Type_940_Cancelled
@@ -18248,13 +18272,6 @@ export const Attribute: sts.Type<Attribute> = sts.struct(() => {
     }
 })
 
-export const AttributeKeyValuePair: sts.Type<AttributeKeyValuePair> = sts.struct(() => {
-    return {
-        key: sts.bytes(),
-        value: sts.bytes(),
-    }
-})
-
 export const Type_523: sts.Type<Type_523> = sts.struct(() => {
     return {
         accountId: AccountId32,
@@ -18326,6 +18343,13 @@ export const ForeignTokenCreationParams: sts.Type<ForeignTokenCreationParams> = 
 })
 
 export const BoundedString = sts.bytes()
+
+export const AttributeKeyValuePair: sts.Type<AttributeKeyValuePair> = sts.struct(() => {
+    return {
+        key: sts.bytes(),
+        value: sts.bytes(),
+    }
+})
 
 export const TokenMarketBehavior: sts.Type<TokenMarketBehavior> = sts.closedEnum(() => {
     return {

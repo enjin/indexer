@@ -460,7 +460,7 @@ export const execute = {
     matrixV1030: new CallType(
         'PolkadotXcm.execute',
         sts.struct({
-            message: matrixV1030.Type_476,
+            message: matrixV1030.Type_484,
             maxWeight: matrixV1030.Weight,
         })
     ),
@@ -1332,4 +1332,51 @@ export const transferAssetsUsingTypeAndThen = {
             weightLimit: matrixV1030.V3WeightLimit,
         })
     ),
+}
+
+export const addAuthorizedAlias = {
+    name: 'PolkadotXcm.add_authorized_alias',
+    /**
+     * Authorize another `aliaser` location to alias into the local `origin` making this call.
+     * The `aliaser` is only authorized until the provided `expiry` block number.
+     * The call can also be used for a previously authorized alias in order to update its
+     * `expiry` block number.
+     *
+     * Usually useful to allow your local account to be aliased into from a remote location
+     * also under your control (like your account on another chain).
+     *
+     * WARNING: make sure the caller `origin` (you) trusts the `aliaser` location to act in
+     * their/your name. Once authorized using this call, the `aliaser` can freely impersonate
+     * `origin` in XCM programs executed on the local chain.
+     */
+    matrixV1030: new CallType(
+        'PolkadotXcm.add_authorized_alias',
+        sts.struct({
+            aliaser: matrixV1030.VersionedLocation,
+            expires: sts.option(() => sts.bigint()),
+        })
+    ),
+}
+
+export const removeAuthorizedAlias = {
+    name: 'PolkadotXcm.remove_authorized_alias',
+    /**
+     * Remove a previously authorized `aliaser` from the list of locations that can alias into
+     * the local `origin` making this call.
+     */
+    matrixV1030: new CallType(
+        'PolkadotXcm.remove_authorized_alias',
+        sts.struct({
+            aliaser: matrixV1030.VersionedLocation,
+        })
+    ),
+}
+
+export const removeAllAuthorizedAliases = {
+    name: 'PolkadotXcm.remove_all_authorized_aliases',
+    /**
+     * Remove all previously authorized `aliaser`s that can alias into the local `origin`
+     * making this call.
+     */
+    matrixV1030: new CallType('PolkadotXcm.remove_all_authorized_aliases', sts.unit()),
 }

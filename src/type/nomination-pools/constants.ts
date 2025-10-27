@@ -222,3 +222,10 @@ export const payoutRewardsInterval = {
      */
     v1060: new ConstantType('NominationPools.PayoutRewardsInterval', sts.number()),
 }
+
+export const maxValidatorBonusAmounts = {
+    /**
+     *  The max number of bonus amounts for funding the validator bonus
+     */
+    v1060: new ConstantType('NominationPools.MaxValidatorBonusAmounts', sts.number()),
+}

@@ -2412,3 +2412,46 @@ export interface RecordedXcmV1060 {
     is(block: RuntimeCtx): boolean
     get(block: Block): Promise<v1060.V5Instruction[] | undefined>
 }
+
+export const authorizedAliases = {
+    /**
+     *  Map of authorized aliasers of local origins. Each local location can authorize a list of
+     *  other locations to alias into it. Each aliaser is only valid until its inner `expiry`
+     *  block number.
+     */
+    v1060: new StorageType(
+        'XcmPallet.AuthorizedAliases',
+        'Optional',
+        [v1060.VersionedLocation],
+        v1060.AuthorizedAliasesEntry
+    ) as AuthorizedAliasesV1060,
+}
+
+/**
+ *  Map of authorized aliasers of local origins. Each local location can authorize a list of
+ *  other locations to alias into it. Each aliaser is only valid until its inner `expiry`
+ *  block number.
+ */
+export interface AuthorizedAliasesV1060 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: v1060.VersionedLocation): Promise<v1060.AuthorizedAliasesEntry | undefined>
+    getMany(block: Block, keys: v1060.VersionedLocation[]): Promise<(v1060.AuthorizedAliasesEntry | undefined)[]>
+    getKeys(block: Block): Promise<v1060.VersionedLocation[]>
+    getKeys(block: Block, key: v1060.VersionedLocation): Promise<v1060.VersionedLocation[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v1060.VersionedLocation[]>
+    getKeysPaged(pageSize: number, block: Block, key: v1060.VersionedLocation): AsyncIterable<v1060.VersionedLocation[]>
+    getPairs(block: Block): Promise<[k: v1060.VersionedLocation, v: v1060.AuthorizedAliasesEntry | undefined][]>
+    getPairs(
+        block: Block,
+        key: v1060.VersionedLocation
+    ): Promise<[k: v1060.VersionedLocation, v: v1060.AuthorizedAliasesEntry | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: v1060.VersionedLocation, v: v1060.AuthorizedAliasesEntry | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: v1060.VersionedLocation
+    ): AsyncIterable<[k: v1060.VersionedLocation, v: v1060.AuthorizedAliasesEntry | undefined][]>
+}

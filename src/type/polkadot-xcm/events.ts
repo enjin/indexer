@@ -141,7 +141,7 @@ export const sent = {
         })
     ),
     /**
-     * A XCM message was sent.
+     * An XCM message was sent.
      */
     matrixV1030: new EventType(
         'PolkadotXcm.Sent',
@@ -1775,6 +1775,80 @@ export const versionMigrationFinished = {
         'PolkadotXcm.VersionMigrationFinished',
         sts.struct({
             version: sts.number(),
+        })
+    ),
+}
+
+export const sendFailed = {
+    name: 'PolkadotXcm.SendFailed',
+    /**
+     * An XCM message failed to send.
+     */
+    matrixV1030: new EventType(
+        'PolkadotXcm.SendFailed',
+        sts.struct({
+            origin: matrixV1030.V5Location,
+            destination: matrixV1030.V5Location,
+            error: matrixV1030.V3SendError,
+            messageId: sts.bytes(),
+        })
+    ),
+}
+
+export const processXcmError = {
+    name: 'PolkadotXcm.ProcessXcmError',
+    /**
+     * An XCM message failed to process.
+     */
+    matrixV1030: new EventType(
+        'PolkadotXcm.ProcessXcmError',
+        sts.struct({
+            origin: matrixV1030.V5Location,
+            error: matrixV1030.V5Error,
+            messageId: sts.bytes(),
+        })
+    ),
+}
+
+export const aliasAuthorized = {
+    name: 'PolkadotXcm.AliasAuthorized',
+    /**
+     * An `aliaser` location was authorized by `target` to alias it, authorization valid until
+     * `expiry` block number.
+     */
+    matrixV1030: new EventType(
+        'PolkadotXcm.AliasAuthorized',
+        sts.struct({
+            aliaser: matrixV1030.V5Location,
+            target: matrixV1030.V5Location,
+            expiry: sts.option(() => sts.bigint()),
+        })
+    ),
+}
+
+export const aliasAuthorizationRemoved = {
+    name: 'PolkadotXcm.AliasAuthorizationRemoved',
+    /**
+     * `target` removed alias authorization for `aliaser`.
+     */
+    matrixV1030: new EventType(
+        'PolkadotXcm.AliasAuthorizationRemoved',
+        sts.struct({
+            aliaser: matrixV1030.V5Location,
+            target: matrixV1030.V5Location,
+        })
+    ),
+}
+
+export const aliasesAuthorizationsRemoved = {
+    name: 'PolkadotXcm.AliasesAuthorizationsRemoved',
+    /**
+     * `target` removed all alias authorizations.
+     */
+    matrixV1030: new EventType(
+        'PolkadotXcm.AliasesAuthorizationsRemoved',
+        sts.struct({
+            target: matrixV1030.V5Location,
         })
     ),
 }

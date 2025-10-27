@@ -460,7 +460,7 @@ export const execute = {
     v1060: new CallType(
         'XcmPallet.execute',
         sts.struct({
-            message: v1060.Type_462,
+            message: v1060.Type_460,
             maxWeight: v1060.Weight,
         })
     ),
@@ -1332,4 +1332,51 @@ export const transferAssetsUsingTypeAndThen = {
             weightLimit: v1060.V3WeightLimit,
         })
     ),
+}
+
+export const addAuthorizedAlias = {
+    name: 'XcmPallet.add_authorized_alias',
+    /**
+     * Authorize another `aliaser` location to alias into the local `origin` making this call.
+     * The `aliaser` is only authorized until the provided `expiry` block number.
+     * The call can also be used for a previously authorized alias in order to update its
+     * `expiry` block number.
+     *
+     * Usually useful to allow your local account to be aliased into from a remote location
+     * also under your control (like your account on another chain).
+     *
+     * WARNING: make sure the caller `origin` (you) trusts the `aliaser` location to act in
+     * their/your name. Once authorized using this call, the `aliaser` can freely impersonate
+     * `origin` in XCM programs executed on the local chain.
+     */
+    v1060: new CallType(
+        'XcmPallet.add_authorized_alias',
+        sts.struct({
+            aliaser: v1060.VersionedLocation,
+            expires: sts.option(() => sts.bigint()),
+        })
+    ),
+}
+
+export const removeAuthorizedAlias = {
+    name: 'XcmPallet.remove_authorized_alias',
+    /**
+     * Remove a previously authorized `aliaser` from the list of locations that can alias into
+     * the local `origin` making this call.
+     */
+    v1060: new CallType(
+        'XcmPallet.remove_authorized_alias',
+        sts.struct({
+            aliaser: v1060.VersionedLocation,
+        })
+    ),
+}
+
+export const removeAllAuthorizedAliases = {
+    name: 'XcmPallet.remove_all_authorized_aliases',
+    /**
+     * Remove all previously authorized `aliaser`s that can alias into the local `origin`
+     * making this call.
+     */
+    v1060: new CallType('XcmPallet.remove_all_authorized_aliases', sts.unit()),
 }

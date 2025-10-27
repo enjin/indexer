@@ -35,10 +35,10 @@ export const setKeys = {
      * - `O(1)`. Actual cost depends on the number of length of `T::Keys::key_ids()` which is
      *   fixed.
      */
-    enjinV100: new CallType(
+    matrixV1030: new CallType(
         'Session.set_keys',
         sts.struct({
-            keys: enjinV100.SessionKeys,
+            keys: matrixV1030.SessionKeys,
             proof: sts.bytes(),
         })
     ),
@@ -53,10 +53,10 @@ export const setKeys = {
      * - `O(1)`. Actual cost depends on the number of length of `T::Keys::key_ids()` which is
      *   fixed.
      */
-    matrixV1030: new CallType(
+    enjinV100: new CallType(
         'Session.set_keys',
         sts.struct({
-            keys: matrixV1030.SessionKeys,
+            keys: enjinV100.SessionKeys,
             proof: sts.bytes(),
         })
     ),

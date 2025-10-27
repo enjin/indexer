@@ -5,10 +5,8 @@ import * as matrixV1010 from '../matrixV1010'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 import * as matrixV1020 from '../matrixV1020'
 import * as matrixEnjinV1022 from '../matrixEnjinV1022'
-import * as matrixV1030 from '../matrixV1030'
 import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
-import * as v1060 from '../v1060'
 
 export const processingFailed = {
     name: 'MessageQueue.ProcessingFailed',
@@ -172,52 +170,6 @@ export const processingFailed = {
             error: v1050.ProcessMessageError,
         })
     ),
-    /**
-     * Message discarded due to an error in the `MessageProcessor` (usually a format error).
-     */
-    matrixV1030: new EventType(
-        'MessageQueue.ProcessingFailed',
-        sts.struct({
-            /**
-             * The `blake2_256` hash of the message.
-             */
-            id: matrixV1030.H256,
-            /**
-             * The queue of the message.
-             */
-            origin: matrixV1030.AggregateMessageOrigin,
-            /**
-             * The error that occurred.
-             *
-             * This error is pretty opaque. More fine-grained errors need to be emitted as events
-             * by the `MessageProcessor`.
-             */
-            error: matrixV1030.ProcessMessageError,
-        })
-    ),
-    /**
-     * Message discarded due to an error in the `MessageProcessor` (usually a format error).
-     */
-    v1060: new EventType(
-        'MessageQueue.ProcessingFailed',
-        sts.struct({
-            /**
-             * The `blake2_256` hash of the message.
-             */
-            id: v1060.H256,
-            /**
-             * The queue of the message.
-             */
-            origin: v1060.AggregateMessageOrigin,
-            /**
-             * The error that occurred.
-             *
-             * This error is pretty opaque. More fine-grained errors need to be emitted as events
-             * by the `MessageProcessor`.
-             */
-            error: v1060.ProcessMessageError,
-        })
-    ),
 }
 
 export const processed = {
@@ -263,64 +215,6 @@ export const processed = {
             success: sts.boolean(),
         })
     ),
-    /**
-     * Message is processed.
-     */
-    matrixV1030: new EventType(
-        'MessageQueue.Processed',
-        sts.struct({
-            /**
-             * The `blake2_256` hash of the message.
-             */
-            id: matrixV1030.H256,
-            /**
-             * The queue of the message.
-             */
-            origin: matrixV1030.AggregateMessageOrigin,
-            /**
-             * How much weight was used to process the message.
-             */
-            weightUsed: matrixV1030.Weight,
-            /**
-             * Whether the message was processed.
-             *
-             * Note that this does not mean that the underlying `MessageProcessor` was internally
-             * successful. It *solely* means that the MQ pallet will treat this as a success
-             * condition and discard the message. Any internal error needs to be emitted as events
-             * by the `MessageProcessor`.
-             */
-            success: sts.boolean(),
-        })
-    ),
-    /**
-     * Message is processed.
-     */
-    v1060: new EventType(
-        'MessageQueue.Processed',
-        sts.struct({
-            /**
-             * The `blake2_256` hash of the message.
-             */
-            id: v1060.H256,
-            /**
-             * The queue of the message.
-             */
-            origin: v1060.AggregateMessageOrigin,
-            /**
-             * How much weight was used to process the message.
-             */
-            weightUsed: v1060.Weight,
-            /**
-             * Whether the message was processed.
-             *
-             * Note that this does not mean that the underlying `MessageProcessor` was internally
-             * successful. It *solely* means that the MQ pallet will treat this as a success
-             * condition and discard the message. Any internal error needs to be emitted as events
-             * by the `MessageProcessor`.
-             */
-            success: sts.boolean(),
-        })
-    ),
 }
 
 export const overweightEnqueued = {
@@ -361,54 +255,6 @@ export const overweightEnqueued = {
             messageIndex: sts.number(),
         })
     ),
-    /**
-     * Message placed in overweight queue.
-     */
-    matrixV1030: new EventType(
-        'MessageQueue.OverweightEnqueued',
-        sts.struct({
-            /**
-             * The `blake2_256` hash of the message.
-             */
-            id: sts.bytes(),
-            /**
-             * The queue of the message.
-             */
-            origin: matrixV1030.AggregateMessageOrigin,
-            /**
-             * The page of the message.
-             */
-            pageIndex: sts.number(),
-            /**
-             * The index of the message within the page.
-             */
-            messageIndex: sts.number(),
-        })
-    ),
-    /**
-     * Message placed in overweight queue.
-     */
-    v1060: new EventType(
-        'MessageQueue.OverweightEnqueued',
-        sts.struct({
-            /**
-             * The `blake2_256` hash of the message.
-             */
-            id: sts.bytes(),
-            /**
-             * The queue of the message.
-             */
-            origin: v1060.AggregateMessageOrigin,
-            /**
-             * The page of the message.
-             */
-            pageIndex: sts.number(),
-            /**
-             * The index of the message within the page.
-             */
-            messageIndex: sts.number(),
-        })
-    ),
 }
 
 export const pageReaped = {
@@ -436,38 +282,6 @@ export const pageReaped = {
         'MessageQueue.PageReaped',
         sts.struct({
             origin: enjinV101.AggregateMessageOrigin,
-            index: sts.number(),
-        })
-    ),
-    /**
-     * This page was reaped.
-     */
-    matrixV1030: new EventType(
-        'MessageQueue.PageReaped',
-        sts.struct({
-            /**
-             * The queue of the page.
-             */
-            origin: matrixV1030.AggregateMessageOrigin,
-            /**
-             * The index of the page.
-             */
-            index: sts.number(),
-        })
-    ),
-    /**
-     * This page was reaped.
-     */
-    v1060: new EventType(
-        'MessageQueue.PageReaped',
-        sts.struct({
-            /**
-             * The queue of the page.
-             */
-            origin: v1060.AggregateMessageOrigin,
-            /**
-             * The index of the page.
-             */
             index: sts.number(),
         })
     ),

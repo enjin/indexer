@@ -10,6 +10,7 @@ import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV604 from '../matrixV604'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 import * as matrixV1030 from '../matrixV1030'
+import * as v1060 from '../v1060'
 
 export const extrinsicSuccess = {
     name: 'System.ExtrinsicSuccess',
@@ -69,6 +70,16 @@ export const extrinsicFailed = {
     /**
      * An extrinsic failed.
      */
+    matrixV1030: new EventType(
+        'System.ExtrinsicFailed',
+        sts.struct({
+            dispatchError: matrixV1030.DispatchError,
+            dispatchInfo: matrixV1030.DispatchEventInfo,
+        })
+    ),
+    /**
+     * An extrinsic failed.
+     */
     enjinV100: new EventType(
         'System.ExtrinsicFailed',
         sts.struct({
@@ -119,11 +130,11 @@ export const extrinsicFailed = {
     /**
      * An extrinsic failed.
      */
-    matrixV1030: new EventType(
+    v1060: new EventType(
         'System.ExtrinsicFailed',
         sts.struct({
-            dispatchError: matrixV1030.DispatchError,
-            dispatchInfo: matrixV1030.DispatchEventInfo,
+            dispatchError: v1060.DispatchError,
+            dispatchInfo: v1060.DispatchEventInfo,
         })
     ),
 }
@@ -186,6 +197,20 @@ export const upgradeAuthorized = {
         sts.struct({
             codeHash: matrixEnjinV1012.H256,
             checkVersion: sts.boolean(),
+        })
+    ),
+}
+
+export const rejectedInvalidAuthorizedUpgrade = {
+    name: 'System.RejectedInvalidAuthorizedUpgrade',
+    /**
+     * An invalid authorized upgrade was rejected while trying to apply it.
+     */
+    matrixV1030: new EventType(
+        'System.RejectedInvalidAuthorizedUpgrade',
+        sts.struct({
+            codeHash: matrixV1030.H256,
+            error: matrixV1030.DispatchError,
         })
     ),
 }

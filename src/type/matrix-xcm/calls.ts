@@ -32,6 +32,35 @@ export const transferToParachain = {
             destWeight: sts.option(() => sts.bigint()),
         })
     ),
+    /**
+     * `origin` transfers `amount` of ENJ to `beneficiary` on the `parachain`.
+     *
+     * This extrinsic requires specifying the correct account format, see
+     * [Account](ep_core_xt::Account) in addition to other standard parameters for an xcm
+     * transfer.
+     *
+     * Note: ENJ needs to be registered as foreign token in destination parachain
+     *
+     * - `para_id`: destination parachain
+     * - `beneficiary`: account to receive ENJ in destination parachain
+     * - `amount`: amount of ENJ to transfer
+     * - `dest_weight`: optional weight to be paid in destination chain, unlimited in case it's
+     *   `None`
+     *
+     * # Errors
+     *
+     * - [`Error::InvalidAddress`]: `beneficiary` is invalid, i.e could not be converted to
+     *   [`Location`]
+     */
+    matrixV1030: new CallType(
+        'MatrixXcm.transfer_to_parachain',
+        sts.struct({
+            paraId: matrixV1030.ParachainId,
+            beneficiary: matrixV1030.Account,
+            amount: sts.bigint(),
+            destWeight: sts.option(() => sts.bigint()),
+        })
+    ),
 }
 
 export const transferAssetToParachain = {
@@ -65,6 +94,40 @@ export const transferAssetToParachain = {
             destWeight: sts.option(() => sts.bigint()),
         })
     ),
+    /**
+     * `origin` transfers `amount` of `asset` to `beneficiary` on the `parachain`
+     *
+     * Unlike `transfer_to_parachain`, this extrinsic has the ability to transfer any asset on
+     * Efinity to another chain. It may be used for transferring NFTs and foreign tokens. It
+     * requires specifying the [Account](ep_core_xt::Account) format in addition to other
+     * standard parameters for an xcm transfer.
+     *
+     * Note: `asset` needs to be registered as foreign token in destination parachain
+     *
+     * - `para_id`: destination parachain
+     * - `beneficiary`: account to receive `asset` in destination parachain
+     * - `asset`: asset to transfer
+     * - `amount`: amount of `asset` to transfer
+     * - `dest_weight`: optional weight to be paid in destination chain, unlimited in case it's
+     *   `None`
+     *
+     * # Errors
+     *
+     * - [`Error::InvalidAddress`]: `beneficiary` is invalid, i.e could not be converted to
+     *   [`Location`]
+     * - [`Error::NotTransferable`]: A corresponding Location could not be converted for the
+     *   asset.
+     */
+    matrixV1030: new CallType(
+        'MatrixXcm.transfer_asset_to_parachain',
+        sts.struct({
+            paraId: matrixV1030.ParachainId,
+            beneficiary: matrixV1030.Account,
+            currencyId: matrixV1030.AssetId,
+            amount: sts.bigint(),
+            destWeight: sts.option(() => sts.bigint()),
+        })
+    ),
 }
 
 export const transferAssetWithFee = {
@@ -94,6 +157,34 @@ export const transferAssetWithFee = {
             feePair: matrixEnjinV603.CurrencyIdAmountPair,
             paraId: matrixEnjinV603.ParachainId,
             beneficiary: matrixEnjinV603.Account,
+            destWeight: sts.option(() => sts.bigint()),
+        })
+    ),
+    /**
+     * `origin` transfers `asset` to `beneficiary` at `parachain` using `fee_asset` for
+     * the fee. This allows the transfer of custom assets like NFTs which cannot be used to
+     * pay fees.
+     *
+     * Note: each [`Asset`] must be registered as a foreign asset at the destination
+     * parachain.
+     *
+     * - `asset`: asset to transfer
+     * - `fee_asset`: asset to be used as fee
+     * - `beneficiary`: account to receive `asset` in destination parachain
+     * - `para_id`: destination parachain
+     * - `dest_weight`: optional weight to be paid in destination chain, unlimited in case it's
+     *
+     * # Errors
+     * - [`Error::InvalidAddress`]: `beneficiary` is invalid, i.e could not be converted to
+     *   [`Location`]
+     */
+    matrixV1030: new CallType(
+        'MatrixXcm.transfer_asset_with_fee',
+        sts.struct({
+            assetPair: matrixV1030.CurrencyIdAmountPair,
+            feePair: matrixV1030.CurrencyIdAmountPair,
+            paraId: matrixV1030.ParachainId,
+            beneficiary: matrixV1030.Account,
             destWeight: sts.option(() => sts.bigint()),
         })
     ),

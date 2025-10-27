@@ -1,6 +1,7 @@
 import { sts, Block, Bytes, Option, Result, CallType, RuntimeCtx } from '../support'
 import * as enjinV100 from '../enjinV100'
 import * as enjinV1032 from '../enjinV1032'
+import * as v1060 from '../v1060'
 
 export const forceSetCurrentCode = {
     name: 'Paras.force_set_current_code',
@@ -141,6 +142,62 @@ export const forceSetMostRecentContext = {
         sts.struct({
             para: enjinV1032.Id,
             context: sts.number(),
+        })
+    ),
+}
+
+export const removeUpgradeCooldown = {
+    name: 'Paras.remove_upgrade_cooldown',
+    /**
+     * Remove an upgrade cooldown for a parachain.
+     *
+     * The cost for removing the cooldown earlier depends on the time left for the cooldown
+     * multiplied by [`Config::CooldownRemovalMultiplier`]. The paid tokens are burned.
+     */
+    v1060: new CallType(
+        'Paras.remove_upgrade_cooldown',
+        sts.struct({
+            para: v1060.Id,
+        })
+    ),
+}
+
+export const authorizeForceSetCurrentCodeHash = {
+    name: 'Paras.authorize_force_set_current_code_hash',
+    /**
+     * Sets the storage for the authorized current code hash of the parachain.
+     * If not applied, it will be removed at the `System::block_number() + valid_period` block.
+     *
+     * This can be useful, when triggering `Paras::force_set_current_code(para, code)`
+     * from a different chain than the one where the `Paras` pallet is deployed.
+     *
+     * The main purpose is to avoid transferring the entire `code` Wasm blob between chains.
+     * Instead, we authorize `code_hash` with `root`, which can later be applied by
+     * `Paras::apply_authorized_force_set_current_code(para, code)` by anyone.
+     *
+     * Authorizations are stored in an **overwriting manner**.
+     */
+    v1060: new CallType(
+        'Paras.authorize_force_set_current_code_hash',
+        sts.struct({
+            para: v1060.Id,
+            newCodeHash: v1060.ValidationCodeHash,
+            validPeriod: sts.number(),
+        })
+    ),
+}
+
+export const applyAuthorizedForceSetCurrentCode = {
+    name: 'Paras.apply_authorized_force_set_current_code',
+    /**
+     * Applies the already authorized current code for the parachain,
+     * triggering the same functionality as `force_set_current_code`.
+     */
+    v1060: new CallType(
+        'Paras.apply_authorized_force_set_current_code',
+        sts.struct({
+            para: v1060.Id,
+            newCode: v1060.ValidationCode,
         })
     ),
 }

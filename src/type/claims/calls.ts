@@ -5,7 +5,6 @@ import * as v102 from '../v102'
 import * as matrixV500 from '../matrixV500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV604 from '../matrixV604'
-import * as matrixV1030 from '../matrixV1030'
 
 export const claim = {
     name: 'Claims.claim',
@@ -145,41 +144,6 @@ export const claim = {
             ethereumSignature: sts.bytes(),
         })
     ),
-    /**
-     * Make a claim to collect your EFI.
-     *
-     * The dispatch origin for this call must be _None_.
-     *
-     * Unsigned Validation:
-     * A call to claim is deemed valid if the signature provided matches
-     * the expected signed message of:
-     *
-     * > Ethereum Signed Message:
-     * > (configured prefix string)(address)
-     *
-     * and `address` matches the `dest` account.
-     *
-     * Parameters:
-     * - `dest`: The destination account to payout the claim.
-     * - `ethereum_signature`: The signature of an ethereum signed message matching the format
-     *   described above.
-     * - `ethereum_address` : The Ethereum address from which the message is signed.
-     *
-     * <weight>
-     * The weight of this call is invariant over the input parameters.
-     * Weight includes logic to validate unsigned `claim` call.
-     *
-     * Total Complexity: O(1)
-     * </weight>
-     */
-    matrixV1030: new CallType(
-        'Claims.claim',
-        sts.struct({
-            dest: matrixV1030.AccountId32,
-            ethereumSignature: sts.bytes(),
-            ethereumAddress: matrixV1030.H160,
-        })
-    ),
 }
 
 export const mintClaim = {
@@ -291,25 +255,6 @@ export const moveClaim = {
         sts.struct({
             old: enjinV100.Account,
             new: enjinV100.Account,
-        })
-    ),
-    /**
-     * `move_claim` moves the claim from one Ethereum address to another
-     *
-     * Arguments:
-     *
-     * * `old`: EthereumAddress,
-     * * `new`: EthereumAddress,
-     *
-     * The weight of this call is invariant over the input parameters.
-     *
-     * Total Complexity: O(1)
-     */
-    matrixV1030: new CallType(
-        'Claims.move_claim',
-        sts.struct({
-            old: matrixV1030.H160,
-            new: matrixV1030.H160,
         })
     ),
 }
@@ -468,35 +413,6 @@ export const requestClaims = {
             chain: v102.Chain,
         })
     ),
-    /**
-     * `request_claims` is only accessible by the relayer and allows them to request claims for
-     * a batch of transactions.
-     *
-     * The users burns their Ethereum EFI/ENJ holdings to get them onto Enjin relaychain as
-     * ENJ2 tokens. The relayer listens to the burn events batches them and calls this
-     * extrinsic to requests claim for them. Relayer also sends the block number upto which all
-     * the burn events were processed as a parameter. This block is stored on pallet to prevent
-     * replay attack. Also it is important to set the exchange rate before this extrinsic is
-     * called.
-     *
-     * Parameters:
-     *
-     * * `block_number`: The block number of Ethereum or Parachain block that contains the
-     *   transaction.
-     * * `batch_data`: A vector of EthereumTransactionDataOf structs.
-     *
-     * The weight of this call is invariant over the input parameters.
-     * Weight includes logic to iterate over pending approval ETH transaction
-     *
-     * Total Complexity: O(N)
-     */
-    matrixV1030: new CallType(
-        'Claims.request_claims',
-        sts.struct({
-            blockNumber: sts.number(),
-            batchData: sts.array(() => matrixV1030.Claim),
-        })
-    ),
 }
 
 export const rejectClaims = {
@@ -627,26 +543,6 @@ export const rejectClaims = {
         'Claims.reject_claims',
         sts.struct({
             batchData: sts.array(() => v102.RejectData),
-        })
-    ),
-    /**
-     * `reject_claims` is a function that is called by ForceOrigin and allows to reject a batch
-     * of claims that were rejected upon verification
-     *
-     * Arguments:
-     *
-     * * `batch_data`: A vector of user accounts and transaction hashes.
-     *
-     * The weight of this call is invariant over the input parameters.
-     * Weight includes logic to iterate over pending approval ETH transaction
-     * And REMOVE the pending ETH transaction
-     *
-     * Total Complexity: O(N)
-     */
-    matrixV1030: new CallType(
-        'Claims.reject_claims',
-        sts.struct({
-            batchData: sts.array(() => matrixV1030.RejectData),
         })
     ),
 }

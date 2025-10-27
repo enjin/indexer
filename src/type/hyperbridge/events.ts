@@ -40,23 +40,3 @@ export const relayerFeeWithdrawn = {
         })
     ),
 }
-
-export const protocolRevenueWithdrawn = {
-    name: 'Hyperbridge.ProtocolRevenueWithdrawn',
-    /**
-     * Hyperbridge has withdrawn it's protocol revenue
-     */
-    matrixV1030: new EventType(
-        'Hyperbridge.ProtocolRevenueWithdrawn',
-        sts.struct({
-            /**
-             * The amount that was withdrawn
-             */
-            amount: sts.bigint(),
-            /**
-             * The withdrawal beneficiary
-             */
-            account: matrixV1030.AccountId32,
-        })
-    ),
-}

@@ -35,6 +35,17 @@ export const requestRevenueAt = {
     ),
 }
 
+export const creditAccount = {
+    name: 'Coretime.credit_account',
+    v1060: new CallType(
+        'Coretime.credit_account',
+        sts.struct({
+            who: v1060.AccountId32,
+            amount: sts.bigint(),
+        })
+    ),
+}
+
 export const assignCore = {
     name: 'Coretime.assign_core',
     /**

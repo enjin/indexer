@@ -291,3 +291,18 @@ export const controllerBatchDeprecated = {
         })
     ),
 }
+
+export const currencyMigrated = {
+    name: 'Staking.CurrencyMigrated',
+    /**
+     * Staking balance migrated from locks to holds, with any balance that could not be held
+     * is force withdrawn.
+     */
+    v1060: new EventType(
+        'Staking.CurrencyMigrated',
+        sts.struct({
+            stash: v1060.AccountId32,
+            forceWithdraw: sts.bigint(),
+        })
+    ),
+}

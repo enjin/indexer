@@ -1,5 +1,6 @@
 import { sts, Block, Bytes, Option, Result, ConstantType, RuntimeCtx } from '../support'
 import * as enjinV100 from '../enjinV100'
+import * as v1060 from '../v1060'
 
 export const proposalBond = {
     /**
@@ -61,4 +62,11 @@ export const payoutPeriod = {
      *  The period during which an approved treasury spend has to be claimed.
      */
     enjinV1032: new ConstantType('Treasury.PayoutPeriod', sts.number()),
+}
+
+export const potAccount = {
+    /**
+     *  Gets this pallet's derived pot account.
+     */
+    v1060: new ConstantType('Treasury.pot_account', v1060.AccountId32),
 }

@@ -137,7 +137,7 @@ export const sent = {
         })
     ),
     /**
-     * A XCM message was sent.
+     * An XCM message was sent.
      */
     v1060: new EventType(
         'XcmPallet.Sent',
@@ -1733,6 +1733,80 @@ export const versionMigrationFinished = {
         'XcmPallet.VersionMigrationFinished',
         sts.struct({
             version: sts.number(),
+        })
+    ),
+}
+
+export const sendFailed = {
+    name: 'XcmPallet.SendFailed',
+    /**
+     * An XCM message failed to send.
+     */
+    v1060: new EventType(
+        'XcmPallet.SendFailed',
+        sts.struct({
+            origin: v1060.V5Location,
+            destination: v1060.V5Location,
+            error: v1060.V3SendError,
+            messageId: sts.bytes(),
+        })
+    ),
+}
+
+export const processXcmError = {
+    name: 'XcmPallet.ProcessXcmError',
+    /**
+     * An XCM message failed to process.
+     */
+    v1060: new EventType(
+        'XcmPallet.ProcessXcmError',
+        sts.struct({
+            origin: v1060.V5Location,
+            error: v1060.V5Error,
+            messageId: sts.bytes(),
+        })
+    ),
+}
+
+export const aliasAuthorized = {
+    name: 'XcmPallet.AliasAuthorized',
+    /**
+     * An `aliaser` location was authorized by `target` to alias it, authorization valid until
+     * `expiry` block number.
+     */
+    v1060: new EventType(
+        'XcmPallet.AliasAuthorized',
+        sts.struct({
+            aliaser: v1060.V5Location,
+            target: v1060.V5Location,
+            expiry: sts.option(() => sts.bigint()),
+        })
+    ),
+}
+
+export const aliasAuthorizationRemoved = {
+    name: 'XcmPallet.AliasAuthorizationRemoved',
+    /**
+     * `target` removed alias authorization for `aliaser`.
+     */
+    v1060: new EventType(
+        'XcmPallet.AliasAuthorizationRemoved',
+        sts.struct({
+            aliaser: v1060.V5Location,
+            target: v1060.V5Location,
+        })
+    ),
+}
+
+export const aliasesAuthorizationsRemoved = {
+    name: 'XcmPallet.AliasesAuthorizationsRemoved',
+    /**
+     * `target` removed all alias authorizations.
+     */
+    v1060: new EventType(
+        'XcmPallet.AliasesAuthorizationsRemoved',
+        sts.struct({
+            target: v1060.V5Location,
         })
     ),
 }

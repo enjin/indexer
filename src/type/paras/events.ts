@@ -1,5 +1,6 @@
 import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
 import * as enjinV100 from '../enjinV100'
+import * as v1060 from '../v1060'
 
 export const currentCodeUpdated = {
     name: 'Paras.CurrentCodeUpdated',
@@ -66,4 +67,44 @@ export const pvfCheckRejected = {
      * `code_hash` `para_id`
      */
     enjinV100: new EventType('Paras.PvfCheckRejected', sts.tuple([enjinV100.ValidationCodeHash, enjinV100.Id])),
+}
+
+export const upgradeCooldownRemoved = {
+    name: 'Paras.UpgradeCooldownRemoved',
+    /**
+     * The upgrade cooldown was removed.
+     */
+    v1060: new EventType(
+        'Paras.UpgradeCooldownRemoved',
+        sts.struct({
+            /**
+             * The parachain for which the cooldown got removed.
+             */
+            paraId: v1060.Id,
+        })
+    ),
+}
+
+export const codeAuthorized = {
+    name: 'Paras.CodeAuthorized',
+    /**
+     * A new code hash has been authorized for a Para.
+     */
+    v1060: new EventType(
+        'Paras.CodeAuthorized',
+        sts.struct({
+            /**
+             * Para
+             */
+            paraId: v1060.Id,
+            /**
+             * Authorized code hash.
+             */
+            codeHash: v1060.ValidationCodeHash,
+            /**
+             * Block at which authorization expires and will be removed.
+             */
+            expireAt: sts.number(),
+        })
+    ),
 }

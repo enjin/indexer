@@ -96,3 +96,23 @@ export const erc6160AssetRegistrationDispatched = {
         })
     ),
 }
+
+export const assetRegisteredLocally = {
+    name: 'TokenGateway.AssetRegisteredLocally',
+    /**
+     * An asset has been registered locally
+     */
+    matrixV1030: new EventType(
+        'TokenGateway.AssetRegisteredLocally',
+        sts.struct({
+            /**
+             * The local asset id
+             */
+            localId: matrixV1030.AssetId,
+            /**
+             * The token gateway asset id
+             */
+            assetId: matrixV1030.H256,
+        })
+    ),
+}

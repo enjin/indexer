@@ -90,7 +90,7 @@ export const referendumInfoFor = {
         'FellowshipReferenda.ReferendumInfoFor',
         'Optional',
         [sts.number()],
-        v1060.Type_1093
+        v1060.Type_1114
     ) as ReferendumInfoForV1060,
 }
 
@@ -225,20 +225,20 @@ export interface ReferendumInfoForV1030 {
  */
 export interface ReferendumInfoForV1060 {
     is(block: RuntimeCtx): boolean
-    get(block: Block, key: number): Promise<v1060.Type_1093 | undefined>
-    getMany(block: Block, keys: number[]): Promise<(v1060.Type_1093 | undefined)[]>
+    get(block: Block, key: number): Promise<v1060.Type_1114 | undefined>
+    getMany(block: Block, keys: number[]): Promise<(v1060.Type_1114 | undefined)[]>
     getKeys(block: Block): Promise<number[]>
     getKeys(block: Block, key: number): Promise<number[]>
     getKeysPaged(pageSize: number, block: Block): AsyncIterable<number[]>
     getKeysPaged(pageSize: number, block: Block, key: number): AsyncIterable<number[]>
-    getPairs(block: Block): Promise<[k: number, v: v1060.Type_1093 | undefined][]>
-    getPairs(block: Block, key: number): Promise<[k: number, v: v1060.Type_1093 | undefined][]>
-    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: number, v: v1060.Type_1093 | undefined][]>
+    getPairs(block: Block): Promise<[k: number, v: v1060.Type_1114 | undefined][]>
+    getPairs(block: Block, key: number): Promise<[k: number, v: v1060.Type_1114 | undefined][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: number, v: v1060.Type_1114 | undefined][]>
     getPairsPaged(
         pageSize: number,
         block: Block,
         key: number
-    ): AsyncIterable<[k: number, v: v1060.Type_1093 | undefined][]>
+    ): AsyncIterable<[k: number, v: v1060.Type_1114 | undefined][]>
 }
 
 export const trackQueue = {

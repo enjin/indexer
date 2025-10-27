@@ -56,3 +56,33 @@ export const placeOrderKeepAlive = {
         })
     ),
 }
+
+export const placeOrderWithCredits = {
+    name: 'OnDemandAssignmentProvider.place_order_with_credits',
+    /**
+     * Create a single on demand core order with credits.
+     * Will charge the owner's on-demand credit account the spot price for the current block.
+     *
+     * Parameters:
+     * - `origin`: The sender of the call, on-demand credits will be withdrawn from this
+     *   account.
+     * - `max_amount`: The maximum number of credits to spend from the origin to place an
+     *   order.
+     * - `para_id`: A `ParaId` the origin wants to provide blockspace for.
+     *
+     * Errors:
+     * - `InsufficientCredits`
+     * - `QueueFull`
+     * - `SpotPriceHigherThanMaxAmount`
+     *
+     * Events:
+     * - `OnDemandOrderPlaced`
+     */
+    v1060: new CallType(
+        'OnDemandAssignmentProvider.place_order_with_credits',
+        sts.struct({
+            maxAmount: sts.bigint(),
+            paraId: v1060.Id,
+        })
+    ),
+}
