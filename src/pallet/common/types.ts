@@ -476,7 +476,6 @@ export type RuntimeHoldReason =
     | HoldReason_MultiTokens
     | HoldReason_Preimage
     | HoldReason_SafeMode
-    | HoldReason_StakeExchange
     | HoldReason_CollatorStaking
     | HoldReason_StateTrieMigration
     | HoldReason_StakeExchange // Added on v1060
