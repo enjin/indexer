@@ -79,7 +79,7 @@
     "express": "^5.1.0",
     "graphql-type-json": "^0.3.2",
     "lodash": "^4.17.21",
-    "mathjs": "^14.5.2",
+    "mathjs": "^14.8.2",
     "mime-types": "^3.0.1",
     "node-cache": "^5.1.2",
     "pg": "^8.16.0",
