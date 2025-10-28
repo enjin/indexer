@@ -470,6 +470,18 @@ type HoldReason_TechnicalCommittee = {
     __kind: 'TechnicalCommittee'
 }
 
+export interface HoldReason_PolkadotXcm {
+    __kind: 'PolkadotXcm'
+}
+
+export interface HoldReason_XcmPallet {
+    __kind: 'XcmPallet'
+}
+
+export interface HoldReason_Staking {
+    __kind: 'Staking'
+}
+
 export type RuntimeHoldReason =
     | HoldReason_FuelTanks
     | HoldReason_Marketplace
@@ -478,9 +490,12 @@ export type RuntimeHoldReason =
     | HoldReason_SafeMode
     | HoldReason_CollatorStaking
     | HoldReason_StateTrieMigration
+    | HoldReason_Staking
     | HoldReason_StakeExchange // Added on v1060
     | HoldReason_Council // Added on matrixV1030
     | HoldReason_TechnicalCommittee // Added on matrixV1030
+    | HoldReason_PolkadotXcm // Added on matrixV1030
+    | HoldReason_XcmPallet // Added on v1060
 
 type Root = {
     __kind: 'Root'
