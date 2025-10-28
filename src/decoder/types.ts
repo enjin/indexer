@@ -16,14 +16,12 @@ export interface DecodeRequest {
     spec_version?: number
 }
 
+import type { DecodedCall, ExtrinsicSignature } from '@subsquid/substrate-runtime'
+
 export interface DecodeResponse {
     version: number
-    signature?: {
-        address: unknown
-        signature: unknown
-        signedExtensions: unknown
-    }
-    call: unknown
+    signature?: ExtrinsicSignature
+    call: DecodedCall
     hash: string
     extrinsic_hash: string
 }

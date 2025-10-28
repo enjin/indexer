@@ -2,7 +2,7 @@
  * Compatibility layer to transform new decoder output to match platform-decoder format
  */
 
-import type { Runtime } from '@subsquid/substrate-runtime'
+import type { Runtime, Extrinsic, DecodedEvent } from '@subsquid/substrate-runtime'
 
 function hexToNumberArray(hex: string): number[] {
     const cleanHex = hex.startsWith('0x') ? hex.slice(2) : hex
@@ -13,34 +13,37 @@ function hexToNumberArray(hex: string): number[] {
     return bytes
 }
 
-function transformAddress(address: { __kind: string; value: string }): { [key: string]: number[] } {
+function transformAddress(address: unknown): { [key: string]: number[] } {
+    const addr = address as { __kind: string; value: string }
     return {
-        [address.__kind]: hexToNumberArray(address.value),
+        [addr.__kind]: hexToNumberArray(addr.value),
     }
 }
 
-function transformSignature(signature: { __kind: string; value: string }): { [key: string]: number[] } {
+function transformSignature(signature: unknown): { [key: string]: number[] } {
+    const sig = signature as { __kind: string; value: string }
     return {
-        [signature.__kind]: hexToNumberArray(signature.value),
+        [sig.__kind]: hexToNumberArray(sig.value),
     }
 }
 
-function parseEra(checkMortality: { __kind: string; value?: number }): {
+function parseEra(checkMortality: unknown): {
     period: number
     phase: number
 } | null {
-    if (checkMortality.__kind === 'Immortal') {
+    const mortality = checkMortality as { __kind: string; value?: number }
+    if (mortality.__kind === 'Immortal') {
         return null
     }
 
     // Mortal era format: MortalN where N is the encoded value
-    const match = checkMortality.__kind.match(/^Mortal(\d+)$/)
-    if (!match || checkMortality.value === undefined) {
+    const match = mortality.__kind.match(/^Mortal(\d+)$/)
+    if (!match || mortality.value === undefined) {
         return null
     }
 
     const encoded = parseInt(match[1])
-    const phase = checkMortality.value
+    const phase = mortality.value
 
     // Calculate period from encoded value
     // Period is 2^encoded
@@ -49,24 +52,25 @@ function parseEra(checkMortality: { __kind: string; value?: number }): {
     return { period, phase }
 }
 
-function transformSignedExtensions(signedExtensions: {
-    checkMortality?: { __kind: string; value?: number }
-    checkNonce?: number
-    chargeTransactionPayment?: string
-    checkMetadataHash?: { mode: { __kind: string } }
-}): {
+function transformSignedExtensions(signedExtensions: unknown): {
     era: { period: number; phase: number } | null
     nonce: number
     tip: string
     metadata_hash: string
 } {
-    const era = signedExtensions.checkMortality ? parseEra(signedExtensions.checkMortality) : null
+    const extensions = signedExtensions as {
+        checkMortality?: unknown
+        checkNonce?: number
+        chargeTransactionPayment?: string
+        checkMetadataHash?: { mode?: { __kind: string } }
+    }
+    const era = extensions.checkMortality ? parseEra(extensions.checkMortality) : null
 
     return {
         era: era || { period: 0, phase: 0 },
-        nonce: signedExtensions.checkNonce ?? 0,
-        tip: signedExtensions.chargeTransactionPayment ?? '0',
-        metadata_hash: signedExtensions.checkMetadataHash?.mode.__kind ?? 'Disabled',
+        nonce: extensions.checkNonce ?? 0,
+        tip: extensions.chargeTransactionPayment ?? '0',
+        metadata_hash: extensions.checkMetadataHash?.mode?.__kind ?? 'Disabled',
     }
 }
 
@@ -102,19 +106,24 @@ function transformObjectKeys(obj: unknown): unknown {
     return obj
 }
 
-function transformCallStructure(call: { __kind: string; value?: unknown }): {
+function transformCallStructure(call: unknown): {
     [palletName: string]: { [callName: string]: unknown }
 } {
-    const palletName = call.__kind
-    const callData = call.value
+    const typedCall = call as { __kind: string; value?: unknown }
+    const palletName = typedCall.__kind
+    const callData = typedCall.value
 
     if (callData && typeof callData === 'object' && '__kind' in callData) {
         const typedCallData = callData as { __kind: string; [key: string]: unknown }
         const callName = typedCallData.__kind
 
         // Extract all properties except __kind
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { __kind: _kind, ...params } = typedCallData
+        const params: Record<string, unknown> = {}
+        for (const [key, value] of Object.entries(typedCallData)) {
+            if (key !== '__kind') {
+                params[key] = value
+            }
+        }
 
         // Transform keys from camelCase to snake_case
         const transformedParams = transformObjectKeys(params)
@@ -188,28 +197,31 @@ function transformArgumentValue(typeName: string, value: unknown): unknown {
     return value
 }
 
-export function transformEvent(runtime: Runtime, decodedEvent: Record<string, unknown>): unknown {
-    if (!('__kind' in decodedEvent)) {
-        return decodedEvent
-    }
-
-    const palletName = decodedEvent.__kind as string
+export function transformEvent(runtime: Runtime, decodedEvent: DecodedEvent): unknown {
+    const palletName = decodedEvent.__kind
     const eventValue = decodedEvent.value
 
-    if (!eventValue || typeof eventValue !== 'object' || !('__kind' in eventValue)) {
+    if (typeof eventValue !== 'object' || !('__kind' in eventValue)) {
         return {
-            [palletName]: eventValue ?? {},
+            [palletName]: eventValue,
         }
     }
 
-    const eventName = eventValue.__kind as string
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { __kind: _eventKind, ...eventParams } = eventValue as { __kind: string; [key: string]: unknown }
+    const eventName = eventValue.__kind
+    const eventData = eventValue
+    const eventParams: Record<string, unknown> = {}
+    for (const [key, value] of Object.entries(eventData)) {
+        if (key !== '__kind') {
+            eventParams[key] = value
+        }
+    }
 
     const eventTypeIndex = runtime.description.event
-    const eventType = runtime.description.types[eventTypeIndex]
+    const eventType = runtime.description.types[eventTypeIndex] as {
+        variants?: Array<{ name: string; fields?: Array<{ type: number }> }>
+    }
 
-    const palletVariant = eventType.variants?.find((v: { name: string }) => v.name === palletName)
+    const palletVariant = eventType.variants?.find((v) => v.name === palletName)
     if (!palletVariant || !palletVariant.fields || palletVariant.fields.length === 0) {
         const result: Record<string, unknown> = {}
         for (const [key, value] of Object.entries(eventParams)) {
@@ -223,9 +235,11 @@ export function transformEvent(runtime: Runtime, decodedEvent: Record<string, un
     }
 
     const palletEventsTypeIndex = palletVariant.fields[0].type
-    const palletEventsType = runtime.description.types[palletEventsTypeIndex]
+    const palletEventsType = runtime.description.types[palletEventsTypeIndex] as {
+        variants?: Array<{ name: string; fields?: Array<{ name?: string; typeName?: string }> }>
+    }
 
-    const specificEvent = palletEventsType.variants?.find((v: { name: string }) => v.name === eventName)
+    const specificEvent = palletEventsType.variants?.find((v) => v.name === eventName)
     if (!specificEvent || !specificEvent.fields) {
         const result: Record<string, unknown> = {}
         for (const [key, value] of Object.entries(eventParams)) {
@@ -244,6 +258,8 @@ export function transformEvent(runtime: Runtime, decodedEvent: Record<string, un
         const transformedArgs: Record<string, unknown> = {}
         for (const field of specificEvent.fields) {
             const fieldName = field.name
+            if (!fieldName) continue
+
             const typeName = field.typeName || ''
             const value = eventParams[fieldName]
 
@@ -276,22 +292,7 @@ export function transformEvent(runtime: Runtime, decodedEvent: Record<string, un
     }
 }
 
-export function transformExtrinsic(decoded: {
-    version: number
-    signature?: {
-        address: { __kind: string; value: string }
-        signature: { __kind: string; value: string }
-        signedExtensions: {
-            checkMortality?: { __kind: string; value?: number }
-            checkNonce?: number
-            chargeTransactionPayment?: string
-            checkMetadataHash?: { mode: { __kind: string } }
-        }
-    }
-    call: { __kind: string; value?: unknown }
-    hash: string
-    extrinsic_hash: string
-}): unknown {
+export function transformExtrinsic(decoded: Extrinsic & { hash: string; extrinsic_hash: string }): unknown {
     const result: Record<string, unknown> = {
         hash: decoded.hash.startsWith('0x') ? decoded.hash.slice(2) : decoded.hash,
         version: decoded.version,
