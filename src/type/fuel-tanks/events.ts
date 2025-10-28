@@ -352,6 +352,30 @@ export const accountAdded = {
         })
     ),
     /**
+     * An account was added to a [`FuelTank`]
+     */
+    enjinV100: new EventType(
+        'FuelTanks.AccountAdded',
+        sts.struct({
+            /**
+             * The [`AccountId`](frame_system::Config::AccountId) of the [`FuelTank`]
+             */
+            tankId: enjinV100.AccountId32,
+            /**
+             * The [`AccountId`](frame_system::Config::AccountId) that was added
+             */
+            userId: enjinV100.AccountId32,
+            /**
+             * The deposit reserved by the [`FuelTank`] for this account
+             */
+            tankDeposit: sts.bigint(),
+            /**
+             * The deposit reserved by the user for this account
+             */
+            userDeposit: sts.bigint(),
+        })
+    ),
+    /**
      * An account was added to a fuel tank
      */
     matrixV1030: new EventType(
