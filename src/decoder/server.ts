@@ -3,9 +3,9 @@ import { createLogger } from '@subsquid/logger'
 import { blake2AsHex } from '@polkadot/util-crypto'
 import { isHex } from '@polkadot/util'
 import { getRuntimeCached } from './metadata'
-import type { DecodeRequest, DecodeResponse, ErrorResponse, Network, DecodedEventRecord } from './types'
+import type { DecodeRequest, DecodeResponse, Network, DecodedEventRecord } from './types'
 import { NETWORKS, NETWORK_ALIASES } from './types'
-import { transformToCompatibleFormat, transformEventToCompatibleFormat } from './compatibility'
+import { transformExtrinsic, transformEvent } from './compatibility'
 import { Src } from '@subsquid/scale-codec'
 
 const log = createLogger('sqd:decoder')
@@ -86,7 +86,7 @@ function validateRequest(body: unknown): { valid: true; data: DecodeRequest } | 
             return { valid: false, error: '"extrinsics" must be an array' }
         }
         // We know it's an array, but elements could be any type
-        if (req.extrinsics.some((e: unknown) => typeof e !== 'string' || !isHex(e as string))) {
+        if (req.extrinsics.some((e: unknown) => typeof e !== 'string' || !isHex(e))) {
             return { valid: false, error: 'All extrinsics must be valid hex strings' }
         }
     }
@@ -125,8 +125,8 @@ function validateRequest(body: unknown): { valid: true; data: DecodeRequest } | 
             extrinsic: req.extrinsic as string | undefined,
             extrinsics: req.extrinsics as string[] | undefined,
             events: req.events as string | undefined,
-            network: req.network as string | undefined,
-            spec_version: req.spec_version as number | undefined,
+            network: req.network,
+            spec_version: req.spec_version,
         },
     }
 }
@@ -141,7 +141,7 @@ async function handleDecode(req: Request, res: Response): Promise<void> {
         }
 
         const { extrinsic, extrinsics, events, network: networkInput, spec_version } = validation.data
-        const network = networkInput ? resolveNetwork(networkInput)! : DEFAULT_NETWORK
+        const network = (networkInput && resolveNetwork(networkInput)) || DEFAULT_NETWORK
         const specVersion = spec_version ?? getLatestSpecVersion(network)
 
         // Handle single extrinsic
@@ -163,7 +163,7 @@ async function handleDecode(req: Request, res: Response): Promise<void> {
                 }
 
                 // Transform to platform-decoder compatible format
-                const compatibleResponse = transformToCompatibleFormat(response as any)
+                const compatibleResponse = transformExtrinsic(response)
 
                 res.setHeader('Content-Type', 'application/json')
                 res.end(JSON.stringify(compatibleResponse, bigIntReplacer))
@@ -193,7 +193,7 @@ async function handleDecode(req: Request, res: Response): Promise<void> {
                     }
 
                     // Transform to platform-decoder compatible format
-                    return transformToCompatibleFormat(response as any)
+                    return transformExtrinsic(response)
                 })
 
                 res.setHeader('Content-Type', 'application/json')
@@ -224,7 +224,7 @@ async function handleDecode(req: Request, res: Response): Promise<void> {
                 for (let i = 0; i < length; i++) {
                     // Decode Phase enum
                     const phaseVariant = src.u8()
-                    let phase: { [key: string]: number | null } = {}
+                    const phase: { [key: string]: number | null } = {}
 
                     if (phaseVariant === 0) {
                         // ApplyExtrinsic(u32)
@@ -251,7 +251,7 @@ async function handleDecode(req: Request, res: Response): Promise<void> {
 
                     results.push({
                         phase,
-                        event: transformEventToCompatibleFormat(decodedEvent),
+                        event: transformEvent(runtime, decodedEvent),
                         topics,
                     })
                 }

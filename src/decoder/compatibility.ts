@@ -2,6 +2,8 @@
  * Compatibility layer to transform new decoder output to match platform-decoder format
  */
 
+import type { Runtime } from '@subsquid/substrate-runtime'
+
 function hexToNumberArray(hex: string): number[] {
     const cleanHex = hex.startsWith('0x') ? hex.slice(2) : hex
     const bytes: number[] = []
@@ -64,7 +66,7 @@ function transformSignedExtensions(signedExtensions: {
         era: era || { period: 0, phase: 0 },
         nonce: signedExtensions.checkNonce ?? 0,
         tip: signedExtensions.chargeTransactionPayment ?? '0',
-        metadata_hash: signedExtensions.checkMetadataHash?.mode?.__kind ?? 'Disabled',
+        metadata_hash: signedExtensions.checkMetadataHash?.mode.__kind ?? 'Disabled',
     }
 }
 
@@ -104,14 +106,15 @@ function transformCallStructure(call: { __kind: string; value?: unknown }): {
     [palletName: string]: { [callName: string]: unknown }
 } {
     const palletName = call.__kind
-    let callData = call.value
+    const callData = call.value
 
     if (callData && typeof callData === 'object' && '__kind' in callData) {
         const typedCallData = callData as { __kind: string; [key: string]: unknown }
         const callName = typedCallData.__kind
 
         // Extract all properties except __kind
-        const { __kind, ...params } = typedCallData
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { __kind: _kind, ...params } = typedCallData
 
         // Transform keys from camelCase to snake_case
         const transformedParams = transformObjectKeys(params)
@@ -128,71 +131,152 @@ function transformCallStructure(call: { __kind: string; value?: unknown }): {
     }
 }
 
-export function transformEventToCompatibleFormat(event: unknown): unknown {
-    function transformValue(val: unknown): unknown {
-        if (val === null || val === undefined) {
-            return val
+function accountIdToByteArray(value: unknown): unknown {
+    if (typeof value === 'string' && value.startsWith('0x')) {
+        return hexToNumberArray(value)
+    }
+    if (value && typeof value === 'object' && '__kind' in value) {
+        const kindValue = value as { __kind: string; value?: unknown }
+        if (kindValue.value && typeof kindValue.value === 'string' && kindValue.value.startsWith('0x')) {
+            return hexToNumberArray(kindValue.value)
         }
+    }
+    return value
+}
 
-        if (Array.isArray(val)) {
-            return val.map(transformValue)
-        }
-
-        if (typeof val === 'object' && '__kind' in val) {
-            const kindVal = (val as { __kind: string }).__kind
-            const rest = Object.entries(val).filter(([k]) => k !== '__kind')
-
-            if (rest.length === 0) {
-                return kindVal
-            }
-
-            const transformed: Record<string, unknown> = {}
-            for (const [k, v] of rest) {
-                transformed[k] = transformValue(v)
-            }
-
-            if ('value' in transformed && Object.keys(transformed).length === 1) {
-                return transformValue(transformed.value)
-            }
-
-            return transformed
-        }
-
-        if (typeof val === 'object') {
-            const transformed: Record<string, unknown> = {}
-            for (const [k, v] of Object.entries(val)) {
-                transformed[k] = transformValue(v)
-            }
-            return transformed
-        }
-
-        return val
+function transformArgumentValue(typeName: string, value: unknown): unknown {
+    if (typeName.includes('AccountId')) {
+        return accountIdToByteArray(value)
     }
 
-    if (event && typeof event === 'object' && '__kind' in event) {
-        const palletName = event.__kind as string
-        const eventValue = (event as { value?: unknown }).value
+    if (value === null || value === undefined) {
+        return value
+    }
 
-        if (eventValue && typeof eventValue === 'object' && '__kind' in eventValue) {
-            const eventName = (eventValue as { __kind: string }).__kind
-            const { __kind, ...params } = eventValue as { __kind: string; [key: string]: unknown }
+    if (Array.isArray(value)) {
+        return value.map((v) => transformArgumentValue(typeName, v))
+    }
 
-            return {
-                [palletName]: {
-                    [eventName]: transformValue(params),
-                },
-            }
+    if (typeof value === 'object' && '__kind' in value) {
+        const kindVal = (value as { __kind: string }).__kind
+        const rest = Object.entries(value).filter(([k]) => k !== '__kind')
+
+        if (rest.length === 0) {
+            return kindVal
+        }
+
+        const transformed: Record<string, unknown> = {}
+        for (const [k, v] of rest) {
+            transformed[k] = transformArgumentValue(typeName, v)
+        }
+
+        if ('value' in transformed && Object.keys(transformed).length === 1) {
+            return transformArgumentValue(typeName, transformed.value)
+        }
+
+        return transformed
+    }
+
+    if (typeof value === 'object') {
+        const transformed: Record<string, unknown> = {}
+        for (const [k, v] of Object.entries(value)) {
+            transformed[k] = transformArgumentValue(typeName, v)
+        }
+        return transformed
+    }
+
+    return value
+}
+
+export function transformEvent(runtime: Runtime, decodedEvent: Record<string, unknown>): unknown {
+    if (!('__kind' in decodedEvent)) {
+        return decodedEvent
+    }
+
+    const palletName = decodedEvent.__kind as string
+    const eventValue = decodedEvent.value
+
+    if (!eventValue || typeof eventValue !== 'object' || !('__kind' in eventValue)) {
+        return {
+            [palletName]: eventValue ?? {},
+        }
+    }
+
+    const eventName = eventValue.__kind as string
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { __kind: _eventKind, ...eventParams } = eventValue as { __kind: string; [key: string]: unknown }
+
+    const eventTypeIndex = runtime.description.event
+    const eventType = runtime.description.types[eventTypeIndex]
+
+    const palletVariant = eventType.variants?.find((v: { name: string }) => v.name === palletName)
+    if (!palletVariant || !palletVariant.fields || palletVariant.fields.length === 0) {
+        const result: Record<string, unknown> = {}
+        for (const [key, value] of Object.entries(eventParams)) {
+            result[key] = transformArgumentValue('', value)
+        }
+        return {
+            [palletName]: {
+                [eventName]: result,
+            },
+        }
+    }
+
+    const palletEventsTypeIndex = palletVariant.fields[0].type
+    const palletEventsType = runtime.description.types[palletEventsTypeIndex]
+
+    const specificEvent = palletEventsType.variants?.find((v: { name: string }) => v.name === eventName)
+    if (!specificEvent || !specificEvent.fields) {
+        const result: Record<string, unknown> = {}
+        for (const [key, value] of Object.entries(eventParams)) {
+            result[key] = transformArgumentValue('', value)
+        }
+        return {
+            [palletName]: {
+                [eventName]: result,
+            },
+        }
+    }
+
+    const isNamed = specificEvent.fields.some((f: { name?: string }) => f.name !== undefined)
+
+    if (isNamed) {
+        const transformedArgs: Record<string, unknown> = {}
+        for (const field of specificEvent.fields) {
+            const fieldName = field.name
+            const typeName = field.typeName || ''
+            const value = eventParams[fieldName]
+
+            const key = typeName || fieldName
+            transformedArgs[key] = transformArgumentValue(typeName, value)
         }
 
         return {
-            [palletName]: transformValue(eventValue) ?? {},
+            [palletName]: {
+                [eventName]: transformedArgs,
+            },
+        }
+    } else {
+        const transformedArgs: unknown[] = []
+        const paramValues = Object.values(eventParams)
+
+        for (let i = 0; i < specificEvent.fields.length; i++) {
+            const field = specificEvent.fields[i]
+            const typeName = field.typeName || ''
+            const value = paramValues[i]
+
+            transformedArgs.push(transformArgumentValue(typeName, value))
+        }
+
+        return {
+            [palletName]: {
+                [eventName]: transformedArgs,
+            },
         }
     }
-
-    return event
 }
 
-export function transformToCompatibleFormat(decoded: {
+export function transformExtrinsic(decoded: {
     version: number
     signature?: {
         address: { __kind: string; value: string }

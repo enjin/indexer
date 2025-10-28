@@ -58,13 +58,15 @@ export async function getRuntimeCached(network: Network, specVersion: number): P
     const cacheKey = `${network}:${specVersion}`
 
     // Check if already cached
-    if (runtimeCache.has(cacheKey)) {
-        return runtimeCache.get(cacheKey)!
+    const cached = runtimeCache.get(cacheKey)
+    if (cached) {
+        return cached
     }
 
     // Check if load is in progress
-    if (pendingLoads.has(cacheKey)) {
-        return pendingLoads.get(cacheKey)!
+    const pending = pendingLoads.get(cacheKey)
+    if (pending) {
+        return pending
     }
 
     // Start new load

@@ -1,10 +1,5 @@
 // Network constants
-export const NETWORKS = [
-    'enjin-matrixchain',
-    'canary-matrixchain',
-    'enjin-relaychain',
-    'canary-relaychain',
-] as const
+export const NETWORKS = ['enjin-matrixchain', 'canary-matrixchain', 'enjin-relaychain', 'canary-relaychain'] as const
 
 export type Network = (typeof NETWORKS)[number]
 
