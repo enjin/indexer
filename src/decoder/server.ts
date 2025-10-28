@@ -18,16 +18,19 @@ function bigIntReplacer(_key: string, value: unknown): unknown {
 }
 
 const DEFAULT_NETWORK: Network = 'enjin-matrixchain'
+const DEFAULT_SPEC_VERSION: number = 1022
 
 const LATEST_SPEC_VERSIONS: Record<Network, number> = {
-    'enjin-matrixchain': 1022,
-    'canary-matrixchain': 1022,
+    // enjin
     'enjin-relaychain': 1050,
-    'canary-relaychain': 1050,
+    'enjin-matrixchain': 1022,
+    // canary
+    'canary-relaychain': 1060,
+    'canary-matrixchain': 1030,
 }
 
 function getLatestSpecVersion(network: Network): number {
-    return LATEST_SPEC_VERSIONS[network] || 1022
+    return LATEST_SPEC_VERSIONS[network] || DEFAULT_SPEC_VERSION
 }
 
 function resolveNetwork(networkInput: string): Network | null {
