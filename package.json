@@ -66,6 +66,7 @@
     "@subsquid/graphql-server": "^4.10.0",
     "@subsquid/hasura-configuration": "^2.0.0",
     "@subsquid/logger": "^1.4.0",
+    "@subsquid/scale-codec": "^4.0.1",
     "@subsquid/ss58": "^2.0.2",
     "@subsquid/substrate-processor": "^8.6.0",
     "@subsquid/substrate-runtime": "^2.0.1",
