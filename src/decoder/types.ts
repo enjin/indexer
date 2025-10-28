@@ -16,7 +16,7 @@ export const NETWORK_ALIASES: Record<string, Network> = {
 export interface DecodeRequest {
     extrinsic?: string
     extrinsics?: string[]
-    events?: string[]
+    events?: string // Single hex string containing Vec<EventRecord>
     network?: string
     spec_version?: number
 }
@@ -31,6 +31,18 @@ export interface DecodeResponse {
     call: unknown
     hash: string
     extrinsic_hash: string
+}
+
+export interface EventPhase {
+    ApplyExtrinsic?: number
+    Finalization?: null
+    Initialization?: null
+}
+
+export interface DecodedEventRecord {
+    phase: EventPhase
+    event: unknown
+    topics: string[]
 }
 
 export interface EventDecodeResponse {

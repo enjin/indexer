@@ -3,9 +3,10 @@ import { createLogger } from '@subsquid/logger'
 import { blake2AsHex } from '@polkadot/util-crypto'
 import { isHex } from '@polkadot/util'
 import { getRuntimeCached } from './metadata'
-import type { DecodeRequest, DecodeResponse, ErrorResponse, Network, EventDecodeResponse } from './types'
+import type { DecodeRequest, DecodeResponse, ErrorResponse, Network, DecodedEventRecord } from './types'
 import { NETWORKS, NETWORK_ALIASES } from './types'
 import { transformToCompatibleFormat } from './compatibility'
+import { Src } from '@subsquid/scale-codec'
 
 const log = createLogger('sqd:decoder')
 
@@ -84,14 +85,13 @@ function validateRequest(body: unknown): { valid: true; data: DecodeRequest } | 
         }
     }
 
-    // Validate events array
+    // Validate events (single hex string)
     if (hasEvents) {
-        if (!Array.isArray(req.events)) {
-            return { valid: false, error: '"events" must be an array' }
+        if (typeof req.events !== 'string') {
+            return { valid: false, error: '"events" must be a hex string' }
         }
-        const events = req.events as unknown[]
-        if (events.some((e) => typeof e !== 'string' || !isHex(e))) {
-            return { valid: false, error: 'All events must be valid hex strings' }
+        if (!isHex(req.events)) {
+            return { valid: false, error: 'Events must be a valid hex string' }
         }
     }
 
@@ -118,11 +118,81 @@ function validateRequest(body: unknown): { valid: true; data: DecodeRequest } | 
         data: {
             extrinsic: req.extrinsic as string | undefined,
             extrinsics: req.extrinsics as string[] | undefined,
-            events: req.events as string[] | undefined,
+            events: req.events as string | undefined,
             network: req.network as string | undefined,
             spec_version: req.spec_version as number | undefined,
         },
     }
+}
+
+function transformEventToCompatibleFormat(event: unknown): unknown {
+    // Transform from {__kind: "System", value: {__kind: "ExtrinsicSuccess", ...}} format
+    // to {"System": {"ExtrinsicSuccess": {...}}} format
+    // Also transform nested __kind fields to just the kind string
+    function transformValue(val: unknown): unknown {
+        if (val === null || val === undefined) {
+            return val
+        }
+
+        if (Array.isArray(val)) {
+            return val.map(transformValue)
+        }
+
+        if (typeof val === 'object' && '__kind' in val) {
+            const kindVal = (val as { __kind: string }).__kind
+            const rest = Object.entries(val).filter(([k]) => k !== '__kind')
+
+            // If there are no other fields, just return the kind string
+            if (rest.length === 0) {
+                return kindVal
+            }
+
+            // Otherwise, recurse on the other fields
+            const transformed: Record<string, unknown> = {}
+            for (const [k, v] of rest) {
+                transformed[k] = transformValue(v)
+            }
+
+            // Check if this looks like a top-level event {__kind: "Pallet", value: ...}
+            if ('value' in transformed && Object.keys(transformed).length === 1) {
+                return transformValue(transformed.value)
+            }
+
+            return transformed
+        }
+
+        if (typeof val === 'object') {
+            const transformed: Record<string, unknown> = {}
+            for (const [k, v] of Object.entries(val)) {
+                transformed[k] = transformValue(v)
+            }
+            return transformed
+        }
+
+        return val
+    }
+
+    if (event && typeof event === 'object' && '__kind' in event) {
+        const palletName = event.__kind as string
+        const eventValue = (event as { value?: unknown }).value
+
+        if (eventValue && typeof eventValue === 'object' && '__kind' in eventValue) {
+            const eventName = (eventValue as { __kind: string }).__kind
+            const { __kind, ...params } = eventValue as { __kind: string; [key: string]: unknown }
+
+            return {
+                [palletName]: {
+                    [eventName]: transformValue(params),
+                },
+            }
+        }
+
+        return {
+            [palletName]: transformValue(eventValue) ?? {},
+        }
+    }
+
+    return event
 }
 
 async function handleDecode(req: Request, res: Response): Promise<void> {
@@ -200,12 +270,65 @@ async function handleDecode(req: Request, res: Response): Promise<void> {
         }
 
         // Handle events
-        if (events && events.length > 0) {
-            // Note: Event decoding requires scale-codec which is not directly available in @subsquid/substrate-runtime
-            // Platform-decoder uses substrate_metadata package which has EventCodec
-            // For now, return error indicating this is not yet implemented
-            log.warn('Events decoding requested but not yet implemented')
-            res.json({ error: 'Events decoding not yet implemented' })
+        if (events) {
+            try {
+                log.info(`Decoding events for network: ${network}, spec: ${specVersion}`)
+                const runtime = await getRuntimeCached(network, specVersion)
+
+                // Decode Vec<EventRecord> using Src for manual SCALE parsing
+                // Convert hex string to Uint8Array
+                const hexString = events.startsWith('0x') ? events.slice(2) : events
+                const bytes = new Uint8Array(Buffer.from(hexString, 'hex'))
+                const src = new Src(bytes)
+                const length = src.compact()
+                log.info(`Decoding ${length} events from SCALE bytes`)
+
+                const results: DecodedEventRecord[] = []
+
+                for (let i = 0; i < length; i++) {
+                    // Decode Phase enum
+                    const phaseVariant = src.u8()
+                    let phase: { [key: string]: number | null } = {}
+
+                    if (phaseVariant === 0) {
+                        // ApplyExtrinsic(u32)
+                        phase.ApplyExtrinsic = src.u32()
+                    } else if (phaseVariant === 1) {
+                        // Finalization
+                        phase.Finalization = null
+                    } else if (phaseVariant === 2) {
+                        // Initialization
+                        phase.Initialization = null
+                    }
+
+                    // Decode Event using runtime
+                    // Use decode() instead of decodeBinary() to work with existing Src
+                    const decodedEvent = runtime.scaleCodec.decode(runtime.description.event, src)
+
+                    // Decode topics Vec<Hash>
+                    const topicsLength = src.compact()
+                    const topics: string[] = []
+                    for (let j = 0; j < topicsLength; j++) {
+                        const hash = src.bytes(32)
+                        topics.push('0x' + Buffer.from(hash).toString('hex'))
+                    }
+
+                    results.push({
+                        phase,
+                        event: transformEventToCompatibleFormat(decodedEvent),
+                        topics,
+                    })
+                }
+
+                res.setHeader('Content-Type', 'application/json')
+                res.end(JSON.stringify(results, bigIntReplacer))
+            } catch (error) {
+                const errorMessage = error instanceof Error ? error.message : String(error)
+                const stack = error instanceof Error ? error.stack : ''
+                log.error(`Failed to decode events: ${errorMessage}`)
+                log.error(`Stack trace: ${stack}`)
+                res.json({ error: 'Failed to decode events', details: errorMessage })
+            }
             return
         }
 
