@@ -5,6 +5,7 @@ import { isHex } from '@polkadot/util'
 import { getRuntimeCached } from './metadata'
 import type { DecodeRequest, DecodeResponse, ErrorResponse, Network, EventDecodeResponse } from './types'
 import { NETWORKS, NETWORK_ALIASES } from './types'
+import { transformToCompatibleFormat } from './compatibility'
 
 const log = createLogger('sqd:decoder')
 
@@ -152,8 +153,11 @@ async function handleDecode(req: Request, res: Response): Promise<void> {
                     extrinsic_hash: hash,
                 }
 
+                // Transform to platform-decoder compatible format
+                const compatibleResponse = transformToCompatibleFormat(response)
+
                 res.setHeader('Content-Type', 'application/json')
-                res.end(JSON.stringify(response, bigIntReplacer))
+                res.end(JSON.stringify(compatibleResponse, bigIntReplacer))
             } catch (error) {
                 log.error(`Failed to decode extrinsic: ${error}`)
                 res.json({ error: 'Failed to decode extrinsic' })
@@ -171,13 +175,16 @@ async function handleDecode(req: Request, res: Response): Promise<void> {
                     const decoded = runtime.decodeExtrinsic(ext)
                     const hash = blake2AsHex(ext, 256)
 
-                    return {
+                    const response = {
                         version: decoded.version,
                         signature: decoded.signature,
                         call: decoded.call,
                         hash,
                         extrinsic_hash: hash,
                     }
+
+                    // Transform to platform-decoder compatible format
+                    return transformToCompatibleFormat(response)
                 })
 
                 res.setHeader('Content-Type', 'application/json')
