@@ -124,7 +124,7 @@ function transformCallStructure(call: { __kind: string; value?: unknown }): {
     }
 
     return {
-        [palletName]: callData ?? {},
+        [palletName]: (callData ?? {}) as { [callName: string]: unknown },
     }
 }
 

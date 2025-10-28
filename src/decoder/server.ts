@@ -48,6 +48,12 @@ function resolveNetwork(networkInput: string): Network | null {
     return null
 }
 
+function isValidationError(
+    validation: ReturnType<typeof validateRequest>
+): validation is { valid: false; error: string } {
+    return !validation.valid
+}
+
 function validateRequest(body: unknown): { valid: true; data: DecodeRequest } | { valid: false; error: string } {
     if (!body || typeof body !== 'object') {
         return { valid: false, error: 'Request body must be an object' }
@@ -79,8 +85,8 @@ function validateRequest(body: unknown): { valid: true; data: DecodeRequest } | 
         if (!Array.isArray(req.extrinsics)) {
             return { valid: false, error: '"extrinsics" must be an array' }
         }
-        const extrinsics = req.extrinsics as unknown[]
-        if (extrinsics.some((e) => typeof e !== 'string' || !isHex(e))) {
+        // We know it's an array, but elements could be any type
+        if (req.extrinsics.some((e: unknown) => typeof e !== 'string' || !isHex(e as string))) {
             return { valid: false, error: 'All extrinsics must be valid hex strings' }
         }
     }
@@ -128,7 +134,7 @@ function validateRequest(body: unknown): { valid: true; data: DecodeRequest } | 
 async function handleDecode(req: Request, res: Response): Promise<void> {
     try {
         const validation = validateRequest(req.body)
-        if (!validation.valid) {
+        if (isValidationError(validation)) {
             // Return 200 OK with error object (matches platform-decoder)
             res.json({ error: validation.error })
             return
@@ -157,7 +163,7 @@ async function handleDecode(req: Request, res: Response): Promise<void> {
                 }
 
                 // Transform to platform-decoder compatible format
-                const compatibleResponse = transformToCompatibleFormat(response)
+                const compatibleResponse = transformToCompatibleFormat(response as any)
 
                 res.setHeader('Content-Type', 'application/json')
                 res.end(JSON.stringify(compatibleResponse, bigIntReplacer))
@@ -187,7 +193,7 @@ async function handleDecode(req: Request, res: Response): Promise<void> {
                     }
 
                     // Transform to platform-decoder compatible format
-                    return transformToCompatibleFormat(response)
+                    return transformToCompatibleFormat(response as any)
                 })
 
                 res.setHeader('Content-Type', 'application/json')
