@@ -42,8 +42,7 @@ const strip0x = (s: string): string => (s.startsWith('0x') ? s.slice(2) : s)
 
 const toBytes = (hex: string): number[] => Array.from(decodeHex(hex))
 
-const isRecord = (v: unknown): v is Record<string, unknown> =>
-    !!v && typeof v === 'object' && !Array.isArray(v)
+const isRecord = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v)
 
 const hasKind = (v: unknown): v is { __kind: string } & Record<string, unknown> =>
     isRecord(v) && typeof v.__kind === 'string'
@@ -122,23 +121,14 @@ function transformCall(call: unknown): Record<string, unknown> {
     return { [palletName]: (value ?? {}) as Record<string, unknown> }
 }
 
-function accountIdToByteArray(value: unknown): unknown {
-    if (isHex(value)) return toBytes(value)
-    if (value && typeof value === 'object' && '__kind' in value) {
-        const kindedValue = value as { __kind: string; value?: unknown }
-        if (isHex(kindedValue.value)) return toBytes(kindedValue.value)
-    }
-    return value
-}
-
 function transformArgumentValue(typeName: string, value: unknown): unknown {
-    if (/(^|[^A-Za-z])(AccountId|AccountId32|AccountId20|H160|H256)([^A-Za-z]|$)/.test(typeName)) {
-        return accountIdToByteArray(value)
-    }
-
     if (value === null || value === undefined) {
         return value
     }
+
+    // Convert hex values to byte arrays (handles both raw hex and kinded objects)
+    if (isHex(value)) return toBytes(value)
+    if (hasKind(value) && isHex(value.value)) return toBytes(value.value)
 
     if (Array.isArray(value)) {
         return value.map((v) => transformArgumentValue(typeName, v))
@@ -229,7 +219,7 @@ export function transformEvent(runtime: Runtime, decodedEvent: DecodedEvent): un
 
             const typeName = field.typeName || ''
             const value = eventParams[fieldName]
-            const key = toSnakeCaseKey(fieldName)
+            const key = field.typeName || toSnakeCaseKey(fieldName)
 
             transformedArgs[key] = transformArgumentValue(typeName, value)
         }
