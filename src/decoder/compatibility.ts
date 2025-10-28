@@ -128,6 +128,70 @@ function transformCallStructure(call: { __kind: string; value?: unknown }): {
     }
 }
 
+export function transformEventToCompatibleFormat(event: unknown): unknown {
+    function transformValue(val: unknown): unknown {
+        if (val === null || val === undefined) {
+            return val
+        }
+
+        if (Array.isArray(val)) {
+            return val.map(transformValue)
+        }
+
+        if (typeof val === 'object' && '__kind' in val) {
+            const kindVal = (val as { __kind: string }).__kind
+            const rest = Object.entries(val).filter(([k]) => k !== '__kind')
+
+            if (rest.length === 0) {
+                return kindVal
+            }
+
+            const transformed: Record<string, unknown> = {}
+            for (const [k, v] of rest) {
+                transformed[k] = transformValue(v)
+            }
+
+            if ('value' in transformed && Object.keys(transformed).length === 1) {
+                return transformValue(transformed.value)
+            }
+
+            return transformed
+        }
+
+        if (typeof val === 'object') {
+            const transformed: Record<string, unknown> = {}
+            for (const [k, v] of Object.entries(val)) {
+                transformed[k] = transformValue(v)
+            }
+            return transformed
+        }
+
+        return val
+    }
+
+    if (event && typeof event === 'object' && '__kind' in event) {
+        const palletName = event.__kind as string
+        const eventValue = (event as { value?: unknown }).value
+
+        if (eventValue && typeof eventValue === 'object' && '__kind' in eventValue) {
+            const eventName = (eventValue as { __kind: string }).__kind
+            const { __kind, ...params } = eventValue as { __kind: string; [key: string]: unknown }
+
+            return {
+                [palletName]: {
+                    [eventName]: transformValue(params),
+                },
+            }
+        }
+
+        return {
+            [palletName]: transformValue(eventValue) ?? {},
+        }
+    }
+
+    return event
+}
+
 export function transformToCompatibleFormat(decoded: {
     version: number
     signature?: {

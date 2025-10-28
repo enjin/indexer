@@ -5,7 +5,7 @@ import { isHex } from '@polkadot/util'
 import { getRuntimeCached } from './metadata'
 import type { DecodeRequest, DecodeResponse, ErrorResponse, Network, DecodedEventRecord } from './types'
 import { NETWORKS, NETWORK_ALIASES } from './types'
-import { transformToCompatibleFormat } from './compatibility'
+import { transformToCompatibleFormat, transformEventToCompatibleFormat } from './compatibility'
 import { Src } from '@subsquid/scale-codec'
 
 const log = createLogger('sqd:decoder')
@@ -123,76 +123,6 @@ function validateRequest(body: unknown): { valid: true; data: DecodeRequest } | 
             spec_version: req.spec_version as number | undefined,
         },
     }
-}
-
-function transformEventToCompatibleFormat(event: unknown): unknown {
-    // Transform from {__kind: "System", value: {__kind: "ExtrinsicSuccess", ...}} format
-    // to {"System": {"ExtrinsicSuccess": {...}}} format
-    // Also transform nested __kind fields to just the kind string
-    function transformValue(val: unknown): unknown {
-        if (val === null || val === undefined) {
-            return val
-        }
-
-        if (Array.isArray(val)) {
-            return val.map(transformValue)
-        }
-
-        if (typeof val === 'object' && '__kind' in val) {
-            const kindVal = (val as { __kind: string }).__kind
-            const rest = Object.entries(val).filter(([k]) => k !== '__kind')
-
-            // If there are no other fields, just return the kind string
-            if (rest.length === 0) {
-                return kindVal
-            }
-
-            // Otherwise, recurse on the other fields
-            const transformed: Record<string, unknown> = {}
-            for (const [k, v] of rest) {
-                transformed[k] = transformValue(v)
-            }
-
-            // Check if this looks like a top-level event {__kind: "Pallet", value: ...}
-            if ('value' in transformed && Object.keys(transformed).length === 1) {
-                return transformValue(transformed.value)
-            }
-
-            return transformed
-        }
-
-        if (typeof val === 'object') {
-            const transformed: Record<string, unknown> = {}
-            for (const [k, v] of Object.entries(val)) {
-                transformed[k] = transformValue(v)
-            }
-            return transformed
-        }
-
-        return val
-    }
-
-    if (event && typeof event === 'object' && '__kind' in event) {
-        const palletName = event.__kind as string
-        const eventValue = (event as { value?: unknown }).value
-
-        if (eventValue && typeof eventValue === 'object' && '__kind' in eventValue) {
-            const eventName = (eventValue as { __kind: string }).__kind
-            const { __kind, ...params } = eventValue as { __kind: string; [key: string]: unknown }
-
-            return {
-                [palletName]: {
-                    [eventName]: transformValue(params),
-                },
-            }
-        }
-
-        return {
-            [palletName]: transformValue(eventValue) ?? {},
-        }
-    }
-
-    return event
 }
 
 async function handleDecode(req: Request, res: Response): Promise<void> {
