@@ -29,6 +29,10 @@ export const mint = withDispatchCheck((call: CallItem): Mint => {
             () => calls.multiTokens.mint.matrixV1010.decode(call)
         )
         .when(
+            () => calls.multiTokens.mint.matrixV1030.is(call),
+            () => calls.multiTokens.mint.matrixV1030.decode(call)
+        )
+        .when(
             () => calls.multiTokens.mint.matrixV600.is(call),
             () => calls.multiTokens.mint.matrixV600.decode(call)
         )
