@@ -3,7 +3,6 @@ import { decode } from '@subsquid/ss58'
 import { isHex, stringToHex } from '@polkadot/util'
 import { HexString } from '@polkadot/util/types'
 import config from '~/util/config'
-import { createHash } from 'crypto'
 
 export function isMainnet(): boolean {
     return ['enjin-relaychain', 'enjin-matrixchain'].includes(config.chainName)
@@ -49,9 +48,6 @@ export function safeJsonString(data: Record<string, unknown>): string {
     return JSON.stringify(data, (key, value) => (typeof value === 'bigint' ? value.toString() : value))
 }
 
-export function getEventCacheKey(data: Record<string, unknown>): string {
-    const json = safeJsonString(data)
-    const hash = createHash('md5').update(json).digest('hex')
-
-    return `${config.chainName}.events:${hash}`
+export function getEventCacheKey(height: number, eventIndex: number): string {
+    return `${config.chainName}.event:${height}:${eventIndex}`
 }

@@ -48,7 +48,7 @@ async function bootstrap() {
     logger.info(`last block number on config: ${dataService.lastBlockNumber}`)
 
     const snsEvents: SnsEvent[] = []
-    let snsEventsCache: Map<string, { value: SnsEvent; expiresAt: number }> = new Map()
+    let snsEventsCache: Map<string, { eventId: string; blockHash: string; expiresAt: number }> = new Map()
 
     processorConfig.run(
         new TypeormDatabase({
@@ -89,23 +89,28 @@ async function bootstrap() {
                         await callHandler(ctx, block.header, call)
                     }
 
-                    for (const eventItem of block.events) {
+                    for (const [eventIndex, eventItem] of block.events.entries()) {
                         const [e, a, s] = await processEvents(ctx, block.header, eventItem, dataService.lastBlockNumber)
                         if (e) eventsCollection.push(e)
                         if (a) accountTokenEvents.push(a)
                         if (s) {
-                            const eventCacheKey = getEventCacheKey(s.body)
+                            const eventCacheKey = getEventCacheKey(block.header.height, eventIndex)
                             const cachedSnsEvent = snsEventsCache.get(eventCacheKey)
-                            if (eventCacheKey && !cachedSnsEvent) {
-                                snsEventsCache.set(eventCacheKey, { value: s, expiresAt: Date.now() + 120_000 })
+
+                            if (!cachedSnsEvent) {
+                                snsEventsCache.set(eventCacheKey, {
+                                    eventId: s.id,
+                                    blockHash: block.header.hash,
+                                    expiresAt: Date.now() + 120_000,
+                                })
                                 snsEvents.push(s)
-                            } else {
+                            } else if (cachedSnsEvent.blockHash !== block.header.hash) {
                                 snsEvents.push({
                                     ...s,
                                     body: {
                                         ...s.body,
                                         isReorganized: true,
-                                        reorganizedId: cachedSnsEvent?.value.id,
+                                        reorganizedId: cachedSnsEvent.eventId,
                                     },
                                 })
                             }
@@ -183,8 +188,8 @@ async function isValidEvent(ctx: CommonContext, id: string): Promise<boolean> {
     return event !== undefined
 }
 
-function clearExpiredCache(snsEventsCache: Map<string, { value: SnsEvent; expiresAt: number }>) {
-    snsEventsCache.forEach((value: { value: SnsEvent; expiresAt: number }, key: string) => {
+function clearExpiredCache(snsEventsCache: Map<string, { eventId: string; blockHash: string; expiresAt: number }>) {
+    snsEventsCache.forEach((value: { eventId: string; blockHash: string; expiresAt: number }, key: string) => {
         if (value.expiresAt < Date.now()) {
             snsEventsCache.delete(key)
         }
