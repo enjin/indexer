@@ -50,7 +50,7 @@ const hasKind = (v: unknown): v is { __kind: string } & Record<string, unknown> 
 const toSnakeCaseKey = (s: string): string => s.replace(/[A-Z]/g, (m) => `_${m.toLowerCase()}`)
 
 const toSnakeCaseDeep = (value: unknown): unknown => {
-    if (value === null || value === undefined) return value
+    if (value === null || value === undefined) return null
 
     // Convert hex values to byte arrays
     if (isHex(value)) return toBytes(value)
@@ -156,7 +156,9 @@ function transformCall(call: unknown): Record<string, unknown> {
         const kindedValue = value as { __kind: string } & Record<string, unknown>
         const { __kind: callName, ...params } = kindedValue
         const transformedParams: Record<string, unknown> = {}
-        for (const [k, v] of Object.entries(params)) {
+        for (const k of Object.getOwnPropertyNames(params)) {
+            if (k === '__kind') continue
+            const v = params[k]
             transformedParams[toSnakeCaseKey(k)] = toSnakeCaseDeep(v)
         }
         return { [palletName]: { [callName]: transformedParams } }
