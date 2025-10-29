@@ -168,8 +168,9 @@ function parseEra(checkMortality: unknown): {
     const encoded = parseInt(match[1])
     const phase = mortality.value
 
-    // Calculate period from encoded value
-    // Period is 2^encoded
+    // Calculate period from encoded value using bit shift
+    // Period is 2^encoded (e.g., Mortal6 with phase 42 → period: 64, phase: 42)
+    // Note: Substrate encodes mortality as an exponent, not the actual period
     const period = 1 << encoded
 
     return { period, phase }
@@ -225,6 +226,11 @@ function transformCall(call: unknown): Record<string, unknown> {
 /**
  * Transforms event/call argument values based on runtime type information.
  * Handles hex-to-bytes conversion and variant unwrapping.
+ * 
+ * Key difference from toSnakeCaseDeep:
+ * - Keys are NOT converted to snake_case (preserves original casing)
+ * - Empty variants return the kind string (e.g., { __kind: "None" } → "None")
+ * - Single-value variants unwrap completely (e.g., { __kind: "Some", value: 42 } → 42)
  */
 function transformArgumentValue(typeName: string, value: unknown): unknown {
     if (value === null || value === undefined) {
@@ -239,11 +245,14 @@ function transformArgumentValue(typeName: string, value: unknown): unknown {
         return value.map((v) => transformArgumentValue(typeName, v))
     }
 
+    // Variant unwrapping (differs from toSnakeCaseDeep)
     if (typeof value === 'object' && '__kind' in value) {
         const variant = value as KindVariant & Record<string, unknown>
         const kindVal = variant.__kind
         const rest = Object.entries(variant).filter(([k]) => k !== '__kind')
 
+        // Empty variant: return just the kind string
+        // Example: { __kind: "None" } → "None"
         if (rest.length === 0) {
             return kindVal
         }
@@ -253,10 +262,13 @@ function transformArgumentValue(typeName: string, value: unknown): unknown {
             transformed[k] = transformArgumentValue(typeName, v)
         }
 
+        // Single 'value' field: unwrap completely
+        // Example: { __kind: "Some", value: 42 } → 42
         if ('value' in transformed && Object.keys(transformed).length === 1) {
             return transformArgumentValue(typeName, transformed.value)
         }
 
+        // Multi-field variant: return object with original keys (not snake_cased)
         return transformed
     }
 
@@ -318,9 +330,11 @@ export function transformEvent(runtime: Runtime, decodedEvent: DecodedEvent): un
         return asEvent(palletName, eventName, result)
     }
 
+    // Determine if event has named fields (returns object) or positional (returns array)
     const isNamed = specificEvent.fields.some((f: { name?: string }) => f.name !== undefined)
 
     if (isNamed) {
+        // Named arguments: build object with keys from metadata
         const transformedArgs: Record<string, unknown> = {}
         for (const field of specificEvent.fields) {
             const fieldName = field.name
@@ -328,6 +342,10 @@ export function transformEvent(runtime: Runtime, decodedEvent: DecodedEvent): un
 
             const typeName = field.typeName || ''
             const value = eventParams[fieldName]
+            
+            // Use typeName as key if available, otherwise use snake_cased fieldName
+            // Example: field with typeName "T::AccountId" → key: "T::AccountId"
+            //          field with name "collectionId" → key: "collection_id"
             const key = field.typeName || toSnakeCaseKey(fieldName)
 
             transformedArgs[key] = transformArgumentValue(typeName, value)
@@ -335,6 +353,7 @@ export function transformEvent(runtime: Runtime, decodedEvent: DecodedEvent): un
 
         return asEvent(palletName, eventName, transformedArgs)
     } else {
+        // Positional arguments: build array ordered by metadata field sequence
         const transformedArgs: unknown[] = []
         const paramValues = Object.values(eventParams)
 
