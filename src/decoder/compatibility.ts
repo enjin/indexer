@@ -97,6 +97,9 @@ const toSnakeCaseDeep = (value: unknown): unknown => {
         const restEntries = Object.entries(rest)
 
         // If __kind with a single 'value' field, unwrap it based on value type
+        // Example: { __kind: "Id", value: "0x1234" } → { Id: [18, 52] }
+        //          { __kind: "Some", value: 42 } → { Some: 42 }
+        //          { __kind: "None", value: null } → { None: null }
         if (restEntries.length === 1 && 'value' in rest) {
             const unwrappedValue = toSnakeCaseDeep(rest.value)
             // If value is null/undefined or the unwrapped value is null, return { [__kind]: null }
@@ -107,6 +110,8 @@ const toSnakeCaseDeep = (value: unknown): unknown => {
         }
 
         // If only __kind with no other fields, return { [__kind]: null }
+        // Example: { __kind: "Immortal" } → { Immortal: null }
+        //          { __kind: "Free" } → { Free: null }
         if (restEntries.length === 0) {
             return { [__kind]: null }
         }
@@ -119,6 +124,9 @@ const toSnakeCaseDeep = (value: unknown): unknown => {
         return { [__kind]: transformed }
     }
 
+    // Plain objects without __kind: transform keys to snake_case recursively
+    // Example: { collectionId: 123, tokenId: 456 } → { collection_id: 123, token_id: 456 }
+    //          { checkMortality: {...}, checkNonce: 5 } → { check_mortality: {...}, check_nonce: 5 }
     if (isRecord(value)) {
         const transformed: Record<string, unknown> = {}
         for (const [k, v] of Object.entries(value)) {
@@ -196,6 +204,9 @@ function transformCall(call: unknown): Record<string, unknown> {
     if (!hasKind(call)) return {}
     const { __kind: palletName, value } = call
 
+    // Nested call structure with both pallet and call name
+    // Example: { __kind: "Timestamp", value: { __kind: "set", now: 123 } }
+    //       → { Timestamp: { set: { now: 123 } } }
     if (value && typeof value === 'object' && '__kind' in value) {
         const kindedValue = value as { __kind: string } & Record<string, unknown>
         const { __kind: callName, ...params } = kindedValue
