@@ -1,6 +1,39 @@
-// =============================================
-// Compatibility layer to transform new decoder output to match platform-decoder format
-// =============================================
+/**
+ * Compatibility layer to transform new decoder output to match platform-decoder format
+ * 
+ * Example transformation (Timestamp.set extrinsic: 0x280503000ba0440c289a01):
+ * 
+ * Input (Subsquid format):
+ * ```json
+ * {
+ *   "version": 5,
+ *   "call": {
+ *     "__kind": "Timestamp",
+ *     "value": { "__kind": "set", "now": 1761608484000 }
+ *   }
+ * }
+ * ```
+ * 
+ * Output (platform-decoder format):
+ * ```json
+ * {
+ *   "hash": "b065b06f...",
+ *   "version": 5,
+ *   "extrinsic_length": 11,
+ *   "calls": {
+ *     "Timestamp": {
+ *       "set": { "now": "1761608484000" }
+ *     }
+ *   }
+ * }
+ * ```
+ * 
+ * Key transformations:
+ * - `__kind` variants → nested objects
+ * - camelCase → snake_case
+ * - hex strings → byte arrays
+ * - undefined → null (for optional fields)
+ */
 
 import type { DecodedEvent, Extrinsic, Runtime } from '@subsquid/substrate-runtime'
 import { decodeHex, isHex } from '@subsquid/util-internal-hex'
