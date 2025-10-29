@@ -154,6 +154,9 @@ async function handleDecode(req: Request, res: Response): Promise<void> {
                 // Calculate extrinsic hash using blake2b (matches Substrate)
                 const hash = blake2AsHex(extrinsic, 256)
 
+                // Calculate extrinsic length (byte length of hex string)
+                const extrinsicLength = (extrinsic.startsWith('0x') ? extrinsic.length - 2 : extrinsic.length) / 2
+
                 const response: DecodeResponse = {
                     version: decoded.version,
                     signature: decoded.signature,
@@ -163,7 +166,7 @@ async function handleDecode(req: Request, res: Response): Promise<void> {
                 }
 
                 // Transform to platform-decoder compatible format
-                const compatibleResponse = transformExtrinsic(response)
+                const compatibleResponse = transformExtrinsic(response, extrinsicLength)
 
                 res.setHeader('Content-Type', 'application/json')
                 res.end(JSON.stringify(compatibleResponse, bigIntReplacer))
@@ -183,6 +186,7 @@ async function handleDecode(req: Request, res: Response): Promise<void> {
                 const results = extrinsics.map((ext) => {
                     const decoded = runtime.decodeExtrinsic(ext)
                     const hash = blake2AsHex(ext, 256)
+                    const extrinsicLength = (ext.startsWith('0x') ? ext.length - 2 : ext.length) / 2
 
                     const response = {
                         version: decoded.version,
@@ -193,7 +197,7 @@ async function handleDecode(req: Request, res: Response): Promise<void> {
                     }
 
                     // Transform to platform-decoder compatible format
-                    return transformExtrinsic(response)
+                    return transformExtrinsic(response, extrinsicLength)
                 })
 
                 res.setHeader('Content-Type', 'application/json')

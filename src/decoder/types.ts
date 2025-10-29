@@ -1,3 +1,5 @@
+import type { DecodedCall, ExtrinsicSignature } from '@subsquid/substrate-runtime'
+
 // Network constants
 export const NETWORKS = ['enjin-matrixchain', 'canary-matrixchain', 'enjin-relaychain', 'canary-relaychain'] as const
 
@@ -15,8 +17,6 @@ export interface DecodeRequest {
     network?: string
     spec_version?: number
 }
-
-import type { DecodedCall, ExtrinsicSignature } from '@subsquid/substrate-runtime'
 
 export interface DecodeResponse {
     version: number

@@ -49,13 +49,53 @@ const hasKind = (v: unknown): v is { __kind: string } & Record<string, unknown> 
 
 const toSnakeCaseKey = (s: string): string => s.replace(/[A-Z]/g, (m) => `_${m.toLowerCase()}`)
 
-const toSnakeCaseShallow = (obj: unknown): unknown => {
-    if (!isRecord(obj)) return obj
-    const out: Record<string, unknown> = {}
-    for (const [k, v] of Object.entries(obj)) {
-        out[k === '__kind' ? k : toSnakeCaseKey(k)] = v
+const toSnakeCaseDeep = (value: unknown): unknown => {
+    if (value === null || value === undefined) return value
+
+    // Convert hex values to byte arrays
+    if (isHex(value)) return toBytes(value)
+    if (hasKind(value) && isHex(value.value)) return toBytes(value.value)
+
+    if (Array.isArray(value)) {
+        return value.map(toSnakeCaseDeep)
     }
-    return out
+
+    if (hasKind(value)) {
+        const { __kind, ...rest } = value
+        const restEntries = Object.entries(rest)
+
+        // If __kind with a single 'value' field, unwrap it based on value type
+        if (restEntries.length === 1 && 'value' in rest) {
+            const unwrappedValue = toSnakeCaseDeep(rest.value)
+            // If value is null/undefined or the unwrapped value is null, return { [__kind]: null }
+            if (rest.value === null || rest.value === undefined || unwrappedValue === null) {
+                return { [__kind]: null }
+            }
+            return { [__kind]: unwrappedValue }
+        }
+
+        // If only __kind with no other fields, return { [__kind]: null }
+        if (restEntries.length === 0) {
+            return { [__kind]: null }
+        }
+
+        // Otherwise transform all fields
+        const transformed: Record<string, unknown> = {}
+        for (const [k, v] of restEntries) {
+            transformed[toSnakeCaseKey(k)] = toSnakeCaseDeep(v)
+        }
+        return { [__kind]: transformed }
+    }
+
+    if (isRecord(value)) {
+        const transformed: Record<string, unknown> = {}
+        for (const [k, v] of Object.entries(value)) {
+            transformed[toSnakeCaseKey(k)] = toSnakeCaseDeep(v)
+        }
+        return transformed
+    }
+
+    return value
 }
 
 const asEvent = (pallet: string, name: string, args: unknown) => ({ [pallet]: { [name]: args } })
@@ -115,7 +155,11 @@ function transformCall(call: unknown): Record<string, unknown> {
     if (value && typeof value === 'object' && '__kind' in value) {
         const kindedValue = value as { __kind: string } & Record<string, unknown>
         const { __kind: callName, ...params } = kindedValue
-        return { [palletName]: { [callName]: toSnakeCaseShallow(params) } }
+        const transformedParams: Record<string, unknown> = {}
+        for (const [k, v] of Object.entries(params)) {
+            transformedParams[toSnakeCaseKey(k)] = toSnakeCaseDeep(v)
+        }
+        return { [palletName]: { [callName]: transformedParams } }
     }
 
     return { [palletName]: (value ?? {}) as Record<string, unknown> }
@@ -241,10 +285,17 @@ export function transformEvent(runtime: Runtime, decodedEvent: DecodedEvent): un
     }
 }
 
-export function transformExtrinsic(decoded: Extrinsic & { hash: string; extrinsic_hash: string }): unknown {
+export function transformExtrinsic(
+    decoded: Extrinsic & { hash: string; extrinsic_hash: string },
+    extrinsicLength?: number
+): unknown {
     const result: Record<string, unknown> = {
         hash: strip0x(decoded.hash),
         version: decoded.version,
+    }
+
+    if (extrinsicLength !== undefined) {
+        result.extrinsic_length = extrinsicLength
     }
 
     if (decoded.signature) {
