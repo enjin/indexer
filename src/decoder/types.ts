@@ -7,6 +7,10 @@ export type Network = (typeof NETWORKS)[number]
 
 // Network alias mapping (e.g., "canary" -> "canary-matrixchain")
 export const NETWORK_ALIASES: Record<string, Network> = {
+    'enjin-matrixchain': 'enjin-matrixchain',
+    'canary-matrixchain': 'canary-matrixchain',
+    'enjin-relaychain': 'enjin-relaychain',
+    'canary-relaychain': 'canary-relaychain',
     canary: 'canary-matrixchain',
 }
 

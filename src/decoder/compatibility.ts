@@ -1,8 +1,8 @@
 /**
  * Compatibility layer to transform new decoder output to match platform-decoder format
- * 
+ *
  * Example transformation (Timestamp.set extrinsic: 0x280503000ba0440c289a01):
- * 
+ *
  * Input (Subsquid format):
  * ```json
  * {
@@ -13,7 +13,7 @@
  *   }
  * }
  * ```
- * 
+ *
  * Output (platform-decoder format):
  * ```json
  * {
@@ -27,7 +27,7 @@
  *   }
  * }
  * ```
- * 
+ *
  * Key transformations:
  * - `__kind` variants → nested objects
  * - camelCase → snake_case
@@ -226,7 +226,7 @@ function transformCall(call: unknown): Record<string, unknown> {
 /**
  * Transforms event/call argument values based on runtime type information.
  * Handles hex-to-bytes conversion and variant unwrapping.
- * 
+ *
  * Key difference from toSnakeCaseDeep:
  * - Keys are NOT converted to snake_case (preserves original casing)
  * - Empty variants return the kind string (e.g., { __kind: "None" } → "None")
@@ -342,7 +342,7 @@ export function transformEvent(runtime: Runtime, decodedEvent: DecodedEvent): un
 
             const typeName = field.typeName || ''
             const value = eventParams[fieldName]
-            
+
             // Use typeName as key if available, otherwise use snake_cased fieldName
             // Example: field with typeName "T::AccountId" → key: "T::AccountId"
             //          field with name "collectionId" → key: "collection_id"
