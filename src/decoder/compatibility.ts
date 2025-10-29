@@ -1,19 +1,14 @@
-/**
- * Compatibility layer to transform new decoder output to match platform-decoder format
- */
+// =============================================
+// Compatibility layer to transform new decoder output to match platform-decoder format
+// =============================================
 
-import type { Runtime, Extrinsic, DecodedEvent } from '@subsquid/substrate-runtime'
+import type { DecodedEvent, Extrinsic, Runtime } from '@subsquid/substrate-runtime'
 import { decodeHex, isHex } from '@subsquid/util-internal-hex'
 
 // Type definitions for runtime-specific structures
-interface AddressOrSignature {
+interface KindVariant<T = unknown> {
     __kind: string
-    value: string
-}
-
-interface MortalityVariant {
-    __kind: string
-    value?: number
+    value?: T
 }
 
 interface SignedExtensionsData {
@@ -21,11 +16,6 @@ interface SignedExtensionsData {
     checkNonce?: number
     chargeTransactionPayment?: string
     checkMetadataHash?: { mode?: { __kind: string } }
-}
-
-interface CallData {
-    __kind: string
-    value?: unknown
 }
 
 interface TypeVariant {
@@ -37,7 +27,10 @@ interface RuntimeType {
     variants?: TypeVariant[]
 }
 
+// =============================================
 // Utility functions
+// =============================================
+
 const strip0x = (s: string): string => (s.startsWith('0x') ? s.slice(2) : s)
 
 const toBytes = (hex: string): number[] => Array.from(decodeHex(hex))
@@ -49,6 +42,12 @@ const hasKind = (v: unknown): v is { __kind: string } & Record<string, unknown> 
 
 const toSnakeCaseKey = (s: string): string => s.replace(/[A-Z]/g, (m) => `_${m.toLowerCase()}`)
 
+/**
+ * Recursively transforms data structure to snake_case keys and converts:
+ * - undefined/null → null
+ * - hex strings → byte arrays
+ * - __kind variants → { [kind]: value } format
+ */
 const toSnakeCaseDeep = (value: unknown): unknown => {
     if (value === null || value === undefined) return null
 
@@ -101,16 +100,20 @@ const toSnakeCaseDeep = (value: unknown): unknown => {
 const asEvent = (pallet: string, name: string, args: unknown) => ({ [pallet]: { [name]: args } })
 
 const kindHexToBytes = (input: unknown): { [k: string]: number[] } => {
-    const typed = input as AddressOrSignature
+    const typed = input as KindVariant<string>
     if (!typed.__kind || !typed.value) return {}
     return { [typed.__kind]: toBytes(typed.value) }
 }
 
+/**
+ * Parses era/mortality data from extrinsic signature.
+ * Mortal extrinsics have limited validity period, immortal ones never expire.
+ */
 function parseEra(checkMortality: unknown): {
     period: number
     phase: number
 } | null {
-    const mortality = checkMortality as MortalityVariant
+    const mortality = checkMortality as KindVariant<number>
     if (mortality.__kind === 'Immortal') {
         return null
     }
@@ -131,6 +134,10 @@ function parseEra(checkMortality: unknown): {
     return { period, phase }
 }
 
+/**
+ * Transforms signed extension metadata from extrinsic signature.
+ * Extracts era, nonce, tip, and metadata hash validation mode.
+ */
 function transformSignedExtensions(signedExtensions: unknown): {
     era: { period: number; phase: number } | null
     nonce: number
@@ -148,6 +155,10 @@ function transformSignedExtensions(signedExtensions: unknown): {
     }
 }
 
+/**
+ * Transforms call data to platform-decoder format: { PalletName: { call_name: params } }
+ * Uses Object.getOwnPropertyNames to preserve undefined fields (converted to null).
+ */
 function transformCall(call: unknown): Record<string, unknown> {
     if (!hasKind(call)) return {}
     const { __kind: palletName, value } = call
@@ -167,6 +178,10 @@ function transformCall(call: unknown): Record<string, unknown> {
     return { [palletName]: (value ?? {}) as Record<string, unknown> }
 }
 
+/**
+ * Transforms event/call argument values based on runtime type information.
+ * Handles hex-to-bytes conversion and variant unwrapping.
+ */
 function transformArgumentValue(typeName: string, value: unknown): unknown {
     if (value === null || value === undefined) {
         return value
@@ -181,7 +196,7 @@ function transformArgumentValue(typeName: string, value: unknown): unknown {
     }
 
     if (typeof value === 'object' && '__kind' in value) {
-        const variant = value as CallData & Record<string, unknown>
+        const variant = value as KindVariant & Record<string, unknown>
         const kindVal = variant.__kind
         const rest = Object.entries(variant).filter(([k]) => k !== '__kind')
 
@@ -212,6 +227,10 @@ function transformArgumentValue(typeName: string, value: unknown): unknown {
     return value
 }
 
+/**
+ * Transforms blockchain event to platform-decoder format: { Pallet: { EventName: args } }
+ * Uses runtime metadata to determine if event has named or positional arguments.
+ */
 export function transformEvent(runtime: Runtime, decodedEvent: DecodedEvent): unknown {
     const palletName = decodedEvent.__kind
     const eventValue = decodedEvent.value
@@ -287,6 +306,10 @@ export function transformEvent(runtime: Runtime, decodedEvent: DecodedEvent): un
     }
 }
 
+/**
+ * Transforms blockchain extrinsic to platform-decoder format.
+ * Converts signature data (address, signature, extensions) and call data.
+ */
 export function transformExtrinsic(
     decoded: Extrinsic & { hash: string; extrinsic_hash: string },
     extrinsicLength?: number
