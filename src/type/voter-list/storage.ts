@@ -96,3 +96,24 @@ export interface ListBagsEnjinV100 {
         key: bigint
     ): AsyncIterable<[k: bigint, v: enjinV100.Bag | undefined][]>
 }
+
+export const lock = {
+    /**
+     *  Lock all updates to this pallet.
+     *
+     *  If any nodes needs updating, removal or addition due to a temporary lock, the
+     *  [`Call::rebag`] can be used.
+     */
+    v1060: new StorageType('VoterList.Lock', 'Optional', [], sts.unit()) as LockV1060,
+}
+
+/**
+ *  Lock all updates to this pallet.
+ *
+ *  If any nodes needs updating, removal or addition due to a temporary lock, the
+ *  [`Call::rebag`] can be used.
+ */
+export interface LockV1060 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block): Promise<null | undefined>
+}

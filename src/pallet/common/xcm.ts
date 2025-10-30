@@ -453,6 +453,11 @@ export interface V4Location {
     interior: V4Junctions
 }
 
+export interface V5Location {
+    parents: number
+    interior: V5Junctions
+}
+
 export type V4Junctions =
     | V4Junctions_Here
     | V4Junctions_X1
@@ -506,6 +511,173 @@ export interface V4Junctions_X7 {
 export interface V4Junctions_X8 {
     __kind: 'X8'
     value: V4Junction[]
+}
+
+export type V5Junctions =
+    | V5Junctions_Here
+    | V5Junctions_X1
+    | V5Junctions_X2
+    | V5Junctions_X3
+    | V5Junctions_X4
+    | V5Junctions_X5
+    | V5Junctions_X6
+    | V5Junctions_X7
+    | V5Junctions_X8
+
+export interface V5Junctions_Here {
+    __kind: 'Here'
+}
+
+export interface V5Junctions_X1 {
+    __kind: 'X1'
+    value: V5Junction[]
+}
+
+export interface V5Junctions_X2 {
+    __kind: 'X2'
+    value: V5Junction[]
+}
+
+export interface V5Junctions_X3 {
+    __kind: 'X3'
+    value: V5Junction[]
+}
+
+export interface V5Junctions_X4 {
+    __kind: 'X4'
+    value: V5Junction[]
+}
+
+export interface V5Junctions_X5 {
+    __kind: 'X5'
+    value: V5Junction[]
+}
+
+export interface V5Junctions_X6 {
+    __kind: 'X6'
+    value: V5Junction[]
+}
+
+export interface V5Junctions_X7 {
+    __kind: 'X7'
+    value: V5Junction[]
+}
+
+export interface V5Junctions_X8 {
+    __kind: 'X8'
+    value: V5Junction[]
+}
+
+export type V5Junction =
+    | V5Junction_AccountId32
+    | V5Junction_AccountIndex64
+    | V5Junction_AccountKey20
+    | V5Junction_GeneralIndex
+    | V5Junction_GeneralKey
+    | V5Junction_GlobalConsensus
+    | V5Junction_OnlyChild
+    | V5Junction_PalletInstance
+    | V5Junction_Parachain
+    | V5Junction_Plurality
+
+export interface V5Junction_AccountId32 {
+    __kind: 'AccountId32'
+    network?: V5NetworkId | undefined
+    id: Bytes
+}
+
+export interface V5Junction_AccountIndex64 {
+    __kind: 'AccountIndex64'
+    network?: V5NetworkId | undefined
+    index: bigint
+}
+
+export interface V5Junction_AccountKey20 {
+    __kind: 'AccountKey20'
+    network?: V5NetworkId | undefined
+    key: Bytes
+}
+
+export interface V5Junction_GeneralIndex {
+    __kind: 'GeneralIndex'
+    value: bigint
+}
+
+export interface V5Junction_GeneralKey {
+    __kind: 'GeneralKey'
+    length: number
+    data: Bytes
+}
+
+export interface V5Junction_GlobalConsensus {
+    __kind: 'GlobalConsensus'
+    value: V5NetworkId
+}
+
+export interface V5Junction_OnlyChild {
+    __kind: 'OnlyChild'
+}
+
+export interface V5Junction_PalletInstance {
+    __kind: 'PalletInstance'
+    value: number
+}
+
+export interface V5Junction_Parachain {
+    __kind: 'Parachain'
+    value: number
+}
+
+export interface V5Junction_Plurality {
+    __kind: 'Plurality'
+    id: V3BodyId
+    part: V3BodyPart
+}
+
+export type V5NetworkId =
+    | V5NetworkId_BitcoinCash
+    | V5NetworkId_BitcoinCore
+    | V5NetworkId_ByFork
+    | V5NetworkId_ByGenesis
+    | V5NetworkId_Ethereum
+    | V5NetworkId_Kusama
+    | V5NetworkId_Polkadot
+    | V5NetworkId_PolkadotBulletin
+
+export interface V5NetworkId_BitcoinCash {
+    __kind: 'BitcoinCash'
+}
+
+export interface V5NetworkId_BitcoinCore {
+    __kind: 'BitcoinCore'
+}
+
+export interface V5NetworkId_ByFork {
+    __kind: 'ByFork'
+    blockNumber: bigint
+    blockHash: Bytes
+}
+
+export interface V5NetworkId_ByGenesis {
+    __kind: 'ByGenesis'
+    value: Bytes
+}
+
+export interface V5NetworkId_Ethereum {
+    __kind: 'Ethereum'
+    chainId: bigint
+}
+
+export interface V5NetworkId_Kusama {
+    __kind: 'Kusama'
+}
+
+export interface V5NetworkId_Polkadot {
+    __kind: 'Polkadot'
+}
+
+export interface V5NetworkId_PolkadotBulletin {
+    __kind: 'PolkadotBulletin'
 }
 
 export type V4Junction =
@@ -709,6 +881,11 @@ export interface VersionedLocation_V4 {
     value: V4Location
 }
 
+export interface VersionedLocation_V5 {
+    __kind: 'V5'
+    value: V5Location
+}
+
 export interface V2MultiAsset {
     id: V2AssetId
     fun: V2Fungibility
@@ -781,7 +958,7 @@ export interface V2AssetId_Concrete {
     value: V2MultiLocation
 }
 
-export type VersionedAssets = VersionedAssets_V2 | VersionedAssets_V3 | VersionedAssets_V4
+export type VersionedAssets = VersionedAssets_V2 | VersionedAssets_V3 | VersionedAssets_V4 | VersionedAssets_V5
 
 export interface VersionedAssets_V2 {
     __kind: 'V2'
@@ -869,6 +1046,65 @@ export interface V4Asset {
     fun: V4Fungibility
 }
 
+export interface V5Asset {
+    id: V5AssetId
+    fun: V5Fungibility
+}
+
+export interface V5AssetId {
+    parents: number
+    interior: V5Junctions
+}
+
+export type V5Fungibility = V5Fungibility_Fungible | V5Fungibility_NonFungible
+
+export interface V5Fungibility_Fungible {
+    __kind: 'Fungible'
+    value: bigint
+}
+
+export interface V5Fungibility_NonFungible {
+    __kind: 'NonFungible'
+    value: V5AssetInstance
+}
+
+export type V5AssetInstance =
+    | V5AssetInstance_Array16
+    | V5AssetInstance_Array32
+    | V5AssetInstance_Array4
+    | V5AssetInstance_Array8
+    | V5AssetInstance_Index
+    | V5AssetInstance_Undefined
+
+export interface V5AssetInstance_Array16 {
+    __kind: 'Array16'
+    value: Bytes
+}
+
+export interface V5AssetInstance_Array32 {
+    __kind: 'Array32'
+    value: Bytes
+}
+
+export interface V5AssetInstance_Array4 {
+    __kind: 'Array4'
+    value: Bytes
+}
+
+export interface V5AssetInstance_Array8 {
+    __kind: 'Array8'
+    value: Bytes
+}
+
+export interface V5AssetInstance_Index {
+    __kind: 'Index'
+    value: bigint
+}
+
+export interface V5AssetInstance_Undefined {
+    __kind: 'Undefined'
+}
+
 export type V4Fungibility = V4Fungibility_Fungible | V4Fungibility_NonFungible
 
 export interface V4Fungibility_Fungible {
@@ -921,6 +1157,11 @@ export interface V4AssetInstance_Undefined {
 export interface VersionedAssets_V4 {
     __kind: 'V4'
     value: V4Asset[]
+}
+
+export interface VersionedAssets_V5 {
+    __kind: 'V5'
+    value: V5Asset[]
 }
 
 export type VersionedAsset = VersionedAsset_V2 | VersionedAsset_V3 | VersionedAsset_V4
@@ -1005,4 +1246,8 @@ export interface VersionedLocation_V2 {
     value: V2MultiLocation
 }
 
-export type VersionedLocation = VersionedLocation_V2 | VersionedLocation_V3 | VersionedLocation_V4
+export type VersionedLocation =
+    | VersionedLocation_V2
+    | VersionedLocation_V3
+    | VersionedLocation_V4
+    | VersionedLocation_V5

@@ -1337,8 +1337,9 @@ type NominationPoolsRewardPaid {
   era: Int!
   validatorStash: Account!
   reward: BigInt!
-  bonus: BigInt!
+  bonus: BigInt # Removed on v1060
   poolId: String!
+  commission: CommissionPayment # Added on v1060
 }
 
 type NominationPoolsPoolSlashed {
@@ -1580,7 +1581,7 @@ type EraReward @entity {
   changeInRate: BigInt!
   active: BigInt!
   commission: CommissionPayment
-  bonus: BigInt!
+  bonus: BigInt
   reinvested: BigInt!
   apy: Float!
   averageApy: Float!

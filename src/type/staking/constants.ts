@@ -99,3 +99,10 @@ export const maxExposurePageSize = {
      */
     enjinV1032: new ConstantType('Staking.MaxExposurePageSize', sts.number()),
 }
+
+export const maxValidatorSet = {
+    /**
+     *  The absolute maximum of winner validators this pallet should return.
+     */
+    v1060: new ConstantType('Staking.MaxValidatorSet', sts.number()),
+}

@@ -1,6 +1,7 @@
 import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
+import * as matrixV1030 from '../matrixV1030'
 
 export const bountyProposed = {
     name: 'Bounties.BountyProposed',
@@ -147,6 +148,22 @@ export const curatorAccepted = {
         sts.struct({
             bountyId: sts.number(),
             curator: matrixEnjinV1012.AccountId32,
+        })
+    ),
+}
+
+export const depositPoked = {
+    name: 'Bounties.DepositPoked',
+    /**
+     * A bounty deposit has been poked.
+     */
+    matrixV1030: new EventType(
+        'Bounties.DepositPoked',
+        sts.struct({
+            bountyId: sts.number(),
+            proposer: matrixV1030.AccountId32,
+            oldDeposit: sts.bigint(),
+            newDeposit: sts.bigint(),
         })
     ),
 }

@@ -3,6 +3,7 @@ import * as enjinV100 from '../enjinV100'
 import * as v100 from '../v100'
 import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
+import * as v1060 from '../v1060'
 
 export const eraPaid = {
     name: 'Staking.EraPaid',
@@ -211,6 +212,18 @@ export const payoutStarted = {
             validatorStash: enjinV100.AccountId32,
         })
     ),
+    /**
+     * A Page of stakers rewards are getting paid. `next` is `None` if all pages are claimed.
+     */
+    v1060: new EventType(
+        'Staking.PayoutStarted',
+        sts.struct({
+            eraIndex: sts.number(),
+            validatorStash: v1060.AccountId32,
+            page: sts.number(),
+            next: sts.option(() => sts.number()),
+        })
+    ),
 }
 
 export const validatorPrefsSet = {
@@ -275,6 +288,21 @@ export const controllerBatchDeprecated = {
         'Staking.ControllerBatchDeprecated',
         sts.struct({
             failures: sts.number(),
+        })
+    ),
+}
+
+export const currencyMigrated = {
+    name: 'Staking.CurrencyMigrated',
+    /**
+     * Staking balance migrated from locks to holds, with any balance that could not be held
+     * is force withdrawn.
+     */
+    v1060: new EventType(
+        'Staking.CurrencyMigrated',
+        sts.struct({
+            stash: v1060.AccountId32,
+            forceWithdraw: sts.bigint(),
         })
     ),
 }

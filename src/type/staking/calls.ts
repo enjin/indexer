@@ -6,6 +6,7 @@ import * as v105 from '../v105'
 import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
 import * as enjinV1050 from '../enjinV1050'
+import * as v1060 from '../v1060'
 
 export const bond = {
     name: 'Staking.bond',
@@ -995,6 +996,60 @@ export const restoreLedger = {
             maybeController: sts.option(() => enjinV1050.AccountId32),
             maybeTotal: sts.option(() => sts.bigint()),
             maybeUnlocking: sts.option(() => sts.array(() => enjinV1050.UnlockChunk)),
+        })
+    ),
+}
+
+export const migrateCurrency = {
+    name: 'Staking.migrate_currency',
+    /**
+     * Removes the legacy Staking locks if they exist.
+     *
+     * This removes the legacy lock on the stake with [`Config::OldCurrency`] and creates a
+     * hold on it if needed. If all stake cannot be held, the best effort is made to hold as
+     * much as possible. The remaining stake is forced withdrawn from the ledger.
+     *
+     * The fee is waived if the migration is successful.
+     */
+    v1060: new CallType(
+        'Staking.migrate_currency',
+        sts.struct({
+            stash: v1060.AccountId32,
+        })
+    ),
+}
+
+export const manualSlash = {
+    name: 'Staking.manual_slash',
+    /**
+     * This function allows governance to manually slash a validator and is a
+     * **fallback mechanism**.
+     *
+     * The dispatch origin must be `T::AdminOrigin`.
+     *
+     * ## Parameters
+     * - `validator_stash` - The stash account of the validator to slash.
+     * - `era` - The era in which the validator was in the active set.
+     * - `slash_fraction` - The percentage of the stake to slash, expressed as a Perbill.
+     *
+     * ## Behavior
+     *
+     * The slash will be applied using the standard slashing mechanics, respecting the
+     * configured `SlashDeferDuration`.
+     *
+     * This means:
+     * - If the validator was already slashed by a higher percentage for the same era, this
+     *   slash will have no additional effect.
+     * - If the validator was previously slashed by a lower percentage, only the difference
+     *   will be applied.
+     * - The slash will be deferred by `SlashDeferDuration` eras before being enacted.
+     */
+    v1060: new CallType(
+        'Staking.manual_slash',
+        sts.struct({
+            validatorStash: v1060.AccountId32,
+            era: sts.number(),
+            slashFraction: v1060.Perbill,
         })
     ),
 }

@@ -1,5 +1,6 @@
 import { sts, Block, Bytes, Option, Result, ConstantType, RuntimeCtx } from '../support'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
+import * as matrixV1030 from '../matrixV1030'
 
 export const proposalBond = {
     /**
@@ -61,4 +62,11 @@ export const payoutPeriod = {
      *  The period during which an approved treasury spend has to be claimed.
      */
     matrixEnjinV1012: new ConstantType('CommunityPool.PayoutPeriod', sts.number()),
+}
+
+export const potAccount = {
+    /**
+     *  Gets this pallet's derived pot account.
+     */
+    matrixV1030: new ConstantType('CommunityPool.pot_account', matrixV1030.AccountId32),
 }

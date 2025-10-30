@@ -8,8 +8,10 @@ import * as matrixV500 from '../matrixV500'
 import * as matrixV602 from '../matrixV602'
 import * as matrixV1000 from '../matrixV1000'
 import * as matrixV1010 from '../matrixV1010'
+import * as matrixV1030 from '../matrixV1030'
 import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
+import * as v1060 from '../v1060'
 
 export const sudid = {
     name: 'Sudo.Sudid',
@@ -46,6 +48,21 @@ export const sudid = {
             sudoResult: sts.result(
                 () => sts.unit(),
                 () => matrixV1000.DispatchError
+            ),
+        })
+    ),
+    /**
+     * A sudo call just took place.
+     */
+    matrixV1030: new EventType(
+        'Sudo.Sudid',
+        sts.struct({
+            /**
+             * The result of the call made by the sudo user.
+             */
+            sudoResult: sts.result(
+                () => sts.unit(),
+                () => matrixV1030.DispatchError
             ),
         })
     ),
@@ -106,6 +123,21 @@ export const sudid = {
             sudoResult: sts.result(
                 () => sts.unit(),
                 () => v105.DispatchError
+            ),
+        })
+    ),
+    /**
+     * A sudo call just took place.
+     */
+    v1060: new EventType(
+        'Sudo.Sudid',
+        sts.struct({
+            /**
+             * The result of the call made by the sudo user.
+             */
+            sudoResult: sts.result(
+                () => sts.unit(),
+                () => v1060.DispatchError
             ),
         })
     ),
@@ -229,6 +261,21 @@ export const sudoAsDone = {
         })
     ),
     /**
+     * A [sudo_as](Pallet::sudo_as) call just took place.
+     */
+    matrixV1030: new EventType(
+        'Sudo.SudoAsDone',
+        sts.struct({
+            /**
+             * The result of the call made by the sudo user.
+             */
+            sudoResult: sts.result(
+                () => sts.unit(),
+                () => matrixV1030.DispatchError
+            ),
+        })
+    ),
+    /**
      * A sudo just took place. \[result\]
      */
     enjinV100: new EventType(
@@ -285,6 +332,21 @@ export const sudoAsDone = {
             sudoResult: sts.result(
                 () => sts.unit(),
                 () => v105.DispatchError
+            ),
+        })
+    ),
+    /**
+     * A [sudo_as](Pallet::sudo_as) call just took place.
+     */
+    v1060: new EventType(
+        'Sudo.SudoAsDone',
+        sts.struct({
+            /**
+             * The result of the call made by the sudo user.
+             */
+            sudoResult: sts.result(
+                () => sts.unit(),
+                () => v1060.DispatchError
             ),
         })
     ),

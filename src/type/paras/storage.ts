@@ -5,6 +5,7 @@ import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
 import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
+import * as v1060 from '../v1060'
 
 export const pvfActiveVoteMap = {
     /**
@@ -1034,4 +1035,40 @@ export interface FutureCodeUpgradesAtEnjinV1050 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): [enjinV1050.Id, number][]
     get(block: Block): Promise<[enjinV1050.Id, number][] | undefined>
+}
+
+export const authorizedCodeHash = {
+    /**
+     *  The code hash authorizations for a para which will expire `expire_at` `BlockNumberFor<T>`.
+     */
+    v1060: new StorageType(
+        'Paras.AuthorizedCodeHash',
+        'Optional',
+        [v1060.Id],
+        v1060.AuthorizedCodeHashAndExpiry
+    ) as AuthorizedCodeHashV1060,
+}
+
+/**
+ *  The code hash authorizations for a para which will expire `expire_at` `BlockNumberFor<T>`.
+ */
+export interface AuthorizedCodeHashV1060 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: v1060.Id): Promise<v1060.AuthorizedCodeHashAndExpiry | undefined>
+    getMany(block: Block, keys: v1060.Id[]): Promise<(v1060.AuthorizedCodeHashAndExpiry | undefined)[]>
+    getKeys(block: Block): Promise<v1060.Id[]>
+    getKeys(block: Block, key: v1060.Id): Promise<v1060.Id[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v1060.Id[]>
+    getKeysPaged(pageSize: number, block: Block, key: v1060.Id): AsyncIterable<v1060.Id[]>
+    getPairs(block: Block): Promise<[k: v1060.Id, v: v1060.AuthorizedCodeHashAndExpiry | undefined][]>
+    getPairs(block: Block, key: v1060.Id): Promise<[k: v1060.Id, v: v1060.AuthorizedCodeHashAndExpiry | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: v1060.Id, v: v1060.AuthorizedCodeHashAndExpiry | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: v1060.Id
+    ): AsyncIterable<[k: v1060.Id, v: v1060.AuthorizedCodeHashAndExpiry | undefined][]>
 }

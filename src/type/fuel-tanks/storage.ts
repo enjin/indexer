@@ -10,9 +10,11 @@ import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 import * as matrixV1012 from '../matrixV1012'
 import * as enjinV1021 from '../enjinV1021'
 import * as v1021 from '../v1021'
+import * as matrixV1030 from '../matrixV1030'
 import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
 import * as v1032 from '../v1032'
+import * as v1060 from '../v1060'
 
 export const tanks = {
     /**
@@ -81,6 +83,15 @@ export const tanks = {
     /**
      *  Mapping of Fuel Tanks accounts to their data
      */
+    matrixV1030: new StorageType(
+        'FuelTanks.Tanks',
+        'Optional',
+        [matrixV1030.AccountId32],
+        matrixV1030.FuelTank
+    ) as TanksMatrixV1030,
+    /**
+     *  Mapping of Fuel Tanks accounts to their data
+     */
     enjinV100: new StorageType(
         'FuelTanks.Tanks',
         'Optional',
@@ -121,6 +132,10 @@ export const tanks = {
      *  Mapping of Fuel Tanks accounts to their data
      */
     v1032: new StorageType('FuelTanks.Tanks', 'Optional', [v1032.AccountId32], v1032.FuelTank) as TanksV1032,
+    /**
+     *  Mapping of Fuel Tanks accounts to their data
+     */
+    v1060: new StorageType('FuelTanks.Tanks', 'Optional', [v1060.AccountId32], v1060.FuelTank) as TanksV1060,
 }
 
 /**
@@ -327,6 +342,33 @@ export interface TanksMatrixV1012 {
 /**
  *  Mapping of Fuel Tanks accounts to their data
  */
+export interface TanksMatrixV1030 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: matrixV1030.AccountId32): Promise<matrixV1030.FuelTank | undefined>
+    getMany(block: Block, keys: matrixV1030.AccountId32[]): Promise<(matrixV1030.FuelTank | undefined)[]>
+    getKeys(block: Block): Promise<matrixV1030.AccountId32[]>
+    getKeys(block: Block, key: matrixV1030.AccountId32): Promise<matrixV1030.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<matrixV1030.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block, key: matrixV1030.AccountId32): AsyncIterable<matrixV1030.AccountId32[]>
+    getPairs(block: Block): Promise<[k: matrixV1030.AccountId32, v: matrixV1030.FuelTank | undefined][]>
+    getPairs(
+        block: Block,
+        key: matrixV1030.AccountId32
+    ): Promise<[k: matrixV1030.AccountId32, v: matrixV1030.FuelTank | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: matrixV1030.AccountId32, v: matrixV1030.FuelTank | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: matrixV1030.AccountId32
+    ): AsyncIterable<[k: matrixV1030.AccountId32, v: matrixV1030.FuelTank | undefined][]>
+}
+
+/**
+ *  Mapping of Fuel Tanks accounts to their data
+ */
 export interface TanksEnjinV100 {
     is(block: RuntimeCtx): boolean
     get(block: Block, key: enjinV100.AccountId32): Promise<enjinV100.FuelTank | undefined>
@@ -498,6 +540,30 @@ export interface TanksV1032 {
     ): AsyncIterable<[k: v1032.AccountId32, v: v1032.FuelTank | undefined][]>
 }
 
+/**
+ *  Mapping of Fuel Tanks accounts to their data
+ */
+export interface TanksV1060 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: v1060.AccountId32): Promise<v1060.FuelTank | undefined>
+    getMany(block: Block, keys: v1060.AccountId32[]): Promise<(v1060.FuelTank | undefined)[]>
+    getKeys(block: Block): Promise<v1060.AccountId32[]>
+    getKeys(block: Block, key: v1060.AccountId32): Promise<v1060.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v1060.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block, key: v1060.AccountId32): AsyncIterable<v1060.AccountId32[]>
+    getPairs(block: Block): Promise<[k: v1060.AccountId32, v: v1060.FuelTank | undefined][]>
+    getPairs(block: Block, key: v1060.AccountId32): Promise<[k: v1060.AccountId32, v: v1060.FuelTank | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: v1060.AccountId32, v: v1060.FuelTank | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: v1060.AccountId32
+    ): AsyncIterable<[k: v1060.AccountId32, v: v1060.FuelTank | undefined][]>
+}
+
 export const accounts = {
     /**
      *  Mapping of Fuel Tanks and their user Accounts to account data
@@ -565,6 +631,15 @@ export const accounts = {
     /**
      *  Mapping of Fuel Tanks and their user Accounts to account data
      */
+    matrixV1030: new StorageType(
+        'FuelTanks.Accounts',
+        'Optional',
+        [matrixV1030.AccountId32, matrixV1030.AccountId32],
+        matrixV1030.UserAccount
+    ) as AccountsMatrixV1030,
+    /**
+     *  Mapping of Fuel Tanks and their user Accounts to account data
+     */
     enjinV100: new StorageType(
         'FuelTanks.Accounts',
         'Optional',
@@ -625,6 +700,15 @@ export const accounts = {
         [v1032.AccountId32, v1032.AccountId32],
         v1032.UserAccount
     ) as AccountsV1032,
+    /**
+     *  Mapping of Fuel Tanks and their user Accounts to account data
+     */
+    v1060: new StorageType(
+        'FuelTanks.Accounts',
+        'Optional',
+        [v1060.AccountId32, v1060.AccountId32],
+        v1060.UserAccount
+    ) as AccountsV1060,
 }
 
 /**
@@ -1118,6 +1202,68 @@ export interface AccountsMatrixV1012 {
 /**
  *  Mapping of Fuel Tanks and their user Accounts to account data
  */
+export interface AccountsMatrixV1030 {
+    is(block: RuntimeCtx): boolean
+    get(
+        block: Block,
+        key1: matrixV1030.AccountId32,
+        key2: matrixV1030.AccountId32
+    ): Promise<matrixV1030.UserAccount | undefined>
+    getMany(
+        block: Block,
+        keys: [matrixV1030.AccountId32, matrixV1030.AccountId32][]
+    ): Promise<(matrixV1030.UserAccount | undefined)[]>
+    getKeys(block: Block): Promise<[matrixV1030.AccountId32, matrixV1030.AccountId32][]>
+    getKeys(block: Block, key1: matrixV1030.AccountId32): Promise<[matrixV1030.AccountId32, matrixV1030.AccountId32][]>
+    getKeys(
+        block: Block,
+        key1: matrixV1030.AccountId32,
+        key2: matrixV1030.AccountId32
+    ): Promise<[matrixV1030.AccountId32, matrixV1030.AccountId32][]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[matrixV1030.AccountId32, matrixV1030.AccountId32][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: matrixV1030.AccountId32
+    ): AsyncIterable<[matrixV1030.AccountId32, matrixV1030.AccountId32][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: matrixV1030.AccountId32,
+        key2: matrixV1030.AccountId32
+    ): AsyncIterable<[matrixV1030.AccountId32, matrixV1030.AccountId32][]>
+    getPairs(
+        block: Block
+    ): Promise<[k: [matrixV1030.AccountId32, matrixV1030.AccountId32], v: matrixV1030.UserAccount | undefined][]>
+    getPairs(
+        block: Block,
+        key1: matrixV1030.AccountId32
+    ): Promise<[k: [matrixV1030.AccountId32, matrixV1030.AccountId32], v: matrixV1030.UserAccount | undefined][]>
+    getPairs(
+        block: Block,
+        key1: matrixV1030.AccountId32,
+        key2: matrixV1030.AccountId32
+    ): Promise<[k: [matrixV1030.AccountId32, matrixV1030.AccountId32], v: matrixV1030.UserAccount | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: [matrixV1030.AccountId32, matrixV1030.AccountId32], v: matrixV1030.UserAccount | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: matrixV1030.AccountId32
+    ): AsyncIterable<[k: [matrixV1030.AccountId32, matrixV1030.AccountId32], v: matrixV1030.UserAccount | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: matrixV1030.AccountId32,
+        key2: matrixV1030.AccountId32
+    ): AsyncIterable<[k: [matrixV1030.AccountId32, matrixV1030.AccountId32], v: matrixV1030.UserAccount | undefined][]>
+}
+
+/**
+ *  Mapping of Fuel Tanks and their user Accounts to account data
+ */
 export interface AccountsEnjinV100 {
     is(block: RuntimeCtx): boolean
     get(
@@ -1513,6 +1659,59 @@ export interface AccountsV1032 {
     ): AsyncIterable<[k: [v1032.AccountId32, v1032.AccountId32], v: v1032.UserAccount | undefined][]>
 }
 
+/**
+ *  Mapping of Fuel Tanks and their user Accounts to account data
+ */
+export interface AccountsV1060 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key1: v1060.AccountId32, key2: v1060.AccountId32): Promise<v1060.UserAccount | undefined>
+    getMany(block: Block, keys: [v1060.AccountId32, v1060.AccountId32][]): Promise<(v1060.UserAccount | undefined)[]>
+    getKeys(block: Block): Promise<[v1060.AccountId32, v1060.AccountId32][]>
+    getKeys(block: Block, key1: v1060.AccountId32): Promise<[v1060.AccountId32, v1060.AccountId32][]>
+    getKeys(
+        block: Block,
+        key1: v1060.AccountId32,
+        key2: v1060.AccountId32
+    ): Promise<[v1060.AccountId32, v1060.AccountId32][]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[v1060.AccountId32, v1060.AccountId32][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: v1060.AccountId32
+    ): AsyncIterable<[v1060.AccountId32, v1060.AccountId32][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: v1060.AccountId32,
+        key2: v1060.AccountId32
+    ): AsyncIterable<[v1060.AccountId32, v1060.AccountId32][]>
+    getPairs(block: Block): Promise<[k: [v1060.AccountId32, v1060.AccountId32], v: v1060.UserAccount | undefined][]>
+    getPairs(
+        block: Block,
+        key1: v1060.AccountId32
+    ): Promise<[k: [v1060.AccountId32, v1060.AccountId32], v: v1060.UserAccount | undefined][]>
+    getPairs(
+        block: Block,
+        key1: v1060.AccountId32,
+        key2: v1060.AccountId32
+    ): Promise<[k: [v1060.AccountId32, v1060.AccountId32], v: v1060.UserAccount | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: [v1060.AccountId32, v1060.AccountId32], v: v1060.UserAccount | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: v1060.AccountId32
+    ): AsyncIterable<[k: [v1060.AccountId32, v1060.AccountId32], v: v1060.UserAccount | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: v1060.AccountId32,
+        key2: v1060.AccountId32
+    ): AsyncIterable<[k: [v1060.AccountId32, v1060.AccountId32], v: v1060.UserAccount | undefined][]>
+}
+
 export const freezeQueue = {
     /**
      *  The queue for fuel tank and rule set freezing
@@ -1534,4 +1733,25 @@ export interface FreezeQueueMatrixEnjinV603 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): matrixEnjinV603.FreezeQueueItem[]
     get(block: Block): Promise<matrixEnjinV603.FreezeQueueItem[] | undefined>
+}
+
+export const destroyedTanks = {
+    /**
+     *  Fuel tank accounts that will be removed in `on_idle`
+     */
+    matrixV1030: new StorageType(
+        'FuelTanks.DestroyedTanks',
+        'Default',
+        [],
+        sts.array(() => matrixV1030.AccountId32)
+    ) as DestroyedTanksMatrixV1030,
+}
+
+/**
+ *  Fuel tank accounts that will be removed in `on_idle`
+ */
+export interface DestroyedTanksMatrixV1030 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): matrixV1030.AccountId32[]
+    get(block: Block): Promise<matrixV1030.AccountId32[] | undefined>
 }

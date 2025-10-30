@@ -3112,6 +3112,34 @@ export const PrimaryPreDigest: sts.Type<PrimaryPreDigest> = sts.struct(() => {
     }
 })
 
+export interface ProxyDefinition {
+    delegate: AccountId32
+    proxyType: ProxyType
+    delay: number
+}
+
+export type ProxyType = ProxyType_Any | ProxyType_Governance | ProxyType_Tokens
+
+export interface ProxyType_Any {
+    __kind: 'Any'
+}
+
+export interface ProxyType_Governance {
+    __kind: 'Governance'
+}
+
+export interface ProxyType_Tokens {
+    __kind: 'Tokens'
+}
+
+export const ProxyDefinition: sts.Type<ProxyDefinition> = sts.struct(() => {
+    return {
+        delegate: AccountId32,
+        proxyType: ProxyType,
+        delay: sts.number(),
+    }
+})
+
 export interface Registration {
     judgements: [number, Judgement][]
     deposit: bigint
@@ -6729,20 +6757,6 @@ export interface ProxyEvent_PureCreated {
     who: AccountId32
     proxyType: ProxyType
     disambiguationIndex: number
-}
-
-export type ProxyType = ProxyType_Any | ProxyType_Governance | ProxyType_Tokens
-
-export interface ProxyType_Any {
-    __kind: 'Any'
-}
-
-export interface ProxyType_Governance {
-    __kind: 'Governance'
-}
-
-export interface ProxyType_Tokens {
-    __kind: 'Tokens'
 }
 
 /**
@@ -10641,62 +10655,6 @@ export const DispatchErrorWithPostInfo: sts.Type<DispatchErrorWithPostInfo> = st
     return {
         postInfo: PostDispatchInfo,
         error: DispatchError,
-    }
-})
-
-export const DispatchError: sts.Type<DispatchError> = sts.closedEnum(() => {
-    return {
-        Arithmetic: ArithmeticError,
-        BadOrigin: sts.unit(),
-        CannotLookup: sts.unit(),
-        ConsumerRemaining: sts.unit(),
-        Corruption: sts.unit(),
-        Exhausted: sts.unit(),
-        Module: ModuleError,
-        NoProviders: sts.unit(),
-        Other: sts.unit(),
-        RootNotAllowed: sts.unit(),
-        Token: TokenError,
-        TooManyConsumers: sts.unit(),
-        Transactional: TransactionalError,
-        Unavailable: sts.unit(),
-    }
-})
-
-export const TransactionalError: sts.Type<TransactionalError> = sts.closedEnum(() => {
-    return {
-        LimitReached: sts.unit(),
-        NoLayer: sts.unit(),
-    }
-})
-
-export const TokenError: sts.Type<TokenError> = sts.closedEnum(() => {
-    return {
-        BelowMinimum: sts.unit(),
-        Blocked: sts.unit(),
-        CannotCreate: sts.unit(),
-        CannotCreateHold: sts.unit(),
-        Frozen: sts.unit(),
-        FundsUnavailable: sts.unit(),
-        NotExpendable: sts.unit(),
-        OnlyProvider: sts.unit(),
-        UnknownAsset: sts.unit(),
-        Unsupported: sts.unit(),
-    }
-})
-
-export const ModuleError: sts.Type<ModuleError> = sts.struct(() => {
-    return {
-        index: sts.number(),
-        error: sts.bytes(),
-    }
-})
-
-export const ArithmeticError: sts.Type<ArithmeticError> = sts.closedEnum(() => {
-    return {
-        DivisionByZero: sts.unit(),
-        Overflow: sts.unit(),
-        Underflow: sts.unit(),
     }
 })
 
@@ -15291,13 +15249,34 @@ export interface ConfigOp_Set {
     value: bigint
 }
 
-export const ProxyType: sts.Type<ProxyType> = sts.closedEnum(() => {
+export const MultiSignature: sts.Type<MultiSignature> = sts.closedEnum(() => {
     return {
-        Any: sts.unit(),
-        Governance: sts.unit(),
-        Tokens: sts.unit(),
+        Ecdsa: sts.bytes(),
+        Ed25519: sts.bytes(),
+        Sr25519: Signature,
     }
 })
+
+export const Signature = sts.bytes()
+
+export type MultiSignature = MultiSignature_Ecdsa | MultiSignature_Ed25519 | MultiSignature_Sr25519
+
+export interface MultiSignature_Ecdsa {
+    __kind: 'Ecdsa'
+    value: Bytes
+}
+
+export interface MultiSignature_Ed25519 {
+    __kind: 'Ed25519'
+    value: Bytes
+}
+
+export interface MultiSignature_Sr25519 {
+    __kind: 'Sr25519'
+    value: Signature
+}
+
+export type Signature = Bytes
 
 export const CounterOfferResponse: sts.Type<CounterOfferResponse> = sts.closedEnum(() => {
     return {
@@ -21025,25 +21004,6 @@ export interface IdentityCall_set_username_for {
     signature?: MultiSignature | undefined
 }
 
-export type MultiSignature = MultiSignature_Ecdsa | MultiSignature_Ed25519 | MultiSignature_Sr25519
-
-export interface MultiSignature_Ecdsa {
-    __kind: 'Ecdsa'
-    value: Bytes
-}
-
-export interface MultiSignature_Ed25519 {
-    __kind: 'Ed25519'
-    value: Bytes
-}
-
-export interface MultiSignature_Sr25519 {
-    __kind: 'Sr25519'
-    value: Signature
-}
-
-export type Signature = Bytes
-
 /**
  * Contains a variant per dispatchable extrinsic that this pallet has.
  */
@@ -23261,8 +23221,6 @@ export const ExpirableSignature: sts.Type<ExpirableSignature> = sts.struct(() =>
     }
 })
 
-export const Signature = sts.bytes()
-
 export const FuelTankDescriptor: sts.Type<FuelTankDescriptor> = sts.struct(() => {
     return {
         name: sts.bytes(),
@@ -25100,14 +25058,6 @@ export const IdentityCall: sts.Type<IdentityCall> = sts.closedEnum(() => {
     }
 })
 
-export const MultiSignature: sts.Type<MultiSignature> = sts.closedEnum(() => {
-    return {
-        Ecdsa: sts.bytes(),
-        Ed25519: sts.bytes(),
-        Sr25519: Signature,
-    }
-})
-
 /**
  * Contains a variant per dispatchable extrinsic that this pallet has.
  */
@@ -26272,6 +26222,70 @@ export const RewardDestination: sts.Type<RewardDestination> = sts.closedEnum(() 
         None: sts.unit(),
         Staked: sts.unit(),
         Stash: sts.unit(),
+    }
+})
+
+export const ProxyType: sts.Type<ProxyType> = sts.closedEnum(() => {
+    return {
+        Any: sts.unit(),
+        Governance: sts.unit(),
+        Tokens: sts.unit(),
+    }
+})
+
+export const DispatchError: sts.Type<DispatchError> = sts.closedEnum(() => {
+    return {
+        Arithmetic: ArithmeticError,
+        BadOrigin: sts.unit(),
+        CannotLookup: sts.unit(),
+        ConsumerRemaining: sts.unit(),
+        Corruption: sts.unit(),
+        Exhausted: sts.unit(),
+        Module: ModuleError,
+        NoProviders: sts.unit(),
+        Other: sts.unit(),
+        RootNotAllowed: sts.unit(),
+        Token: TokenError,
+        TooManyConsumers: sts.unit(),
+        Transactional: TransactionalError,
+        Unavailable: sts.unit(),
+    }
+})
+
+export const TransactionalError: sts.Type<TransactionalError> = sts.closedEnum(() => {
+    return {
+        LimitReached: sts.unit(),
+        NoLayer: sts.unit(),
+    }
+})
+
+export const TokenError: sts.Type<TokenError> = sts.closedEnum(() => {
+    return {
+        BelowMinimum: sts.unit(),
+        Blocked: sts.unit(),
+        CannotCreate: sts.unit(),
+        CannotCreateHold: sts.unit(),
+        Frozen: sts.unit(),
+        FundsUnavailable: sts.unit(),
+        NotExpendable: sts.unit(),
+        OnlyProvider: sts.unit(),
+        UnknownAsset: sts.unit(),
+        Unsupported: sts.unit(),
+    }
+})
+
+export const ModuleError: sts.Type<ModuleError> = sts.struct(() => {
+    return {
+        index: sts.number(),
+        error: sts.bytes(),
+    }
+})
+
+export const ArithmeticError: sts.Type<ArithmeticError> = sts.closedEnum(() => {
+    return {
+        DivisionByZero: sts.unit(),
+        Overflow: sts.unit(),
+        Underflow: sts.unit(),
     }
 })
 

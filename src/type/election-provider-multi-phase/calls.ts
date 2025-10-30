@@ -101,4 +101,11 @@ export const governanceFallback = {
             maybeMaxTargets: sts.option(() => sts.number()),
         })
     ),
+    /**
+     * Trigger the governance fallback.
+     *
+     * This can only be called when [`Phase::Emergency`] is enabled, as an alternative to
+     * calling [`Call::set_emergency_election_result`].
+     */
+    v1060: new CallType('ElectionProviderMultiPhase.governance_fallback', sts.unit()),
 }

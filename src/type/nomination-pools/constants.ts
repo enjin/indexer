@@ -215,3 +215,17 @@ export const orphanedPoolAccountId = {
      */
     v101: new ConstantType('NominationPools.OrphanedPoolAccountId', v101.AccountId32),
 }
+
+export const payoutRewardsInterval = {
+    /**
+     *  Number of blocks the offchain worker waits in between paying out rewards
+     */
+    v1060: new ConstantType('NominationPools.PayoutRewardsInterval', sts.number()),
+}
+
+export const maxValidatorBonusAmounts = {
+    /**
+     *  The max number of bonus amounts for funding the validator bonus
+     */
+    v1060: new ConstantType('NominationPools.MaxValidatorBonusAmounts', sts.number()),
+}

@@ -21,6 +21,10 @@ export const limitedTeleportAssets = withDispatchCheck((call: CallItem): Limited
             () => calls.xcmPallet.limitedTeleportAssets.v1030.decode(call)
         )
         .when(
+            () => calls.xcmPallet.limitedTeleportAssets.v1060.is(call),
+            () => calls.xcmPallet.limitedTeleportAssets.v1060.decode(call)
+        )
+        .when(
             () => calls.xcmPallet.limitedTeleportAssets.v100.is(call),
             () => calls.xcmPallet.limitedTeleportAssets.v100.decode(call)
         )

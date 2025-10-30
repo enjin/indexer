@@ -400,7 +400,7 @@ export interface ShouldMutate_AccountId32_SomeMutation {
 }
 
 export type PoolMutation = {
-    duration?: number
+    duration?: number // Removed on v1060
     newCommission?: ShouldMutate_Perbill
     maxCommission?: Perbill
     changeRate?: CommissionChangeRate
@@ -462,15 +462,40 @@ type HoldReason_StateTrieMigration = {
     __kind: 'StateTrieMigration'
 }
 
+type HoldReason_Council = {
+    __kind: 'Council'
+}
+
+type HoldReason_TechnicalCommittee = {
+    __kind: 'TechnicalCommittee'
+}
+
+export interface HoldReason_PolkadotXcm {
+    __kind: 'PolkadotXcm'
+}
+
+export interface HoldReason_XcmPallet {
+    __kind: 'XcmPallet'
+}
+
+export interface HoldReason_Staking {
+    __kind: 'Staking'
+}
+
 export type RuntimeHoldReason =
     | HoldReason_FuelTanks
     | HoldReason_Marketplace
     | HoldReason_MultiTokens
     | HoldReason_Preimage
     | HoldReason_SafeMode
-    | HoldReason_StakeExchange
     | HoldReason_CollatorStaking
     | HoldReason_StateTrieMigration
+    | HoldReason_Staking
+    | HoldReason_StakeExchange // Added on v1060
+    | HoldReason_Council // Added on matrixV1030
+    | HoldReason_TechnicalCommittee // Added on matrixV1030
+    | HoldReason_PolkadotXcm // Added on matrixV1030
+    | HoldReason_XcmPallet // Added on v1060
 
 type Root = {
     __kind: 'Root'
