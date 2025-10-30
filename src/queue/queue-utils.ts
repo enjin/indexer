@@ -99,7 +99,11 @@ export function dispatchFetchAccounts(ids: string[]): void {
 export function dispatchFetchExtra(ids: string[]): void {
     xxhasher
         .createId(ids)
-        .then((hashedIds) => {
+        .then(async (hashedIds) => {
+            const job = await CollectionsQueue.getJob(`collections.extra.${hashedIds}`)
+            if (job && job.id) {
+                await CollectionsQueue.remove(job.id)
+            }
             CollectionsQueue.add(
                 JobsEnum.FETCH_EXTRA,
                 { ids },
