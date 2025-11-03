@@ -86,7 +86,7 @@
     "mime-types": "^3.0.1",
     "node-cache": "^5.1.2",
     "pg": "^8.16.0",
-    "pg-query-stream": "^4.10.0",
+    "pg-query-stream": "^4.10.3",
     "prom-client": "^15.1.3",
     "ts-pattern": "^5.7.1",
     "type-graphql": "1.2.0-rc.1",
