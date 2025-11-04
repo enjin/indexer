@@ -5,5 +5,6 @@ export type Infused = {
     collectionId: bigint
     tokenId: bigint
     accountId: AccountId32 | RootOrSigned
-    amount: bigint
+    amount?: bigint
+    totalAmount?: bigint
 }

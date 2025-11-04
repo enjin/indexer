@@ -18,6 +18,10 @@ export function bidPlaced(event: EventItem): BidPlaced {
     return match(event)
         .returnType<BidPlaced>()
         .when(
+            () => marketplace.bidPlaced.matrixV1030.is(event),
+            () => marketplace.bidPlaced.matrixV1030.decode(event)
+        )
+        .when(
             () => marketplace.bidPlaced.matrixEnjinV603.is(event),
             () => marketplace.bidPlaced.matrixEnjinV603.decode(event)
         )

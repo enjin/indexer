@@ -25,6 +25,10 @@ export function infused(event: EventItem): Infused {
             () => multiTokens.infused.matrixEnjinV1012.decode(event)
         )
         .when(
+            () => multiTokens.infused.matrixV1030.is(event),
+            () => multiTokens.infused.matrixV1030.decode(event)
+        )
+        .when(
             () => multiTokens.infused.matrixV1020.is(event),
             () => multiTokens.infused.matrixV1020.decode(event)
         )
@@ -56,7 +60,7 @@ export function infusedEventModel(
         data: new MultiTokensInfused({
             collectionId: data.collectionId,
             tokenId: data.tokenId,
-            amount: data.amount,
+            amount: data.amount ?? data.totalAmount,
             accountId: account.id,
         }),
     })

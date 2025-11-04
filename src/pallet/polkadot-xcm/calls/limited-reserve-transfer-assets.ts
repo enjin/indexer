@@ -17,6 +17,10 @@ export const limitedReserveTransferAssets = withDispatchCheck((call: CallItem): 
             () => calls.polkadotXcm.limitedReserveTransferAssets.matrixEnjinV603.decode(call)
         )
         .when(
+            () => calls.polkadotXcm.limitedReserveTransferAssets.matrixV1030.is(call),
+            () => calls.polkadotXcm.limitedReserveTransferAssets.matrixV1030.decode(call)
+        )
+        .when(
             () => calls.polkadotXcm.limitedReserveTransferAssets.matrixV1010.is(call),
             () => calls.polkadotXcm.limitedReserveTransferAssets.matrixV1010.decode(call)
         )

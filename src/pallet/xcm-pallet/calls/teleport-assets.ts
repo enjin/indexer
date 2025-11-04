@@ -17,6 +17,10 @@ export const teleportAssets = withDispatchCheck((call: CallItem): TeleportAssets
             () => calls.xcmPallet.teleportAssets.enjinV100.decode(call)
         )
         .when(
+            () => calls.xcmPallet.teleportAssets.v1060.is(call),
+            () => calls.xcmPallet.teleportAssets.v1060.decode(call)
+        )
+        .when(
             () => calls.xcmPallet.teleportAssets.v1030.is(call),
             () => calls.xcmPallet.teleportAssets.v1030.decode(call)
         )

@@ -17,6 +17,10 @@ export const limitedTeleportAssets = withDispatchCheck((call: CallItem): Limited
             () => calls.polkadotXcm.limitedTeleportAssets.matrixEnjinV603.decode(call)
         )
         .when(
+            () => calls.polkadotXcm.limitedTeleportAssets.matrixV1030.is(call),
+            () => calls.polkadotXcm.limitedTeleportAssets.matrixV1030.decode(call)
+        )
+        .when(
             () => calls.polkadotXcm.limitedTeleportAssets.matrixV1010.is(call),
             () => calls.polkadotXcm.limitedTeleportAssets.matrixV1010.decode(call)
         )
