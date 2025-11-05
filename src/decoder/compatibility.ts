@@ -330,10 +330,25 @@ export function transformEvent(runtime: Runtime, decodedEvent: DecodedEvent): un
         return asEvent(palletName, eventName, result)
     }
 
-    // Determine if event has named fields (returns object) or positional (returns array)
-    const isNamed = specificEvent.fields.some((f: { name?: string }) => f.name !== undefined)
+    // Determine if the event uses named fields (returns an object) or positional fields (returns an array)
+    const types = specificEvent.fields.filter((f) => f.typeName).map((f) => f.typeName)
+    const hasDuplicateTypes = new Set(types).size !== types.length
 
-    if (isNamed) {
+    if (hasDuplicateTypes) {
+        // Positional arguments: build array ordered by metadata field sequence
+        const transformedArgs: unknown[] = []
+        const paramValues = Object.values(eventParams)
+
+        for (let i = 0; i < specificEvent.fields.length; i++) {
+            const field = specificEvent.fields[i]
+            const typeName = field.typeName || ''
+            const value = paramValues[i]
+
+            transformedArgs.push(transformArgumentValue(typeName, value))
+        }
+
+        return asEvent(palletName, eventName, transformedArgs)
+    } else {
         // Named arguments: build object with keys from metadata
         const transformedArgs: Record<string, unknown> = {}
         for (const field of specificEvent.fields) {
@@ -349,20 +364,6 @@ export function transformEvent(runtime: Runtime, decodedEvent: DecodedEvent): un
             const key = field.typeName || toSnakeCaseKey(fieldName)
 
             transformedArgs[key] = transformArgumentValue(typeName, value)
-        }
-
-        return asEvent(palletName, eventName, transformedArgs)
-    } else {
-        // Positional arguments: build array ordered by metadata field sequence
-        const transformedArgs: unknown[] = []
-        const paramValues = Object.values(eventParams)
-
-        for (let i = 0; i < specificEvent.fields.length; i++) {
-            const field = specificEvent.fields[i]
-            const typeName = field.typeName || ''
-            const value = paramValues[i]
-
-            transformedArgs.push(transformArgumentValue(typeName, value))
         }
 
         return asEvent(palletName, eventName, transformedArgs)
