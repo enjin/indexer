@@ -37,6 +37,10 @@ export const createFuelTank = withDispatchCheck((call: CallItem): CreateFuelTank
             () => calls.fuelTanks.createFuelTank.matrixEnjinV603.decode(call)
         )
         .when(
+            () => calls.fuelTanks.createFuelTank.matrixV1030.is(call),
+            () => calls.fuelTanks.createFuelTank.matrixV1030.decode(call)
+        )
+        .when(
             () => calls.fuelTanks.createFuelTank.matrixV1023.is(call),
             () => calls.fuelTanks.createFuelTank.matrixV1023.decode(call)
         )

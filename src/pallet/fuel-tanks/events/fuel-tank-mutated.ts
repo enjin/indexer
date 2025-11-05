@@ -32,6 +32,14 @@ export function fuelTankMutated(event: EventItem): FuelTankMutated {
             () => fuelTanks.fuelTankMutated.enjinV100.decode(event)
         )
         .when(
+            () => fuelTanks.fuelTankMutated.matrixV1030.is(event),
+            () => fuelTanks.fuelTankMutated.matrixV1030.decode(event)
+        )
+        .when(
+            () => fuelTanks.fuelTankMutated.v1060.is(event),
+            () => fuelTanks.fuelTankMutated.v1060.decode(event)
+        )
+        .when(
             () => fuelTanks.fuelTankMutated.v1030.is(event),
             () => fuelTanks.fuelTankMutated.v1030.decode(event)
         )
