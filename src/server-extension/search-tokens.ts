@@ -139,7 +139,9 @@ export class SearchTokensResolver {
             const [collectionId, tokenId] = query.split('-')
             builder
                 .andWhere('collection.collection_id = :collectionId', { collectionId })
-                .leftJoinAndSelect('collection.tokens', 'token', 'token.token_id = :tokenId', { tokenId })
+                .leftJoinAndSelect('collection.tokens', 'token', 'token.token_id::text LIKE :tokenId', {
+                    tokenId: `${tokenId}%`,
+                })
         } else {
             builder.leftJoinAndSelect('collection.tokens', 'token', 'token.token_id::text LIKE :tokenId', {
                 tokenId: `${query}%`,
