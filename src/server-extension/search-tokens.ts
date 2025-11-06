@@ -11,15 +11,9 @@ class SearchTokensArgs {
     @Field(() => String)
     query!: string
 
-    @Field(() => ID)
+    @Field(() => String)
     @Validate(IsPublicKey)
     publicKey!: string
-
-    @Field(() => Int, { defaultValue: 0 })
-    offset: number = 0
-
-    @Field(() => Int, { defaultValue: 10 })
-    limit: number = 10
 }
 
 @ObjectType()
@@ -29,6 +23,15 @@ export class SearchTokensAttribute {
 
     @Field(() => String, { nullable: true })
     value?: string
+}
+
+@ObjectType()
+export class SearchTokensCap {
+    @Field(() => String)
+    type!: string
+
+    @Field(() => BigInteger)
+    supply!: typeof BigInteger
 }
 
 @ObjectType()
@@ -60,14 +63,17 @@ export class SearchTokensToken {
     @Field(() => BigInteger)
     supply!: typeof BigInteger
 
+    @Field(() => SearchTokensCap, { nullable: true })
+    cap?: SearchTokensCap
+
     @Field(() => Boolean)
     nonFungible!: boolean
 
     @Field()
     createdAt!: Date
 
-    @Field(() => SearchTokensCollection)
-    collection!: SearchTokensCollection
+    @Field(() => Json, { nullable: true })
+    metadata?: typeof Json
 
     @Field(() => [SearchTokensAttribute], { nullable: true })
     attributes?: SearchTokensAttribute[]
@@ -78,14 +84,23 @@ export class SearchTokensToken {
 }
 
 @ObjectType()
-export class SearchTokensResponse {
+export class SearchTokensCollectionWithTokens {
+    @Field(() => ID)
+    id!: string
+
+    @Field(() => SearchTokensCollectionOwner)
+    owner!: SearchTokensCollectionOwner
+
+    @Field(() => Json, { nullable: true })
+    metadata?: typeof Json
+
+    @Field(() => [SearchTokensAttribute], { nullable: true })
+    attributes?: SearchTokensAttribute[]
+
     @Field(() => [SearchTokensToken])
-    data!: SearchTokensToken[]
+    tokens!: SearchTokensToken[]
 
-    @Field(() => Int)
-    count!: number
-
-    constructor(props: Partial<SearchTokensResponse>) {
+    constructor(props: Partial<SearchTokensCollectionWithTokens>) {
         Object.assign(this, props)
     }
 }
@@ -94,27 +109,23 @@ export class SearchTokensResponse {
 export class SearchTokensResolver {
     constructor(private tx: () => Promise<EntityManager>) {}
 
-    @Query(() => SearchTokensResponse)
-    async searchTokens(@Args() { query, publicKey, limit, offset }: SearchTokensArgs): Promise<SearchTokensResponse> {
+    @Query(() => [SearchTokensCollectionWithTokens])
+    async searchTokens(@Args() { query, publicKey }: SearchTokensArgs): Promise<SearchTokensCollectionWithTokens[]> {
         const manager = await this.tx()
 
         if (!/^\d+(-\d+)?$/.test(query)) {
             throw new Error(
-                'Query must contain only numbers and optionally a dash (format: collectionId or collectionId-tokenId)'
+                'Query must contain only numbers and optionally a dash (format: tokenId to search across collections, or collectionId-tokenId for a specific token)'
             )
         }
 
         const metadataKeys = ['name', 'description', 'fallback_image', 'banner_image', 'media', 'uri', 'external_url']
 
         const builder = manager
-            .getRepository(Token)
-            .createQueryBuilder('token')
-            .leftJoinAndSelect('token.collection', 'collection')
+            .getRepository(Collection)
+            .createQueryBuilder('collection')
             .leftJoin('collection.owner', 'owner')
             .addSelect('owner.id')
-            .leftJoinAndSelect('token.attributes', 'tokenAttrs', 'tokenAttrs.key IN (:...metadataKeys)', {
-                metadataKeys,
-            })
             .leftJoinAndSelect(
                 'collection.attributes',
                 'collectionAttrs',
@@ -122,26 +133,25 @@ export class SearchTokensResolver {
                 { metadataKeys }
             )
 
-        let whereClause = 'collection.owner = :publicKey'
+        builder.where('collection.owner = :publicKey', { publicKey })
 
         if (query.includes('-')) {
             const [collectionId, tokenId] = query.split('-')
-            builder.where(`${whereClause} AND collection.collection_id = :collectionId AND token.token_id = :tokenId`, {
-                publicKey,
-                collectionId,
-                tokenId,
-            })
+            builder
+                .andWhere('collection.collection_id = :collectionId', { collectionId })
+                .leftJoinAndSelect('collection.tokens', 'token', 'token.token_id = :tokenId', { tokenId })
         } else {
-            builder.where(`${whereClause} AND token.token_id::text LIKE :tokenId`, {
-                publicKey,
+            builder.leftJoinAndSelect('collection.tokens', 'token', 'token.token_id::text LIKE :tokenId', {
                 tokenId: `${query}%`,
             })
         }
 
-        builder.orderBy('token.created_at', 'DESC').skip(offset).limit(limit)
+        builder.leftJoinAndSelect('token.attributes', 'tokenAttrs', 'tokenAttrs.key IN (:...metadataKeys)', {
+            metadataKeys,
+        })
 
-        const [data, count] = (await builder.getManyAndCount()) as any[]
+        builder.orderBy('token.created_at', 'DESC')
 
-        return { data, count }
+        return (await builder.getMany()) as any[]
     }
 }
