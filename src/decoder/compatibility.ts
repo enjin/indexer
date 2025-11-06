@@ -224,66 +224,6 @@ function transformCall(call: unknown): Record<string, unknown> {
 }
 
 /**
- * Transforms event/call argument values based on runtime type information.
- * Handles hex-to-bytes conversion and variant unwrapping.
- *
- * Key difference from toSnakeCaseDeep:
- * - Keys are NOT converted to snake_case (preserves original casing)
- * - Empty variants return the kind string (e.g., { __kind: "None" } → "None")
- * - Single-value variants unwrap completely (e.g., { __kind: "Some", value: 42 } → 42)
- */
-function transformArgumentValue(typeName: string, value: unknown): unknown {
-    if (value === null || value === undefined) {
-        return value
-    }
-
-    // Convert hex values to byte arrays (handles both raw hex and kinded objects)
-    if (isHex(value)) return toBytes(value)
-    if (hasKind(value) && isHex(value.value)) return toBytes(value.value)
-
-    if (Array.isArray(value)) {
-        return value.map((v) => transformArgumentValue(typeName, v))
-    }
-
-    // Variant unwrapping (differs from toSnakeCaseDeep)
-    if (typeof value === 'object' && '__kind' in value) {
-        const variant = value as KindVariant & Record<string, unknown>
-        const kindVal = variant.__kind
-        const rest = Object.entries(variant).filter(([k]) => k !== '__kind')
-
-        // Empty variant: return just the kind string
-        // Example: { __kind: "None" } → "None"
-        if (rest.length === 0) {
-            return kindVal
-        }
-
-        const transformed: Record<string, unknown> = {}
-        for (const [k, v] of rest) {
-            transformed[k] = transformArgumentValue(typeName, v)
-        }
-
-        // Single 'value' field: unwrap completely
-        // Example: { __kind: "Some", value: 42 } → 42
-        if ('value' in transformed && Object.keys(transformed).length === 1) {
-            return transformArgumentValue(typeName, transformed.value)
-        }
-
-        // Multi-field variant: return object with original keys (not snake_cased)
-        return transformed
-    }
-
-    if (typeof value === 'object') {
-        const transformed: Record<string, unknown> = {}
-        for (const [k, v] of Object.entries(value)) {
-            transformed[k] = transformArgumentValue(typeName, v)
-        }
-        return transformed
-    }
-
-    return value
-}
-
-/**
  * Transforms blockchain event to platform-decoder format: { Pallet: { EventName: args } }
  * Uses runtime metadata to determine if event has named or positional arguments.
  */
@@ -313,7 +253,7 @@ export function transformEvent(runtime: Runtime, decodedEvent: DecodedEvent): un
     if (!palletVariant || !palletVariant.fields || palletVariant.fields.length === 0) {
         const result: Record<string, unknown> = {}
         for (const [key, value] of Object.entries(eventParams)) {
-            result[key] = transformArgumentValue('', value)
+            result[key] = toSnakeCaseDeep(value)
         }
         return asEvent(palletName, eventName, result)
     }
@@ -325,22 +265,33 @@ export function transformEvent(runtime: Runtime, decodedEvent: DecodedEvent): un
     if (!specificEvent || !specificEvent.fields) {
         const result: Record<string, unknown> = {}
         for (const [key, value] of Object.entries(eventParams)) {
-            result[key] = transformArgumentValue('', value)
+            result[key] = toSnakeCaseDeep(value)
         }
         return asEvent(palletName, eventName, result)
     }
 
-    // Determine if event has named fields (returns object) or positional (returns array)
-    const isNamed = specificEvent.fields.some((f: { name?: string }) => f.name !== undefined)
+    // Determine if the event uses named fields (returns an object) or positional fields (returns an array)
+    const types = specificEvent.fields.filter((f) => f.typeName).map((f) => f.typeName)
+    const hasDuplicateTypes = new Set(types).size !== types.length
 
-    if (isNamed) {
+    if (hasDuplicateTypes) {
+        // Positional arguments: build array ordered by metadata field sequence
+        const transformedArgs: unknown[] = []
+        const paramValues = Object.values(eventParams)
+
+        for (let i = 0; i < specificEvent.fields.length; i++) {
+            const value = paramValues[i]
+            transformedArgs.push(toSnakeCaseDeep(value))
+        }
+
+        return asEvent(palletName, eventName, transformedArgs)
+    } else {
         // Named arguments: build object with keys from metadata
         const transformedArgs: Record<string, unknown> = {}
         for (const field of specificEvent.fields) {
             const fieldName = field.name
             if (!fieldName) continue
 
-            const typeName = field.typeName || ''
             const value = eventParams[fieldName]
 
             // Use typeName as key if available, otherwise use snake_cased fieldName
@@ -348,21 +299,7 @@ export function transformEvent(runtime: Runtime, decodedEvent: DecodedEvent): un
             //          field with name "collectionId" → key: "collection_id"
             const key = field.typeName || toSnakeCaseKey(fieldName)
 
-            transformedArgs[key] = transformArgumentValue(typeName, value)
-        }
-
-        return asEvent(palletName, eventName, transformedArgs)
-    } else {
-        // Positional arguments: build array ordered by metadata field sequence
-        const transformedArgs: unknown[] = []
-        const paramValues = Object.values(eventParams)
-
-        for (let i = 0; i < specificEvent.fields.length; i++) {
-            const field = specificEvent.fields[i]
-            const typeName = field.typeName || ''
-            const value = paramValues[i]
-
-            transformedArgs.push(transformArgumentValue(typeName, value))
+            transformedArgs[key] = toSnakeCaseDeep(value)
         }
 
         return asEvent(palletName, eventName, transformedArgs)
