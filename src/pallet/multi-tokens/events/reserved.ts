@@ -16,6 +16,10 @@ export function reserved(event: EventItem): Reserved {
             () => multiTokens.reserved.matrixEnjinV603.decode(event)
         )
         .when(
+            () => multiTokens.reserved.matrixV1030.is(event),
+            () => multiTokens.reserved.matrixV1030.decode(event)
+        )
+        .when(
             () => multiTokens.reserved.matrixV1023.is(event),
             () => multiTokens.reserved.matrixV1023.decode(event)
         )
@@ -30,6 +34,10 @@ export function reserved(event: EventItem): Reserved {
         .when(
             () => multiTokens.reserved.v1050.is(event),
             () => multiTokens.reserved.v1050.decode(event)
+        )
+        .when(
+            () => multiTokens.reserved.v1060.is(event),
+            () => multiTokens.reserved.v1060.decode(event)
         )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
