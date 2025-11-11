@@ -294,7 +294,16 @@ export class TopCollectionResolver {
 
                 return mqb
             }, 'iq')
-            .orderBy(orderBy, order, 'NULLS LAST')
+            .orderBy(
+                orderBy === TopCollectionOrderByInput.VOLUME ||
+                    orderBy === TopCollectionOrderByInput.VOLUME_CHANGE ||
+                    orderBy === TopCollectionOrderByInput.SALES ||
+                    orderBy === TopCollectionOrderByInput.USERS
+                    ? `${orderBy}::numeric`
+                    : orderBy,
+                order,
+                'NULLS LAST'
+            )
             .addOrderBy('id', 'DESC')
             .limit(limit)
             .offset(offset)
