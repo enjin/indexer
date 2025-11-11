@@ -36,7 +36,7 @@
  */
 
 import type { DecodedEvent, Extrinsic, Runtime } from '@subsquid/substrate-runtime'
-import type { VariantType } from '@subsquid/substrate-runtime/lib/metadata'
+import type { CompositeType, VariantType } from '@subsquid/substrate-runtime/lib/metadata'
 import { decodeHex, isHex } from '@subsquid/util-internal-hex'
 
 // Type definitions for runtime-specific structures
@@ -50,15 +50,6 @@ interface SignedExtensionsData {
     checkNonce?: number
     chargeTransactionPayment?: string
     checkMetadataHash?: { mode?: { __kind: string } }
-}
-
-interface TypeVariant {
-    name: string
-    fields?: Array<{ type: number; name?: string; typeName?: string }>
-}
-
-interface RuntimeType {
-    variants?: TypeVariant[]
 }
 
 // =============================================
@@ -84,15 +75,15 @@ const toSnakeCaseKey = (s: string): string => s.replace(/[A-Z]/g, (m) => `_${m.t
 function isPureUnitEnum(runtime: Runtime | undefined, typeIndex: number | undefined): boolean {
     if (!runtime || typeIndex === undefined) return false
 
-    try {
-        const type = runtime.description.types[typeIndex] as RuntimeType
-        if (!type.variants || type.variants.length === 0) return true
-
+    const type = runtime.description.types[typeIndex] as VariantType | undefined
+    
+    // Check if it's a VariantType (enum) with variants
+    if (type && Array.isArray(type.variants)) {
         // If ANY variant has fields, it's a complex enum
-        return !type.variants.some((v) => v.fields && v.fields.length > 0)
-    } catch {
-        return false
+        return !type.variants.some((v) => v?.fields?.length > 0)
     }
+    
+    return true
 }
 
 const toSnakeCaseDeep = (
@@ -141,17 +132,15 @@ const toSnakeCaseDeep = (
         // If we have a struct type index, try to look up field types from metadata
         let fieldTypeMap: Record<string, number> = {}
         if (runtime && typeIndex !== undefined) {
-            try {
-                const type = runtime.description.types[typeIndex] as RuntimeType
-                if (type.fields) {
-                    fieldTypeMap = Object.fromEntries(
-                        type.fields
-                            .filter((f) => f.name && f.type !== undefined)
-                            .map((f) => [f.name!, f.type])
-                    )
-                }
-            } catch {
-                // Ignore errors, fieldTypeMap will be empty
+            const type = runtime.description.types[typeIndex] as CompositeType | undefined
+            
+            // Only CompositeType has fields
+            if (type && Array.isArray(type.fields)) {
+                fieldTypeMap = Object.fromEntries(
+                    type.fields
+                        .filter((f) => f?.name && f.type !== undefined)
+                        .map((f) => [f.name!, f.type])
+                )
             }
         }
         
@@ -286,11 +275,11 @@ export function transformEvent(runtime: Runtime, decodedEvent: DecodedEvent): un
     // Step 4: Query runtime metadata to find the event type definition
     // The runtime metadata contains type information for all pallets and their events
     const eventTypeIndex = runtime.description.event
-    const eventType = runtime.description.types[eventTypeIndex] as RuntimeType
+    const eventType = runtime.description.types[eventTypeIndex] as VariantType | undefined
 
     // Step 5: Find the specific pallet variant in the event type definition
     // Each pallet has its own variant in the global event enum
-    const palletVariant = eventType.variants?.find((v) => v.name === palletName)
+    const palletVariant = eventType?.variants?.find((v) => v.name === palletName)
     if (!palletVariant || !palletVariant.fields || palletVariant.fields.length === 0) {
         // Fallback: If pallet metadata is missing, transform params to snake_case and return
         // This handles cases where metadata may be incomplete or outdated
@@ -304,11 +293,11 @@ export function transformEvent(runtime: Runtime, decodedEvent: DecodedEvent): un
     // Step 6: Navigate to the pallet's event type definition
     // The pallet variant contains a field pointing to the pallet's event enum type
     const palletEventsTypeIndex = palletVariant.fields[0].type
-    const palletEventsType = runtime.description.types[palletEventsTypeIndex] as RuntimeType
+    const palletEventsType = runtime.description.types[palletEventsTypeIndex] as VariantType | undefined
 
     // Step 7: Find the specific event variant within the pallet's events
     // This gives us the field definitions for this particular event
-    const specificEvent = palletEventsType.variants?.find((v) => v.name === eventName)
+    const specificEvent = palletEventsType?.variants?.find((v) => v.name === eventName)
     if (!specificEvent || !specificEvent.fields) {
         // Fallback: If event metadata is missing, transform params to snake_case and return
         // This handles new events that may not be in the metadata yet
