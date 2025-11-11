@@ -161,6 +161,27 @@ const kindHexToBytes = (input: unknown): { [k: string]: number[] } => {
 }
 
 /**
+ * Looks up a variant in a type enum from runtime metadata.
+ * Used to find pallet variants in call/event enums.
+ */
+function findVariant(runtime: Runtime, typeIndex: number, variantName: string) {
+    const type = runtime.description.types[typeIndex] as VariantType
+    const variant = type.variants.find((v) => v.name === variantName)
+    if (!variant) {
+        throw new Error(`Variant ${variantName} not found in runtime metadata`)
+    }
+    return variant
+}
+
+/**
+ * Builds a map of field names to type indices from a variant's fields.
+ * Used for metadata-aware transformation of call/event parameters.
+ */
+function getFieldTypeMap(variant: ReturnType<typeof findVariant>): Record<string, number> {
+    return Object.fromEntries(variant.fields.filter((f) => f.name).map((f) => [f.name, f.type]))
+}
+
+/**
  * Parses era/mortality data from extrinsic signature.
  * Mortal extrinsics have limited validity period, immortal ones never expire.
  */
@@ -213,9 +234,9 @@ function transformSignedExtensions(signedExtensions: unknown): {
 
 /**
  * Transforms call data to platform-decoder format: { PalletName: { call_name: params } }
- * Uses Object.getOwnPropertyNames to preserve undefined fields (converted to null).
+ * Uses runtime metadata to determine field types for proper type-aware transformation.
  */
-function transformCall(call: unknown): Record<string, unknown> {
+function transformCall(call: unknown, runtime?: Runtime): Record<string, unknown> {
     if (!hasKind(call)) return {}
     const { __kind: palletName, value } = call
 
@@ -225,11 +246,27 @@ function transformCall(call: unknown): Record<string, unknown> {
     if (value && typeof value === 'object' && '__kind' in value) {
         const kindedValue = value as { __kind: string } & Record<string, unknown>
         const { __kind: callName, ...params } = kindedValue
+
+        // Query runtime metadata to find call type definitions if available
+        let callFieldTypeMap: Record<string, number> = {}
+        if (runtime) {
+            // Step 1: Find the pallet in the call enum
+            const palletVariant = findVariant(runtime, runtime.description.call, palletName)
+
+            // Step 2: Find the specific call in the pallet's call enum
+            const palletCallsTypeIndex = palletVariant.fields[0].type
+            const specificCall = findVariant(runtime, palletCallsTypeIndex, callName)
+
+            // Step 3: Build a map of field names to type indices for metadata-aware transformation
+            callFieldTypeMap = getFieldTypeMap(specificCall)
+        }
+
         const transformedParams: Record<string, unknown> = {}
         for (const k of Object.getOwnPropertyNames(params)) {
             if (k === '__kind') continue
             const v = params[k]
-            transformedParams[toSnakeCaseKey(k)] = toSnakeCaseDeep(v)
+            const fieldTypeIndex = callFieldTypeMap[k]
+            transformedParams[toSnakeCaseKey(k)] = toSnakeCaseDeep(v, runtime, fieldTypeIndex)
         }
         return { [palletName]: { [callName]: transformedParams } }
     }
@@ -271,18 +308,9 @@ export function transformEvent(runtime: Runtime, decodedEvent: DecodedEvent): un
 
     // Step 4: Query runtime metadata to find the event type definition
     // The runtime metadata contains type information for all pallets and their events
-    const eventTypeIndex = runtime.description.event
-    const eventType = runtime.description.types[eventTypeIndex] as VariantType
-    const palletVariant = eventType.variants.find((v) => v.name === palletName)
-    if (!palletVariant) {
-        throw new Error(`Pallet ${palletName} not found in runtime metadata`)
-    }
+    const palletVariant = findVariant(runtime, runtime.description.event, palletName)
     const palletEventsTypeIndex = palletVariant.fields[0].type
-    const palletEventsType = runtime.description.types[palletEventsTypeIndex] as VariantType
-    const specificEvent = palletEventsType.variants.find((v) => v.name === eventName)
-    if (!specificEvent) {
-        throw new Error(`Event ${eventName} not found in pallet ${palletName} metadata`)
-    }
+    const specificEvent = findVariant(runtime, palletEventsTypeIndex, eventName)
 
     // Step 5: Determine output format based on field metadata
     // Check if typeNames contain duplicates to decide between positional array or named object
@@ -335,7 +363,8 @@ export function transformEvent(runtime: Runtime, decodedEvent: DecodedEvent): un
  */
 export function transformExtrinsic(
     decoded: Extrinsic & { hash: string; extrinsic_hash: string },
-    extrinsicLength?: number
+    extrinsicLength?: number,
+    runtime?: Runtime
 ): unknown {
     const result: Record<string, unknown> = {
         hash: strip0x(decoded.hash),
@@ -354,7 +383,7 @@ export function transformExtrinsic(
         }
     }
 
-    result.calls = transformCall(decoded.call)
+    result.calls = transformCall(decoded.call, runtime)
     result.extrinsic_hash = strip0x(decoded.extrinsic_hash)
 
     return result
