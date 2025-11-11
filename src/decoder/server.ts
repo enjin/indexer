@@ -100,8 +100,8 @@ const server: Application = express()
 server.use(express.json({ limit: '1mb' }))
 
 server.get('/decoder', (_req, res) => {
-    res.set('Allow', 'POST');
-    res.status(405).send('Method Not Allowed');
+    res.set('Allow', 'POST')
+    res.status(405).send('Method Not Allowed')
 })
 
 server.get('/health', (_req, res) => {
