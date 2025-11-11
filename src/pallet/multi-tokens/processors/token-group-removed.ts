@@ -34,7 +34,7 @@ export async function tokenGroupRemoved(
         }),
     ])
 
-    if (!tokenGroupToken || !tokenGroup || !token) {
+    if (!tokenGroupToken || !tokenGroup) {
         return mappings.multiTokens.events.tokenGroupRemovedEventModel(item, data)
     }
 
