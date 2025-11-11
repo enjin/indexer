@@ -99,15 +99,16 @@ const server: Application = express()
 
 server.use(express.json({ limit: '1mb' }))
 
-server.get('/', (_req, res) => {
-    res.send('Ok')
+server.get('/decoder', (_req, res) => {
+    res.set('Allow', 'POST')
+    res.status(405).send('Method Not Allowed')
 })
 
 server.get('/health', (_req, res) => {
     res.json({ status: 'healthy' })
 })
 
-server.post('/', handleDecode)
+server.post('/decoder', handleDecode)
 
 const port = process.env.DECODER_PORT || 8090
 

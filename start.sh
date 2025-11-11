@@ -16,9 +16,11 @@ if [ "$ROLE" = "processor" ]; then
 elif [ "$ROLE" = "graphql" ]; then
     pnpm run metrics &
     P1=$!
-    pnpm exec squid-graphql-server --subscriptions --dumb-cache redis --dumb-cache-max-age 3000 --max-root-fields 10 --sql-statement-timeout 30000 &
+    pnpm run decoder &
     P2=$!
-    wait $P1 $P2
+    pnpm exec squid-graphql-server --subscriptions --dumb-cache redis --dumb-cache-max-age 3000 --max-root-fields 10 --sql-statement-timeout 30000 &
+    P3=$!
+    wait $P1 $P2 $P3
 elif [ "$ROLE" = "worker" ]; then
     pnpm run worker
 else
