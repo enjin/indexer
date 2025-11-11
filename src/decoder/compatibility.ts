@@ -86,7 +86,6 @@ const toSnakeCaseDeep = (value: unknown): unknown => {
 
     // Convert hex values to byte arrays
     if (isHex(value)) return toBytes(value)
-    if (hasKind(value) && isHex(value.value)) return toBytes(value.value)
 
     if (Array.isArray(value)) {
         return value.map(toSnakeCaseDeep)
