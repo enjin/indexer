@@ -21,6 +21,10 @@ export const createCollection = withDispatchCheck((call: CallItem): CreateCollec
             () => calls.multiTokens.createCollection.matrixEnjinV603.decode(call)
         )
         .when(
+            () => calls.multiTokens.createCollection.matrixV1030.is(call),
+            () => calls.multiTokens.createCollection.matrixV1030.decode(call)
+        )
+        .when(
             () => calls.multiTokens.createCollection.matrixV1020.is(call),
             () => calls.multiTokens.createCollection.matrixV1020.decode(call)
         )
