@@ -36,7 +36,13 @@
  */
 
 import type { DecodedEvent, Extrinsic, Runtime } from '@subsquid/substrate-runtime'
+import type { CompositeType, Field, VariantType } from '@subsquid/substrate-runtime/lib/metadata'
 import { decodeHex, isHex } from '@subsquid/util-internal-hex'
+
+// Extend Field type to include typeName which exists in runtime metadata but isn't in TS types
+interface FieldWithTypeName extends Field {
+    typeName?: string
+}
 
 // Type definitions for runtime-specific structures
 interface KindVariant<T = unknown> {
@@ -49,15 +55,6 @@ interface SignedExtensionsData {
     checkNonce?: number
     chargeTransactionPayment?: string
     checkMetadataHash?: { mode?: { __kind: string } }
-}
-
-interface TypeVariant {
-    name: string
-    fields?: Array<{ type: number; name?: string; typeName?: string }>
-}
-
-interface RuntimeType {
-    variants?: TypeVariant[]
 }
 
 // =============================================
@@ -76,60 +73,78 @@ const hasKind = (v: unknown): v is { __kind: string } & Record<string, unknown> 
 const toSnakeCaseKey = (s: string): string => s.replace(/[A-Z]/g, (m) => `_${m.toLowerCase()}`)
 
 /**
- * Recursively transforms data structure to snake_case keys and converts:
- * - undefined/null → null
- * - hex strings → byte arrays
- * - __kind variants → { [kind]: value } format
+ * Checks if a type is a "pure unit enum" - an enum where ALL variants are unit variants.
+ * If ANY variant in the enum has associated data fields, the entire enum is considered "complex"
+ * and all its variants should return as objects (even empty ones as { variant: null }).
  */
-const toSnakeCaseDeep = (value: unknown): unknown => {
+function isPureUnitEnum(runtime: Runtime | undefined, typeIndex: number | undefined): boolean {
+    if (!runtime || typeIndex === undefined) return false
+
+    const type = runtime.description.types[typeIndex] as VariantType | undefined
+
+    // Check if it's a VariantType (enum) with variants
+    if (type && Array.isArray(type.variants)) {
+        // If ANY variant has fields, it's a complex enum
+        return !type.variants.some((v) => v.fields.length > 0)
+    }
+
+    return true
+}
+
+const toSnakeCaseDeep = (value: unknown, runtime?: Runtime, typeIndex?: number): unknown => {
     if (value === null || value === undefined) return null
 
     // Convert hex values to byte arrays
     if (isHex(value)) return toBytes(value)
 
     if (Array.isArray(value)) {
-        return value.map(toSnakeCaseDeep)
+        return value.map((v) => toSnakeCaseDeep(v, runtime, typeIndex))
     }
 
     if (hasKind(value)) {
         const { __kind, ...rest } = value
         const restEntries = Object.entries(rest)
 
-        // If __kind with a single 'value' field, unwrap it based on value type
-        // Example: { __kind: "Id", value: "0x1234" } → { Id: [18, 52] }
-        //          { __kind: "Some", value: 42 } → { Some: 42 }
-        //          { __kind: "None", value: null } → { None: null }
         if (restEntries.length === 1 && 'value' in rest) {
-            const unwrappedValue = toSnakeCaseDeep(rest.value)
-            // If value is null/undefined or the unwrapped value is null, return { [__kind]: null }
+            const unwrappedValue = toSnakeCaseDeep(rest.value, runtime, typeIndex)
             if (rest.value === null || rest.value === undefined || unwrappedValue === null) {
                 return { [__kind]: null }
             }
             return { [__kind]: unwrappedValue }
         }
 
-        // If only __kind with no other fields, return { [__kind]: null }
-        // Example: { __kind: "Immortal" } → { Immortal: null }
-        //          { __kind: "Free" } → { Free: null }
+        // Pure unit variants (from pure unit enum) → return as string
+        // Complex variants with no current data → return as { [kind]: null }
         if (restEntries.length === 0) {
-            return { [__kind]: null }
+            const isPureUnit = isPureUnitEnum(runtime, typeIndex)
+            return isPureUnit ? __kind : { [__kind]: null }
         }
 
-        // Otherwise transform all fields
         const transformed: Record<string, unknown> = {}
         for (const [k, v] of restEntries) {
-            transformed[toSnakeCaseKey(k)] = toSnakeCaseDeep(v)
+            transformed[toSnakeCaseKey(k)] = toSnakeCaseDeep(v, runtime, typeIndex)
         }
         return { [__kind]: transformed }
     }
 
-    // Plain objects without __kind: transform keys to snake_case recursively
-    // Example: { collectionId: 123, tokenId: 456 } → { collection_id: 123, token_id: 456 }
-    //          { checkMortality: {...}, checkNonce: 5 } → { check_mortality: {...}, check_nonce: 5 }
     if (isRecord(value)) {
         const transformed: Record<string, unknown> = {}
+
+        // If we have a struct type index, try to look up field types from metadata
+        let fieldTypeMap: Record<string, number> = {}
+        if (runtime && typeIndex !== undefined) {
+            const type = runtime.description.types[typeIndex] as CompositeType | undefined
+
+            // Only CompositeType has fields
+            if (type && Array.isArray(type.fields)) {
+                fieldTypeMap = Object.fromEntries(type.fields.filter((f) => f.name).map((f) => [f.name, f.type]))
+            }
+        }
+
         for (const [k, v] of Object.entries(value)) {
-            transformed[toSnakeCaseKey(k)] = toSnakeCaseDeep(v)
+            const snakeCaseKey = toSnakeCaseKey(k)
+            const fieldTypeIndex = fieldTypeMap[k]
+            transformed[snakeCaseKey] = toSnakeCaseDeep(v, runtime, fieldTypeIndex)
         }
         return transformed
     }
@@ -143,6 +158,27 @@ const kindHexToBytes = (input: unknown): { [k: string]: number[] } => {
     const typed = input as KindVariant<string>
     if (!typed.__kind || !typed.value) return {}
     return { [typed.__kind]: toBytes(typed.value) }
+}
+
+/**
+ * Looks up a variant in a type enum from runtime metadata.
+ * Used to find pallet variants in call/event enums.
+ */
+function findVariant(runtime: Runtime, typeIndex: number, variantName: string) {
+    const type = runtime.description.types[typeIndex] as VariantType
+    const variant = type.variants.find((v) => v.name === variantName)
+    if (!variant) {
+        throw new Error(`Variant ${variantName} not found in runtime metadata`)
+    }
+    return variant
+}
+
+/**
+ * Builds a map of field names to type indices from a variant's fields.
+ * Used for metadata-aware transformation of call/event parameters.
+ */
+function getFieldTypeMap(variant: ReturnType<typeof findVariant>): Record<string, number> {
+    return Object.fromEntries(variant.fields.filter((f) => f.name).map((f) => [f.name, f.type]))
 }
 
 /**
@@ -198,9 +234,9 @@ function transformSignedExtensions(signedExtensions: unknown): {
 
 /**
  * Transforms call data to platform-decoder format: { PalletName: { call_name: params } }
- * Uses Object.getOwnPropertyNames to preserve undefined fields (converted to null).
+ * Uses runtime metadata to determine field types for proper type-aware transformation.
  */
-function transformCall(call: unknown): Record<string, unknown> {
+function transformCall(call: unknown, runtime?: Runtime): Record<string, unknown> {
     if (!hasKind(call)) return {}
     const { __kind: palletName, value } = call
 
@@ -210,11 +246,27 @@ function transformCall(call: unknown): Record<string, unknown> {
     if (value && typeof value === 'object' && '__kind' in value) {
         const kindedValue = value as { __kind: string } & Record<string, unknown>
         const { __kind: callName, ...params } = kindedValue
+
+        // Query runtime metadata to find call type definitions if available
+        let callFieldTypeMap: Record<string, number> = {}
+        if (runtime) {
+            // Step 1: Find the pallet in the call enum
+            const palletVariant = findVariant(runtime, runtime.description.call, palletName)
+
+            // Step 2: Find the specific call in the pallet's call enum
+            const palletCallsTypeIndex = palletVariant.fields[0].type
+            const specificCall = findVariant(runtime, palletCallsTypeIndex, callName)
+
+            // Step 3: Build a map of field names to type indices for metadata-aware transformation
+            callFieldTypeMap = getFieldTypeMap(specificCall)
+        }
+
         const transformedParams: Record<string, unknown> = {}
         for (const k of Object.getOwnPropertyNames(params)) {
             if (k === '__kind') continue
             const v = params[k]
-            transformedParams[toSnakeCaseKey(k)] = toSnakeCaseDeep(v)
+            const fieldTypeIndex = callFieldTypeMap[k]
+            transformedParams[toSnakeCaseKey(k)] = toSnakeCaseDeep(v, runtime, fieldTypeIndex)
         }
         return { [palletName]: { [callName]: transformedParams } }
     }
@@ -227,15 +279,24 @@ function transformCall(call: unknown): Record<string, unknown> {
  * Uses runtime metadata to determine if event has named or positional arguments.
  */
 export function transformEvent(runtime: Runtime, decodedEvent: DecodedEvent): unknown {
+    // Step 1: Extract pallet name from top-level __kind
+    // Example: { __kind: "MultiTokens", value: {...} } → palletName = "MultiTokens"
     const palletName = decodedEvent.__kind
     const eventValue = decodedEvent.value
 
+    // Step 2: Handle events without structured data (rare edge case)
+    // If value is not an object with __kind, return as-is wrapped in pallet name
+    // Example: { __kind: "System", value: "someValue" } → { System: "someValue" }
     if (typeof eventValue !== 'object' || !('__kind' in eventValue)) {
         return {
             [palletName]: eventValue,
         }
     }
 
+    // Step 3: Extract event name and parameters from nested __kind structure
+    // Example: { __kind: "CollectionCreated", collectionId: "0x1234", owner: "0xabcd" }
+    //       → eventName = "CollectionCreated"
+    //       → eventParams = { collectionId: "0x1234", owner: "0xabcd" }
     const eventName = eventValue.__kind
     const eventData = eventValue
     const eventParams: Record<string, unknown> = {}
@@ -245,47 +306,39 @@ export function transformEvent(runtime: Runtime, decodedEvent: DecodedEvent): un
         }
     }
 
-    const eventTypeIndex = runtime.description.event
-    const eventType = runtime.description.types[eventTypeIndex] as RuntimeType
-
-    const palletVariant = eventType.variants?.find((v) => v.name === palletName)
-    if (!palletVariant || !palletVariant.fields || palletVariant.fields.length === 0) {
-        const result: Record<string, unknown> = {}
-        for (const [key, value] of Object.entries(eventParams)) {
-            result[key] = toSnakeCaseDeep(value)
-        }
-        return asEvent(palletName, eventName, result)
-    }
-
+    // Step 4: Query runtime metadata to find the event type definition
+    // The runtime metadata contains type information for all pallets and their events
+    const palletVariant = findVariant(runtime, runtime.description.event, palletName)
     const palletEventsTypeIndex = palletVariant.fields[0].type
-    const palletEventsType = runtime.description.types[palletEventsTypeIndex] as RuntimeType
+    const specificEvent = findVariant(runtime, palletEventsTypeIndex, eventName)
 
-    const specificEvent = palletEventsType.variants?.find((v) => v.name === eventName)
-    if (!specificEvent || !specificEvent.fields) {
-        const result: Record<string, unknown> = {}
-        for (const [key, value] of Object.entries(eventParams)) {
-            result[key] = toSnakeCaseDeep(value)
-        }
-        return asEvent(palletName, eventName, result)
-    }
-
-    // Determine if the event uses named fields (returns an object) or positional fields (returns an array)
-    const types = specificEvent.fields.filter((f) => f.typeName).map((f) => f.typeName)
+    // Step 5: Determine output format based on field metadata
+    // Check if typeNames contain duplicates to decide between positional array or named object
+    // Example with duplicates: [T::AccountId, T::AccountId, Balance] → use array format
+    // Example without duplicates: [T::AccountId, CollectionId, TokenId] → use object format
+    const types = specificEvent.fields
+        .filter((f) => (f as FieldWithTypeName).typeName)
+        .map((f) => (f as FieldWithTypeName).typeName)
     const hasDuplicateTypes = new Set(types).size !== types.length
 
     if (hasDuplicateTypes) {
-        // Positional arguments: build array ordered by metadata field sequence
+        // Format 1: Positional arguments (array)
+        // Used when field types are ambiguous (duplicates) - order matters, names don't
+        // Example: [accountId1_bytes, accountId2_bytes, amount]
         const transformedArgs: unknown[] = []
         const paramValues = Object.values(eventParams)
 
         for (let i = 0; i < specificEvent.fields.length; i++) {
             const value = paramValues[i]
-            transformedArgs.push(toSnakeCaseDeep(value))
+            const fieldTypeIndex = specificEvent.fields[i].type
+            transformedArgs.push(toSnakeCaseDeep(value, runtime, fieldTypeIndex))
         }
 
         return asEvent(palletName, eventName, transformedArgs)
     } else {
-        // Named arguments: build object with keys from metadata
+        // Format 2: Named arguments (object)
+        // Used when field types are unique - names provide clarity
+        // Example: { "T::AccountId": accountId_bytes, "CollectionId": collection_id_bytes }
         const transformedArgs: Record<string, unknown> = {}
         for (const field of specificEvent.fields) {
             const fieldName = field.name
@@ -293,12 +346,11 @@ export function transformEvent(runtime: Runtime, decodedEvent: DecodedEvent): un
 
             const value = eventParams[fieldName]
 
-            // Use typeName as key if available, otherwise use snake_cased fieldName
-            // Example: field with typeName "T::AccountId" → key: "T::AccountId"
-            //          field with name "collectionId" → key: "collection_id"
-            const key = field.typeName || toSnakeCaseKey(fieldName)
-
-            transformedArgs[key] = toSnakeCaseDeep(value)
+            // Prefer typeName from metadata for semantic clarity, fall back to snake_cased field name
+            // typeName examples: "T::AccountId", "CollectionId", "Balance"
+            // field name examples: "who", "collectionId", "amount"
+            const key = (field as FieldWithTypeName).typeName || toSnakeCaseKey(fieldName)
+            transformedArgs[key] = toSnakeCaseDeep(value, runtime, field.type)
         }
 
         return asEvent(palletName, eventName, transformedArgs)
@@ -311,7 +363,8 @@ export function transformEvent(runtime: Runtime, decodedEvent: DecodedEvent): un
  */
 export function transformExtrinsic(
     decoded: Extrinsic & { hash: string; extrinsic_hash: string },
-    extrinsicLength?: number
+    extrinsicLength?: number,
+    runtime?: Runtime
 ): unknown {
     const result: Record<string, unknown> = {
         hash: strip0x(decoded.hash),
@@ -330,7 +383,7 @@ export function transformExtrinsic(
         }
     }
 
-    result.calls = transformCall(decoded.call)
+    result.calls = transformCall(decoded.call, runtime)
     result.extrinsic_hash = strip0x(decoded.extrinsic_hash)
 
     return result
