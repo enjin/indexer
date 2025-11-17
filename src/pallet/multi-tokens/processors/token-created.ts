@@ -197,8 +197,10 @@ export async function tokenCreated(
         return mappings.multiTokens.events.tokenCreatedEventModel(item, event)
     }
 
+    console.log('item.call', item.call?.name, mappings.multiTokens.calls.batchMint.name)
     if (item.call && item.call.name === mappings.multiTokens.calls.batchMint.name) {
         const call = mappings.multiTokens.calls.batchMint(item.call)
+        console.log('call', call)
         const tokens = await tokenFromBatchCall(ctx, block, event, call)
         await ctx.store.save(tokens)
     } else if (item.call) {
