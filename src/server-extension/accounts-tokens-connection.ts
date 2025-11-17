@@ -1,11 +1,168 @@
-import { Field, ObjectType, Query, Resolver, ArgsType, Args, Int } from 'type-graphql'
+import { Field, ObjectType, Query, Resolver, ArgsType, Args, Int, registerEnumType, ID } from 'type-graphql'
+import { Json, BigInteger } from '@subsquid/graphql-server'
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
 import { Validate } from 'class-validator'
-import { Collection, Listing, Token, TokenAccount, TokenGroupToken } from '~/model'
+import { Collection, Listing, Token, TokenAccount, TokenGroupToken, TokenGroup, Attribute } from '~/model'
 import { IsPublicKeyArray, encodeCursor, decodeCursor } from './helpers'
 import { PageInfo } from './types'
-import { AccountsTokensOrderByInput, AccountsTokensOrderInput, AccountsTokensToken } from './accounts-tokens'
+
+export enum AccountsTokensOrderByInput {
+    COLLECTION_NAME = 'collection.name',
+    TOKEN_NAME = 'token.name',
+    DATE = 'token.createdAt',
+}
+
+export enum AccountsTokensOrderInput {
+    ASC = 'ASC',
+    DESC = 'DESC',
+}
+
+export enum AccountsTokensFreezeState {
+    Permanent = 'Permanent',
+    Temporary = 'Temporary',
+    Never = 'Never',
+}
+
+registerEnumType(AccountsTokensOrderByInput, {
+    name: 'AccountsTokensOrderByInput',
+})
+
+registerEnumType(AccountsTokensOrderInput, {
+    name: 'AccountsTokensOrderInput',
+})
+
+registerEnumType(AccountsTokensFreezeState, {
+    name: 'AccountsTokensFreezeState',
+})
+
+@ObjectType()
+export class AccountsTokensListing {
+    @Field(() => ID)
+    id!: string
+
+    @Field(() => BigInteger)
+    highestPrice!: typeof BigInteger
+
+    @Field(() => Json)
+    state!: typeof Json
+
+    @Field(() => Json)
+    data!: typeof Json
+
+    @Field(() => Json)
+    makeAssetId!: typeof Json
+}
+
+@ObjectType()
+export class AccountsTokensOwner {
+    @Field(() => ID)
+    id!: string
+
+    @Field(() => BigInteger)
+    balance!: typeof BigInteger
+
+    @Field(() => Boolean)
+    isFrozen!: boolean
+
+    @Field(() => String)
+    accountId!: string
+
+    @Field(() => BigInteger)
+    reservedBalance!: typeof BigInteger
+
+    @Field()
+    updatedAt!: Date
+
+    @Field()
+    createdAt!: Date
+
+    @Field(() => [AccountsTokensListing], { nullable: true })
+    listings!: AccountsTokensListing[]
+}
+
+@ObjectType()
+export class AccountsTokensAttribute {
+    @Field(() => String)
+    key!: string
+
+    @Field(() => String, { nullable: true })
+    value?: string
+}
+
+@ObjectType()
+export class AccountsTokensTokenGroup {
+    @Field(() => ID)
+    id!: string
+
+    @Field(() => [AccountsTokensAttribute], { nullable: true })
+    attributes?: AccountsTokensAttribute[]
+
+    constructor(props: Partial<AccountsTokensTokenGroup>) {
+        Object.assign(this, props)
+    }
+}
+
+@ObjectType()
+export class AccountsTokensCollection {
+    @Field(() => ID)
+    id!: string
+
+    @Field(() => BigInteger)
+    collectionId!: typeof BigInteger
+
+    @Field(() => Json, { nullable: true })
+    metadata!: typeof Json
+
+    @Field(() => Json)
+    stats!: typeof Json
+
+    @Field(() => [AccountsTokensAttribute], { nullable: true })
+    attributes?: AccountsTokensAttribute[]
+}
+
+@ObjectType()
+export class AccountsTokensToken {
+    @Field(() => ID)
+    id!: string
+
+    @Field(() => BigInteger)
+    tokenId!: typeof BigInteger
+
+    @Field(() => BigInteger)
+    supply!: typeof BigInteger
+
+    @Field(() => Boolean)
+    isFrozen!: boolean
+
+    @Field({ nullable: true })
+    freezeState!: AccountsTokensFreezeState
+
+    @Field(() => Json, { nullable: true })
+    metadata!: typeof Json
+
+    @Field(() => Boolean)
+    nonFungible!: boolean
+
+    @Field()
+    createdAt!: Date
+
+    @Field(() => AccountsTokensCollection)
+    collection!: AccountsTokensCollection
+
+    @Field(() => [AccountsTokensAttribute], { nullable: true })
+    attributes?: AccountsTokensAttribute[]
+
+    @Field(() => [AccountsTokensOwner], { nullable: false })
+    owners!: AccountsTokensOwner[]
+
+    @Field(() => [AccountsTokensTokenGroup], { nullable: true })
+    tokenGroupTokens?: AccountsTokensTokenGroup[]
+
+    constructor(props: Partial<AccountsTokensToken>) {
+        Object.assign(this, props)
+    }
+}
 
 @ArgsType()
 class AccountsTokensConnectionArgs {
@@ -192,6 +349,9 @@ export class AccountsTokensConnectionResolver {
                 'collectionAttrs.token IS NULL AND collectionAttrs.key IN (:...metadataKeys)',
                 { metadataKeys }
             )
+            .leftJoinAndSelect('token.tokenGroupTokens', 'tgt')
+            .leftJoinAndSelect('tgt.tokenGroup', 'tg')
+            .leftJoinAndSelect('tg.attributes', 'tgAttrs')
             .where('token.id IN (:...tokenIds)', { tokenIds })
             .orderBy(orderBy, order, 'NULLS LAST')
             .addOrderBy('token.id', order, 'NULLS LAST')
@@ -269,6 +429,19 @@ export class AccountsTokensConnectionResolver {
                     key: attr.key,
                     value: attr.value,
                 })),
+                tokenGroupTokens: (token.tokenGroupTokens || [])
+                    .filter((tgt: any) => tgt.tokenGroup)
+                    .sort((a: any, b: any) => (a.position ?? 0) - (b.position ?? 0))
+                    .map((tgt: any) => {
+                        const tokenGroup = tgt.tokenGroup
+                        return new AccountsTokensTokenGroup({
+                            id: tokenGroup.id.toString(),
+                            attributes: (tokenGroup.attributes || []).map((attr: any) => ({
+                                key: attr.key,
+                                value: attr.value,
+                            })),
+                        })
+                    }),
                 owners: [],
             })
 
