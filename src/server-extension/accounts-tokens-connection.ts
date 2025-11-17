@@ -104,6 +104,16 @@ export class AccountsTokensTokenGroup {
 }
 
 @ObjectType()
+export class AccountsTokensTokenGroupToken {
+    @Field(() => AccountsTokensTokenGroup)
+    tokenGroup!: AccountsTokensTokenGroup
+
+    constructor(props: Partial<AccountsTokensTokenGroupToken>) {
+        Object.assign(this, props)
+    }
+}
+
+@ObjectType()
 export class AccountsTokensCollection {
     @Field(() => ID)
     id!: string
@@ -156,8 +166,8 @@ export class AccountsTokensToken {
     @Field(() => [AccountsTokensOwner], { nullable: false })
     owners!: AccountsTokensOwner[]
 
-    @Field(() => [AccountsTokensTokenGroup], { nullable: true })
-    tokenGroupTokens?: AccountsTokensTokenGroup[]
+    @Field(() => [AccountsTokensTokenGroupToken], { nullable: true })
+    tokenGroupTokens?: AccountsTokensTokenGroupToken[]
 
     constructor(props: Partial<AccountsTokensToken>) {
         Object.assign(this, props)
@@ -434,12 +444,14 @@ export class AccountsTokensConnectionResolver {
                     .sort((a: any, b: any) => (a.position ?? 0) - (b.position ?? 0))
                     .map((tgt: any) => {
                         const tokenGroup = tgt.tokenGroup
-                        return new AccountsTokensTokenGroup({
-                            id: tokenGroup.id.toString(),
-                            attributes: (tokenGroup.attributes || []).map((attr: any) => ({
-                                key: attr.key,
-                                value: attr.value,
-                            })),
+                        return new AccountsTokensTokenGroupToken({
+                            tokenGroup: new AccountsTokensTokenGroup({
+                                id: tokenGroup.id.toString(),
+                                attributes: (tokenGroup.attributes || []).map((attr: any) => ({
+                                    key: attr.key,
+                                    value: attr.value,
+                                })),
+                            }),
                         })
                     }),
                 owners: [],
