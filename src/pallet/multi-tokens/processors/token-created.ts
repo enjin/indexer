@@ -95,8 +95,6 @@ async function tokenFromCall(
 
     let tokenParams = null
 
-    console.log('call', call)
-
     if ('capacity' in call) {
         const data = await mappings.multiTokens.storage.tokens(block, {
             collectionId: event.collectionId,
@@ -110,7 +108,6 @@ async function tokenFromCall(
 
     if ('params' in call) {
         tokenParams = call.params
-        console.log('tokenParams', tokenParams)
 
         if ('sufficiency' in tokenParams) {
             token.minimumBalance =
