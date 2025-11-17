@@ -11,7 +11,7 @@ import {
 import { Block, CommonContext, EventItem } from '~/contexts'
 import * as mappings from '~/pallet/index'
 import { CreatePool } from '~/pallet/nomination-pools/calls'
-import { ForceMint, Mint } from '~/pallet/multi-tokens/calls'
+import { BatchMint, ForceMint, Mint } from '~/pallet/multi-tokens/calls'
 import { TokenCreated } from '~/pallet/multi-tokens/events'
 import { TokenMarketBehavior as TokenMarketBehavior500 } from '~/type/matrixV500'
 import { TokenMarketBehavior as TokenMarketBehavior1020 } from '~/type/matrixV1020'
@@ -157,6 +157,28 @@ async function tokenFromCall(
     return token
 }
 
+async function tokenFromBatchCall(
+    ctx: CommonContext,
+    block: Block,
+    event: TokenCreated,
+    call: BatchMint
+): Promise<Token[]> {
+    const tokens = await Promise.all(
+        call.recipients.map(async (recipient) => {
+            return tokenFromCall(ctx, block, event, {
+                recipient: {
+                    __kind: 'Id',
+                    value: recipient.accountId,
+                },
+                collectionId: call.collectionId,
+                params: recipient.params,
+            })
+        })
+    )
+
+    return tokens
+}
+
 export async function tokenCreated(
     ctx: CommonContext,
     block: Block,
@@ -178,7 +200,11 @@ export async function tokenCreated(
         return mappings.multiTokens.events.tokenCreatedEventModel(item, event)
     }
 
-    if (item.call) {
+    if (item.call && item.call.name === mappings.multiTokens.calls.batchMint.name) {
+        const call = mappings.multiTokens.calls.batchMint(item.call)
+        const tokens = await tokenFromBatchCall(ctx, block, event, call)
+        await ctx.store.save(tokens)
+    } else if (item.call) {
         const call = mappings.multiTokens.utils.anyMint(item.call, event.collectionId, event.tokenId)
         const token = await tokenFromCall(ctx, block, event, call)
         await ctx.store.save(token)
