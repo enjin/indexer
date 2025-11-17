@@ -108,6 +108,7 @@ async function tokenFromCall(
 
     if ('params' in call) {
         tokenParams = call.params
+        console.log('tokenParams', tokenParams)
 
         if ('sufficiency' in tokenParams) {
             token.minimumBalance =
