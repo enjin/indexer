@@ -95,6 +95,8 @@ async function tokenFromCall(
 
     let tokenParams = null
 
+    console.log('call', call)
+
     if ('capacity' in call) {
         const data = await mappings.multiTokens.storage.tokens(block, {
             collectionId: event.collectionId,
