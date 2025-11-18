@@ -1,6 +1,5 @@
 export * from '~/server-extension/account-staking-summary'
 export * from '~/server-extension/accounts-nft-summary'
-export * from '~/server-extension/accounts-tokens'
 export * from '~/server-extension/accounts-tokens-connection'
 export * from '~/server-extension/claimable-colllections'
 export * from '~/server-extension/claims-account-nonce'
