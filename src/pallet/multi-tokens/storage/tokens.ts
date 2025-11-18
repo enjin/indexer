@@ -38,6 +38,10 @@ export async function tokens(
             () => getTokens(multiTokens.tokens.matrixEnjinV603)
         )
         .when(
+            () => multiTokens.tokens.matrixV1030.is(block),
+            () => getTokens(multiTokens.tokens.matrixV1030)
+        )
+        .when(
             () => multiTokens.tokens.matrixV1020.is(block),
             () => getTokens(multiTokens.tokens.matrixV1020)
         )
@@ -64,6 +68,10 @@ export async function tokens(
         .when(
             () => multiTokens.tokens.enjinV100.is(block),
             () => getTokens(multiTokens.tokens.enjinV100)
+        )
+        .when(
+            () => multiTokens.tokens.v1060.is(block),
+            () => getTokens(multiTokens.tokens.v1060)
         )
         .when(
             () => multiTokens.tokens.v1050.is(block),
