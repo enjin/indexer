@@ -12,7 +12,7 @@ export async function computeAccountStats(job: Job) {
         .select('account.stats', 'stats')
         .addSelect('COALESCE(collection_count.count, 0)', 'totalCollections')
         .addSelect('COALESCE(token_count.count, 0)', 'totalTokens')
-        .addSelect('COALESCE(volume_sum.volume, 0)', 'volume')
+        .addSelect('COALESCE(volume_sum.volume, 0) + COALESCE(volume_sum_offer.volume, 0)', 'volume')
         .addSelect('COALESCE(tokens_value_sum.tokensValue, 0)', 'tokensValue')
         .from(Account, 'account')
         .leftJoin(
