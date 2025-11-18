@@ -204,14 +204,12 @@ export async function tokenCreated(
     if (item.call && isDispatchCall(item.call)) {
         const unwrappedCall = unwrapFuelTankCall(item.call) as Batch
         // @ts-ignore
-        if (unwrappedCall?.__kind === 'batch') {
-            const batchMintCall = unwrappedCall.calls[0].value
-            if (batchMintCall.__kind === 'batch_mint') {
-                const tokens = await tokenFromBatchCall(ctx, block, event, batchMintCall)
-                await ctx.store.save(tokens)
+        const batchMintCall = unwrappedCall.calls[0].value
+        if (batchMintCall.__kind === 'batch_mint') {
+            const tokens = await tokenFromBatchCall(ctx, block, event, batchMintCall)
+            await ctx.store.save(tokens)
 
-                return mappings.multiTokens.events.tokenCreatedEventModel(item, event)
-            }
+            return mappings.multiTokens.events.tokenCreatedEventModel(item, event)
         }
     }
 
