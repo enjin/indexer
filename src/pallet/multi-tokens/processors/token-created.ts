@@ -18,6 +18,8 @@ import { TokenMarketBehavior as TokenMarketBehavior1020 } from '~/type/matrixV10
 import { getOrCreateAccount } from '~/util/entities'
 import { getCapType, getFreezeState, isTokenFrozen } from '~/synchronize/common'
 import { EventHandlerResult } from '~/processor.handler'
+import { isDispatchCall, unwrapFuelTankCall } from '~/pallet/fuel-tanks/utils'
+import { Batch } from '~/pallet/matrix-utility/calls'
 
 type TokenMarketBehavior = TokenMarketBehavior500 | TokenMarketBehavior1020
 
@@ -65,6 +67,8 @@ async function tokenFromCall(
         where: { id: event.collectionId.toString() },
     })
 
+    const tokenCall = call
+
     if (!collection) {
         throwFatalError(`[TokenCreated] We have not found collection ${event.collectionId.toString()}.`)
     }
@@ -95,7 +99,7 @@ async function tokenFromCall(
 
     let tokenParams = null
 
-    if ('capacity' in call) {
+    if ('capacity' in tokenCall) {
         const data = await mappings.multiTokens.storage.tokens(block, {
             collectionId: event.collectionId,
             tokenId: event.tokenId,
@@ -106,8 +110,8 @@ async function tokenFromCall(
         }
     }
 
-    if ('params' in call) {
-        tokenParams = call.params
+    if ('params' in tokenCall) {
+        tokenParams = tokenCall.params
 
         if ('sufficiency' in tokenParams) {
             token.minimumBalance =
@@ -197,12 +201,21 @@ export async function tokenCreated(
         return mappings.multiTokens.events.tokenCreatedEventModel(item, event)
     }
 
-    // @ts-ignore
-    if (item.call && item.call.__kind === 'batch') {
-        const call = mappings.multiTokens.calls.batchMint(item.call)
-        const tokens = await tokenFromBatchCall(ctx, block, event, call)
-        await ctx.store.save(tokens)
-    } else if (item.call) {
+    if (item.call && isDispatchCall(item.call)) {
+        const unwrappedCall = unwrapFuelTankCall(item.call) as Batch
+        // @ts-ignore
+        if (unwrappedCall?.__kind === 'batch') {
+            const batchMintCall = unwrappedCall.calls[0].value
+            if (batchMintCall.__kind === 'batch_mint') {
+                const tokens = await tokenFromBatchCall(ctx, block, event, batchMintCall)
+                await ctx.store.save(tokens)
+
+                return mappings.multiTokens.events.tokenCreatedEventModel(item, event)
+            }
+        }
+    }
+
+    if (item.call) {
         const call = mappings.multiTokens.utils.anyMint(item.call, event.collectionId, event.tokenId)
         const token = await tokenFromCall(ctx, block, event, call)
         await ctx.store.save(token)
