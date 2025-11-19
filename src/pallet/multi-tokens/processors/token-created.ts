@@ -79,7 +79,7 @@ async function tokenFromCall(
         if ('__kind' in params) {
             if (params.__kind === 'CreateToken' || params.__kind === 'Mint') {
                 tokenId = params.tokenId
-            } else if (params.__kind === 'CreateOrMint') {
+            } else {
                 tokenId = params.value.tokenId
             }
         } else {
