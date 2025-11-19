@@ -70,6 +70,9 @@ export class Token {
     @BigIntColumn_({nullable: false})
     infusion!: bigint
 
+    @BigIntColumn_({nullable: true})
+    bestListingPrice!: bigint | undefined | null
+
     @Index_()
     @ManyToOne_(() => Collection, {nullable: true})
     collection!: Collection

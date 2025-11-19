@@ -739,6 +739,7 @@ type Token @entity {
   accountDepositCount: Int!
   anyoneCanInfuse: Boolean!
   infusion: BigInt!
+  bestListingPrice: BigInt
 
   # Relations
   collection: Collection! @index
