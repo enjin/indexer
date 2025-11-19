@@ -56,6 +56,7 @@ export async function bidPlaced(
     makeAssetId.bestListing = null
     if (bestListing) {
         makeAssetId.bestListing = bestListing
+        makeAssetId.bestListingPrice = bestListing.price
     }
     await ctx.store.save(makeAssetId)
 

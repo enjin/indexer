@@ -40,6 +40,7 @@ export async function tokenDestroyed(
     }
 
     token.bestListing = null
+    token.bestListingPrice = null
     token.recentListing = null
     token.lastSale = null
 

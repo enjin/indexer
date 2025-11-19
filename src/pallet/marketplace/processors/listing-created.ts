@@ -128,6 +128,7 @@ export async function listingCreated(
         makeAssetId.bestListing = null
         if (bestListing) {
             makeAssetId.bestListing = bestListing
+            makeAssetId.bestListingPrice = bestListing.price
         }
         makeAssetId.recentListing = listing
         await ctx.store.save(makeAssetId)
