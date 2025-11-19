@@ -1,4 +1,4 @@
-import {Query, Resolver, Args, ArgsType, Field, ObjectType, ID, InputType, Int} from 'type-graphql'
+import { Query, Resolver, Args, ArgsType, Field, ObjectType, ID, InputType, Int } from 'type-graphql'
 import type { EntityManager } from 'typeorm'
 import { Account, NominationPool, PoolState } from '~/model'
 import { Validate } from 'class-validator'
@@ -198,7 +198,6 @@ export class BestPoolsResolver {
             .andWhere('pool.capacity - pool.points >= :minBondAmount', { minBondAmount })
             .groupBy('pool.id')
             .addGroupBy('token.id')
-            .limit(limit)
             .getRawMany()
 
         if (pools.length === 0) return []
@@ -243,7 +242,7 @@ export class BestPoolsResolver {
             })
         }
 
-        return rateFiltered.slice(0, 5).map(
+        return rateFiltered.slice(0, limit).map(
             (p) =>
                 new BestPool({
                     id: p.id,
