@@ -1,4 +1,4 @@
-import { Query, Resolver, Args, ArgsType, Field, ObjectType, ID, InputType } from 'type-graphql'
+import {Query, Resolver, Args, ArgsType, Field, ObjectType, ID, InputType, Int} from 'type-graphql'
 import type { EntityManager } from 'typeorm'
 import { Account, NominationPool, PoolState } from '~/model'
 import { Validate } from 'class-validator'
@@ -12,6 +12,9 @@ class BestPoolsArgs {
     @Field(() => String, { nullable: true })
     @Validate(IsPublicKey)
     accountId?: string
+
+    @Field(() => Int, { defaultValue: 5 })
+    limit: number = 5
 }
 
 @InputType()
@@ -148,7 +151,7 @@ export class BestPoolsResolver {
     constructor(private tx: () => Promise<EntityManager>) {}
 
     @Query(() => [BestPool])
-    async bestPools(@Args() { accountId }: BestPoolsArgs): Promise<BestPool[]> {
+    async bestPools(@Args() { accountId, limit }: BestPoolsArgs): Promise<BestPool[]> {
         const manager = await this.tx()
 
         const account = await manager
@@ -156,7 +159,9 @@ export class BestPoolsResolver {
             .createQueryBuilder('account')
             .where('account.id = :accountId', { accountId })
             .getOne()
-        const amount = account?.balance.free ?? 0n
+        const amount: bigint = account?.balance.free ?? 0n
+
+        const minBondAmount = '1000000000000000000';
 
         const pools = await manager
             .getRepository(NominationPool)
@@ -190,8 +195,10 @@ export class BestPoolsResolver {
             .addSelect('COALESCE(SUM(ta.balance), 0)', 'totalStake')
             .where('pool.state = :state', { state: PoolState.Open })
             .andWhere('pool.availableStakePoints >= :amount', { amount })
+            .andWhere('pool.capacity - pool.points >= :minBondAmount', { minBondAmount })
             .groupBy('pool.id')
             .addGroupBy('token.id')
+            .limit(limit)
             .getRawMany()
 
         if (pools.length === 0) return []
