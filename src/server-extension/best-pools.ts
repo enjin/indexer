@@ -161,7 +161,7 @@ export class BestPoolsResolver {
             .getOne()
         const amount: bigint = account?.balance.free ?? 0n
 
-        const minBondAmount = '1000000000000000000';
+        const minBondAmount = '1000000000000000000'
 
         const pools = await manager
             .getRepository(NominationPool)
