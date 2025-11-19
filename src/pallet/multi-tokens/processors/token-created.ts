@@ -87,10 +87,19 @@ async function tokenFromCall(
         }
     }
 
+    const existingToken = await ctx.store.findOne<Token>(Token, {
+        where: { id: `${event.collectionId}-${tokenId}` },
+    })
+
+    let existingSupply = 0n
+    if (existingToken) {
+        existingSupply = existingToken.supply
+    }
+
     const token = new Token({
         id: `${event.collectionId}-${tokenId}`,
         tokenId: tokenId,
-        supply: 0n, // Updated on `Minted`
+        supply: existingSupply, // Updated on `Minted`
         cap: null, // params.cap,
         behavior: null, // params.behavior,
         isFrozen: false, // isTokenFrozen(params.freezeState),
