@@ -12,7 +12,7 @@ export async function computeAccountStats(job: Job) {
         .select('account.stats', 'stats')
         .addSelect('COALESCE(collection_count.count, 0)', 'totalCollections')
         .addSelect('COALESCE(token_count.count, 0)', 'totalTokens')
-        .addSelect('COALESCE(volume_sum.volume, 0)', 'volume')
+        .addSelect('COALESCE(volume_sum.volume, 0) + COALESCE(volume_sum_offer.volume, 0)', 'volume')
         .addSelect('COALESCE(tokens_value_sum.tokensValue, 0)', 'tokensValue')
         .from(Account, 'account')
         .leftJoin(
@@ -26,8 +26,13 @@ export async function computeAccountStats(job: Job) {
             '1=1'
         )
         .leftJoin(
-            `(SELECT COALESCE(SUM(amount * price), 0) as volume FROM listing_sale WHERE buyer_id = '${accountId}')`,
+            `(SELECT COALESCE(SUM(amount * price), 0) as volume FROM listing_sale WHERE listing_id NOT IN (SELECT id FROM listing WHERE type = 'Offer') AND buyer_id = '${accountId}')`,
             'volume_sum',
+            '1=1'
+        )
+        .leftJoin(
+            `(SELECT COALESCE(SUM(ls.amount * ls.price), 0) as volume FROM listing_sale as ls INNER JOIN listing as l ON ls.listing_id = l.id WHERE l.type = 'Offer' AND l.seller_id = '${accountId}')`,
+            'volume_sum_offer',
             '1=1'
         )
         .leftJoin(
