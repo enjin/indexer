@@ -116,6 +116,7 @@ export async function listingFilled(
         makeAssetId.bestListing = null
         if (bestListing) {
             makeAssetId.bestListing = bestListing
+            makeAssetId.bestListingPrice = bestListing.price
         }
 
         makeAssetId.lastSale = sale
