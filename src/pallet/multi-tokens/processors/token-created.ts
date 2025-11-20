@@ -73,10 +73,33 @@ async function tokenFromCall(
         throwFatalError(`[TokenCreated] We have not found collection ${event.collectionId.toString()}.`)
     }
 
+    let tokenId = event.tokenId
+    if ('params' in tokenCall) {
+        const params = tokenCall.params
+        if ('__kind' in params) {
+            if (params.__kind === 'CreateToken' || params.__kind === 'Mint') {
+                tokenId = params.tokenId
+            } else {
+                tokenId = params.value.tokenId
+            }
+        } else {
+            tokenId = params.tokenId
+        }
+    }
+
+    const existingToken = await ctx.store.findOne<Token>(Token, {
+        where: { id: `${event.collectionId}-${tokenId}` },
+    })
+
+    let existingSupply = 0n
+    if (existingToken) {
+        existingSupply = existingToken.supply
+    }
+
     const token = new Token({
-        id: `${event.collectionId}-${event.tokenId}`,
-        tokenId: event.tokenId,
-        supply: 0n, // Updated on `Minted`
+        id: `${event.collectionId}-${tokenId}`,
+        tokenId: tokenId,
+        supply: existingSupply, // Updated on `Minted`
         cap: null, // params.cap,
         behavior: null, // params.behavior,
         isFrozen: false, // isTokenFrozen(params.freezeState),
