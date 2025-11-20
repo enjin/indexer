@@ -227,8 +227,8 @@ export async function tokenCreated(
     if (item.call && isDispatchCall(item.call)) {
         const unwrappedCall = unwrapFuelTankCall(item.call) as Batch
         // @ts-ignore
-        const batchMintCall = unwrappedCall.calls[0].value
-        if (batchMintCall.__kind === 'batch_mint') {
+        const batchMintCall = unwrappedCall.calls?.[0]?.value
+        if (batchMintCall?.__kind === 'batch_mint') {
             const tokens = await tokenFromBatchCall(ctx, block, event, batchMintCall)
             await ctx.store.save(tokens)
 
