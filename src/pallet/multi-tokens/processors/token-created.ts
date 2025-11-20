@@ -19,7 +19,6 @@ import { getOrCreateAccount } from '~/util/entities'
 import { getCapType, getFreezeState, isTokenFrozen } from '~/synchronize/common'
 import { EventHandlerResult } from '~/processor.handler'
 import { isDispatchCall, unwrapFuelTankCall } from '~/pallet/fuel-tanks/utils'
-import { Batch } from '~/pallet/matrix-utility/calls'
 
 type TokenMarketBehavior = TokenMarketBehavior500 | TokenMarketBehavior1020
 
@@ -225,9 +224,9 @@ export async function tokenCreated(
     }
 
     if (item.call && isDispatchCall(item.call)) {
-        const unwrappedCall = unwrapFuelTankCall(item.call) as Batch
+        const unwrappedCall = unwrapFuelTankCall(item.call)
         // @ts-ignore
-        const batchMintCall = unwrappedCall.calls?.[0]?.value
+        const batchMintCall = unwrappedCall?.calls?.[0]?.value
         if (batchMintCall?.__kind === 'batch_mint') {
             const tokens = await tokenFromBatchCall(ctx, block, event, batchMintCall)
             await ctx.store.save(tokens)
