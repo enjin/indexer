@@ -107,8 +107,6 @@ class TokenGroupItemsConnection {
     }
 }
 
-
-
 @Resolver()
 export class TokenGroupItemsResolver {
     constructor(private tx: () => Promise<EntityManager>) {}
@@ -265,7 +263,10 @@ export class TokenGroupItemsResolver {
         const pageTokenIds = pageItems.filter((row: any) => row.sort_priority === 1).map((row: any) => row.id)
 
         // Fetch full group data
-        const groupsMap = new Map<string, { ownedCount: number; attributes: TokenGroupItemAttribute[]; tokenIds: string[] }>()
+        const groupsMap = new Map<
+            string,
+            { ownedCount: number; attributes: TokenGroupItemAttribute[]; tokenIds: string[] }
+        >()
         if (pageGroupIds.length > 0) {
             const groupDetails = await manager
                 .getRepository(TokenAccount)
@@ -383,8 +384,6 @@ export class TokenGroupItemsResolver {
                 }
             }
         }
-
-
 
         // Build items from paged results
         const hasNextPage = pageItems.length > limit
