@@ -185,8 +185,9 @@ export class TokenGroupItemsResolver {
         // Keyset pagination query: fetch groups and ungrouped tokens in one pass
         const accountIdPlaceholders = accountIds.map((_, i) => `$${i + 1}`).join(', ')
         const collectionIdPlaceholder = `$${accountIds.length + 1}`
-        const cursorTypeParam = cursorType === 'GROUP' ? 0 : cursorType === 'TOKEN' ? 1 : 0
-        const cursorOwnedCountParam = cursorOwnedCount ?? 0
+        const cursorTypeParam = cursorType === 'GROUP' ? 0 : cursorType === 'TOKEN' ? 1 : -1
+        // For descending owned_count, start from MAX_SAFE_INTEGER on first page to include all groups
+        const cursorOwnedCountParam = cursorOwnedCount ?? Number.MAX_SAFE_INTEGER
         const cursorIdParam = cursorId ?? ''
 
         const pageItems = await manager.query(
