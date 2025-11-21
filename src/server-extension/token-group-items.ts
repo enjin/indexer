@@ -183,8 +183,11 @@ export class TokenGroupItemsResolver {
         }
 
         // Keyset pagination query: fetch groups and ungrouped tokens in one pass
-        const accountIdPlaceholders = accountIds.map((_, i) => `$${i + 2}`).join(', ')
-        const collectionIdPlaceholder = `$${accountIds.length + 2}`
+        const accountIdPlaceholders = accountIds.map((_, i) => `$${i + 1}`).join(', ')
+        const collectionIdPlaceholder = `$${accountIds.length + 1}`
+        const cursorTypeParam = cursorType === 'GROUP' ? 0 : cursorType === 'TOKEN' ? 1 : 0
+        const cursorOwnedCountParam = cursorOwnedCount ?? 0
+        const cursorIdParam = cursorId ?? ''
 
         const pageItems = await manager.query(
             `
@@ -235,15 +238,60 @@ export class TokenGroupItemsResolver {
             WHERE (sort_priority, owned_count DESC, id) ${
                 cursorType && cursorId && cursorOwnedCount !== null ? '>' : '>='
             } (
-                ${cursorType === 'GROUP' ? '0' : '1'},
-                ${cursorOwnedCount ?? 0},
-                ${cursorId ? `'${cursorId}'` : "''"}
+                $${accountIds.length + 2},
+                $${accountIds.length + 3},
+                $${accountIds.length + 4}
             )
             ORDER BY sort_priority, owned_count DESC, id
             LIMIT ${limit + 1}
         `,
+            [...accountIds, collectionId, cursorTypeParam, cursorOwnedCountParam, cursorIdParam]
+        )
+
+        // Fetch total count of matching items (without LIMIT)
+        const totalCountResult = await manager.query(
+            `
+            -- groups_data: token groups owned by the account(s) with at least two tokens
+            WITH groups_data AS (
+                SELECT
+                    tg.id AS id
+                FROM token_account
+                INNER JOIN token ON token_account.token_id = token.id
+                INNER JOIN collection ON token.collection_id = collection.id
+                INNER JOIN token_group_token tgt ON token.id = tgt.token_id
+                INNER JOIN token_group tg ON tgt.token_group_id = tg.id
+                WHERE token_account.account IN (${accountIdPlaceholders})
+                    AND token_account.total_balance > 0
+                    AND collection.collection_id = ${collectionIdPlaceholder}
+                GROUP BY tg.id
+                HAVING COUNT(DISTINCT token.id) >= 2
+            ),
+            -- ungrouped_tokens: tokens without a qualifying group
+            ungrouped_tokens AS (
+                SELECT
+                    token.id AS id
+                FROM token_account
+                INNER JOIN token ON token_account.token_id = token.id
+                INNER JOIN collection ON token.collection_id = collection.id
+                LEFT JOIN token_group_token tgt ON token.id = tgt.token_id
+                LEFT JOIN token_group tg ON tgt.token_group_id = tg.id
+                    AND tg.id IN (SELECT id FROM groups_data)
+                WHERE token_account.account IN (${accountIdPlaceholders})
+                    AND token_account.total_balance > 0
+                    AND collection.collection_id = ${collectionIdPlaceholder}
+                    AND tg.id IS NULL
+                GROUP BY token.id
+            )
+            SELECT COUNT(*) AS count
+            FROM (
+                SELECT id FROM groups_data
+                UNION ALL
+                SELECT id FROM ungrouped_tokens
+            ) AS merged
+        `,
             [...accountIds, collectionId]
         )
+        const totalCount = parseInt(totalCountResult[0]?.count ?? 0, 10)
 
         if (!pageItems?.length) {
             return new TokenGroupItemsConnection({
@@ -254,7 +302,7 @@ export class TokenGroupItemsResolver {
                     startCursor: '',
                     endCursor: '',
                 }),
-                totalCount: 0,
+                totalCount,
             })
         }
 
@@ -429,7 +477,7 @@ export class TokenGroupItemsResolver {
                 startCursor: edges[0]?.cursor ?? '',
                 endCursor: edges[edges.length - 1]?.cursor ?? '',
             }),
-            totalCount: items.length,
+            totalCount,
         })
     }
 }
