@@ -202,7 +202,7 @@ export class TokenGroupItemsResolver {
                 INNER JOIN collection ON token.collection_id = collection.id
                 INNER JOIN token_group_token tgt ON token.id = tgt.token_id
                 INNER JOIN token_group tg ON tgt.token_group_id = tg.id
-                WHERE token_account.account IN (${accountIdPlaceholders})
+                WHERE token_account.account_id IN (${accountIdPlaceholders})
                     AND token_account.total_balance > 0
                     AND collection.collection_id = ${collectionIdPlaceholder}
                 GROUP BY tg.id
@@ -220,7 +220,7 @@ export class TokenGroupItemsResolver {
                 LEFT JOIN token_group_token tgt ON token.id = tgt.token_id
                 LEFT JOIN token_group tg ON tgt.token_group_id = tg.id
                     AND tg.id IN (SELECT id FROM groups_data)
-                WHERE token_account.account IN (${accountIdPlaceholders})
+                WHERE token_account.account_id IN (${accountIdPlaceholders})
                     AND token_account.total_balance > 0
                     AND collection.collection_id = ${collectionIdPlaceholder}
                     AND tg.id IS NULL
@@ -234,13 +234,13 @@ export class TokenGroupItemsResolver {
             )
             SELECT id, owned_count, sort_priority
             FROM merged
-            -- tuple comparison implements keyset pagination
-            WHERE (sort_priority, owned_count DESC, id) ${
-                cursorType && cursorId && cursorOwnedCount !== null ? '>' : '>='
-            } (
-                $${accountIds.length + 2},
-                $${accountIds.length + 3},
-                $${accountIds.length + 4}
+            -- keyset pagination: compare sort_priority (ASC), owned_count (DESC), id (ASC)
+            WHERE (
+                sort_priority > $${accountIds.length + 2}
+                OR (sort_priority = $${accountIds.length + 2} AND owned_count < $${accountIds.length + 3})
+                OR (sort_priority = $${accountIds.length + 2} AND owned_count = $${accountIds.length + 3} AND id ${
+                    cursorType && cursorId && cursorOwnedCount !== null ? '>' : '>='
+                } $${accountIds.length + 4})
             )
             ORDER BY sort_priority, owned_count DESC, id
             LIMIT ${limit + 1}
@@ -260,7 +260,7 @@ export class TokenGroupItemsResolver {
                 INNER JOIN collection ON token.collection_id = collection.id
                 INNER JOIN token_group_token tgt ON token.id = tgt.token_id
                 INNER JOIN token_group tg ON tgt.token_group_id = tg.id
-                WHERE token_account.account IN (${accountIdPlaceholders})
+                WHERE token_account.account_id IN (${accountIdPlaceholders})
                     AND token_account.total_balance > 0
                     AND collection.collection_id = ${collectionIdPlaceholder}
                 GROUP BY tg.id
@@ -276,7 +276,7 @@ export class TokenGroupItemsResolver {
                 LEFT JOIN token_group_token tgt ON token.id = tgt.token_id
                 LEFT JOIN token_group tg ON tgt.token_group_id = tg.id
                     AND tg.id IN (SELECT id FROM groups_data)
-                WHERE token_account.account IN (${accountIdPlaceholders})
+                WHERE token_account.account_id IN (${accountIdPlaceholders})
                     AND token_account.total_balance > 0
                     AND collection.collection_id = ${collectionIdPlaceholder}
                     AND tg.id IS NULL
