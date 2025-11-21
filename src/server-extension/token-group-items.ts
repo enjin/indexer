@@ -360,6 +360,10 @@ export class TokenGroupItemsResolver {
             }
 
             // Fetch tokens for groups (owned by the requested accounts) - limit to 4 per group
+            const groupTokensPlaceholders = pageGroupIds.map((_, i) => `$${i + 1}`).join(', ')
+            const accountIdsPlaceholders = accountIds
+                .map((_, i) => `$${pageGroupIds.length + i + 1}`)
+                .join(', ')
             const groupTokens = await manager.query(
                 `
                 WITH ranked_tokens AS (
@@ -371,8 +375,8 @@ export class TokenGroupItemsResolver {
                     INNER JOIN token ON token_account.token_id = token.id
                     INNER JOIN token_group_token tgt ON token.id = tgt.token_id
                     INNER JOIN token_group tg ON tgt.token_group_id = tg.id
-                    WHERE tg.id IN (${pageGroupIds.map(() => '?').join(',')})
-                        AND token_account.account_id IN (${accountIds.map(() => '?').join(',')})
+                    WHERE tg.id IN (${groupTokensPlaceholders})
+                        AND token_account.account_id IN (${accountIdsPlaceholders})
                         AND token_account.total_balance > 0
                 )
                 SELECT group_id, token_id
