@@ -360,9 +360,9 @@ export class TokenGroupItemsResolver {
             }
 
             // Fetch tokens for groups (owned by the requested accounts) - limit to 4 per group
-            const groupTokensPlaceholders = pageGroupIds.map((_, i) => `$${i + 1}`).join(', ')
+            const groupTokensPlaceholders = pageGroupIds.map((_: any, i: number) => `$${i + 1}`).join(', ')
             const accountIdsPlaceholders = accountIds
-                .map((_, i) => `$${pageGroupIds.length + i + 1}`)
+                .map((_: any, i: number) => `$${pageGroupIds.length + i + 1}`)
                 .join(', ')
             const groupTokens = await manager.query(
                 `
