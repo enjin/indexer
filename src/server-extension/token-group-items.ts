@@ -3,7 +3,7 @@ import { BigInteger, Json } from '@subsquid/graphql-server'
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
 import { Validate } from 'class-validator'
-import { TokenAccount, Attribute } from '~/model'
+import { TokenAccount, Attribute, Token, TokenGroup, Collection } from '~/model'
 import { decodeCursor, encodeCursor, IsPublicKeyArray } from './helpers'
 import { PageInfo } from './types'
 
@@ -14,6 +14,25 @@ class TokenGroupItemAttribute {
 
     @Field(() => String, { nullable: true })
     value?: string
+}
+
+@ObjectType()
+class TokenGroupItemCollection {
+    @Field(() => ID)
+    id!: string
+
+    @Field(() => BigInteger)
+    collectionId!: typeof BigInteger
+
+    @Field(() => Json, { nullable: true })
+    metadata!: typeof Json
+
+    @Field(() => [TokenGroupItemAttribute], { nullable: true })
+    attributes?: TokenGroupItemAttribute[]
+
+    constructor(props: Partial<TokenGroupItemCollection>) {
+        Object.assign(this, props)
+    }
 }
 
 @ArgsType()
@@ -40,11 +59,17 @@ class TokenGroupItemGroup {
     @Field(() => Int)
     ownedCount!: number
 
+    @Field(() => TokenGroupItemCollection)
+    collection!: TokenGroupItemCollection
+
     @Field(() => [TokenGroupItemAttribute], { nullable: true })
     attributes?: TokenGroupItemAttribute[]
 
     @Field(() => [TokenGroupItemToken], { nullable: true })
     tokens?: TokenGroupItemToken[]
+
+    @Field()
+    createdAt!: Date
 
     constructor(props: Partial<TokenGroupItemGroup>) {
         Object.assign(this, props)
@@ -58,6 +83,24 @@ class TokenGroupItemToken {
 
     @Field(() => BigInteger)
     tokenId!: typeof BigInteger
+
+    @Field(() => BigInteger)
+    supply!: typeof BigInteger
+
+    @Field(() => Boolean)
+    isFrozen!: boolean
+
+    @Field(() => Json, { nullable: true })
+    metadata!: typeof Json
+
+    @Field(() => Boolean)
+    nonFungible!: boolean
+
+    @Field()
+    createdAt!: Date
+
+    @Field(() => TokenGroupItemCollection)
+    collection!: TokenGroupItemCollection
 
     @Field(() => [TokenGroupItemAttribute], { nullable: true })
     attributes?: TokenGroupItemAttribute[]
@@ -314,10 +357,26 @@ export class TokenGroupItemsResolver {
         // Fetch full group data
         const groupsMap = new Map<
             string,
-            { ownedCount: number; attributes: TokenGroupItemAttribute[]; tokenIds: string[] }
+            {
+                ownedCount: number
+                attributes: TokenGroupItemAttribute[]
+                tokenIds: string[]
+                collection?: TokenGroupItemCollection
+                createdAt?: Date
+            }
         >()
         if (pageGroupIds.length > 0) {
             const groupDetails = await manager
+                .getRepository(TokenGroup)
+                .createQueryBuilder('tg')
+                .leftJoinAndSelect('tg.collection', 'collection')
+                .leftJoinAndSelect('tg.attributes', 'tgAttrs')
+                .leftJoinAndSelect('collection.attributes', 'collectionAttrs', 'collectionAttrs.token IS NULL')
+                .where('tg.id IN (:...groupIds)', { groupIds: pageGroupIds })
+                .getMany()
+
+            // Get owned counts for each group
+            const groupOwnedCounts = await manager
                 .getRepository(TokenAccount)
                 .createQueryBuilder('token_account')
                 .innerJoin('token_account.token', 'token')
@@ -327,36 +386,44 @@ export class TokenGroupItemsResolver {
                 .select('tg.id', 'group_id')
                 .addSelect('COUNT(DISTINCT token.id)', 'token_count')
                 .where('tg.id IN (:...groupIds)', { groupIds: pageGroupIds })
-                .andWhere('token_account.account IN (:...accountIds)', { accountIds })
-                .andWhere('token_account.totalBalance > 0')
-                .andWhere('collection.collectionId = :collectionId', { collectionId })
+                .andWhere('token_account.account_id IN (:...accountIds)', { accountIds })
+                .andWhere('token_account.total_balance > 0')
+                .andWhere('collection.collection_id = :collectionId', { collectionId })
                 .groupBy('tg.id')
                 .getRawMany()
 
-            for (const row of groupDetails) {
-                groupsMap.set(String(row.group_id), {
-                    ownedCount: parseInt(row.token_count, 10),
-                    attributes: [],
-                    tokenIds: [],
-                })
-            }
+            const ownedCountMap = new Map(
+                groupOwnedCounts.map((row) => [String(row.group_id), parseInt(row.token_count, 10)])
+            )
 
-            // Fetch group attributes
-            const groupAttributes = await manager
-                .getRepository(Attribute)
-                .createQueryBuilder('attribute')
-                .where('attribute.tokenGroup IN (:...groupIds)', { groupIds: pageGroupIds })
-                .getRawMany()
+            for (const group of groupDetails) {
+                const groupId = String(group.id)
+                const ownedCount = ownedCountMap.get(groupId) || 0
 
-            for (const attr of groupAttributes) {
-                const groupId = String(attr.token_group_id)
-                const groupData = groupsMap.get(groupId)
-                if (groupData) {
-                    groupData.attributes.push({
+                const collectionAttrs = (group.collection?.attributes || [])
+                    .filter((attr: any) => !attr.token)
+                    .map((attr: any) => ({
                         key: attr.key,
                         value: attr.value,
-                    })
-                }
+                    }))
+
+                groupsMap.set(groupId, {
+                    ownedCount,
+                    attributes: (group.attributes || []).map((attr: any) => ({
+                        key: attr.key,
+                        value: attr.value,
+                    })),
+                    tokenIds: [],
+                    collection: group.collection
+                        ? new TokenGroupItemCollection({
+                              id: group.collection.id.toString(),
+                              collectionId: group.collection.collectionId as any,
+                              metadata: group.collection.metadata as any,
+                              attributes: collectionAttrs,
+                          })
+                        : undefined,
+                    createdAt: group.createdAt ?? new Date(),
+                })
             }
 
             // Fetch tokens for groups (owned by the requested accounts) - limit to 4 per group
@@ -401,40 +468,74 @@ export class TokenGroupItemsResolver {
         const allTokenIds = [...new Set([...pageTokenIds, ...allGroupTokenIds])]
 
         // Fetch full token data
-        const tokensMap = new Map<string, { tokenId: bigint; attributes: TokenGroupItemAttribute[] }>()
-        if (allTokenIds.length > 0) {
-            const tokenDetails = await manager
-                .getRepository(TokenAccount)
-                .createQueryBuilder('token_account')
-                .innerJoin('token_account.token', 'token')
-                .select('token.id', 'token_id')
-                .addSelect('token.tokenId', 'token_token_id')
-                .where('token.id IN (:...tokenIds)', { tokenIds: allTokenIds })
-                .getRawMany()
-
-            for (const row of tokenDetails) {
-                tokensMap.set(String(row.token_id), {
-                    tokenId: row.token_token_id != null ? BigInt(row.token_token_id) : 0n,
-                    attributes: [],
-                })
+        const tokensMap = new Map<
+            string,
+            {
+                tokenId: bigint
+                supply: bigint
+                isFrozen: boolean
+                metadata?: any
+                nonFungible: boolean
+                createdAt: Date
+                collection?: TokenGroupItemCollection
+                attributes: TokenGroupItemAttribute[]
             }
+        >()
+        if (allTokenIds.length > 0) {
+            const metadataKeys = [
+                'name',
+                'description',
+                'fallback_image',
+                'banner_image',
+                'media',
+                'uri',
+                'external_url',
+            ]
 
-            // Fetch token attributes
-            const tokenAttributes = await manager
-                .getRepository(Attribute)
-                .createQueryBuilder('attribute')
-                .where('attribute.token IN (:...tokenIds)', { tokenIds: allTokenIds })
-                .getRawMany()
+            const tokenDetails = await manager
+                .getRepository(Token)
+                .createQueryBuilder('token')
+                .leftJoinAndSelect('token.collection', 'collection')
+                .leftJoinAndSelect('token.attributes', 'tokenAttrs', 'tokenAttrs.key IN (:...metadataKeys)', {
+                    metadataKeys,
+                })
+                .leftJoinAndSelect(
+                    'collection.attributes',
+                    'collectionAttrs',
+                    'collectionAttrs.token IS NULL AND collectionAttrs.key IN (:...metadataKeys)',
+                    { metadataKeys }
+                )
+                .where('token.id IN (:...tokenIds)', { tokenIds: allTokenIds })
+                .getMany()
 
-            for (const attr of tokenAttributes) {
-                const tokenId = String(attr.token_id)
-                const tokenData = tokensMap.get(tokenId)
-                if (tokenData) {
-                    tokenData.attributes.push({
+            for (const token of tokenDetails) {
+                const collectionAttrs = (token.collection?.attributes || [])
+                    .filter((attr: any) => !attr.token)
+                    .map((attr: any) => ({
                         key: attr.key,
                         value: attr.value,
-                    })
-                }
+                    }))
+
+                tokensMap.set(String(token.id), {
+                    tokenId: token.tokenId,
+                    supply: token.supply,
+                    isFrozen: token.isFrozen,
+                    metadata: token.metadata as any,
+                    nonFungible: token.nonFungible,
+                    createdAt: token.createdAt,
+                    collection: token.collection
+                        ? new TokenGroupItemCollection({
+                              id: token.collection.id.toString(),
+                              collectionId: token.collection.collectionId as any,
+                              metadata: token.collection.metadata as any,
+                              attributes: collectionAttrs,
+                          })
+                        : undefined,
+                    attributes: (token.attributes || []).map((attr: any) => ({
+                        key: attr.key,
+                        value: attr.value,
+                    })),
+                })
             }
         }
 
@@ -448,20 +549,37 @@ export class TokenGroupItemsResolver {
                     return new TokenGroupItemToken({
                         id: tokenId,
                         tokenId: (tokenData?.tokenId ?? 0n) as any,
+                        supply: (tokenData?.supply ?? 0n) as any,
+                        isFrozen: tokenData?.isFrozen ?? false,
+                        metadata: tokenData?.metadata,
+                        nonFungible: tokenData?.nonFungible ?? false,
+                        createdAt: tokenData?.createdAt ?? new Date(),
+                        collection:
+                            tokenData?.collection || new TokenGroupItemCollection({ id: '', collectionId: 0n as any }),
                         attributes: tokenData?.attributes ?? [],
                     })
                 })
                 return new TokenGroupItemGroup({
                     id: row.id,
                     ownedCount: groupData?.ownedCount ?? 0,
+                    collection:
+                        groupData?.collection || new TokenGroupItemCollection({ id: '', collectionId: 0n as any }),
                     attributes: groupData?.attributes ?? [],
                     tokens: groupTokens,
+                    createdAt: groupData?.createdAt ?? new Date(),
                 })
             } else {
                 const tokenData = tokensMap.get(row.id)
                 return new TokenGroupItemToken({
                     id: row.id,
                     tokenId: (tokenData?.tokenId ?? 0n) as any,
+                    supply: (tokenData?.supply ?? 0n) as any,
+                    isFrozen: tokenData?.isFrozen ?? false,
+                    metadata: tokenData?.metadata,
+                    nonFungible: tokenData?.nonFungible ?? false,
+                    createdAt: tokenData?.createdAt ?? new Date(),
+                    collection:
+                        tokenData?.collection || new TokenGroupItemCollection({ id: '', collectionId: 0n as any }),
                     attributes: tokenData?.attributes ?? [],
                 })
             }
