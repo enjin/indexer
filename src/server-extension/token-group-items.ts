@@ -37,7 +37,7 @@ class TokenGroupItemCollection {
 
 @ArgsType()
 class TokenGroupItemsArgs {
-    @Field(() => ID)
+    @Field(() => String)
     collectionId!: string
 
     @Field(() => [String])
