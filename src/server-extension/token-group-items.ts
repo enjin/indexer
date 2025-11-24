@@ -555,7 +555,8 @@ export class CollectionInventoryResolver {
                         nonFungible: tokenData?.nonFungible ?? false,
                         createdAt: tokenData?.createdAt ?? new Date(),
                         collection:
-                            tokenData?.collection || new CollectionInventoryItemCollection({ id: '', collectionId: 0n as any }),
+                            tokenData?.collection ||
+                            new CollectionInventoryItemCollection({ id: '', collectionId: 0n as any }),
                         attributes: tokenData?.attributes ?? [],
                     })
                 })
@@ -563,7 +564,8 @@ export class CollectionInventoryResolver {
                     id: row.id,
                     ownedCount: groupData?.ownedCount ?? 0,
                     collection:
-                        groupData?.collection || new CollectionInventoryItemCollection({ id: '', collectionId: 0n as any }),
+                        groupData?.collection ||
+                        new CollectionInventoryItemCollection({ id: '', collectionId: 0n as any }),
                     attributes: groupData?.attributes ?? [],
                     tokens: groupTokens,
                     createdAt: groupData?.createdAt ?? new Date(),
@@ -579,7 +581,8 @@ export class CollectionInventoryResolver {
                     nonFungible: tokenData?.nonFungible ?? false,
                     createdAt: tokenData?.createdAt ?? new Date(),
                     collection:
-                        tokenData?.collection || new CollectionInventoryItemCollection({ id: '', collectionId: 0n as any }),
+                        tokenData?.collection ||
+                        new CollectionInventoryItemCollection({ id: '', collectionId: 0n as any }),
                     attributes: tokenData?.attributes ?? [],
                 })
             }
