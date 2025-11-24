@@ -8,7 +8,7 @@ import { decodeCursor, encodeCursor, IsPublicKeyArray } from './helpers'
 import { PageInfo } from './types'
 
 @ObjectType()
-class TokenGroupItemAttribute {
+class CollectionInventoryItemAttribute {
     @Field(() => String)
     key!: string
 
@@ -17,7 +17,7 @@ class TokenGroupItemAttribute {
 }
 
 @ObjectType()
-class TokenGroupItemCollection {
+class CollectionInventoryItemCollection {
     @Field(() => ID)
     id!: string
 
@@ -27,16 +27,16 @@ class TokenGroupItemCollection {
     @Field(() => Json, { nullable: true })
     metadata!: typeof Json
 
-    @Field(() => [TokenGroupItemAttribute], { nullable: true })
-    attributes?: TokenGroupItemAttribute[]
+    @Field(() => [CollectionInventoryItemAttribute], { nullable: true })
+    attributes?: CollectionInventoryItemAttribute[]
 
-    constructor(props: Partial<TokenGroupItemCollection>) {
+    constructor(props: Partial<CollectionInventoryItemCollection>) {
         Object.assign(this, props)
     }
 }
 
 @ArgsType()
-class TokenGroupItemsArgs {
+class CollectionInventoryArgs {
     @Field(() => String)
     collectionId!: string
 
@@ -52,32 +52,32 @@ class TokenGroupItemsArgs {
 }
 
 @ObjectType()
-class TokenGroupItemGroup {
+class CollectionInventoryGroup {
     @Field(() => ID)
     id!: string
 
     @Field(() => Int)
     ownedCount!: number
 
-    @Field(() => TokenGroupItemCollection)
-    collection!: TokenGroupItemCollection
+    @Field(() => CollectionInventoryItemCollection)
+    collection!: CollectionInventoryItemCollection
 
-    @Field(() => [TokenGroupItemAttribute], { nullable: true })
-    attributes?: TokenGroupItemAttribute[]
+    @Field(() => [CollectionInventoryItemAttribute], { nullable: true })
+    attributes?: CollectionInventoryItemAttribute[]
 
-    @Field(() => [TokenGroupItemToken], { nullable: true })
-    tokens?: TokenGroupItemToken[]
+    @Field(() => [CollectionInventoryToken], { nullable: true })
+    tokens?: CollectionInventoryToken[]
 
     @Field()
     createdAt!: Date
 
-    constructor(props: Partial<TokenGroupItemGroup>) {
+    constructor(props: Partial<CollectionInventoryGroup>) {
         Object.assign(this, props)
     }
 }
 
 @ObjectType()
-class TokenGroupItemToken {
+class CollectionInventoryToken {
     @Field(() => ID)
     id!: string
 
@@ -99,45 +99,45 @@ class TokenGroupItemToken {
     @Field()
     createdAt!: Date
 
-    @Field(() => TokenGroupItemCollection)
-    collection!: TokenGroupItemCollection
+    @Field(() => CollectionInventoryItemCollection)
+    collection!: CollectionInventoryItemCollection
 
-    @Field(() => [TokenGroupItemAttribute], { nullable: true })
-    attributes?: TokenGroupItemAttribute[]
+    @Field(() => [CollectionInventoryItemAttribute], { nullable: true })
+    attributes?: CollectionInventoryItemAttribute[]
 
-    constructor(props: Partial<TokenGroupItemToken>) {
+    constructor(props: Partial<CollectionInventoryToken>) {
         Object.assign(this, props)
     }
 }
 
-const TokenGroupItemContent = createUnionType({
-    name: 'TokenGroupItemContent',
-    types: () => [TokenGroupItemGroup, TokenGroupItemToken],
+const CollectionInventoryItem = createUnionType({
+    name: 'CollectionInventoryItem',
+    types: () => [CollectionInventoryGroup, CollectionInventoryToken],
     resolveType: (value) => {
         if ('ownedCount' in value) {
-            return TokenGroupItemGroup
+            return CollectionInventoryGroup
         }
-        return TokenGroupItemToken
+        return CollectionInventoryToken
     },
 })
 
 @ObjectType()
-class TokenGroupItemsEdge {
+class CollectionInventoryEdge {
     @Field(() => String)
     cursor!: string
 
-    @Field(() => TokenGroupItemContent)
-    node!: typeof TokenGroupItemContent
+    @Field(() => CollectionInventoryItem)
+    node!: typeof CollectionInventoryItem
 
-    constructor(props: Partial<TokenGroupItemsEdge>) {
+    constructor(props: Partial<CollectionInventoryEdge>) {
         Object.assign(this, props)
     }
 }
 
 @ObjectType()
-class TokenGroupItemsConnection {
-    @Field(() => [TokenGroupItemsEdge])
-    edges!: TokenGroupItemsEdge[]
+class CollectionInventoryConnection {
+    @Field(() => [CollectionInventoryEdge])
+    edges!: CollectionInventoryEdge[]
 
     @Field(() => PageInfo)
     pageInfo!: PageInfo
@@ -145,24 +145,24 @@ class TokenGroupItemsConnection {
     @Field(() => Int)
     totalCount!: number
 
-    constructor(props: Partial<TokenGroupItemsConnection>) {
+    constructor(props: Partial<CollectionInventoryConnection>) {
         Object.assign(this, props)
     }
 }
 
 @Resolver()
-export class TokenGroupItemsResolver {
+export class CollectionInventoryResolver {
     constructor(private tx: () => Promise<EntityManager>) {}
 
     /**
      * Returns grouped token items owned by the given accounts for one collection.
      */
-    @Query(() => TokenGroupItemsConnection)
-    async tokenGroupItems(@Args() args: TokenGroupItemsArgs): Promise<TokenGroupItemsConnection> {
+    @Query(() => CollectionInventoryConnection)
+    async collectionInventory(@Args() args: CollectionInventoryArgs): Promise<CollectionInventoryConnection> {
         const { accountIds, collectionId, first, after } = args
 
         if (!accountIds?.length) {
-            return new TokenGroupItemsConnection({
+            return new CollectionInventoryConnection({
                 edges: [],
                 pageInfo: new PageInfo({
                     hasNextPage: false,
@@ -338,7 +338,7 @@ export class TokenGroupItemsResolver {
         const totalCount = parseInt(totalCountResult[0]?.count ?? 0, 10)
 
         if (!pageItems?.length) {
-            return new TokenGroupItemsConnection({
+            return new CollectionInventoryConnection({
                 edges: [],
                 pageInfo: new PageInfo({
                     hasNextPage: false,
@@ -359,9 +359,9 @@ export class TokenGroupItemsResolver {
             string,
             {
                 ownedCount: number
-                attributes: TokenGroupItemAttribute[]
+                attributes: CollectionInventoryItemAttribute[]
                 tokenIds: string[]
-                collection?: TokenGroupItemCollection
+                collection?: CollectionInventoryItemCollection
                 createdAt?: Date
             }
         >()
@@ -415,7 +415,7 @@ export class TokenGroupItemsResolver {
                     })),
                     tokenIds: [],
                     collection: group.collection
-                        ? new TokenGroupItemCollection({
+                        ? new CollectionInventoryItemCollection({
                               id: group.collection.id.toString(),
                               collectionId: group.collection.collectionId as any,
                               metadata: group.collection.metadata as any,
@@ -477,8 +477,8 @@ export class TokenGroupItemsResolver {
                 metadata?: any
                 nonFungible: boolean
                 createdAt: Date
-                collection?: TokenGroupItemCollection
-                attributes: TokenGroupItemAttribute[]
+                collection?: CollectionInventoryItemCollection
+                attributes: CollectionInventoryItemAttribute[]
             }
         >()
         if (allTokenIds.length > 0) {
@@ -524,7 +524,7 @@ export class TokenGroupItemsResolver {
                     nonFungible: token.nonFungible,
                     createdAt: token.createdAt,
                     collection: token.collection
-                        ? new TokenGroupItemCollection({
+                        ? new CollectionInventoryItemCollection({
                               id: token.collection.id.toString(),
                               collectionId: token.collection.collectionId as any,
                               metadata: token.collection.metadata as any,
@@ -546,7 +546,7 @@ export class TokenGroupItemsResolver {
                 const groupData = groupsMap.get(row.id)
                 const groupTokens = (groupData?.tokenIds ?? []).map((tokenId) => {
                     const tokenData = tokensMap.get(tokenId)
-                    return new TokenGroupItemToken({
+                    return new CollectionInventoryToken({
                         id: tokenId,
                         tokenId: (tokenData?.tokenId ?? 0n) as any,
                         supply: (tokenData?.supply ?? 0n) as any,
@@ -555,22 +555,22 @@ export class TokenGroupItemsResolver {
                         nonFungible: tokenData?.nonFungible ?? false,
                         createdAt: tokenData?.createdAt ?? new Date(),
                         collection:
-                            tokenData?.collection || new TokenGroupItemCollection({ id: '', collectionId: 0n as any }),
+                            tokenData?.collection || new CollectionInventoryItemCollection({ id: '', collectionId: 0n as any }),
                         attributes: tokenData?.attributes ?? [],
                     })
                 })
-                return new TokenGroupItemGroup({
+                return new CollectionInventoryGroup({
                     id: row.id,
                     ownedCount: groupData?.ownedCount ?? 0,
                     collection:
-                        groupData?.collection || new TokenGroupItemCollection({ id: '', collectionId: 0n as any }),
+                        groupData?.collection || new CollectionInventoryItemCollection({ id: '', collectionId: 0n as any }),
                     attributes: groupData?.attributes ?? [],
                     tokens: groupTokens,
                     createdAt: groupData?.createdAt ?? new Date(),
                 })
             } else {
                 const tokenData = tokensMap.get(row.id)
-                return new TokenGroupItemToken({
+                return new CollectionInventoryToken({
                     id: row.id,
                     tokenId: (tokenData?.tokenId ?? 0n) as any,
                     supply: (tokenData?.supply ?? 0n) as any,
@@ -579,20 +579,20 @@ export class TokenGroupItemsResolver {
                     nonFungible: tokenData?.nonFungible ?? false,
                     createdAt: tokenData?.createdAt ?? new Date(),
                     collection:
-                        tokenData?.collection || new TokenGroupItemCollection({ id: '', collectionId: 0n as any }),
+                        tokenData?.collection || new CollectionInventoryItemCollection({ id: '', collectionId: 0n as any }),
                     attributes: tokenData?.attributes ?? [],
                 })
             }
         })
 
-        const edges = items.map((node: TokenGroupItemGroup | TokenGroupItemToken) => {
-            const itemId = node instanceof TokenGroupItemGroup ? node.id : node.id
-            const itemType = node instanceof TokenGroupItemGroup ? 'GROUP' : 'TOKEN'
+        const edges = items.map((node: CollectionInventoryGroup | CollectionInventoryToken) => {
+            const itemId = node instanceof CollectionInventoryGroup ? node.id : node.id
+            const itemType = node instanceof CollectionInventoryGroup ? 'GROUP' : 'TOKEN'
             const cursor = encodeCursor(itemId, itemType)
-            return new TokenGroupItemsEdge({ cursor, node })
+            return new CollectionInventoryEdge({ cursor, node })
         })
 
-        return new TokenGroupItemsConnection({
+        return new CollectionInventoryConnection({
             edges,
             pageInfo: new PageInfo({
                 hasNextPage,
