@@ -144,7 +144,7 @@ export async function dispatchComputeStats(id: string): Promise<void> {
         JobsEnum.COMPUTE_STATS,
         { id },
         {
-            delay: 6000,
+            delay: 60000,
             jobId: `collections.stats.${id}`,
         }
     ).catch(() => {
@@ -207,7 +207,7 @@ export async function dispatchComputeMetadata({
         JobsEnum.COMPUTE_METADATA,
         { id, type, force, allTokens, traits },
         {
-            delay: 6000,
+            delay: 60000,
             jobId: `metadata.${id}`,
         }
     ).catch(() => {
