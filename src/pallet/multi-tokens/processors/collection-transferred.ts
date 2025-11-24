@@ -18,6 +18,9 @@ export async function collectionTransferred(
 
     const collection = await ctx.store.findOne<Collection>(Collection, {
         where: { id: data.collectionId.toString() },
+        relations: {
+            owner: true,
+        },
     })
 
     if (!collection) {
