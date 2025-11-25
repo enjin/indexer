@@ -7,12 +7,11 @@ export async function updateClaimDetails(ctx: CommonContext, block: Block) {
     if (exchangeRate === undefined) return
 
     const delayClaimsPeriod = await mappings.claims.storage.delayClaimsPeriod(block)
-    if (delayClaimsPeriod === undefined) return
 
     const claimDetails = new ClaimDetails({
         id: '0',
         totalUnclaimedAmount: await mappings.claims.storage.totalUnclaimedAmount(block),
-        delayClaimsPeriod: BigInt(delayClaimsPeriod.toString()),
+        delayClaimsPeriod: BigInt(delayClaimsPeriod?.toString() ?? '0'),
         exchangeRate: typeof exchangeRate === 'bigint' ? null : exchangeRate,
     })
 
