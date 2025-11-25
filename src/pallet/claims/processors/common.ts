@@ -1,3 +1,4 @@
+import { BN } from '@polkadot/util'
 import { Block, CommonContext } from '~/contexts'
 import { ClaimDetails } from '~/model'
 import * as mappings from '~/pallet/index'
@@ -9,7 +10,7 @@ export async function updateClaimDetails(ctx: CommonContext, block: Block) {
     const claimDetails = new ClaimDetails({
         id: '0',
         totalUnclaimedAmount: await mappings.claims.storage.totalUnclaimedAmount(block),
-        delayClaimsPeriod: await mappings.claims.storage.delayClaimsPeriod(block),
+        delayClaimsPeriod: BigInt((await mappings.claims.storage.delayClaimsPeriod(block))?.toString()!),
         exchangeRate: typeof exchangeRate === 'bigint' ? null : exchangeRate,
     })
 

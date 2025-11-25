@@ -12,8 +12,8 @@ export class ClaimDetails {
     @IntColumn_({nullable: true})
     exchangeRate!: number | undefined | null
 
-    @IntColumn_({nullable: true})
-    delayClaimsPeriod!: number | undefined | null
+    @BigIntColumn_({nullable: true})
+    delayClaimsPeriod!: bigint | undefined | null
 
     @BigIntColumn_({nullable: false})
     totalUnclaimedAmount!: bigint

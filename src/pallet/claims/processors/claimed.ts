@@ -3,6 +3,7 @@ import { Claim, ClaimDetails, ClaimRequest, ClaimsClaimed, Event as EventModel, 
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
 import * as mappings from '~/pallet/index'
+import { BN } from '@polkadot/util'
 
 export async function claimed(ctx: CommonContext, block: Block, item: EventItem): Promise<EventModel | undefined> {
     if (!item.extrinsic) return undefined
@@ -18,13 +19,15 @@ export async function claimed(ctx: CommonContext, block: Block, item: EventItem)
         throw new Error('Delay period is not set')
     }
 
+    const res = new BN(block.height).sub(new BN(period.toString()))
+
     const [totalUnclaimedAmount, claimRequests, claim] = await Promise.all([
         mappings.claims.storage.totalUnclaimedAmount(block),
         ctx.store.find<ClaimRequest>(ClaimRequest, {
             where: {
                 who: claimAccount,
                 isClaimed: false,
-                createdBlock: LessThan(block.height - period),
+                createdBlock: LessThan(res.toNumber()),
             },
         }),
         ctx.store.findOneBy<Claim>(Claim, { account: { id: account.id } }),

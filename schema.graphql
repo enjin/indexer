@@ -1064,7 +1064,7 @@ type ClaimDetails @entity {
   id: ID!
 
   exchangeRate: Int
-  delayClaimsPeriod: Int
+  delayClaimsPeriod: BigInt
   totalUnclaimedAmount: BigInt!
 }
 
