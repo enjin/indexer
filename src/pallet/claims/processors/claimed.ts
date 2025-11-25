@@ -19,7 +19,7 @@ export async function claimed(ctx: CommonContext, block: Block, item: EventItem)
         throw new Error('Delay period is not set')
     }
 
-    const res = new BN(block.height).sub(new BN(period.toString()))
+    const blockDiff = new BN(block.height).sub(new BN(period.toString())).toNumber()
 
     const [totalUnclaimedAmount, claimRequests, claim] = await Promise.all([
         mappings.claims.storage.totalUnclaimedAmount(block),
@@ -27,7 +27,7 @@ export async function claimed(ctx: CommonContext, block: Block, item: EventItem)
             where: {
                 who: claimAccount,
                 isClaimed: false,
-                createdBlock: LessThan(res.toNumber()),
+                createdBlock: LessThan(blockDiff),
             },
         }),
         ctx.store.findOneBy<Claim>(Claim, { account: { id: account.id } }),
