@@ -179,7 +179,7 @@ type MarketplaceOfferCreated {
 type MarketplaceOfferSettled {
   listing: Listing!
   buyer: Account!
-  amount: BigInt
+  amount: BigInt!
   price: BigInt!
   protocolFee: BigInt
   royalty: BigInt
