@@ -18,6 +18,7 @@ import {
     RefreshBalancesResolver,
     RefreshCollectionsResolver,
     RefreshListingsResolver,
+    CollectionInventoryResolver,
 } from '~/server-extension'
 
 export {
@@ -40,4 +41,5 @@ export {
     RefreshBalancesResolver,
     RefreshCollectionsResolver,
     RefreshListingsResolver,
+    CollectionInventoryResolver,
 }
