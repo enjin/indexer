@@ -8,7 +8,7 @@ export async function delayTimeForClaimSet(ctx: CommonContext, block: Block, ite
     const totalUnclaimedAmount = await mappings.claims.storage.totalUnclaimedAmount(block)
     const claimDetails = new ClaimDetails({
         id: '0',
-        delayClaimsPeriod: event.delayTime,
+        delayClaimsPeriod: BigInt(event.delayTime),
         totalUnclaimedAmount: totalUnclaimedAmount ?? 0n,
     })
 
