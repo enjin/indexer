@@ -9,6 +9,8 @@ export class MarketplaceOfferSettled {
     private _buyer!: string
     private _amount!: bigint | undefined | null
     private _price!: bigint
+    private _protocolFee!: bigint | undefined | null
+    private _royalty!: bigint | undefined | null
 
     constructor(props?: Partial<Omit<MarketplaceOfferSettled, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
@@ -17,6 +19,8 @@ export class MarketplaceOfferSettled {
             this._buyer = marshal.string.fromJSON(json.buyer)
             this._amount = json.amount == null ? undefined : marshal.bigint.fromJSON(json.amount)
             this._price = marshal.bigint.fromJSON(json.price)
+            this._protocolFee = json.protocolFee == null ? undefined : marshal.bigint.fromJSON(json.protocolFee)
+            this._royalty = json.royalty == null ? undefined : marshal.bigint.fromJSON(json.royalty)
         }
     }
 
@@ -55,6 +59,22 @@ export class MarketplaceOfferSettled {
         this._price = value
     }
 
+    get protocolFee(): bigint | undefined | null {
+        return this._protocolFee
+    }
+
+    set protocolFee(value: bigint | undefined | null) {
+        this._protocolFee = value
+    }
+
+    get royalty(): bigint | undefined | null {
+        return this._royalty
+    }
+
+    set royalty(value: bigint | undefined | null) {
+        this._royalty = value
+    }
+
     toJSON(): object {
         return {
             isTypeOf: this.isTypeOf,
@@ -62,6 +82,8 @@ export class MarketplaceOfferSettled {
             buyer: this.buyer,
             amount: this.amount == null ? undefined : marshal.bigint.toJSON(this.amount),
             price: marshal.bigint.toJSON(this.price),
+            protocolFee: this.protocolFee == null ? undefined : marshal.bigint.toJSON(this.protocolFee),
+            royalty: this.royalty == null ? undefined : marshal.bigint.toJSON(this.royalty),
         }
     }
 }

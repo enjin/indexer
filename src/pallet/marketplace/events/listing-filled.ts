@@ -95,6 +95,8 @@ export function listingFilledEventModel(
                 buyer: data.buyer,
                 amount: data.amountFilled,
                 price: 'price' in data ? (data.price as bigint) : listing.highestPrice,
+                protocolFee: data.protocolFee,
+                royalty: data.royalty,
             }),
         })
     }

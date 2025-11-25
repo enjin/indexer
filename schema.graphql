@@ -181,6 +181,8 @@ type MarketplaceOfferSettled {
   buyer: Account!
   amount: BigInt
   price: BigInt!
+  protocolFee: BigInt
+  royalty: BigInt
 }
 
 type MarketplaceOfferCancelled {
