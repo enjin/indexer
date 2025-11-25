@@ -7,16 +7,16 @@ export class MarketplaceAuctionFinalized {
     public readonly isTypeOf = 'MarketplaceAuctionFinalized'
     private _listing!: string
     private _winningBid!: string | undefined | null
-    private _protocolFee!: bigint
-    private _royalty!: bigint
+    private _protocolFee!: bigint | undefined | null
+    private _royalty!: bigint | undefined | null
 
     constructor(props?: Partial<Omit<MarketplaceAuctionFinalized, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
         if (json != null) {
             this._listing = marshal.string.fromJSON(json.listing)
             this._winningBid = json.winningBid == null ? undefined : marshal.string.fromJSON(json.winningBid)
-            this._protocolFee = marshal.bigint.fromJSON(json.protocolFee)
-            this._royalty = marshal.bigint.fromJSON(json.royalty)
+            this._protocolFee = json.protocolFee == null ? undefined : marshal.bigint.fromJSON(json.protocolFee)
+            this._royalty = json.royalty == null ? undefined : marshal.bigint.fromJSON(json.royalty)
         }
     }
 
@@ -37,21 +37,19 @@ export class MarketplaceAuctionFinalized {
         this._winningBid = value
     }
 
-    get protocolFee(): bigint {
-        assert(this._protocolFee != null, 'uninitialized access')
+    get protocolFee(): bigint | undefined | null {
         return this._protocolFee
     }
 
-    set protocolFee(value: bigint) {
+    set protocolFee(value: bigint | undefined | null) {
         this._protocolFee = value
     }
 
-    get royalty(): bigint {
-        assert(this._royalty != null, 'uninitialized access')
+    get royalty(): bigint | undefined | null {
         return this._royalty
     }
 
-    set royalty(value: bigint) {
+    set royalty(value: bigint | undefined | null) {
         this._royalty = value
     }
 
@@ -60,8 +58,8 @@ export class MarketplaceAuctionFinalized {
             isTypeOf: this.isTypeOf,
             listing: this.listing,
             winningBid: this.winningBid,
-            protocolFee: marshal.bigint.toJSON(this.protocolFee),
-            royalty: marshal.bigint.toJSON(this.royalty),
+            protocolFee: this.protocolFee == null ? undefined : marshal.bigint.toJSON(this.protocolFee),
+            royalty: this.royalty == null ? undefined : marshal.bigint.toJSON(this.royalty),
         }
     }
 }

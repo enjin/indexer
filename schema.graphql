@@ -101,8 +101,8 @@ type TeleportBalanceWithdrawn {
 type MarketplaceAuctionFinalized {
   listing: Listing!
   winningBid: Bid
-  protocolFee: BigInt!
-  royalty: BigInt!
+  protocolFee: BigInt
+  royalty: BigInt
 }
 
 type MarketplaceBidPlaced {
@@ -127,9 +127,9 @@ type MarketplaceListingFilled {
   buyer: Account!
   amountFilled: BigInt!
   amountRemaining: BigInt!
-  protocolFee: BigInt!
+  protocolFee: BigInt
   price: BigInt!
-  royalty: BigInt!
+  royalty: BigInt
 }
 
 type MarketplaceCounterOfferPlaced {
@@ -179,8 +179,10 @@ type MarketplaceOfferCreated {
 type MarketplaceOfferSettled {
   listing: Listing!
   buyer: Account!
-  amount: BigInt
+  amount: BigInt!
   price: BigInt!
+  protocolFee: BigInt
+  royalty: BigInt
 }
 
 type MarketplaceOfferCancelled {

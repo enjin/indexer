@@ -7,16 +7,20 @@ export class MarketplaceOfferSettled {
     public readonly isTypeOf = 'MarketplaceOfferSettled'
     private _listing!: string
     private _buyer!: string
-    private _amount!: bigint | undefined | null
+    private _amount!: bigint
     private _price!: bigint
+    private _protocolFee!: bigint | undefined | null
+    private _royalty!: bigint | undefined | null
 
     constructor(props?: Partial<Omit<MarketplaceOfferSettled, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
         if (json != null) {
             this._listing = marshal.string.fromJSON(json.listing)
             this._buyer = marshal.string.fromJSON(json.buyer)
-            this._amount = json.amount == null ? undefined : marshal.bigint.fromJSON(json.amount)
+            this._amount = marshal.bigint.fromJSON(json.amount)
             this._price = marshal.bigint.fromJSON(json.price)
+            this._protocolFee = json.protocolFee == null ? undefined : marshal.bigint.fromJSON(json.protocolFee)
+            this._royalty = json.royalty == null ? undefined : marshal.bigint.fromJSON(json.royalty)
         }
     }
 
@@ -38,11 +42,12 @@ export class MarketplaceOfferSettled {
         this._buyer = value
     }
 
-    get amount(): bigint | undefined | null {
+    get amount(): bigint {
+        assert(this._amount != null, 'uninitialized access')
         return this._amount
     }
 
-    set amount(value: bigint | undefined | null) {
+    set amount(value: bigint) {
         this._amount = value
     }
 
@@ -55,13 +60,31 @@ export class MarketplaceOfferSettled {
         this._price = value
     }
 
+    get protocolFee(): bigint | undefined | null {
+        return this._protocolFee
+    }
+
+    set protocolFee(value: bigint | undefined | null) {
+        this._protocolFee = value
+    }
+
+    get royalty(): bigint | undefined | null {
+        return this._royalty
+    }
+
+    set royalty(value: bigint | undefined | null) {
+        this._royalty = value
+    }
+
     toJSON(): object {
         return {
             isTypeOf: this.isTypeOf,
             listing: this.listing,
             buyer: this.buyer,
-            amount: this.amount == null ? undefined : marshal.bigint.toJSON(this.amount),
+            amount: marshal.bigint.toJSON(this.amount),
             price: marshal.bigint.toJSON(this.price),
+            protocolFee: this.protocolFee == null ? undefined : marshal.bigint.toJSON(this.protocolFee),
+            royalty: this.royalty == null ? undefined : marshal.bigint.toJSON(this.royalty),
         }
     }
 }
