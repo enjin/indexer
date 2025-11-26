@@ -14,6 +14,7 @@ export async function computeAccountStats(job: Job) {
         .addSelect('COALESCE(token_count.count, 0)', 'totalTokens')
         .addSelect('COALESCE(volume_sum.volume, 0) + COALESCE(volume_sum_offer.volume, 0)', 'volume')
         .addSelect('COALESCE(tokens_value_sum.tokensValue, 0)', 'tokensValue')
+        .addSelect('COALESCE(total_infused_sum.totalInfused, 0)', 'totalInfused')
         .from(Account, 'account')
         .leftJoin(
             `(SELECT COUNT(*) as count FROM collection WHERE owner_id = '${accountId}')`,
