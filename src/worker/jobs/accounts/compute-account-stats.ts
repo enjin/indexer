@@ -47,7 +47,7 @@ export async function computeAccountStats(job: Job) {
             '1=1'
         )
         .leftJoin(
-            `(SELECT COALESCE(SUM(token.infusion * token_account.total_balance), 0) as totalInfused FROM token_account INNER JOIN token ON token_account.token_id = token.id WHERE token_account.account_id = '${accountId}')`,
+            `(SELECT COALESCE(SUM((event.data->>'amount')::numeric), 0) as totalInfused FROM event WHERE event.name = 'MultiTokensInfused' AND event.data->>'accountId' = '${accountId}')`,
             'total_infused_sum',
             '1=1'
         )
