@@ -45,15 +45,22 @@ export async function computeAccountStats(job: Job) {
             'tokens_value_sum',
             '1=1'
         )
+        .leftJoin(
+            `(SELECT COALESCE(SUM(token.infusion * token_account.total_balance), 0) as totalInfused FROM token_account INNER JOIN token ON token_account.token = token.id WHERE token_account.account_id = '${accountId}')`,
+            'total_infused_sum',
+            '1=1'
+        )
         .where('account.id = :accountId', { accountId })
         .getRawOne()
 
     const tokensValue = BigInt(data.tokensValue || '0')
+    const totalInfused = BigInt(data.totalInfused || '0')
 
     await job.log(`Total collections: ${data.totalCollections}`)
     await job.log(`Total tokens: ${data.totalTokens}`)
     await job.log(`Volume: ${data.volume}`)
     await job.log(`Tokens value: ${tokensValue}`)
+    await job.log(`Total infused: ${totalInfused}`)
 
     await em.update(
         Account,
@@ -64,6 +71,7 @@ export async function computeAccountStats(job: Job) {
                 totalTokens: Number(data.totalTokens),
                 volume: BigInt(data.volume),
                 tokensValue: tokensValue,
+                totalInfused: totalInfused,
             }),
         }
     )
