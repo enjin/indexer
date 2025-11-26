@@ -526,7 +526,7 @@ type AccountStats {
     totalCollections: Int!
     totalTokens: Int!
     volume: BigInt!
-    totalInfused: BigInt!
+    totalInfused: BigInt
     tokensValue: BigInt!
 }
 
