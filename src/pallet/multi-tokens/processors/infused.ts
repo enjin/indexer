@@ -47,6 +47,7 @@ export async function infused(
     }
 
     await QueueUtils.dispatchComputeStats(data.collectionId.toString())
+    await QueueUtils.dispatchComputeAccountStats(account.id)
 
     const snsEvent: SnsEvent = {
         id: item.id,

@@ -14,6 +14,7 @@ export async function computeAccountStats(job: Job) {
         .addSelect('COALESCE(token_count.count, 0)', 'totalTokens')
         .addSelect('COALESCE(volume_sum.volume, 0) + COALESCE(volume_sum_offer.volume, 0)', 'volume')
         .addSelect('COALESCE(tokens_value_sum.tokensValue, 0)', 'tokensValue')
+        .addSelect('COALESCE(total_infused_sum.totalInfused, 0)', 'totalInfused')
         .from(Account, 'account')
         .leftJoin(
             `(SELECT COUNT(*) as count FROM collection WHERE owner_id = '${accountId}')`,
@@ -45,15 +46,22 @@ export async function computeAccountStats(job: Job) {
             'tokens_value_sum',
             '1=1'
         )
+        .leftJoin(
+            `(SELECT COALESCE(SUM((event.data->>'amount')::numeric), 0) as totalInfused FROM event WHERE event.name = 'MultiTokensInfused' AND event.data->>'accountId' = '${accountId}')`,
+            'total_infused_sum',
+            '1=1'
+        )
         .where('account.id = :accountId', { accountId })
         .getRawOne()
 
     const tokensValue = BigInt(data.tokensValue || '0')
+    const totalInfused = BigInt(data.totalInfused || '0')
 
     await job.log(`Total collections: ${data.totalCollections}`)
     await job.log(`Total tokens: ${data.totalTokens}`)
     await job.log(`Volume: ${data.volume}`)
     await job.log(`Tokens value: ${tokensValue}`)
+    await job.log(`Total infused: ${totalInfused}`)
 
     await em.update(
         Account,
@@ -64,6 +72,7 @@ export async function computeAccountStats(job: Job) {
                 totalTokens: Number(data.totalTokens),
                 volume: BigInt(data.volume),
                 tokensValue: tokensValue,
+                totalInfused: totalInfused,
             }),
         }
     )

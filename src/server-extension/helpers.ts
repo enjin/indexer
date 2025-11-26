@@ -40,7 +40,7 @@ export class IsPublicKey implements ValidatorConstraintInterface {
 @ValidatorConstraint({ name: 'PublicKeyArray', async: false })
 export class IsPublicKeyArray implements ValidatorConstraintInterface {
     validate(value: string[]) {
-        if (!Array.isArray(value)) return false
+        if (!Array.isArray(value)) return true
         return value.every((address) => isValidAddress(address))
     }
 

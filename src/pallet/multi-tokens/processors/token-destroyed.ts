@@ -72,6 +72,9 @@ export async function tokenDestroyed(
                     id: token.id,
                 },
             },
+            relations: {
+                account: true,
+            },
         }),
         ctx.store.find(ListingSale, {
             where: [
@@ -186,6 +189,10 @@ export async function tokenDestroyed(
                 await ctx.store.save(member)
             }
         }
+    }
+
+    for (const tokenAccount of tokenAccounts) {
+        await QueueUtils.dispatchComputeAccountStats(tokenAccount.account.id)
     }
 
     await ctx.store.remove(bids)
