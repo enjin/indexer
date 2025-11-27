@@ -196,7 +196,7 @@ class AccountsTokensConnectionArgs {
     query?: string
 
     @Field(() => String, { nullable: true })
-    collectionId?: string
+    collectionId?: string | bigint
 
     @Field(() => String, { nullable: true })
     tokenGroupId?: string
@@ -253,6 +253,15 @@ export class AccountsTokensConnectionResolver {
         // Default limit for forward pagination
         const limit = first ?? 20
 
+        // Validate numeric ID parameters
+        if (collectionId && !/^\d+$/.test(collectionId.toString())) {
+            throw new Error('collectionId must be a numeric string')
+        }
+
+        if (tokenGroupId && !/^\d+$/.test(tokenGroupId.toString())) {
+            throw new Error('tokenGroupId must be a numeric string')
+        }
+
         // Build the base query
         const baseQuery = manager
             .getRepository(Token)
@@ -272,18 +281,18 @@ export class AccountsTokensConnectionResolver {
             .setParameter('accountIds', accountIds)
 
         if (collectionId) {
-            baseQuery.andWhere('collection.collectionId = :collectionId', { collectionId })
+            baseQuery.andWhere('collection.collectionId = :collectionId', { collectionId: BigInt(collectionId) })
         }
 
         if (tokenGroupId) {
             baseQuery
                 .innerJoin('token.tokenGroupTokens', 'tgt')
                 .innerJoin('tgt.tokenGroup', 'tg')
-                .andWhere('tg.id = :tokenGroupId', { tokenGroupId })
+                .andWhere('tg.id = :tokenGroupId', { tokenGroupId: BigInt(tokenGroupId) })
         }
 
         if (query) {
-            baseQuery.andWhere('collection.name ILIKE :query OR token.name ILIKE :query', {
+            baseQuery.andWhere('(collection.name ILIKE :query OR token.name ILIKE :query)', {
                 query: `%${query}%`,
             })
         }
