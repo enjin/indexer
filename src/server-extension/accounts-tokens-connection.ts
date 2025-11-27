@@ -292,7 +292,7 @@ export class AccountsTokensConnectionResolver {
         }
 
         if (query) {
-            baseQuery.andWhere('collection.name ILIKE :query OR token.name ILIKE :query', {
+            baseQuery.andWhere('(collection.name ILIKE :query OR token.name ILIKE :query)', {
                 query: `%${query}%`,
             })
         }
