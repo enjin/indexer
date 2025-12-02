@@ -1,5 +1,5 @@
 import { throwFatalError } from '~/util/errors'
-import { Collection, CollectionAccount, Token, TokenAccount, TransferPolicy } from '~/model'
+import {Collection, CollectionAccount, FreezeState, Token, TokenAccount, TransferPolicy} from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
@@ -61,6 +61,7 @@ export async function thawed(
         }
 
         token.isFrozen = false
+        token.freezeState = event.freezeType.freezeState as FreezeState | undefined
         await ctx.store.save(token)
     } else {
         const collection = await ctx.store.findOne<Collection>(Collection, {
