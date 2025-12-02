@@ -6,7 +6,7 @@ import * as mappings from '~/pallet/index'
 import { match } from 'ts-pattern'
 import { QueueUtils } from '~/queue'
 import { EventHandlerResult } from '~/processor.handler'
-import { Freeze } from "~/type/v100";
+import { Freeze } from '~/type/v100'
 
 export async function thawed(
     ctx: CommonContext,
@@ -37,9 +37,12 @@ export async function thawed(
         await ctx.store.save(tokenAccount)
     } else if (event.freezeType.__kind === 'CollectionAccount') {
         const address = event.freezeType.value
-        const collectionAccount: CollectionAccount | undefined = await ctx.store.findOne<CollectionAccount>(CollectionAccount, {
-            where: { id: `${event.collectionId}-${address}` },
-        })
+        const collectionAccount: CollectionAccount | undefined = await ctx.store.findOne<CollectionAccount>(
+            CollectionAccount,
+            {
+                where: { id: `${event.collectionId}-${address}` },
+            }
+        )
 
         if (!collectionAccount) {
             throwFatalError(`[Thawed] We have not found collection account ${event.collectionId}-${address}.`)
