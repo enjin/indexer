@@ -1,11 +1,12 @@
 import { throwFatalError } from '~/util/errors'
-import { Collection, CollectionAccount, FreezeState, Token, TokenAccount, TransferPolicy } from '~/model'
+import { Collection, CollectionAccount, Token, TokenAccount, TransferPolicy } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { match } from 'ts-pattern'
 import { QueueUtils } from '~/queue'
 import { EventHandlerResult } from '~/processor.handler'
+import { Freeze } from "~/type/v100";
 
 export async function thawed(
     ctx: CommonContext,
@@ -13,14 +14,14 @@ export async function thawed(
     item: EventItem,
     skipSave: boolean
 ): Promise<EventHandlerResult> {
-    const event = mappings.multiTokens.events.thawed(item)
+    const event: Freeze = mappings.multiTokens.events.thawed(item)
 
     if (skipSave) return [mappings.multiTokens.events.thawedEventModel(item, event), undefined]
 
     let snsEvent: SnsEvent | undefined = undefined
 
     if (event.freezeType.__kind === 'TokenAccount') {
-        const tokenAccount = await ctx.store.findOne<TokenAccount>(TokenAccount, {
+        const tokenAccount: TokenAccount | undefined = await ctx.store.findOne<TokenAccount>(TokenAccount, {
             where: { id: `${event.freezeType.accountId}-${event.collectionId}-${event.freezeType.tokenId}` },
         })
 
@@ -36,7 +37,7 @@ export async function thawed(
         await ctx.store.save(tokenAccount)
     } else if (event.freezeType.__kind === 'CollectionAccount') {
         const address = event.freezeType.value
-        const collectionAccount = await ctx.store.findOne<CollectionAccount>(CollectionAccount, {
+        const collectionAccount: CollectionAccount | undefined = await ctx.store.findOne<CollectionAccount>(CollectionAccount, {
             where: { id: `${event.collectionId}-${address}` },
         })
 
@@ -49,7 +50,7 @@ export async function thawed(
         collectionAccount.updatedAt = new Date(block.timestamp ?? 0)
         await ctx.store.save(collectionAccount)
     } else if (event.freezeType.__kind === 'Token') {
-        const token = await ctx.store.findOne<Token>(Token, {
+        const token: Token | undefined = await ctx.store.findOne<Token>(Token, {
             where: { id: `${event.collectionId}-${event.freezeType.tokenId}` },
         })
 
@@ -61,10 +62,10 @@ export async function thawed(
         }
 
         token.isFrozen = false
-        token.freezeState = event.freezeType.freezeState as FreezeState | undefined
+        token.freezeState = null
         await ctx.store.save(token)
     } else {
-        const collection = await ctx.store.findOne<Collection>(Collection, {
+        const collection: Collection | undefined = await ctx.store.findOne<Collection>(Collection, {
             where: { id: event.collectionId.toString() },
         })
 
