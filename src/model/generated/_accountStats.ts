@@ -5,7 +5,7 @@ export class AccountStats {
     private _totalCollections!: number
     private _totalTokens!: number
     private _volume!: bigint
-    private _totalInfused!: bigint
+    private _totalInfused!: bigint | undefined | null
     private _tokensValue!: bigint
 
     constructor(props?: Partial<Omit<AccountStats, 'toJSON'>>, json?: any) {
@@ -14,7 +14,7 @@ export class AccountStats {
             this._totalCollections = marshal.int.fromJSON(json.totalCollections)
             this._totalTokens = marshal.int.fromJSON(json.totalTokens)
             this._volume = marshal.bigint.fromJSON(json.volume)
-            this._totalInfused = marshal.bigint.fromJSON(json.totalInfused)
+            this._totalInfused = json.totalInfused == null ? undefined : marshal.bigint.fromJSON(json.totalInfused)
             this._tokensValue = marshal.bigint.fromJSON(json.tokensValue)
         }
     }
@@ -46,12 +46,11 @@ export class AccountStats {
         this._volume = value
     }
 
-    get totalInfused(): bigint {
-        assert(this._totalInfused != null, 'uninitialized access')
+    get totalInfused(): bigint | undefined | null {
         return this._totalInfused
     }
 
-    set totalInfused(value: bigint) {
+    set totalInfused(value: bigint | undefined | null) {
         this._totalInfused = value
     }
 
@@ -69,7 +68,7 @@ export class AccountStats {
             totalCollections: this.totalCollections,
             totalTokens: this.totalTokens,
             volume: marshal.bigint.toJSON(this.volume),
-            totalInfused: marshal.bigint.toJSON(this.totalInfused),
+            totalInfused: this.totalInfused == null ? undefined : marshal.bigint.toJSON(this.totalInfused),
             tokensValue: marshal.bigint.toJSON(this.tokensValue),
         }
     }
