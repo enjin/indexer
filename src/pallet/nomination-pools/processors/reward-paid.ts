@@ -182,7 +182,7 @@ async function updatePoolApy(
             era: true,
         },
         order: { era: { index: 'desc' } },
-        take: 14,
+        take: 30,
     })
 
     const changeInRate =
