@@ -280,7 +280,7 @@ export async function rewardPaid(ctx: CommonContext, block: Block, item: EventIt
     // Save the reward first is necessary for pmr
     await ctx.store.save(reward)
 
-    await Promise.all([ctx.store.save(pool), ctx.store.save(members), inserts.length && ctx.store.insert(inserts)])
+    await Promise.all([ctx.store.save(pool), ctx.store.save(members), inserts.length && ctx.store.save(inserts)])
 
     const snsEvent: SnsEvent = {
         id: item.id,
