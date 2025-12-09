@@ -278,7 +278,7 @@ export async function rewardPaid(ctx: CommonContext, block: Block, item: EventIt
     const { inserts, members } = await calculateMemberRewards(ctx, eventData, pool, memberBalances, reward)
 
     // Save the reward first is necessary for pmr
-    await ctx.store.insert(reward)
+    await ctx.store.save(reward)
 
     await Promise.all([ctx.store.save(pool), ctx.store.save(members), inserts.length && ctx.store.insert(inserts)])
 
