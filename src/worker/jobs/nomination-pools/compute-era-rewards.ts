@@ -111,6 +111,7 @@ export async function computeEraRewards(_job: Job, eraIndex: number): Promise<vo
             await _job.log(`Updating existing era reward for pool ${poolId}`)
             // Update existing EraReward
             eraReward.reinvested += accumulatedRewards
+            eraReward.bonus = eraReward.bonus ?? 0n
             if (accumulatedCommission > 0n) {
                 if (eraReward.commission) {
                     eraReward.commission = new CommissionPayment({
