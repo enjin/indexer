@@ -132,6 +132,7 @@ export async function computeEraRewards(_job: Job, eraIndex: number): Promise<vo
                 rate: pool.rate,
                 active: pool.balance.active,
                 reinvested: accumulatedRewards,
+                bonus: 0n,
                 commission:
                     accumulatedCommission > 0n
                         ? new CommissionPayment({
