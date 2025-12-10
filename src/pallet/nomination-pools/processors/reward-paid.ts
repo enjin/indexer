@@ -67,6 +67,7 @@ async function getReward(
     let reward: EraReward
 
     if (existReward) {
+        existReward.bonus = existReward.bonus ?? 0n
         const newCommission = eventData.commission
             ? new CommissionPayment({
                   beneficiary: eventData.commission.beneficiary,
@@ -102,6 +103,7 @@ async function getReward(
             pool,
             apy: 0,
             averageApy: 0,
+            bonus: 0n,
             active: pool.balance.active,
             reinvested: eventData.reward + (eventData.commission?.amount ?? 0n),
             changeInRate: 0n,
