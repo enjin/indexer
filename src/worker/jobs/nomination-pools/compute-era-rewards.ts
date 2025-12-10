@@ -108,6 +108,7 @@ export async function computeEraRewards(_job: Job, eraIndex: number): Promise<vo
         let eraReward = existingEraRewardsMap.get(eraRewardId)
 
         if (eraReward) {
+            await _job.log(`Updating existing era reward for pool ${poolId}`)
             // Update existing EraReward
             eraReward.reinvested += accumulatedRewards
             if (accumulatedCommission > 0n) {
@@ -124,6 +125,7 @@ export async function computeEraRewards(_job: Job, eraIndex: number): Promise<vo
                 }
             }
         } else {
+            await _job.log(`Creating new era reward for pool ${poolId}`)
             // Create new EraReward
             eraReward = new EraReward({
                 id: eraRewardId,
