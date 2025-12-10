@@ -9,6 +9,10 @@ export function rewardPaid(event: EventItem): RewardPaid {
     return match(event)
         .returnType<RewardPaid>()
         .when(
+            () => nominationPools.rewardPaid.enjinV1062.is(event),
+            () => nominationPools.rewardPaid.enjinV1062.decode(event)
+        )
+        .when(
             () => nominationPools.rewardPaid.enjinV100.is(event),
             () => nominationPools.rewardPaid.enjinV100.decode(event)
         )

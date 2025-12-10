@@ -4,6 +4,7 @@ import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV1010 from '../matrixV1010'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 import * as matrixV1030 from '../matrixV1030'
+import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 
 export const selfLocation = {
     /**
@@ -14,6 +15,10 @@ export const selfLocation = {
      *  Self chain location.
      */
     matrixEnjinV1012: new ConstantType('XTokens.SelfLocation', matrixEnjinV1012.V4Location),
+    /**
+     *  Self chain location.
+     */
+    matrixEnjinV1031: new ConstantType('XTokens.SelfLocation', matrixEnjinV1031.V5Location),
     /**
      *  Self chain location.
      */

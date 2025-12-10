@@ -107,5 +107,25 @@ export const governanceFallback = {
      * This can only be called when [`Phase::Emergency`] is enabled, as an alternative to
      * calling [`Call::set_emergency_election_result`].
      */
+    enjinV1062: new CallType('ElectionProviderMultiPhase.governance_fallback', sts.unit()),
+    /**
+     * Trigger the governance fallback.
+     *
+     * This can only be called when [`Phase::Emergency`] is enabled, as an alternative to
+     * calling [`Call::set_emergency_election_result`].
+     */
+    v100: new CallType(
+        'ElectionProviderMultiPhase.governance_fallback',
+        sts.struct({
+            maybeMaxVoters: sts.option(() => sts.number()),
+            maybeMaxTargets: sts.option(() => sts.number()),
+        })
+    ),
+    /**
+     * Trigger the governance fallback.
+     *
+     * This can only be called when [`Phase::Emergency`] is enabled, as an alternative to
+     * calling [`Call::set_emergency_election_result`].
+     */
     v1060: new CallType('ElectionProviderMultiPhase.governance_fallback', sts.unit()),
 }

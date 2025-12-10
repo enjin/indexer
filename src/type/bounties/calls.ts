@@ -1,6 +1,6 @@
 import { sts, Block, Bytes, Option, Result, CallType, RuntimeCtx } from '../support'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
-import * as matrixV1030 from '../matrixV1030'
+import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 
 export const proposeBounty = {
     name: 'Bounties.propose_bounty',
@@ -215,11 +215,11 @@ export const approveBountyWithCurator = {
      * ## Complexity
      * - O(1).
      */
-    matrixV1030: new CallType(
+    matrixEnjinV1031: new CallType(
         'Bounties.approve_bounty_with_curator',
         sts.struct({
             bountyId: sts.number(),
-            curator: matrixV1030.MultiAddress,
+            curator: matrixEnjinV1031.MultiAddress,
             fee: sts.bigint(),
         })
     ),
@@ -244,7 +244,7 @@ export const pokeDeposit = {
      *
      * Emits `DepositPoked` if the deposit is updated.
      */
-    matrixV1030: new CallType(
+    matrixEnjinV1031: new CallType(
         'Bounties.poke_deposit',
         sts.struct({
             bountyId: sts.number(),

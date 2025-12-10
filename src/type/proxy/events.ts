@@ -1,11 +1,14 @@
 import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import * as matrixV1010 from '../matrixV1010'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 import * as matrixV1030 from '../matrixV1030'
 import * as v1030 from '../v1030'
+import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 import * as enjinV1032 from '../enjinV1032'
 import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 import * as v1060 from '../v1060'
+import * as enjinV1062 from '../enjinV1062'
 
 export const proxyExecuted = {
     name: 'Proxy.ProxyExecuted',
@@ -18,6 +21,30 @@ export const proxyExecuted = {
             result: sts.result(
                 () => sts.unit(),
                 () => matrixEnjinV1012.DispatchError
+            ),
+        })
+    ),
+    /**
+     * A proxy was executed correctly, with the given.
+     */
+    matrixEnjinV1031: new EventType(
+        'Proxy.ProxyExecuted',
+        sts.struct({
+            result: sts.result(
+                () => sts.unit(),
+                () => matrixEnjinV1031.DispatchError
+            ),
+        })
+    ),
+    /**
+     * A proxy was executed correctly, with the given.
+     */
+    matrixV1010: new EventType(
+        'Proxy.ProxyExecuted',
+        sts.struct({
+            result: sts.result(
+                () => sts.unit(),
+                () => matrixV1010.DispatchError
             ),
         })
     ),
@@ -48,6 +75,30 @@ export const proxyExecuted = {
     /**
      * A proxy was executed correctly, with the given.
      */
+    enjinV1062: new EventType(
+        'Proxy.ProxyExecuted',
+        sts.struct({
+            result: sts.result(
+                () => sts.unit(),
+                () => enjinV1062.DispatchError
+            ),
+        })
+    ),
+    /**
+     * A proxy was executed correctly, with the given.
+     */
+    v1030: new EventType(
+        'Proxy.ProxyExecuted',
+        sts.struct({
+            result: sts.result(
+                () => sts.unit(),
+                () => v1030.DispatchError
+            ),
+        })
+    ),
+    /**
+     * A proxy was executed correctly, with the given.
+     */
     v1060: new EventType(
         'Proxy.ProxyExecuted',
         sts.struct({
@@ -71,6 +122,32 @@ export const pureCreated = {
             pure: matrixEnjinV1012.AccountId32,
             who: matrixEnjinV1012.AccountId32,
             proxyType: matrixEnjinV1012.ProxyType,
+            disambiguationIndex: sts.number(),
+        })
+    ),
+    /**
+     * A pure account has been created by new proxy with given
+     * disambiguation index and proxy type.
+     */
+    matrixEnjinV1031: new EventType(
+        'Proxy.PureCreated',
+        sts.struct({
+            pure: matrixEnjinV1031.AccountId32,
+            who: matrixEnjinV1031.AccountId32,
+            proxyType: matrixEnjinV1031.ProxyType,
+            disambiguationIndex: sts.number(),
+        })
+    ),
+    /**
+     * A pure account has been created by new proxy with given
+     * disambiguation index and proxy type.
+     */
+    matrixV1010: new EventType(
+        'Proxy.PureCreated',
+        sts.struct({
+            pure: matrixV1010.AccountId32,
+            who: matrixV1010.AccountId32,
+            proxyType: matrixV1010.ProxyType,
             disambiguationIndex: sts.number(),
         })
     ),
@@ -173,6 +250,30 @@ export const proxyAdded = {
     /**
      * A proxy was added.
      */
+    matrixEnjinV1031: new EventType(
+        'Proxy.ProxyAdded',
+        sts.struct({
+            delegator: matrixEnjinV1031.AccountId32,
+            delegatee: matrixEnjinV1031.AccountId32,
+            proxyType: matrixEnjinV1031.ProxyType,
+            delay: sts.number(),
+        })
+    ),
+    /**
+     * A proxy was added.
+     */
+    matrixV1010: new EventType(
+        'Proxy.ProxyAdded',
+        sts.struct({
+            delegator: matrixV1010.AccountId32,
+            delegatee: matrixV1010.AccountId32,
+            proxyType: matrixV1010.ProxyType,
+            delay: sts.number(),
+        })
+    ),
+    /**
+     * A proxy was added.
+     */
     matrixV1030: new EventType(
         'Proxy.ProxyAdded',
         sts.struct({
@@ -249,6 +350,30 @@ export const proxyRemoved = {
     /**
      * A proxy was removed.
      */
+    matrixEnjinV1031: new EventType(
+        'Proxy.ProxyRemoved',
+        sts.struct({
+            delegator: matrixEnjinV1031.AccountId32,
+            delegatee: matrixEnjinV1031.AccountId32,
+            proxyType: matrixEnjinV1031.ProxyType,
+            delay: sts.number(),
+        })
+    ),
+    /**
+     * A proxy was removed.
+     */
+    matrixV1010: new EventType(
+        'Proxy.ProxyRemoved',
+        sts.struct({
+            delegator: matrixV1010.AccountId32,
+            delegatee: matrixV1010.AccountId32,
+            proxyType: matrixV1010.ProxyType,
+            delay: sts.number(),
+        })
+    ),
+    /**
+     * A proxy was removed.
+     */
     matrixV1030: new EventType(
         'Proxy.ProxyRemoved',
         sts.struct({
@@ -313,24 +438,24 @@ export const pureKilled = {
     /**
      * A pure proxy was killed by its spawner.
      */
-    matrixV1030: new EventType(
+    matrixEnjinV1031: new EventType(
         'Proxy.PureKilled',
         sts.struct({
-            pure: matrixV1030.AccountId32,
-            spawner: matrixV1030.AccountId32,
-            proxyType: matrixV1030.ProxyType,
+            pure: matrixEnjinV1031.AccountId32,
+            spawner: matrixEnjinV1031.AccountId32,
+            proxyType: matrixEnjinV1031.ProxyType,
             disambiguationIndex: sts.number(),
         })
     ),
     /**
      * A pure proxy was killed by its spawner.
      */
-    v1060: new EventType(
+    enjinV1062: new EventType(
         'Proxy.PureKilled',
         sts.struct({
-            pure: v1060.AccountId32,
-            spawner: v1060.AccountId32,
-            proxyType: v1060.ProxyType,
+            pure: enjinV1062.AccountId32,
+            spawner: enjinV1062.AccountId32,
+            proxyType: enjinV1062.ProxyType,
             disambiguationIndex: sts.number(),
         })
     ),
@@ -341,11 +466,11 @@ export const depositPoked = {
     /**
      * A deposit stored for proxies or announcements was poked / updated.
      */
-    matrixV1030: new EventType(
+    matrixEnjinV1031: new EventType(
         'Proxy.DepositPoked',
         sts.struct({
-            who: matrixV1030.AccountId32,
-            kind: matrixV1030.DepositKind,
+            who: matrixEnjinV1031.AccountId32,
+            kind: matrixEnjinV1031.DepositKind,
             oldDeposit: sts.bigint(),
             newDeposit: sts.bigint(),
         })

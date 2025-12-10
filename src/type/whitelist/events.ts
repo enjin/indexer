@@ -5,6 +5,7 @@ import * as enjinV101 from '../enjinV101'
 import * as v104 from '../v104'
 import * as v105 from '../v105'
 import * as v1060 from '../v1060'
+import * as enjinV1062 from '../enjinV1062'
 
 export const callWhitelisted = {
     name: 'Whitelist.CallWhitelisted',
@@ -45,6 +46,16 @@ export const whitelistedCallDispatched = {
             result: sts.result(
                 () => enjinV101.PostDispatchInfo,
                 () => enjinV101.DispatchErrorWithPostInfo
+            ),
+        })
+    ),
+    enjinV1062: new EventType(
+        'Whitelist.WhitelistedCallDispatched',
+        sts.struct({
+            callHash: enjinV1062.H256,
+            result: sts.result(
+                () => enjinV1062.PostDispatchInfo,
+                () => enjinV1062.DispatchErrorWithPostInfo
             ),
         })
     ),

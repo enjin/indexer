@@ -48,6 +48,7 @@ import { Call as CallV1031 } from 'src/type/v1031'
 import { Call as CallV1032 } from 'src/type/v1032'
 import { Call as CallV1050 } from 'src/type/v1050'
 import { Call as CallV1060 } from 'src/type/v1060'
+import { Call as CallMatrixEnjinV1031 } from 'src/type/matrixEnjinV1031'
 
 type Call =
     | CallEnjinV100
@@ -82,6 +83,7 @@ type Call =
     | CallMatrixV1022
     | CallMatrixV1023
     | CallMatrixV1030
+    | CallMatrixEnjinV1031
     | CallV100
     | CallV101
     | CallV102

@@ -6,6 +6,7 @@ import * as v1026 from '../v1026'
 import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
 import * as v1060 from '../v1060'
+import * as enjinV1062 from '../enjinV1062'
 
 export const attempted = {
     name: 'XcmPallet.Attempted',
@@ -31,6 +32,15 @@ export const attempted = {
         'XcmPallet.Attempted',
         sts.struct({
             outcome: enjinV1032.V4Outcome,
+        })
+    ),
+    /**
+     * Execution of an XCM message was attempted.
+     */
+    enjinV1062: new EventType(
+        'XcmPallet.Attempted',
+        sts.struct({
+            outcome: enjinV1062.V5Outcome,
         })
     ),
     /**
@@ -100,6 +110,18 @@ export const sent = {
             origin: enjinV1032.V4Location,
             destination: enjinV1032.V4Location,
             message: sts.array(() => enjinV1032.V4Instruction),
+            messageId: sts.bytes(),
+        })
+    ),
+    /**
+     * An XCM message was sent.
+     */
+    enjinV1062: new EventType(
+        'XcmPallet.Sent',
+        sts.struct({
+            origin: enjinV1062.V5Location,
+            destination: enjinV1062.V5Location,
+            message: sts.array(() => enjinV1062.V5Instruction),
             messageId: sts.bytes(),
         })
     ),
@@ -188,6 +210,18 @@ export const unexpectedResponse = {
      * Query response received which does not match a registered query. This may be because a
      * matching query was never registered, it may be because it is a duplicate response, or
      * because the query timed out.
+     */
+    enjinV1062: new EventType(
+        'XcmPallet.UnexpectedResponse',
+        sts.struct({
+            origin: enjinV1062.V5Location,
+            queryId: sts.bigint(),
+        })
+    ),
+    /**
+     * Query response received which does not match a registered query. This may be because a
+     * matching query was never registered, it may be because it is a duplicate response, or
+     * because the query timed out.
      *
      * \[ origin location, id \]
      */
@@ -259,6 +293,17 @@ export const responseReady = {
         sts.struct({
             queryId: sts.bigint(),
             response: enjinV1032.V4Response,
+        })
+    ),
+    /**
+     * Query response has been received and is ready for taking with `take_response`. There is
+     * no registered notification call.
+     */
+    enjinV1062: new EventType(
+        'XcmPallet.ResponseReady',
+        sts.struct({
+            queryId: sts.bigint(),
+            response: enjinV1062.V5Response,
         })
     ),
     /**
@@ -532,6 +577,19 @@ export const invalidResponder = {
      * Expected query response has been received but the origin location of the response does
      * not match that expected. The query remains registered for a later, valid, response to
      * be received and acted upon.
+     */
+    enjinV1062: new EventType(
+        'XcmPallet.InvalidResponder',
+        sts.struct({
+            origin: enjinV1062.V5Location,
+            queryId: sts.bigint(),
+            expectedLocation: sts.option(() => enjinV1062.V5Location),
+        })
+    ),
+    /**
+     * Expected query response has been received but the origin location of the response does
+     * not match that expected. The query remains registered for a later, valid, response to
+     * be received and acted upon.
      *
      * \[ origin location, id, expected location \]
      */
@@ -623,6 +681,22 @@ export const invalidResponderVersion = {
         'XcmPallet.InvalidResponderVersion',
         sts.struct({
             origin: enjinV1032.V4Location,
+            queryId: sts.bigint(),
+        })
+    ),
+    /**
+     * Expected query response has been received but the expected origin location placed in
+     * storage by this runtime previously cannot be decoded. The query remains registered.
+     *
+     * This is unexpected (since a location placed in storage in a previously executing
+     * runtime should be readable prior to query timeout) and dangerous since the possibly
+     * valid response will be dropped. Manual governance intervention is probably going to be
+     * needed.
+     */
+    enjinV1062: new EventType(
+        'XcmPallet.InvalidResponderVersion',
+        sts.struct({
+            origin: enjinV1062.V5Location,
             queryId: sts.bigint(),
         })
     ),
@@ -757,6 +831,17 @@ export const assetsTrapped = {
     ),
     /**
      * Some assets have been placed in an asset trap.
+     */
+    enjinV1062: new EventType(
+        'XcmPallet.AssetsTrapped',
+        sts.struct({
+            hash: enjinV1062.H256,
+            origin: enjinV1062.V5Location,
+            assets: enjinV1062.VersionedAssets,
+        })
+    ),
+    /**
+     * Some assets have been placed in an asset trap.
      *
      * \[ hash, origin, assets \]
      */
@@ -837,6 +922,20 @@ export const versionChangeNotified = {
             destination: enjinV1032.V4Location,
             result: sts.number(),
             cost: sts.array(() => enjinV1032.V4Asset),
+            messageId: sts.bytes(),
+        })
+    ),
+    /**
+     * An XCM version change notification message has been attempted to be sent.
+     *
+     * The cost of sending it (borne by the chain) is included.
+     */
+    enjinV1062: new EventType(
+        'XcmPallet.VersionChangeNotified',
+        sts.struct({
+            destination: enjinV1062.V5Location,
+            result: sts.number(),
+            cost: sts.array(() => enjinV1062.V5Asset),
             messageId: sts.bytes(),
         })
     ),
@@ -929,6 +1028,17 @@ export const supportedVersionChanged = {
     /**
      * The supported version of a location has been changed. This might be through an
      * automatic notification or a manual intervention.
+     */
+    enjinV1062: new EventType(
+        'XcmPallet.SupportedVersionChanged',
+        sts.struct({
+            location: enjinV1062.V5Location,
+            version: sts.number(),
+        })
+    ),
+    /**
+     * The supported version of a location has been changed. This might be through an
+     * automatic notification or a manual intervention.
      *
      * \[ location, XCM version \]
      */
@@ -1002,6 +1112,18 @@ export const notifyTargetSendFail = {
             location: enjinV1032.V4Location,
             queryId: sts.bigint(),
             error: enjinV1032.V3Error,
+        })
+    ),
+    /**
+     * A given location which had a version change subscription was dropped owing to an error
+     * sending the notification to it.
+     */
+    enjinV1062: new EventType(
+        'XcmPallet.NotifyTargetSendFail',
+        sts.struct({
+            location: enjinV1062.V5Location,
+            queryId: sts.bigint(),
+            error: enjinV1062.V5Error,
         })
     ),
     /**
@@ -1083,6 +1205,17 @@ export const notifyTargetMigrationFail = {
         'XcmPallet.NotifyTargetMigrationFail',
         sts.struct({
             location: enjinV1032.VersionedLocation,
+            queryId: sts.bigint(),
+        })
+    ),
+    /**
+     * A given location which had a version change subscription was dropped owing to an error
+     * migrating the location to our new XCM format.
+     */
+    enjinV1062: new EventType(
+        'XcmPallet.NotifyTargetMigrationFail',
+        sts.struct({
+            location: enjinV1062.VersionedLocation,
             queryId: sts.bigint(),
         })
     ),
@@ -1171,6 +1304,22 @@ export const invalidQuerierVersion = {
         'XcmPallet.InvalidQuerierVersion',
         sts.struct({
             origin: enjinV1032.V4Location,
+            queryId: sts.bigint(),
+        })
+    ),
+    /**
+     * Expected query response has been received but the expected querier location placed in
+     * storage by this runtime previously cannot be decoded. The query remains registered.
+     *
+     * This is unexpected (since a location placed in storage in a previously executing
+     * runtime should be readable prior to query timeout) and dangerous since the possibly
+     * valid response will be dropped. Manual governance intervention is probably going to be
+     * needed.
+     */
+    enjinV1062: new EventType(
+        'XcmPallet.InvalidQuerierVersion',
+        sts.struct({
+            origin: enjinV1062.V5Location,
             queryId: sts.bigint(),
         })
     ),
@@ -1286,6 +1435,20 @@ export const invalidQuerier = {
      * Expected query response has been received but the querier location of the response does
      * not match the expected. The query remains registered for a later, valid, response to
      * be received and acted upon.
+     */
+    enjinV1062: new EventType(
+        'XcmPallet.InvalidQuerier',
+        sts.struct({
+            origin: enjinV1062.V5Location,
+            queryId: sts.bigint(),
+            expectedQuerier: enjinV1062.V5Location,
+            maybeActualQuerier: sts.option(() => enjinV1062.V5Location),
+        })
+    ),
+    /**
+     * Expected query response has been received but the querier location of the response does
+     * not match the expected. The query remains registered for a later, valid, response to
+     * be received and acted upon.
      *
      * \[ origin location, id, expected querier, maybe actual querier \]
      */
@@ -1376,6 +1539,18 @@ export const versionNotifyStarted = {
     /**
      * A remote has requested XCM version change notification from us and we have honored it.
      * A version information message is sent to them and its cost is included.
+     */
+    enjinV1062: new EventType(
+        'XcmPallet.VersionNotifyStarted',
+        sts.struct({
+            destination: enjinV1062.V5Location,
+            cost: sts.array(() => enjinV1062.V5Asset),
+            messageId: sts.bytes(),
+        })
+    ),
+    /**
+     * A remote has requested XCM version change notification from us and we have honored it.
+     * A version information message is sent to them and its cost is included.
      *
      * \[ destination location, cost \]
      */
@@ -1451,6 +1626,17 @@ export const versionNotifyRequested = {
         sts.struct({
             destination: enjinV1032.V4Location,
             cost: sts.array(() => enjinV1032.V4Asset),
+            messageId: sts.bytes(),
+        })
+    ),
+    /**
+     * We have requested that a remote chain send us XCM version change notifications.
+     */
+    enjinV1062: new EventType(
+        'XcmPallet.VersionNotifyRequested',
+        sts.struct({
+            destination: enjinV1062.V5Location,
+            cost: sts.array(() => enjinV1062.V5Asset),
             messageId: sts.bytes(),
         })
     ),
@@ -1533,6 +1719,18 @@ export const versionNotifyUnrequested = {
         })
     ),
     /**
+     * We have requested that a remote chain stops sending us XCM version change
+     * notifications.
+     */
+    enjinV1062: new EventType(
+        'XcmPallet.VersionNotifyUnrequested',
+        sts.struct({
+            destination: enjinV1062.V5Location,
+            cost: sts.array(() => enjinV1062.V5Asset),
+            messageId: sts.bytes(),
+        })
+    ),
+    /**
      * We have requested that a remote chain stops sending us XCM version change notifications.
      *
      * \[ destination location, cost \]
@@ -1611,6 +1809,16 @@ export const feesPaid = {
     ),
     /**
      * Fees were paid from a location for an operation (often for using `SendXcm`).
+     */
+    enjinV1062: new EventType(
+        'XcmPallet.FeesPaid',
+        sts.struct({
+            paying: enjinV1062.V5Location,
+            fees: sts.array(() => enjinV1062.V5Asset),
+        })
+    ),
+    /**
+     * Fees were paid from a location for an operation (often for using `SendXcm`).
      *
      * \[ paying location, fees \]
      */
@@ -1682,6 +1890,17 @@ export const assetsClaimed = {
     ),
     /**
      * Some assets have been claimed from an asset trap
+     */
+    enjinV1062: new EventType(
+        'XcmPallet.AssetsClaimed',
+        sts.struct({
+            hash: enjinV1062.H256,
+            origin: enjinV1062.V5Location,
+            assets: enjinV1062.VersionedAssets,
+        })
+    ),
+    /**
+     * Some assets have been claimed from an asset trap
      *
      * \[ hash, origin, assets \]
      */
@@ -1742,12 +1961,12 @@ export const sendFailed = {
     /**
      * An XCM message failed to send.
      */
-    v1060: new EventType(
+    enjinV1062: new EventType(
         'XcmPallet.SendFailed',
         sts.struct({
-            origin: v1060.V5Location,
-            destination: v1060.V5Location,
-            error: v1060.V3SendError,
+            origin: enjinV1062.V5Location,
+            destination: enjinV1062.V5Location,
+            error: enjinV1062.V3SendError,
             messageId: sts.bytes(),
         })
     ),
@@ -1758,11 +1977,11 @@ export const processXcmError = {
     /**
      * An XCM message failed to process.
      */
-    v1060: new EventType(
+    enjinV1062: new EventType(
         'XcmPallet.ProcessXcmError',
         sts.struct({
-            origin: v1060.V5Location,
-            error: v1060.V5Error,
+            origin: enjinV1062.V5Location,
+            error: enjinV1062.V5Error,
             messageId: sts.bytes(),
         })
     ),
@@ -1774,11 +1993,11 @@ export const aliasAuthorized = {
      * An `aliaser` location was authorized by `target` to alias it, authorization valid until
      * `expiry` block number.
      */
-    v1060: new EventType(
+    enjinV1062: new EventType(
         'XcmPallet.AliasAuthorized',
         sts.struct({
-            aliaser: v1060.V5Location,
-            target: v1060.V5Location,
+            aliaser: enjinV1062.V5Location,
+            target: enjinV1062.V5Location,
             expiry: sts.option(() => sts.bigint()),
         })
     ),
@@ -1789,11 +2008,11 @@ export const aliasAuthorizationRemoved = {
     /**
      * `target` removed alias authorization for `aliaser`.
      */
-    v1060: new EventType(
+    enjinV1062: new EventType(
         'XcmPallet.AliasAuthorizationRemoved',
         sts.struct({
-            aliaser: v1060.V5Location,
-            target: v1060.V5Location,
+            aliaser: enjinV1062.V5Location,
+            target: enjinV1062.V5Location,
         })
     ),
 }
@@ -1803,10 +2022,10 @@ export const aliasesAuthorizationsRemoved = {
     /**
      * `target` removed all alias authorizations.
      */
-    v1060: new EventType(
+    enjinV1062: new EventType(
         'XcmPallet.AliasesAuthorizationsRemoved',
         sts.struct({
-            target: v1060.V5Location,
+            target: enjinV1062.V5Location,
         })
     ),
 }

@@ -17,9 +17,11 @@ import * as enjinV1021 from '../enjinV1021'
 import * as v1021 from '../v1021'
 import * as matrixV1030 from '../matrixV1030'
 import * as v1030 from '../v1030'
+import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 import * as enjinV1032 from '../enjinV1032'
 import * as v1032 from '../v1032'
 import * as v1060 from '../v1060'
+import * as enjinV1062 from '../enjinV1062'
 
 export const fuelTankCreated = {
     name: 'FuelTanks.FuelTankCreated',
@@ -77,6 +79,22 @@ export const fuelTankMutated = {
              * The mutation that was applied
              */
             mutation: matrixEnjinV1012.DefaultTankMutation,
+        })
+    ),
+    /**
+     * A fuel tank was mutated
+     */
+    matrixEnjinV1031: new EventType(
+        'FuelTanks.FuelTankMutated',
+        sts.struct({
+            /**
+             * The account id of the fuel tank
+             */
+            tankId: matrixEnjinV1031.AccountId32,
+            /**
+             * The mutation that was applied
+             */
+            mutation: matrixEnjinV1031.DefaultTankMutation,
         })
     ),
     /**
@@ -157,6 +175,22 @@ export const fuelTankMutated = {
              * The mutation that was applied
              */
             mutation: enjinV1032.DefaultTankMutation,
+        })
+    ),
+    /**
+     * A fuel tank was mutated
+     */
+    enjinV1062: new EventType(
+        'FuelTanks.FuelTankMutated',
+        sts.struct({
+            /**
+             * The account id of the fuel tank
+             */
+            tankId: enjinV1062.AccountId32,
+            /**
+             * The mutation that was applied
+             */
+            mutation: enjinV1062.DefaultTankMutation,
         })
     ),
     /**
@@ -324,6 +358,30 @@ export const accountAdded = {
         })
     ),
     /**
+     * An account was added to a fuel tank
+     */
+    matrixEnjinV1031: new EventType(
+        'FuelTanks.AccountAdded',
+        sts.struct({
+            /**
+             * The account id of the fuel tank
+             */
+            tankId: matrixEnjinV1031.AccountId32,
+            /**
+             * The account id that was added
+             */
+            userId: matrixEnjinV1031.AccountId32,
+            /**
+             * The deposit reserved by the fuel tank for this account
+             */
+            tankDeposit: sts.bigint(),
+            /**
+             * The deposit reserved by the user for this account
+             */
+            userDeposit: sts.bigint(),
+        })
+    ),
+    /**
      * An account was added to a [`FuelTank`]
      */
     matrixV1000: new EventType(
@@ -443,6 +501,31 @@ export const accountAdded = {
             userId: v102.AccountId32,
             /**
              * The deposit reserved by the [`FuelTank`] for this account
+             */
+            tankDeposit: sts.bigint(),
+            /**
+             * The deposit reserved by the user for this account
+             */
+            userDeposit: sts.bigint(),
+        })
+    ),
+
+    /**
+     * An account was added to a fuel tank
+     */
+    enjinV1062: new EventType(
+        'FuelTanks.AccountAdded',
+        sts.struct({
+            /**
+             * The account id of the fuel tank
+             */
+            tankId: enjinV1062.AccountId32,
+            /**
+             * The account id that was added
+             */
+            userId: enjinV1062.AccountId32,
+            /**
+             * The deposit reserved by the fuel tank for this account
              */
             tankDeposit: sts.bigint(),
             /**
@@ -1212,6 +1295,26 @@ export const dispatchFailed = {
     /**
      * The dispatch of a call has failed
      */
+    matrixEnjinV1031: new EventType(
+        'FuelTanks.DispatchFailed',
+        sts.struct({
+            /**
+             * The account id of the fuel tank
+             */
+            tankId: matrixEnjinV1031.AccountId32,
+            /**
+             * The account id that dispatched the call
+             */
+            caller: matrixEnjinV1031.AccountId32,
+            /**
+             * The error
+             */
+            error: matrixEnjinV1031.DispatchError,
+        })
+    ),
+    /**
+     * The dispatch of a call has failed
+     */
     matrixV500: new EventType(
         'FuelTanks.DispatchFailed',
         sts.struct({
@@ -1327,6 +1430,26 @@ export const dispatchFailed = {
              * The error
              */
             error: enjinV101.DispatchError,
+        })
+    ),
+    /**
+     * The dispatch of a call has failed
+     */
+    enjinV1062: new EventType(
+        'FuelTanks.DispatchFailed',
+        sts.struct({
+            /**
+             * The account id of the fuel tank
+             */
+            tankId: enjinV1062.AccountId32,
+            /**
+             * The account id that dispatched the call
+             */
+            caller: enjinV1062.AccountId32,
+            /**
+             * The error
+             */
+            error: enjinV1062.DispatchError,
         })
     ),
     /**
@@ -1465,13 +1588,13 @@ export const destroyFuelTankScheduled = {
     /**
      * A fuel tank has been scheduled to be destroyed
      */
-    matrixV1030: new EventType(
+    matrixEnjinV1031: new EventType(
         'FuelTanks.DestroyFuelTankScheduled',
         sts.struct({
             /**
              * The account id
              */
-            tankId: matrixV1030.AccountId32,
+            tankId: matrixEnjinV1031.AccountId32,
         })
     ),
 }

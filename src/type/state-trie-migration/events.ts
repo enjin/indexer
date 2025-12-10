@@ -1,5 +1,5 @@
 import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
-import * as matrixV1023 from '../matrixV1023'
+import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 
 export const migrated = {
     name: 'StateTrieMigration.Migrated',
@@ -7,12 +7,12 @@ export const migrated = {
      * Given number of `(top, child)` keys were migrated respectively, with the given
      * `compute`.
      */
-    matrixV1023: new EventType(
+    matrixEnjinV1031: new EventType(
         'StateTrieMigration.Migrated',
         sts.struct({
             top: sts.number(),
             child: sts.number(),
-            compute: matrixV1023.MigrationCompute,
+            compute: matrixEnjinV1031.MigrationCompute,
         })
     ),
 }
@@ -22,10 +22,10 @@ export const slashed = {
     /**
      * Some account got slashed by the given amount.
      */
-    matrixV1023: new EventType(
+    matrixEnjinV1031: new EventType(
         'StateTrieMigration.Slashed',
         sts.struct({
-            who: matrixV1023.AccountId32,
+            who: matrixEnjinV1031.AccountId32,
             amount: sts.bigint(),
         })
     ),
@@ -36,7 +36,7 @@ export const autoMigrationFinished = {
     /**
      * The auto migration task finished.
      */
-    matrixV1023: new EventType('StateTrieMigration.AutoMigrationFinished', sts.unit()),
+    matrixEnjinV1031: new EventType('StateTrieMigration.AutoMigrationFinished', sts.unit()),
 }
 
 export const halted = {
@@ -44,10 +44,10 @@ export const halted = {
     /**
      * Migration got halted due to an error or miss-configuration.
      */
-    matrixV1023: new EventType(
+    matrixEnjinV1031: new EventType(
         'StateTrieMigration.Halted',
         sts.struct({
-            error: matrixV1023.Error,
+            error: matrixEnjinV1031.Error,
         })
     ),
 }

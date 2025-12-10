@@ -97,12 +97,12 @@ export const auctionBidExtension = {
     /**
      *  Number of blocks that an auction is extended when a bid is placed near it's end block
      */
-    matrixV1030: new ConstantType('Marketplace.AuctionBidExtension', sts.number()),
+    matrixEnjinV1031: new ConstantType('Marketplace.AuctionBidExtension', sts.number()),
 }
 
 export const removeExpiredListingsInterval = {
     /**
      *  Number of blocks the offchain worker waits in between removing expired listings
      */
-    matrixV1030: new ConstantType('Marketplace.RemoveExpiredListingsInterval', sts.number()),
+    matrixEnjinV1031: new ConstantType('Marketplace.RemoveExpiredListingsInterval', sts.number()),
 }

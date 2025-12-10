@@ -1,5 +1,5 @@
 import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
-import * as matrixV1030 from '../matrixV1030'
+import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 
 export const newSession = {
     name: 'Session.NewSession',
@@ -21,7 +21,7 @@ export const newQueued = {
      * The `NewSession` event in the current block also implies a new validator set to be
      * queued.
      */
-    matrixV1030: new EventType('Session.NewQueued', sts.unit()),
+    matrixEnjinV1031: new EventType('Session.NewQueued', sts.unit()),
 }
 
 export const validatorDisabled = {
@@ -29,10 +29,10 @@ export const validatorDisabled = {
     /**
      * Validator has been disabled.
      */
-    matrixV1030: new EventType(
+    matrixEnjinV1031: new EventType(
         'Session.ValidatorDisabled',
         sts.struct({
-            validator: matrixV1030.AccountId32,
+            validator: matrixEnjinV1031.AccountId32,
         })
     ),
 }
@@ -42,10 +42,10 @@ export const validatorReenabled = {
     /**
      * Validator has been re-enabled.
      */
-    matrixV1030: new EventType(
+    matrixEnjinV1031: new EventType(
         'Session.ValidatorReenabled',
         sts.struct({
-            validator: matrixV1030.AccountId32,
+            validator: matrixEnjinV1031.AccountId32,
         })
     ),
 }

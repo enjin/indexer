@@ -1,6 +1,8 @@
 import { sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx } from '../support'
 import * as enjinV100 from '../enjinV100'
+import * as v100 from '../v100'
 import * as v1060 from '../v1060'
+import * as enjinV1062 from '../enjinV1062'
 
 export const unappliedSlashes = {
     /**
@@ -12,6 +14,24 @@ export const unappliedSlashes = {
         [sts.number(), enjinV100.CandidateHash],
         enjinV100.PendingSlashes
     ) as UnappliedSlashesEnjinV100,
+    /**
+     *  Validators pending dispute slashes.
+     */
+    enjinV1062: new StorageType(
+        'ParasSlashing.UnappliedSlashes',
+        'Optional',
+        [sts.number(), enjinV1062.CandidateHash],
+        enjinV1062.PendingSlashes
+    ) as UnappliedSlashesEnjinV1062,
+    /**
+     *  Validators pending dispute slashes.
+     */
+    v100: new StorageType(
+        'ParasSlashing.UnappliedSlashes',
+        'Optional',
+        [sts.number(), v100.CandidateHash],
+        v100.PendingSlashes
+    ) as UnappliedSlashesV100,
     /**
      *  Validators pending dispute slashes.
      */
@@ -66,6 +86,99 @@ export interface UnappliedSlashesEnjinV100 {
         key1: number,
         key2: enjinV100.CandidateHash
     ): AsyncIterable<[k: [number, enjinV100.CandidateHash], v: enjinV100.PendingSlashes | undefined][]>
+}
+
+/**
+ *  Validators pending dispute slashes.
+ */
+export interface UnappliedSlashesEnjinV1062 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key1: number, key2: enjinV1062.CandidateHash): Promise<enjinV1062.PendingSlashes | undefined>
+    getMany(
+        block: Block,
+        keys: [number, enjinV1062.CandidateHash][]
+    ): Promise<(enjinV1062.PendingSlashes | undefined)[]>
+    getKeys(block: Block): Promise<[number, enjinV1062.CandidateHash][]>
+    getKeys(block: Block, key1: number): Promise<[number, enjinV1062.CandidateHash][]>
+    getKeys(block: Block, key1: number, key2: enjinV1062.CandidateHash): Promise<[number, enjinV1062.CandidateHash][]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[number, enjinV1062.CandidateHash][]>
+    getKeysPaged(pageSize: number, block: Block, key1: number): AsyncIterable<[number, enjinV1062.CandidateHash][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: number,
+        key2: enjinV1062.CandidateHash
+    ): AsyncIterable<[number, enjinV1062.CandidateHash][]>
+    getPairs(block: Block): Promise<[k: [number, enjinV1062.CandidateHash], v: enjinV1062.PendingSlashes | undefined][]>
+    getPairs(
+        block: Block,
+        key1: number
+    ): Promise<[k: [number, enjinV1062.CandidateHash], v: enjinV1062.PendingSlashes | undefined][]>
+    getPairs(
+        block: Block,
+        key1: number,
+        key2: enjinV1062.CandidateHash
+    ): Promise<[k: [number, enjinV1062.CandidateHash], v: enjinV1062.PendingSlashes | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: [number, enjinV1062.CandidateHash], v: enjinV1062.PendingSlashes | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: number
+    ): AsyncIterable<[k: [number, enjinV1062.CandidateHash], v: enjinV1062.PendingSlashes | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: number,
+        key2: enjinV1062.CandidateHash
+    ): AsyncIterable<[k: [number, enjinV1062.CandidateHash], v: enjinV1062.PendingSlashes | undefined][]>
+}
+
+/**
+ *  Validators pending dispute slashes.
+ */
+export interface UnappliedSlashesV100 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key1: number, key2: v100.CandidateHash): Promise<v100.PendingSlashes | undefined>
+    getMany(block: Block, keys: [number, v100.CandidateHash][]): Promise<(v100.PendingSlashes | undefined)[]>
+    getKeys(block: Block): Promise<[number, v100.CandidateHash][]>
+    getKeys(block: Block, key1: number): Promise<[number, v100.CandidateHash][]>
+    getKeys(block: Block, key1: number, key2: v100.CandidateHash): Promise<[number, v100.CandidateHash][]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[number, v100.CandidateHash][]>
+    getKeysPaged(pageSize: number, block: Block, key1: number): AsyncIterable<[number, v100.CandidateHash][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: number,
+        key2: v100.CandidateHash
+    ): AsyncIterable<[number, v100.CandidateHash][]>
+    getPairs(block: Block): Promise<[k: [number, v100.CandidateHash], v: v100.PendingSlashes | undefined][]>
+    getPairs(
+        block: Block,
+        key1: number
+    ): Promise<[k: [number, v100.CandidateHash], v: v100.PendingSlashes | undefined][]>
+    getPairs(
+        block: Block,
+        key1: number,
+        key2: v100.CandidateHash
+    ): Promise<[k: [number, v100.CandidateHash], v: v100.PendingSlashes | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: [number, v100.CandidateHash], v: v100.PendingSlashes | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: number
+    ): AsyncIterable<[k: [number, v100.CandidateHash], v: v100.PendingSlashes | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: number,
+        key2: v100.CandidateHash
+    ): AsyncIterable<[k: [number, v100.CandidateHash], v: v100.PendingSlashes | undefined][]>
 }
 
 /**

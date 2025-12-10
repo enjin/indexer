@@ -1,7 +1,7 @@
 import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
-import * as matrixV1030 from '../matrixV1030'
+import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 
 export const bountyProposed = {
     name: 'Bounties.BountyProposed',
@@ -157,11 +157,11 @@ export const depositPoked = {
     /**
      * A bounty deposit has been poked.
      */
-    matrixV1030: new EventType(
+    matrixEnjinV1031: new EventType(
         'Bounties.DepositPoked',
         sts.struct({
             bountyId: sts.number(),
-            proposer: matrixV1030.AccountId32,
+            proposer: matrixEnjinV1031.AccountId32,
             oldDeposit: sts.bigint(),
             newDeposit: sts.bigint(),
         })

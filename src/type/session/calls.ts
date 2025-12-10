@@ -1,8 +1,12 @@
 import { sts, Block, Bytes, Option, Result, CallType, RuntimeCtx } from '../support'
 import * as enjinV100 from '../enjinV100'
+import * as v100 from '../v100'
+import * as matrixV500 from '../matrixV500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV1030 from '../matrixV1030'
+import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 import * as v1060 from '../v1060'
+import * as enjinV1062 from '../enjinV1062'
 
 export const setKeys = {
     name: 'Session.set_keys',
@@ -21,6 +25,47 @@ export const setKeys = {
         'Session.set_keys',
         sts.struct({
             keys: matrixEnjinV603.SessionKeys,
+            proof: sts.bytes(),
+        })
+    ),
+    /**
+     * Sets the session key(s) of the function caller to `keys`.
+     * Allows an account to set its session key prior to becoming a validator.
+     * This doesn't take effect until the next session.
+     *
+     * The dispatch origin of this function must be signed.
+     *
+     * ## Complexity
+     * - `O(1)`. Actual cost depends on the number of length of `T::Keys::key_ids()` which is
+     *   fixed.
+     */
+    matrixEnjinV1031: new CallType(
+        'Session.set_keys',
+        sts.struct({
+            keys: matrixEnjinV1031.SessionKeys,
+            proof: sts.bytes(),
+        })
+    ),
+    /**
+     * Sets the session key(s) of the function caller to `keys`.
+     * Allows an account to set its session key prior to becoming a validator.
+     * This doesn't take effect until the next session.
+     *
+     * The dispatch origin of this function must be signed.
+     *
+     * # <weight>
+     * - Complexity: `O(1)`. Actual cost depends on the number of length of
+     *   `T::Keys::key_ids()` which is fixed.
+     * - DbReads: `origin account`, `T::ValidatorIdOf`, `NextKeys`
+     * - DbWrites: `origin account`, `NextKeys`
+     * - DbReads per key id: `KeyOwner`
+     * - DbWrites per key id: `KeyOwner`
+     * # </weight>
+     */
+    matrixV500: new CallType(
+        'Session.set_keys',
+        sts.struct({
+            keys: matrixV500.SessionKeys,
             proof: sts.bytes(),
         })
     ),
@@ -57,6 +102,47 @@ export const setKeys = {
         'Session.set_keys',
         sts.struct({
             keys: enjinV100.SessionKeys,
+            proof: sts.bytes(),
+        })
+    ),
+    /**
+     * Sets the session key(s) of the function caller to `keys`.
+     * Allows an account to set its session key prior to becoming a validator.
+     * This doesn't take effect until the next session.
+     *
+     * The dispatch origin of this function must be signed.
+     *
+     * ## Complexity
+     * - `O(1)`. Actual cost depends on the number of length of `T::Keys::key_ids()` which is
+     *   fixed.
+     */
+    enjinV1062: new CallType(
+        'Session.set_keys',
+        sts.struct({
+            keys: enjinV1062.SessionKeys,
+            proof: sts.bytes(),
+        })
+    ),
+    /**
+     * Sets the session key(s) of the function caller to `keys`.
+     * Allows an account to set its session key prior to becoming a validator.
+     * This doesn't take effect until the next session.
+     *
+     * The dispatch origin of this function must be signed.
+     *
+     * # <weight>
+     * - Complexity: `O(1)`. Actual cost depends on the number of length of
+     *   `T::Keys::key_ids()` which is fixed.
+     * - DbReads: `origin account`, `T::ValidatorIdOf`, `NextKeys`
+     * - DbWrites: `origin account`, `NextKeys`
+     * - DbReads per key id: `KeyOwner`
+     * - DbWrites per key id: `KeyOwner`
+     * # </weight>
+     */
+    v100: new CallType(
+        'Session.set_keys',
+        sts.struct({
+            keys: v100.SessionKeys,
             proof: sts.bytes(),
         })
     ),

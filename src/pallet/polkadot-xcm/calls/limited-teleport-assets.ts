@@ -9,6 +9,10 @@ export const limitedTeleportAssets = withDispatchCheck((call: CallItem): Limited
     return match(call)
         .returnType<LimitedTeleportAssets>()
         .when(
+            () => calls.polkadotXcm.limitedTeleportAssets.matrixEnjinV1031.is(call),
+            () => calls.polkadotXcm.limitedTeleportAssets.matrixEnjinV1031.decode(call)
+        )
+        .when(
             () => calls.polkadotXcm.limitedTeleportAssets.matrixEnjinV1012.is(call),
             () => calls.polkadotXcm.limitedTeleportAssets.matrixEnjinV1012.decode(call)
         )

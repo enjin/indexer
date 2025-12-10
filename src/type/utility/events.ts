@@ -9,7 +9,9 @@ import * as matrixV602 from '../matrixV602'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV604 from '../matrixV604'
 import * as matrixV1030 from '../matrixV1030'
+import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 import * as v1060 from '../v1060'
+import * as enjinV1062 from '../enjinV1062'
 
 export const batchInterrupted = {
     name: 'Utility.BatchInterrupted',
@@ -22,6 +24,17 @@ export const batchInterrupted = {
         sts.struct({
             index: sts.number(),
             error: matrixEnjinV603.DispatchError,
+        })
+    ),
+    /**
+     * Batch of dispatches did not complete fully. Index of first failing dispatch given, as
+     * well as the error.
+     */
+    matrixEnjinV1031: new EventType(
+        'Utility.BatchInterrupted',
+        sts.struct({
+            index: sts.number(),
+            error: matrixEnjinV1031.DispatchError,
         })
     ),
     /**
@@ -88,6 +101,17 @@ export const batchInterrupted = {
         sts.struct({
             index: sts.number(),
             error: enjinV101.DispatchError,
+        })
+    ),
+    /**
+     * Batch of dispatches did not complete fully. Index of first failing dispatch given, as
+     * well as the error.
+     */
+    enjinV1062: new EventType(
+        'Utility.BatchInterrupted',
+        sts.struct({
+            index: sts.number(),
+            error: enjinV1062.DispatchError,
         })
     ),
     /**
@@ -174,6 +198,15 @@ export const itemFailed = {
     /**
      * A single item within a Batch of dispatches has completed with error.
      */
+    matrixEnjinV1031: new EventType(
+        'Utility.ItemFailed',
+        sts.struct({
+            error: matrixEnjinV1031.DispatchError,
+        })
+    ),
+    /**
+     * A single item within a Batch of dispatches has completed with error.
+     */
     matrixV500: new EventType(
         'Utility.ItemFailed',
         sts.struct({
@@ -228,6 +261,15 @@ export const itemFailed = {
     /**
      * A single item within a Batch of dispatches has completed with error.
      */
+    enjinV1062: new EventType(
+        'Utility.ItemFailed',
+        sts.struct({
+            error: enjinV1062.DispatchError,
+        })
+    ),
+    /**
+     * A single item within a Batch of dispatches has completed with error.
+     */
     v100: new EventType(
         'Utility.ItemFailed',
         sts.struct({
@@ -274,6 +316,18 @@ export const dispatchedAs = {
             result: sts.result(
                 () => sts.unit(),
                 () => matrixEnjinV603.DispatchError
+            ),
+        })
+    ),
+    /**
+     * A call was dispatched.
+     */
+    matrixEnjinV1031: new EventType(
+        'Utility.DispatchedAs',
+        sts.struct({
+            result: sts.result(
+                () => sts.unit(),
+                () => matrixEnjinV1031.DispatchError
             ),
         })
     ),
@@ -352,6 +406,18 @@ export const dispatchedAs = {
     /**
      * A call was dispatched.
      */
+    enjinV1062: new EventType(
+        'Utility.DispatchedAs',
+        sts.struct({
+            result: sts.result(
+                () => sts.unit(),
+                () => enjinV1062.DispatchError
+            ),
+        })
+    ),
+    /**
+     * A call was dispatched.
+     */
     v100: new EventType(
         'Utility.DispatchedAs',
         sts.struct({
@@ -404,7 +470,7 @@ export const ifElseMainSuccess = {
     /**
      * Main call was dispatched.
      */
-    matrixV1030: new EventType('Utility.IfElseMainSuccess', sts.unit()),
+    matrixEnjinV1031: new EventType('Utility.IfElseMainSuccess', sts.unit()),
 }
 
 export const ifElseFallbackCalled = {
@@ -412,10 +478,10 @@ export const ifElseFallbackCalled = {
     /**
      * The fallback call was dispatched.
      */
-    matrixV1030: new EventType(
+    matrixEnjinV1031: new EventType(
         'Utility.IfElseFallbackCalled',
         sts.struct({
-            mainError: matrixV1030.DispatchError,
+            mainError: matrixEnjinV1031.DispatchError,
         })
     ),
 }

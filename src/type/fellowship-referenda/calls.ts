@@ -6,6 +6,7 @@ import * as v105 from '../v105'
 import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
 import * as v1060 from '../v1060'
+import * as enjinV1062 from '../enjinV1062'
 
 export const submit = {
     name: 'FellowshipReferenda.submit',
@@ -64,6 +65,25 @@ export const submit = {
             proposalOrigin: enjinV1032.OriginCaller,
             proposal: enjinV1032.Bounded,
             enactmentMoment: enjinV1032.DispatchTime,
+        })
+    ),
+    /**
+     * Propose a referendum on a privileged action.
+     *
+     * - `origin`: must be `SubmitOrigin` and the account must have `SubmissionDeposit` funds
+     *   available.
+     * - `proposal_origin`: The origin from which the proposal should be executed.
+     * - `proposal`: The proposal.
+     * - `enactment_moment`: The moment that the proposal should be enacted.
+     *
+     * Emits `Submitted`.
+     */
+    enjinV1062: new CallType(
+        'FellowshipReferenda.submit',
+        sts.struct({
+            proposalOrigin: enjinV1062.OriginCaller,
+            proposal: enjinV1062.Bounded,
+            enactmentMoment: enjinV1062.DispatchTime,
         })
     ),
     /**

@@ -8,6 +8,10 @@ export function dispatchAndTouch(call: CallItem): DispatchAndTouch {
     return match(call)
         .returnType<DispatchAndTouch>()
         .when(
+            () => calls.fuelTanks.dispatchAndTouch.matrixEnjinV1031.is(call),
+            () => calls.fuelTanks.dispatchAndTouch.matrixEnjinV1031.decode(call)
+        )
+        .when(
             () => calls.fuelTanks.dispatchAndTouch.matrixEnjinV1022.is(call),
             () => calls.fuelTanks.dispatchAndTouch.matrixEnjinV1022.decode(call)
         )

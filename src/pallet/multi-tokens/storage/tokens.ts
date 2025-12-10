@@ -26,6 +26,10 @@ export async function tokens(
     return match(block)
         .returnType<Promise<Token | AsyncIterable<[k: [bigint, bigint], v: Token | undefined][]> | undefined>>()
         .when(
+            () => multiTokens.tokens.matrixEnjinV1031.is(block),
+            () => getTokens(multiTokens.tokens.matrixEnjinV1031)
+        )
+        .when(
             () => multiTokens.tokens.matrixEnjinV1022.is(block),
             () => getTokens(multiTokens.tokens.matrixEnjinV1022)
         )

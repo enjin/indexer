@@ -1,9 +1,13 @@
 import { sts, Block, Bytes, Option, Result, CallType, RuntimeCtx } from '../support'
 import * as matrixEnjinV1000 from '../matrixEnjinV1000'
+import * as matrixV1010 from '../matrixV1010'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 import * as matrixV1030 from '../matrixV1030'
+import * as v1030 from '../v1030'
+import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 import * as enjinV1032 from '../enjinV1032'
 import * as v1060 from '../v1060'
+import * as enjinV1062 from '../enjinV1062'
 
 export const addRegistrar = {
     name: 'Identity.add_registrar',
@@ -401,6 +405,25 @@ export const removeUsernameAuthority = {
     /**
      * Remove `authority` from the username authorities.
      */
+    matrixEnjinV1031: new CallType(
+        'Identity.remove_username_authority',
+        sts.struct({
+            suffix: sts.bytes(),
+            authority: matrixEnjinV1031.MultiAddress,
+        })
+    ),
+    /**
+     * Remove `authority` from the username authorities.
+     */
+    matrixV1010: new CallType(
+        'Identity.remove_username_authority',
+        sts.struct({
+            authority: matrixV1010.MultiAddress,
+        })
+    ),
+    /**
+     * Remove `authority` from the username authorities.
+     */
     matrixV1030: new CallType(
         'Identity.remove_username_authority',
         sts.struct({
@@ -415,6 +438,25 @@ export const removeUsernameAuthority = {
         'Identity.remove_username_authority',
         sts.struct({
             authority: enjinV1032.MultiAddress,
+        })
+    ),
+    /**
+     * Remove `authority` from the username authorities.
+     */
+    enjinV1062: new CallType(
+        'Identity.remove_username_authority',
+        sts.struct({
+            suffix: sts.bytes(),
+            authority: enjinV1062.MultiAddress,
+        })
+    ),
+    /**
+     * Remove `authority` from the username authorities.
+     */
+    v1030: new CallType(
+        'Identity.remove_username_authority',
+        sts.struct({
+            authority: v1030.MultiAddress,
         })
     ),
     /**
@@ -465,6 +507,49 @@ export const setUsernameFor = {
      *   - When combined with the suffix of the issuing authority be _less than_ the
      *     `MaxUsernameLength`.
      */
+    matrixEnjinV1031: new CallType(
+        'Identity.set_username_for',
+        sts.struct({
+            who: matrixEnjinV1031.MultiAddress,
+            username: sts.bytes(),
+            signature: sts.option(() => matrixEnjinV1031.MultiSignature),
+            useAllocation: sts.boolean(),
+        })
+    ),
+    /**
+     * Set the username for `who`. Must be called by a username authority.
+     *
+     * The authority must have an `allocation`. Users can either pre-sign their usernames or
+     * accept them later.
+     *
+     * Usernames must:
+     *   - Only contain lowercase ASCII characters or digits.
+     *   - When combined with the suffix of the issuing authority be _less than_ the
+     *     `MaxUsernameLength`.
+     */
+    matrixV1010: new CallType(
+        'Identity.set_username_for',
+        sts.struct({
+            who: matrixV1010.MultiAddress,
+            username: sts.bytes(),
+            signature: sts.option(() => matrixV1010.MultiSignature),
+        })
+    ),
+    /**
+     * Set the username for `who`. Must be called by a username authority.
+     *
+     * If `use_allocation` is set, the authority must have a username allocation available to
+     * spend. Otherwise, the authority will need to put up a deposit for registering the
+     * username.
+     *
+     * Users can either pre-sign their usernames or
+     * accept them later.
+     *
+     * Usernames must:
+     *   - Only contain lowercase ASCII characters or digits.
+     *   - When combined with the suffix of the issuing authority be _less than_ the
+     *     `MaxUsernameLength`.
+     */
     matrixV1030: new CallType(
         'Identity.set_username_for',
         sts.struct({
@@ -491,6 +576,49 @@ export const setUsernameFor = {
             who: enjinV1032.MultiAddress,
             username: sts.bytes(),
             signature: sts.option(() => enjinV1032.MultiSignature),
+        })
+    ),
+    /**
+     * Set the username for `who`. Must be called by a username authority.
+     *
+     * If `use_allocation` is set, the authority must have a username allocation available to
+     * spend. Otherwise, the authority will need to put up a deposit for registering the
+     * username.
+     *
+     * Users can either pre-sign their usernames or
+     * accept them later.
+     *
+     * Usernames must:
+     *   - Only contain lowercase ASCII characters or digits.
+     *   - When combined with the suffix of the issuing authority be _less than_ the
+     *     `MaxUsernameLength`.
+     */
+    enjinV1062: new CallType(
+        'Identity.set_username_for',
+        sts.struct({
+            who: enjinV1062.MultiAddress,
+            username: sts.bytes(),
+            signature: sts.option(() => enjinV1062.MultiSignature),
+            useAllocation: sts.boolean(),
+        })
+    ),
+    /**
+     * Set the username for `who`. Must be called by a username authority.
+     *
+     * The authority must have an `allocation`. Users can either pre-sign their usernames or
+     * accept them later.
+     *
+     * Usernames must:
+     *   - Only contain lowercase ASCII characters or digits.
+     *   - When combined with the suffix of the issuing authority be _less than_ the
+     *     `MaxUsernameLength`.
+     */
+    v1030: new CallType(
+        'Identity.set_username_for',
+        sts.struct({
+            who: v1030.MultiAddress,
+            username: sts.bytes(),
+            signature: sts.option(() => v1030.MultiSignature),
         })
     ),
     /**
@@ -582,7 +710,7 @@ export const unbindUsername = {
      * Once the grace period has passed, the username can be deleted by calling
      * [remove_username](crate::Call::remove_username).
      */
-    matrixV1030: new CallType(
+    matrixEnjinV1031: new CallType(
         'Identity.unbind_username',
         sts.struct({
             username: sts.bytes(),
@@ -596,7 +724,7 @@ export const removeUsername = {
      * Permanently delete a username which has been unbinding for longer than the grace period.
      * Caller is refunded the fee if the username expired and the removal was successful.
      */
-    matrixV1030: new CallType(
+    matrixEnjinV1031: new CallType(
         'Identity.remove_username',
         sts.struct({
             username: sts.bytes(),
@@ -610,7 +738,7 @@ export const killUsername = {
      * Call with [ForceOrigin](crate::Config::ForceOrigin) privileges which deletes a username
      * and slashes any deposit associated with it.
      */
-    matrixV1030: new CallType(
+    matrixEnjinV1031: new CallType(
         'Identity.kill_username',
         sts.struct({
             username: sts.bytes(),

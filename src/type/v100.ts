@@ -1,5 +1,29 @@
 import { sts, Result, Option, Bytes, BitSequence } from './support'
 
+export const RuntimeVersion: sts.Type<RuntimeVersion> = sts.struct(() => {
+    return {
+        specName: sts.string(),
+        implName: sts.string(),
+        authoringVersion: sts.number(),
+        specVersion: sts.number(),
+        implVersion: sts.number(),
+        apis: sts.array(() => sts.tuple(() => [sts.bytes(), sts.number()])),
+        transactionVersion: sts.number(),
+        stateVersion: sts.number(),
+    }
+})
+
+export interface RuntimeVersion {
+    specName: string
+    implName: string
+    authoringVersion: number
+    specVersion: number
+    implVersion: number
+    apis: [Bytes, number][]
+    transactionVersion: number
+    stateVersion: number
+}
+
 export type Type_780 =
     | Type_780_Approved
     | Type_780_Cancelled
@@ -1553,6 +1577,41 @@ export const ParaInfo: sts.Type<ParaInfo> = sts.struct(() => {
     }
 })
 
+export type CandidateHash = Bytes
+
+export interface PendingSlashes {
+    keys: [V2ValidatorIndex, Bytes][]
+    kind: SlashingOffenceKind
+}
+
+export type SlashingOffenceKind = SlashingOffenceKind_AgainstValid | SlashingOffenceKind_ForInvalid
+
+export interface SlashingOffenceKind_AgainstValid {
+    __kind: 'AgainstValid'
+}
+
+export interface SlashingOffenceKind_ForInvalid {
+    __kind: 'ForInvalid'
+}
+
+export type V2ValidatorIndex = number
+
+export const PendingSlashes: sts.Type<PendingSlashes> = sts.struct(() => {
+    return {
+        keys: sts.array(() => sts.tuple(() => [V2ValidatorIndex, sts.bytes()])),
+        kind: SlashingOffenceKind,
+    }
+})
+
+export const SlashingOffenceKind: sts.Type<SlashingOffenceKind> = sts.closedEnum(() => {
+    return {
+        AgainstValid: sts.unit(),
+        ForInvalid: sts.unit(),
+    }
+})
+
+export const V2ValidatorIndex = sts.number()
+
 export type ValidationCodeHash = Bytes
 
 export interface PvfCheckActiveVoteState {
@@ -1690,8 +1749,6 @@ export interface V2InvalidDisputeStatementKind_Explicit {
     __kind: 'Explicit'
 }
 
-export type CandidateHash = Bytes
-
 export type V2ValidityAttestation = V2ValidityAttestation_Explicit | V2ValidityAttestation_Implicit
 
 export interface V2ValidityAttestation_Explicit {
@@ -1703,8 +1760,6 @@ export interface V2ValidityAttestation_Implicit {
     __kind: 'Implicit'
     value: Bytes
 }
-
-export type V2ValidatorIndex = number
 
 export interface V2CandidateReceipt {
     descriptor: V2CandidateDescriptor
@@ -1774,31 +1829,6 @@ export const V2ValidityAttestation: sts.Type<V2ValidityAttestation> = sts.closed
         Implicit: sts.bytes(),
     }
 })
-
-export const V2ValidatorIndex = sts.number()
-
-export const V2CandidateReceipt: sts.Type<V2CandidateReceipt> = sts.struct(() => {
-    return {
-        descriptor: V2CandidateDescriptor,
-        commitmentsHash: H256,
-    }
-})
-
-export const V2CandidateDescriptor: sts.Type<V2CandidateDescriptor> = sts.struct(() => {
-    return {
-        paraId: Id,
-        relayParent: H256,
-        collator: V2Public,
-        persistedValidationDataHash: H256,
-        povHash: H256,
-        erasureRoot: H256,
-        signature: V2Signature,
-        paraHead: H256,
-        validationCodeHash: ValidationCodeHash,
-    }
-})
-
-export const V2Signature = sts.bytes()
 
 export interface HostConfiguration {
     maxCodeSize: number
@@ -2539,6 +2569,17 @@ export interface Approval {
     amount: bigint
     expiration?: number | undefined
 }
+
+export interface SessionKeys {
+    grandpa: Public
+    babe: Bytes
+    imOnline: Bytes
+    paraValidator: Bytes
+    paraAssignment: Bytes
+    authorityDiscovery: Bytes
+}
+
+export type Public = Bytes
 
 export interface AccountData {
     free: bigint
@@ -6210,8 +6251,6 @@ export interface GrandpaEvent_Resumed {
     __kind: 'Resumed'
 }
 
-export type Public = Bytes
-
 /**
  * 
 			The [event](https://docs.substrate.io/main-docs/build/events-errors/) emitted
@@ -7692,12 +7731,6 @@ export const ParaInclusionEvent: sts.Type<ParaInclusionEvent> = sts.closedEnum((
         CandidateTimedOut: sts.tuple(() => [V2CandidateReceipt, HeadData, V2CoreIndex]),
     }
 })
-
-export const V2GroupIndex = sts.number()
-
-export const V2CoreIndex = sts.number()
-
-export const HeadData = sts.bytes()
 
 /**
  * Events type.
@@ -9833,6 +9866,48 @@ export interface VersionedXcm_V3 {
     value: V3Instruction[]
 }
 
+export const MembershipProof: sts.Type<MembershipProof> = sts.struct(() => {
+    return {
+        session: sts.number(),
+        trieNodes: sts.array(() => sts.bytes()),
+        validatorCount: sts.number(),
+    }
+})
+
+export interface MembershipProof {
+    session: number
+    trieNodes: Bytes[]
+    validatorCount: number
+}
+
+export const DisputeProof: sts.Type<DisputeProof> = sts.struct(() => {
+    return {
+        timeSlot: DisputesTimeSlot,
+        kind: SlashingOffenceKind,
+        validatorIndex: V2ValidatorIndex,
+        validatorId: sts.bytes(),
+    }
+})
+
+export const DisputesTimeSlot: sts.Type<DisputesTimeSlot> = sts.struct(() => {
+    return {
+        sessionIndex: sts.number(),
+        candidateHash: CandidateHash,
+    }
+})
+
+export interface DisputesTimeSlot {
+    sessionIndex: number
+    candidateHash: CandidateHash
+}
+
+export interface DisputeProof {
+    timeSlot: DisputesTimeSlot
+    kind: SlashingOffenceKind
+    validatorIndex: V2ValidatorIndex
+    validatorId: Bytes
+}
+
 export const V2InherentData: sts.Type<V2InherentData> = sts.struct(() => {
     return {
         bitfields: sts.array(() => V2UncheckedSigned),
@@ -9962,6 +10037,22 @@ export interface V2CandidateCommitments {
 
 export type ValidationCode = Bytes
 
+export const V2CandidateDescriptor: sts.Type<V2CandidateDescriptor> = sts.struct(() => {
+    return {
+        paraId: Id,
+        relayParent: H256,
+        collator: V2Public,
+        persistedValidationDataHash: H256,
+        povHash: H256,
+        erasureRoot: H256,
+        signature: V2Signature,
+        paraHead: H256,
+        validationCodeHash: ValidationCodeHash,
+    }
+})
+
+export const V2Signature = sts.bytes()
+
 export interface V2CommittedCandidateReceipt {
     descriptor: V2CandidateDescriptor
     commitments: V2CandidateCommitments
@@ -10019,52 +10110,6 @@ export interface Type_360_Remove {
 export interface Type_360_Set {
     __kind: 'Set'
     value: AccountId32
-}
-
-export const Type_359: sts.Type<Type_359> = sts.closedEnum(() => {
-    return {
-        Noop: sts.unit(),
-        Remove: sts.unit(),
-        Set: Perbill,
-    }
-})
-
-export type Type_359 = Type_359_Noop | Type_359_Remove | Type_359_Set
-
-export interface Type_359_Noop {
-    __kind: 'Noop'
-}
-
-export interface Type_359_Remove {
-    __kind: 'Remove'
-}
-
-export interface Type_359_Set {
-    __kind: 'Set'
-    value: Perbill
-}
-
-export const Type_358: sts.Type<Type_358> = sts.closedEnum(() => {
-    return {
-        Noop: sts.unit(),
-        Remove: sts.unit(),
-        Set: sts.bigint(),
-    }
-})
-
-export type Type_358 = Type_358_Noop | Type_358_Remove | Type_358_Set
-
-export interface Type_358_Noop {
-    __kind: 'Noop'
-}
-
-export interface Type_358_Remove {
-    __kind: 'Remove'
-}
-
-export interface Type_358_Set {
-    __kind: 'Set'
-    value: bigint
 }
 
 export const BondExtra: sts.Type<BondExtra> = sts.closedEnum(() => {
@@ -10320,18 +10365,6 @@ export const Attribute: sts.Type<Attribute> = sts.struct(() => {
     }
 })
 
-export const AttributeKeyValuePair: sts.Type<AttributeKeyValuePair> = sts.struct(() => {
-    return {
-        key: sts.bytes(),
-        value: sts.bytes(),
-    }
-})
-
-export interface AttributeKeyValuePair {
-    key: Bytes
-    value: Bytes
-}
-
 export const Type_469: sts.Type<Type_469> = sts.struct(() => {
     return {
         accountId: AccountId32,
@@ -10372,6 +10405,11 @@ export interface ForeignTokenCreationParams {
     symbol: Bytes
     location?: V3MultiLocation | undefined
     unitsPerSecond?: bigint | undefined
+}
+
+export interface AttributeKeyValuePair {
+    key: Bytes
+    value: Bytes
 }
 
 export type SufficiencyParam = SufficiencyParam_Insufficient | SufficiencyParam_Sufficient
@@ -10479,6 +10517,13 @@ export const ForeignTokenCreationParams: sts.Type<ForeignTokenCreationParams> = 
 })
 
 export const BoundedString = sts.bytes()
+
+export const AttributeKeyValuePair: sts.Type<AttributeKeyValuePair> = sts.struct(() => {
+    return {
+        key: sts.bytes(),
+        value: sts.bytes(),
+    }
+})
 
 export const TokenMarketBehavior: sts.Type<TokenMarketBehavior> = sts.closedEnum(() => {
     return {
@@ -10602,6 +10647,17 @@ export interface DefaultCollectionDescriptor {
     explicitRoyaltyCurrencies: AssetId[]
     attributes: AttributeKeyValuePair[]
 }
+
+export const SessionKeys: sts.Type<SessionKeys> = sts.struct(() => {
+    return {
+        grandpa: Public,
+        babe: sts.bytes(),
+        imOnline: sts.bytes(),
+        paraValidator: sts.bytes(),
+        paraAssignment: sts.bytes(),
+        authorityDiscovery: sts.bytes(),
+    }
+})
 
 export const OriginCaller: sts.Type<OriginCaller> = sts.closedEnum(() => {
     return {
@@ -12512,26 +12568,6 @@ export const SessionCall: sts.Type<SessionCall> = sts.closedEnum(() => {
     }
 })
 
-export const SessionKeys: sts.Type<SessionKeys> = sts.struct(() => {
-    return {
-        grandpa: Public,
-        babe: sts.bytes(),
-        imOnline: sts.bytes(),
-        paraValidator: sts.bytes(),
-        paraAssignment: sts.bytes(),
-        authorityDiscovery: sts.bytes(),
-    }
-})
-
-export interface SessionKeys {
-    grandpa: Public
-    babe: Bytes
-    imOnline: Bytes
-    paraValidator: Bytes
-    paraAssignment: Bytes
-    authorityDiscovery: Bytes
-}
-
 /**
  * Contains one variant per dispatchable that can be called by an extrinsic.
  */
@@ -13255,65 +13291,6 @@ export const ParasSlashingCall: sts.Type<ParasSlashingCall> = sts.closedEnum(() 
     }
 })
 
-export const MembershipProof: sts.Type<MembershipProof> = sts.struct(() => {
-    return {
-        session: sts.number(),
-        trieNodes: sts.array(() => sts.bytes()),
-        validatorCount: sts.number(),
-    }
-})
-
-export interface MembershipProof {
-    session: number
-    trieNodes: Bytes[]
-    validatorCount: number
-}
-
-export const DisputeProof: sts.Type<DisputeProof> = sts.struct(() => {
-    return {
-        timeSlot: DisputesTimeSlot,
-        kind: SlashingOffenceKind,
-        validatorIndex: V2ValidatorIndex,
-        validatorId: sts.bytes(),
-    }
-})
-
-export const SlashingOffenceKind: sts.Type<SlashingOffenceKind> = sts.closedEnum(() => {
-    return {
-        AgainstValid: sts.unit(),
-        ForInvalid: sts.unit(),
-    }
-})
-
-export type SlashingOffenceKind = SlashingOffenceKind_AgainstValid | SlashingOffenceKind_ForInvalid
-
-export interface SlashingOffenceKind_AgainstValid {
-    __kind: 'AgainstValid'
-}
-
-export interface SlashingOffenceKind_ForInvalid {
-    __kind: 'ForInvalid'
-}
-
-export const DisputesTimeSlot: sts.Type<DisputesTimeSlot> = sts.struct(() => {
-    return {
-        sessionIndex: sts.number(),
-        candidateHash: CandidateHash,
-    }
-})
-
-export interface DisputesTimeSlot {
-    sessionIndex: number
-    candidateHash: CandidateHash
-}
-
-export interface DisputeProof {
-    timeSlot: DisputesTimeSlot
-    kind: SlashingOffenceKind
-    validatorIndex: V2ValidatorIndex
-    validatorId: Bytes
-}
-
 /**
  * Contains one variant per dispatchable that can be called by an extrinsic.
  */
@@ -13617,6 +13594,52 @@ export const NominationPoolsCall: sts.Type<NominationPoolsCall> = sts.closedEnum
         }),
     }
 })
+
+export const Type_359: sts.Type<Type_359> = sts.closedEnum(() => {
+    return {
+        Noop: sts.unit(),
+        Remove: sts.unit(),
+        Set: Perbill,
+    }
+})
+
+export type Type_359 = Type_359_Noop | Type_359_Remove | Type_359_Set
+
+export interface Type_359_Noop {
+    __kind: 'Noop'
+}
+
+export interface Type_359_Remove {
+    __kind: 'Remove'
+}
+
+export interface Type_359_Set {
+    __kind: 'Set'
+    value: Perbill
+}
+
+export const Type_358: sts.Type<Type_358> = sts.closedEnum(() => {
+    return {
+        Noop: sts.unit(),
+        Remove: sts.unit(),
+        Set: sts.bigint(),
+    }
+})
+
+export type Type_358 = Type_358_Noop | Type_358_Remove | Type_358_Set
+
+export interface Type_358_Noop {
+    __kind: 'Noop'
+}
+
+export interface Type_358_Remove {
+    __kind: 'Remove'
+}
+
+export interface Type_358_Set {
+    __kind: 'Set'
+    value: bigint
+}
 
 /**
  * Contains one variant per dispatchable that can be called by an extrinsic.
@@ -17423,6 +17446,19 @@ export const HrmpChannelId: sts.Type<HrmpChannelId> = sts.struct(() => {
 })
 
 export const Id = sts.number()
+
+export const V2GroupIndex = sts.number()
+
+export const V2CoreIndex = sts.number()
+
+export const HeadData = sts.bytes()
+
+export const V2CandidateReceipt: sts.Type<V2CandidateReceipt> = sts.struct(() => {
+    return {
+        descriptor: V2CandidateDescriptor,
+        commitmentsHash: H256,
+    }
+})
 
 export const FixedU128 = sts.bigint()
 

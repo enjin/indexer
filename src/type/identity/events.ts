@@ -1,7 +1,7 @@
 import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
 import * as matrixEnjinV1000 from '../matrixEnjinV1000'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
-import * as matrixV1030 from '../matrixV1030'
+import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 
 export const identitySet = {
     name: 'Identity.IdentitySet',
@@ -247,10 +247,10 @@ export const subIdentitiesSet = {
     /**
      * An account's sub-identities were set (in bulk).
      */
-    matrixV1030: new EventType(
+    matrixEnjinV1031: new EventType(
         'Identity.SubIdentitiesSet',
         sts.struct({
-            main: matrixV1030.AccountId32,
+            main: matrixEnjinV1031.AccountId32,
             numberOfSubs: sts.number(),
             newDeposit: sts.bigint(),
         })
@@ -262,11 +262,11 @@ export const subIdentityRenamed = {
     /**
      * A given sub-account's associated name was changed by its super-identity.
      */
-    matrixV1030: new EventType(
+    matrixEnjinV1031: new EventType(
         'Identity.SubIdentityRenamed',
         sts.struct({
-            sub: matrixV1030.AccountId32,
-            main: matrixV1030.AccountId32,
+            sub: matrixEnjinV1031.AccountId32,
+            main: matrixEnjinV1031.AccountId32,
         })
     ),
 }
@@ -276,7 +276,7 @@ export const usernameUnbound = {
     /**
      * A username has been unbound.
      */
-    matrixV1030: new EventType(
+    matrixEnjinV1031: new EventType(
         'Identity.UsernameUnbound',
         sts.struct({
             username: sts.bytes(),
@@ -289,7 +289,7 @@ export const usernameRemoved = {
     /**
      * A username has been removed.
      */
-    matrixV1030: new EventType(
+    matrixEnjinV1031: new EventType(
         'Identity.UsernameRemoved',
         sts.struct({
             username: sts.bytes(),
@@ -302,7 +302,7 @@ export const usernameKilled = {
     /**
      * A username has been killed.
      */
-    matrixV1030: new EventType(
+    matrixEnjinV1031: new EventType(
         'Identity.UsernameKilled',
         sts.struct({
             username: sts.bytes(),

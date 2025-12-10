@@ -4,6 +4,7 @@ import * as matrixV604 from '../matrixV604'
 import * as matrixV1010 from '../matrixV1010'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 import * as matrixV1030 from '../matrixV1030'
+import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 
 export const minimumWeights = {
     /**
@@ -32,6 +33,19 @@ export const minimumWeights = {
         [matrixEnjinV1012.XcmOperation],
         matrixEnjinV1012.MinimumWeightFeePair
     ) as MinimumWeightsMatrixEnjinV1012,
+    /**
+     *  The `dest_weight` limit and fee for executing XCM msg sent by matrixXcm. Must be
+     *  sufficient, otherwise the execution of XCM msg on relaychain will fail. For example it is
+     *  used for setting the minimum fee (in DOT) for statemint.
+     *
+     *  XcmWeightFee: map: XcmOperation => MinimumWeightFeePair
+     */
+    matrixEnjinV1031: new StorageType(
+        'MatrixXcm.MinimumWeights',
+        'Default',
+        [matrixEnjinV1031.XcmOperation],
+        matrixEnjinV1031.MinimumWeightFeePair
+    ) as MinimumWeightsMatrixEnjinV1031,
     /**
      *  The `dest_weight` limit and fee for executing XCM msg sent by matrixXcm. Must be
      *  sufficient, otherwise the execution of XCM msg on relaychain will fail. For example it is
@@ -153,6 +167,47 @@ export interface MinimumWeightsMatrixEnjinV1012 {
         block: Block,
         key: matrixEnjinV1012.XcmOperation
     ): AsyncIterable<[k: matrixEnjinV1012.XcmOperation, v: matrixEnjinV1012.MinimumWeightFeePair | undefined][]>
+}
+
+/**
+ *  The `dest_weight` limit and fee for executing XCM msg sent by matrixXcm. Must be
+ *  sufficient, otherwise the execution of XCM msg on relaychain will fail. For example it is
+ *  used for setting the minimum fee (in DOT) for statemint.
+ *
+ *  XcmWeightFee: map: XcmOperation => MinimumWeightFeePair
+ */
+export interface MinimumWeightsMatrixEnjinV1031 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): matrixEnjinV1031.MinimumWeightFeePair
+    get(block: Block, key: matrixEnjinV1031.XcmOperation): Promise<matrixEnjinV1031.MinimumWeightFeePair | undefined>
+    getMany(
+        block: Block,
+        keys: matrixEnjinV1031.XcmOperation[]
+    ): Promise<(matrixEnjinV1031.MinimumWeightFeePair | undefined)[]>
+    getKeys(block: Block): Promise<matrixEnjinV1031.XcmOperation[]>
+    getKeys(block: Block, key: matrixEnjinV1031.XcmOperation): Promise<matrixEnjinV1031.XcmOperation[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<matrixEnjinV1031.XcmOperation[]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key: matrixEnjinV1031.XcmOperation
+    ): AsyncIterable<matrixEnjinV1031.XcmOperation[]>
+    getPairs(
+        block: Block
+    ): Promise<[k: matrixEnjinV1031.XcmOperation, v: matrixEnjinV1031.MinimumWeightFeePair | undefined][]>
+    getPairs(
+        block: Block,
+        key: matrixEnjinV1031.XcmOperation
+    ): Promise<[k: matrixEnjinV1031.XcmOperation, v: matrixEnjinV1031.MinimumWeightFeePair | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: matrixEnjinV1031.XcmOperation, v: matrixEnjinV1031.MinimumWeightFeePair | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: matrixEnjinV1031.XcmOperation
+    ): AsyncIterable<[k: matrixEnjinV1031.XcmOperation, v: matrixEnjinV1031.MinimumWeightFeePair | undefined][]>
 }
 
 /**

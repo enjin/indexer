@@ -1,5 +1,5 @@
 import { sts, Block, Bytes, Option, Result, CallType, RuntimeCtx } from '../support'
-import * as v1060 from '../v1060'
+import * as enjinV1062 from '../enjinV1062'
 
 export const requestCoreCount = {
     name: 'Coretime.request_core_count',
@@ -11,7 +11,7 @@ export const requestCoreCount = {
      * - `origin`: Root or the Coretime Chain
      * - `count`: total number of cores
      */
-    v1060: new CallType(
+    enjinV1062: new CallType(
         'Coretime.request_core_count',
         sts.struct({
             count: sts.number(),
@@ -27,7 +27,7 @@ export const requestRevenueAt = {
      * to the Coretime chain in a `notify_revenue` message. At the same time, the amount is
      * teleported to the Coretime chain.
      */
-    v1060: new CallType(
+    enjinV1062: new CallType(
         'Coretime.request_revenue_at',
         sts.struct({
             when: sts.number(),
@@ -37,10 +37,10 @@ export const requestRevenueAt = {
 
 export const creditAccount = {
     name: 'Coretime.credit_account',
-    v1060: new CallType(
+    enjinV1062: new CallType(
         'Coretime.credit_account',
         sts.struct({
-            who: v1060.AccountId32,
+            who: enjinV1062.AccountId32,
             amount: sts.bigint(),
         })
     ),
@@ -59,12 +59,12 @@ export const assignCore = {
      * -`assignment`: How the blockspace should be utilised.
      * -`end_hint`: An optional hint as to when this particular set of instructions will end.
      */
-    v1060: new CallType(
+    enjinV1062: new CallType(
         'Coretime.assign_core',
         sts.struct({
             core: sts.number(),
             begin: sts.number(),
-            assignment: sts.array(() => sts.tuple(() => [v1060.CoreAssignment, v1060.PartsOf57600])),
+            assignment: sts.array(() => sts.tuple(() => [enjinV1062.CoreAssignment, enjinV1062.PartsOf57600])),
             endHint: sts.option(() => sts.number()),
         })
     ),

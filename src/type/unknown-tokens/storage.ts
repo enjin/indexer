@@ -1,6 +1,8 @@
 import { sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx } from '../support'
+import * as matrixV1010 from '../matrixV1010'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 import * as matrixV1030 from '../matrixV1030'
+import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 
 export const concreteFungibleBalances = {
     /**
@@ -15,6 +17,30 @@ export const concreteFungibleBalances = {
         [matrixEnjinV1012.V4Location, matrixEnjinV1012.V4Location],
         sts.bigint()
     ) as ConcreteFungibleBalancesMatrixEnjinV1012,
+    /**
+     *  Concrete fungible balances under a given location and a concrete
+     *  fungible id.
+     *
+     *  double_map: who, asset_id => u128
+     */
+    matrixEnjinV1031: new StorageType(
+        'UnknownTokens.ConcreteFungibleBalances',
+        'Default',
+        [matrixEnjinV1031.V5Location, matrixEnjinV1031.V5Location],
+        sts.bigint()
+    ) as ConcreteFungibleBalancesMatrixEnjinV1031,
+    /**
+     *  Concrete fungible balances under a given location and a concrete
+     *  fungible id.
+     *
+     *  double_map: who, asset_id => u128
+     */
+    matrixV1010: new StorageType(
+        'UnknownTokens.ConcreteFungibleBalances',
+        'Default',
+        [matrixV1010.V4Location, matrixV1010.V4Location],
+        sts.bigint()
+    ) as ConcreteFungibleBalancesMatrixV1010,
     /**
      *  Concrete fungible balances under a given location and a concrete
      *  fungible id.
@@ -103,6 +129,131 @@ export interface ConcreteFungibleBalancesMatrixEnjinV1012 {
  *
  *  double_map: who, asset_id => u128
  */
+export interface ConcreteFungibleBalancesMatrixEnjinV1031 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): bigint
+    get(block: Block, key1: matrixEnjinV1031.V5Location, key2: matrixEnjinV1031.V5Location): Promise<bigint | undefined>
+    getMany(
+        block: Block,
+        keys: [matrixEnjinV1031.V5Location, matrixEnjinV1031.V5Location][]
+    ): Promise<(bigint | undefined)[]>
+    getKeys(block: Block): Promise<[matrixEnjinV1031.V5Location, matrixEnjinV1031.V5Location][]>
+    getKeys(
+        block: Block,
+        key1: matrixEnjinV1031.V5Location
+    ): Promise<[matrixEnjinV1031.V5Location, matrixEnjinV1031.V5Location][]>
+    getKeys(
+        block: Block,
+        key1: matrixEnjinV1031.V5Location,
+        key2: matrixEnjinV1031.V5Location
+    ): Promise<[matrixEnjinV1031.V5Location, matrixEnjinV1031.V5Location][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[matrixEnjinV1031.V5Location, matrixEnjinV1031.V5Location][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: matrixEnjinV1031.V5Location
+    ): AsyncIterable<[matrixEnjinV1031.V5Location, matrixEnjinV1031.V5Location][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: matrixEnjinV1031.V5Location,
+        key2: matrixEnjinV1031.V5Location
+    ): AsyncIterable<[matrixEnjinV1031.V5Location, matrixEnjinV1031.V5Location][]>
+    getPairs(
+        block: Block
+    ): Promise<[k: [matrixEnjinV1031.V5Location, matrixEnjinV1031.V5Location], v: bigint | undefined][]>
+    getPairs(
+        block: Block,
+        key1: matrixEnjinV1031.V5Location
+    ): Promise<[k: [matrixEnjinV1031.V5Location, matrixEnjinV1031.V5Location], v: bigint | undefined][]>
+    getPairs(
+        block: Block,
+        key1: matrixEnjinV1031.V5Location,
+        key2: matrixEnjinV1031.V5Location
+    ): Promise<[k: [matrixEnjinV1031.V5Location, matrixEnjinV1031.V5Location], v: bigint | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: [matrixEnjinV1031.V5Location, matrixEnjinV1031.V5Location], v: bigint | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: matrixEnjinV1031.V5Location
+    ): AsyncIterable<[k: [matrixEnjinV1031.V5Location, matrixEnjinV1031.V5Location], v: bigint | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: matrixEnjinV1031.V5Location,
+        key2: matrixEnjinV1031.V5Location
+    ): AsyncIterable<[k: [matrixEnjinV1031.V5Location, matrixEnjinV1031.V5Location], v: bigint | undefined][]>
+}
+
+/**
+ *  Concrete fungible balances under a given location and a concrete
+ *  fungible id.
+ *
+ *  double_map: who, asset_id => u128
+ */
+export interface ConcreteFungibleBalancesMatrixV1010 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): bigint
+    get(block: Block, key1: matrixV1010.V4Location, key2: matrixV1010.V4Location): Promise<bigint | undefined>
+    getMany(block: Block, keys: [matrixV1010.V4Location, matrixV1010.V4Location][]): Promise<(bigint | undefined)[]>
+    getKeys(block: Block): Promise<[matrixV1010.V4Location, matrixV1010.V4Location][]>
+    getKeys(block: Block, key1: matrixV1010.V4Location): Promise<[matrixV1010.V4Location, matrixV1010.V4Location][]>
+    getKeys(
+        block: Block,
+        key1: matrixV1010.V4Location,
+        key2: matrixV1010.V4Location
+    ): Promise<[matrixV1010.V4Location, matrixV1010.V4Location][]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[matrixV1010.V4Location, matrixV1010.V4Location][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: matrixV1010.V4Location
+    ): AsyncIterable<[matrixV1010.V4Location, matrixV1010.V4Location][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: matrixV1010.V4Location,
+        key2: matrixV1010.V4Location
+    ): AsyncIterable<[matrixV1010.V4Location, matrixV1010.V4Location][]>
+    getPairs(block: Block): Promise<[k: [matrixV1010.V4Location, matrixV1010.V4Location], v: bigint | undefined][]>
+    getPairs(
+        block: Block,
+        key1: matrixV1010.V4Location
+    ): Promise<[k: [matrixV1010.V4Location, matrixV1010.V4Location], v: bigint | undefined][]>
+    getPairs(
+        block: Block,
+        key1: matrixV1010.V4Location,
+        key2: matrixV1010.V4Location
+    ): Promise<[k: [matrixV1010.V4Location, matrixV1010.V4Location], v: bigint | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: [matrixV1010.V4Location, matrixV1010.V4Location], v: bigint | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: matrixV1010.V4Location
+    ): AsyncIterable<[k: [matrixV1010.V4Location, matrixV1010.V4Location], v: bigint | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: matrixV1010.V4Location,
+        key2: matrixV1010.V4Location
+    ): AsyncIterable<[k: [matrixV1010.V4Location, matrixV1010.V4Location], v: bigint | undefined][]>
+}
+
+/**
+ *  Concrete fungible balances under a given location and a concrete
+ *  fungible id.
+ *
+ *  double_map: who, asset_id => u128
+ */
 export interface ConcreteFungibleBalancesMatrixV1030 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): bigint
@@ -173,6 +324,30 @@ export const abstractFungibleBalances = {
      *
      *  double_map: who, asset_id => u128
      */
+    matrixEnjinV1031: new StorageType(
+        'UnknownTokens.AbstractFungibleBalances',
+        'Default',
+        [matrixEnjinV1031.V5Location, sts.bytes()],
+        sts.bigint()
+    ) as AbstractFungibleBalancesMatrixEnjinV1031,
+    /**
+     *  Abstract fungible balances under a given location and a abstract
+     *  fungible id.
+     *
+     *  double_map: who, asset_id => u128
+     */
+    matrixV1010: new StorageType(
+        'UnknownTokens.AbstractFungibleBalances',
+        'Default',
+        [matrixV1010.V4Location, sts.bytes()],
+        sts.bigint()
+    ) as AbstractFungibleBalancesMatrixV1010,
+    /**
+     *  Abstract fungible balances under a given location and a abstract
+     *  fungible id.
+     *
+     *  double_map: who, asset_id => u128
+     */
     matrixV1030: new StorageType(
         'UnknownTokens.AbstractFungibleBalances',
         'Default',
@@ -236,6 +411,116 @@ export interface AbstractFungibleBalancesMatrixEnjinV1012 {
         key1: matrixEnjinV1012.V4Location,
         key2: Bytes
     ): AsyncIterable<[k: [matrixEnjinV1012.V4Location, Bytes], v: bigint | undefined][]>
+}
+
+/**
+ *  Abstract fungible balances under a given location and a abstract
+ *  fungible id.
+ *
+ *  double_map: who, asset_id => u128
+ */
+export interface AbstractFungibleBalancesMatrixEnjinV1031 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): bigint
+    get(block: Block, key1: matrixEnjinV1031.V5Location, key2: Bytes): Promise<bigint | undefined>
+    getMany(block: Block, keys: [matrixEnjinV1031.V5Location, Bytes][]): Promise<(bigint | undefined)[]>
+    getKeys(block: Block): Promise<[matrixEnjinV1031.V5Location, Bytes][]>
+    getKeys(block: Block, key1: matrixEnjinV1031.V5Location): Promise<[matrixEnjinV1031.V5Location, Bytes][]>
+    getKeys(
+        block: Block,
+        key1: matrixEnjinV1031.V5Location,
+        key2: Bytes
+    ): Promise<[matrixEnjinV1031.V5Location, Bytes][]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[matrixEnjinV1031.V5Location, Bytes][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: matrixEnjinV1031.V5Location
+    ): AsyncIterable<[matrixEnjinV1031.V5Location, Bytes][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: matrixEnjinV1031.V5Location,
+        key2: Bytes
+    ): AsyncIterable<[matrixEnjinV1031.V5Location, Bytes][]>
+    getPairs(block: Block): Promise<[k: [matrixEnjinV1031.V5Location, Bytes], v: bigint | undefined][]>
+    getPairs(
+        block: Block,
+        key1: matrixEnjinV1031.V5Location
+    ): Promise<[k: [matrixEnjinV1031.V5Location, Bytes], v: bigint | undefined][]>
+    getPairs(
+        block: Block,
+        key1: matrixEnjinV1031.V5Location,
+        key2: Bytes
+    ): Promise<[k: [matrixEnjinV1031.V5Location, Bytes], v: bigint | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: [matrixEnjinV1031.V5Location, Bytes], v: bigint | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: matrixEnjinV1031.V5Location
+    ): AsyncIterable<[k: [matrixEnjinV1031.V5Location, Bytes], v: bigint | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: matrixEnjinV1031.V5Location,
+        key2: Bytes
+    ): AsyncIterable<[k: [matrixEnjinV1031.V5Location, Bytes], v: bigint | undefined][]>
+}
+
+/**
+ *  Abstract fungible balances under a given location and a abstract
+ *  fungible id.
+ *
+ *  double_map: who, asset_id => u128
+ */
+export interface AbstractFungibleBalancesMatrixV1010 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): bigint
+    get(block: Block, key1: matrixV1010.V4Location, key2: Bytes): Promise<bigint | undefined>
+    getMany(block: Block, keys: [matrixV1010.V4Location, Bytes][]): Promise<(bigint | undefined)[]>
+    getKeys(block: Block): Promise<[matrixV1010.V4Location, Bytes][]>
+    getKeys(block: Block, key1: matrixV1010.V4Location): Promise<[matrixV1010.V4Location, Bytes][]>
+    getKeys(block: Block, key1: matrixV1010.V4Location, key2: Bytes): Promise<[matrixV1010.V4Location, Bytes][]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[matrixV1010.V4Location, Bytes][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: matrixV1010.V4Location
+    ): AsyncIterable<[matrixV1010.V4Location, Bytes][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: matrixV1010.V4Location,
+        key2: Bytes
+    ): AsyncIterable<[matrixV1010.V4Location, Bytes][]>
+    getPairs(block: Block): Promise<[k: [matrixV1010.V4Location, Bytes], v: bigint | undefined][]>
+    getPairs(
+        block: Block,
+        key1: matrixV1010.V4Location
+    ): Promise<[k: [matrixV1010.V4Location, Bytes], v: bigint | undefined][]>
+    getPairs(
+        block: Block,
+        key1: matrixV1010.V4Location,
+        key2: Bytes
+    ): Promise<[k: [matrixV1010.V4Location, Bytes], v: bigint | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: [matrixV1010.V4Location, Bytes], v: bigint | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: matrixV1010.V4Location
+    ): AsyncIterable<[k: [matrixV1010.V4Location, Bytes], v: bigint | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: matrixV1010.V4Location,
+        key2: Bytes
+    ): AsyncIterable<[k: [matrixV1010.V4Location, Bytes], v: bigint | undefined][]>
 }
 
 /**

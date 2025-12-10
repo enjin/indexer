@@ -1,5 +1,29 @@
 import { sts, Result, Option, Bytes, BitSequence } from './support'
 
+export const RuntimeVersion: sts.Type<RuntimeVersion> = sts.struct(() => {
+    return {
+        specName: sts.string(),
+        implName: sts.string(),
+        authoringVersion: sts.number(),
+        specVersion: sts.number(),
+        implVersion: sts.number(),
+        apis: sts.array(() => sts.tuple(() => [sts.bytes(), sts.number()])),
+        transactionVersion: sts.number(),
+        stateVersion: sts.number(),
+    }
+})
+
+export interface RuntimeVersion {
+    specName: string
+    implName: string
+    authoringVersion: number
+    specVersion: number
+    implVersion: number
+    apis: [Bytes, number][]
+    transactionVersion: number
+    stateVersion: number
+}
+
 export type XcmOperation = XcmOperation_ParachainFee | XcmOperation_XTokensTransfer
 
 export interface XcmOperation_ParachainFee {
@@ -862,6 +886,84 @@ export interface Approval {
     amount: bigint
     expiration?: number | undefined
 }
+
+export interface Bounty {
+    proposer: AccountId32
+    value: bigint
+    fee: bigint
+    curatorDeposit: bigint
+    bond: bigint
+    status: BountyStatus
+}
+
+export type BountyStatus =
+    | BountyStatus_Active
+    | BountyStatus_Approved
+    | BountyStatus_CuratorProposed
+    | BountyStatus_Funded
+    | BountyStatus_PendingPayout
+    | BountyStatus_Proposed
+
+export interface BountyStatus_Active {
+    __kind: 'Active'
+    curator: AccountId32
+    updateDue: number
+}
+
+export interface BountyStatus_Approved {
+    __kind: 'Approved'
+}
+
+export interface BountyStatus_CuratorProposed {
+    __kind: 'CuratorProposed'
+    curator: AccountId32
+}
+
+export interface BountyStatus_Funded {
+    __kind: 'Funded'
+}
+
+export interface BountyStatus_PendingPayout {
+    __kind: 'PendingPayout'
+    curator: AccountId32
+    beneficiary: AccountId32
+    unlockAt: number
+}
+
+export interface BountyStatus_Proposed {
+    __kind: 'Proposed'
+}
+
+export const Bounty: sts.Type<Bounty> = sts.struct(() => {
+    return {
+        proposer: AccountId32,
+        value: sts.bigint(),
+        fee: sts.bigint(),
+        curatorDeposit: sts.bigint(),
+        bond: sts.bigint(),
+        status: BountyStatus,
+    }
+})
+
+export const BountyStatus: sts.Type<BountyStatus> = sts.closedEnum(() => {
+    return {
+        Active: sts.enumStruct({
+            curator: AccountId32,
+            updateDue: sts.number(),
+        }),
+        Approved: sts.unit(),
+        CuratorProposed: sts.enumStruct({
+            curator: AccountId32,
+        }),
+        Funded: sts.unit(),
+        PendingPayout: sts.enumStruct({
+            curator: AccountId32,
+            beneficiary: AccountId32,
+            unlockAt: sts.number(),
+        }),
+        Proposed: sts.unit(),
+    }
+})
 
 export type VersionedAssetId = VersionedAssetId_V3
 
@@ -1958,6 +2060,13 @@ export const QueueConfigData: sts.Type<QueueConfigData> = sts.struct(() => {
         xcmpMaxIndividualWeight: Weight,
     }
 })
+
+export interface SessionKeys {
+    aura: Public
+    pools: Public
+}
+
+export type Public = Bytes
 
 export type Call =
     | Call_Balances
@@ -3330,13 +3439,6 @@ export interface SessionCall_set_keys {
     keys: SessionKeys
     proof: Bytes
 }
-
-export interface SessionKeys {
-    aura: Public
-    pools: Public
-}
-
-export type Public = Bytes
 
 /**
  * Contains one variant per dispatchable that can be called by an extrinsic.
@@ -12253,13 +12355,6 @@ export const MarketplaceEvent: sts.Type<MarketplaceEvent> = sts.closedEnum(() =>
     }
 })
 
-export const Bid: sts.Type<Bid> = sts.struct(() => {
-    return {
-        bidder: AccountId32,
-        price: sts.bigint(),
-    }
-})
-
 /**
  * 
 			The [event](https://docs.substrate.io/main-docs/build/events-errors/) emitted
@@ -12906,13 +13001,6 @@ export const Attribute: sts.Type<Attribute> = sts.struct(() => {
     }
 })
 
-export const AttributeKeyValuePair: sts.Type<AttributeKeyValuePair> = sts.struct(() => {
-    return {
-        key: sts.bytes(),
-        value: sts.bytes(),
-    }
-})
-
 export const Type_380: sts.Type<Type_380> = sts.struct(() => {
     return {
         accountId: AccountId32,
@@ -12984,6 +13072,13 @@ export const ForeignTokenCreationParams: sts.Type<ForeignTokenCreationParams> = 
 })
 
 export const BoundedString = sts.bytes()
+
+export const AttributeKeyValuePair: sts.Type<AttributeKeyValuePair> = sts.struct(() => {
+    return {
+        key: sts.bytes(),
+        value: sts.bytes(),
+    }
+})
 
 export const TokenMarketBehavior: sts.Type<TokenMarketBehavior> = sts.closedEnum(() => {
     return {
@@ -13620,6 +13715,15 @@ export const VersionedXcm: sts.Type<VersionedXcm> = sts.closedEnum(() => {
     }
 })
 
+export const SessionKeys: sts.Type<SessionKeys> = sts.struct(() => {
+    return {
+        aura: Public,
+        pools: Public,
+    }
+})
+
+export const Public = sts.bytes()
+
 export const MultiAddress: sts.Type<MultiAddress> = sts.closedEnum(() => {
     return {
         Address20: sts.bytes(),
@@ -13973,15 +14077,6 @@ export const SessionCall: sts.Type<SessionCall> = sts.closedEnum(() => {
     }
 })
 
-export const SessionKeys: sts.Type<SessionKeys> = sts.struct(() => {
-    return {
-        aura: Public,
-        pools: Public,
-    }
-})
-
-export const Public = sts.bytes()
-
 /**
  * Contains one variant per dispatchable that can be called by an extrinsic.
  */
@@ -14128,46 +14223,6 @@ export const ParachainSystemCall: sts.Type<ParachainSystemCall> = sts.closedEnum
         }),
     }
 })
-
-export const ParachainInherentData: sts.Type<ParachainInherentData> = sts.struct(() => {
-    return {
-        validationData: V2PersistedValidationData,
-        relayChainState: StorageProof,
-        downwardMessages: sts.array(() => InboundDownwardMessage),
-        horizontalMessages: sts.array(() => sts.tuple(() => [Id, sts.array(() => InboundHrmpMessage)])),
-    }
-})
-
-export const InboundHrmpMessage: sts.Type<InboundHrmpMessage> = sts.struct(() => {
-    return {
-        sentAt: sts.number(),
-        data: sts.bytes(),
-    }
-})
-
-export const InboundDownwardMessage: sts.Type<InboundDownwardMessage> = sts.struct(() => {
-    return {
-        sentAt: sts.number(),
-        msg: sts.bytes(),
-    }
-})
-
-export const StorageProof: sts.Type<StorageProof> = sts.struct(() => {
-    return {
-        trieNodes: sts.array(() => sts.bytes()),
-    }
-})
-
-export const V2PersistedValidationData: sts.Type<V2PersistedValidationData> = sts.struct(() => {
-    return {
-        parentHead: HeadData,
-        relayParentNumber: sts.number(),
-        relayParentStorageRoot: H256,
-        maxPovSize: sts.number(),
-    }
-})
-
-export const HeadData = sts.bytes()
 
 /**
  * Contains one variant per dispatchable that can be called by an extrinsic.
@@ -14823,10 +14878,57 @@ export const BalancesCall: sts.Type<BalancesCall> = sts.closedEnum(() => {
     }
 })
 
+export const ParachainInherentData: sts.Type<ParachainInherentData> = sts.struct(() => {
+    return {
+        validationData: V2PersistedValidationData,
+        relayChainState: StorageProof,
+        downwardMessages: sts.array(() => InboundDownwardMessage),
+        horizontalMessages: sts.array(() => sts.tuple(() => [Id, sts.array(() => InboundHrmpMessage)])),
+    }
+})
+
+export const InboundHrmpMessage: sts.Type<InboundHrmpMessage> = sts.struct(() => {
+    return {
+        sentAt: sts.number(),
+        data: sts.bytes(),
+    }
+})
+
+export const InboundDownwardMessage: sts.Type<InboundDownwardMessage> = sts.struct(() => {
+    return {
+        sentAt: sts.number(),
+        msg: sts.bytes(),
+    }
+})
+
+export const StorageProof: sts.Type<StorageProof> = sts.struct(() => {
+    return {
+        trieNodes: sts.array(() => sts.bytes()),
+    }
+})
+
+export const V2PersistedValidationData: sts.Type<V2PersistedValidationData> = sts.struct(() => {
+    return {
+        parentHead: HeadData,
+        relayParentNumber: sts.number(),
+        relayParentStorageRoot: H256,
+        maxPovSize: sts.number(),
+    }
+})
+
+export const HeadData = sts.bytes()
+
 export const MinimumWeightFeePair: sts.Type<MinimumWeightFeePair> = sts.struct(() => {
     return {
         minimumWeight: Weight,
         fee: sts.bigint(),
+    }
+})
+
+export const Bid: sts.Type<Bid> = sts.struct(() => {
+    return {
+        bidder: AccountId32,
+        price: sts.bigint(),
     }
 })
 

@@ -141,13 +141,13 @@ export const lastSpendPeriod = {
     /**
      *  The blocknumber for the last triggered spend period.
      */
-    v1060: new StorageType('Treasury.LastSpendPeriod', 'Optional', [], sts.number()) as LastSpendPeriodV1060,
+    enjinV1062: new StorageType('Treasury.LastSpendPeriod', 'Optional', [], sts.number()) as LastSpendPeriodEnjinV1062,
 }
 
 /**
  *  The blocknumber for the last triggered spend period.
  */
-export interface LastSpendPeriodV1060 {
+export interface LastSpendPeriodEnjinV1062 {
     is(block: RuntimeCtx): boolean
     get(block: Block): Promise<number | undefined>
 }

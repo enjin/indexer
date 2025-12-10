@@ -155,5 +155,5 @@ export const maxBackersPerWinner = {
      *
      *  This is needed to ensure election computation is bounded.
      */
-    v1060: new ConstantType('ElectionProviderMultiPhase.MaxBackersPerWinner', sts.number()),
+    enjinV1062: new ConstantType('ElectionProviderMultiPhase.MaxBackersPerWinner', sts.number()),
 }

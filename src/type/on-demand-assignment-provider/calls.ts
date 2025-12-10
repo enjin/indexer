@@ -1,5 +1,5 @@
 import { sts, Block, Bytes, Option, Result, CallType, RuntimeCtx } from '../support'
-import * as v1060 from '../v1060'
+import * as enjinV1062 from '../enjinV1062'
 
 export const placeOrderAllowDeath = {
     name: 'OnDemandAssignmentProvider.place_order_allow_death',
@@ -20,11 +20,11 @@ export const placeOrderAllowDeath = {
      * Events:
      * - `OnDemandOrderPlaced`
      */
-    v1060: new CallType(
+    enjinV1062: new CallType(
         'OnDemandAssignmentProvider.place_order_allow_death',
         sts.struct({
             maxAmount: sts.bigint(),
-            paraId: v1060.Id,
+            paraId: enjinV1062.Id,
         })
     ),
 }
@@ -48,11 +48,11 @@ export const placeOrderKeepAlive = {
      * Events:
      * - `OnDemandOrderPlaced`
      */
-    v1060: new CallType(
+    enjinV1062: new CallType(
         'OnDemandAssignmentProvider.place_order_keep_alive',
         sts.struct({
             maxAmount: sts.bigint(),
-            paraId: v1060.Id,
+            paraId: enjinV1062.Id,
         })
     ),
 }
@@ -78,11 +78,11 @@ export const placeOrderWithCredits = {
      * Events:
      * - `OnDemandOrderPlaced`
      */
-    v1060: new CallType(
+    enjinV1062: new CallType(
         'OnDemandAssignmentProvider.place_order_with_credits',
         sts.struct({
             maxAmount: sts.bigint(),
-            paraId: v1060.Id,
+            paraId: enjinV1062.Id,
         })
     ),
 }

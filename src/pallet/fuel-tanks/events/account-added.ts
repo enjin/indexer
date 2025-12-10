@@ -24,6 +24,10 @@ export function accountAdded(event: EventItem): AccountAdded {
             () => fuelTanks.accountAdded.matrixV500.decode(event)
         )
         .when(
+            () => fuelTanks.accountAdded.enjinV1062.is(event),
+            () => fuelTanks.accountAdded.enjinV1062.decode(event)
+        )
+        .when(
             () => fuelTanks.accountAdded.enjinV1021.is(event),
             () => fuelTanks.accountAdded.enjinV1021.decode(event)
         )

@@ -5,7 +5,7 @@ import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
 import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
-import * as v1060 from '../v1060'
+import * as enjinV1062 from '../enjinV1062'
 
 export const pvfActiveVoteMap = {
     /**
@@ -1041,34 +1041,37 @@ export const authorizedCodeHash = {
     /**
      *  The code hash authorizations for a para which will expire `expire_at` `BlockNumberFor<T>`.
      */
-    v1060: new StorageType(
+    enjinV1062: new StorageType(
         'Paras.AuthorizedCodeHash',
         'Optional',
-        [v1060.Id],
-        v1060.AuthorizedCodeHashAndExpiry
-    ) as AuthorizedCodeHashV1060,
+        [enjinV1062.Id],
+        enjinV1062.AuthorizedCodeHashAndExpiry
+    ) as AuthorizedCodeHashEnjinV1062,
 }
 
 /**
  *  The code hash authorizations for a para which will expire `expire_at` `BlockNumberFor<T>`.
  */
-export interface AuthorizedCodeHashV1060 {
+export interface AuthorizedCodeHashEnjinV1062 {
     is(block: RuntimeCtx): boolean
-    get(block: Block, key: v1060.Id): Promise<v1060.AuthorizedCodeHashAndExpiry | undefined>
-    getMany(block: Block, keys: v1060.Id[]): Promise<(v1060.AuthorizedCodeHashAndExpiry | undefined)[]>
-    getKeys(block: Block): Promise<v1060.Id[]>
-    getKeys(block: Block, key: v1060.Id): Promise<v1060.Id[]>
-    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v1060.Id[]>
-    getKeysPaged(pageSize: number, block: Block, key: v1060.Id): AsyncIterable<v1060.Id[]>
-    getPairs(block: Block): Promise<[k: v1060.Id, v: v1060.AuthorizedCodeHashAndExpiry | undefined][]>
-    getPairs(block: Block, key: v1060.Id): Promise<[k: v1060.Id, v: v1060.AuthorizedCodeHashAndExpiry | undefined][]>
+    get(block: Block, key: enjinV1062.Id): Promise<enjinV1062.AuthorizedCodeHashAndExpiry | undefined>
+    getMany(block: Block, keys: enjinV1062.Id[]): Promise<(enjinV1062.AuthorizedCodeHashAndExpiry | undefined)[]>
+    getKeys(block: Block): Promise<enjinV1062.Id[]>
+    getKeys(block: Block, key: enjinV1062.Id): Promise<enjinV1062.Id[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<enjinV1062.Id[]>
+    getKeysPaged(pageSize: number, block: Block, key: enjinV1062.Id): AsyncIterable<enjinV1062.Id[]>
+    getPairs(block: Block): Promise<[k: enjinV1062.Id, v: enjinV1062.AuthorizedCodeHashAndExpiry | undefined][]>
+    getPairs(
+        block: Block,
+        key: enjinV1062.Id
+    ): Promise<[k: enjinV1062.Id, v: enjinV1062.AuthorizedCodeHashAndExpiry | undefined][]>
     getPairsPaged(
         pageSize: number,
         block: Block
-    ): AsyncIterable<[k: v1060.Id, v: v1060.AuthorizedCodeHashAndExpiry | undefined][]>
+    ): AsyncIterable<[k: enjinV1062.Id, v: enjinV1062.AuthorizedCodeHashAndExpiry | undefined][]>
     getPairsPaged(
         pageSize: number,
         block: Block,
-        key: v1060.Id
-    ): AsyncIterable<[k: v1060.Id, v: v1060.AuthorizedCodeHashAndExpiry | undefined][]>
+        key: enjinV1062.Id
+    ): AsyncIterable<[k: enjinV1062.Id, v: enjinV1062.AuthorizedCodeHashAndExpiry | undefined][]>
 }

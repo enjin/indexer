@@ -4,6 +4,7 @@ import * as v100 from '../v100'
 import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
 import * as v1060 from '../v1060'
+import * as enjinV1062 from '../enjinV1062'
 
 export const eraPaid = {
     name: 'Staking.EraPaid',
@@ -215,6 +216,28 @@ export const payoutStarted = {
     /**
      * A Page of stakers rewards are getting paid. `next` is `None` if all pages are claimed.
      */
+    enjinV1062: new EventType(
+        'Staking.PayoutStarted',
+        sts.struct({
+            eraIndex: sts.number(),
+            validatorStash: enjinV1062.AccountId32,
+            page: sts.number(),
+            next: sts.option(() => sts.number()),
+        })
+    ),
+    /**
+     * The stakers' rewards are getting paid.
+     */
+    v100: new EventType(
+        'Staking.PayoutStarted',
+        sts.struct({
+            eraIndex: sts.number(),
+            validatorStash: v100.AccountId32,
+        })
+    ),
+    /**
+     * A Page of stakers rewards are getting paid. `next` is `None` if all pages are claimed.
+     */
     v1060: new EventType(
         'Staking.PayoutStarted',
         sts.struct({
@@ -298,10 +321,10 @@ export const currencyMigrated = {
      * Staking balance migrated from locks to holds, with any balance that could not be held
      * is force withdrawn.
      */
-    v1060: new EventType(
+    enjinV1062: new EventType(
         'Staking.CurrencyMigrated',
         sts.struct({
-            stash: v1060.AccountId32,
+            stash: enjinV1062.AccountId32,
             forceWithdraw: sts.bigint(),
         })
     ),

@@ -159,18 +159,18 @@ export const lastSpendPeriod = {
     /**
      *  The blocknumber for the last triggered spend period.
      */
-    matrixV1030: new StorageType(
+    matrixEnjinV1031: new StorageType(
         'CommunityPool.LastSpendPeriod',
         'Optional',
         [],
         sts.number()
-    ) as LastSpendPeriodMatrixV1030,
+    ) as LastSpendPeriodMatrixEnjinV1031,
 }
 
 /**
  *  The blocknumber for the last triggered spend period.
  */
-export interface LastSpendPeriodMatrixV1030 {
+export interface LastSpendPeriodMatrixEnjinV1031 {
     is(block: RuntimeCtx): boolean
     get(block: Block): Promise<number | undefined>
 }

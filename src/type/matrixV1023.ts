@@ -1,33 +1,5 @@
 import { sts, Result, Option, Bytes, BitSequence } from './support'
 
-export interface MigrationLimits {
-    size: number
-    item: number
-}
-
-export interface MigrationTask {
-    progressTop: Progress
-    progressChild: Progress
-    size: number
-    topItems: number
-    childItems: number
-}
-
-export type Progress = Progress_Complete | Progress_LastKey | Progress_ToStart
-
-export interface Progress_Complete {
-    __kind: 'Complete'
-}
-
-export interface Progress_LastKey {
-    __kind: 'LastKey'
-    value: Bytes
-}
-
-export interface Progress_ToStart {
-    __kind: 'ToStart'
-}
-
 export interface TokenAccount {
     balance: bigint
     reservedBalance: bigint
@@ -2397,6 +2369,34 @@ export interface StateTrieMigrationCall_migrate_custom_top {
 export interface StateTrieMigrationCall_set_signed_max_limits {
     __kind: 'set_signed_max_limits'
     limits: MigrationLimits
+}
+
+export type Progress = Progress_Complete | Progress_LastKey | Progress_ToStart
+
+export interface Progress_Complete {
+    __kind: 'Complete'
+}
+
+export interface Progress_LastKey {
+    __kind: 'LastKey'
+    value: Bytes
+}
+
+export interface Progress_ToStart {
+    __kind: 'ToStart'
+}
+
+export interface MigrationTask {
+    progressTop: Progress
+    progressChild: Progress
+    size: number
+    topItems: number
+    childItems: number
+}
+
+export interface MigrationLimits {
+    size: number
+    item: number
 }
 
 /**
@@ -16211,6 +16211,27 @@ export const StateTrieMigrationEvent: sts.Type<StateTrieMigrationEvent> = sts.cl
     }
 })
 
+export const MigrationCompute: sts.Type<MigrationCompute> = sts.closedEnum(() => {
+    return {
+        Auto: sts.unit(),
+        Signed: sts.unit(),
+    }
+})
+
+/**
+ * The `Error` enum of this pallet.
+ */
+export const Error: sts.Type<Error> = sts.closedEnum(() => {
+    return {
+        BadChildRoot: sts.unit(),
+        BadWitness: sts.unit(),
+        KeyTooLong: sts.unit(),
+        MaxSignedLimits: sts.unit(),
+        NotEnoughFunds: sts.unit(),
+        SignedMigrationNotAllowed: sts.unit(),
+    }
+})
+
 /**
  * The `Event` enum of this pallet
  */
@@ -18640,31 +18661,6 @@ export const Phase: sts.Type<Phase> = sts.closedEnum(() => {
     }
 })
 
-export const Progress: sts.Type<Progress> = sts.closedEnum(() => {
-    return {
-        Complete: sts.unit(),
-        LastKey: sts.bytes(),
-        ToStart: sts.unit(),
-    }
-})
-
-export const MigrationTask: sts.Type<MigrationTask> = sts.struct(() => {
-    return {
-        progressTop: Progress,
-        progressChild: Progress,
-        size: sts.number(),
-        topItems: sts.number(),
-        childItems: sts.number(),
-    }
-})
-
-export const MigrationLimits: sts.Type<MigrationLimits> = sts.struct(() => {
-    return {
-        size: sts.number(),
-        item: sts.number(),
-    }
-})
-
 export const ProxyType: sts.Type<ProxyType> = sts.closedEnum(() => {
     return {
         Any: sts.unit(),
@@ -19130,6 +19126,31 @@ export const StateTrieMigrationCall: sts.Type<StateTrieMigrationCall> = sts.clos
         set_signed_max_limits: sts.enumStruct({
             limits: MigrationLimits,
         }),
+    }
+})
+
+export const Progress: sts.Type<Progress> = sts.closedEnum(() => {
+    return {
+        Complete: sts.unit(),
+        LastKey: sts.bytes(),
+        ToStart: sts.unit(),
+    }
+})
+
+export const MigrationTask: sts.Type<MigrationTask> = sts.struct(() => {
+    return {
+        progressTop: Progress,
+        progressChild: Progress,
+        size: sts.number(),
+        topItems: sts.number(),
+        childItems: sts.number(),
+    }
+})
+
+export const MigrationLimits: sts.Type<MigrationLimits> = sts.struct(() => {
+    return {
+        size: sts.number(),
+        item: sts.number(),
     }
 })
 
@@ -21553,27 +21574,6 @@ export const AdjustmentDirection: sts.Type<AdjustmentDirection> = sts.closedEnum
     return {
         Decrease: sts.unit(),
         Increase: sts.unit(),
-    }
-})
-
-/**
- * The `Error` enum of this pallet.
- */
-export const Error: sts.Type<Error> = sts.closedEnum(() => {
-    return {
-        BadChildRoot: sts.unit(),
-        BadWitness: sts.unit(),
-        KeyTooLong: sts.unit(),
-        MaxSignedLimits: sts.unit(),
-        NotEnoughFunds: sts.unit(),
-        SignedMigrationNotAllowed: sts.unit(),
-    }
-})
-
-export const MigrationCompute: sts.Type<MigrationCompute> = sts.closedEnum(() => {
-    return {
-        Auto: sts.unit(),
-        Signed: sts.unit(),
     }
 })
 

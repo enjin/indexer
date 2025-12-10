@@ -9,6 +9,10 @@ export const createCollection = withDispatchCheck((call: CallItem): CreateCollec
     return match(call)
         .returnType<CreateCollection>()
         .when(
+            () => calls.multiTokens.createCollection.matrixEnjinV1031.is(call),
+            () => calls.multiTokens.createCollection.matrixEnjinV1031.decode(call)
+        )
+        .when(
             () => calls.multiTokens.createCollection.matrixEnjinV1022.is(call),
             () => calls.multiTokens.createCollection.matrixEnjinV1022.decode(call)
         )
