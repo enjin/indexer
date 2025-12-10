@@ -6,9 +6,67 @@ import {
     EraReward,
     CommissionPayment,
 } from '~/model'
-import { connectionManager, dataHandlerContext } from '~/contexts'
+import { CommonContext, connectionManager, dataHandlerContext } from '~/contexts'
 import { Job } from 'bullmq'
-import { In } from 'typeorm'
+import { In, LessThan } from 'typeorm'
+import Big from 'big.js'
+import processorConfig from '~/util/config'
+import { computeEraApy } from '~/pallet/nomination-pools/processors'
+
+async function updatePoolApy(
+    ctx: CommonContext,
+    pool: NominationPool,
+    reward: EraReward,
+    eraIndex: number
+): Promise<{ pool: NominationPool; reward: EraReward }> {
+    const eraRewards = await ctx.store.find(EraReward, {
+        where: {
+            pool: { id: pool.id },
+            era: { index: LessThan(eraIndex) },
+        },
+        relations: {
+            era: true,
+        },
+        order: { era: { index: 'desc' } },
+        take: 30,
+    })
+
+    const changeInRate =
+        eraRewards.length > 0
+            ? Big(pool.rate.toString()).minus(Big(eraRewards[0].rate.toString()))
+            : Big(pool.rate.toString()).minus(10 ** 18)
+
+    reward.changeInRate = BigInt(changeInRate.toString())
+
+    let apy: Big.Big
+
+    if (eraRewards.length === 0) {
+        // First era for this pool
+        const rate = Big(pool.rate.toString())
+        const decimals = Big(10).pow(18)
+        apy = rate.div(decimals).pow(processorConfig.erasPerYear).sub(1).mul(100)
+        reward.apy = apy.toNumber()
+    } else {
+        // Calculate APY based on balance change from previous era
+        const previousBalance = Big(eraRewards[0].active.toString())
+        const newBalance = Big(reward.reinvested.toString()).plus(previousBalance)
+
+        const currentApy = newBalance.div(previousBalance).pow(processorConfig.erasPerYear).sub(1).mul(100)
+        reward.apy = currentApy.toNumber()
+
+        eraRewards.unshift(reward)
+        apy = computeEraApy(eraRewards, pool.apy)
+    }
+
+    pool.apy = Math.max(apy.toNumber(), 0)
+    reward.averageApy = apy.toNumber()
+
+    // if (eventData.commission) {
+    //     pool.accumulatedCommission = (pool.accumulatedCommission ?? 0n) + eventData.commission.amount
+    // }
+
+    return { pool, reward }
+}
 
 export async function computeEraRewards(_job: Job, eraIndex: number): Promise<void> {
     const ctx = await dataHandlerContext()
@@ -86,9 +144,9 @@ export async function computeEraRewards(_job: Job, eraIndex: number): Promise<vo
     const poolsMap = new Map(pools.map((p) => [p.id, p]))
 
     const eraRewardsToSave: EraReward[] = []
-
+    const poolsToSave: NominationPool[] = []
     for (const [poolId, events] of groupedByPool) {
-        const pool = poolsMap.get(poolId)
+        let pool = poolsMap.get(poolId)
         if (!pool) continue
 
         // Calculate accumulated rewards for this pool
@@ -110,7 +168,7 @@ export async function computeEraRewards(_job: Job, eraIndex: number): Promise<vo
         if (eraReward) {
             await _job.log(`Updating existing era reward for pool ${poolId}`)
             // Update existing EraReward
-            eraReward.reinvested += accumulatedRewards
+            eraReward.reinvested = accumulatedRewards
             eraReward.bonus = eraReward.bonus ?? 0n
             if (accumulatedCommission > 0n) {
                 if (eraReward.commission) {
@@ -149,10 +207,19 @@ export async function computeEraRewards(_job: Job, eraIndex: number): Promise<vo
             })
         }
 
+        const poolApyRes = await updatePoolApy(ctx, pool, eraReward, newEraIndex)
+        pool = poolApyRes.pool
+        eraReward = poolApyRes.reward
+
         eraRewardsToSave.push(eraReward)
+        poolsToSave.push(pool)
     }
 
     if (eraRewardsToSave.length > 0) {
         await ctx.store.save(eraRewardsToSave)
+    }
+
+    if (poolsToSave.length > 0) {
+        await ctx.store.save(poolsToSave)
     }
 }
