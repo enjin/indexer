@@ -21,11 +21,17 @@ export async function computeEraRewards(_job: Job, eraIndex: number): Promise<vo
         throw new Error(`Era not found: ${eraIndex}`)
     }
 
+    await _job.log(`Computing era rewards for era ${eraIndex}`)
+
     const newEraIndex = eraIndex + 1
+
+    await _job.log(`New era index: ${newEraIndex}`)
 
     let newEra = await ctx.store.findOne(Era, {
         where: { index: newEraIndex },
     })
+
+    await _job.log(`New era: ${newEra?.id}`)
 
     if (!newEra) {
         newEra = new Era({
@@ -38,6 +44,8 @@ export async function computeEraRewards(_job: Job, eraIndex: number): Promise<vo
         await ctx.store.save(newEra)
     }
 
+    await _job.log(`New era saved: ${newEra?.id}`)
+
     const rewardEvents = await ctx.store.find(EventModel, {
         where: {
             name: NominationPoolsRewardPaid.name,
@@ -46,6 +54,8 @@ export async function computeEraRewards(_job: Job, eraIndex: number): Promise<vo
             },
         },
     })
+
+    await _job.log(`Found ${rewardEvents.length} reward events`)
 
     // Group reward events by pool ID
     const groupedByPool = new Map<string, NominationPoolsRewardPaid[]>()
@@ -60,6 +70,8 @@ export async function computeEraRewards(_job: Job, eraIndex: number): Promise<vo
         groupedByPool.get(poolId)!.push(rewardEventData)
     }
 
+    await _job.log(`Grouped reward events by pool: ${groupedByPool.size} pools`)
+
     const poolIds = Array.from(groupedByPool.keys())
     const eraRewardIds = poolIds.map((poolId) => `${poolId}-${newEraIndex.toString()}`)
 
@@ -67,6 +79,9 @@ export async function computeEraRewards(_job: Job, eraIndex: number): Promise<vo
         ctx.store.find(EraReward, { where: { id: In(eraRewardIds) } }),
         ctx.store.find(NominationPool, { where: { id: In(poolIds) } }),
     ])
+
+    await _job.log(`Found ${existingEraRewards.length} existing era rewards`)
+    await _job.log(`Found ${pools.length} pools`)
 
     const existingEraRewardsMap = new Map(existingEraRewards.map((er) => [er.id, er]))
     const poolsMap = new Map(pools.map((p) => [p.id, p]))
