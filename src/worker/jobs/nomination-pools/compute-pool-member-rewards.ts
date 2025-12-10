@@ -4,6 +4,7 @@ import { Job } from 'bullmq'
 import { In } from 'typeorm'
 import Rpc from '~/util/rpc'
 import { encodeAddress, decodeAddress } from '@polkadot/util-crypto'
+import { decode } from '@subsquid/ss58'
 
 async function getMembersBalance(blockNumber: number, poolId: number): Promise<Record<string, bigint>> {
     const { api } = await Rpc.getInstance()
@@ -37,7 +38,7 @@ async function calculateMemberRewards(
     reward: EraReward,
     _job: Job
 ) {
-    const memberIds = Object.keys(memberBalances).map((accountId) => `${pool.id}-${accountId}`)
+    const memberIds = Object.keys(memberBalances).map((accountId) => `${pool.id}-${decode(accountId).toString()}`)
     await _job.log(`Found ${memberIds.join(', ')} member ids for pool ${pool.id}`)
     const members = await ctx.store.find(PoolMember, {
         relations: {
@@ -83,10 +84,11 @@ async function calculateMemberRewards(
             accumulatedRewards: newAccumulated,
         }
 
-        await _job.log(`Computed pool member rewards for member ${member.id}: ${eraRewards} points, ${newAccumulated} accumulated rewards`)
+        await _job.log(
+            `Computed pool member rewards for member ${member.id}: ${eraRewards} points, ${newAccumulated} accumulated rewards`
+        )
 
         inserts.push(new PoolMemberRewards(pmrData))
-
     }
     await _job.log(`-----------------------------------------------`)
 
