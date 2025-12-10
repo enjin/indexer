@@ -88,7 +88,7 @@ async function calculateMemberRewards(
         inserts.push(new PoolMemberRewards(pmrData))
 
     }
-    await _job.log(`--------------------------------------- \n Pushed pool member rewards for member ${member.id} to inserts --------------------------------`)
+    await _job.log(`-----------------------------------------------`)
 
     return { inserts, members }
 }
