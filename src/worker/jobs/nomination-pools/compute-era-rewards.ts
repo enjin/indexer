@@ -48,7 +48,7 @@ export async function computeEraRewards(_job: Job, eraIndex: number): Promise<vo
 
     const rewardEvents = await ctx.store.find(EventModel, {
         where: {
-            name: NominationPoolsRewardPaid.name,
+            name: 'NominationPoolsRewardPaid',
             data: {
                 era: eraIndex,
             },
