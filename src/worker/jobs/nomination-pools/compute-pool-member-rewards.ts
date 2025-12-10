@@ -38,7 +38,7 @@ async function calculateMemberRewards(
     reward: EraReward,
     _job: Job
 ) {
-    const memberIds = Object.keys(memberBalances).map((accountId) => `${pool.id}-${decode(accountId).toString()}`)
+    const memberIds = Object.keys(memberBalances).map((accountId) => `${pool.id}-${decode(accountId).bytes}`)
     await _job.log(`Found ${memberIds.join(', ')} member ids for pool ${pool.id}`)
     const members = await ctx.store.find(PoolMember, {
         relations: {
