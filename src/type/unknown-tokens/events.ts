@@ -4,6 +4,7 @@ import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV1010 from '../matrixV1010'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 import * as matrixV1030 from '../matrixV1030'
+import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 
 export const deposited = {
     name: 'UnknownTokens.Deposited',
@@ -25,6 +26,16 @@ export const deposited = {
         sts.struct({
             asset: matrixEnjinV1012.V4Asset,
             who: matrixEnjinV1012.V4Location,
+        })
+    ),
+    /**
+     * Deposit success.
+     */
+    matrixEnjinV1031: new EventType(
+        'UnknownTokens.Deposited',
+        sts.struct({
+            asset: matrixEnjinV1031.V5Asset,
+            who: matrixEnjinV1031.V5Location,
         })
     ),
     /**
@@ -79,6 +90,16 @@ export const withdrawn = {
         sts.struct({
             asset: matrixEnjinV1012.V4Asset,
             who: matrixEnjinV1012.V4Location,
+        })
+    ),
+    /**
+     * Withdraw success.
+     */
+    matrixEnjinV1031: new EventType(
+        'UnknownTokens.Withdrawn',
+        sts.struct({
+            asset: matrixEnjinV1031.V5Asset,
+            who: matrixEnjinV1031.V5Location,
         })
     ),
     /**

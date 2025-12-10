@@ -9,6 +9,10 @@ export const batch = withDispatchCheck((call: CallItem): Batch => {
     return match(call)
         .returnType<Batch>()
         .when(
+            () => calls.matrixUtility.batch.matrixEnjinV1031.is(call),
+            () => calls.matrixUtility.batch.matrixEnjinV1031.decode(call)
+        )
+        .when(
             () => calls.matrixUtility.batch.matrixEnjinV1022.is(call),
             () => calls.matrixUtility.batch.matrixEnjinV1022.decode(call)
         )

@@ -1,6 +1,8 @@
 import { sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx } from '../support'
+import * as matrixV500 from '../matrixV500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV1030 from '../matrixV1030'
+import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 
 export const bountyCount = {
     /**
@@ -31,6 +33,24 @@ export const bounties = {
     /**
      *  Bounties that have been made.
      */
+    matrixEnjinV1031: new StorageType(
+        'Bounties.Bounties',
+        'Optional',
+        [sts.number()],
+        matrixEnjinV1031.Bounty
+    ) as BountiesMatrixEnjinV1031,
+    /**
+     *  Bounties that have been made.
+     */
+    matrixV500: new StorageType(
+        'Bounties.Bounties',
+        'Optional',
+        [sts.number()],
+        matrixV500.Bounty
+    ) as BountiesMatrixV500,
+    /**
+     *  Bounties that have been made.
+     */
     matrixV1030: new StorageType(
         'Bounties.Bounties',
         'Optional',
@@ -58,6 +78,48 @@ export interface BountiesMatrixEnjinV603 {
         block: Block,
         key: number
     ): AsyncIterable<[k: number, v: matrixEnjinV603.Bounty | undefined][]>
+}
+
+/**
+ *  Bounties that have been made.
+ */
+export interface BountiesMatrixEnjinV1031 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: number): Promise<matrixEnjinV1031.Bounty | undefined>
+    getMany(block: Block, keys: number[]): Promise<(matrixEnjinV1031.Bounty | undefined)[]>
+    getKeys(block: Block): Promise<number[]>
+    getKeys(block: Block, key: number): Promise<number[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<number[]>
+    getKeysPaged(pageSize: number, block: Block, key: number): AsyncIterable<number[]>
+    getPairs(block: Block): Promise<[k: number, v: matrixEnjinV1031.Bounty | undefined][]>
+    getPairs(block: Block, key: number): Promise<[k: number, v: matrixEnjinV1031.Bounty | undefined][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: number, v: matrixEnjinV1031.Bounty | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: number
+    ): AsyncIterable<[k: number, v: matrixEnjinV1031.Bounty | undefined][]>
+}
+
+/**
+ *  Bounties that have been made.
+ */
+export interface BountiesMatrixV500 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: number): Promise<matrixV500.Bounty | undefined>
+    getMany(block: Block, keys: number[]): Promise<(matrixV500.Bounty | undefined)[]>
+    getKeys(block: Block): Promise<number[]>
+    getKeys(block: Block, key: number): Promise<number[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<number[]>
+    getKeysPaged(pageSize: number, block: Block, key: number): AsyncIterable<number[]>
+    getPairs(block: Block): Promise<[k: number, v: matrixV500.Bounty | undefined][]>
+    getPairs(block: Block, key: number): Promise<[k: number, v: matrixV500.Bounty | undefined][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: number, v: matrixV500.Bounty | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: number
+    ): AsyncIterable<[k: number, v: matrixV500.Bounty | undefined][]>
 }
 
 /**

@@ -12,6 +12,7 @@ import * as matrixV1020 from '../matrixV1020'
 import * as matrixEnjinV1022 from '../matrixEnjinV1022'
 import * as matrixV1030 from '../matrixV1030'
 import * as v1030 from '../v1030'
+import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 import * as v1031 from '../v1031'
 import * as enjinV1032 from '../enjinV1032'
 import * as enjinV1050 from '../enjinV1050'
@@ -67,6 +68,22 @@ export const listingCreated = {
              * The listing
              */
             listing: matrixEnjinV1022.Listing,
+        })
+    ),
+    /**
+     * A listing was created
+     */
+    matrixEnjinV1031: new EventType(
+        'Marketplace.ListingCreated',
+        sts.struct({
+            /**
+             * Id for the listing
+             */
+            listingId: matrixEnjinV1031.H256,
+            /**
+             * The listing
+             */
+            listing: matrixEnjinV1031.Listing,
         })
     ),
     /**
@@ -608,6 +625,38 @@ export const bidPlaced = {
     /**
      * A bid was placed
      */
+    matrixEnjinV1031: new EventType(
+        'Marketplace.BidPlaced',
+        sts.struct({
+            /**
+             * ID of the listing
+             */
+            listingId: matrixEnjinV1031.H256,
+            /**
+             * The bid that was placed
+             */
+            bid: matrixEnjinV1031.Bid,
+        })
+    ),
+    /**
+     * A bid was placed
+     */
+    matrixV500: new EventType(
+        'Marketplace.BidPlaced',
+        sts.struct({
+            /**
+             * ID of the listing
+             */
+            listingId: matrixV500.H256,
+            /**
+             * The bid that was placed
+             */
+            bid: matrixV500.Bid,
+        })
+    ),
+    /**
+     * A bid was placed
+     */
     matrixV1030: new EventType(
         'Marketplace.BidPlaced',
         sts.struct({
@@ -703,6 +752,54 @@ export const auctionFinalized = {
              * The bid that won
              */
             winningBid: sts.option(() => matrixEnjinV603.Bid),
+            /**
+             * Amount paid as protocol fee
+             */
+            protocolFee: sts.bigint(),
+            /**
+             * Amount that went to royalties
+             */
+            royalty: sts.bigint(),
+        })
+    ),
+    /**
+     * An auction was finalized
+     */
+    matrixEnjinV1031: new EventType(
+        'Marketplace.AuctionFinalized',
+        sts.struct({
+            /**
+             * The listing id
+             */
+            listingId: matrixEnjinV1031.H256,
+            /**
+             * The bid that won
+             */
+            winningBid: sts.option(() => matrixEnjinV1031.Bid),
+            /**
+             * Amount paid as protocol fee
+             */
+            protocolFee: sts.bigint(),
+            /**
+             * Amount that went to royalties
+             */
+            royalty: sts.bigint(),
+        })
+    ),
+    /**
+     * An auction was finalized
+     */
+    matrixV500: new EventType(
+        'Marketplace.AuctionFinalized',
+        sts.struct({
+            /**
+             * The listing id
+             */
+            listingId: matrixV500.H256,
+            /**
+             * The bid that won
+             */
+            winningBid: sts.option(() => matrixV500.Bid),
             /**
              * Amount paid as protocol fee
              */
@@ -1128,6 +1225,31 @@ export const listingUpgraded = {
         'Marketplace.ListingUpgraded',
         sts.struct({
             listingId: matrixEnjinV1022.H256,
+        })
+    ),
+    /**
+     * A listing has been upgraded
+     */
+    matrixEnjinV1031: new EventType(
+        'Marketplace.ListingUpgraded',
+        sts.struct({
+            /**
+             * The listing id
+             */
+            listingId: matrixEnjinV1031.H256,
+            /**
+             * The version of the storage this element was migrated to
+             */
+            storageVersion: sts.number(),
+        })
+    ),
+    /**
+     * A listing has been upgraded
+     */
+    matrixV1020: new EventType(
+        'Marketplace.ListingUpgraded',
+        sts.struct({
+            listingId: matrixV1020.H256,
         })
     ),
     /**

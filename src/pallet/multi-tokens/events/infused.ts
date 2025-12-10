@@ -17,6 +17,10 @@ export function infused(event: EventItem): Infused {
     return match(event)
         .returnType<Infused>()
         .when(
+            () => multiTokens.infused.matrixEnjinV1031.is(event),
+            () => multiTokens.infused.matrixEnjinV1031.decode(event)
+        )
+        .when(
             () => multiTokens.infused.matrixEnjinV1022.is(event),
             () => multiTokens.infused.matrixEnjinV1022.decode(event)
         )

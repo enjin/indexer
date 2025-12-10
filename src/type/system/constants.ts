@@ -1,8 +1,10 @@
 import { sts, Block, Bytes, Option, Result, ConstantType, RuntimeCtx } from '../support'
 import * as enjinV100 from '../enjinV100'
 import * as v100 from '../v100'
+import * as matrixV500 from '../matrixV500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV1030 from '../matrixV1030'
+import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
 
@@ -39,6 +41,14 @@ export const version = {
      *  Get the chain's current version.
      */
     matrixEnjinV603: new ConstantType('System.Version', matrixEnjinV603.RuntimeVersion),
+    /**
+     *  Get the chain's in-code version.
+     */
+    matrixEnjinV1031: new ConstantType('System.Version', matrixEnjinV1031.RuntimeVersion),
+    /**
+     *  Get the chain's current version.
+     */
+    matrixV500: new ConstantType('System.Version', matrixV500.RuntimeVersion),
     /**
      *  Get the chain's in-code version.
      */

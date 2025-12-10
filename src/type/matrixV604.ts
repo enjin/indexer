@@ -13518,13 +13518,6 @@ export const AuctionData: sts.Type<AuctionData> = sts.struct(() => {
     }
 })
 
-export const AssetId: sts.Type<AssetId> = sts.struct(() => {
-    return {
-        collectionId: sts.bigint(),
-        tokenId: sts.bigint(),
-    }
-})
-
 export const DispatchRuleDescriptor: sts.Type<DispatchRuleDescriptor> = sts.closedEnum(() => {
     return {
         MaxFuelBurnPerTransaction: MaxFuelBurnPerTransactionRule,
@@ -13652,6 +13645,35 @@ export const XcmOperation: sts.Type<XcmOperation> = sts.closedEnum(() => {
     return {
         ParachainFee: V3MultiLocation,
         XTokensTransfer: sts.unit(),
+    }
+})
+
+export const CurrencyIdAmountPair: sts.Type<CurrencyIdAmountPair> = sts.struct(() => {
+    return {
+        currencyId: AssetId,
+        amount: sts.bigint(),
+    }
+})
+
+export const AssetId: sts.Type<AssetId> = sts.struct(() => {
+    return {
+        collectionId: sts.bigint(),
+        tokenId: sts.bigint(),
+    }
+})
+
+export const Account: sts.Type<Account> = sts.closedEnum(() => {
+    return {
+        EVM: H160,
+        Substrate: AccountId32,
+    }
+})
+
+export const ParachainId: sts.Type<ParachainId> = sts.closedEnum(() => {
+    return {
+        Acala: sts.unit(),
+        Moonbeam: sts.unit(),
+        Statemint: sts.unit(),
     }
 })
 
@@ -14943,28 +14965,6 @@ export const MatrixXcmCall: sts.Type<MatrixXcmCall> = sts.closedEnum(() => {
             amount: sts.bigint(),
             destWeight: sts.option(() => sts.bigint()),
         }),
-    }
-})
-
-export const CurrencyIdAmountPair: sts.Type<CurrencyIdAmountPair> = sts.struct(() => {
-    return {
-        currencyId: AssetId,
-        amount: sts.bigint(),
-    }
-})
-
-export const Account: sts.Type<Account> = sts.closedEnum(() => {
-    return {
-        EVM: H160,
-        Substrate: AccountId32,
-    }
-})
-
-export const ParachainId: sts.Type<ParachainId> = sts.closedEnum(() => {
-    return {
-        Acala: sts.unit(),
-        Moonbeam: sts.unit(),
-        Statemint: sts.unit(),
     }
 })
 

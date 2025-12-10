@@ -22,6 +22,7 @@ import * as matrixEnjinV1022 from '../matrixEnjinV1022'
 import * as matrixV1022 from '../matrixV1022'
 import * as matrixV1023 from '../matrixV1023'
 import * as matrixV1030 from '../matrixV1030'
+import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 
 export const setMembers = {
     name: 'Council.set_members',
@@ -170,6 +171,24 @@ export const execute = {
         'Council.execute',
         sts.struct({
             proposal: matrixEnjinV1022.Call,
+            lengthBound: sts.number(),
+        })
+    ),
+    /**
+     * Dispatch a proposal from a member using the `Member` origin.
+     *
+     * Origin must be a member of the collective.
+     *
+     * ## Complexity:
+     * - `O(B + M + P)` where:
+     * - `B` is `proposal` size in bytes (length-fee-bounded)
+     * - `M` members-count (code-bounded)
+     * - `P` complexity of dispatching `proposal`
+     */
+    matrixEnjinV1031: new CallType(
+        'Council.execute',
+        sts.struct({
+            proposal: matrixEnjinV1031.Call,
             lengthBound: sts.number(),
         })
     ),
@@ -594,6 +613,30 @@ export const propose = {
         sts.struct({
             threshold: sts.number(),
             proposal: matrixEnjinV1022.Call,
+            lengthBound: sts.number(),
+        })
+    ),
+    /**
+     * Add a new proposal to either be voted on or executed directly.
+     *
+     * Requires the sender to be member.
+     *
+     * `threshold` determines whether `proposal` is executed directly (`threshold < 2`)
+     * or put up for voting.
+     *
+     * ## Complexity
+     * - `O(B + M + P1)` or `O(B + M + P2)` where:
+     *   - `B` is `proposal` size in bytes (length-fee-bounded)
+     *   - `M` is members-count (code- and governance-bounded)
+     *   - branching is influenced by `threshold` where:
+     *     - `P1` is proposal execution complexity (`threshold < 2`)
+     *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
+     */
+    matrixEnjinV1031: new CallType(
+        'Council.propose',
+        sts.struct({
+            threshold: sts.number(),
+            proposal: matrixEnjinV1031.Call,
             lengthBound: sts.number(),
         })
     ),
@@ -1080,6 +1123,46 @@ export const close = {
     ),
 }
 
+export const kill = {
+    name: 'Council.kill',
+    /**
+     * Disapprove the proposal and burn the cost held for storing this proposal.
+     *
+     * Parameters:
+     * - `origin`: must be the `KillOrigin`.
+     * - `proposal_hash`: The hash of the proposal that should be killed.
+     *
+     * Emits `Killed` and `ProposalCostBurned` if any cost was held for a given proposal.
+     */
+    matrixEnjinV1031: new CallType(
+        'Council.kill',
+        sts.struct({
+            proposalHash: matrixEnjinV1031.H256,
+        })
+    ),
+}
+
+export const releaseProposalCost = {
+    name: 'Council.release_proposal_cost',
+    /**
+     * Release the cost held for storing a proposal once the given proposal is completed.
+     *
+     * If there is no associated cost for the given proposal, this call will have no effect.
+     *
+     * Parameters:
+     * - `origin`: must be `Signed` or `Root`.
+     * - `proposal_hash`: The hash of the proposal.
+     *
+     * Emits `ProposalCostReleased` if any cost held for a given proposal.
+     */
+    matrixEnjinV1031: new CallType(
+        'Council.release_proposal_cost',
+        sts.struct({
+            proposalHash: matrixEnjinV1031.H256,
+        })
+    ),
+}
+
 export const closeOldWeight = {
     name: 'Council.close_old_weight',
     /**
@@ -1123,46 +1206,6 @@ export const closeOldWeight = {
             index: sts.number(),
             proposalWeightBound: sts.bigint(),
             lengthBound: sts.number(),
-        })
-    ),
-}
-
-export const kill = {
-    name: 'Council.kill',
-    /**
-     * Disapprove the proposal and burn the cost held for storing this proposal.
-     *
-     * Parameters:
-     * - `origin`: must be the `KillOrigin`.
-     * - `proposal_hash`: The hash of the proposal that should be killed.
-     *
-     * Emits `Killed` and `ProposalCostBurned` if any cost was held for a given proposal.
-     */
-    matrixV1030: new CallType(
-        'Council.kill',
-        sts.struct({
-            proposalHash: matrixV1030.H256,
-        })
-    ),
-}
-
-export const releaseProposalCost = {
-    name: 'Council.release_proposal_cost',
-    /**
-     * Release the cost held for storing a proposal once the given proposal is completed.
-     *
-     * If there is no associated cost for the given proposal, this call will have no effect.
-     *
-     * Parameters:
-     * - `origin`: must be `Signed` or `Root`.
-     * - `proposal_hash`: The hash of the proposal.
-     *
-     * Emits `ProposalCostReleased` if any cost held for a given proposal.
-     */
-    matrixV1030: new CallType(
-        'Council.release_proposal_cost',
-        sts.struct({
-            proposalHash: matrixV1030.H256,
         })
     ),
 }

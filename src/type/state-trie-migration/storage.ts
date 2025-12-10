@@ -1,5 +1,5 @@
 import { sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx } from '../support'
-import * as matrixV1023 from '../matrixV1023'
+import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 
 export const migrationProcess = {
     /**
@@ -8,12 +8,12 @@ export const migrationProcess = {
      *  This stores the snapshot of the last migrated keys. It can be set into motion and move
      *  forward by any of the means provided by this pallet.
      */
-    matrixV1023: new StorageType(
+    matrixEnjinV1031: new StorageType(
         'StateTrieMigration.MigrationProcess',
         'Default',
         [],
-        matrixV1023.MigrationTask
-    ) as MigrationProcessMatrixV1023,
+        matrixEnjinV1031.MigrationTask
+    ) as MigrationProcessMatrixEnjinV1031,
 }
 
 /**
@@ -22,10 +22,10 @@ export const migrationProcess = {
  *  This stores the snapshot of the last migrated keys. It can be set into motion and move
  *  forward by any of the means provided by this pallet.
  */
-export interface MigrationProcessMatrixV1023 {
+export interface MigrationProcessMatrixEnjinV1031 {
     is(block: RuntimeCtx): boolean
-    getDefault(block: Block): matrixV1023.MigrationTask
-    get(block: Block): Promise<matrixV1023.MigrationTask | undefined>
+    getDefault(block: Block): matrixEnjinV1031.MigrationTask
+    get(block: Block): Promise<matrixEnjinV1031.MigrationTask | undefined>
 }
 
 export const autoLimits = {
@@ -34,12 +34,12 @@ export const autoLimits = {
      *
      *  If set to None, then no automatic migration happens.
      */
-    matrixV1023: new StorageType(
+    matrixEnjinV1031: new StorageType(
         'StateTrieMigration.AutoLimits',
         'Default',
         [],
-        sts.option(() => matrixV1023.MigrationLimits)
-    ) as AutoLimitsMatrixV1023,
+        sts.option(() => matrixEnjinV1031.MigrationLimits)
+    ) as AutoLimitsMatrixEnjinV1031,
 }
 
 /**
@@ -47,10 +47,10 @@ export const autoLimits = {
  *
  *  If set to None, then no automatic migration happens.
  */
-export interface AutoLimitsMatrixV1023 {
+export interface AutoLimitsMatrixEnjinV1031 {
     is(block: RuntimeCtx): boolean
-    getDefault(block: Block): matrixV1023.MigrationLimits | undefined
-    get(block: Block): Promise<(matrixV1023.MigrationLimits | undefined) | undefined>
+    getDefault(block: Block): matrixEnjinV1031.MigrationLimits | undefined
+    get(block: Block): Promise<(matrixEnjinV1031.MigrationLimits | undefined) | undefined>
 }
 
 export const signedMigrationMaxLimits = {
@@ -59,12 +59,12 @@ export const signedMigrationMaxLimits = {
      *
      *  If not set, no signed submission is allowed.
      */
-    matrixV1023: new StorageType(
+    matrixEnjinV1031: new StorageType(
         'StateTrieMigration.SignedMigrationMaxLimits',
         'Optional',
         [],
-        matrixV1023.MigrationLimits
-    ) as SignedMigrationMaxLimitsMatrixV1023,
+        matrixEnjinV1031.MigrationLimits
+    ) as SignedMigrationMaxLimitsMatrixEnjinV1031,
 }
 
 /**
@@ -72,7 +72,7 @@ export const signedMigrationMaxLimits = {
  *
  *  If not set, no signed submission is allowed.
  */
-export interface SignedMigrationMaxLimitsMatrixV1023 {
+export interface SignedMigrationMaxLimitsMatrixEnjinV1031 {
     is(block: RuntimeCtx): boolean
-    get(block: Block): Promise<matrixV1023.MigrationLimits | undefined>
+    get(block: Block): Promise<matrixEnjinV1031.MigrationLimits | undefined>
 }

@@ -79,7 +79,7 @@ export const usernameDeposit = {
      *  The amount held on deposit per registered username. This value should change only in
      *  runtime upgrades with proper migration of existing deposits.
      */
-    matrixV1030: new ConstantType('Identity.UsernameDeposit', sts.bigint()),
+    matrixEnjinV1031: new ConstantType('Identity.UsernameDeposit', sts.bigint()),
 }
 
 export const usernameGracePeriod = {
@@ -87,5 +87,5 @@ export const usernameGracePeriod = {
      *  The number of blocks that must pass to enable the permanent deletion of a username by
      *  its respective authority.
      */
-    matrixV1030: new ConstantType('Identity.UsernameGracePeriod', sts.number()),
+    matrixEnjinV1031: new ConstantType('Identity.UsernameGracePeriod', sts.number()),
 }

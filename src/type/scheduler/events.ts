@@ -9,6 +9,7 @@ import * as matrixV602 from '../matrixV602'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV604 from '../matrixV604'
 import * as matrixV1030 from '../matrixV1030'
+import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
 
@@ -53,6 +54,20 @@ export const dispatched = {
             result: sts.result(
                 () => sts.unit(),
                 () => matrixEnjinV603.DispatchError
+            ),
+        })
+    ),
+    /**
+     * Dispatched some task.
+     */
+    matrixEnjinV1031: new EventType(
+        'Scheduler.Dispatched',
+        sts.struct({
+            task: sts.tuple(() => [sts.number(), sts.number()]),
+            id: sts.option(() => sts.bytes()),
+            result: sts.result(
+                () => sts.unit(),
+                () => matrixEnjinV1031.DispatchError
             ),
         })
     ),
@@ -304,7 +319,7 @@ export const agendaIncomplete = {
     /**
      * Agenda is incomplete from `when`.
      */
-    matrixV1030: new EventType(
+    matrixEnjinV1031: new EventType(
         'Scheduler.AgendaIncomplete',
         sts.struct({
             when: sts.number(),

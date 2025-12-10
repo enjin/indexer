@@ -9,6 +9,10 @@ export const createFuelTank = withDispatchCheck((call: CallItem): CreateFuelTank
     return match(call)
         .returnType<CreateFuelTank>()
         .when(
+            () => calls.fuelTanks.createFuelTank.matrixEnjinV1031.is(call),
+            () => calls.fuelTanks.createFuelTank.matrixEnjinV1031.decode(call)
+        )
+        .when(
             () => calls.fuelTanks.createFuelTank.matrixEnjinV1022.is(call),
             () => calls.fuelTanks.createFuelTank.matrixEnjinV1022.decode(call)
         )

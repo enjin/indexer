@@ -6,6 +6,7 @@ import * as matrixV602 from '../matrixV602'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV604 from '../matrixV604'
 import * as matrixV1030 from '../matrixV1030'
+import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
 
@@ -55,6 +56,22 @@ export const multisigExecuted = {
             result: sts.result(
                 () => sts.unit(),
                 () => matrixEnjinV603.DispatchError
+            ),
+        })
+    ),
+    /**
+     * A multisig operation has been executed.
+     */
+    matrixEnjinV1031: new EventType(
+        'Multisig.MultisigExecuted',
+        sts.struct({
+            approving: matrixEnjinV1031.AccountId32,
+            timepoint: matrixEnjinV1031.Timepoint,
+            multisig: matrixEnjinV1031.AccountId32,
+            callHash: sts.bytes(),
+            result: sts.result(
+                () => sts.unit(),
+                () => matrixEnjinV1031.DispatchError
             ),
         })
     ),
@@ -209,10 +226,10 @@ export const depositPoked = {
     /**
      * The deposit for a multisig operation has been updated/poked.
      */
-    matrixV1030: new EventType(
+    matrixEnjinV1031: new EventType(
         'Multisig.DepositPoked',
         sts.struct({
-            who: matrixV1030.AccountId32,
+            who: matrixEnjinV1031.AccountId32,
             callHash: sts.bytes(),
             oldDeposit: sts.bigint(),
             newDeposit: sts.bigint(),

@@ -8,6 +8,10 @@ export function unreserved(event: EventItem): Unreserved {
     return match(event)
         .returnType<Unreserved>()
         .when(
+            () => multiTokens.unreserved.matrixEnjinV1031.is(event),
+            () => multiTokens.unreserved.matrixEnjinV1031.decode(event)
+        )
+        .when(
             () => multiTokens.unreserved.matrixEnjinV1022.is(event),
             () => multiTokens.unreserved.matrixEnjinV1022.decode(event)
         )

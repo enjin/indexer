@@ -8,6 +8,10 @@ export function fuelTankMutated(event: EventItem): FuelTankMutated {
     return match(event)
         .returnType<FuelTankMutated>()
         .when(
+            () => fuelTanks.fuelTankMutated.matrixEnjinV1031.is(event),
+            () => fuelTanks.fuelTankMutated.matrixEnjinV1031.decode(event)
+        )
+        .when(
             () => fuelTanks.fuelTankMutated.matrixEnjinV1012.is(event),
             () => fuelTanks.fuelTankMutated.matrixEnjinV1012.decode(event)
         )

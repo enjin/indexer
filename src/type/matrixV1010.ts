@@ -1,5 +1,33 @@
 import { sts, Result, Option, Bytes, BitSequence } from './support'
 
+export interface ProxyDefinition {
+    delegate: AccountId32
+    proxyType: ProxyType
+    delay: number
+}
+
+export type ProxyType = ProxyType_Any | ProxyType_Governance | ProxyType_Tokens
+
+export interface ProxyType_Any {
+    __kind: 'Any'
+}
+
+export interface ProxyType_Governance {
+    __kind: 'Governance'
+}
+
+export interface ProxyType_Tokens {
+    __kind: 'Tokens'
+}
+
+export const ProxyDefinition: sts.Type<ProxyDefinition> = sts.struct(() => {
+    return {
+        delegate: AccountId32,
+        proxyType: ProxyType,
+        delay: sts.number(),
+    }
+})
+
 export interface Registration {
     judgements: [number, Judgement][]
     deposit: bigint
@@ -4625,20 +4653,6 @@ export interface ProxyCall_remove_proxy {
     delegate: MultiAddress
     proxyType: ProxyType
     delay: number
-}
-
-export type ProxyType = ProxyType_Any | ProxyType_Governance | ProxyType_Tokens
-
-export interface ProxyType_Any {
-    __kind: 'Any'
-}
-
-export interface ProxyType_Governance {
-    __kind: 'Governance'
-}
-
-export interface ProxyType_Tokens {
-    __kind: 'Tokens'
 }
 
 /**
@@ -15784,62 +15798,6 @@ export const UtilityEvent: sts.Type<UtilityEvent> = sts.closedEnum(() => {
     }
 })
 
-export const DispatchError: sts.Type<DispatchError> = sts.closedEnum(() => {
-    return {
-        Arithmetic: ArithmeticError,
-        BadOrigin: sts.unit(),
-        CannotLookup: sts.unit(),
-        ConsumerRemaining: sts.unit(),
-        Corruption: sts.unit(),
-        Exhausted: sts.unit(),
-        Module: ModuleError,
-        NoProviders: sts.unit(),
-        Other: sts.unit(),
-        RootNotAllowed: sts.unit(),
-        Token: TokenError,
-        TooManyConsumers: sts.unit(),
-        Transactional: TransactionalError,
-        Unavailable: sts.unit(),
-    }
-})
-
-export const TransactionalError: sts.Type<TransactionalError> = sts.closedEnum(() => {
-    return {
-        LimitReached: sts.unit(),
-        NoLayer: sts.unit(),
-    }
-})
-
-export const TokenError: sts.Type<TokenError> = sts.closedEnum(() => {
-    return {
-        BelowMinimum: sts.unit(),
-        Blocked: sts.unit(),
-        CannotCreate: sts.unit(),
-        CannotCreateHold: sts.unit(),
-        Frozen: sts.unit(),
-        FundsUnavailable: sts.unit(),
-        NotExpendable: sts.unit(),
-        OnlyProvider: sts.unit(),
-        UnknownAsset: sts.unit(),
-        Unsupported: sts.unit(),
-    }
-})
-
-export const ModuleError: sts.Type<ModuleError> = sts.struct(() => {
-    return {
-        index: sts.number(),
-        error: sts.bytes(),
-    }
-})
-
-export const ArithmeticError: sts.Type<ArithmeticError> = sts.closedEnum(() => {
-    return {
-        DivisionByZero: sts.unit(),
-        Overflow: sts.unit(),
-        Underflow: sts.unit(),
-    }
-})
-
 /**
  * The `Event` enum of this pallet
  */
@@ -17468,13 +17426,15 @@ export const Phase: sts.Type<Phase> = sts.closedEnum(() => {
     }
 })
 
-export const ProxyType: sts.Type<ProxyType> = sts.closedEnum(() => {
+export const MultiSignature: sts.Type<MultiSignature> = sts.closedEnum(() => {
     return {
-        Any: sts.unit(),
-        Governance: sts.unit(),
-        Tokens: sts.unit(),
+        Ecdsa: Signature,
+        Ed25519: sts.bytes(),
+        Sr25519: sts.bytes(),
     }
 })
+
+export const Signature = sts.bytes()
 
 export const ListingData: sts.Type<ListingData> = sts.closedEnum(() => {
     return {
@@ -19473,8 +19433,6 @@ export const MultiTokensCall: sts.Type<MultiTokensCall> = sts.closedEnum(() => {
     }
 })
 
-export const Signature = sts.bytes()
-
 /**
  * Contains a variant per dispatchable extrinsic that this pallet has.
  */
@@ -19748,14 +19706,6 @@ export const IdentityCall: sts.Type<IdentityCall> = sts.closedEnum(() => {
             username: sts.bytes(),
             signature: sts.option(() => MultiSignature),
         }),
-    }
-})
-
-export const MultiSignature: sts.Type<MultiSignature> = sts.closedEnum(() => {
-    return {
-        Ecdsa: Signature,
-        Ed25519: sts.bytes(),
-        Sr25519: sts.bytes(),
     }
 })
 
@@ -20200,6 +20150,70 @@ export const AdjustmentDirection: sts.Type<AdjustmentDirection> = sts.closedEnum
     }
 })
 
+export const ProxyType: sts.Type<ProxyType> = sts.closedEnum(() => {
+    return {
+        Any: sts.unit(),
+        Governance: sts.unit(),
+        Tokens: sts.unit(),
+    }
+})
+
+export const DispatchError: sts.Type<DispatchError> = sts.closedEnum(() => {
+    return {
+        Arithmetic: ArithmeticError,
+        BadOrigin: sts.unit(),
+        CannotLookup: sts.unit(),
+        ConsumerRemaining: sts.unit(),
+        Corruption: sts.unit(),
+        Exhausted: sts.unit(),
+        Module: ModuleError,
+        NoProviders: sts.unit(),
+        Other: sts.unit(),
+        RootNotAllowed: sts.unit(),
+        Token: TokenError,
+        TooManyConsumers: sts.unit(),
+        Transactional: TransactionalError,
+        Unavailable: sts.unit(),
+    }
+})
+
+export const TransactionalError: sts.Type<TransactionalError> = sts.closedEnum(() => {
+    return {
+        LimitReached: sts.unit(),
+        NoLayer: sts.unit(),
+    }
+})
+
+export const TokenError: sts.Type<TokenError> = sts.closedEnum(() => {
+    return {
+        BelowMinimum: sts.unit(),
+        Blocked: sts.unit(),
+        CannotCreate: sts.unit(),
+        CannotCreateHold: sts.unit(),
+        Frozen: sts.unit(),
+        FundsUnavailable: sts.unit(),
+        NotExpendable: sts.unit(),
+        OnlyProvider: sts.unit(),
+        UnknownAsset: sts.unit(),
+        Unsupported: sts.unit(),
+    }
+})
+
+export const ModuleError: sts.Type<ModuleError> = sts.struct(() => {
+    return {
+        index: sts.number(),
+        error: sts.bytes(),
+    }
+})
+
+export const ArithmeticError: sts.Type<ArithmeticError> = sts.closedEnum(() => {
+    return {
+        DivisionByZero: sts.unit(),
+        Overflow: sts.unit(),
+        Underflow: sts.unit(),
+    }
+})
+
 export const ProcessMessageError: sts.Type<ProcessMessageError> = sts.closedEnum(() => {
     return {
         BadFormat: sts.unit(),
@@ -20329,8 +20343,6 @@ export const Approval: sts.Type<Approval> = sts.struct(() => {
     }
 })
 
-export const AccountId32 = sts.bytes()
-
 export const Token: sts.Type<Token> = sts.struct(() => {
     return {
         supply: sts.bigint(),
@@ -20444,6 +20456,8 @@ export const Type_164: sts.Type<Type_164> = sts.closedEnum(() => {
         SomeMutation: sts.option(() => TokenMarketBehavior),
     }
 })
+
+export const AccountId32 = sts.bytes()
 
 export const VersionedLocation: sts.Type<VersionedLocation> = sts.closedEnum(() => {
     return {

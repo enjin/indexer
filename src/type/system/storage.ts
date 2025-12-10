@@ -44,6 +44,7 @@ import * as enjinV1026 from '../enjinV1026'
 import * as v1026 from '../v1026'
 import * as matrixV1030 from '../matrixV1030'
 import * as v1030 from '../v1030'
+import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 import * as v1031 from '../v1031'
 import * as enjinV1032 from '../enjinV1032'
 import * as v1032 from '../v1032'
@@ -514,6 +515,21 @@ export const events = {
         [],
         sts.array(() => matrixEnjinV1022.EventRecord)
     ) as EventsMatrixEnjinV1022,
+    /**
+     *  Events deposited for the current block.
+     *
+     *  NOTE: The item is unbound and should therefore never be read on chain.
+     *  It could otherwise inflate the PoV size of a block.
+     *
+     *  Events have a large in-memory size. Box the events to not go out-of-memory
+     *  just in case someone still reads them from within the runtime.
+     */
+    matrixEnjinV1031: new StorageType(
+        'System.Events',
+        'Default',
+        [],
+        sts.array(() => matrixEnjinV1031.EventRecord)
+    ) as EventsMatrixEnjinV1031,
     /**
      *  Events deposited for the current block.
      *
@@ -1324,6 +1340,21 @@ export interface EventsMatrixEnjinV1022 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): matrixEnjinV1022.EventRecord[]
     get(block: Block): Promise<matrixEnjinV1022.EventRecord[] | undefined>
+}
+
+/**
+ *  Events deposited for the current block.
+ *
+ *  NOTE: The item is unbound and should therefore never be read on chain.
+ *  It could otherwise inflate the PoV size of a block.
+ *
+ *  Events have a large in-memory size. Box the events to not go out-of-memory
+ *  just in case someone still reads them from within the runtime.
+ */
+export interface EventsMatrixEnjinV1031 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): matrixEnjinV1031.EventRecord[]
+    get(block: Block): Promise<matrixEnjinV1031.EventRecord[] | undefined>
 }
 
 /**
@@ -2240,12 +2271,12 @@ export const extrinsicWeightReclaimed = {
      *  Logic doing some post dispatch weight reduction must update this storage to avoid duplicate
      *  reduction.
      */
-    matrixV1030: new StorageType(
+    matrixEnjinV1031: new StorageType(
         'System.ExtrinsicWeightReclaimed',
         'Default',
         [],
-        matrixV1030.Weight
-    ) as ExtrinsicWeightReclaimedMatrixV1030,
+        matrixEnjinV1031.Weight
+    ) as ExtrinsicWeightReclaimedMatrixEnjinV1031,
 }
 
 /**
@@ -2257,8 +2288,8 @@ export const extrinsicWeightReclaimed = {
  *  Logic doing some post dispatch weight reduction must update this storage to avoid duplicate
  *  reduction.
  */
-export interface ExtrinsicWeightReclaimedMatrixV1030 {
+export interface ExtrinsicWeightReclaimedMatrixEnjinV1031 {
     is(block: RuntimeCtx): boolean
-    getDefault(block: Block): matrixV1030.Weight
-    get(block: Block): Promise<matrixV1030.Weight | undefined>
+    getDefault(block: Block): matrixEnjinV1031.Weight
+    get(block: Block): Promise<matrixEnjinV1031.Weight | undefined>
 }

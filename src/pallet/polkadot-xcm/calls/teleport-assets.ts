@@ -9,6 +9,10 @@ export const teleportAssets = withDispatchCheck((call: CallItem): TeleportAssets
     return match(call)
         .returnType<TeleportAssets>()
         .when(
+            () => calls.polkadotXcm.teleportAssets.matrixEnjinV1031.is(call),
+            () => calls.polkadotXcm.teleportAssets.matrixEnjinV1031.decode(call)
+        )
+        .when(
             () => calls.polkadotXcm.teleportAssets.matrixEnjinV1012.is(call),
             () => calls.polkadotXcm.teleportAssets.matrixEnjinV1012.decode(call)
         )

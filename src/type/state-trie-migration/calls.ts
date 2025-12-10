@@ -1,5 +1,5 @@
 import { sts, Block, Bytes, Option, Result, CallType, RuntimeCtx } from '../support'
-import * as matrixV1023 from '../matrixV1023'
+import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 
 export const controlAutoMigration = {
     name: 'StateTrieMigration.control_auto_migration',
@@ -8,10 +8,10 @@ export const controlAutoMigration = {
      *
      * The dispatch origin of this call must be [`Config::ControlOrigin`].
      */
-    matrixV1023: new CallType(
+    matrixEnjinV1031: new CallType(
         'StateTrieMigration.control_auto_migration',
         sts.struct({
-            maybeConfig: sts.option(() => matrixV1023.MigrationLimits),
+            maybeConfig: sts.option(() => matrixEnjinV1031.MigrationLimits),
         })
     ),
 }
@@ -41,12 +41,12 @@ export const continueMigrate = {
      * recommended way of doing this is to pass a `limit` that only bounds `count`, as the
      * `size` limit can always be overwritten.
      */
-    matrixV1023: new CallType(
+    matrixEnjinV1031: new CallType(
         'StateTrieMigration.continue_migrate',
         sts.struct({
-            limits: matrixV1023.MigrationLimits,
+            limits: matrixEnjinV1031.MigrationLimits,
             realSizeUpper: sts.number(),
-            witnessTask: matrixV1023.MigrationTask,
+            witnessTask: matrixEnjinV1031.MigrationTask,
         })
     ),
 }
@@ -59,7 +59,7 @@ export const migrateCustomTop = {
      * This does not affect the global migration process tracker ([`MigrationProcess`]), and
      * should only be used in case any keys are leftover due to a bug.
      */
-    matrixV1023: new CallType(
+    matrixEnjinV1031: new CallType(
         'StateTrieMigration.migrate_custom_top',
         sts.struct({
             keys: sts.array(() => sts.bytes()),
@@ -78,7 +78,7 @@ export const migrateCustomChild = {
      * This does not affect the global migration process tracker ([`MigrationProcess`]), and
      * should only be used in case any keys are leftover due to a bug.
      */
-    matrixV1023: new CallType(
+    matrixEnjinV1031: new CallType(
         'StateTrieMigration.migrate_custom_child',
         sts.struct({
             root: sts.bytes(),
@@ -93,10 +93,10 @@ export const setSignedMaxLimits = {
     /**
      * Set the maximum limit of the signed migration.
      */
-    matrixV1023: new CallType(
+    matrixEnjinV1031: new CallType(
         'StateTrieMigration.set_signed_max_limits',
         sts.struct({
-            limits: matrixV1023.MigrationLimits,
+            limits: matrixEnjinV1031.MigrationLimits,
         })
     ),
 }
@@ -114,11 +114,11 @@ export const forceSetProgress = {
      * In case you mess things up, you can also, in principle, use this to reset the migration
      * process.
      */
-    matrixV1023: new CallType(
+    matrixEnjinV1031: new CallType(
         'StateTrieMigration.force_set_progress',
         sts.struct({
-            progressTop: matrixV1023.Progress,
-            progressChild: matrixV1023.Progress,
+            progressTop: matrixEnjinV1031.Progress,
+            progressChild: matrixEnjinV1031.Progress,
         })
     ),
 }

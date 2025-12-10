@@ -8,6 +8,10 @@ export function reserved(event: EventItem): Reserved {
     return match(event)
         .returnType<Reserved>()
         .when(
+            () => multiTokens.reserved.matrixEnjinV1031.is(event),
+            () => multiTokens.reserved.matrixEnjinV1031.decode(event)
+        )
+        .when(
             () => multiTokens.reserved.matrixEnjinV1022.is(event),
             () => multiTokens.reserved.matrixEnjinV1022.decode(event)
         )

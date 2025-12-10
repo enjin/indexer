@@ -24,5 +24,5 @@ export const maxKeyLen = {
      *  For more info see
      *  <https://www.shawntabrizi.com/blog/substrate/querying-substrate-storage-via-rpc/>
      */
-    matrixV1023: new ConstantType('StateTrieMigration.MaxKeyLen', sts.number()),
+    matrixEnjinV1031: new ConstantType('StateTrieMigration.MaxKeyLen', sts.number()),
 }

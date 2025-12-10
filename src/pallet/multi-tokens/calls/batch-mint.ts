@@ -9,6 +9,10 @@ export const batchMint = withDispatchCheck((call: CallItem): BatchMint => {
     return match(call)
         .returnType<BatchMint>()
         .when(
+            () => calls.multiTokens.batchMint.matrixEnjinV1031.is(call),
+            () => calls.multiTokens.batchMint.matrixEnjinV1031.decode(call)
+        )
+        .when(
             () => calls.multiTokens.batchMint.matrixEnjinV1022.is(call),
             () => calls.multiTokens.batchMint.matrixEnjinV1022.decode(call)
         )

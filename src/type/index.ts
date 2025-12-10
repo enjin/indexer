@@ -1,4 +1,5 @@
 export * as matrixEnjinV603 from './matrixEnjinV603'
+export * as matrixEnjinV1031 from './matrixEnjinV1031'
 export * as matrixV500 from './matrixV500'
 export * as matrixV602 from './matrixV602'
 export * as matrixV604 from './matrixV604'

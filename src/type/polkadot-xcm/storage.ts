@@ -4,8 +4,10 @@ import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV604 from '../matrixV604'
 import * as matrixV1010 from '../matrixV1010'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
+import * as matrixV1020 from '../matrixV1020'
 import * as matrixEnjinV1022 from '../matrixEnjinV1022'
 import * as matrixV1030 from '../matrixV1030'
+import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 
 export const queryCounter = {
     /**
@@ -47,6 +49,15 @@ export const queries = {
         [sts.bigint()],
         matrixEnjinV1012.QueryStatus
     ) as QueriesMatrixEnjinV1012,
+    /**
+     *  The ongoing queries.
+     */
+    matrixEnjinV1031: new StorageType(
+        'PolkadotXcm.Queries',
+        'Optional',
+        [sts.bigint()],
+        matrixEnjinV1031.QueryStatus
+    ) as QueriesMatrixEnjinV1031,
     /**
      *  The ongoing queries.
      */
@@ -122,6 +133,30 @@ export interface QueriesMatrixEnjinV1012 {
         block: Block,
         key: bigint
     ): AsyncIterable<[k: bigint, v: matrixEnjinV1012.QueryStatus | undefined][]>
+}
+
+/**
+ *  The ongoing queries.
+ */
+export interface QueriesMatrixEnjinV1031 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: bigint): Promise<matrixEnjinV1031.QueryStatus | undefined>
+    getMany(block: Block, keys: bigint[]): Promise<(matrixEnjinV1031.QueryStatus | undefined)[]>
+    getKeys(block: Block): Promise<bigint[]>
+    getKeys(block: Block, key: bigint): Promise<bigint[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<bigint[]>
+    getKeysPaged(pageSize: number, block: Block, key: bigint): AsyncIterable<bigint[]>
+    getPairs(block: Block): Promise<[k: bigint, v: matrixEnjinV1031.QueryStatus | undefined][]>
+    getPairs(block: Block, key: bigint): Promise<[k: bigint, v: matrixEnjinV1031.QueryStatus | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: bigint, v: matrixEnjinV1031.QueryStatus | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: bigint
+    ): AsyncIterable<[k: bigint, v: matrixEnjinV1031.QueryStatus | undefined][]>
 }
 
 /**
@@ -271,6 +306,15 @@ export const supportedVersion = {
     /**
      *  The Latest versions that we know various locations support.
      */
+    matrixEnjinV1031: new StorageType(
+        'PolkadotXcm.SupportedVersion',
+        'Optional',
+        [sts.number(), matrixEnjinV1031.VersionedLocation],
+        sts.number()
+    ) as SupportedVersionMatrixEnjinV1031,
+    /**
+     *  The Latest versions that we know various locations support.
+     */
     matrixV500: new StorageType(
         'PolkadotXcm.SupportedVersion',
         'Optional',
@@ -401,6 +445,59 @@ export interface SupportedVersionMatrixEnjinV1012 {
         key1: number,
         key2: matrixEnjinV1012.VersionedLocation
     ): AsyncIterable<[k: [number, matrixEnjinV1012.VersionedLocation], v: number | undefined][]>
+}
+
+/**
+ *  The Latest versions that we know various locations support.
+ */
+export interface SupportedVersionMatrixEnjinV1031 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key1: number, key2: matrixEnjinV1031.VersionedLocation): Promise<number | undefined>
+    getMany(block: Block, keys: [number, matrixEnjinV1031.VersionedLocation][]): Promise<(number | undefined)[]>
+    getKeys(block: Block): Promise<[number, matrixEnjinV1031.VersionedLocation][]>
+    getKeys(block: Block, key1: number): Promise<[number, matrixEnjinV1031.VersionedLocation][]>
+    getKeys(
+        block: Block,
+        key1: number,
+        key2: matrixEnjinV1031.VersionedLocation
+    ): Promise<[number, matrixEnjinV1031.VersionedLocation][]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[number, matrixEnjinV1031.VersionedLocation][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: number
+    ): AsyncIterable<[number, matrixEnjinV1031.VersionedLocation][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: number,
+        key2: matrixEnjinV1031.VersionedLocation
+    ): AsyncIterable<[number, matrixEnjinV1031.VersionedLocation][]>
+    getPairs(block: Block): Promise<[k: [number, matrixEnjinV1031.VersionedLocation], v: number | undefined][]>
+    getPairs(
+        block: Block,
+        key1: number
+    ): Promise<[k: [number, matrixEnjinV1031.VersionedLocation], v: number | undefined][]>
+    getPairs(
+        block: Block,
+        key1: number,
+        key2: matrixEnjinV1031.VersionedLocation
+    ): Promise<[k: [number, matrixEnjinV1031.VersionedLocation], v: number | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: [number, matrixEnjinV1031.VersionedLocation], v: number | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: number
+    ): AsyncIterable<[k: [number, matrixEnjinV1031.VersionedLocation], v: number | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: number,
+        key2: matrixEnjinV1031.VersionedLocation
+    ): AsyncIterable<[k: [number, matrixEnjinV1031.VersionedLocation], v: number | undefined][]>
 }
 
 /**
@@ -570,6 +667,15 @@ export const versionNotifiers = {
     /**
      *  All locations that we have requested version notifications from.
      */
+    matrixEnjinV1031: new StorageType(
+        'PolkadotXcm.VersionNotifiers',
+        'Optional',
+        [sts.number(), matrixEnjinV1031.VersionedLocation],
+        sts.bigint()
+    ) as VersionNotifiersMatrixEnjinV1031,
+    /**
+     *  All locations that we have requested version notifications from.
+     */
     matrixV500: new StorageType(
         'PolkadotXcm.VersionNotifiers',
         'Optional',
@@ -700,6 +806,59 @@ export interface VersionNotifiersMatrixEnjinV1012 {
         key1: number,
         key2: matrixEnjinV1012.VersionedLocation
     ): AsyncIterable<[k: [number, matrixEnjinV1012.VersionedLocation], v: bigint | undefined][]>
+}
+
+/**
+ *  All locations that we have requested version notifications from.
+ */
+export interface VersionNotifiersMatrixEnjinV1031 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key1: number, key2: matrixEnjinV1031.VersionedLocation): Promise<bigint | undefined>
+    getMany(block: Block, keys: [number, matrixEnjinV1031.VersionedLocation][]): Promise<(bigint | undefined)[]>
+    getKeys(block: Block): Promise<[number, matrixEnjinV1031.VersionedLocation][]>
+    getKeys(block: Block, key1: number): Promise<[number, matrixEnjinV1031.VersionedLocation][]>
+    getKeys(
+        block: Block,
+        key1: number,
+        key2: matrixEnjinV1031.VersionedLocation
+    ): Promise<[number, matrixEnjinV1031.VersionedLocation][]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[number, matrixEnjinV1031.VersionedLocation][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: number
+    ): AsyncIterable<[number, matrixEnjinV1031.VersionedLocation][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: number,
+        key2: matrixEnjinV1031.VersionedLocation
+    ): AsyncIterable<[number, matrixEnjinV1031.VersionedLocation][]>
+    getPairs(block: Block): Promise<[k: [number, matrixEnjinV1031.VersionedLocation], v: bigint | undefined][]>
+    getPairs(
+        block: Block,
+        key1: number
+    ): Promise<[k: [number, matrixEnjinV1031.VersionedLocation], v: bigint | undefined][]>
+    getPairs(
+        block: Block,
+        key1: number,
+        key2: matrixEnjinV1031.VersionedLocation
+    ): Promise<[k: [number, matrixEnjinV1031.VersionedLocation], v: bigint | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: [number, matrixEnjinV1031.VersionedLocation], v: bigint | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: number
+    ): AsyncIterable<[k: [number, matrixEnjinV1031.VersionedLocation], v: bigint | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: number,
+        key2: matrixEnjinV1031.VersionedLocation
+    ): AsyncIterable<[k: [number, matrixEnjinV1031.VersionedLocation], v: bigint | undefined][]>
 }
 
 /**
@@ -868,6 +1027,16 @@ export const versionNotifyTargets = {
         [sts.number(), matrixEnjinV1012.VersionedLocation],
         sts.tuple(() => [sts.bigint(), matrixEnjinV1012.Weight, sts.number()])
     ) as VersionNotifyTargetsMatrixEnjinV1012,
+    /**
+     *  The target locations that are subscribed to our version changes, as well as the most recent
+     *  of our versions we informed them of.
+     */
+    matrixEnjinV1031: new StorageType(
+        'PolkadotXcm.VersionNotifyTargets',
+        'Optional',
+        [sts.number(), matrixEnjinV1031.VersionedLocation],
+        sts.tuple(() => [sts.bigint(), matrixEnjinV1031.Weight, sts.number()])
+    ) as VersionNotifyTargetsMatrixEnjinV1031,
     /**
      *  The target locations that are subscribed to our version changes, as well as the most recent
      *  of our versions we informed them of.
@@ -1047,6 +1216,81 @@ export interface VersionNotifyTargetsMatrixEnjinV1012 {
         key2: matrixEnjinV1012.VersionedLocation
     ): AsyncIterable<
         [k: [number, matrixEnjinV1012.VersionedLocation], v: [bigint, matrixEnjinV1012.Weight, number] | undefined][]
+    >
+}
+
+/**
+ *  The target locations that are subscribed to our version changes, as well as the most recent
+ *  of our versions we informed them of.
+ */
+export interface VersionNotifyTargetsMatrixEnjinV1031 {
+    is(block: RuntimeCtx): boolean
+    get(
+        block: Block,
+        key1: number,
+        key2: matrixEnjinV1031.VersionedLocation
+    ): Promise<[bigint, matrixEnjinV1031.Weight, number] | undefined>
+    getMany(
+        block: Block,
+        keys: [number, matrixEnjinV1031.VersionedLocation][]
+    ): Promise<([bigint, matrixEnjinV1031.Weight, number] | undefined)[]>
+    getKeys(block: Block): Promise<[number, matrixEnjinV1031.VersionedLocation][]>
+    getKeys(block: Block, key1: number): Promise<[number, matrixEnjinV1031.VersionedLocation][]>
+    getKeys(
+        block: Block,
+        key1: number,
+        key2: matrixEnjinV1031.VersionedLocation
+    ): Promise<[number, matrixEnjinV1031.VersionedLocation][]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[number, matrixEnjinV1031.VersionedLocation][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: number
+    ): AsyncIterable<[number, matrixEnjinV1031.VersionedLocation][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: number,
+        key2: matrixEnjinV1031.VersionedLocation
+    ): AsyncIterable<[number, matrixEnjinV1031.VersionedLocation][]>
+    getPairs(
+        block: Block
+    ): Promise<
+        [k: [number, matrixEnjinV1031.VersionedLocation], v: [bigint, matrixEnjinV1031.Weight, number] | undefined][]
+    >
+    getPairs(
+        block: Block,
+        key1: number
+    ): Promise<
+        [k: [number, matrixEnjinV1031.VersionedLocation], v: [bigint, matrixEnjinV1031.Weight, number] | undefined][]
+    >
+    getPairs(
+        block: Block,
+        key1: number,
+        key2: matrixEnjinV1031.VersionedLocation
+    ): Promise<
+        [k: [number, matrixEnjinV1031.VersionedLocation], v: [bigint, matrixEnjinV1031.Weight, number] | undefined][]
+    >
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<
+        [k: [number, matrixEnjinV1031.VersionedLocation], v: [bigint, matrixEnjinV1031.Weight, number] | undefined][]
+    >
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: number
+    ): AsyncIterable<
+        [k: [number, matrixEnjinV1031.VersionedLocation], v: [bigint, matrixEnjinV1031.Weight, number] | undefined][]
+    >
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: number,
+        key2: matrixEnjinV1031.VersionedLocation
+    ): AsyncIterable<
+        [k: [number, matrixEnjinV1031.VersionedLocation], v: [bigint, matrixEnjinV1031.Weight, number] | undefined][]
     >
 }
 
@@ -1277,6 +1521,17 @@ export const versionDiscoveryQueue = {
      *  the `u32` counter is the number of times that a send to the destination has been attempted,
      *  which is used as a prioritization.
      */
+    matrixEnjinV1031: new StorageType(
+        'PolkadotXcm.VersionDiscoveryQueue',
+        'Default',
+        [],
+        sts.array(() => sts.tuple(() => [matrixEnjinV1031.VersionedLocation, sts.number()]))
+    ) as VersionDiscoveryQueueMatrixEnjinV1031,
+    /**
+     *  Destinations whose latest XCM version we would like to know. Duplicates not allowed, and
+     *  the `u32` counter is the number of times that a send to the destination has been attempted,
+     *  which is used as a prioritization.
+     */
     matrixV500: new StorageType(
         'PolkadotXcm.VersionDiscoveryQueue',
         'Default',
@@ -1327,6 +1582,17 @@ export interface VersionDiscoveryQueueMatrixEnjinV1012 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): [matrixEnjinV1012.VersionedLocation, number][]
     get(block: Block): Promise<[matrixEnjinV1012.VersionedLocation, number][] | undefined>
+}
+
+/**
+ *  Destinations whose latest XCM version we would like to know. Duplicates not allowed, and
+ *  the `u32` counter is the number of times that a send to the destination has been attempted,
+ *  which is used as a prioritization.
+ */
+export interface VersionDiscoveryQueueMatrixEnjinV1031 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): [matrixEnjinV1031.VersionedLocation, number][]
+    get(block: Block): Promise<[matrixEnjinV1031.VersionedLocation, number][] | undefined>
 }
 
 /**
@@ -1401,6 +1667,15 @@ export const remoteLockedFungibles = {
         [sts.number(), matrixEnjinV1012.AccountId32, matrixEnjinV1012.VersionedAssetId],
         matrixEnjinV1012.RemoteLockedFungibleRecord
     ) as RemoteLockedFungiblesMatrixEnjinV1012,
+    /**
+     *  Fungible assets which we know are locked on a remote chain.
+     */
+    matrixEnjinV1031: new StorageType(
+        'PolkadotXcm.RemoteLockedFungibles',
+        'Optional',
+        [sts.number(), matrixEnjinV1031.AccountId32, matrixEnjinV1031.VersionedAssetId],
+        matrixEnjinV1031.RemoteLockedFungibleRecord
+    ) as RemoteLockedFungiblesMatrixEnjinV1031,
     /**
      *  Fungible assets which we know are locked on a remote chain.
      */
@@ -1705,6 +1980,141 @@ export interface RemoteLockedFungiblesMatrixEnjinV1012 {
         [
             k: [number, matrixEnjinV1012.AccountId32, matrixEnjinV1012.VersionedAssetId],
             v: matrixEnjinV1012.RemoteLockedFungibleRecord | undefined,
+        ][]
+    >
+}
+
+/**
+ *  Fungible assets which we know are locked on a remote chain.
+ */
+export interface RemoteLockedFungiblesMatrixEnjinV1031 {
+    is(block: RuntimeCtx): boolean
+    get(
+        block: Block,
+        key1: number,
+        key2: matrixEnjinV1031.AccountId32,
+        key3: matrixEnjinV1031.VersionedAssetId
+    ): Promise<matrixEnjinV1031.RemoteLockedFungibleRecord | undefined>
+    getMany(
+        block: Block,
+        keys: [number, matrixEnjinV1031.AccountId32, matrixEnjinV1031.VersionedAssetId][]
+    ): Promise<(matrixEnjinV1031.RemoteLockedFungibleRecord | undefined)[]>
+    getKeys(block: Block): Promise<[number, matrixEnjinV1031.AccountId32, matrixEnjinV1031.VersionedAssetId][]>
+    getKeys(
+        block: Block,
+        key1: number
+    ): Promise<[number, matrixEnjinV1031.AccountId32, matrixEnjinV1031.VersionedAssetId][]>
+    getKeys(
+        block: Block,
+        key1: number,
+        key2: matrixEnjinV1031.AccountId32
+    ): Promise<[number, matrixEnjinV1031.AccountId32, matrixEnjinV1031.VersionedAssetId][]>
+    getKeys(
+        block: Block,
+        key1: number,
+        key2: matrixEnjinV1031.AccountId32,
+        key3: matrixEnjinV1031.VersionedAssetId
+    ): Promise<[number, matrixEnjinV1031.AccountId32, matrixEnjinV1031.VersionedAssetId][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[number, matrixEnjinV1031.AccountId32, matrixEnjinV1031.VersionedAssetId][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: number
+    ): AsyncIterable<[number, matrixEnjinV1031.AccountId32, matrixEnjinV1031.VersionedAssetId][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: number,
+        key2: matrixEnjinV1031.AccountId32
+    ): AsyncIterable<[number, matrixEnjinV1031.AccountId32, matrixEnjinV1031.VersionedAssetId][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: number,
+        key2: matrixEnjinV1031.AccountId32,
+        key3: matrixEnjinV1031.VersionedAssetId
+    ): AsyncIterable<[number, matrixEnjinV1031.AccountId32, matrixEnjinV1031.VersionedAssetId][]>
+    getPairs(
+        block: Block
+    ): Promise<
+        [
+            k: [number, matrixEnjinV1031.AccountId32, matrixEnjinV1031.VersionedAssetId],
+            v: matrixEnjinV1031.RemoteLockedFungibleRecord | undefined,
+        ][]
+    >
+    getPairs(
+        block: Block,
+        key1: number
+    ): Promise<
+        [
+            k: [number, matrixEnjinV1031.AccountId32, matrixEnjinV1031.VersionedAssetId],
+            v: matrixEnjinV1031.RemoteLockedFungibleRecord | undefined,
+        ][]
+    >
+    getPairs(
+        block: Block,
+        key1: number,
+        key2: matrixEnjinV1031.AccountId32
+    ): Promise<
+        [
+            k: [number, matrixEnjinV1031.AccountId32, matrixEnjinV1031.VersionedAssetId],
+            v: matrixEnjinV1031.RemoteLockedFungibleRecord | undefined,
+        ][]
+    >
+    getPairs(
+        block: Block,
+        key1: number,
+        key2: matrixEnjinV1031.AccountId32,
+        key3: matrixEnjinV1031.VersionedAssetId
+    ): Promise<
+        [
+            k: [number, matrixEnjinV1031.AccountId32, matrixEnjinV1031.VersionedAssetId],
+            v: matrixEnjinV1031.RemoteLockedFungibleRecord | undefined,
+        ][]
+    >
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<
+        [
+            k: [number, matrixEnjinV1031.AccountId32, matrixEnjinV1031.VersionedAssetId],
+            v: matrixEnjinV1031.RemoteLockedFungibleRecord | undefined,
+        ][]
+    >
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: number
+    ): AsyncIterable<
+        [
+            k: [number, matrixEnjinV1031.AccountId32, matrixEnjinV1031.VersionedAssetId],
+            v: matrixEnjinV1031.RemoteLockedFungibleRecord | undefined,
+        ][]
+    >
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: number,
+        key2: matrixEnjinV1031.AccountId32
+    ): AsyncIterable<
+        [
+            k: [number, matrixEnjinV1031.AccountId32, matrixEnjinV1031.VersionedAssetId],
+            v: matrixEnjinV1031.RemoteLockedFungibleRecord | undefined,
+        ][]
+    >
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: number,
+        key2: matrixEnjinV1031.AccountId32,
+        key3: matrixEnjinV1031.VersionedAssetId
+    ): AsyncIterable<
+        [
+            k: [number, matrixEnjinV1031.AccountId32, matrixEnjinV1031.VersionedAssetId],
+            v: matrixEnjinV1031.RemoteLockedFungibleRecord | undefined,
         ][]
     >
 }
@@ -2259,6 +2669,15 @@ export const lockedFungibles = {
     /**
      *  Fungible assets which we know are locked on this chain.
      */
+    matrixEnjinV1031: new StorageType(
+        'PolkadotXcm.LockedFungibles',
+        'Optional',
+        [matrixEnjinV1031.AccountId32],
+        sts.array(() => sts.tuple(() => [sts.bigint(), matrixEnjinV1031.VersionedLocation]))
+    ) as LockedFungiblesMatrixEnjinV1031,
+    /**
+     *  Fungible assets which we know are locked on this chain.
+     */
     matrixV500: new StorageType(
         'PolkadotXcm.LockedFungibles',
         'Optional',
@@ -2365,6 +2784,45 @@ export interface LockedFungiblesMatrixEnjinV1012 {
         block: Block,
         key: matrixEnjinV1012.AccountId32
     ): AsyncIterable<[k: matrixEnjinV1012.AccountId32, v: [bigint, matrixEnjinV1012.VersionedLocation][] | undefined][]>
+}
+
+/**
+ *  Fungible assets which we know are locked on this chain.
+ */
+export interface LockedFungiblesMatrixEnjinV1031 {
+    is(block: RuntimeCtx): boolean
+    get(
+        block: Block,
+        key: matrixEnjinV1031.AccountId32
+    ): Promise<[bigint, matrixEnjinV1031.VersionedLocation][] | undefined>
+    getMany(
+        block: Block,
+        keys: matrixEnjinV1031.AccountId32[]
+    ): Promise<([bigint, matrixEnjinV1031.VersionedLocation][] | undefined)[]>
+    getKeys(block: Block): Promise<matrixEnjinV1031.AccountId32[]>
+    getKeys(block: Block, key: matrixEnjinV1031.AccountId32): Promise<matrixEnjinV1031.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<matrixEnjinV1031.AccountId32[]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key: matrixEnjinV1031.AccountId32
+    ): AsyncIterable<matrixEnjinV1031.AccountId32[]>
+    getPairs(
+        block: Block
+    ): Promise<[k: matrixEnjinV1031.AccountId32, v: [bigint, matrixEnjinV1031.VersionedLocation][] | undefined][]>
+    getPairs(
+        block: Block,
+        key: matrixEnjinV1031.AccountId32
+    ): Promise<[k: matrixEnjinV1031.AccountId32, v: [bigint, matrixEnjinV1031.VersionedLocation][] | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: matrixEnjinV1031.AccountId32, v: [bigint, matrixEnjinV1031.VersionedLocation][] | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: matrixEnjinV1031.AccountId32
+    ): AsyncIterable<[k: matrixEnjinV1031.AccountId32, v: [bigint, matrixEnjinV1031.VersionedLocation][] | undefined][]>
 }
 
 /**
@@ -2540,6 +2998,34 @@ export const recordedXcm = {
      *  Only relevant if this pallet is being used as the [`xcm_executor::traits::RecordXcm`]
      *  implementation in the XCM executor configuration.
      */
+    matrixEnjinV1031: new StorageType(
+        'PolkadotXcm.RecordedXcm',
+        'Optional',
+        [],
+        sts.array(() => matrixEnjinV1031.V5Instruction)
+    ) as RecordedXcmMatrixEnjinV1031,
+    /**
+     *  If [`ShouldRecordXcm`] is set to true, then the last XCM program executed locally
+     *  will be stored here.
+     *  Runtime APIs can fetch the XCM that was executed by accessing this value.
+     *
+     *  Only relevant if this pallet is being used as the [`xcm_executor::traits::RecordXcm`]
+     *  implementation in the XCM executor configuration.
+     */
+    matrixV1020: new StorageType(
+        'PolkadotXcm.RecordedXcm',
+        'Optional',
+        [],
+        sts.array(() => matrixV1020.V4Instruction)
+    ) as RecordedXcmMatrixV1020,
+    /**
+     *  If [`ShouldRecordXcm`] is set to true, then the last XCM program executed locally
+     *  will be stored here.
+     *  Runtime APIs can fetch the XCM that was executed by accessing this value.
+     *
+     *  Only relevant if this pallet is being used as the [`xcm_executor::traits::RecordXcm`]
+     *  implementation in the XCM executor configuration.
+     */
     matrixV1030: new StorageType(
         'PolkadotXcm.RecordedXcm',
         'Optional',
@@ -2569,6 +3055,32 @@ export interface RecordedXcmMatrixEnjinV1022 {
  *  Only relevant if this pallet is being used as the [`xcm_executor::traits::RecordXcm`]
  *  implementation in the XCM executor configuration.
  */
+export interface RecordedXcmMatrixEnjinV1031 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block): Promise<matrixEnjinV1031.V5Instruction[] | undefined>
+}
+
+/**
+ *  If [`ShouldRecordXcm`] is set to true, then the last XCM program executed locally
+ *  will be stored here.
+ *  Runtime APIs can fetch the XCM that was executed by accessing this value.
+ *
+ *  Only relevant if this pallet is being used as the [`xcm_executor::traits::RecordXcm`]
+ *  implementation in the XCM executor configuration.
+ */
+export interface RecordedXcmMatrixV1020 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block): Promise<matrixV1020.V4Instruction[] | undefined>
+}
+
+/**
+ *  If [`ShouldRecordXcm`] is set to true, then the last XCM program executed locally
+ *  will be stored here.
+ *  Runtime APIs can fetch the XCM that was executed by accessing this value.
+ *
+ *  Only relevant if this pallet is being used as the [`xcm_executor::traits::RecordXcm`]
+ *  implementation in the XCM executor configuration.
+ */
 export interface RecordedXcmMatrixV1030 {
     is(block: RuntimeCtx): boolean
     get(block: Block): Promise<matrixV1030.V5Instruction[] | undefined>
@@ -2580,12 +3092,12 @@ export const authorizedAliases = {
      *  other locations to alias into it. Each aliaser is only valid until its inner `expiry`
      *  block number.
      */
-    matrixV1030: new StorageType(
+    matrixEnjinV1031: new StorageType(
         'PolkadotXcm.AuthorizedAliases',
         'Optional',
-        [matrixV1030.VersionedLocation],
-        matrixV1030.AuthorizedAliasesEntry
-    ) as AuthorizedAliasesMatrixV1030,
+        [matrixEnjinV1031.VersionedLocation],
+        matrixEnjinV1031.AuthorizedAliasesEntry
+    ) as AuthorizedAliasesMatrixEnjinV1031,
 }
 
 /**
@@ -2593,35 +3105,38 @@ export const authorizedAliases = {
  *  other locations to alias into it. Each aliaser is only valid until its inner `expiry`
  *  block number.
  */
-export interface AuthorizedAliasesMatrixV1030 {
+export interface AuthorizedAliasesMatrixEnjinV1031 {
     is(block: RuntimeCtx): boolean
-    get(block: Block, key: matrixV1030.VersionedLocation): Promise<matrixV1030.AuthorizedAliasesEntry | undefined>
+    get(
+        block: Block,
+        key: matrixEnjinV1031.VersionedLocation
+    ): Promise<matrixEnjinV1031.AuthorizedAliasesEntry | undefined>
     getMany(
         block: Block,
-        keys: matrixV1030.VersionedLocation[]
-    ): Promise<(matrixV1030.AuthorizedAliasesEntry | undefined)[]>
-    getKeys(block: Block): Promise<matrixV1030.VersionedLocation[]>
-    getKeys(block: Block, key: matrixV1030.VersionedLocation): Promise<matrixV1030.VersionedLocation[]>
-    getKeysPaged(pageSize: number, block: Block): AsyncIterable<matrixV1030.VersionedLocation[]>
+        keys: matrixEnjinV1031.VersionedLocation[]
+    ): Promise<(matrixEnjinV1031.AuthorizedAliasesEntry | undefined)[]>
+    getKeys(block: Block): Promise<matrixEnjinV1031.VersionedLocation[]>
+    getKeys(block: Block, key: matrixEnjinV1031.VersionedLocation): Promise<matrixEnjinV1031.VersionedLocation[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<matrixEnjinV1031.VersionedLocation[]>
     getKeysPaged(
         pageSize: number,
         block: Block,
-        key: matrixV1030.VersionedLocation
-    ): AsyncIterable<matrixV1030.VersionedLocation[]>
+        key: matrixEnjinV1031.VersionedLocation
+    ): AsyncIterable<matrixEnjinV1031.VersionedLocation[]>
     getPairs(
         block: Block
-    ): Promise<[k: matrixV1030.VersionedLocation, v: matrixV1030.AuthorizedAliasesEntry | undefined][]>
+    ): Promise<[k: matrixEnjinV1031.VersionedLocation, v: matrixEnjinV1031.AuthorizedAliasesEntry | undefined][]>
     getPairs(
         block: Block,
-        key: matrixV1030.VersionedLocation
-    ): Promise<[k: matrixV1030.VersionedLocation, v: matrixV1030.AuthorizedAliasesEntry | undefined][]>
+        key: matrixEnjinV1031.VersionedLocation
+    ): Promise<[k: matrixEnjinV1031.VersionedLocation, v: matrixEnjinV1031.AuthorizedAliasesEntry | undefined][]>
     getPairsPaged(
         pageSize: number,
         block: Block
-    ): AsyncIterable<[k: matrixV1030.VersionedLocation, v: matrixV1030.AuthorizedAliasesEntry | undefined][]>
+    ): AsyncIterable<[k: matrixEnjinV1031.VersionedLocation, v: matrixEnjinV1031.AuthorizedAliasesEntry | undefined][]>
     getPairsPaged(
         pageSize: number,
         block: Block,
-        key: matrixV1030.VersionedLocation
-    ): AsyncIterable<[k: matrixV1030.VersionedLocation, v: matrixV1030.AuthorizedAliasesEntry | undefined][]>
+        key: matrixEnjinV1031.VersionedLocation
+    ): AsyncIterable<[k: matrixEnjinV1031.VersionedLocation, v: matrixEnjinV1031.AuthorizedAliasesEntry | undefined][]>
 }

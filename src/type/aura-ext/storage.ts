@@ -1,6 +1,6 @@
 import { sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx } from '../support'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
-import * as matrixV1030 from '../matrixV1030'
+import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 
 export const authorities = {
     /**
@@ -62,12 +62,12 @@ export const relaySlotInfo = {
      *  This is updated in [`FixedVelocityConsensusHook::on_state_proof`] with the current relay
      *  chain slot as provided by the relay chain state proof.
      */
-    matrixV1030: new StorageType(
+    matrixEnjinV1031: new StorageType(
         'AuraExt.RelaySlotInfo',
         'Optional',
         [],
-        sts.tuple(() => [matrixV1030.Slot, sts.number()])
-    ) as RelaySlotInfoMatrixV1030,
+        sts.tuple(() => [matrixEnjinV1031.Slot, sts.number()])
+    ) as RelaySlotInfoMatrixEnjinV1031,
 }
 
 /**
@@ -76,7 +76,7 @@ export const relaySlotInfo = {
  *  This is updated in [`FixedVelocityConsensusHook::on_state_proof`] with the current relay
  *  chain slot as provided by the relay chain state proof.
  */
-export interface RelaySlotInfoMatrixV1030 {
+export interface RelaySlotInfoMatrixEnjinV1031 {
     is(block: RuntimeCtx): boolean
-    get(block: Block): Promise<[matrixV1030.Slot, number] | undefined>
+    get(block: Block): Promise<[matrixEnjinV1031.Slot, number] | undefined>
 }
