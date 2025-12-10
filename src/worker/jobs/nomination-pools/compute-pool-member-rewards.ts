@@ -97,6 +97,8 @@ export async function computePoolMemberRewards(_job: Job, eraIndex: number): Pro
         throw new Error(`Era not found: ${eraIndex}`)
     }
 
+    await _job.log(`Computing pool member rewards for era ${eraIndex}`)
+
     const eraRewards = await ctx.store.find(EraReward, {
         where: { era: { index: eraIndex } },
         relations: {
@@ -115,8 +117,14 @@ export async function computePoolMemberRewards(_job: Job, eraIndex: number): Pro
             throw new Error(`Pool not found: ${eraReward.pool?.id}`)
         }
 
+        await _job.log(`Computing pool member rewards for pool ${pool.id}`)
+
         const memberBalances = await getMembersBalance(era.startBlock, parseInt(pool.id))
+
+        await _job.log(`Found ${Object.keys(memberBalances).length} member balances for pool ${pool.id}`)
+
         const { inserts, members } = await calculateMemberRewards(ctx, eraIndex, pool, memberBalances, eraReward)
+        await _job.log(`Computed ${inserts.length} inserts and ${members.length} members for pool ${pool.id}`)
 
         if (inserts.length > 0) {
             await ctx.store.save(inserts)
