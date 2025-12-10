@@ -6,12 +6,13 @@ import {
     EraReward,
     CommissionPayment,
 } from '~/model'
-import { dataHandlerContext } from '~/contexts'
+import { connectionManager, dataHandlerContext } from '~/contexts'
 import { Job } from 'bullmq'
 import { In } from 'typeorm'
 
 export async function computeEraRewards(_job: Job, eraIndex: number): Promise<void> {
     const ctx = await dataHandlerContext()
+    const em = await connectionManager()
 
     const era = await ctx.store.findOne(Era, {
         where: { index: eraIndex },
@@ -46,14 +47,12 @@ export async function computeEraRewards(_job: Job, eraIndex: number): Promise<vo
 
     await _job.log(`New era saved: ${newEra?.id}`)
 
-    const rewardEvents = await ctx.store.find(EventModel, {
-        where: {
-            name: 'NominationPoolsRewardPaid',
-            data: {
-                era: 903,
-            },
-        },
-    })
+    const rewardEvents = await em
+        .getRepository(EventModel)
+        .createQueryBuilder('event')
+        .where('event.name = :name', { name: 'NominationPoolsRewardPaid' })
+        .andWhere("(event.data->>'era')::int = :era", { era: eraIndex })
+        .getMany()
 
     await _job.log(`Found ${rewardEvents.length} reward events`)
 
