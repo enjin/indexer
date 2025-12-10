@@ -25,7 +25,7 @@ export function rewardPaid(event: EventItem): RewardPaid {
         })
 }
 
-export function rewardPaidEventModel(item: EventItem, data: RewardPaid, validatorStash: string): EventModel {
+export function rewardPaidEventModel(item: EventItem, data: RewardPaid, validatorStash: string, eraIndex: number): EventModel {
     return new EventModel({
         id: item.id,
         name: NominationPoolsRewardPaid.name,
@@ -33,7 +33,7 @@ export function rewardPaidEventModel(item: EventItem, data: RewardPaid, validato
         data: new NominationPoolsRewardPaid({
             pool: data.poolId.toString(),
             poolId: data.poolId.toString(),
-            era: data.era,
+            era: eraIndex,
             reward: data.reward,
             bonus: data.bonus ? data.bonus : undefined,
             commission: data.commission
