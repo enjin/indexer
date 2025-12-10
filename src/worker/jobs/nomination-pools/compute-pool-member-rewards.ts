@@ -34,9 +34,11 @@ async function calculateMemberRewards(
     eraIndex: number,
     pool: NominationPool,
     memberBalances: Record<string, bigint>,
-    reward: EraReward
+    reward: EraReward,
+    _job: Job
 ) {
     const memberIds = Object.keys(memberBalances).map((accountId) => `${pool.id}-${accountId}`)
+    await _job.log(`Found ${memberIds.length} member ids for pool ${pool.id}`)
     const members = await ctx.store.find(PoolMember, {
         relations: {
             account: true,
@@ -47,10 +49,11 @@ async function calculateMemberRewards(
     })
 
     const totalPoolPoints = (pool.balance.active * 10n ** 18n) / pool.rate
-
+    await _job.log(`Total pool points for pool ${pool.id}: ${totalPoolPoints}`)
     const inserts: PoolMemberRewards[] = []
 
     for (const member of members) {
+        await _job.log(`Computing pool member rewards for member ${member.id}`)
         // The previous reward is needed in case of duplicate rewards (there could be 2 events of RewardPaid from 2 validators or more)
         // therefore the previous reward need to be eliminated from the accumulated rewards
         let previousReward: bigint = 0n
@@ -80,7 +83,11 @@ async function calculateMemberRewards(
             accumulatedRewards: newAccumulated,
         }
 
+        await _job.log(`Computed pool member rewards for member ${member.id}: ${eraRewards} points, ${newAccumulated} accumulated rewards`)
+
         inserts.push(new PoolMemberRewards(pmrData))
+
+        await _job.log(`--------------------------------------- \n Pushed pool member rewards for member ${member.id} to inserts --------------------------------`)
     }
 
     return { inserts, members }
@@ -123,7 +130,7 @@ export async function computePoolMemberRewards(_job: Job, eraIndex: number): Pro
 
         await _job.log(`Found ${Object.keys(memberBalances).length} member balances for pool ${pool.id}`)
 
-        const { inserts, members } = await calculateMemberRewards(ctx, eraIndex, pool, memberBalances, eraReward)
+        const { inserts, members } = await calculateMemberRewards(ctx, eraIndex, pool, memberBalances, eraReward, _job)
         await _job.log(`Computed ${inserts.length} inserts and ${members.length} members for pool ${pool.id}`)
 
         if (inserts.length > 0) {
