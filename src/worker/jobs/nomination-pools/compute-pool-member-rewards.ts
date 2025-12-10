@@ -38,7 +38,7 @@ async function calculateMemberRewards(
     _job: Job
 ) {
     const memberIds = Object.keys(memberBalances).map((accountId) => `${pool.id}-${accountId}`)
-    await _job.log(`Found ${memberIds.length} member ids for pool ${pool.id}`)
+    await _job.log(`Found ${memberIds.join(', ')} member ids for pool ${pool.id}`)
     const members = await ctx.store.find(PoolMember, {
         relations: {
             account: true,
@@ -87,8 +87,8 @@ async function calculateMemberRewards(
 
         inserts.push(new PoolMemberRewards(pmrData))
 
-        await _job.log(`--------------------------------------- \n Pushed pool member rewards for member ${member.id} to inserts --------------------------------`)
     }
+    await _job.log(`--------------------------------------- \n Pushed pool member rewards for member ${member.id} to inserts --------------------------------`)
 
     return { inserts, members }
 }
