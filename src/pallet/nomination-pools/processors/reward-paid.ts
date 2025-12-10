@@ -81,7 +81,7 @@ async function getReward(
         } else {
             existReward.commission = newCommission
         }
-        existReward.reinvested = newCommission?.amount ?? 0n + eventData.reward
+        existReward.reinvested += eventData.reward + (newCommission?.amount ?? 0n)
         existReward.rate = pool.rate
 
         await ctx.store.save(existReward)
