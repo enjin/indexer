@@ -1,8 +1,10 @@
 import { sts, Block, Bytes, Option, Result, ConstantType, RuntimeCtx } from '../support'
 import * as enjinV100 from '../enjinV100'
+import * as v100 from '../v100'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV1030 from '../matrixV1030'
 import * as v1060 from '../v1060'
+import * as enjinV1062 from '../enjinV1062'
 
 export const blockWeights = {
     /**
@@ -45,6 +47,14 @@ export const version = {
      *  Get the chain's current version.
      */
     enjinV100: new ConstantType('System.Version', enjinV100.RuntimeVersion),
+    /**
+     *  Get the chain's in-code version.
+     */
+    enjinV1062: new ConstantType('System.Version', enjinV1062.RuntimeVersion),
+    /**
+     *  Get the chain's current version.
+     */
+    v100: new ConstantType('System.Version', v100.RuntimeVersion),
     /**
      *  Get the chain's in-code version.
      */

@@ -209,23 +209,23 @@ export const earlyBirdReimbursementAccountId = {
     enjinV1025: new ConstantType('NominationPools.EarlyBirdReimbursementAccountId', enjinV1025.AccountId32),
 }
 
-export const orphanedPoolAccountId = {
-    /**
-     *  The account that will receive the deposit and commission if the pool's token is burned
-     */
-    v101: new ConstantType('NominationPools.OrphanedPoolAccountId', v101.AccountId32),
-}
-
 export const payoutRewardsInterval = {
     /**
      *  Number of blocks the offchain worker waits in between paying out rewards
      */
-    v1060: new ConstantType('NominationPools.PayoutRewardsInterval', sts.number()),
+    enjinV1062: new ConstantType('NominationPools.PayoutRewardsInterval', sts.number()),
 }
 
 export const maxValidatorBonusAmounts = {
     /**
      *  The max number of bonus amounts for funding the validator bonus
      */
-    v1060: new ConstantType('NominationPools.MaxValidatorBonusAmounts', sts.number()),
+    enjinV1062: new ConstantType('NominationPools.MaxValidatorBonusAmounts', sts.number()),
+}
+
+export const orphanedPoolAccountId = {
+    /**
+     *  The account that will receive the deposit and commission if the pool's token is burned
+     */
+    v101: new ConstantType('NominationPools.OrphanedPoolAccountId', v101.AccountId32),
 }

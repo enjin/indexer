@@ -16,6 +16,7 @@ import * as v1023 from '../v1023'
 import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
 import * as v1060 from '../v1060'
+import * as enjinV1062 from '../enjinV1062'
 
 export const join = {
     name: 'NominationPools.join',
@@ -331,6 +332,33 @@ export const create = {
         })
     ),
     /**
+     * Create a new nomination pool.
+     *
+     * # Arguments
+     *
+     * * `token_id` - Token that that will control the pool. This token must be from the
+     *   [`Config::PoolCollectionId`] collection and it must be held by the caller.
+     * * `deposit` - The amount of funds to delegate to the pool. This also acts as a deposit
+     *   because the pool's creator cannot fully unbond funds until the pool is destroyed.
+     * * `capacity` - The maximum total balance allowed in the pool. This is measured in sENJ.
+     *   It must be below the pool's capacity. See `Capacity` section in crate level docs.
+     * * `name` - The name of the pool
+     * # Note
+     *
+     * In addition to `deposit`, the caller will transfer the existential deposit for the
+     * pool's accounts; so the caller needs at have at least `deposit + existential_deposit
+     * transferable.
+     */
+    enjinV1062: new CallType(
+        'NominationPools.create',
+        sts.struct({
+            tokenId: sts.bigint(),
+            deposit: sts.bigint(),
+            capacity: sts.bigint(),
+            name: enjinV1062.BoundedVec,
+        })
+    ),
+    /**
      * Create a new delegation pool.
      *
      * # Arguments
@@ -569,23 +597,21 @@ export const setConfigs = {
         })
     ),
     /**
-     * Update configurations for the nomination pools. The origin for this call must be
-     * Root.
+     * Update configurations for the nomination pools. Callable only by
+     * [`Config::ForceOrigin`].
      *
      * # Arguments
      *
      * * `min_join_bond` - Set [`MinJoinBond`].
      * * `min_create_bond` - Set [`MinCreateBond`].
-     * * `max_pools` - Set [`MaxPools`].
-     * * `max_members` - Set [`MaxPoolMembers`].
-     * * `max_members_per_pool` - Set [`MaxPoolMembersPerPool`].
+     * * `global_max_commission` - Set [`GlobalMaxCommission`].
      */
-    v100: new CallType(
+    enjinV1062: new CallType(
         'NominationPools.set_configs',
         sts.struct({
-            minJoinBond: v100.Type_358,
-            minCreateBond: v100.Type_358,
-            globalMaxCommission: v100.Type_359,
+            minJoinBond: enjinV1062.Type_332,
+            minCreateBond: enjinV1062.Type_332,
+            globalMaxCommission: enjinV1062.Type_333,
         })
     ),
     /**
@@ -712,6 +738,19 @@ export const mutate = {
         sts.struct({
             poolId: sts.number(),
             mutation: enjinV1023.PoolMutation,
+        })
+    ),
+    /**
+     * Mutate the nomination pool data.
+     *
+     * The dispatch origin of this call must be signed by the account holding the pool token
+     * of the given pool_id.
+     */
+    enjinV1062: new CallType(
+        'NominationPools.mutate',
+        sts.struct({
+            poolId: sts.number(),
+            mutation: enjinV1062.PoolMutation,
         })
     ),
     /**
@@ -1130,6 +1169,73 @@ export const removeEarlyBirdShares = {
     ),
 }
 
+export const removeEmptyUnbondingMembers = {
+    name: 'NominationPools.remove_empty_unbonding_members',
+    /**
+     * Removes `limit` items from `UnbondingMembers` that are empty
+     */
+    enjinV1062: new CallType(
+        'NominationPools.remove_empty_unbonding_members',
+        sts.struct({
+            limit: sts.number(),
+        })
+    ),
+}
+
+export const payoutRewardsUnsigned = {
+    name: 'NominationPools.payout_rewards_unsigned',
+    /**
+     * Unsigned transaction to pay rewards to a validator and distribute to pools
+     */
+    enjinV1062: new CallType(
+        'NominationPools.payout_rewards_unsigned',
+        sts.struct({
+            payload: enjinV1062.PayoutRewardsPayload,
+            signature: enjinV1062.MultiSignature,
+        })
+    ),
+}
+
+export const payoutValidatorBonus = {
+    name: 'NominationPools.payout_validator_bonus',
+    /**
+     * Pay out the validator bonus according to the config stored at [`ValidatorBonusInfo`]. It
+     * can only be called at least `cycle_duration` after `last_paid_era`. To receive the
+     * payment, the validators must have a `KnownGood` or `Reasonable` judgement, they must
+     * meet the `performance_threshold`, and they must have participated in
+     * `minimum_good_eras`.
+     *
+     * The payment that is sent is set in `bonus_amounts`, and the actual amount sent varies
+     * according to how many sub-identities the validator has.
+     */
+    enjinV1062: new CallType(
+        'NominationPools.payout_validator_bonus',
+        sts.struct({
+            era: sts.number(),
+            validatorCount: sts.number(),
+        })
+    ),
+}
+
+export const setValidatorBonusConfig = {
+    name: 'NominationPools.set_validator_bonus_config',
+    /**
+     * Sets config values for validator bonuses stored in [`ValidatorBonusInfo`]. The
+     * `last_paid_era` will be set to `0` if `reset_last_paid_era` is true.
+     */
+    enjinV1062: new CallType(
+        'NominationPools.set_validator_bonus_config',
+        sts.struct({
+            cycleDuration: sts.option(() => sts.number()),
+            performanceThreshold: sts.option(() => enjinV1062.Perbill),
+            minimumGoodEras: sts.option(() => sts.number()),
+            payoutAccount: sts.option(() => enjinV1062.AccountId32),
+            bonusAmounts: sts.option(() => sts.array(() => sts.bigint())),
+            resetLastPaidEra: sts.boolean(),
+        })
+    ),
+}
+
 export const updateRoles = {
     name: 'NominationPools.update_roles',
     /**
@@ -1230,73 +1336,6 @@ export const mutatePool = {
         sts.struct({
             poolId: sts.number(),
             mutation: v101.PoolMutation,
-        })
-    ),
-}
-
-export const removeEmptyUnbondingMembers = {
-    name: 'NominationPools.remove_empty_unbonding_members',
-    /**
-     * Removes `limit` items from `UnbondingMembers` that are empty
-     */
-    v1060: new CallType(
-        'NominationPools.remove_empty_unbonding_members',
-        sts.struct({
-            limit: sts.number(),
-        })
-    ),
-}
-
-export const payoutRewardsUnsigned = {
-    name: 'NominationPools.payout_rewards_unsigned',
-    /**
-     * Unsigned transaction to pay rewards to a validator and distribute to pools
-     */
-    v1060: new CallType(
-        'NominationPools.payout_rewards_unsigned',
-        sts.struct({
-            payload: v1060.PayoutRewardsPayload,
-            signature: v1060.MultiSignature,
-        })
-    ),
-}
-
-export const payoutValidatorBonus = {
-    name: 'NominationPools.payout_validator_bonus',
-    /**
-     * Pay out the validator bonus according to the config stored at [`ValidatorBonusInfo`]. It
-     * can only be called at least `cycle_duration` after `last_paid_era`. To receive the
-     * payment, the validators must have a `KnownGood` or `Reasonable` judgement, they must
-     * meet the `performance_threshold`, and they must have participated in
-     * `minimum_good_eras`.
-     *
-     * The payment that is sent is set in `bonus_amounts`, and the actual amount sent varies
-     * according to how many sub-identities the validator has.
-     */
-    v1060: new CallType(
-        'NominationPools.payout_validator_bonus',
-        sts.struct({
-            era: sts.number(),
-            validatorCount: sts.number(),
-        })
-    ),
-}
-
-export const setValidatorBonusConfig = {
-    name: 'NominationPools.set_validator_bonus_config',
-    /**
-     * Sets config values for validator bonuses stored in [`ValidatorBonusInfo`]. The
-     * `last_paid_era` will be set to `0` if `reset_last_paid_era` is true.
-     */
-    v1060: new CallType(
-        'NominationPools.set_validator_bonus_config',
-        sts.struct({
-            cycleDuration: sts.option(() => sts.number()),
-            performanceThreshold: sts.option(() => v1060.Perbill),
-            minimumGoodEras: sts.option(() => sts.number()),
-            payoutAccount: sts.option(() => v1060.AccountId32),
-            bonusAmounts: sts.option(() => sts.array(() => sts.bigint())),
-            resetLastPaidEra: sts.boolean(),
         })
     ),
 }

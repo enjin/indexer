@@ -15,6 +15,7 @@ import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
 import * as v1032 from '../v1032'
 import * as v1060 from '../v1060'
+import * as enjinV1062 from '../enjinV1062'
 
 export const tanks = {
     /**
@@ -116,6 +117,15 @@ export const tanks = {
         [enjinV1032.AccountId32],
         enjinV1032.FuelTank
     ) as TanksEnjinV1032,
+    /**
+     *  Mapping of Fuel Tanks accounts to their data
+     */
+    enjinV1062: new StorageType(
+        'FuelTanks.Tanks',
+        'Optional',
+        [enjinV1062.AccountId32],
+        enjinV1062.FuelTank
+    ) as TanksEnjinV1062,
     /**
      *  Mapping of Fuel Tanks accounts to their data
      */
@@ -450,6 +460,33 @@ export interface TanksEnjinV1032 {
 /**
  *  Mapping of Fuel Tanks accounts to their data
  */
+export interface TanksEnjinV1062 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: enjinV1062.AccountId32): Promise<enjinV1062.FuelTank | undefined>
+    getMany(block: Block, keys: enjinV1062.AccountId32[]): Promise<(enjinV1062.FuelTank | undefined)[]>
+    getKeys(block: Block): Promise<enjinV1062.AccountId32[]>
+    getKeys(block: Block, key: enjinV1062.AccountId32): Promise<enjinV1062.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<enjinV1062.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block, key: enjinV1062.AccountId32): AsyncIterable<enjinV1062.AccountId32[]>
+    getPairs(block: Block): Promise<[k: enjinV1062.AccountId32, v: enjinV1062.FuelTank | undefined][]>
+    getPairs(
+        block: Block,
+        key: enjinV1062.AccountId32
+    ): Promise<[k: enjinV1062.AccountId32, v: enjinV1062.FuelTank | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: enjinV1062.AccountId32, v: enjinV1062.FuelTank | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: enjinV1062.AccountId32
+    ): AsyncIterable<[k: enjinV1062.AccountId32, v: enjinV1062.FuelTank | undefined][]>
+}
+
+/**
+ *  Mapping of Fuel Tanks accounts to their data
+ */
 export interface TanksV102 {
     is(block: RuntimeCtx): boolean
     get(block: Block, key: v102.AccountId32): Promise<v102.FuelTank | undefined>
@@ -664,6 +701,15 @@ export const accounts = {
         [enjinV1032.AccountId32, enjinV1032.AccountId32],
         enjinV1032.UserAccount
     ) as AccountsEnjinV1032,
+    /**
+     *  Mapping of Fuel Tanks and their user Accounts to account data
+     */
+    enjinV1062: new StorageType(
+        'FuelTanks.Accounts',
+        'Optional',
+        [enjinV1062.AccountId32, enjinV1062.AccountId32],
+        enjinV1062.UserAccount
+    ) as AccountsEnjinV1062,
     /**
      *  Mapping of Fuel Tanks and their user Accounts to account data
      */
@@ -1445,6 +1491,68 @@ export interface AccountsEnjinV1032 {
         key1: enjinV1032.AccountId32,
         key2: enjinV1032.AccountId32
     ): AsyncIterable<[k: [enjinV1032.AccountId32, enjinV1032.AccountId32], v: enjinV1032.UserAccount | undefined][]>
+}
+
+/**
+ *  Mapping of Fuel Tanks and their user Accounts to account data
+ */
+export interface AccountsEnjinV1062 {
+    is(block: RuntimeCtx): boolean
+    get(
+        block: Block,
+        key1: enjinV1062.AccountId32,
+        key2: enjinV1062.AccountId32
+    ): Promise<enjinV1062.UserAccount | undefined>
+    getMany(
+        block: Block,
+        keys: [enjinV1062.AccountId32, enjinV1062.AccountId32][]
+    ): Promise<(enjinV1062.UserAccount | undefined)[]>
+    getKeys(block: Block): Promise<[enjinV1062.AccountId32, enjinV1062.AccountId32][]>
+    getKeys(block: Block, key1: enjinV1062.AccountId32): Promise<[enjinV1062.AccountId32, enjinV1062.AccountId32][]>
+    getKeys(
+        block: Block,
+        key1: enjinV1062.AccountId32,
+        key2: enjinV1062.AccountId32
+    ): Promise<[enjinV1062.AccountId32, enjinV1062.AccountId32][]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[enjinV1062.AccountId32, enjinV1062.AccountId32][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: enjinV1062.AccountId32
+    ): AsyncIterable<[enjinV1062.AccountId32, enjinV1062.AccountId32][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: enjinV1062.AccountId32,
+        key2: enjinV1062.AccountId32
+    ): AsyncIterable<[enjinV1062.AccountId32, enjinV1062.AccountId32][]>
+    getPairs(
+        block: Block
+    ): Promise<[k: [enjinV1062.AccountId32, enjinV1062.AccountId32], v: enjinV1062.UserAccount | undefined][]>
+    getPairs(
+        block: Block,
+        key1: enjinV1062.AccountId32
+    ): Promise<[k: [enjinV1062.AccountId32, enjinV1062.AccountId32], v: enjinV1062.UserAccount | undefined][]>
+    getPairs(
+        block: Block,
+        key1: enjinV1062.AccountId32,
+        key2: enjinV1062.AccountId32
+    ): Promise<[k: [enjinV1062.AccountId32, enjinV1062.AccountId32], v: enjinV1062.UserAccount | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: [enjinV1062.AccountId32, enjinV1062.AccountId32], v: enjinV1062.UserAccount | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: enjinV1062.AccountId32
+    ): AsyncIterable<[k: [enjinV1062.AccountId32, enjinV1062.AccountId32], v: enjinV1062.UserAccount | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: enjinV1062.AccountId32,
+        key2: enjinV1062.AccountId32
+    ): AsyncIterable<[k: [enjinV1062.AccountId32, enjinV1062.AccountId32], v: enjinV1062.UserAccount | undefined][]>
 }
 
 /**

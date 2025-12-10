@@ -1,7 +1,9 @@
 import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
 import * as enjinV100 from '../enjinV100'
+import * as v100 from '../v100'
 import * as enjinV101 from '../enjinV101'
 import * as v1060 from '../v1060'
+import * as enjinV1062 from '../enjinV1062'
 
 export const candidateBacked = {
     name: 'ParaInclusion.CandidateBacked',
@@ -11,6 +13,20 @@ export const candidateBacked = {
     enjinV100: new EventType(
         'ParaInclusion.CandidateBacked',
         sts.tuple([enjinV100.V4CandidateReceipt, enjinV100.HeadData, enjinV100.V4CoreIndex, enjinV100.V4GroupIndex])
+    ),
+    /**
+     * A candidate was backed. `[candidate, head_data]`
+     */
+    enjinV1062: new EventType(
+        'ParaInclusion.CandidateBacked',
+        sts.tuple([enjinV1062.CandidateReceiptV2, enjinV1062.HeadData, enjinV1062.V8CoreIndex, enjinV1062.V8GroupIndex])
+    ),
+    /**
+     * A candidate was backed. `[candidate, head_data]`
+     */
+    v100: new EventType(
+        'ParaInclusion.CandidateBacked',
+        sts.tuple([v100.V2CandidateReceipt, v100.HeadData, v100.V2CoreIndex, v100.V2GroupIndex])
     ),
     /**
      * A candidate was backed. `[candidate, head_data]`
@@ -33,6 +49,20 @@ export const candidateIncluded = {
     /**
      * A candidate was included. `[candidate, head_data]`
      */
+    enjinV1062: new EventType(
+        'ParaInclusion.CandidateIncluded',
+        sts.tuple([enjinV1062.CandidateReceiptV2, enjinV1062.HeadData, enjinV1062.V8CoreIndex, enjinV1062.V8GroupIndex])
+    ),
+    /**
+     * A candidate was included. `[candidate, head_data]`
+     */
+    v100: new EventType(
+        'ParaInclusion.CandidateIncluded',
+        sts.tuple([v100.V2CandidateReceipt, v100.HeadData, v100.V2CoreIndex, v100.V2GroupIndex])
+    ),
+    /**
+     * A candidate was included. `[candidate, head_data]`
+     */
     v1060: new EventType(
         'ParaInclusion.CandidateIncluded',
         sts.tuple([v1060.CandidateReceiptV2, v1060.HeadData, v1060.V8CoreIndex, v1060.V8GroupIndex])
@@ -47,6 +77,20 @@ export const candidateTimedOut = {
     enjinV100: new EventType(
         'ParaInclusion.CandidateTimedOut',
         sts.tuple([enjinV100.V4CandidateReceipt, enjinV100.HeadData, enjinV100.V4CoreIndex])
+    ),
+    /**
+     * A candidate timed out. `[candidate, head_data]`
+     */
+    enjinV1062: new EventType(
+        'ParaInclusion.CandidateTimedOut',
+        sts.tuple([enjinV1062.CandidateReceiptV2, enjinV1062.HeadData, enjinV1062.V8CoreIndex])
+    ),
+    /**
+     * A candidate timed out. `[candidate, head_data]`
+     */
+    v100: new EventType(
+        'ParaInclusion.CandidateTimedOut',
+        sts.tuple([v100.V2CandidateReceipt, v100.HeadData, v100.V2CoreIndex])
     ),
     /**
      * A candidate timed out. `[candidate, head_data]`

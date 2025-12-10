@@ -1,7 +1,7 @@
 import { sts, Block, Bytes, Option, Result, CallType, RuntimeCtx } from '../support'
 import * as enjinV100 from '../enjinV100'
 import * as enjinV1032 from '../enjinV1032'
-import * as v1060 from '../v1060'
+import * as enjinV1062 from '../enjinV1062'
 
 export const forceSetCurrentCode = {
     name: 'Paras.force_set_current_code',
@@ -154,10 +154,10 @@ export const removeUpgradeCooldown = {
      * The cost for removing the cooldown earlier depends on the time left for the cooldown
      * multiplied by [`Config::CooldownRemovalMultiplier`]. The paid tokens are burned.
      */
-    v1060: new CallType(
+    enjinV1062: new CallType(
         'Paras.remove_upgrade_cooldown',
         sts.struct({
-            para: v1060.Id,
+            para: enjinV1062.Id,
         })
     ),
 }
@@ -177,11 +177,11 @@ export const authorizeForceSetCurrentCodeHash = {
      *
      * Authorizations are stored in an **overwriting manner**.
      */
-    v1060: new CallType(
+    enjinV1062: new CallType(
         'Paras.authorize_force_set_current_code_hash',
         sts.struct({
-            para: v1060.Id,
-            newCodeHash: v1060.ValidationCodeHash,
+            para: enjinV1062.Id,
+            newCodeHash: enjinV1062.ValidationCodeHash,
             validPeriod: sts.number(),
         })
     ),
@@ -193,11 +193,11 @@ export const applyAuthorizedForceSetCurrentCode = {
      * Applies the already authorized current code for the parachain,
      * triggering the same functionality as `force_set_current_code`.
      */
-    v1060: new CallType(
+    enjinV1062: new CallType(
         'Paras.apply_authorized_force_set_current_code',
         sts.struct({
-            para: v1060.Id,
-            newCode: v1060.ValidationCode,
+            para: enjinV1062.Id,
+            newCode: enjinV1062.ValidationCode,
         })
     ),
 }

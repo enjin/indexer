@@ -16,6 +16,7 @@ import * as enjinV1032 from '../enjinV1032'
 import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 import * as v1060 from '../v1060'
+import * as enjinV1062 from '../enjinV1062'
 
 export const info = {
     /**
@@ -164,6 +165,15 @@ export const listings = {
         [enjinV1050.H256],
         enjinV1050.Listing
     ) as ListingsEnjinV1050,
+    /**
+     *  Listings by ID (real storage)
+     */
+    enjinV1062: new StorageType(
+        'Marketplace.Listings',
+        'Optional',
+        [enjinV1062.H256],
+        enjinV1062.Listing
+    ) as ListingsEnjinV1062,
     /**
      *  Listings by ID
      */
@@ -457,6 +467,30 @@ export interface ListingsEnjinV1050 {
         block: Block,
         key: enjinV1050.H256
     ): AsyncIterable<[k: enjinV1050.H256, v: enjinV1050.Listing | undefined][]>
+}
+
+/**
+ *  Listings by ID (real storage)
+ */
+export interface ListingsEnjinV1062 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: enjinV1062.H256): Promise<enjinV1062.Listing | undefined>
+    getMany(block: Block, keys: enjinV1062.H256[]): Promise<(enjinV1062.Listing | undefined)[]>
+    getKeys(block: Block): Promise<enjinV1062.H256[]>
+    getKeys(block: Block, key: enjinV1062.H256): Promise<enjinV1062.H256[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<enjinV1062.H256[]>
+    getKeysPaged(pageSize: number, block: Block, key: enjinV1062.H256): AsyncIterable<enjinV1062.H256[]>
+    getPairs(block: Block): Promise<[k: enjinV1062.H256, v: enjinV1062.Listing | undefined][]>
+    getPairs(block: Block, key: enjinV1062.H256): Promise<[k: enjinV1062.H256, v: enjinV1062.Listing | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: enjinV1062.H256, v: enjinV1062.Listing | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: enjinV1062.H256
+    ): AsyncIterable<[k: enjinV1062.H256, v: enjinV1062.Listing | undefined][]>
 }
 
 /**

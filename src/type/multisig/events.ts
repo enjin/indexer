@@ -1,11 +1,13 @@
 import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
 import * as enjinV101 from '../enjinV101'
+import * as v105 from '../v105'
 import * as matrixV500 from '../matrixV500'
 import * as matrixV602 from '../matrixV602'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV604 from '../matrixV604'
 import * as matrixV1030 from '../matrixV1030'
 import * as v1060 from '../v1060'
+import * as enjinV1062 from '../enjinV1062'
 
 export const newMultisig = {
     name: 'Multisig.NewMultisig',
@@ -133,6 +135,38 @@ export const multisigExecuted = {
             result: sts.result(
                 () => sts.unit(),
                 () => enjinV101.DispatchError
+            ),
+        })
+    ),
+    /**
+     * A multisig operation has been executed.
+     */
+    enjinV1062: new EventType(
+        'Multisig.MultisigExecuted',
+        sts.struct({
+            approving: enjinV1062.AccountId32,
+            timepoint: enjinV1062.Timepoint,
+            multisig: enjinV1062.AccountId32,
+            callHash: sts.bytes(),
+            result: sts.result(
+                () => sts.unit(),
+                () => enjinV1062.DispatchError
+            ),
+        })
+    ),
+    /**
+     * A multisig operation has been executed.
+     */
+    v105: new EventType(
+        'Multisig.MultisigExecuted',
+        sts.struct({
+            approving: v105.AccountId32,
+            timepoint: v105.Timepoint,
+            multisig: v105.AccountId32,
+            callHash: sts.bytes(),
+            result: sts.result(
+                () => sts.unit(),
+                () => v105.DispatchError
             ),
         })
     ),

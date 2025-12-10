@@ -1,58 +1,576 @@
 import { sts, Result, Option, Bytes, BitSequence } from './support'
 
-export type Type_1093 =
-    | Type_1093_Approved
-    | Type_1093_Cancelled
-    | Type_1093_Killed
-    | Type_1093_Ongoing
-    | Type_1093_Rejected
-    | Type_1093_TimedOut
+export const V5Junctions: sts.Type<V5Junctions> = sts.closedEnum(() => {
+    return {
+        Here: sts.unit(),
+        X1: sts.array(() => V5Junction),
+        X2: sts.array(() => V5Junction),
+        X3: sts.array(() => V5Junction),
+        X4: sts.array(() => V5Junction),
+        X5: sts.array(() => V5Junction),
+        X6: sts.array(() => V5Junction),
+        X7: sts.array(() => V5Junction),
+        X8: sts.array(() => V5Junction),
+    }
+})
 
-export interface Type_1093_Approved {
+export const V5Junction: sts.Type<V5Junction> = sts.closedEnum(() => {
+    return {
+        AccountId32: sts.enumStruct({
+            network: sts.option(() => V5NetworkId),
+            id: sts.bytes(),
+        }),
+        AccountIndex64: sts.enumStruct({
+            network: sts.option(() => V5NetworkId),
+            index: sts.bigint(),
+        }),
+        AccountKey20: sts.enumStruct({
+            network: sts.option(() => V5NetworkId),
+            key: sts.bytes(),
+        }),
+        GeneralIndex: sts.bigint(),
+        GeneralKey: sts.enumStruct({
+            length: sts.number(),
+            data: sts.bytes(),
+        }),
+        GlobalConsensus: V5NetworkId,
+        OnlyChild: sts.unit(),
+        PalletInstance: sts.number(),
+        Parachain: sts.number(),
+        Plurality: sts.enumStruct({
+            id: V3BodyId,
+            part: V3BodyPart,
+        }),
+    }
+})
+
+export const V3BodyPart: sts.Type<V3BodyPart> = sts.closedEnum(() => {
+    return {
+        AtLeastProportion: sts.enumStruct({
+            nom: sts.number(),
+            denom: sts.number(),
+        }),
+        Fraction: sts.enumStruct({
+            nom: sts.number(),
+            denom: sts.number(),
+        }),
+        Members: sts.enumStruct({
+            count: sts.number(),
+        }),
+        MoreThanProportion: sts.enumStruct({
+            nom: sts.number(),
+            denom: sts.number(),
+        }),
+        Voice: sts.unit(),
+    }
+})
+
+export type V3BodyPart =
+    | V3BodyPart_AtLeastProportion
+    | V3BodyPart_Fraction
+    | V3BodyPart_Members
+    | V3BodyPart_MoreThanProportion
+    | V3BodyPart_Voice
+
+export interface V3BodyPart_AtLeastProportion {
+    __kind: 'AtLeastProportion'
+    nom: number
+    denom: number
+}
+
+export interface V3BodyPart_Fraction {
+    __kind: 'Fraction'
+    nom: number
+    denom: number
+}
+
+export interface V3BodyPart_Members {
+    __kind: 'Members'
+    count: number
+}
+
+export interface V3BodyPart_MoreThanProportion {
+    __kind: 'MoreThanProportion'
+    nom: number
+    denom: number
+}
+
+export interface V3BodyPart_Voice {
+    __kind: 'Voice'
+}
+
+export const V3BodyId: sts.Type<V3BodyId> = sts.closedEnum(() => {
+    return {
+        Administration: sts.unit(),
+        Defense: sts.unit(),
+        Executive: sts.unit(),
+        Index: sts.number(),
+        Judicial: sts.unit(),
+        Legislative: sts.unit(),
+        Moniker: sts.bytes(),
+        Technical: sts.unit(),
+        Treasury: sts.unit(),
+        Unit: sts.unit(),
+    }
+})
+
+export type V3BodyId =
+    | V3BodyId_Administration
+    | V3BodyId_Defense
+    | V3BodyId_Executive
+    | V3BodyId_Index
+    | V3BodyId_Judicial
+    | V3BodyId_Legislative
+    | V3BodyId_Moniker
+    | V3BodyId_Technical
+    | V3BodyId_Treasury
+    | V3BodyId_Unit
+
+export interface V3BodyId_Administration {
+    __kind: 'Administration'
+}
+
+export interface V3BodyId_Defense {
+    __kind: 'Defense'
+}
+
+export interface V3BodyId_Executive {
+    __kind: 'Executive'
+}
+
+export interface V3BodyId_Index {
+    __kind: 'Index'
+    value: number
+}
+
+export interface V3BodyId_Judicial {
+    __kind: 'Judicial'
+}
+
+export interface V3BodyId_Legislative {
+    __kind: 'Legislative'
+}
+
+export interface V3BodyId_Moniker {
+    __kind: 'Moniker'
+    value: Bytes
+}
+
+export interface V3BodyId_Technical {
+    __kind: 'Technical'
+}
+
+export interface V3BodyId_Treasury {
+    __kind: 'Treasury'
+}
+
+export interface V3BodyId_Unit {
+    __kind: 'Unit'
+}
+
+export const V5NetworkId: sts.Type<V5NetworkId> = sts.closedEnum(() => {
+    return {
+        BitcoinCash: sts.unit(),
+        BitcoinCore: sts.unit(),
+        ByFork: sts.enumStruct({
+            blockNumber: sts.bigint(),
+            blockHash: sts.bytes(),
+        }),
+        ByGenesis: sts.bytes(),
+        Ethereum: sts.enumStruct({
+            chainId: sts.bigint(),
+        }),
+        Kusama: sts.unit(),
+        Polkadot: sts.unit(),
+        PolkadotBulletin: sts.unit(),
+    }
+})
+
+export type V5NetworkId =
+    | V5NetworkId_BitcoinCash
+    | V5NetworkId_BitcoinCore
+    | V5NetworkId_ByFork
+    | V5NetworkId_ByGenesis
+    | V5NetworkId_Ethereum
+    | V5NetworkId_Kusama
+    | V5NetworkId_Polkadot
+    | V5NetworkId_PolkadotBulletin
+
+export interface V5NetworkId_BitcoinCash {
+    __kind: 'BitcoinCash'
+}
+
+export interface V5NetworkId_BitcoinCore {
+    __kind: 'BitcoinCore'
+}
+
+export interface V5NetworkId_ByFork {
+    __kind: 'ByFork'
+    blockNumber: bigint
+    blockHash: Bytes
+}
+
+export interface V5NetworkId_ByGenesis {
+    __kind: 'ByGenesis'
+    value: Bytes
+}
+
+export interface V5NetworkId_Ethereum {
+    __kind: 'Ethereum'
+    chainId: bigint
+}
+
+export interface V5NetworkId_Kusama {
+    __kind: 'Kusama'
+}
+
+export interface V5NetworkId_Polkadot {
+    __kind: 'Polkadot'
+}
+
+export interface V5NetworkId_PolkadotBulletin {
+    __kind: 'PolkadotBulletin'
+}
+
+export type V5Junction =
+    | V5Junction_AccountId32
+    | V5Junction_AccountIndex64
+    | V5Junction_AccountKey20
+    | V5Junction_GeneralIndex
+    | V5Junction_GeneralKey
+    | V5Junction_GlobalConsensus
+    | V5Junction_OnlyChild
+    | V5Junction_PalletInstance
+    | V5Junction_Parachain
+    | V5Junction_Plurality
+
+export interface V5Junction_AccountId32 {
+    __kind: 'AccountId32'
+    network?: V5NetworkId | undefined
+    id: Bytes
+}
+
+export interface V5Junction_AccountIndex64 {
+    __kind: 'AccountIndex64'
+    network?: V5NetworkId | undefined
+    index: bigint
+}
+
+export interface V5Junction_AccountKey20 {
+    __kind: 'AccountKey20'
+    network?: V5NetworkId | undefined
+    key: Bytes
+}
+
+export interface V5Junction_GeneralIndex {
+    __kind: 'GeneralIndex'
+    value: bigint
+}
+
+export interface V5Junction_GeneralKey {
+    __kind: 'GeneralKey'
+    length: number
+    data: Bytes
+}
+
+export interface V5Junction_GlobalConsensus {
+    __kind: 'GlobalConsensus'
+    value: V5NetworkId
+}
+
+export interface V5Junction_OnlyChild {
+    __kind: 'OnlyChild'
+}
+
+export interface V5Junction_PalletInstance {
+    __kind: 'PalletInstance'
+    value: number
+}
+
+export interface V5Junction_Parachain {
+    __kind: 'Parachain'
+    value: number
+}
+
+export interface V5Junction_Plurality {
+    __kind: 'Plurality'
+    id: V3BodyId
+    part: V3BodyPart
+}
+
+export type V5Junctions =
+    | V5Junctions_Here
+    | V5Junctions_X1
+    | V5Junctions_X2
+    | V5Junctions_X3
+    | V5Junctions_X4
+    | V5Junctions_X5
+    | V5Junctions_X6
+    | V5Junctions_X7
+    | V5Junctions_X8
+
+export interface V5Junctions_Here {
+    __kind: 'Here'
+}
+
+export interface V5Junctions_X1 {
+    __kind: 'X1'
+    value: V5Junction[]
+}
+
+export interface V5Junctions_X2 {
+    __kind: 'X2'
+    value: V5Junction[]
+}
+
+export interface V5Junctions_X3 {
+    __kind: 'X3'
+    value: V5Junction[]
+}
+
+export interface V5Junctions_X4 {
+    __kind: 'X4'
+    value: V5Junction[]
+}
+
+export interface V5Junctions_X5 {
+    __kind: 'X5'
+    value: V5Junction[]
+}
+
+export interface V5Junctions_X6 {
+    __kind: 'X6'
+    value: V5Junction[]
+}
+
+export interface V5Junctions_X7 {
+    __kind: 'X7'
+    value: V5Junction[]
+}
+
+export interface V5Junctions_X8 {
+    __kind: 'X8'
+    value: V5Junction[]
+}
+
+export const PalletId = sts.bytes()
+
+export const FixedU128 = sts.bigint()
+
+export const RuntimeVersion: sts.Type<RuntimeVersion> = sts.struct(() => {
+    return {
+        specName: Cow,
+        implName: Cow,
+        authoringVersion: sts.number(),
+        specVersion: sts.number(),
+        implVersion: sts.number(),
+        apis: sts.array(() => sts.tuple(() => [sts.bytes(), sts.number()])),
+        transactionVersion: sts.number(),
+        systemVersion: sts.number(),
+    }
+})
+
+export const Cow = sts.string()
+
+export interface RuntimeVersion {
+    specName: Cow
+    implName: Cow
+    authoringVersion: number
+    specVersion: number
+    implVersion: number
+    apis: [Bytes, number][]
+    transactionVersion: number
+    systemVersion: number
+}
+
+export type Cow = string
+
+export interface CoreDescriptor {
+    queue?: QueueDescriptor | undefined
+    currentWork?: WorkState | undefined
+}
+
+export interface WorkState {
+    assignments: [CoreAssignment, AssignmentState][]
+    endHint?: number | undefined
+    pos: number
+    step: PartsOf57600
+}
+
+export type PartsOf57600 = number
+
+export interface AssignmentState {
+    ratio: PartsOf57600
+    remaining: PartsOf57600
+}
+
+export type CoreAssignment = CoreAssignment_Idle | CoreAssignment_Pool | CoreAssignment_Task
+
+export interface CoreAssignment_Idle {
+    __kind: 'Idle'
+}
+
+export interface CoreAssignment_Pool {
+    __kind: 'Pool'
+}
+
+export interface CoreAssignment_Task {
+    __kind: 'Task'
+    value: number
+}
+
+export interface QueueDescriptor {
+    first: number
+    last: number
+}
+
+export const CoreDescriptor: sts.Type<CoreDescriptor> = sts.struct(() => {
+    return {
+        queue: sts.option(() => QueueDescriptor),
+        currentWork: sts.option(() => WorkState),
+    }
+})
+
+export const WorkState: sts.Type<WorkState> = sts.struct(() => {
+    return {
+        assignments: sts.array(() => sts.tuple(() => [CoreAssignment, AssignmentState])),
+        endHint: sts.option(() => sts.number()),
+        pos: sts.number(),
+        step: PartsOf57600,
+    }
+})
+
+export const AssignmentState: sts.Type<AssignmentState> = sts.struct(() => {
+    return {
+        ratio: PartsOf57600,
+        remaining: PartsOf57600,
+    }
+})
+
+export const QueueDescriptor: sts.Type<QueueDescriptor> = sts.struct(() => {
+    return {
+        first: sts.number(),
+        last: sts.number(),
+    }
+})
+
+export interface Schedule {
+    assignments: [CoreAssignment, PartsOf57600][]
+    endHint?: number | undefined
+    nextSchedule?: number | undefined
+}
+
+export const Schedule: sts.Type<Schedule> = sts.struct(() => {
+    return {
+        assignments: sts.array(() => sts.tuple(() => [CoreAssignment, PartsOf57600])),
+        endHint: sts.option(() => sts.number()),
+        nextSchedule: sts.option(() => sts.number()),
+    }
+})
+
+export interface EnqueuedOrder {
+    paraId: Id
+    idx: QueueIndex
+}
+
+export type QueueIndex = number
+
+export const EnqueuedOrder: sts.Type<EnqueuedOrder> = sts.struct(() => {
+    return {
+        paraId: Id,
+        idx: QueueIndex,
+    }
+})
+
+export const QueueIndex = sts.number()
+
+export interface QueueStatusType {
+    traffic: FixedU128
+    nextIndex: QueueIndex
+    smallestIndex: QueueIndex
+    freedIndices: ReverseQueueIndex[]
+}
+
+export type ReverseQueueIndex = number
+
+export type FixedU128 = bigint
+
+export const QueueStatusType: sts.Type<QueueStatusType> = sts.struct(() => {
+    return {
+        traffic: FixedU128,
+        nextIndex: QueueIndex,
+        smallestIndex: QueueIndex,
+        freedIndices: sts.array(() => ReverseQueueIndex),
+    }
+})
+
+export const ReverseQueueIndex = sts.number()
+
+export interface CoreAffinityCount {
+    coreIndex: V8CoreIndex
+    count: number
+}
+
+export const CoreAffinityCount: sts.Type<CoreAffinityCount> = sts.struct(() => {
+    return {
+        coreIndex: V8CoreIndex,
+        count: sts.number(),
+    }
+})
+
+export type Type_1114 =
+    | Type_1114_Approved
+    | Type_1114_Cancelled
+    | Type_1114_Killed
+    | Type_1114_Ongoing
+    | Type_1114_Rejected
+    | Type_1114_TimedOut
+
+export interface Type_1114_Approved {
     __kind: 'Approved'
-    value: [number, Type_1073 | undefined, Type_1073 | undefined]
+    value: [number, Type_1094 | undefined, Type_1094 | undefined]
 }
 
-export interface Type_1093_Cancelled {
+export interface Type_1114_Cancelled {
     __kind: 'Cancelled'
-    value: [number, Type_1073 | undefined, Type_1073 | undefined]
+    value: [number, Type_1094 | undefined, Type_1094 | undefined]
 }
 
-export interface Type_1093_Killed {
+export interface Type_1114_Killed {
     __kind: 'Killed'
     value: number
 }
 
-export interface Type_1093_Ongoing {
+export interface Type_1114_Ongoing {
     __kind: 'Ongoing'
-    value: Type_1094
+    value: Type_1115
 }
 
-export interface Type_1093_Rejected {
+export interface Type_1114_Rejected {
     __kind: 'Rejected'
-    value: [number, Type_1073 | undefined, Type_1073 | undefined]
+    value: [number, Type_1094 | undefined, Type_1094 | undefined]
 }
 
-export interface Type_1093_TimedOut {
+export interface Type_1114_TimedOut {
     __kind: 'TimedOut'
-    value: [number, Type_1073 | undefined, Type_1073 | undefined]
+    value: [number, Type_1094 | undefined, Type_1094 | undefined]
 }
 
-export interface Type_1094 {
+export interface Type_1115 {
     track: number
     origin: OriginCaller
     proposal: Bounded
     enactment: DispatchTime
     submitted: number
-    submissionDeposit: Type_1073
-    decisionDeposit?: Type_1073 | undefined
+    submissionDeposit: Type_1094
+    decisionDeposit?: Type_1094 | undefined
     deciding?: DecidingStatus | undefined
-    tally: Type_718
+    tally: Type_750
     inQueue: boolean
     alarm?: [number, [number, number]] | undefined
 }
 
-export interface Type_718 {
+export interface Type_750 {
     bareAyes: number
     ayes: number
     nays: number
@@ -94,15 +612,20 @@ export interface Bounded_Lookup {
 }
 
 export type OriginCaller =
+    | OriginCaller_FuelTanks
     | OriginCaller_Origins
     | OriginCaller_ParachainsOrigin
-    | OriginCaller_Void
     | OriginCaller_XcmPallet
     | OriginCaller_system
 
+export interface OriginCaller_FuelTanks {
+    __kind: 'FuelTanks'
+    value: Type_351
+}
+
 export interface OriginCaller_Origins {
     __kind: 'Origins'
-    value: Type_452
+    value: Type_350
 }
 
 export interface OriginCaller_ParachainsOrigin {
@@ -110,14 +633,9 @@ export interface OriginCaller_ParachainsOrigin {
     value: Origin
 }
 
-export interface OriginCaller_Void {
-    __kind: 'Void'
-    value: Void
-}
-
 export interface OriginCaller_XcmPallet {
     __kind: 'XcmPallet'
-    value: Type_451
+    value: Type_349
 }
 
 export interface OriginCaller_system {
@@ -125,7 +643,11 @@ export interface OriginCaller_system {
     value: RawOrigin
 }
 
-export type RawOrigin = RawOrigin_None | RawOrigin_Root | RawOrigin_Signed
+export type RawOrigin = RawOrigin_Authorized | RawOrigin_None | RawOrigin_Root | RawOrigin_Signed
+
+export interface RawOrigin_Authorized {
+    __kind: 'Authorized'
+}
 
 export interface RawOrigin_None {
     __kind: 'None'
@@ -140,19 +662,17 @@ export interface RawOrigin_Signed {
     value: AccountId32
 }
 
-export type Type_451 = Type_451_Response | Type_451_Xcm
+export type Type_349 = Type_349_Response | Type_349_Xcm
 
-export interface Type_451_Response {
+export interface Type_349_Response {
     __kind: 'Response'
-    value: V4Location
+    value: V5Location
 }
 
-export interface Type_451_Xcm {
+export interface Type_349_Xcm {
     __kind: 'Xcm'
-    value: V4Location
+    value: V5Location
 }
-
-export type Void = never
 
 export type Origin = Origin_Parachain
 
@@ -161,196 +681,205 @@ export interface Origin_Parachain {
     value: Id
 }
 
-export type Type_452 =
-    | Type_452_AuctionAdmin
-    | Type_452_BigSpender
-    | Type_452_BigTipper
-    | Type_452_Fellows
-    | Type_452_Fellowship1Dan
-    | Type_452_Fellowship2Dan
-    | Type_452_Fellowship3Dan
-    | Type_452_Fellowship4Dan
-    | Type_452_Fellowship5Dan
-    | Type_452_Fellowship6Dan
-    | Type_452_Fellowship7Dan
-    | Type_452_Fellowship8Dan
-    | Type_452_Fellowship9Dan
-    | Type_452_FellowshipAdmin
-    | Type_452_FellowshipExperts
-    | Type_452_FellowshipInitiates
-    | Type_452_FellowshipMasters
-    | Type_452_FuelTanksAdmin
-    | Type_452_GeneralAdmin
-    | Type_452_LeaseAdmin
-    | Type_452_MediumSpender
-    | Type_452_MultiTokensAdmin
-    | Type_452_ParachainsAdmin
-    | Type_452_ReferendumCanceller
-    | Type_452_ReferendumKiller
-    | Type_452_SmallSpender
-    | Type_452_SmallTipper
-    | Type_452_StakingAdmin
-    | Type_452_TreasuryAdmin
-    | Type_452_WhitelistAdmin
-    | Type_452_WhitelistedCaller
+export type Type_350 =
+    | Type_350_AuctionAdmin
+    | Type_350_BigSpender
+    | Type_350_BigTipper
+    | Type_350_Fellows
+    | Type_350_Fellowship1Dan
+    | Type_350_Fellowship2Dan
+    | Type_350_Fellowship3Dan
+    | Type_350_Fellowship4Dan
+    | Type_350_Fellowship5Dan
+    | Type_350_Fellowship6Dan
+    | Type_350_Fellowship7Dan
+    | Type_350_Fellowship8Dan
+    | Type_350_Fellowship9Dan
+    | Type_350_FellowshipAdmin
+    | Type_350_FellowshipExperts
+    | Type_350_FellowshipInitiates
+    | Type_350_FellowshipMasters
+    | Type_350_FuelTanksAdmin
+    | Type_350_GeneralAdmin
+    | Type_350_LeaseAdmin
+    | Type_350_MediumSpender
+    | Type_350_MultiTokensAdmin
+    | Type_350_ParachainsAdmin
+    | Type_350_ReferendumCanceller
+    | Type_350_ReferendumKiller
+    | Type_350_SmallSpender
+    | Type_350_SmallTipper
+    | Type_350_StakingAdmin
+    | Type_350_TreasuryAdmin
+    | Type_350_WhitelistAdmin
+    | Type_350_WhitelistedCaller
 
-export interface Type_452_AuctionAdmin {
+export interface Type_350_AuctionAdmin {
     __kind: 'AuctionAdmin'
 }
 
-export interface Type_452_BigSpender {
+export interface Type_350_BigSpender {
     __kind: 'BigSpender'
 }
 
-export interface Type_452_BigTipper {
+export interface Type_350_BigTipper {
     __kind: 'BigTipper'
 }
 
-export interface Type_452_Fellows {
+export interface Type_350_Fellows {
     __kind: 'Fellows'
 }
 
-export interface Type_452_Fellowship1Dan {
+export interface Type_350_Fellowship1Dan {
     __kind: 'Fellowship1Dan'
 }
 
-export interface Type_452_Fellowship2Dan {
+export interface Type_350_Fellowship2Dan {
     __kind: 'Fellowship2Dan'
 }
 
-export interface Type_452_Fellowship3Dan {
+export interface Type_350_Fellowship3Dan {
     __kind: 'Fellowship3Dan'
 }
 
-export interface Type_452_Fellowship4Dan {
+export interface Type_350_Fellowship4Dan {
     __kind: 'Fellowship4Dan'
 }
 
-export interface Type_452_Fellowship5Dan {
+export interface Type_350_Fellowship5Dan {
     __kind: 'Fellowship5Dan'
 }
 
-export interface Type_452_Fellowship6Dan {
+export interface Type_350_Fellowship6Dan {
     __kind: 'Fellowship6Dan'
 }
 
-export interface Type_452_Fellowship7Dan {
+export interface Type_350_Fellowship7Dan {
     __kind: 'Fellowship7Dan'
 }
 
-export interface Type_452_Fellowship8Dan {
+export interface Type_350_Fellowship8Dan {
     __kind: 'Fellowship8Dan'
 }
 
-export interface Type_452_Fellowship9Dan {
+export interface Type_350_Fellowship9Dan {
     __kind: 'Fellowship9Dan'
 }
 
-export interface Type_452_FellowshipAdmin {
+export interface Type_350_FellowshipAdmin {
     __kind: 'FellowshipAdmin'
 }
 
-export interface Type_452_FellowshipExperts {
+export interface Type_350_FellowshipExperts {
     __kind: 'FellowshipExperts'
 }
 
-export interface Type_452_FellowshipInitiates {
+export interface Type_350_FellowshipInitiates {
     __kind: 'FellowshipInitiates'
 }
 
-export interface Type_452_FellowshipMasters {
+export interface Type_350_FellowshipMasters {
     __kind: 'FellowshipMasters'
 }
 
-export interface Type_452_FuelTanksAdmin {
+export interface Type_350_FuelTanksAdmin {
     __kind: 'FuelTanksAdmin'
 }
 
-export interface Type_452_GeneralAdmin {
+export interface Type_350_GeneralAdmin {
     __kind: 'GeneralAdmin'
 }
 
-export interface Type_452_LeaseAdmin {
+export interface Type_350_LeaseAdmin {
     __kind: 'LeaseAdmin'
 }
 
-export interface Type_452_MediumSpender {
+export interface Type_350_MediumSpender {
     __kind: 'MediumSpender'
 }
 
-export interface Type_452_MultiTokensAdmin {
+export interface Type_350_MultiTokensAdmin {
     __kind: 'MultiTokensAdmin'
 }
 
-export interface Type_452_ParachainsAdmin {
+export interface Type_350_ParachainsAdmin {
     __kind: 'ParachainsAdmin'
 }
 
-export interface Type_452_ReferendumCanceller {
+export interface Type_350_ReferendumCanceller {
     __kind: 'ReferendumCanceller'
 }
 
-export interface Type_452_ReferendumKiller {
+export interface Type_350_ReferendumKiller {
     __kind: 'ReferendumKiller'
 }
 
-export interface Type_452_SmallSpender {
+export interface Type_350_SmallSpender {
     __kind: 'SmallSpender'
 }
 
-export interface Type_452_SmallTipper {
+export interface Type_350_SmallTipper {
     __kind: 'SmallTipper'
 }
 
-export interface Type_452_StakingAdmin {
+export interface Type_350_StakingAdmin {
     __kind: 'StakingAdmin'
 }
 
-export interface Type_452_TreasuryAdmin {
+export interface Type_350_TreasuryAdmin {
     __kind: 'TreasuryAdmin'
 }
 
-export interface Type_452_WhitelistAdmin {
+export interface Type_350_WhitelistAdmin {
     __kind: 'WhitelistAdmin'
 }
 
-export interface Type_452_WhitelistedCaller {
+export interface Type_350_WhitelistedCaller {
     __kind: 'WhitelistedCaller'
 }
 
-export interface Type_1073 {
+export type Type_351 = Type_351_FuelTank
+
+export interface Type_351_FuelTank {
+    __kind: 'FuelTank'
+    caller: AccountId32
+    tankId: AccountId32
+    providesDeposit: boolean
+}
+
+export interface Type_1094 {
     who: AccountId32
     amount: bigint
 }
 
-export const Type_1093: sts.Type<Type_1093> = sts.closedEnum(() => {
+export const Type_1114: sts.Type<Type_1114> = sts.closedEnum(() => {
     return {
-        Approved: sts.tuple(() => [sts.number(), sts.option(() => Type_1073), sts.option(() => Type_1073)]),
-        Cancelled: sts.tuple(() => [sts.number(), sts.option(() => Type_1073), sts.option(() => Type_1073)]),
+        Approved: sts.tuple(() => [sts.number(), sts.option(() => Type_1094), sts.option(() => Type_1094)]),
+        Cancelled: sts.tuple(() => [sts.number(), sts.option(() => Type_1094), sts.option(() => Type_1094)]),
         Killed: sts.number(),
-        Ongoing: Type_1094,
-        Rejected: sts.tuple(() => [sts.number(), sts.option(() => Type_1073), sts.option(() => Type_1073)]),
-        TimedOut: sts.tuple(() => [sts.number(), sts.option(() => Type_1073), sts.option(() => Type_1073)]),
+        Ongoing: Type_1115,
+        Rejected: sts.tuple(() => [sts.number(), sts.option(() => Type_1094), sts.option(() => Type_1094)]),
+        TimedOut: sts.tuple(() => [sts.number(), sts.option(() => Type_1094), sts.option(() => Type_1094)]),
     }
 })
 
-export const Type_1094: sts.Type<Type_1094> = sts.struct(() => {
+export const Type_1115: sts.Type<Type_1115> = sts.struct(() => {
     return {
         track: sts.number(),
         origin: OriginCaller,
         proposal: Bounded,
         enactment: DispatchTime,
         submitted: sts.number(),
-        submissionDeposit: Type_1073,
-        decisionDeposit: sts.option(() => Type_1073),
+        submissionDeposit: Type_1094,
+        decisionDeposit: sts.option(() => Type_1094),
         deciding: sts.option(() => DecidingStatus),
-        tally: Type_718,
+        tally: Type_750,
         inQueue: sts.boolean(),
         alarm: sts.option(() => sts.tuple(() => [sts.number(), sts.tuple(() => [sts.number(), sts.number()])])),
     }
 })
 
-export const Type_718: sts.Type<Type_718> = sts.struct(() => {
+export const Type_750: sts.Type<Type_750> = sts.struct(() => {
     return {
         bareAyes: sts.number(),
         ayes: sts.number(),
@@ -365,7 +894,7 @@ export const DecidingStatus: sts.Type<DecidingStatus> = sts.struct(() => {
     }
 })
 
-export const Type_1073: sts.Type<Type_1073> = sts.struct(() => {
+export const Type_1094: sts.Type<Type_1094> = sts.struct(() => {
     return {
         who: AccountId32,
         amount: sts.bigint(),
@@ -382,12 +911,12 @@ export type ReferendumInfo =
 
 export interface ReferendumInfo_Approved {
     __kind: 'Approved'
-    value: [number, Type_1073 | undefined, Type_1073 | undefined]
+    value: [number, Type_1094 | undefined, Type_1094 | undefined]
 }
 
 export interface ReferendumInfo_Cancelled {
     __kind: 'Cancelled'
-    value: [number, Type_1073 | undefined, Type_1073 | undefined]
+    value: [number, Type_1094 | undefined, Type_1094 | undefined]
 }
 
 export interface ReferendumInfo_Killed {
@@ -402,12 +931,12 @@ export interface ReferendumInfo_Ongoing {
 
 export interface ReferendumInfo_Rejected {
     __kind: 'Rejected'
-    value: [number, Type_1073 | undefined, Type_1073 | undefined]
+    value: [number, Type_1094 | undefined, Type_1094 | undefined]
 }
 
 export interface ReferendumInfo_TimedOut {
     __kind: 'TimedOut'
-    value: [number, Type_1073 | undefined, Type_1073 | undefined]
+    value: [number, Type_1094 | undefined, Type_1094 | undefined]
 }
 
 export interface ReferendumStatus {
@@ -416,8 +945,8 @@ export interface ReferendumStatus {
     proposal: Bounded
     enactment: DispatchTime
     submitted: number
-    submissionDeposit: Type_1073
-    decisionDeposit?: Type_1073 | undefined
+    submissionDeposit: Type_1094
+    decisionDeposit?: Type_1094 | undefined
     deciding?: DecidingStatus | undefined
     tally: Tally
     inQueue: boolean
@@ -432,12 +961,12 @@ export interface Tally {
 
 export const ReferendumInfo: sts.Type<ReferendumInfo> = sts.closedEnum(() => {
     return {
-        Approved: sts.tuple(() => [sts.number(), sts.option(() => Type_1073), sts.option(() => Type_1073)]),
-        Cancelled: sts.tuple(() => [sts.number(), sts.option(() => Type_1073), sts.option(() => Type_1073)]),
+        Approved: sts.tuple(() => [sts.number(), sts.option(() => Type_1094), sts.option(() => Type_1094)]),
+        Cancelled: sts.tuple(() => [sts.number(), sts.option(() => Type_1094), sts.option(() => Type_1094)]),
         Killed: sts.number(),
         Ongoing: ReferendumStatus,
-        Rejected: sts.tuple(() => [sts.number(), sts.option(() => Type_1073), sts.option(() => Type_1073)]),
-        TimedOut: sts.tuple(() => [sts.number(), sts.option(() => Type_1073), sts.option(() => Type_1073)]),
+        Rejected: sts.tuple(() => [sts.number(), sts.option(() => Type_1094), sts.option(() => Type_1094)]),
+        TimedOut: sts.tuple(() => [sts.number(), sts.option(() => Type_1094), sts.option(() => Type_1094)]),
     }
 })
 
@@ -448,8 +977,8 @@ export const ReferendumStatus: sts.Type<ReferendumStatus> = sts.struct(() => {
         proposal: Bounded,
         enactment: DispatchTime,
         submitted: sts.number(),
-        submissionDeposit: Type_1073,
-        decisionDeposit: sts.option(() => Type_1073),
+        submissionDeposit: Type_1094,
+        decisionDeposit: sts.option(() => Type_1094),
         deciding: sts.option(() => DecidingStatus),
         tally: Tally,
         inQueue: sts.boolean(),
@@ -465,21 +994,825 @@ export const Tally: sts.Type<Tally> = sts.struct(() => {
     }
 })
 
-export interface BeefyAuthoritySet {
-    id: bigint
-    len: number
-    keysetCommitment: H256
+export interface AuthorizedAliasesEntry {
+    aliasers: OriginAliaser[]
 }
 
-export const BeefyAuthoritySet: sts.Type<BeefyAuthoritySet> = sts.struct(() => {
+export interface OriginAliaser {
+    location: VersionedLocation
+    expiry?: bigint | undefined
+}
+
+export const AuthorizedAliasesEntry: sts.Type<AuthorizedAliasesEntry> = sts.struct(() => {
     return {
-        id: sts.bigint(),
-        len: sts.number(),
-        keysetCommitment: H256,
+        aliasers: sts.array(() => OriginAliaser),
     }
 })
 
-export type VersionedAssetId = VersionedAssetId_V3 | VersionedAssetId_V4
+export const OriginAliaser: sts.Type<OriginAliaser> = sts.struct(() => {
+    return {
+        location: VersionedLocation,
+        expiry: sts.option(() => sts.bigint()),
+    }
+})
+
+export type V5Instruction =
+    | V5Instruction_AliasOrigin
+    | V5Instruction_BurnAsset
+    | V5Instruction_BuyExecution
+    | V5Instruction_ClaimAsset
+    | V5Instruction_ClearError
+    | V5Instruction_ClearOrigin
+    | V5Instruction_ClearTopic
+    | V5Instruction_ClearTransactStatus
+    | V5Instruction_DepositAsset
+    | V5Instruction_DepositReserveAsset
+    | V5Instruction_DescendOrigin
+    | V5Instruction_ExchangeAsset
+    | V5Instruction_ExecuteWithOrigin
+    | V5Instruction_ExpectAsset
+    | V5Instruction_ExpectError
+    | V5Instruction_ExpectOrigin
+    | V5Instruction_ExpectPallet
+    | V5Instruction_ExpectTransactStatus
+    | V5Instruction_ExportMessage
+    | V5Instruction_HrmpChannelAccepted
+    | V5Instruction_HrmpChannelClosing
+    | V5Instruction_HrmpNewChannelOpenRequest
+    | V5Instruction_InitiateReserveWithdraw
+    | V5Instruction_InitiateTeleport
+    | V5Instruction_InitiateTransfer
+    | V5Instruction_LockAsset
+    | V5Instruction_NoteUnlockable
+    | V5Instruction_PayFees
+    | V5Instruction_QueryPallet
+    | V5Instruction_QueryResponse
+    | V5Instruction_ReceiveTeleportedAsset
+    | V5Instruction_RefundSurplus
+    | V5Instruction_ReportError
+    | V5Instruction_ReportHolding
+    | V5Instruction_ReportTransactStatus
+    | V5Instruction_RequestUnlock
+    | V5Instruction_ReserveAssetDeposited
+    | V5Instruction_SetAppendix
+    | V5Instruction_SetErrorHandler
+    | V5Instruction_SetFeesMode
+    | V5Instruction_SetHints
+    | V5Instruction_SetTopic
+    | V5Instruction_SubscribeVersion
+    | V5Instruction_Transact
+    | V5Instruction_TransferAsset
+    | V5Instruction_TransferReserveAsset
+    | V5Instruction_Trap
+    | V5Instruction_UniversalOrigin
+    | V5Instruction_UnlockAsset
+    | V5Instruction_UnpaidExecution
+    | V5Instruction_UnsubscribeVersion
+    | V5Instruction_WithdrawAsset
+
+export interface V5Instruction_AliasOrigin {
+    __kind: 'AliasOrigin'
+    value: V5Location
+}
+
+export interface V5Instruction_BurnAsset {
+    __kind: 'BurnAsset'
+    value: V5Asset[]
+}
+
+export interface V5Instruction_BuyExecution {
+    __kind: 'BuyExecution'
+    fees: V5Asset
+    weightLimit: V3WeightLimit
+}
+
+export interface V5Instruction_ClaimAsset {
+    __kind: 'ClaimAsset'
+    assets: V5Asset[]
+    ticket: V5Location
+}
+
+export interface V5Instruction_ClearError {
+    __kind: 'ClearError'
+}
+
+export interface V5Instruction_ClearOrigin {
+    __kind: 'ClearOrigin'
+}
+
+export interface V5Instruction_ClearTopic {
+    __kind: 'ClearTopic'
+}
+
+export interface V5Instruction_ClearTransactStatus {
+    __kind: 'ClearTransactStatus'
+}
+
+export interface V5Instruction_DepositAsset {
+    __kind: 'DepositAsset'
+    assets: V5AssetFilter
+    beneficiary: V5Location
+}
+
+export interface V5Instruction_DepositReserveAsset {
+    __kind: 'DepositReserveAsset'
+    assets: V5AssetFilter
+    dest: V5Location
+    xcm: V5Instruction[]
+}
+
+export interface V5Instruction_DescendOrigin {
+    __kind: 'DescendOrigin'
+    value: V5Junctions
+}
+
+export interface V5Instruction_ExchangeAsset {
+    __kind: 'ExchangeAsset'
+    give: V5AssetFilter
+    want: V5Asset[]
+    maximal: boolean
+}
+
+export interface V5Instruction_ExecuteWithOrigin {
+    __kind: 'ExecuteWithOrigin'
+    descendantOrigin?: V5Junctions | undefined
+    xcm: V5Instruction[]
+}
+
+export interface V5Instruction_ExpectAsset {
+    __kind: 'ExpectAsset'
+    value: V5Asset[]
+}
+
+export interface V5Instruction_ExpectError {
+    __kind: 'ExpectError'
+    value?: [number, V5Error] | undefined
+}
+
+export interface V5Instruction_ExpectOrigin {
+    __kind: 'ExpectOrigin'
+    value?: V5Location | undefined
+}
+
+export interface V5Instruction_ExpectPallet {
+    __kind: 'ExpectPallet'
+    index: number
+    name: Bytes
+    moduleName: Bytes
+    crateMajor: number
+    minCrateMinor: number
+}
+
+export interface V5Instruction_ExpectTransactStatus {
+    __kind: 'ExpectTransactStatus'
+    value: V3MaybeErrorCode
+}
+
+export interface V5Instruction_ExportMessage {
+    __kind: 'ExportMessage'
+    network: V5NetworkId
+    destination: V5Junctions
+    xcm: V5Instruction[]
+}
+
+export interface V5Instruction_HrmpChannelAccepted {
+    __kind: 'HrmpChannelAccepted'
+    recipient: number
+}
+
+export interface V5Instruction_HrmpChannelClosing {
+    __kind: 'HrmpChannelClosing'
+    initiator: number
+    sender: number
+    recipient: number
+}
+
+export interface V5Instruction_HrmpNewChannelOpenRequest {
+    __kind: 'HrmpNewChannelOpenRequest'
+    sender: number
+    maxMessageSize: number
+    maxCapacity: number
+}
+
+export interface V5Instruction_InitiateReserveWithdraw {
+    __kind: 'InitiateReserveWithdraw'
+    assets: V5AssetFilter
+    reserve: V5Location
+    xcm: V5Instruction[]
+}
+
+export interface V5Instruction_InitiateTeleport {
+    __kind: 'InitiateTeleport'
+    assets: V5AssetFilter
+    dest: V5Location
+    xcm: V5Instruction[]
+}
+
+export interface V5Instruction_InitiateTransfer {
+    __kind: 'InitiateTransfer'
+    destination: V5Location
+    remoteFees?: V5AssetTransferFilter | undefined
+    preserveOrigin: boolean
+    assets: V5AssetTransferFilter[]
+    remoteXcm: V5Instruction[]
+}
+
+export interface V5Instruction_LockAsset {
+    __kind: 'LockAsset'
+    asset: V5Asset
+    unlocker: V5Location
+}
+
+export interface V5Instruction_NoteUnlockable {
+    __kind: 'NoteUnlockable'
+    asset: V5Asset
+    owner: V5Location
+}
+
+export interface V5Instruction_PayFees {
+    __kind: 'PayFees'
+    asset: V5Asset
+}
+
+export interface V5Instruction_QueryPallet {
+    __kind: 'QueryPallet'
+    moduleName: Bytes
+    responseInfo: V5QueryResponseInfo
+}
+
+export interface V5Instruction_QueryResponse {
+    __kind: 'QueryResponse'
+    queryId: bigint
+    response: V5Response
+    maxWeight: Weight
+    querier?: V5Location | undefined
+}
+
+export interface V5Instruction_ReceiveTeleportedAsset {
+    __kind: 'ReceiveTeleportedAsset'
+    value: V5Asset[]
+}
+
+export interface V5Instruction_RefundSurplus {
+    __kind: 'RefundSurplus'
+}
+
+export interface V5Instruction_ReportError {
+    __kind: 'ReportError'
+    value: V5QueryResponseInfo
+}
+
+export interface V5Instruction_ReportHolding {
+    __kind: 'ReportHolding'
+    responseInfo: V5QueryResponseInfo
+    assets: V5AssetFilter
+}
+
+export interface V5Instruction_ReportTransactStatus {
+    __kind: 'ReportTransactStatus'
+    value: V5QueryResponseInfo
+}
+
+export interface V5Instruction_RequestUnlock {
+    __kind: 'RequestUnlock'
+    asset: V5Asset
+    locker: V5Location
+}
+
+export interface V5Instruction_ReserveAssetDeposited {
+    __kind: 'ReserveAssetDeposited'
+    value: V5Asset[]
+}
+
+export interface V5Instruction_SetAppendix {
+    __kind: 'SetAppendix'
+    value: V5Instruction[]
+}
+
+export interface V5Instruction_SetErrorHandler {
+    __kind: 'SetErrorHandler'
+    value: V5Instruction[]
+}
+
+export interface V5Instruction_SetFeesMode {
+    __kind: 'SetFeesMode'
+    jitWithdraw: boolean
+}
+
+export interface V5Instruction_SetHints {
+    __kind: 'SetHints'
+    hints: V5Hint[]
+}
+
+export interface V5Instruction_SetTopic {
+    __kind: 'SetTopic'
+    value: Bytes
+}
+
+export interface V5Instruction_SubscribeVersion {
+    __kind: 'SubscribeVersion'
+    queryId: bigint
+    maxResponseWeight: Weight
+}
+
+export interface V5Instruction_Transact {
+    __kind: 'Transact'
+    originKind: V3OriginKind
+    fallbackMaxWeight?: Weight | undefined
+    call: DoubleEncoded
+}
+
+export interface V5Instruction_TransferAsset {
+    __kind: 'TransferAsset'
+    assets: V5Asset[]
+    beneficiary: V5Location
+}
+
+export interface V5Instruction_TransferReserveAsset {
+    __kind: 'TransferReserveAsset'
+    assets: V5Asset[]
+    dest: V5Location
+    xcm: V5Instruction[]
+}
+
+export interface V5Instruction_Trap {
+    __kind: 'Trap'
+    value: bigint
+}
+
+export interface V5Instruction_UniversalOrigin {
+    __kind: 'UniversalOrigin'
+    value: V5Junction
+}
+
+export interface V5Instruction_UnlockAsset {
+    __kind: 'UnlockAsset'
+    asset: V5Asset
+    target: V5Location
+}
+
+export interface V5Instruction_UnpaidExecution {
+    __kind: 'UnpaidExecution'
+    weightLimit: V3WeightLimit
+    checkOrigin?: V5Location | undefined
+}
+
+export interface V5Instruction_UnsubscribeVersion {
+    __kind: 'UnsubscribeVersion'
+}
+
+export interface V5Instruction_WithdrawAsset {
+    __kind: 'WithdrawAsset'
+    value: V5Asset[]
+}
+
+export interface DoubleEncoded {
+    encoded: Bytes
+}
+
+export type V3OriginKind =
+    | V3OriginKind_Native
+    | V3OriginKind_SovereignAccount
+    | V3OriginKind_Superuser
+    | V3OriginKind_Xcm
+
+export interface V3OriginKind_Native {
+    __kind: 'Native'
+}
+
+export interface V3OriginKind_SovereignAccount {
+    __kind: 'SovereignAccount'
+}
+
+export interface V3OriginKind_Superuser {
+    __kind: 'Superuser'
+}
+
+export interface V3OriginKind_Xcm {
+    __kind: 'Xcm'
+}
+
+export type V5Hint = V5Hint_AssetClaimer
+
+export interface V5Hint_AssetClaimer {
+    __kind: 'AssetClaimer'
+    location: V5Location
+}
+
+export type V5Response =
+    | V5Response_Assets
+    | V5Response_DispatchResult
+    | V5Response_ExecutionResult
+    | V5Response_Null
+    | V5Response_PalletsInfo
+    | V5Response_Version
+
+export interface V5Response_Assets {
+    __kind: 'Assets'
+    value: V5Asset[]
+}
+
+export interface V5Response_DispatchResult {
+    __kind: 'DispatchResult'
+    value: V3MaybeErrorCode
+}
+
+export interface V5Response_ExecutionResult {
+    __kind: 'ExecutionResult'
+    value?: [number, V5Error] | undefined
+}
+
+export interface V5Response_Null {
+    __kind: 'Null'
+}
+
+export interface V5Response_PalletsInfo {
+    __kind: 'PalletsInfo'
+    value: V5PalletInfo[]
+}
+
+export interface V5Response_Version {
+    __kind: 'Version'
+    value: number
+}
+
+export interface V5PalletInfo {
+    index: number
+    name: Bytes
+    moduleName: Bytes
+    major: number
+    minor: number
+    patch: number
+}
+
+export interface V5QueryResponseInfo {
+    destination: V5Location
+    queryId: bigint
+    maxWeight: Weight
+}
+
+export type V5AssetTransferFilter =
+    | V5AssetTransferFilter_ReserveDeposit
+    | V5AssetTransferFilter_ReserveWithdraw
+    | V5AssetTransferFilter_Teleport
+
+export interface V5AssetTransferFilter_ReserveDeposit {
+    __kind: 'ReserveDeposit'
+    value: V5AssetFilter
+}
+
+export interface V5AssetTransferFilter_ReserveWithdraw {
+    __kind: 'ReserveWithdraw'
+    value: V5AssetFilter
+}
+
+export interface V5AssetTransferFilter_Teleport {
+    __kind: 'Teleport'
+    value: V5AssetFilter
+}
+
+export type V3MaybeErrorCode = V3MaybeErrorCode_Error | V3MaybeErrorCode_Success | V3MaybeErrorCode_TruncatedError
+
+export interface V3MaybeErrorCode_Error {
+    __kind: 'Error'
+    value: Bytes
+}
+
+export interface V3MaybeErrorCode_Success {
+    __kind: 'Success'
+}
+
+export interface V3MaybeErrorCode_TruncatedError {
+    __kind: 'TruncatedError'
+    value: Bytes
+}
+
+export type V5Error =
+    | V5Error_AssetNotFound
+    | V5Error_BadOrigin
+    | V5Error_Barrier
+    | V5Error_DestinationUnsupported
+    | V5Error_ExceedsMaxMessageSize
+    | V5Error_ExceedsStackLimit
+    | V5Error_ExpectationFalse
+    | V5Error_ExportError
+    | V5Error_FailedToDecode
+    | V5Error_FailedToTransactAsset
+    | V5Error_FeesNotMet
+    | V5Error_HoldingWouldOverflow
+    | V5Error_InvalidLocation
+    | V5Error_LocationCannotHold
+    | V5Error_LocationFull
+    | V5Error_LocationNotInvertible
+    | V5Error_LockError
+    | V5Error_MaxWeightInvalid
+    | V5Error_NameMismatch
+    | V5Error_NoDeal
+    | V5Error_NoPermission
+    | V5Error_NotDepositable
+    | V5Error_NotHoldingFees
+    | V5Error_NotWithdrawable
+    | V5Error_Overflow
+    | V5Error_PalletNotFound
+    | V5Error_ReanchorFailed
+    | V5Error_TooExpensive
+    | V5Error_TooManyAssets
+    | V5Error_Transport
+    | V5Error_Trap
+    | V5Error_Unanchored
+    | V5Error_UnhandledXcmVersion
+    | V5Error_Unimplemented
+    | V5Error_UnknownClaim
+    | V5Error_Unroutable
+    | V5Error_UntrustedReserveLocation
+    | V5Error_UntrustedTeleportLocation
+    | V5Error_VersionIncompatible
+    | V5Error_WeightLimitReached
+    | V5Error_WeightNotComputable
+
+export interface V5Error_AssetNotFound {
+    __kind: 'AssetNotFound'
+}
+
+export interface V5Error_BadOrigin {
+    __kind: 'BadOrigin'
+}
+
+export interface V5Error_Barrier {
+    __kind: 'Barrier'
+}
+
+export interface V5Error_DestinationUnsupported {
+    __kind: 'DestinationUnsupported'
+}
+
+export interface V5Error_ExceedsMaxMessageSize {
+    __kind: 'ExceedsMaxMessageSize'
+}
+
+export interface V5Error_ExceedsStackLimit {
+    __kind: 'ExceedsStackLimit'
+}
+
+export interface V5Error_ExpectationFalse {
+    __kind: 'ExpectationFalse'
+}
+
+export interface V5Error_ExportError {
+    __kind: 'ExportError'
+}
+
+export interface V5Error_FailedToDecode {
+    __kind: 'FailedToDecode'
+}
+
+export interface V5Error_FailedToTransactAsset {
+    __kind: 'FailedToTransactAsset'
+}
+
+export interface V5Error_FeesNotMet {
+    __kind: 'FeesNotMet'
+}
+
+export interface V5Error_HoldingWouldOverflow {
+    __kind: 'HoldingWouldOverflow'
+}
+
+export interface V5Error_InvalidLocation {
+    __kind: 'InvalidLocation'
+}
+
+export interface V5Error_LocationCannotHold {
+    __kind: 'LocationCannotHold'
+}
+
+export interface V5Error_LocationFull {
+    __kind: 'LocationFull'
+}
+
+export interface V5Error_LocationNotInvertible {
+    __kind: 'LocationNotInvertible'
+}
+
+export interface V5Error_LockError {
+    __kind: 'LockError'
+}
+
+export interface V5Error_MaxWeightInvalid {
+    __kind: 'MaxWeightInvalid'
+}
+
+export interface V5Error_NameMismatch {
+    __kind: 'NameMismatch'
+}
+
+export interface V5Error_NoDeal {
+    __kind: 'NoDeal'
+}
+
+export interface V5Error_NoPermission {
+    __kind: 'NoPermission'
+}
+
+export interface V5Error_NotDepositable {
+    __kind: 'NotDepositable'
+}
+
+export interface V5Error_NotHoldingFees {
+    __kind: 'NotHoldingFees'
+}
+
+export interface V5Error_NotWithdrawable {
+    __kind: 'NotWithdrawable'
+}
+
+export interface V5Error_Overflow {
+    __kind: 'Overflow'
+}
+
+export interface V5Error_PalletNotFound {
+    __kind: 'PalletNotFound'
+}
+
+export interface V5Error_ReanchorFailed {
+    __kind: 'ReanchorFailed'
+}
+
+export interface V5Error_TooExpensive {
+    __kind: 'TooExpensive'
+}
+
+export interface V5Error_TooManyAssets {
+    __kind: 'TooManyAssets'
+}
+
+export interface V5Error_Transport {
+    __kind: 'Transport'
+}
+
+export interface V5Error_Trap {
+    __kind: 'Trap'
+    value: bigint
+}
+
+export interface V5Error_Unanchored {
+    __kind: 'Unanchored'
+}
+
+export interface V5Error_UnhandledXcmVersion {
+    __kind: 'UnhandledXcmVersion'
+}
+
+export interface V5Error_Unimplemented {
+    __kind: 'Unimplemented'
+}
+
+export interface V5Error_UnknownClaim {
+    __kind: 'UnknownClaim'
+}
+
+export interface V5Error_Unroutable {
+    __kind: 'Unroutable'
+}
+
+export interface V5Error_UntrustedReserveLocation {
+    __kind: 'UntrustedReserveLocation'
+}
+
+export interface V5Error_UntrustedTeleportLocation {
+    __kind: 'UntrustedTeleportLocation'
+}
+
+export interface V5Error_VersionIncompatible {
+    __kind: 'VersionIncompatible'
+}
+
+export interface V5Error_WeightLimitReached {
+    __kind: 'WeightLimitReached'
+    value: Weight
+}
+
+export interface V5Error_WeightNotComputable {
+    __kind: 'WeightNotComputable'
+}
+
+export type V5AssetFilter = V5AssetFilter_Definite | V5AssetFilter_Wild
+
+export interface V5AssetFilter_Definite {
+    __kind: 'Definite'
+    value: V5Asset[]
+}
+
+export interface V5AssetFilter_Wild {
+    __kind: 'Wild'
+    value: V5WildAsset
+}
+
+export type V5WildAsset = V5WildAsset_All | V5WildAsset_AllCounted | V5WildAsset_AllOf | V5WildAsset_AllOfCounted
+
+export interface V5WildAsset_All {
+    __kind: 'All'
+}
+
+export interface V5WildAsset_AllCounted {
+    __kind: 'AllCounted'
+    value: number
+}
+
+export interface V5WildAsset_AllOf {
+    __kind: 'AllOf'
+    id: V5AssetId
+    fun: V5WildFungibility
+}
+
+export interface V5WildAsset_AllOfCounted {
+    __kind: 'AllOfCounted'
+    id: V5AssetId
+    fun: V5WildFungibility
+    count: number
+}
+
+export type V5WildFungibility = V5WildFungibility_Fungible | V5WildFungibility_NonFungible
+
+export interface V5WildFungibility_Fungible {
+    __kind: 'Fungible'
+}
+
+export interface V5WildFungibility_NonFungible {
+    __kind: 'NonFungible'
+}
+
+export interface V5AssetId {
+    parents: number
+    interior: V5Junctions
+}
+
+export type V3WeightLimit = V3WeightLimit_Limited | V3WeightLimit_Unlimited
+
+export interface V3WeightLimit_Limited {
+    __kind: 'Limited'
+    value: Weight
+}
+
+export interface V3WeightLimit_Unlimited {
+    __kind: 'Unlimited'
+}
+
+export interface V5Asset {
+    id: V5AssetId
+    fun: V5Fungibility
+}
+
+export type V5Fungibility = V5Fungibility_Fungible | V5Fungibility_NonFungible
+
+export interface V5Fungibility_Fungible {
+    __kind: 'Fungible'
+    value: bigint
+}
+
+export interface V5Fungibility_NonFungible {
+    __kind: 'NonFungible'
+    value: V5AssetInstance
+}
+
+export type V5AssetInstance =
+    | V5AssetInstance_Array16
+    | V5AssetInstance_Array32
+    | V5AssetInstance_Array4
+    | V5AssetInstance_Array8
+    | V5AssetInstance_Index
+    | V5AssetInstance_Undefined
+
+export interface V5AssetInstance_Array16 {
+    __kind: 'Array16'
+    value: Bytes
+}
+
+export interface V5AssetInstance_Array32 {
+    __kind: 'Array32'
+    value: Bytes
+}
+
+export interface V5AssetInstance_Array4 {
+    __kind: 'Array4'
+    value: Bytes
+}
+
+export interface V5AssetInstance_Array8 {
+    __kind: 'Array8'
+    value: Bytes
+}
+
+export interface V5AssetInstance_Index {
+    __kind: 'Index'
+    value: bigint
+}
+
+export interface V5AssetInstance_Undefined {
+    __kind: 'Undefined'
+}
+
+export type VersionedAssetId = VersionedAssetId_V3 | VersionedAssetId_V4 | VersionedAssetId_V5
 
 export interface VersionedAssetId_V3 {
     __kind: 'V3'
@@ -489,6 +1822,11 @@ export interface VersionedAssetId_V3 {
 export interface VersionedAssetId_V4 {
     __kind: 'V4'
     value: V4AssetId
+}
+
+export interface VersionedAssetId_V5 {
+    __kind: 'V5'
+    value: V5AssetId
 }
 
 export interface V4AssetId {
@@ -615,94 +1953,6 @@ export interface V4Junction_Plurality {
     __kind: 'Plurality'
     id: V3BodyId
     part: V3BodyPart
-}
-
-export type V3BodyPart =
-    | V3BodyPart_AtLeastProportion
-    | V3BodyPart_Fraction
-    | V3BodyPart_Members
-    | V3BodyPart_MoreThanProportion
-    | V3BodyPart_Voice
-
-export interface V3BodyPart_AtLeastProportion {
-    __kind: 'AtLeastProportion'
-    nom: number
-    denom: number
-}
-
-export interface V3BodyPart_Fraction {
-    __kind: 'Fraction'
-    nom: number
-    denom: number
-}
-
-export interface V3BodyPart_Members {
-    __kind: 'Members'
-    count: number
-}
-
-export interface V3BodyPart_MoreThanProportion {
-    __kind: 'MoreThanProportion'
-    nom: number
-    denom: number
-}
-
-export interface V3BodyPart_Voice {
-    __kind: 'Voice'
-}
-
-export type V3BodyId =
-    | V3BodyId_Administration
-    | V3BodyId_Defense
-    | V3BodyId_Executive
-    | V3BodyId_Index
-    | V3BodyId_Judicial
-    | V3BodyId_Legislative
-    | V3BodyId_Moniker
-    | V3BodyId_Technical
-    | V3BodyId_Treasury
-    | V3BodyId_Unit
-
-export interface V3BodyId_Administration {
-    __kind: 'Administration'
-}
-
-export interface V3BodyId_Defense {
-    __kind: 'Defense'
-}
-
-export interface V3BodyId_Executive {
-    __kind: 'Executive'
-}
-
-export interface V3BodyId_Index {
-    __kind: 'Index'
-    value: number
-}
-
-export interface V3BodyId_Judicial {
-    __kind: 'Judicial'
-}
-
-export interface V3BodyId_Legislative {
-    __kind: 'Legislative'
-}
-
-export interface V3BodyId_Moniker {
-    __kind: 'Moniker'
-    value: Bytes
-}
-
-export interface V3BodyId_Technical {
-    __kind: 'Technical'
-}
-
-export interface V3BodyId_Treasury {
-    __kind: 'Treasury'
-}
-
-export interface V3BodyId_Unit {
-    __kind: 'Unit'
 }
 
 export type V4NetworkId =
@@ -981,220 +2231,12 @@ export const RemoteLockedFungibleRecord: sts.Type<RemoteLockedFungibleRecord> = 
     }
 })
 
-export const VersionedAssetId: sts.Type<VersionedAssetId> = sts.closedEnum(() => {
-    return {
-        V3: V3AssetId,
-        V4: V4AssetId,
-    }
-})
-
-export const V4AssetId: sts.Type<V4AssetId> = sts.struct(() => {
-    return {
-        parents: sts.number(),
-        interior: V4Junctions,
-    }
-})
-
-export const V4Junctions: sts.Type<V4Junctions> = sts.closedEnum(() => {
-    return {
-        Here: sts.unit(),
-        X1: sts.array(() => V4Junction),
-        X2: sts.array(() => V4Junction),
-        X3: sts.array(() => V4Junction),
-        X4: sts.array(() => V4Junction),
-        X5: sts.array(() => V4Junction),
-        X6: sts.array(() => V4Junction),
-        X7: sts.array(() => V4Junction),
-        X8: sts.array(() => V4Junction),
-    }
-})
-
-export const V4Junction: sts.Type<V4Junction> = sts.closedEnum(() => {
-    return {
-        AccountId32: sts.enumStruct({
-            network: sts.option(() => V4NetworkId),
-            id: sts.bytes(),
-        }),
-        AccountIndex64: sts.enumStruct({
-            network: sts.option(() => V4NetworkId),
-            index: sts.bigint(),
-        }),
-        AccountKey20: sts.enumStruct({
-            network: sts.option(() => V4NetworkId),
-            key: sts.bytes(),
-        }),
-        GeneralIndex: sts.bigint(),
-        GeneralKey: sts.enumStruct({
-            length: sts.number(),
-            data: sts.bytes(),
-        }),
-        GlobalConsensus: V4NetworkId,
-        OnlyChild: sts.unit(),
-        PalletInstance: sts.number(),
-        Parachain: sts.number(),
-        Plurality: sts.enumStruct({
-            id: V3BodyId,
-            part: V3BodyPart,
-        }),
-    }
-})
-
-export const V3BodyPart: sts.Type<V3BodyPart> = sts.closedEnum(() => {
-    return {
-        AtLeastProportion: sts.enumStruct({
-            nom: sts.number(),
-            denom: sts.number(),
-        }),
-        Fraction: sts.enumStruct({
-            nom: sts.number(),
-            denom: sts.number(),
-        }),
-        Members: sts.enumStruct({
-            count: sts.number(),
-        }),
-        MoreThanProportion: sts.enumStruct({
-            nom: sts.number(),
-            denom: sts.number(),
-        }),
-        Voice: sts.unit(),
-    }
-})
-
-export const V3BodyId: sts.Type<V3BodyId> = sts.closedEnum(() => {
-    return {
-        Administration: sts.unit(),
-        Defense: sts.unit(),
-        Executive: sts.unit(),
-        Index: sts.number(),
-        Judicial: sts.unit(),
-        Legislative: sts.unit(),
-        Moniker: sts.bytes(),
-        Technical: sts.unit(),
-        Treasury: sts.unit(),
-        Unit: sts.unit(),
-    }
-})
-
-export const V4NetworkId: sts.Type<V4NetworkId> = sts.closedEnum(() => {
-    return {
-        BitcoinCash: sts.unit(),
-        BitcoinCore: sts.unit(),
-        ByFork: sts.enumStruct({
-            blockNumber: sts.bigint(),
-            blockHash: sts.bytes(),
-        }),
-        ByGenesis: sts.bytes(),
-        Ethereum: sts.enumStruct({
-            chainId: sts.bigint(),
-        }),
-        Kusama: sts.unit(),
-        Polkadot: sts.unit(),
-        PolkadotBulletin: sts.unit(),
-        Rococo: sts.unit(),
-        Westend: sts.unit(),
-        Wococo: sts.unit(),
-    }
-})
-
-export const V3AssetId: sts.Type<V3AssetId> = sts.closedEnum(() => {
-    return {
-        Abstract: sts.bytes(),
-        Concrete: V3MultiLocation,
-    }
-})
-
-export const V3MultiLocation: sts.Type<V3MultiLocation> = sts.struct(() => {
-    return {
-        parents: sts.number(),
-        interior: V3Junctions,
-    }
-})
-
-export const V3Junctions: sts.Type<V3Junctions> = sts.closedEnum(() => {
-    return {
-        Here: sts.unit(),
-        X1: V3Junction,
-        X2: sts.tuple(() => [V3Junction, V3Junction]),
-        X3: sts.tuple(() => [V3Junction, V3Junction, V3Junction]),
-        X4: sts.tuple(() => [V3Junction, V3Junction, V3Junction, V3Junction]),
-        X5: sts.tuple(() => [V3Junction, V3Junction, V3Junction, V3Junction, V3Junction]),
-        X6: sts.tuple(() => [V3Junction, V3Junction, V3Junction, V3Junction, V3Junction, V3Junction]),
-        X7: sts.tuple(() => [V3Junction, V3Junction, V3Junction, V3Junction, V3Junction, V3Junction, V3Junction]),
-        X8: sts.tuple(() => [
-            V3Junction,
-            V3Junction,
-            V3Junction,
-            V3Junction,
-            V3Junction,
-            V3Junction,
-            V3Junction,
-            V3Junction,
-        ]),
-    }
-})
-
-export const V3Junction: sts.Type<V3Junction> = sts.closedEnum(() => {
-    return {
-        AccountId32: sts.enumStruct({
-            network: sts.option(() => V3NetworkId),
-            id: sts.bytes(),
-        }),
-        AccountIndex64: sts.enumStruct({
-            network: sts.option(() => V3NetworkId),
-            index: sts.bigint(),
-        }),
-        AccountKey20: sts.enumStruct({
-            network: sts.option(() => V3NetworkId),
-            key: sts.bytes(),
-        }),
-        GeneralIndex: sts.bigint(),
-        GeneralKey: sts.enumStruct({
-            length: sts.number(),
-            data: sts.bytes(),
-        }),
-        GlobalConsensus: V3NetworkId,
-        OnlyChild: sts.unit(),
-        PalletInstance: sts.number(),
-        Parachain: sts.number(),
-        Plurality: sts.enumStruct({
-            id: V3BodyId,
-            part: V3BodyPart,
-        }),
-    }
-})
-
-export const V3NetworkId: sts.Type<V3NetworkId> = sts.closedEnum(() => {
-    return {
-        BitcoinCash: sts.unit(),
-        BitcoinCore: sts.unit(),
-        ByFork: sts.enumStruct({
-            blockNumber: sts.bigint(),
-            blockHash: sts.bytes(),
-        }),
-        ByGenesis: sts.bytes(),
-        Ethereum: sts.enumStruct({
-            chainId: sts.bigint(),
-        }),
-        Kusama: sts.unit(),
-        Polkadot: sts.unit(),
-        PolkadotBulletin: sts.unit(),
-        Rococo: sts.unit(),
-        Westend: sts.unit(),
-        Wococo: sts.unit(),
-    }
-})
-
 export interface Weight {
     refTime: bigint
     proofSize: bigint
 }
 
-export type VersionedLocation = VersionedLocation_V2 | VersionedLocation_V3 | VersionedLocation_V4
-
-export interface VersionedLocation_V2 {
-    __kind: 'V2'
-    value: V2MultiLocation
-}
+export type VersionedLocation = VersionedLocation_V3 | VersionedLocation_V4 | VersionedLocation_V5
 
 export interface VersionedLocation_V3 {
     __kind: 'V3'
@@ -1206,232 +2248,14 @@ export interface VersionedLocation_V4 {
     value: V4Location
 }
 
-export interface V2MultiLocation {
+export interface VersionedLocation_V5 {
+    __kind: 'V5'
+    value: V5Location
+}
+
+export interface V4Location {
     parents: number
-    interior: V2Junctions
-}
-
-export type V2Junctions =
-    | V2Junctions_Here
-    | V2Junctions_X1
-    | V2Junctions_X2
-    | V2Junctions_X3
-    | V2Junctions_X4
-    | V2Junctions_X5
-    | V2Junctions_X6
-    | V2Junctions_X7
-    | V2Junctions_X8
-
-export interface V2Junctions_Here {
-    __kind: 'Here'
-}
-
-export interface V2Junctions_X1 {
-    __kind: 'X1'
-    value: V2Junction
-}
-
-export interface V2Junctions_X2 {
-    __kind: 'X2'
-    value: [V2Junction, V2Junction]
-}
-
-export interface V2Junctions_X3 {
-    __kind: 'X3'
-    value: [V2Junction, V2Junction, V2Junction]
-}
-
-export interface V2Junctions_X4 {
-    __kind: 'X4'
-    value: [V2Junction, V2Junction, V2Junction, V2Junction]
-}
-
-export interface V2Junctions_X5 {
-    __kind: 'X5'
-    value: [V2Junction, V2Junction, V2Junction, V2Junction, V2Junction]
-}
-
-export interface V2Junctions_X6 {
-    __kind: 'X6'
-    value: [V2Junction, V2Junction, V2Junction, V2Junction, V2Junction, V2Junction]
-}
-
-export interface V2Junctions_X7 {
-    __kind: 'X7'
-    value: [V2Junction, V2Junction, V2Junction, V2Junction, V2Junction, V2Junction, V2Junction]
-}
-
-export interface V2Junctions_X8 {
-    __kind: 'X8'
-    value: [V2Junction, V2Junction, V2Junction, V2Junction, V2Junction, V2Junction, V2Junction, V2Junction]
-}
-
-export type V2Junction =
-    | V2Junction_AccountId32
-    | V2Junction_AccountIndex64
-    | V2Junction_AccountKey20
-    | V2Junction_GeneralIndex
-    | V2Junction_GeneralKey
-    | V2Junction_OnlyChild
-    | V2Junction_PalletInstance
-    | V2Junction_Parachain
-    | V2Junction_Plurality
-
-export interface V2Junction_AccountId32 {
-    __kind: 'AccountId32'
-    network: V2NetworkId
-    id: Bytes
-}
-
-export interface V2Junction_AccountIndex64 {
-    __kind: 'AccountIndex64'
-    network: V2NetworkId
-    index: bigint
-}
-
-export interface V2Junction_AccountKey20 {
-    __kind: 'AccountKey20'
-    network: V2NetworkId
-    key: Bytes
-}
-
-export interface V2Junction_GeneralIndex {
-    __kind: 'GeneralIndex'
-    value: bigint
-}
-
-export interface V2Junction_GeneralKey {
-    __kind: 'GeneralKey'
-    value: WeakBoundedVec
-}
-
-export interface V2Junction_OnlyChild {
-    __kind: 'OnlyChild'
-}
-
-export interface V2Junction_PalletInstance {
-    __kind: 'PalletInstance'
-    value: number
-}
-
-export interface V2Junction_Parachain {
-    __kind: 'Parachain'
-    value: number
-}
-
-export interface V2Junction_Plurality {
-    __kind: 'Plurality'
-    id: V2BodyId
-    part: V2BodyPart
-}
-
-export type V2BodyPart =
-    | V2BodyPart_AtLeastProportion
-    | V2BodyPart_Fraction
-    | V2BodyPart_Members
-    | V2BodyPart_MoreThanProportion
-    | V2BodyPart_Voice
-
-export interface V2BodyPart_AtLeastProportion {
-    __kind: 'AtLeastProportion'
-    nom: number
-    denom: number
-}
-
-export interface V2BodyPart_Fraction {
-    __kind: 'Fraction'
-    nom: number
-    denom: number
-}
-
-export interface V2BodyPart_Members {
-    __kind: 'Members'
-    count: number
-}
-
-export interface V2BodyPart_MoreThanProportion {
-    __kind: 'MoreThanProportion'
-    nom: number
-    denom: number
-}
-
-export interface V2BodyPart_Voice {
-    __kind: 'Voice'
-}
-
-export type V2BodyId =
-    | V2BodyId_Administration
-    | V2BodyId_Defense
-    | V2BodyId_Executive
-    | V2BodyId_Index
-    | V2BodyId_Judicial
-    | V2BodyId_Legislative
-    | V2BodyId_Named
-    | V2BodyId_Technical
-    | V2BodyId_Treasury
-    | V2BodyId_Unit
-
-export interface V2BodyId_Administration {
-    __kind: 'Administration'
-}
-
-export interface V2BodyId_Defense {
-    __kind: 'Defense'
-}
-
-export interface V2BodyId_Executive {
-    __kind: 'Executive'
-}
-
-export interface V2BodyId_Index {
-    __kind: 'Index'
-    value: number
-}
-
-export interface V2BodyId_Judicial {
-    __kind: 'Judicial'
-}
-
-export interface V2BodyId_Legislative {
-    __kind: 'Legislative'
-}
-
-export interface V2BodyId_Named {
-    __kind: 'Named'
-    value: WeakBoundedVec
-}
-
-export interface V2BodyId_Technical {
-    __kind: 'Technical'
-}
-
-export interface V2BodyId_Treasury {
-    __kind: 'Treasury'
-}
-
-export interface V2BodyId_Unit {
-    __kind: 'Unit'
-}
-
-export type WeakBoundedVec = Bytes
-
-export type V2NetworkId = V2NetworkId_Any | V2NetworkId_Kusama | V2NetworkId_Named | V2NetworkId_Polkadot
-
-export interface V2NetworkId_Any {
-    __kind: 'Any'
-}
-
-export interface V2NetworkId_Kusama {
-    __kind: 'Kusama'
-}
-
-export interface V2NetworkId_Named {
-    __kind: 'Named'
-    value: WeakBoundedVec
-}
-
-export interface V2NetworkId_Polkadot {
-    __kind: 'Polkadot'
+    interior: V4Junctions
 }
 
 export type QueryStatus = QueryStatus_Pending | QueryStatus_Ready | QueryStatus_VersionNotifier
@@ -1456,12 +2280,7 @@ export interface QueryStatus_VersionNotifier {
     isActive: boolean
 }
 
-export type VersionedResponse = VersionedResponse_V2 | VersionedResponse_V3 | VersionedResponse_V4
-
-export interface VersionedResponse_V2 {
-    __kind: 'V2'
-    value: V2Response
-}
+export type VersionedResponse = VersionedResponse_V3 | VersionedResponse_V4 | VersionedResponse_V5
 
 export interface VersionedResponse_V3 {
     __kind: 'V3'
@@ -1471,6 +2290,11 @@ export interface VersionedResponse_V3 {
 export interface VersionedResponse_V4 {
     __kind: 'V4'
     value: V4Response
+}
+
+export interface VersionedResponse_V5 {
+    __kind: 'V5'
+    value: V5Response
 }
 
 export type V4Response =
@@ -1723,22 +2547,6 @@ export interface V3Error_WeightNotComputable {
     __kind: 'WeightNotComputable'
 }
 
-export type V3MaybeErrorCode = V3MaybeErrorCode_Error | V3MaybeErrorCode_Success | V3MaybeErrorCode_TruncatedError
-
-export interface V3MaybeErrorCode_Error {
-    __kind: 'Error'
-    value: Bytes
-}
-
-export interface V3MaybeErrorCode_Success {
-    __kind: 'Success'
-}
-
-export interface V3MaybeErrorCode_TruncatedError {
-    __kind: 'TruncatedError'
-    value: Bytes
-}
-
 export interface V4Asset {
     id: V4AssetId
     fun: V4Fungibility
@@ -1893,233 +2701,6 @@ export interface V3AssetInstance_Undefined {
     __kind: 'Undefined'
 }
 
-export type V2Response = V2Response_Assets | V2Response_ExecutionResult | V2Response_Null | V2Response_Version
-
-export interface V2Response_Assets {
-    __kind: 'Assets'
-    value: V2MultiAsset[]
-}
-
-export interface V2Response_ExecutionResult {
-    __kind: 'ExecutionResult'
-    value?: [number, V2Error] | undefined
-}
-
-export interface V2Response_Null {
-    __kind: 'Null'
-}
-
-export interface V2Response_Version {
-    __kind: 'Version'
-    value: number
-}
-
-export type V2Error =
-    | V2Error_AssetNotFound
-    | V2Error_BadOrigin
-    | V2Error_Barrier
-    | V2Error_DestinationUnsupported
-    | V2Error_ExceedsMaxMessageSize
-    | V2Error_FailedToDecode
-    | V2Error_FailedToTransactAsset
-    | V2Error_InvalidLocation
-    | V2Error_LocationCannotHold
-    | V2Error_MaxWeightInvalid
-    | V2Error_MultiLocationFull
-    | V2Error_MultiLocationNotInvertible
-    | V2Error_NotHoldingFees
-    | V2Error_NotWithdrawable
-    | V2Error_Overflow
-    | V2Error_TooExpensive
-    | V2Error_Transport
-    | V2Error_Trap
-    | V2Error_UnhandledXcmVersion
-    | V2Error_Unimplemented
-    | V2Error_UnknownClaim
-    | V2Error_Unroutable
-    | V2Error_UntrustedReserveLocation
-    | V2Error_UntrustedTeleportLocation
-    | V2Error_WeightLimitReached
-    | V2Error_WeightNotComputable
-
-export interface V2Error_AssetNotFound {
-    __kind: 'AssetNotFound'
-}
-
-export interface V2Error_BadOrigin {
-    __kind: 'BadOrigin'
-}
-
-export interface V2Error_Barrier {
-    __kind: 'Barrier'
-}
-
-export interface V2Error_DestinationUnsupported {
-    __kind: 'DestinationUnsupported'
-}
-
-export interface V2Error_ExceedsMaxMessageSize {
-    __kind: 'ExceedsMaxMessageSize'
-}
-
-export interface V2Error_FailedToDecode {
-    __kind: 'FailedToDecode'
-}
-
-export interface V2Error_FailedToTransactAsset {
-    __kind: 'FailedToTransactAsset'
-}
-
-export interface V2Error_InvalidLocation {
-    __kind: 'InvalidLocation'
-}
-
-export interface V2Error_LocationCannotHold {
-    __kind: 'LocationCannotHold'
-}
-
-export interface V2Error_MaxWeightInvalid {
-    __kind: 'MaxWeightInvalid'
-}
-
-export interface V2Error_MultiLocationFull {
-    __kind: 'MultiLocationFull'
-}
-
-export interface V2Error_MultiLocationNotInvertible {
-    __kind: 'MultiLocationNotInvertible'
-}
-
-export interface V2Error_NotHoldingFees {
-    __kind: 'NotHoldingFees'
-}
-
-export interface V2Error_NotWithdrawable {
-    __kind: 'NotWithdrawable'
-}
-
-export interface V2Error_Overflow {
-    __kind: 'Overflow'
-}
-
-export interface V2Error_TooExpensive {
-    __kind: 'TooExpensive'
-}
-
-export interface V2Error_Transport {
-    __kind: 'Transport'
-}
-
-export interface V2Error_Trap {
-    __kind: 'Trap'
-    value: bigint
-}
-
-export interface V2Error_UnhandledXcmVersion {
-    __kind: 'UnhandledXcmVersion'
-}
-
-export interface V2Error_Unimplemented {
-    __kind: 'Unimplemented'
-}
-
-export interface V2Error_UnknownClaim {
-    __kind: 'UnknownClaim'
-}
-
-export interface V2Error_Unroutable {
-    __kind: 'Unroutable'
-}
-
-export interface V2Error_UntrustedReserveLocation {
-    __kind: 'UntrustedReserveLocation'
-}
-
-export interface V2Error_UntrustedTeleportLocation {
-    __kind: 'UntrustedTeleportLocation'
-}
-
-export interface V2Error_WeightLimitReached {
-    __kind: 'WeightLimitReached'
-    value: bigint
-}
-
-export interface V2Error_WeightNotComputable {
-    __kind: 'WeightNotComputable'
-}
-
-export interface V2MultiAsset {
-    id: V2AssetId
-    fun: V2Fungibility
-}
-
-export type V2Fungibility = V2Fungibility_Fungible | V2Fungibility_NonFungible
-
-export interface V2Fungibility_Fungible {
-    __kind: 'Fungible'
-    value: bigint
-}
-
-export interface V2Fungibility_NonFungible {
-    __kind: 'NonFungible'
-    value: V2AssetInstance
-}
-
-export type V2AssetInstance =
-    | V2AssetInstance_Array16
-    | V2AssetInstance_Array32
-    | V2AssetInstance_Array4
-    | V2AssetInstance_Array8
-    | V2AssetInstance_Blob
-    | V2AssetInstance_Index
-    | V2AssetInstance_Undefined
-
-export interface V2AssetInstance_Array16 {
-    __kind: 'Array16'
-    value: Bytes
-}
-
-export interface V2AssetInstance_Array32 {
-    __kind: 'Array32'
-    value: Bytes
-}
-
-export interface V2AssetInstance_Array4 {
-    __kind: 'Array4'
-    value: Bytes
-}
-
-export interface V2AssetInstance_Array8 {
-    __kind: 'Array8'
-    value: Bytes
-}
-
-export interface V2AssetInstance_Blob {
-    __kind: 'Blob'
-    value: Bytes
-}
-
-export interface V2AssetInstance_Index {
-    __kind: 'Index'
-    value: bigint
-}
-
-export interface V2AssetInstance_Undefined {
-    __kind: 'Undefined'
-}
-
-export type V2AssetId = V2AssetId_Abstract | V2AssetId_Concrete
-
-export interface V2AssetId_Abstract {
-    __kind: 'Abstract'
-    value: Bytes
-}
-
-export interface V2AssetId_Concrete {
-    __kind: 'Concrete'
-    value: V2MultiLocation
-}
-
 export const QueryStatus: sts.Type<QueryStatus> = sts.closedEnum(() => {
     return {
         Pending: sts.enumStruct({
@@ -2141,9 +2722,181 @@ export const QueryStatus: sts.Type<QueryStatus> = sts.closedEnum(() => {
 
 export const VersionedResponse: sts.Type<VersionedResponse> = sts.closedEnum(() => {
     return {
-        V2: V2Response,
         V3: V3Response,
         V4: V4Response,
+        V5: V5Response,
+    }
+})
+
+export const V4Response: sts.Type<V4Response> = sts.closedEnum(() => {
+    return {
+        Assets: sts.array(() => V4Asset),
+        DispatchResult: V3MaybeErrorCode,
+        ExecutionResult: sts.option(() => sts.tuple(() => [sts.number(), V3Error])),
+        Null: sts.unit(),
+        PalletsInfo: sts.array(() => V4PalletInfo),
+        Version: sts.number(),
+    }
+})
+
+export const V4PalletInfo: sts.Type<V4PalletInfo> = sts.struct(() => {
+    return {
+        index: sts.number(),
+        name: sts.bytes(),
+        moduleName: sts.bytes(),
+        major: sts.number(),
+        minor: sts.number(),
+        patch: sts.number(),
+    }
+})
+
+export const V3Error: sts.Type<V3Error> = sts.closedEnum(() => {
+    return {
+        AssetNotFound: sts.unit(),
+        BadOrigin: sts.unit(),
+        Barrier: sts.unit(),
+        DestinationUnsupported: sts.unit(),
+        ExceedsMaxMessageSize: sts.unit(),
+        ExceedsStackLimit: sts.unit(),
+        ExpectationFalse: sts.unit(),
+        ExportError: sts.unit(),
+        FailedToDecode: sts.unit(),
+        FailedToTransactAsset: sts.unit(),
+        FeesNotMet: sts.unit(),
+        HoldingWouldOverflow: sts.unit(),
+        InvalidLocation: sts.unit(),
+        LocationCannotHold: sts.unit(),
+        LocationFull: sts.unit(),
+        LocationNotInvertible: sts.unit(),
+        LockError: sts.unit(),
+        MaxWeightInvalid: sts.unit(),
+        NameMismatch: sts.unit(),
+        NoDeal: sts.unit(),
+        NoPermission: sts.unit(),
+        NotDepositable: sts.unit(),
+        NotHoldingFees: sts.unit(),
+        NotWithdrawable: sts.unit(),
+        Overflow: sts.unit(),
+        PalletNotFound: sts.unit(),
+        ReanchorFailed: sts.unit(),
+        TooExpensive: sts.unit(),
+        Transport: sts.unit(),
+        Trap: sts.bigint(),
+        Unanchored: sts.unit(),
+        UnhandledXcmVersion: sts.unit(),
+        Unimplemented: sts.unit(),
+        UnknownClaim: sts.unit(),
+        Unroutable: sts.unit(),
+        UntrustedReserveLocation: sts.unit(),
+        UntrustedTeleportLocation: sts.unit(),
+        VersionIncompatible: sts.unit(),
+        WeightLimitReached: Weight,
+        WeightNotComputable: sts.unit(),
+    }
+})
+
+export const V3MaybeErrorCode: sts.Type<V3MaybeErrorCode> = sts.closedEnum(() => {
+    return {
+        Error: sts.bytes(),
+        Success: sts.unit(),
+        TruncatedError: sts.bytes(),
+    }
+})
+
+export const V4Asset: sts.Type<V4Asset> = sts.struct(() => {
+    return {
+        id: V4AssetId,
+        fun: V4Fungibility,
+    }
+})
+
+export const V4Fungibility: sts.Type<V4Fungibility> = sts.closedEnum(() => {
+    return {
+        Fungible: sts.bigint(),
+        NonFungible: V4AssetInstance,
+    }
+})
+
+export const V4AssetInstance: sts.Type<V4AssetInstance> = sts.closedEnum(() => {
+    return {
+        Array16: sts.bytes(),
+        Array32: sts.bytes(),
+        Array4: sts.bytes(),
+        Array8: sts.bytes(),
+        Index: sts.bigint(),
+        Undefined: sts.unit(),
+    }
+})
+
+export const V4AssetId: sts.Type<V4AssetId> = sts.struct(() => {
+    return {
+        parents: sts.number(),
+        interior: V4Junctions,
+    }
+})
+
+export const V4Junctions: sts.Type<V4Junctions> = sts.closedEnum(() => {
+    return {
+        Here: sts.unit(),
+        X1: sts.array(() => V4Junction),
+        X2: sts.array(() => V4Junction),
+        X3: sts.array(() => V4Junction),
+        X4: sts.array(() => V4Junction),
+        X5: sts.array(() => V4Junction),
+        X6: sts.array(() => V4Junction),
+        X7: sts.array(() => V4Junction),
+        X8: sts.array(() => V4Junction),
+    }
+})
+
+export const V4Junction: sts.Type<V4Junction> = sts.closedEnum(() => {
+    return {
+        AccountId32: sts.enumStruct({
+            network: sts.option(() => V4NetworkId),
+            id: sts.bytes(),
+        }),
+        AccountIndex64: sts.enumStruct({
+            network: sts.option(() => V4NetworkId),
+            index: sts.bigint(),
+        }),
+        AccountKey20: sts.enumStruct({
+            network: sts.option(() => V4NetworkId),
+            key: sts.bytes(),
+        }),
+        GeneralIndex: sts.bigint(),
+        GeneralKey: sts.enumStruct({
+            length: sts.number(),
+            data: sts.bytes(),
+        }),
+        GlobalConsensus: V4NetworkId,
+        OnlyChild: sts.unit(),
+        PalletInstance: sts.number(),
+        Parachain: sts.number(),
+        Plurality: sts.enumStruct({
+            id: V3BodyId,
+            part: V3BodyPart,
+        }),
+    }
+})
+
+export const V4NetworkId: sts.Type<V4NetworkId> = sts.closedEnum(() => {
+    return {
+        BitcoinCash: sts.unit(),
+        BitcoinCore: sts.unit(),
+        ByFork: sts.enumStruct({
+            blockNumber: sts.bigint(),
+            blockHash: sts.bytes(),
+        }),
+        ByGenesis: sts.bytes(),
+        Ethereum: sts.enumStruct({
+            chainId: sts.bigint(),
+        }),
+        Kusama: sts.unit(),
+        Polkadot: sts.unit(),
+        PolkadotBulletin: sts.unit(),
+        Rococo: sts.unit(),
+        Westend: sts.unit(),
+        Wococo: sts.unit(),
     }
 })
 
@@ -2166,14 +2919,6 @@ export const V3PalletInfo: sts.Type<V3PalletInfo> = sts.struct(() => {
         major: sts.number(),
         minor: sts.number(),
         patch: sts.number(),
-    }
-})
-
-export const V3MaybeErrorCode: sts.Type<V3MaybeErrorCode> = sts.closedEnum(() => {
-    return {
-        Error: sts.bytes(),
-        Success: sts.unit(),
-        TruncatedError: sts.bytes(),
     }
 })
 
@@ -2202,330 +2947,156 @@ export const V3AssetInstance: sts.Type<V3AssetInstance> = sts.closedEnum(() => {
     }
 })
 
-export const V2Response: sts.Type<V2Response> = sts.closedEnum(() => {
-    return {
-        Assets: sts.array(() => V2MultiAsset),
-        ExecutionResult: sts.option(() => sts.tuple(() => [sts.number(), V2Error])),
-        Null: sts.unit(),
-        Version: sts.number(),
-    }
-})
-
-export const V2Error: sts.Type<V2Error> = sts.closedEnum(() => {
-    return {
-        AssetNotFound: sts.unit(),
-        BadOrigin: sts.unit(),
-        Barrier: sts.unit(),
-        DestinationUnsupported: sts.unit(),
-        ExceedsMaxMessageSize: sts.unit(),
-        FailedToDecode: sts.unit(),
-        FailedToTransactAsset: sts.unit(),
-        InvalidLocation: sts.unit(),
-        LocationCannotHold: sts.unit(),
-        MaxWeightInvalid: sts.unit(),
-        MultiLocationFull: sts.unit(),
-        MultiLocationNotInvertible: sts.unit(),
-        NotHoldingFees: sts.unit(),
-        NotWithdrawable: sts.unit(),
-        Overflow: sts.unit(),
-        TooExpensive: sts.unit(),
-        Transport: sts.unit(),
-        Trap: sts.bigint(),
-        UnhandledXcmVersion: sts.unit(),
-        Unimplemented: sts.unit(),
-        UnknownClaim: sts.unit(),
-        Unroutable: sts.unit(),
-        UntrustedReserveLocation: sts.unit(),
-        UntrustedTeleportLocation: sts.unit(),
-        WeightLimitReached: sts.bigint(),
-        WeightNotComputable: sts.unit(),
-    }
-})
-
-export const V2MultiAsset: sts.Type<V2MultiAsset> = sts.struct(() => {
-    return {
-        id: V2AssetId,
-        fun: V2Fungibility,
-    }
-})
-
-export const V2Fungibility: sts.Type<V2Fungibility> = sts.closedEnum(() => {
-    return {
-        Fungible: sts.bigint(),
-        NonFungible: V2AssetInstance,
-    }
-})
-
-export const V2AssetInstance: sts.Type<V2AssetInstance> = sts.closedEnum(() => {
-    return {
-        Array16: sts.bytes(),
-        Array32: sts.bytes(),
-        Array4: sts.bytes(),
-        Array8: sts.bytes(),
-        Blob: sts.bytes(),
-        Index: sts.bigint(),
-        Undefined: sts.unit(),
-    }
-})
-
-export const V2AssetId: sts.Type<V2AssetId> = sts.closedEnum(() => {
+export const V3AssetId: sts.Type<V3AssetId> = sts.closedEnum(() => {
     return {
         Abstract: sts.bytes(),
-        Concrete: V2MultiLocation,
+        Concrete: V3MultiLocation,
     }
 })
 
-export const V2MultiLocation: sts.Type<V2MultiLocation> = sts.struct(() => {
+export const V3MultiLocation: sts.Type<V3MultiLocation> = sts.struct(() => {
     return {
         parents: sts.number(),
-        interior: V2Junctions,
+        interior: V3Junctions,
     }
 })
 
-export const V2Junctions: sts.Type<V2Junctions> = sts.closedEnum(() => {
+export const V3Junctions: sts.Type<V3Junctions> = sts.closedEnum(() => {
     return {
         Here: sts.unit(),
-        X1: V2Junction,
-        X2: sts.tuple(() => [V2Junction, V2Junction]),
-        X3: sts.tuple(() => [V2Junction, V2Junction, V2Junction]),
-        X4: sts.tuple(() => [V2Junction, V2Junction, V2Junction, V2Junction]),
-        X5: sts.tuple(() => [V2Junction, V2Junction, V2Junction, V2Junction, V2Junction]),
-        X6: sts.tuple(() => [V2Junction, V2Junction, V2Junction, V2Junction, V2Junction, V2Junction]),
-        X7: sts.tuple(() => [V2Junction, V2Junction, V2Junction, V2Junction, V2Junction, V2Junction, V2Junction]),
+        X1: V3Junction,
+        X2: sts.tuple(() => [V3Junction, V3Junction]),
+        X3: sts.tuple(() => [V3Junction, V3Junction, V3Junction]),
+        X4: sts.tuple(() => [V3Junction, V3Junction, V3Junction, V3Junction]),
+        X5: sts.tuple(() => [V3Junction, V3Junction, V3Junction, V3Junction, V3Junction]),
+        X6: sts.tuple(() => [V3Junction, V3Junction, V3Junction, V3Junction, V3Junction, V3Junction]),
+        X7: sts.tuple(() => [V3Junction, V3Junction, V3Junction, V3Junction, V3Junction, V3Junction, V3Junction]),
         X8: sts.tuple(() => [
-            V2Junction,
-            V2Junction,
-            V2Junction,
-            V2Junction,
-            V2Junction,
-            V2Junction,
-            V2Junction,
-            V2Junction,
+            V3Junction,
+            V3Junction,
+            V3Junction,
+            V3Junction,
+            V3Junction,
+            V3Junction,
+            V3Junction,
+            V3Junction,
         ]),
     }
 })
 
-export const V2Junction: sts.Type<V2Junction> = sts.closedEnum(() => {
+export const V3Junction: sts.Type<V3Junction> = sts.closedEnum(() => {
     return {
         AccountId32: sts.enumStruct({
-            network: V2NetworkId,
+            network: sts.option(() => V3NetworkId),
             id: sts.bytes(),
         }),
         AccountIndex64: sts.enumStruct({
-            network: V2NetworkId,
+            network: sts.option(() => V3NetworkId),
             index: sts.bigint(),
         }),
         AccountKey20: sts.enumStruct({
-            network: V2NetworkId,
+            network: sts.option(() => V3NetworkId),
             key: sts.bytes(),
         }),
         GeneralIndex: sts.bigint(),
-        GeneralKey: WeakBoundedVec,
+        GeneralKey: sts.enumStruct({
+            length: sts.number(),
+            data: sts.bytes(),
+        }),
+        GlobalConsensus: V3NetworkId,
         OnlyChild: sts.unit(),
         PalletInstance: sts.number(),
         Parachain: sts.number(),
         Plurality: sts.enumStruct({
-            id: V2BodyId,
-            part: V2BodyPart,
+            id: V3BodyId,
+            part: V3BodyPart,
         }),
     }
 })
 
-export const V2BodyPart: sts.Type<V2BodyPart> = sts.closedEnum(() => {
+export const V3NetworkId: sts.Type<V3NetworkId> = sts.closedEnum(() => {
     return {
-        AtLeastProportion: sts.enumStruct({
-            nom: sts.number(),
-            denom: sts.number(),
+        BitcoinCash: sts.unit(),
+        BitcoinCore: sts.unit(),
+        ByFork: sts.enumStruct({
+            blockNumber: sts.bigint(),
+            blockHash: sts.bytes(),
         }),
-        Fraction: sts.enumStruct({
-            nom: sts.number(),
-            denom: sts.number(),
+        ByGenesis: sts.bytes(),
+        Ethereum: sts.enumStruct({
+            chainId: sts.bigint(),
         }),
-        Members: sts.enumStruct({
-            count: sts.number(),
-        }),
-        MoreThanProportion: sts.enumStruct({
-            nom: sts.number(),
-            denom: sts.number(),
-        }),
-        Voice: sts.unit(),
-    }
-})
-
-export const V2BodyId: sts.Type<V2BodyId> = sts.closedEnum(() => {
-    return {
-        Administration: sts.unit(),
-        Defense: sts.unit(),
-        Executive: sts.unit(),
-        Index: sts.number(),
-        Judicial: sts.unit(),
-        Legislative: sts.unit(),
-        Named: WeakBoundedVec,
-        Technical: sts.unit(),
-        Treasury: sts.unit(),
-        Unit: sts.unit(),
-    }
-})
-
-export const WeakBoundedVec = sts.bytes()
-
-export const V2NetworkId: sts.Type<V2NetworkId> = sts.closedEnum(() => {
-    return {
-        Any: sts.unit(),
         Kusama: sts.unit(),
-        Named: WeakBoundedVec,
         Polkadot: sts.unit(),
+        PolkadotBulletin: sts.unit(),
+        Rococo: sts.unit(),
+        Westend: sts.unit(),
+        Wococo: sts.unit(),
     }
 })
 
-export type Id = number
+export type CandidateHash = Bytes
 
-export interface ParaInfo {
-    manager: AccountId32
-    deposit: bigint
-    locked?: boolean | undefined
+export interface PendingSlashes {
+    keys: [V8ValidatorIndex, V8Public][]
+    kind: DisputeOffenceKind
 }
 
-export const ParaInfo: sts.Type<ParaInfo> = sts.struct(() => {
+export type DisputeOffenceKind =
+    | DisputeOffenceKind_AgainstValid
+    | DisputeOffenceKind_ForInvalidApproved
+    | DisputeOffenceKind_ForInvalidBacked
+
+export interface DisputeOffenceKind_AgainstValid {
+    __kind: 'AgainstValid'
+}
+
+export interface DisputeOffenceKind_ForInvalidApproved {
+    __kind: 'ForInvalidApproved'
+}
+
+export interface DisputeOffenceKind_ForInvalidBacked {
+    __kind: 'ForInvalidBacked'
+}
+
+export type V8Public = Bytes
+
+export type V8ValidatorIndex = number
+
+export const PendingSlashes: sts.Type<PendingSlashes> = sts.struct(() => {
     return {
-        manager: AccountId32,
-        deposit: sts.bigint(),
-        locked: sts.option(() => sts.boolean()),
+        keys: sts.array(() => sts.tuple(() => [V8ValidatorIndex, V8Public])),
+        kind: DisputeOffenceKind,
     }
 })
 
-export type V6ExecutorParam =
-    | V6ExecutorParam_MaxMemoryPages
-    | V6ExecutorParam_PrecheckingMaxMemory
-    | V6ExecutorParam_PvfExecTimeout
-    | V6ExecutorParam_PvfPrepTimeout
-    | V6ExecutorParam_StackLogicalMax
-    | V6ExecutorParam_StackNativeMax
-    | V6ExecutorParam_WasmExtBulkMemory
+export const DisputeOffenceKind: sts.Type<DisputeOffenceKind> = sts.closedEnum(() => {
+    return {
+        AgainstValid: sts.unit(),
+        ForInvalidApproved: sts.unit(),
+        ForInvalidBacked: sts.unit(),
+    }
+})
 
-export interface V6ExecutorParam_MaxMemoryPages {
-    __kind: 'MaxMemoryPages'
-    value: number
-}
+export const V8Public = sts.bytes()
 
-export interface V6ExecutorParam_PrecheckingMaxMemory {
-    __kind: 'PrecheckingMaxMemory'
-    value: bigint
-}
+export const V8ValidatorIndex = sts.number()
 
-export interface V6ExecutorParam_PvfExecTimeout {
-    __kind: 'PvfExecTimeout'
-    value: [V6PvfExecKind, bigint]
-}
+export const CandidateHash = sts.bytes()
 
-export interface V6ExecutorParam_PvfPrepTimeout {
-    __kind: 'PvfPrepTimeout'
-    value: [V6PvfPrepKind, bigint]
-}
-
-export interface V6ExecutorParam_StackLogicalMax {
-    __kind: 'StackLogicalMax'
-    value: number
-}
-
-export interface V6ExecutorParam_StackNativeMax {
-    __kind: 'StackNativeMax'
-    value: number
-}
-
-export interface V6ExecutorParam_WasmExtBulkMemory {
-    __kind: 'WasmExtBulkMemory'
-}
-
-export type V6PvfPrepKind = V6PvfPrepKind_Precheck | V6PvfPrepKind_Prepare
-
-export interface V6PvfPrepKind_Precheck {
-    __kind: 'Precheck'
-}
-
-export interface V6PvfPrepKind_Prepare {
-    __kind: 'Prepare'
-}
-
-export type V6PvfExecKind = V6PvfExecKind_Approval | V6PvfExecKind_Backing
-
-export interface V6PvfExecKind_Approval {
-    __kind: 'Approval'
-}
-
-export interface V6PvfExecKind_Backing {
-    __kind: 'Backing'
+export interface AuthorizedCodeHashAndExpiry {
+    codeHash: ValidationCodeHash
+    expireAt: number
 }
 
 export type ValidationCodeHash = Bytes
 
-export interface PvfCheckActiveVoteState {
-    votesAccept: BitSequence
-    votesReject: BitSequence
-    age: number
-    createdAt: number
-    causes: PvfCheckCause[]
-}
-
-export type PvfCheckCause = PvfCheckCause_Onboarding | PvfCheckCause_Upgrade
-
-export interface PvfCheckCause_Onboarding {
-    __kind: 'Onboarding'
-    value: Id
-}
-
-export interface PvfCheckCause_Upgrade {
-    __kind: 'Upgrade'
-    id: Id
-    includedAt: number
-    setGoAhead: SetGoAhead
-}
-
-export type SetGoAhead = SetGoAhead_No | SetGoAhead_Yes
-
-export interface SetGoAhead_No {
-    __kind: 'No'
-}
-
-export interface SetGoAhead_Yes {
-    __kind: 'Yes'
-}
-
-export const PvfCheckActiveVoteState: sts.Type<PvfCheckActiveVoteState> = sts.struct(() => {
+export const AuthorizedCodeHashAndExpiry: sts.Type<AuthorizedCodeHashAndExpiry> = sts.struct(() => {
     return {
-        votesAccept: sts.bitseq(),
-        votesReject: sts.bitseq(),
-        age: sts.number(),
-        createdAt: sts.number(),
-        causes: sts.array(() => PvfCheckCause),
+        codeHash: ValidationCodeHash,
+        expireAt: sts.number(),
     }
 })
-
-export const PvfCheckCause: sts.Type<PvfCheckCause> = sts.closedEnum(() => {
-    return {
-        Onboarding: Id,
-        Upgrade: sts.enumStruct({
-            id: Id,
-            includedAt: sts.number(),
-            setGoAhead: SetGoAhead,
-        }),
-    }
-})
-
-export const SetGoAhead: sts.Type<SetGoAhead> = sts.closedEnum(() => {
-    return {
-        No: sts.unit(),
-        Yes: sts.unit(),
-    }
-})
-
-export const ValidationCodeHash = sts.bytes()
-
-export interface ParasEntry {
-    assignment: Assignment
-    availabilityTimeouts: number
-    ttl: number
-}
 
 export type Assignment = Assignment_Bulk | Assignment_Pool
 
@@ -2537,175 +3108,148 @@ export interface Assignment_Bulk {
 export interface Assignment_Pool {
     __kind: 'Pool'
     paraId: Id
-    coreIndex: V6CoreIndex
+    coreIndex: V8CoreIndex
 }
 
-export type V6CoreIndex = number
-
-export const ParasEntry: sts.Type<ParasEntry> = sts.struct(() => {
-    return {
-        assignment: Assignment,
-        availabilityTimeouts: sts.number(),
-        ttl: sts.number(),
-    }
-})
+export type V8CoreIndex = number
 
 export const Assignment: sts.Type<Assignment> = sts.closedEnum(() => {
     return {
         Bulk: Id,
         Pool: sts.enumStruct({
             paraId: Id,
-            coreIndex: V6CoreIndex,
+            coreIndex: V8CoreIndex,
         }),
     }
 })
 
-export const V6CoreIndex = sts.number()
-
-export type CoreOccupied = CoreOccupied_Free | CoreOccupied_Paras
-
-export interface CoreOccupied_Free {
-    __kind: 'Free'
-}
-
-export interface CoreOccupied_Paras {
-    __kind: 'Paras'
-    value: ParasEntry
-}
-
-export const CoreOccupied: sts.Type<CoreOccupied> = sts.closedEnum(() => {
-    return {
-        Free: sts.unit(),
-        Paras: ParasEntry,
-    }
-})
-
-export interface V6ScrapedOnChainVotes {
+export interface ScrapedOnChainVotes {
     session: number
-    backingValidatorsPerCandidate: [V6CandidateReceipt, [V6ValidatorIndex, V6ValidityAttestation][]][]
-    disputes: V6DisputeStatementSet[]
+    backingValidatorsPerCandidate: [CandidateReceiptV2, [V8ValidatorIndex, V8ValidityAttestation][]][]
+    disputes: V8DisputeStatementSet[]
 }
 
-export interface V6DisputeStatementSet {
+export interface V8DisputeStatementSet {
     candidateHash: CandidateHash
     session: number
-    statements: [V6DisputeStatement, V6ValidatorIndex, Bytes][]
+    statements: [V8DisputeStatement, V8ValidatorIndex, V8Signature][]
 }
 
-export type V6DisputeStatement = V6DisputeStatement_Invalid | V6DisputeStatement_Valid
+export type V8Signature = Bytes
 
-export interface V6DisputeStatement_Invalid {
+export type V8DisputeStatement = V8DisputeStatement_Invalid | V8DisputeStatement_Valid
+
+export interface V8DisputeStatement_Invalid {
     __kind: 'Invalid'
-    value: V6InvalidDisputeStatementKind
+    value: V8InvalidDisputeStatementKind
 }
 
-export interface V6DisputeStatement_Valid {
+export interface V8DisputeStatement_Valid {
     __kind: 'Valid'
-    value: V6ValidDisputeStatementKind
+    value: V8ValidDisputeStatementKind
 }
 
-export type V6ValidDisputeStatementKind =
-    | V6ValidDisputeStatementKind_ApprovalChecking
-    | V6ValidDisputeStatementKind_ApprovalCheckingMultipleCandidates
-    | V6ValidDisputeStatementKind_BackingSeconded
-    | V6ValidDisputeStatementKind_BackingValid
-    | V6ValidDisputeStatementKind_Explicit
+export type V8ValidDisputeStatementKind =
+    | V8ValidDisputeStatementKind_ApprovalChecking
+    | V8ValidDisputeStatementKind_ApprovalCheckingMultipleCandidates
+    | V8ValidDisputeStatementKind_BackingSeconded
+    | V8ValidDisputeStatementKind_BackingValid
+    | V8ValidDisputeStatementKind_Explicit
 
-export interface V6ValidDisputeStatementKind_ApprovalChecking {
+export interface V8ValidDisputeStatementKind_ApprovalChecking {
     __kind: 'ApprovalChecking'
 }
 
-export interface V6ValidDisputeStatementKind_ApprovalCheckingMultipleCandidates {
+export interface V8ValidDisputeStatementKind_ApprovalCheckingMultipleCandidates {
     __kind: 'ApprovalCheckingMultipleCandidates'
     value: CandidateHash[]
 }
 
-export interface V6ValidDisputeStatementKind_BackingSeconded {
+export interface V8ValidDisputeStatementKind_BackingSeconded {
     __kind: 'BackingSeconded'
     value: H256
 }
 
-export interface V6ValidDisputeStatementKind_BackingValid {
+export interface V8ValidDisputeStatementKind_BackingValid {
     __kind: 'BackingValid'
     value: H256
 }
 
-export interface V6ValidDisputeStatementKind_Explicit {
+export interface V8ValidDisputeStatementKind_Explicit {
     __kind: 'Explicit'
 }
 
-export type V6InvalidDisputeStatementKind = V6InvalidDisputeStatementKind_Explicit
+export type V8InvalidDisputeStatementKind = V8InvalidDisputeStatementKind_Explicit
 
-export interface V6InvalidDisputeStatementKind_Explicit {
+export interface V8InvalidDisputeStatementKind_Explicit {
     __kind: 'Explicit'
 }
 
-export type CandidateHash = Bytes
+export type V8ValidityAttestation = V8ValidityAttestation_Explicit | V8ValidityAttestation_Implicit
 
-export type V6ValidityAttestation = V6ValidityAttestation_Explicit | V6ValidityAttestation_Implicit
-
-export interface V6ValidityAttestation_Explicit {
+export interface V8ValidityAttestation_Explicit {
     __kind: 'Explicit'
-    value: Bytes
+    value: V8Signature
 }
 
-export interface V6ValidityAttestation_Implicit {
+export interface V8ValidityAttestation_Implicit {
     __kind: 'Implicit'
-    value: Bytes
+    value: V8Signature
 }
 
-export type V6ValidatorIndex = number
-
-export interface V6CandidateReceipt {
-    descriptor: V6CandidateDescriptor
+export interface CandidateReceiptV2 {
+    descriptor: CandidateDescriptorV2
     commitmentsHash: H256
 }
 
-export interface V6CandidateDescriptor {
+export interface CandidateDescriptorV2 {
     paraId: Id
     relayParent: H256
-    collator: V6Public
+    version: InternalVersion
+    coreIndex: number
+    sessionIndex: number
+    reserved1: Bytes
     persistedValidationDataHash: H256
     povHash: H256
     erasureRoot: H256
-    signature: V6Signature
+    reserved2: Bytes
     paraHead: H256
     validationCodeHash: ValidationCodeHash
 }
 
-export type V6Signature = Bytes
+export type InternalVersion = number
 
-export type V6Public = Bytes
-
-export const V6ScrapedOnChainVotes: sts.Type<V6ScrapedOnChainVotes> = sts.struct(() => {
+export const ScrapedOnChainVotes: sts.Type<ScrapedOnChainVotes> = sts.struct(() => {
     return {
         session: sts.number(),
         backingValidatorsPerCandidate: sts.array(() =>
             sts.tuple(() => [
-                V6CandidateReceipt,
-                sts.array(() => sts.tuple(() => [V6ValidatorIndex, V6ValidityAttestation])),
+                CandidateReceiptV2,
+                sts.array(() => sts.tuple(() => [V8ValidatorIndex, V8ValidityAttestation])),
             ])
         ),
-        disputes: sts.array(() => V6DisputeStatementSet),
+        disputes: sts.array(() => V8DisputeStatementSet),
     }
 })
 
-export const V6DisputeStatementSet: sts.Type<V6DisputeStatementSet> = sts.struct(() => {
+export const V8DisputeStatementSet: sts.Type<V8DisputeStatementSet> = sts.struct(() => {
     return {
         candidateHash: CandidateHash,
         session: sts.number(),
-        statements: sts.array(() => sts.tuple(() => [V6DisputeStatement, V6ValidatorIndex, sts.bytes()])),
+        statements: sts.array(() => sts.tuple(() => [V8DisputeStatement, V8ValidatorIndex, V8Signature])),
     }
 })
 
-export const V6DisputeStatement: sts.Type<V6DisputeStatement> = sts.closedEnum(() => {
+export const V8Signature = sts.bytes()
+
+export const V8DisputeStatement: sts.Type<V8DisputeStatement> = sts.closedEnum(() => {
     return {
-        Invalid: V6InvalidDisputeStatementKind,
-        Valid: V6ValidDisputeStatementKind,
+        Invalid: V8InvalidDisputeStatementKind,
+        Valid: V8ValidDisputeStatementKind,
     }
 })
 
-export const V6ValidDisputeStatementKind: sts.Type<V6ValidDisputeStatementKind> = sts.closedEnum(() => {
+export const V8ValidDisputeStatementKind: sts.Type<V8ValidDisputeStatementKind> = sts.closedEnum(() => {
     return {
         ApprovalChecking: sts.unit(),
         ApprovalCheckingMultipleCandidates: sts.array(() => CandidateHash),
@@ -2715,364 +3259,241 @@ export const V6ValidDisputeStatementKind: sts.Type<V6ValidDisputeStatementKind> 
     }
 })
 
-export const V6InvalidDisputeStatementKind: sts.Type<V6InvalidDisputeStatementKind> = sts.closedEnum(() => {
+export const V8InvalidDisputeStatementKind: sts.Type<V8InvalidDisputeStatementKind> = sts.closedEnum(() => {
     return {
         Explicit: sts.unit(),
     }
 })
 
-export const CandidateHash = sts.bytes()
-
-export const V6ValidityAttestation: sts.Type<V6ValidityAttestation> = sts.closedEnum(() => {
+export const V8ValidityAttestation: sts.Type<V8ValidityAttestation> = sts.closedEnum(() => {
     return {
-        Explicit: sts.bytes(),
-        Implicit: sts.bytes(),
+        Explicit: V8Signature,
+        Implicit: V8Signature,
     }
 })
 
-export const V6ValidatorIndex = sts.number()
+export type Id = number
 
-export const V6CandidateReceipt: sts.Type<V6CandidateReceipt> = sts.struct(() => {
+export interface CandidatePendingAvailability {
+    core: V8CoreIndex
+    hash: CandidateHash
+    descriptor: CandidateDescriptorV2
+    commitments: V8CandidateCommitments
+    availabilityVotes: BitSequence
+    backers: BitSequence
+    relayParentNumber: number
+    backedInNumber: number
+    backingGroup: V8GroupIndex
+}
+
+export type V8GroupIndex = number
+
+export interface V8CandidateCommitments {
+    upwardMessages: Bytes[]
+    horizontalMessages: OutboundHrmpMessage[]
+    newValidationCode?: ValidationCode | undefined
+    headData: HeadData
+    processedDownwardMessages: number
+    hrmpWatermark: number
+}
+
+export type HeadData = Bytes
+
+export type ValidationCode = Bytes
+
+export interface OutboundHrmpMessage {
+    recipient: Id
+    data: Bytes
+}
+
+export const CandidatePendingAvailability: sts.Type<CandidatePendingAvailability> = sts.struct(() => {
     return {
-        descriptor: V6CandidateDescriptor,
-        commitmentsHash: H256,
+        core: V8CoreIndex,
+        hash: CandidateHash,
+        descriptor: CandidateDescriptorV2,
+        commitments: V8CandidateCommitments,
+        availabilityVotes: sts.bitseq(),
+        backers: sts.bitseq(),
+        relayParentNumber: sts.number(),
+        backedInNumber: sts.number(),
+        backingGroup: V8GroupIndex,
     }
 })
 
-export const V6CandidateDescriptor: sts.Type<V6CandidateDescriptor> = sts.struct(() => {
+export const V8CandidateCommitments: sts.Type<V8CandidateCommitments> = sts.struct(() => {
+    return {
+        upwardMessages: sts.array(() => sts.bytes()),
+        horizontalMessages: sts.array(() => OutboundHrmpMessage),
+        newValidationCode: sts.option(() => ValidationCode),
+        headData: HeadData,
+        processedDownwardMessages: sts.number(),
+        hrmpWatermark: sts.number(),
+    }
+})
+
+export const OutboundHrmpMessage: sts.Type<OutboundHrmpMessage> = sts.struct(() => {
+    return {
+        recipient: Id,
+        data: sts.bytes(),
+    }
+})
+
+export const CandidateDescriptorV2: sts.Type<CandidateDescriptorV2> = sts.struct(() => {
     return {
         paraId: Id,
         relayParent: H256,
-        collator: V6Public,
+        version: InternalVersion,
+        coreIndex: sts.number(),
+        sessionIndex: sts.number(),
+        reserved1: sts.bytes(),
         persistedValidationDataHash: H256,
         povHash: H256,
         erasureRoot: H256,
-        signature: V6Signature,
+        reserved2: sts.bytes(),
         paraHead: H256,
         validationCodeHash: ValidationCodeHash,
     }
 })
 
-export const V6Signature = sts.bytes()
-
-export const V6Public = sts.bytes()
+export const InternalVersion = sts.number()
 
 export interface AllowedRelayParentsTracker {
-    buffer: [H256, H256][]
+    buffer: RelayParentInfo[]
     latestNumber: number
+}
+
+export interface RelayParentInfo {
+    relayParent: H256
+    stateRoot: H256
+    claimQueue: [Id, [number, V8CoreIndex[]][]][]
 }
 
 export const AllowedRelayParentsTracker: sts.Type<AllowedRelayParentsTracker> = sts.struct(() => {
     return {
-        buffer: sts.array(() => sts.tuple(() => [H256, H256])),
+        buffer: sts.array(() => RelayParentInfo),
         latestNumber: sts.number(),
     }
 })
 
-export interface HostConfiguration {
-    maxCodeSize: number
-    maxHeadDataSize: number
-    maxUpwardQueueCount: number
-    maxUpwardQueueSize: number
-    maxUpwardMessageSize: number
-    maxUpwardMessageNumPerCandidate: number
-    hrmpMaxMessageNumPerCandidate: number
-    validationUpgradeCooldown: number
-    validationUpgradeDelay: number
-    asyncBackingParams: V6AsyncBackingParams
-    maxPovSize: number
-    maxDownwardMessageSize: number
-    hrmpMaxParachainOutboundChannels: number
-    hrmpSenderDeposit: bigint
-    hrmpRecipientDeposit: bigint
-    hrmpChannelMaxCapacity: number
-    hrmpChannelMaxTotalSize: number
-    hrmpMaxParachainInboundChannels: number
-    hrmpChannelMaxMessageSize: number
-    executorParams: V6ExecutorParam[]
-    codeRetentionPeriod: number
-    maxValidators?: number | undefined
-    disputePeriod: number
-    disputePostConclusionAcceptancePeriod: number
-    noShowSlots: number
-    nDelayTranches: number
-    zerothDelayTrancheWidth: number
-    neededApprovals: number
-    relayVrfModuloSamples: number
-    pvfVotingTtl: number
-    minimumValidationUpgradeDelay: number
-    minimumBackingVotes: number
-    nodeFeatures: BitSequence
-    approvalVotingParams: ApprovalVotingParams
-    schedulerParams: SchedulerParams
-}
+export const RelayParentInfo: sts.Type<RelayParentInfo> = sts.struct(() => {
+    return {
+        relayParent: H256,
+        stateRoot: H256,
+        claimQueue: sts.array(() =>
+            sts.tuple(() => [Id, sts.array(() => sts.tuple(() => [sts.number(), sts.array(() => V8CoreIndex)]))])
+        ),
+    }
+})
 
-export interface SchedulerParams {
-    groupRotationFrequency: number
-    parasAvailabilityPeriod: number
-    maxValidatorsPerCore?: number | undefined
-    lookahead: number
-    numCores: number
-    maxAvailabilityTimeouts: number
-    onDemandQueueMaxSize: number
-    onDemandTargetQueueUtilization: Perbill
-    onDemandFeeVariability: Perbill
-    onDemandBaseFee: bigint
-    ttl: number
+export interface ValidatorBonusInformation {
+    cycleDuration: number
+    performanceThreshold: Perbill
+    minimumGoodEras: number
+    payoutAccount: AccountId32
+    bonusAmounts: bigint[]
+    lastPaidEra: number
 }
 
 export type Perbill = number
 
-export interface ApprovalVotingParams {
-    maxApprovalCoalesceCount: number
-}
-
-export interface V6AsyncBackingParams {
-    maxCandidateDepth: number
-    allowedAncestryLen: number
-}
-
-export const HostConfiguration: sts.Type<HostConfiguration> = sts.struct(() => {
+export const ValidatorBonusInformation: sts.Type<ValidatorBonusInformation> = sts.struct(() => {
     return {
-        maxCodeSize: sts.number(),
-        maxHeadDataSize: sts.number(),
-        maxUpwardQueueCount: sts.number(),
-        maxUpwardQueueSize: sts.number(),
-        maxUpwardMessageSize: sts.number(),
-        maxUpwardMessageNumPerCandidate: sts.number(),
-        hrmpMaxMessageNumPerCandidate: sts.number(),
-        validationUpgradeCooldown: sts.number(),
-        validationUpgradeDelay: sts.number(),
-        asyncBackingParams: V6AsyncBackingParams,
-        maxPovSize: sts.number(),
-        maxDownwardMessageSize: sts.number(),
-        hrmpMaxParachainOutboundChannels: sts.number(),
-        hrmpSenderDeposit: sts.bigint(),
-        hrmpRecipientDeposit: sts.bigint(),
-        hrmpChannelMaxCapacity: sts.number(),
-        hrmpChannelMaxTotalSize: sts.number(),
-        hrmpMaxParachainInboundChannels: sts.number(),
-        hrmpChannelMaxMessageSize: sts.number(),
-        executorParams: sts.array(() => V6ExecutorParam),
-        codeRetentionPeriod: sts.number(),
-        maxValidators: sts.option(() => sts.number()),
-        disputePeriod: sts.number(),
-        disputePostConclusionAcceptancePeriod: sts.number(),
-        noShowSlots: sts.number(),
-        nDelayTranches: sts.number(),
-        zerothDelayTrancheWidth: sts.number(),
-        neededApprovals: sts.number(),
-        relayVrfModuloSamples: sts.number(),
-        pvfVotingTtl: sts.number(),
-        minimumValidationUpgradeDelay: sts.number(),
-        minimumBackingVotes: sts.number(),
-        nodeFeatures: sts.bitseq(),
-        approvalVotingParams: ApprovalVotingParams,
-        schedulerParams: SchedulerParams,
+        cycleDuration: sts.number(),
+        performanceThreshold: Perbill,
+        minimumGoodEras: sts.number(),
+        payoutAccount: AccountId32,
+        bonusAmounts: sts.array(() => sts.bigint()),
+        lastPaidEra: sts.number(),
     }
 })
 
-export const SchedulerParams: sts.Type<SchedulerParams> = sts.struct(() => {
+export interface BondedPoolInner {
+    state: PoolState
+    commission: Commission
+    tokenId: bigint
+    capacity: bigint
+    creationBlock: number
+    name: BoundedVec
+}
+
+export type BoundedVec = Bytes
+
+export interface Commission {
+    current?: Perbill | undefined
+    max?: Perbill | undefined
+    changeRate?: CommissionChangeRate | undefined
+    throttleFrom?: number | undefined
+}
+
+export interface CommissionChangeRate {
+    maxDelta: Perbill
+    minDelay: number
+}
+
+export type PoolState = PoolState_Destroying | PoolState_Open
+
+export interface PoolState_Destroying {
+    __kind: 'Destroying'
+}
+
+export interface PoolState_Open {
+    __kind: 'Open'
+}
+
+export const BondedPoolInner: sts.Type<BondedPoolInner> = sts.struct(() => {
     return {
-        groupRotationFrequency: sts.number(),
-        parasAvailabilityPeriod: sts.number(),
-        maxValidatorsPerCore: sts.option(() => sts.number()),
-        lookahead: sts.number(),
-        numCores: sts.number(),
-        maxAvailabilityTimeouts: sts.number(),
-        onDemandQueueMaxSize: sts.number(),
-        onDemandTargetQueueUtilization: Perbill,
-        onDemandFeeVariability: Perbill,
-        onDemandBaseFee: sts.bigint(),
-        ttl: sts.number(),
+        state: PoolState,
+        commission: Commission,
+        tokenId: sts.bigint(),
+        capacity: sts.bigint(),
+        creationBlock: sts.number(),
+        name: BoundedVec,
     }
 })
 
-export const Perbill = sts.number()
-
-export const ApprovalVotingParams: sts.Type<ApprovalVotingParams> = sts.struct(() => {
+export const Commission: sts.Type<Commission> = sts.struct(() => {
     return {
-        maxApprovalCoalesceCount: sts.number(),
+        current: sts.option(() => Perbill),
+        max: sts.option(() => Perbill),
+        changeRate: sts.option(() => CommissionChangeRate),
+        throttleFrom: sts.option(() => sts.number()),
     }
 })
 
-export const V6AsyncBackingParams: sts.Type<V6AsyncBackingParams> = sts.struct(() => {
+export const CommissionChangeRate: sts.Type<CommissionChangeRate> = sts.struct(() => {
     return {
-        maxCandidateDepth: sts.number(),
-        allowedAncestryLen: sts.number(),
+        maxDelta: Perbill,
+        minDelay: sts.number(),
     }
 })
 
-export interface StakingInfo {
-    annualInflationRate: Perbill
-    collatorPayoutCut: Perbill
-    treasuryPayoutCut: Perbill
+export const PoolState: sts.Type<PoolState> = sts.closedEnum(() => {
+    return {
+        Destroying: sts.unit(),
+        Open: sts.unit(),
+    }
+})
+
+export type Provider = Provider_Allocation | Provider_AuthorityDeposit | Provider_System
+
+export interface Provider_Allocation {
+    __kind: 'Allocation'
 }
 
-export type RewardDestination =
-    | RewardDestination_Account
-    | RewardDestination_Controller
-    | RewardDestination_None
-    | RewardDestination_Staked
-    | RewardDestination_Stash
-
-export interface RewardDestination_Account {
-    __kind: 'Account'
-    value: AccountId32
-}
-
-export interface RewardDestination_Controller {
-    __kind: 'Controller'
-}
-
-export interface RewardDestination_None {
-    __kind: 'None'
-}
-
-export interface RewardDestination_Staked {
-    __kind: 'Staked'
-}
-
-export interface RewardDestination_Stash {
-    __kind: 'Stash'
-}
-
-export interface StakingLedger {
-    stash: AccountId32
-    total: bigint
-    active: bigint
-    unlocking: UnlockChunk[]
-    legacyClaimedRewards: number[]
-}
-
-export interface UnlockChunk {
+export interface Provider_AuthorityDeposit {
+    __kind: 'AuthorityDeposit'
     value: bigint
-    era: number
 }
 
-export const StakingLedger: sts.Type<StakingLedger> = sts.struct(() => {
+export interface Provider_System {
+    __kind: 'System'
+}
+
+export const Provider: sts.Type<Provider> = sts.closedEnum(() => {
     return {
-        stash: AccountId32,
-        total: sts.bigint(),
-        active: sts.bigint(),
-        unlocking: sts.array(() => UnlockChunk),
-        legacyClaimedRewards: sts.array(() => sts.number()),
-    }
-})
-
-export const UnlockChunk: sts.Type<UnlockChunk> = sts.struct(() => {
-    return {
-        value: sts.bigint(),
-        era: sts.number(),
-    }
-})
-
-export type PreDigest = PreDigest_Primary | PreDigest_SecondaryPlain | PreDigest_SecondaryVRF
-
-export interface PreDigest_Primary {
-    __kind: 'Primary'
-    value: PrimaryPreDigest
-}
-
-export interface PreDigest_SecondaryPlain {
-    __kind: 'SecondaryPlain'
-    value: SecondaryPlainPreDigest
-}
-
-export interface PreDigest_SecondaryVRF {
-    __kind: 'SecondaryVRF'
-    value: SecondaryVRFPreDigest
-}
-
-export interface SecondaryVRFPreDigest {
-    authorityIndex: number
-    slot: Slot
-    vrfSignature: VrfSignature
-}
-
-export interface VrfSignature {
-    preOutput: Bytes
-    proof: Bytes
-}
-
-export type Slot = bigint
-
-export interface SecondaryPlainPreDigest {
-    authorityIndex: number
-    slot: Slot
-}
-
-export interface PrimaryPreDigest {
-    authorityIndex: number
-    slot: Slot
-    vrfSignature: VrfSignature
-}
-
-export const PreDigest: sts.Type<PreDigest> = sts.closedEnum(() => {
-    return {
-        Primary: PrimaryPreDigest,
-        SecondaryPlain: SecondaryPlainPreDigest,
-        SecondaryVRF: SecondaryVRFPreDigest,
-    }
-})
-
-export const SecondaryVRFPreDigest: sts.Type<SecondaryVRFPreDigest> = sts.struct(() => {
-    return {
-        authorityIndex: sts.number(),
-        slot: Slot,
-        vrfSignature: VrfSignature,
-    }
-})
-
-export const VrfSignature: sts.Type<VrfSignature> = sts.struct(() => {
-    return {
-        preOutput: sts.bytes(),
-        proof: sts.bytes(),
-    }
-})
-
-export const Slot = sts.bigint()
-
-export const SecondaryPlainPreDigest: sts.Type<SecondaryPlainPreDigest> = sts.struct(() => {
-    return {
-        authorityIndex: sts.number(),
-        slot: Slot,
-    }
-})
-
-export const PrimaryPreDigest: sts.Type<PrimaryPreDigest> = sts.struct(() => {
-    return {
-        authorityIndex: sts.number(),
-        slot: Slot,
-        vrfSignature: VrfSignature,
-    }
-})
-
-export interface ProxyDefinition {
-    delegate: AccountId32
-    proxyType: ProxyType
-    delay: number
-}
-
-export type ProxyType = ProxyType_Any | ProxyType_Governance | ProxyType_Tokens
-
-export interface ProxyType_Any {
-    __kind: 'Any'
-}
-
-export interface ProxyType_Governance {
-    __kind: 'Governance'
-}
-
-export interface ProxyType_Tokens {
-    __kind: 'Tokens'
-}
-
-export const ProxyDefinition: sts.Type<ProxyDefinition> = sts.struct(() => {
-    return {
-        delegate: AccountId32,
-        proxyType: ProxyType,
-        delay: sts.number(),
+        Allocation: sts.unit(),
+        AuthorityDeposit: sts.bigint(),
+        System: sts.unit(),
     }
 })
 
@@ -3449,6 +3870,8 @@ export interface Listing {
     minReceived: bigint
     feeSide: FeeSide
     creationBlock: number
+    startBlock?: number | undefined
+    whitelistedAccountCount?: number | undefined
     deposit: Deposit
     salt: Bytes
     data: ListingData
@@ -3473,12 +3896,7 @@ export interface ListingState_Offer {
 }
 
 export interface OfferState {
-    counter?: CounterOffer | undefined
-}
-
-export interface CounterOffer {
-    accountId: AccountId32
-    price: bigint
+    counterOfferCount: number
 }
 
 export interface AuctionState {
@@ -3488,6 +3906,7 @@ export interface AuctionState {
 export interface Bid {
     bidder: AccountId32
     price: bigint
+    blockNumber: number
 }
 
 export type ListingData = ListingData_Auction | ListingData_FixedPrice | ListingData_Offer
@@ -3511,7 +3930,6 @@ export interface OfferData {
 }
 
 export interface AuctionData {
-    startBlock: number
     endBlock: number
 }
 
@@ -3537,12 +3955,14 @@ export interface FeeSide_Take {
 export interface UserAccount {
     tankDeposit: bigint
     userDeposit: bigint
-    totalReceived: bigint
     ruleDataSets: [number, [DispatchRuleKind, Bytes][]][]
+    incrementedProviders: boolean
+    lastUsedBlock: number
 }
 
 export type DispatchRuleKind =
     | DispatchRuleKind_MaxFuelBurnPerTransaction
+    | DispatchRuleKind_MinimumInfusion
     | DispatchRuleKind_PermittedCalls
     | DispatchRuleKind_PermittedExtrinsics
     | DispatchRuleKind_RequireSignature
@@ -3555,6 +3975,10 @@ export type DispatchRuleKind =
 
 export interface DispatchRuleKind_MaxFuelBurnPerTransaction {
     __kind: 'MaxFuelBurnPerTransaction'
+}
+
+export interface DispatchRuleKind_MinimumInfusion {
+    __kind: 'MinimumInfusion'
 }
 
 export interface DispatchRuleKind_PermittedCalls {
@@ -3597,10 +4021,27 @@ export const UserAccount: sts.Type<UserAccount> = sts.struct(() => {
     return {
         tankDeposit: sts.bigint(),
         userDeposit: sts.bigint(),
-        totalReceived: sts.bigint(),
         ruleDataSets: sts.array(() =>
             sts.tuple(() => [sts.number(), sts.array(() => sts.tuple(() => [DispatchRuleKind, sts.bytes()]))])
         ),
+        incrementedProviders: sts.boolean(),
+        lastUsedBlock: sts.number(),
+    }
+})
+
+export const DispatchRuleKind: sts.Type<DispatchRuleKind> = sts.closedEnum(() => {
+    return {
+        MaxFuelBurnPerTransaction: sts.unit(),
+        MinimumInfusion: sts.unit(),
+        PermittedCalls: sts.unit(),
+        PermittedExtrinsics: sts.unit(),
+        RequireSignature: sts.unit(),
+        RequireToken: sts.unit(),
+        TankFuelBudget: sts.unit(),
+        UserFuelBudget: sts.unit(),
+        WhitelistedCallers: sts.unit(),
+        WhitelistedCollections: sts.unit(),
+        WhitelistedPallets: sts.unit(),
     }
 })
 
@@ -3611,9 +4052,10 @@ export interface FuelTank {
     totalReserved: bigint
     accountCount: number
     userAccountManagement?: UserAccountManagement | undefined
-    isFrozen: boolean
+    status: TankStatus
     coveragePolicy: CoveragePolicy
     accountRules: [AccountRuleKind, AccountRuleWrapper][]
+    accountExpiration?: number | undefined
 }
 
 export type AccountRuleWrapper = AccountRuleWrapper_RequireToken | AccountRuleWrapper_WhitelistedCallers
@@ -3653,8 +4095,23 @@ export interface CoveragePolicy_FeesAndDeposit {
     __kind: 'FeesAndDeposit'
 }
 
+export type TankStatus = TankStatus_Destroyed | TankStatus_Frozen | TankStatus_Operational
+
+export interface TankStatus_Destroyed {
+    __kind: 'Destroyed'
+}
+
+export interface TankStatus_Frozen {
+    __kind: 'Frozen'
+}
+
+export interface TankStatus_Operational {
+    __kind: 'Operational'
+}
+
 export interface UserAccountManagement {
     tankReservesAccountCreationDeposit: boolean
+    tankReservesExistentialDeposit: boolean
 }
 
 export interface RuleSet {
@@ -3665,6 +4122,7 @@ export interface RuleSet {
 
 export type DispatchRuleWrapper =
     | DispatchRuleWrapper_MaxFuelBurnPerTransaction
+    | DispatchRuleWrapper_MinimumInfusion
     | DispatchRuleWrapper_PermittedCalls
     | DispatchRuleWrapper_PermittedExtrinsics
     | DispatchRuleWrapper_RequireSignature
@@ -3680,6 +4138,11 @@ export interface DispatchRuleWrapper_MaxFuelBurnPerTransaction {
     value: MaxFuelBurnPerTransactionRule
 }
 
+export interface DispatchRuleWrapper_MinimumInfusion {
+    __kind: 'MinimumInfusion'
+    value: MinimumInfusionRule
+}
+
 export interface DispatchRuleWrapper_PermittedCalls {
     __kind: 'PermittedCalls'
     value: Bytes[]
@@ -3687,7 +4150,7 @@ export interface DispatchRuleWrapper_PermittedCalls {
 
 export interface DispatchRuleWrapper_PermittedExtrinsics {
     __kind: 'PermittedExtrinsics'
-    value: ExtrinsicInfo[]
+    value: CallIndex[]
 }
 
 export interface DispatchRuleWrapper_RequireSignature {
@@ -3747,10 +4210,12 @@ export interface Consumption {
 
 export type RequireSignatureRule = Bytes
 
-export interface ExtrinsicInfo {
-    palletName: Bytes
-    extrinsicName: Bytes
+export interface CallIndex {
+    palletIndex: number
+    functionIndex: number
 }
+
+export type MinimumInfusionRule = bigint
 
 export type MaxFuelBurnPerTransactionRule = bigint
 
@@ -3762,9 +4227,10 @@ export const FuelTank: sts.Type<FuelTank> = sts.struct(() => {
         totalReserved: sts.bigint(),
         accountCount: sts.number(),
         userAccountManagement: sts.option(() => UserAccountManagement),
-        isFrozen: sts.boolean(),
+        status: TankStatus,
         coveragePolicy: CoveragePolicy,
         accountRules: sts.array(() => sts.tuple(() => [AccountRuleKind, AccountRuleWrapper])),
+        accountExpiration: sts.option(() => sts.number()),
     }
 })
 
@@ -3796,9 +4262,18 @@ export const CoveragePolicy: sts.Type<CoveragePolicy> = sts.closedEnum(() => {
     }
 })
 
+export const TankStatus: sts.Type<TankStatus> = sts.closedEnum(() => {
+    return {
+        Destroyed: sts.unit(),
+        Frozen: sts.unit(),
+        Operational: sts.unit(),
+    }
+})
+
 export const UserAccountManagement: sts.Type<UserAccountManagement> = sts.struct(() => {
     return {
         tankReservesAccountCreationDeposit: sts.boolean(),
+        tankReservesExistentialDeposit: sts.boolean(),
     }
 })
 
@@ -3813,8 +4288,9 @@ export const RuleSet: sts.Type<RuleSet> = sts.struct(() => {
 export const DispatchRuleWrapper: sts.Type<DispatchRuleWrapper> = sts.closedEnum(() => {
     return {
         MaxFuelBurnPerTransaction: MaxFuelBurnPerTransactionRule,
+        MinimumInfusion: MinimumInfusionRule,
         PermittedCalls: sts.array(() => sts.bytes()),
-        PermittedExtrinsics: sts.array(() => ExtrinsicInfo),
+        PermittedExtrinsics: sts.array(() => CallIndex),
         RequireSignature: RequireSignatureRule,
         RequireToken: RequireTokenRule,
         TankFuelBudget: TankFuelBudgetRule,
@@ -3855,18 +4331,20 @@ export const Consumption: sts.Type<Consumption> = sts.struct(() => {
 
 export const RequireSignatureRule = sts.bytes()
 
-export const ExtrinsicInfo: sts.Type<ExtrinsicInfo> = sts.struct(() => {
+export const CallIndex: sts.Type<CallIndex> = sts.struct(() => {
     return {
-        palletName: sts.bytes(),
-        extrinsicName: sts.bytes(),
+        palletIndex: sts.number(),
+        functionIndex: sts.number(),
     }
 })
 
+export const MinimumInfusionRule = sts.bigint()
+
 export const MaxFuelBurnPerTransactionRule = sts.bigint()
 
-export interface V4Location {
+export interface V5Location {
     parents: number
-    interior: V4Junctions
+    interior: V5Junctions
 }
 
 export interface AssetId {
@@ -3874,11 +4352,12 @@ export interface AssetId {
     tokenId: bigint
 }
 
-export interface Attribute {
-    value: Bytes
-    deposit: bigint
-    depositor?: AccountId32 | undefined
-}
+export const AssetId: sts.Type<AssetId> = sts.struct(() => {
+    return {
+        collectionId: sts.bigint(),
+        tokenId: sts.bigint(),
+    }
+})
 
 export interface Token {
     supply: bigint
@@ -3906,7 +4385,7 @@ export interface DefaultTokenMetadata {
 }
 
 export interface DefaultForeignTokenMetadata {
-    location?: V4Location | undefined
+    location?: V5Location | undefined
     unitsPerSecond?: bigint | undefined
 }
 
@@ -3924,6 +4403,10 @@ export interface TokenMarketBehavior_IsCurrency {
 }
 
 export interface DefaultRoyalty {
+    beneficiaries: DefaultRoyaltyInfo[]
+}
+
+export interface DefaultRoyaltyInfo {
     beneficiary: AccountId32
     percentage: number
 }
@@ -3968,6 +4451,7 @@ export interface Collection {
     totalDeposit: bigint
     explicitRoyaltyCurrencies: [AssetId, null][]
     totalInfusion: bigint
+    tokenGroupCount: number
 }
 
 export interface DefaultCollectionPolicy {
@@ -3994,17 +4478,135 @@ export interface TokenAccount {
     balance: bigint
     reservedBalance: bigint
     lockedBalance: bigint
-    namedReserves: [Bytes, bigint][]
+    holds: TokenAccountReserve[]
     locks: [Bytes, bigint][]
     approvals: [AccountId32, Approval][]
     isFrozen: boolean
     deposit?: Deposit | undefined
+    storageVersion: number
 }
 
 export interface Approval {
     amount: bigint
     expiration?: number | undefined
 }
+
+export interface TokenAccountReserve {
+    reason: RuntimeHoldReason
+    balance: bigint
+}
+
+export type RuntimeHoldReason =
+    | RuntimeHoldReason_FuelTanks
+    | RuntimeHoldReason_Marketplace
+    | RuntimeHoldReason_MultiTokens
+    | RuntimeHoldReason_Preimage
+    | RuntimeHoldReason_SafeMode
+    | RuntimeHoldReason_StakeExchange
+    | RuntimeHoldReason_Staking
+    | RuntimeHoldReason_XcmPallet
+
+export interface RuntimeHoldReason_FuelTanks {
+    __kind: 'FuelTanks'
+    value: Type_664
+}
+
+export interface RuntimeHoldReason_Marketplace {
+    __kind: 'Marketplace'
+    value: Type_662
+}
+
+export interface RuntimeHoldReason_MultiTokens {
+    __kind: 'MultiTokens'
+    value: Type_663
+}
+
+export interface RuntimeHoldReason_Preimage {
+    __kind: 'Preimage'
+    value: Type_661
+}
+
+export interface RuntimeHoldReason_SafeMode {
+    __kind: 'SafeMode'
+    value: Type_659
+}
+
+export interface RuntimeHoldReason_StakeExchange {
+    __kind: 'StakeExchange'
+    value: Type_658
+}
+
+export interface RuntimeHoldReason_Staking {
+    __kind: 'Staking'
+    value: HoldReason
+}
+
+export interface RuntimeHoldReason_XcmPallet {
+    __kind: 'XcmPallet'
+    value: Type_660
+}
+
+export type Type_660 = Type_660_AuthorizeAlias
+
+export interface Type_660_AuthorizeAlias {
+    __kind: 'AuthorizeAlias'
+}
+
+export type HoldReason = HoldReason_Staking
+
+export interface HoldReason_Staking {
+    __kind: 'Staking'
+}
+
+export type Type_658 = Type_658_StakeExchange
+
+export interface Type_658_StakeExchange {
+    __kind: 'StakeExchange'
+}
+
+export type Type_659 = Type_659_EnterOrExtend
+
+export interface Type_659_EnterOrExtend {
+    __kind: 'EnterOrExtend'
+}
+
+export type Type_661 = Type_661_Preimage
+
+export interface Type_661_Preimage {
+    __kind: 'Preimage'
+}
+
+export type Type_663 = Type_663_MultiTokens
+
+export interface Type_663_MultiTokens {
+    __kind: 'MultiTokens'
+}
+
+export type Type_662 = Type_662_Marketplace
+
+export interface Type_662_Marketplace {
+    __kind: 'Marketplace'
+}
+
+export type Type_664 = Type_664_FuelTanks
+
+export interface Type_664_FuelTanks {
+    __kind: 'FuelTanks'
+}
+
+export type OffenceSeverity = number
+
+export const OffenceSeverity = sts.number()
+
+export interface SessionKeys {
+    grandpa: Public
+    babe: Bytes
+    paraValidator: V8Public
+    paraAssignment: Bytes
+    authorityDiscovery: Bytes
+}
+
+export type Public = Bytes
 
 export type AccountId32 = Bytes
 
@@ -4013,53 +4615,10 @@ export interface IdAmount {
     amount: bigint
 }
 
-export type RuntimeHoldReason = RuntimeHoldReason_Preimage | RuntimeHoldReason_SafeMode
-
-export interface RuntimeHoldReason_Preimage {
-    __kind: 'Preimage'
-    value: Type_767
-}
-
-export interface RuntimeHoldReason_SafeMode {
-    __kind: 'SafeMode'
-    value: HoldReason
-}
-
-export type HoldReason = HoldReason_EnterOrExtend
-
-export interface HoldReason_EnterOrExtend {
-    __kind: 'EnterOrExtend'
-}
-
-export type Type_767 = Type_767_Preimage
-
-export interface Type_767_Preimage {
-    __kind: 'Preimage'
-}
-
 export const IdAmount: sts.Type<IdAmount> = sts.struct(() => {
     return {
         id: RuntimeHoldReason,
         amount: sts.bigint(),
-    }
-})
-
-export const RuntimeHoldReason: sts.Type<RuntimeHoldReason> = sts.closedEnum(() => {
-    return {
-        Preimage: Type_767,
-        SafeMode: HoldReason,
-    }
-})
-
-export const HoldReason: sts.Type<HoldReason> = sts.closedEnum(() => {
-    return {
-        EnterOrExtend: sts.unit(),
-    }
-})
-
-export const Type_767: sts.Type<Type_767> = sts.closedEnum(() => {
-    return {
-        Preimage: sts.unit(),
     }
 })
 
@@ -4082,7 +4641,7 @@ export const Scheduled: sts.Type<Scheduled> = sts.struct(() => {
 })
 
 export interface EventRecord {
-    phase: Type_722
+    phase: Type_778
     event: Event
     topics: H256[]
 }
@@ -4092,6 +4651,7 @@ export type Event =
     | Event_Auctions
     | Event_Balances
     | Event_ConvictionVoting
+    | Event_Coretime
     | Event_Crowdloan
     | Event_ElectionProviderMultiPhase
     | Event_ExtrinsicPause
@@ -4099,9 +4659,9 @@ export type Event =
     | Event_FellowshipReferenda
     | Event_FuelTanks
     | Event_Grandpa
+    | Event_Historical
     | Event_Hrmp
     | Event_Identity
-    | Event_ImOnline
     | Event_Marketplace
     | Event_MessageQueue
     | Event_Migrations
@@ -4109,6 +4669,7 @@ export type Event =
     | Event_Multisig
     | Event_NominationPools
     | Event_Offences
+    | Event_OnDemandAssignmentProvider
     | Event_ParaInclusion
     | Event_Paras
     | Event_ParasDisputes
@@ -4153,6 +4714,11 @@ export interface Event_ConvictionVoting {
     value: ConvictionVotingEvent
 }
 
+export interface Event_Coretime {
+    __kind: 'Coretime'
+    value: CoretimeEvent
+}
+
 export interface Event_Crowdloan {
     __kind: 'Crowdloan'
     value: CrowdloanEvent
@@ -4188,6 +4754,11 @@ export interface Event_Grandpa {
     value: GrandpaEvent
 }
 
+export interface Event_Historical {
+    __kind: 'Historical'
+    value: HistoricalEvent
+}
+
 export interface Event_Hrmp {
     __kind: 'Hrmp'
     value: HrmpEvent
@@ -4196,11 +4767,6 @@ export interface Event_Hrmp {
 export interface Event_Identity {
     __kind: 'Identity'
     value: IdentityEvent
-}
-
-export interface Event_ImOnline {
-    __kind: 'ImOnline'
-    value: ImOnlineEvent
 }
 
 export interface Event_Marketplace {
@@ -4236,6 +4802,11 @@ export interface Event_NominationPools {
 export interface Event_Offences {
     __kind: 'Offences'
     value: OffencesEvent
+}
+
+export interface Event_OnDemandAssignmentProvider {
+    __kind: 'OnDemandAssignmentProvider'
+    value: OnDemandAssignmentProviderEvent
 }
 
 export interface Event_ParaInclusion {
@@ -4357,6 +4928,9 @@ export interface Event_XcmPallet {
  * The `Event` enum of this pallet
  */
 export type XcmPalletEvent =
+    | XcmPalletEvent_AliasAuthorizationRemoved
+    | XcmPalletEvent_AliasAuthorized
+    | XcmPalletEvent_AliasesAuthorizationsRemoved
     | XcmPalletEvent_AssetsClaimed
     | XcmPalletEvent_AssetsTrapped
     | XcmPalletEvent_Attempted
@@ -4371,8 +4945,10 @@ export type XcmPalletEvent =
     | XcmPalletEvent_NotifyOverweight
     | XcmPalletEvent_NotifyTargetMigrationFail
     | XcmPalletEvent_NotifyTargetSendFail
+    | XcmPalletEvent_ProcessXcmError
     | XcmPalletEvent_ResponseReady
     | XcmPalletEvent_ResponseTaken
+    | XcmPalletEvent_SendFailed
     | XcmPalletEvent_Sent
     | XcmPalletEvent_SupportedVersionChanged
     | XcmPalletEvent_UnexpectedResponse
@@ -4383,12 +4959,40 @@ export type XcmPalletEvent =
     | XcmPalletEvent_VersionNotifyUnrequested
 
 /**
+ * `target` removed alias authorization for `aliaser`.
+ */
+export interface XcmPalletEvent_AliasAuthorizationRemoved {
+    __kind: 'AliasAuthorizationRemoved'
+    aliaser: V5Location
+    target: V5Location
+}
+
+/**
+ * An `aliaser` location was authorized by `target` to alias it, authorization valid until
+ * `expiry` block number.
+ */
+export interface XcmPalletEvent_AliasAuthorized {
+    __kind: 'AliasAuthorized'
+    aliaser: V5Location
+    target: V5Location
+    expiry?: bigint | undefined
+}
+
+/**
+ * `target` removed all alias authorizations.
+ */
+export interface XcmPalletEvent_AliasesAuthorizationsRemoved {
+    __kind: 'AliasesAuthorizationsRemoved'
+    target: V5Location
+}
+
+/**
  * Some assets have been claimed from an asset trap
  */
 export interface XcmPalletEvent_AssetsClaimed {
     __kind: 'AssetsClaimed'
     hash: H256
-    origin: V4Location
+    origin: V5Location
     assets: VersionedAssets
 }
 
@@ -4398,7 +5002,7 @@ export interface XcmPalletEvent_AssetsClaimed {
 export interface XcmPalletEvent_AssetsTrapped {
     __kind: 'AssetsTrapped'
     hash: H256
-    origin: V4Location
+    origin: V5Location
     assets: VersionedAssets
 }
 
@@ -4407,7 +5011,7 @@ export interface XcmPalletEvent_AssetsTrapped {
  */
 export interface XcmPalletEvent_Attempted {
     __kind: 'Attempted'
-    outcome: V4Outcome
+    outcome: V5Outcome
 }
 
 /**
@@ -4415,8 +5019,8 @@ export interface XcmPalletEvent_Attempted {
  */
 export interface XcmPalletEvent_FeesPaid {
     __kind: 'FeesPaid'
-    paying: V4Location
-    fees: V4Asset[]
+    paying: V5Location
+    fees: V5Asset[]
 }
 
 /**
@@ -4426,10 +5030,10 @@ export interface XcmPalletEvent_FeesPaid {
  */
 export interface XcmPalletEvent_InvalidQuerier {
     __kind: 'InvalidQuerier'
-    origin: V4Location
+    origin: V5Location
     queryId: bigint
-    expectedQuerier: V4Location
-    maybeActualQuerier?: V4Location | undefined
+    expectedQuerier: V5Location
+    maybeActualQuerier?: V5Location | undefined
 }
 
 /**
@@ -4443,7 +5047,7 @@ export interface XcmPalletEvent_InvalidQuerier {
  */
 export interface XcmPalletEvent_InvalidQuerierVersion {
     __kind: 'InvalidQuerierVersion'
-    origin: V4Location
+    origin: V5Location
     queryId: bigint
 }
 
@@ -4454,9 +5058,9 @@ export interface XcmPalletEvent_InvalidQuerierVersion {
  */
 export interface XcmPalletEvent_InvalidResponder {
     __kind: 'InvalidResponder'
-    origin: V4Location
+    origin: V5Location
     queryId: bigint
-    expectedLocation?: V4Location | undefined
+    expectedLocation?: V5Location | undefined
 }
 
 /**
@@ -4470,7 +5074,7 @@ export interface XcmPalletEvent_InvalidResponder {
  */
 export interface XcmPalletEvent_InvalidResponderVersion {
     __kind: 'InvalidResponderVersion'
-    origin: V4Location
+    origin: V5Location
     queryId: bigint
 }
 
@@ -4538,9 +5142,19 @@ export interface XcmPalletEvent_NotifyTargetMigrationFail {
  */
 export interface XcmPalletEvent_NotifyTargetSendFail {
     __kind: 'NotifyTargetSendFail'
-    location: V4Location
+    location: V5Location
     queryId: bigint
-    error: V3Error
+    error: V5Error
+}
+
+/**
+ * An XCM message failed to process.
+ */
+export interface XcmPalletEvent_ProcessXcmError {
+    __kind: 'ProcessXcmError'
+    origin: V5Location
+    error: V5Error
+    messageId: Bytes
 }
 
 /**
@@ -4550,7 +5164,7 @@ export interface XcmPalletEvent_NotifyTargetSendFail {
 export interface XcmPalletEvent_ResponseReady {
     __kind: 'ResponseReady'
     queryId: bigint
-    response: V4Response
+    response: V5Response
 }
 
 /**
@@ -4562,13 +5176,24 @@ export interface XcmPalletEvent_ResponseTaken {
 }
 
 /**
- * A XCM message was sent.
+ * An XCM message failed to send.
+ */
+export interface XcmPalletEvent_SendFailed {
+    __kind: 'SendFailed'
+    origin: V5Location
+    destination: V5Location
+    error: V3SendError
+    messageId: Bytes
+}
+
+/**
+ * An XCM message was sent.
  */
 export interface XcmPalletEvent_Sent {
     __kind: 'Sent'
-    origin: V4Location
-    destination: V4Location
-    message: V4Instruction[]
+    origin: V5Location
+    destination: V5Location
+    message: V5Instruction[]
     messageId: Bytes
 }
 
@@ -4578,7 +5203,7 @@ export interface XcmPalletEvent_Sent {
  */
 export interface XcmPalletEvent_SupportedVersionChanged {
     __kind: 'SupportedVersionChanged'
-    location: V4Location
+    location: V5Location
     version: number
 }
 
@@ -4589,7 +5214,7 @@ export interface XcmPalletEvent_SupportedVersionChanged {
  */
 export interface XcmPalletEvent_UnexpectedResponse {
     __kind: 'UnexpectedResponse'
-    origin: V4Location
+    origin: V5Location
     queryId: bigint
 }
 
@@ -4600,9 +5225,9 @@ export interface XcmPalletEvent_UnexpectedResponse {
  */
 export interface XcmPalletEvent_VersionChangeNotified {
     __kind: 'VersionChangeNotified'
-    destination: V4Location
+    destination: V5Location
     result: number
-    cost: V4Asset[]
+    cost: V5Asset[]
     messageId: Bytes
 }
 
@@ -4619,8 +5244,8 @@ export interface XcmPalletEvent_VersionMigrationFinished {
  */
 export interface XcmPalletEvent_VersionNotifyRequested {
     __kind: 'VersionNotifyRequested'
-    destination: V4Location
-    cost: V4Asset[]
+    destination: V5Location
+    cost: V5Asset[]
     messageId: Bytes
 }
 
@@ -4630,8 +5255,8 @@ export interface XcmPalletEvent_VersionNotifyRequested {
  */
 export interface XcmPalletEvent_VersionNotifyStarted {
     __kind: 'VersionNotifyStarted'
-    destination: V4Location
-    cost: V4Asset[]
+    destination: V5Location
+    cost: V5Asset[]
     messageId: Bytes
 }
 
@@ -4641,445 +5266,72 @@ export interface XcmPalletEvent_VersionNotifyStarted {
  */
 export interface XcmPalletEvent_VersionNotifyUnrequested {
     __kind: 'VersionNotifyUnrequested'
-    destination: V4Location
-    cost: V4Asset[]
+    destination: V5Location
+    cost: V5Asset[]
     messageId: Bytes
 }
 
-export type V4Instruction =
-    | V4Instruction_AliasOrigin
-    | V4Instruction_BurnAsset
-    | V4Instruction_BuyExecution
-    | V4Instruction_ClaimAsset
-    | V4Instruction_ClearError
-    | V4Instruction_ClearOrigin
-    | V4Instruction_ClearTopic
-    | V4Instruction_ClearTransactStatus
-    | V4Instruction_DepositAsset
-    | V4Instruction_DepositReserveAsset
-    | V4Instruction_DescendOrigin
-    | V4Instruction_ExchangeAsset
-    | V4Instruction_ExpectAsset
-    | V4Instruction_ExpectError
-    | V4Instruction_ExpectOrigin
-    | V4Instruction_ExpectPallet
-    | V4Instruction_ExpectTransactStatus
-    | V4Instruction_ExportMessage
-    | V4Instruction_HrmpChannelAccepted
-    | V4Instruction_HrmpChannelClosing
-    | V4Instruction_HrmpNewChannelOpenRequest
-    | V4Instruction_InitiateReserveWithdraw
-    | V4Instruction_InitiateTeleport
-    | V4Instruction_LockAsset
-    | V4Instruction_NoteUnlockable
-    | V4Instruction_QueryPallet
-    | V4Instruction_QueryResponse
-    | V4Instruction_ReceiveTeleportedAsset
-    | V4Instruction_RefundSurplus
-    | V4Instruction_ReportError
-    | V4Instruction_ReportHolding
-    | V4Instruction_ReportTransactStatus
-    | V4Instruction_RequestUnlock
-    | V4Instruction_ReserveAssetDeposited
-    | V4Instruction_SetAppendix
-    | V4Instruction_SetErrorHandler
-    | V4Instruction_SetFeesMode
-    | V4Instruction_SetTopic
-    | V4Instruction_SubscribeVersion
-    | V4Instruction_Transact
-    | V4Instruction_TransferAsset
-    | V4Instruction_TransferReserveAsset
-    | V4Instruction_Trap
-    | V4Instruction_UniversalOrigin
-    | V4Instruction_UnlockAsset
-    | V4Instruction_UnpaidExecution
-    | V4Instruction_UnsubscribeVersion
-    | V4Instruction_WithdrawAsset
+export type V3SendError =
+    | V3SendError_DestinationUnsupported
+    | V3SendError_ExceedsMaxMessageSize
+    | V3SendError_Fees
+    | V3SendError_MissingArgument
+    | V3SendError_NotApplicable
+    | V3SendError_Transport
+    | V3SendError_Unroutable
 
-export interface V4Instruction_AliasOrigin {
-    __kind: 'AliasOrigin'
-    value: V4Location
+export interface V3SendError_DestinationUnsupported {
+    __kind: 'DestinationUnsupported'
 }
 
-export interface V4Instruction_BurnAsset {
-    __kind: 'BurnAsset'
-    value: V4Asset[]
+export interface V3SendError_ExceedsMaxMessageSize {
+    __kind: 'ExceedsMaxMessageSize'
 }
 
-export interface V4Instruction_BuyExecution {
-    __kind: 'BuyExecution'
-    fees: V4Asset
-    weightLimit: V3WeightLimit
+export interface V3SendError_Fees {
+    __kind: 'Fees'
 }
 
-export interface V4Instruction_ClaimAsset {
-    __kind: 'ClaimAsset'
-    assets: V4Asset[]
-    ticket: V4Location
+export interface V3SendError_MissingArgument {
+    __kind: 'MissingArgument'
 }
 
-export interface V4Instruction_ClearError {
-    __kind: 'ClearError'
+export interface V3SendError_NotApplicable {
+    __kind: 'NotApplicable'
 }
 
-export interface V4Instruction_ClearOrigin {
-    __kind: 'ClearOrigin'
+export interface V3SendError_Transport {
+    __kind: 'Transport'
 }
 
-export interface V4Instruction_ClearTopic {
-    __kind: 'ClearTopic'
+export interface V3SendError_Unroutable {
+    __kind: 'Unroutable'
 }
 
-export interface V4Instruction_ClearTransactStatus {
-    __kind: 'ClearTransactStatus'
-}
-
-export interface V4Instruction_DepositAsset {
-    __kind: 'DepositAsset'
-    assets: V4AssetFilter
-    beneficiary: V4Location
-}
-
-export interface V4Instruction_DepositReserveAsset {
-    __kind: 'DepositReserveAsset'
-    assets: V4AssetFilter
-    dest: V4Location
-    xcm: V4Instruction[]
-}
-
-export interface V4Instruction_DescendOrigin {
-    __kind: 'DescendOrigin'
-    value: V4Junctions
-}
-
-export interface V4Instruction_ExchangeAsset {
-    __kind: 'ExchangeAsset'
-    give: V4AssetFilter
-    want: V4Asset[]
-    maximal: boolean
-}
-
-export interface V4Instruction_ExpectAsset {
-    __kind: 'ExpectAsset'
-    value: V4Asset[]
-}
-
-export interface V4Instruction_ExpectError {
-    __kind: 'ExpectError'
-    value?: [number, V3Error] | undefined
-}
-
-export interface V4Instruction_ExpectOrigin {
-    __kind: 'ExpectOrigin'
-    value?: V4Location | undefined
-}
-
-export interface V4Instruction_ExpectPallet {
-    __kind: 'ExpectPallet'
-    index: number
-    name: Bytes
-    moduleName: Bytes
-    crateMajor: number
-    minCrateMinor: number
-}
-
-export interface V4Instruction_ExpectTransactStatus {
-    __kind: 'ExpectTransactStatus'
-    value: V3MaybeErrorCode
-}
-
-export interface V4Instruction_ExportMessage {
-    __kind: 'ExportMessage'
-    network: V4NetworkId
-    destination: V4Junctions
-    xcm: V4Instruction[]
-}
-
-export interface V4Instruction_HrmpChannelAccepted {
-    __kind: 'HrmpChannelAccepted'
-    recipient: number
-}
-
-export interface V4Instruction_HrmpChannelClosing {
-    __kind: 'HrmpChannelClosing'
-    initiator: number
-    sender: number
-    recipient: number
-}
-
-export interface V4Instruction_HrmpNewChannelOpenRequest {
-    __kind: 'HrmpNewChannelOpenRequest'
-    sender: number
-    maxMessageSize: number
-    maxCapacity: number
-}
-
-export interface V4Instruction_InitiateReserveWithdraw {
-    __kind: 'InitiateReserveWithdraw'
-    assets: V4AssetFilter
-    reserve: V4Location
-    xcm: V4Instruction[]
-}
-
-export interface V4Instruction_InitiateTeleport {
-    __kind: 'InitiateTeleport'
-    assets: V4AssetFilter
-    dest: V4Location
-    xcm: V4Instruction[]
-}
-
-export interface V4Instruction_LockAsset {
-    __kind: 'LockAsset'
-    asset: V4Asset
-    unlocker: V4Location
-}
-
-export interface V4Instruction_NoteUnlockable {
-    __kind: 'NoteUnlockable'
-    asset: V4Asset
-    owner: V4Location
-}
-
-export interface V4Instruction_QueryPallet {
-    __kind: 'QueryPallet'
-    moduleName: Bytes
-    responseInfo: V4QueryResponseInfo
-}
-
-export interface V4Instruction_QueryResponse {
-    __kind: 'QueryResponse'
-    queryId: bigint
-    response: V4Response
-    maxWeight: Weight
-    querier?: V4Location | undefined
-}
-
-export interface V4Instruction_ReceiveTeleportedAsset {
-    __kind: 'ReceiveTeleportedAsset'
-    value: V4Asset[]
-}
-
-export interface V4Instruction_RefundSurplus {
-    __kind: 'RefundSurplus'
-}
-
-export interface V4Instruction_ReportError {
-    __kind: 'ReportError'
-    value: V4QueryResponseInfo
-}
-
-export interface V4Instruction_ReportHolding {
-    __kind: 'ReportHolding'
-    responseInfo: V4QueryResponseInfo
-    assets: V4AssetFilter
-}
-
-export interface V4Instruction_ReportTransactStatus {
-    __kind: 'ReportTransactStatus'
-    value: V4QueryResponseInfo
-}
-
-export interface V4Instruction_RequestUnlock {
-    __kind: 'RequestUnlock'
-    asset: V4Asset
-    locker: V4Location
-}
-
-export interface V4Instruction_ReserveAssetDeposited {
-    __kind: 'ReserveAssetDeposited'
-    value: V4Asset[]
-}
-
-export interface V4Instruction_SetAppendix {
-    __kind: 'SetAppendix'
-    value: V4Instruction[]
-}
-
-export interface V4Instruction_SetErrorHandler {
-    __kind: 'SetErrorHandler'
-    value: V4Instruction[]
-}
-
-export interface V4Instruction_SetFeesMode {
-    __kind: 'SetFeesMode'
-    jitWithdraw: boolean
-}
-
-export interface V4Instruction_SetTopic {
-    __kind: 'SetTopic'
-    value: Bytes
-}
-
-export interface V4Instruction_SubscribeVersion {
-    __kind: 'SubscribeVersion'
-    queryId: bigint
-    maxResponseWeight: Weight
-}
-
-export interface V4Instruction_Transact {
-    __kind: 'Transact'
-    originKind: V2OriginKind
-    requireWeightAtMost: Weight
-    call: DoubleEncoded
-}
-
-export interface V4Instruction_TransferAsset {
-    __kind: 'TransferAsset'
-    assets: V4Asset[]
-    beneficiary: V4Location
-}
-
-export interface V4Instruction_TransferReserveAsset {
-    __kind: 'TransferReserveAsset'
-    assets: V4Asset[]
-    dest: V4Location
-    xcm: V4Instruction[]
-}
-
-export interface V4Instruction_Trap {
-    __kind: 'Trap'
-    value: bigint
-}
-
-export interface V4Instruction_UniversalOrigin {
-    __kind: 'UniversalOrigin'
-    value: V4Junction
-}
-
-export interface V4Instruction_UnlockAsset {
-    __kind: 'UnlockAsset'
-    asset: V4Asset
-    target: V4Location
-}
-
-export interface V4Instruction_UnpaidExecution {
-    __kind: 'UnpaidExecution'
-    weightLimit: V3WeightLimit
-    checkOrigin?: V4Location | undefined
-}
-
-export interface V4Instruction_UnsubscribeVersion {
-    __kind: 'UnsubscribeVersion'
-}
-
-export interface V4Instruction_WithdrawAsset {
-    __kind: 'WithdrawAsset'
-    value: V4Asset[]
-}
-
-export interface DoubleEncoded {
-    encoded: Bytes
-}
-
-export type V2OriginKind =
-    | V2OriginKind_Native
-    | V2OriginKind_SovereignAccount
-    | V2OriginKind_Superuser
-    | V2OriginKind_Xcm
-
-export interface V2OriginKind_Native {
-    __kind: 'Native'
-}
-
-export interface V2OriginKind_SovereignAccount {
-    __kind: 'SovereignAccount'
-}
-
-export interface V2OriginKind_Superuser {
-    __kind: 'Superuser'
-}
-
-export interface V2OriginKind_Xcm {
-    __kind: 'Xcm'
-}
-
-export interface V4QueryResponseInfo {
-    destination: V4Location
-    queryId: bigint
-    maxWeight: Weight
-}
-
-export type V4AssetFilter = V4AssetFilter_Definite | V4AssetFilter_Wild
-
-export interface V4AssetFilter_Definite {
-    __kind: 'Definite'
-    value: V4Asset[]
-}
-
-export interface V4AssetFilter_Wild {
-    __kind: 'Wild'
-    value: V4WildAsset
-}
-
-export type V4WildAsset = V4WildAsset_All | V4WildAsset_AllCounted | V4WildAsset_AllOf | V4WildAsset_AllOfCounted
-
-export interface V4WildAsset_All {
-    __kind: 'All'
-}
-
-export interface V4WildAsset_AllCounted {
-    __kind: 'AllCounted'
-    value: number
-}
-
-export interface V4WildAsset_AllOf {
-    __kind: 'AllOf'
-    id: V4AssetId
-    fun: V4WildFungibility
-}
-
-export interface V4WildAsset_AllOfCounted {
-    __kind: 'AllOfCounted'
-    id: V4AssetId
-    fun: V4WildFungibility
-    count: number
-}
-
-export type V4WildFungibility = V4WildFungibility_Fungible | V4WildFungibility_NonFungible
-
-export interface V4WildFungibility_Fungible {
-    __kind: 'Fungible'
-}
-
-export interface V4WildFungibility_NonFungible {
-    __kind: 'NonFungible'
-}
-
-export type V3WeightLimit = V3WeightLimit_Limited | V3WeightLimit_Unlimited
-
-export interface V3WeightLimit_Limited {
-    __kind: 'Limited'
-    value: Weight
-}
-
-export interface V3WeightLimit_Unlimited {
-    __kind: 'Unlimited'
-}
-
-export type V4Outcome = V4Outcome_Complete | V4Outcome_Error | V4Outcome_Incomplete
+export type V5Outcome = V5Outcome_Complete | V5Outcome_Error | V5Outcome_Incomplete
 
-export interface V4Outcome_Complete {
+export interface V5Outcome_Complete {
     __kind: 'Complete'
     used: Weight
 }
 
-export interface V4Outcome_Error {
+export interface V5Outcome_Error {
     __kind: 'Error'
-    error: V3Error
+    value: V5InstructionError
 }
 
-export interface V4Outcome_Incomplete {
+export interface V5Outcome_Incomplete {
     __kind: 'Incomplete'
     used: Weight
-    error: V3Error
+    error: V5InstructionError
 }
 
-export type VersionedAssets = VersionedAssets_V2 | VersionedAssets_V3 | VersionedAssets_V4
-
-export interface VersionedAssets_V2 {
-    __kind: 'V2'
-    value: V2MultiAsset[]
+export interface V5InstructionError {
+    index: number
+    error: V5Error
 }
+
+export type VersionedAssets = VersionedAssets_V3 | VersionedAssets_V4 | VersionedAssets_V5
 
 export interface VersionedAssets_V3 {
     __kind: 'V3'
@@ -5089,6 +5341,11 @@ export interface VersionedAssets_V3 {
 export interface VersionedAssets_V4 {
     __kind: 'V4'
     value: V4Asset[]
+}
+
+export interface VersionedAssets_V5 {
+    __kind: 'V5'
+    value: V5Asset[]
 }
 
 /**
@@ -5134,6 +5391,7 @@ export type DispatchError =
     | DispatchError_Token
     | DispatchError_TooManyConsumers
     | DispatchError_Transactional
+    | DispatchError_Trie
     | DispatchError_Unavailable
 
 export interface DispatchError_Arithmetic {
@@ -5192,8 +5450,85 @@ export interface DispatchError_Transactional {
     value: TransactionalError
 }
 
+export interface DispatchError_Trie {
+    __kind: 'Trie'
+    value: TrieError
+}
+
 export interface DispatchError_Unavailable {
     __kind: 'Unavailable'
+}
+
+export type TrieError =
+    | TrieError_DecodeError
+    | TrieError_DecoderError
+    | TrieError_DuplicateKey
+    | TrieError_ExtraneousHashReference
+    | TrieError_ExtraneousNode
+    | TrieError_ExtraneousValue
+    | TrieError_IncompleteDatabase
+    | TrieError_IncompleteProof
+    | TrieError_InvalidChildReference
+    | TrieError_InvalidHash
+    | TrieError_InvalidStateRoot
+    | TrieError_RootMismatch
+    | TrieError_ValueAtIncompleteKey
+    | TrieError_ValueMismatch
+
+export interface TrieError_DecodeError {
+    __kind: 'DecodeError'
+}
+
+export interface TrieError_DecoderError {
+    __kind: 'DecoderError'
+}
+
+export interface TrieError_DuplicateKey {
+    __kind: 'DuplicateKey'
+}
+
+export interface TrieError_ExtraneousHashReference {
+    __kind: 'ExtraneousHashReference'
+}
+
+export interface TrieError_ExtraneousNode {
+    __kind: 'ExtraneousNode'
+}
+
+export interface TrieError_ExtraneousValue {
+    __kind: 'ExtraneousValue'
+}
+
+export interface TrieError_IncompleteDatabase {
+    __kind: 'IncompleteDatabase'
+}
+
+export interface TrieError_IncompleteProof {
+    __kind: 'IncompleteProof'
+}
+
+export interface TrieError_InvalidChildReference {
+    __kind: 'InvalidChildReference'
+}
+
+export interface TrieError_InvalidHash {
+    __kind: 'InvalidHash'
+}
+
+export interface TrieError_InvalidStateRoot {
+    __kind: 'InvalidStateRoot'
+}
+
+export interface TrieError_RootMismatch {
+    __kind: 'RootMismatch'
+}
+
+export interface TrieError_ValueAtIncompleteKey {
+    __kind: 'ValueAtIncompleteKey'
+}
+
+export interface TrieError_ValueMismatch {
+    __kind: 'ValueMismatch'
 }
 
 export type TransactionalError = TransactionalError_LimitReached | TransactionalError_NoLayer
@@ -5385,6 +5720,8 @@ export type UtilityEvent =
     | UtilityEvent_BatchCompletedWithErrors
     | UtilityEvent_BatchInterrupted
     | UtilityEvent_DispatchedAs
+    | UtilityEvent_IfElseFallbackCalled
+    | UtilityEvent_IfElseMainSuccess
     | UtilityEvent_ItemCompleted
     | UtilityEvent_ItemFailed
 
@@ -5421,6 +5758,21 @@ export interface UtilityEvent_DispatchedAs {
 }
 
 /**
+ * The fallback call was dispatched.
+ */
+export interface UtilityEvent_IfElseFallbackCalled {
+    __kind: 'IfElseFallbackCalled'
+    mainError: DispatchError
+}
+
+/**
+ * Main call was dispatched.
+ */
+export interface UtilityEvent_IfElseMainSuccess {
+    __kind: 'IfElseMainSuccess'
+}
+
+/**
  * A single item within a Batch of dispatches has completed with no error.
  */
 export interface UtilityEvent_ItemCompleted {
@@ -5446,8 +5798,6 @@ export type TreasuryEvent =
     | TreasuryEvent_Deposit
     | TreasuryEvent_Paid
     | TreasuryEvent_PaymentFailed
-    | TreasuryEvent_Proposed
-    | TreasuryEvent_Rejected
     | TreasuryEvent_Rollover
     | TreasuryEvent_SpendApproved
     | TreasuryEvent_SpendProcessed
@@ -5514,23 +5864,6 @@ export interface TreasuryEvent_Paid {
 export interface TreasuryEvent_PaymentFailed {
     __kind: 'PaymentFailed'
     index: number
-}
-
-/**
- * New proposal.
- */
-export interface TreasuryEvent_Proposed {
-    __kind: 'Proposed'
-    proposalIndex: number
-}
-
-/**
- * A proposal was rejected; funds were slashed.
- */
-export interface TreasuryEvent_Rejected {
-    __kind: 'Rejected'
-    proposalIndex: number
-    slashed: bigint
 }
 
 /**
@@ -5602,6 +5935,7 @@ export type SystemEvent =
     | SystemEvent_ExtrinsicSuccess
     | SystemEvent_KilledAccount
     | SystemEvent_NewAccount
+    | SystemEvent_RejectedInvalidAuthorizedUpgrade
     | SystemEvent_Remarked
     | SystemEvent_UpgradeAuthorized
 
@@ -5618,7 +5952,7 @@ export interface SystemEvent_CodeUpdated {
 export interface SystemEvent_ExtrinsicFailed {
     __kind: 'ExtrinsicFailed'
     dispatchError: DispatchError
-    dispatchInfo: DispatchInfo
+    dispatchInfo: DispatchEventInfo
 }
 
 /**
@@ -5626,7 +5960,7 @@ export interface SystemEvent_ExtrinsicFailed {
  */
 export interface SystemEvent_ExtrinsicSuccess {
     __kind: 'ExtrinsicSuccess'
-    dispatchInfo: DispatchInfo
+    dispatchInfo: DispatchEventInfo
 }
 
 /**
@@ -5643,6 +5977,15 @@ export interface SystemEvent_KilledAccount {
 export interface SystemEvent_NewAccount {
     __kind: 'NewAccount'
     account: AccountId32
+}
+
+/**
+ * An invalid authorized upgrade was rejected while trying to apply it.
+ */
+export interface SystemEvent_RejectedInvalidAuthorizedUpgrade {
+    __kind: 'RejectedInvalidAuthorizedUpgrade'
+    codeHash: H256
+    error: DispatchError
 }
 
 /**
@@ -5663,7 +6006,7 @@ export interface SystemEvent_UpgradeAuthorized {
     checkVersion: boolean
 }
 
-export interface DispatchInfo {
+export interface DispatchEventInfo {
     weight: Weight
     class: DispatchClass
     paysFee: Pays
@@ -5739,6 +6082,7 @@ export type StakingEvent =
     | StakingEvent_Bonded
     | StakingEvent_Chilled
     | StakingEvent_ControllerBatchDeprecated
+    | StakingEvent_CurrencyMigrated
     | StakingEvent_EraPaid
     | StakingEvent_ForceEra
     | StakingEvent_Kicked
@@ -5784,6 +6128,16 @@ export interface StakingEvent_ControllerBatchDeprecated {
 }
 
 /**
+ * Staking balance migrated from locks to holds, with any balance that could not be held
+ * is force withdrawn.
+ */
+export interface StakingEvent_CurrencyMigrated {
+    __kind: 'CurrencyMigrated'
+    stash: AccountId32
+    forceWithdraw: bigint
+}
+
+/**
  * The era payout has been set; the first balance is the validator-payout; the second is
  * the remainder from the maximum amount of reward.
  */
@@ -5821,12 +6175,14 @@ export interface StakingEvent_OldSlashingReportDiscarded {
 }
 
 /**
- * The stakers' rewards are getting paid.
+ * A Page of stakers rewards are getting paid. `next` is `None` if all pages are claimed.
  */
 export interface StakingEvent_PayoutStarted {
     __kind: 'PayoutStarted'
     eraIndex: number
     validatorStash: AccountId32
+    page: number
+    next?: number | undefined
 }
 
 /**
@@ -5922,6 +6278,34 @@ export interface ValidatorPrefs {
     blocked: boolean
 }
 
+export type RewardDestination =
+    | RewardDestination_Account
+    | RewardDestination_Controller
+    | RewardDestination_None
+    | RewardDestination_Staked
+    | RewardDestination_Stash
+
+export interface RewardDestination_Account {
+    __kind: 'Account'
+    value: AccountId32
+}
+
+export interface RewardDestination_Controller {
+    __kind: 'Controller'
+}
+
+export interface RewardDestination_None {
+    __kind: 'None'
+}
+
+export interface RewardDestination_Staked {
+    __kind: 'Staked'
+}
+
+export interface RewardDestination_Stash {
+    __kind: 'Stash'
+}
+
 export type Forcing = Forcing_ForceAlways | Forcing_ForceNew | Forcing_ForceNone | Forcing_NotForcing
 
 export interface Forcing_ForceAlways {
@@ -5977,10 +6361,14 @@ export interface StakeExchangeEvent_BuyOrderCompleted {
      * The creator of the offer
      */
     offerCreator: AccountId32
+    /**
+     * The offer Id
+     */
+    offerId: bigint
 }
 
 /**
- * Liquidity was added to a offer
+ * Liquidity was added to an offer
  */
 export interface StakeExchangeEvent_LiquidityAdded {
     __kind: 'LiquidityAdded'
@@ -6010,7 +6398,7 @@ export interface StakeExchangeEvent_LiquidityConfigUpdated {
 }
 
 /**
- * Liquidity was withdrawn from a offer
+ * Liquidity was withdrawn from an offer
  */
 export interface StakeExchangeEvent_LiquidityWithdrawn {
     __kind: 'LiquidityWithdrawn'
@@ -6025,7 +6413,7 @@ export interface StakeExchangeEvent_LiquidityWithdrawn {
 }
 
 /**
- * A offer was cancelled
+ * An offer was cancelled
  */
 export interface StakeExchangeEvent_OfferCancelled {
     __kind: 'OfferCancelled'
@@ -6036,7 +6424,7 @@ export interface StakeExchangeEvent_OfferCancelled {
 }
 
 /**
- * A offer was completed and removed
+ * An offer was completed and removed
  */
 export interface StakeExchangeEvent_OfferCompleted {
     __kind: 'OfferCompleted'
@@ -6047,7 +6435,7 @@ export interface StakeExchangeEvent_OfferCompleted {
 }
 
 /**
- * A offer was placed
+ * An offer was placed
  */
 export interface StakeExchangeEvent_OfferCreated {
     __kind: 'OfferCreated'
@@ -6121,7 +6509,19 @@ export interface SlotsEvent_NewLeasePeriod {
 /**
  * The `Event` enum of this pallet
  */
-export type SessionEvent = SessionEvent_NewSession
+export type SessionEvent =
+    | SessionEvent_NewQueued
+    | SessionEvent_NewSession
+    | SessionEvent_ValidatorDisabled
+    | SessionEvent_ValidatorReenabled
+
+/**
+ * The `NewSession` event in the current block also implies a new validator set to be
+ * queued.
+ */
+export interface SessionEvent_NewQueued {
+    __kind: 'NewQueued'
+}
 
 /**
  * New session has happened. Note that the argument is the session index, not the
@@ -6133,9 +6533,26 @@ export interface SessionEvent_NewSession {
 }
 
 /**
+ * Validator has been disabled.
+ */
+export interface SessionEvent_ValidatorDisabled {
+    __kind: 'ValidatorDisabled'
+    validator: AccountId32
+}
+
+/**
+ * Validator has been re-enabled.
+ */
+export interface SessionEvent_ValidatorReenabled {
+    __kind: 'ValidatorReenabled'
+    validator: AccountId32
+}
+
+/**
  * Events type.
  */
 export type SchedulerEvent =
+    | SchedulerEvent_AgendaIncomplete
     | SchedulerEvent_CallUnavailable
     | SchedulerEvent_Canceled
     | SchedulerEvent_Dispatched
@@ -6145,6 +6562,14 @@ export type SchedulerEvent =
     | SchedulerEvent_RetryFailed
     | SchedulerEvent_RetrySet
     | SchedulerEvent_Scheduled
+
+/**
+ * Agenda is incomplete from `when`.
+ */
+export interface SchedulerEvent_AgendaIncomplete {
+    __kind: 'AgendaIncomplete'
+    when: number
+}
 
 /**
  * The call for the provided hash was not found so the task has been aborted.
@@ -6627,10 +7052,12 @@ export interface ReferendaEvent_TimedOut {
  */
 export type ProxyEvent =
     | ProxyEvent_Announced
+    | ProxyEvent_DepositPoked
     | ProxyEvent_ProxyAdded
     | ProxyEvent_ProxyExecuted
     | ProxyEvent_ProxyRemoved
     | ProxyEvent_PureCreated
+    | ProxyEvent_PureKilled
 
 /**
  * An announcement was placed to make a call in the future.
@@ -6640,6 +7067,17 @@ export interface ProxyEvent_Announced {
     real: AccountId32
     proxy: AccountId32
     callHash: H256
+}
+
+/**
+ * A deposit stored for proxies or announcements was poked / updated.
+ */
+export interface ProxyEvent_DepositPoked {
+    __kind: 'DepositPoked'
+    who: AccountId32
+    kind: DepositKind
+    oldDeposit: bigint
+    newDeposit: bigint
 }
 
 /**
@@ -6682,6 +7120,74 @@ export interface ProxyEvent_PureCreated {
     who: AccountId32
     proxyType: ProxyType
     disambiguationIndex: number
+}
+
+/**
+ * A pure proxy was killed by its spawner.
+ */
+export interface ProxyEvent_PureKilled {
+    __kind: 'PureKilled'
+    pure: AccountId32
+    spawner: AccountId32
+    proxyType: ProxyType
+    disambiguationIndex: number
+}
+
+export type ProxyType =
+    | ProxyType_Any
+    | ProxyType_CancelProxy
+    | ProxyType_FuelTanks
+    | ProxyType_Governance
+    | ProxyType_Marketplace
+    | ProxyType_MultiTokens
+    | ProxyType_NominationPools
+    | ProxyType_Staking
+    | ProxyType_Tokens
+
+export interface ProxyType_Any {
+    __kind: 'Any'
+}
+
+export interface ProxyType_CancelProxy {
+    __kind: 'CancelProxy'
+}
+
+export interface ProxyType_FuelTanks {
+    __kind: 'FuelTanks'
+}
+
+export interface ProxyType_Governance {
+    __kind: 'Governance'
+}
+
+export interface ProxyType_Marketplace {
+    __kind: 'Marketplace'
+}
+
+export interface ProxyType_MultiTokens {
+    __kind: 'MultiTokens'
+}
+
+export interface ProxyType_NominationPools {
+    __kind: 'NominationPools'
+}
+
+export interface ProxyType_Staking {
+    __kind: 'Staking'
+}
+
+export interface ProxyType_Tokens {
+    __kind: 'Tokens'
+}
+
+export type DepositKind = DepositKind_Announcements | DepositKind_Proxies
+
+export interface DepositKind_Announcements {
+    __kind: 'Announcements'
+}
+
+export interface DepositKind_Proxies {
+    __kind: 'Proxies'
 }
 
 /**
@@ -6774,6 +7280,7 @@ export interface DisputeResult_Valid {
  */
 export type ParasEvent =
     | ParasEvent_ActionQueued
+    | ParasEvent_CodeAuthorized
     | ParasEvent_CodeUpgradeScheduled
     | ParasEvent_CurrentCodeUpdated
     | ParasEvent_CurrentHeadUpdated
@@ -6781,6 +7288,7 @@ export type ParasEvent =
     | ParasEvent_PvfCheckAccepted
     | ParasEvent_PvfCheckRejected
     | ParasEvent_PvfCheckStarted
+    | ParasEvent_UpgradeCooldownRemoved
 
 /**
  * A para has been queued to execute pending actions. `para_id`
@@ -6788,6 +7296,25 @@ export type ParasEvent =
 export interface ParasEvent_ActionQueued {
     __kind: 'ActionQueued'
     value: [Id, number]
+}
+
+/**
+ * A new code hash has been authorized for a Para.
+ */
+export interface ParasEvent_CodeAuthorized {
+    __kind: 'CodeAuthorized'
+    /**
+     * Para
+     */
+    paraId: Id
+    /**
+     * Authorized code hash.
+     */
+    codeHash: ValidationCodeHash
+    /**
+     * Block at which authorization expires and will be removed.
+     */
+    expireAt: number
 }
 
 /**
@@ -6850,6 +7377,17 @@ export interface ParasEvent_PvfCheckStarted {
 }
 
 /**
+ * The upgrade cooldown was removed.
+ */
+export interface ParasEvent_UpgradeCooldownRemoved {
+    __kind: 'UpgradeCooldownRemoved'
+    /**
+     * The parachain for which the cooldown got removed.
+     */
+    paraId: Id
+}
+
+/**
  * The `Event` enum of this pallet
  */
 export type ParaInclusionEvent =
@@ -6863,7 +7401,7 @@ export type ParaInclusionEvent =
  */
 export interface ParaInclusionEvent_CandidateBacked {
     __kind: 'CandidateBacked'
-    value: [V6CandidateReceipt, HeadData, V6CoreIndex, V6GroupIndex]
+    value: [CandidateReceiptV2, HeadData, V8CoreIndex, V8GroupIndex]
 }
 
 /**
@@ -6871,7 +7409,7 @@ export interface ParaInclusionEvent_CandidateBacked {
  */
 export interface ParaInclusionEvent_CandidateIncluded {
     __kind: 'CandidateIncluded'
-    value: [V6CandidateReceipt, HeadData, V6CoreIndex, V6GroupIndex]
+    value: [CandidateReceiptV2, HeadData, V8CoreIndex, V8GroupIndex]
 }
 
 /**
@@ -6879,7 +7417,7 @@ export interface ParaInclusionEvent_CandidateIncluded {
  */
 export interface ParaInclusionEvent_CandidateTimedOut {
     __kind: 'CandidateTimedOut'
-    value: [V6CandidateReceipt, HeadData, V6CoreIndex]
+    value: [CandidateReceiptV2, HeadData, V8CoreIndex]
 }
 
 /**
@@ -6891,9 +7429,40 @@ export interface ParaInclusionEvent_UpwardMessagesReceived {
     count: number
 }
 
-export type V6GroupIndex = number
+/**
+ * The `Event` enum of this pallet
+ */
+export type OnDemandAssignmentProviderEvent =
+    | OnDemandAssignmentProviderEvent_AccountCredited
+    | OnDemandAssignmentProviderEvent_OnDemandOrderPlaced
+    | OnDemandAssignmentProviderEvent_SpotPriceSet
 
-export type HeadData = Bytes
+/**
+ * An account was given credits.
+ */
+export interface OnDemandAssignmentProviderEvent_AccountCredited {
+    __kind: 'AccountCredited'
+    who: AccountId32
+    amount: bigint
+}
+
+/**
+ * An order was placed at some spot price amount by orderer ordered_by
+ */
+export interface OnDemandAssignmentProviderEvent_OnDemandOrderPlaced {
+    __kind: 'OnDemandOrderPlaced'
+    paraId: Id
+    spotPrice: bigint
+    orderedBy: AccountId32
+}
+
+/**
+ * The value of the spot price has likely changed
+ */
+export interface OnDemandAssignmentProviderEvent_SpotPriceSet {
+    __kind: 'SpotPriceSet'
+    spotPrice: bigint
+}
 
 /**
  * Events type.
@@ -6919,19 +7488,16 @@ export type NominationPoolsEvent =
     | NominationPoolsEvent_CommissionUpdated
     | NominationPoolsEvent_Created
     | NominationPoolsEvent_Destroyed
-    | NominationPoolsEvent_EarlyBirdBonusCalculated
-    | NominationPoolsEvent_EarlyBirdBonusDistributed
-    | NominationPoolsEvent_EarlyBirdBonusPaid
-    | NominationPoolsEvent_EarlyBirdBonusPaymentUnlocked
-    | NominationPoolsEvent_EarlyBirdSharesCaptured
-    | NominationPoolsEvent_EraRewardsProcessed
+    | NominationPoolsEvent_EarlyBirdSharesRemoved
     | NominationPoolsEvent_Nominated
     | NominationPoolsEvent_PoolMutated
     | NominationPoolsEvent_PoolSlashed
     | NominationPoolsEvent_RewardPaid
     | NominationPoolsEvent_StateChanged
     | NominationPoolsEvent_Unbonded
+    | NominationPoolsEvent_UnbondingMemberRemoved
     | NominationPoolsEvent_UnbondingPoolSlashed
+    | NominationPoolsEvent_ValidatorBonusPaid
     | NominationPoolsEvent_Withdrawn
 
 /**
@@ -6971,108 +7537,12 @@ export interface NominationPoolsEvent_Destroyed {
     poolId: number
 }
 
-export interface NominationPoolsEvent_EarlyBirdBonusCalculated {
-    __kind: 'EarlyBirdBonusCalculated'
+export interface NominationPoolsEvent_EarlyBirdSharesRemoved {
+    __kind: 'EarlyBirdSharesRemoved'
     /**
-     * The total amount to be distributed
+     * Number of items removed
      */
-    totalAmount: bigint
-}
-
-/**
- * The early bird bonus has been distributed
- */
-export interface NominationPoolsEvent_EarlyBirdBonusDistributed {
-    __kind: 'EarlyBirdBonusDistributed'
-    /**
-     * The id of the pool
-     */
-    poolId: number
-    /**
-     * The amount distributed
-     */
-    amount: bigint
-}
-
-/**
- * The early bird bonus has been paid to the pool
- */
-export interface NominationPoolsEvent_EarlyBirdBonusPaid {
-    __kind: 'EarlyBirdBonusPaid'
-    /**
-     * The id of the pool
-     */
-    poolId: number
-    /**
-     * The payment ID
-     */
-    paymentId: number
-    /**
-     * The total accounts that were paid
-     */
-    totalAccounts: number
-}
-
-/**
- * A new share of early bird bonus has been unlocked
- */
-export interface NominationPoolsEvent_EarlyBirdBonusPaymentUnlocked {
-    __kind: 'EarlyBirdBonusPaymentUnlocked'
-    /**
-     * The payment-id of the unlocked bonus
-     */
-    paymentId: number
-    /**
-     * The next payment block
-     */
-    nextPaymentBlock: number
-}
-
-/**
- * The shares of pool users have been captured for early bird rewards
- */
-export interface NominationPoolsEvent_EarlyBirdSharesCaptured {
-    __kind: 'EarlyBirdSharesCaptured'
-    /**
-     * The id of the pool
-     */
-    poolId: number
-    /**
-     * The total number of accounts captured
-     */
-    totalAccounts: number
-}
-
-/**
- * This event happens once per era on the previous era that rewards are paid out for. It
- * pays commission, distributes bonus, and reinvests rewards.
- */
-export interface NominationPoolsEvent_EraRewardsProcessed {
-    __kind: 'EraRewardsProcessed'
-    /**
-     * The id of the pool
-     */
-    poolId: number
-    /**
-     * The era that was processed.
-     */
-    era: number
-    /**
-     * The commission that was paid
-     */
-    commission?: CommissionPayment | undefined
-    /**
-     * The amount of bonus that was unlocked
-     */
-    bonus: bigint
-    /**
-     * The amount that was bonded
-     */
-    reinvested: bigint
-    /**
-     * The current bonus cycle ended
-     */
-    bonusCycleEnded: boolean
+    count: number
 }
 
 /**
@@ -7130,9 +7600,9 @@ export interface NominationPoolsEvent_RewardPaid {
      */
     reward: bigint
     /**
-     * The amount that was added to the pool's bonus account
+     * The commission that was paid
      */
-    bonus: bigint
+    commission?: CommissionPayment | undefined
 }
 
 /**
@@ -7176,6 +7646,21 @@ export interface NominationPoolsEvent_Unbonded {
 }
 
 /**
+ * An item was removed from the `UnbondingMembers` storage
+ */
+export interface NominationPoolsEvent_UnbondingMemberRemoved {
+    __kind: 'UnbondingMemberRemoved'
+    /**
+     * The pool id that was removed
+     */
+    poolId: number
+    /**
+     * The member that was removed
+     */
+    member: AccountId32
+}
+
+/**
  * The unbond pool at `era` of pool `pool_id` has been slashed to `balance`.
  */
 export interface NominationPoolsEvent_UnbondingPoolSlashed {
@@ -7183,6 +7668,25 @@ export interface NominationPoolsEvent_UnbondingPoolSlashed {
     poolId: number
     era: number
     balance: bigint
+}
+
+/**
+ * A bonus was paid to validators
+ */
+export interface NominationPoolsEvent_ValidatorBonusPaid {
+    __kind: 'ValidatorBonusPaid'
+    /**
+     * The era for the payment
+     */
+    era: number
+    /**
+     * The total amount rewarded
+     */
+    total: bigint
+    /**
+     * The bonuses rewarded to individual validators
+     */
+    rewards: [AccountId32, bigint][]
 }
 
 /**
@@ -7201,30 +7705,17 @@ export interface NominationPoolsEvent_Withdrawn {
     points: bigint
 }
 
-export type PoolState = PoolState_Destroying | PoolState_Open
-
-export interface PoolState_Destroying {
-    __kind: 'Destroying'
-}
-
-export interface PoolState_Open {
-    __kind: 'Open'
+export interface CommissionPayment {
+    beneficiary: AccountId32
+    amount: bigint
 }
 
 export interface PoolMutation {
-    duration?: number | undefined
     newCommission: ShouldMutate
     maxCommission?: Perbill | undefined
     changeRate?: CommissionChangeRate | undefined
     capacity?: bigint | undefined
     name?: BoundedVec | undefined
-}
-
-export type BoundedVec = Bytes
-
-export interface CommissionChangeRate {
-    maxDelta: Perbill
-    minDelay: number
 }
 
 export type ShouldMutate = ShouldMutate_NoMutation | ShouldMutate_SomeMutation
@@ -7238,19 +7729,26 @@ export interface ShouldMutate_SomeMutation {
     value?: Perbill | undefined
 }
 
-export interface CommissionPayment {
-    beneficiary: AccountId32
-    amount: bigint
-}
-
 /**
  * The `Event` enum of this pallet
  */
 export type MultisigEvent =
+    | MultisigEvent_DepositPoked
     | MultisigEvent_MultisigApproval
     | MultisigEvent_MultisigCancelled
     | MultisigEvent_MultisigExecuted
     | MultisigEvent_NewMultisig
+
+/**
+ * The deposit for a multisig operation has been updated/poked.
+ */
+export interface MultisigEvent_DepositPoked {
+    __kind: 'DepositPoked'
+    who: AccountId32
+    callHash: Bytes
+    oldDeposit: bigint
+    newDeposit: bigint
+}
 
 /**
  * A multisig operation has been approved by someone.
@@ -7314,6 +7812,8 @@ export type MultiTokensEvent =
     | MultiTokensEvent_ClaimTokensInitiated
     | MultiTokensEvent_ClaimedCollections
     | MultiTokensEvent_ClaimedTokens
+    | MultiTokensEvent_CollectionAccountApprovalsMismatch
+    | MultiTokensEvent_CollectionAccountApprovalsUpdated
     | MultiTokensEvent_CollectionAccountCreated
     | MultiTokensEvent_CollectionAccountDestroyed
     | MultiTokensEvent_CollectionAccountUpdated
@@ -7323,6 +7823,7 @@ export type MultiTokensEvent =
     | MultiTokensEvent_CollectionTransferCancelled
     | MultiTokensEvent_CollectionTransferred
     | MultiTokensEvent_CollectionUpdated
+    | MultiTokensEvent_CollectionUpgraded
     | MultiTokensEvent_Deposit
     | MultiTokensEvent_Frozen
     | MultiTokensEvent_Infused
@@ -7338,10 +7839,19 @@ export type MultiTokensEvent =
     | MultiTokensEvent_TokenAccountDepositUpdated
     | MultiTokensEvent_TokenAccountDestroyed
     | MultiTokensEvent_TokenAccountUpdated
+    | MultiTokensEvent_TokenAccountUpgraded
     | MultiTokensEvent_TokenCreated
     | MultiTokensEvent_TokenDestroyed
+    | MultiTokensEvent_TokenGroupAdded
+    | MultiTokensEvent_TokenGroupAttributeRemoved
+    | MultiTokensEvent_TokenGroupAttributeSet
+    | MultiTokensEvent_TokenGroupCreated
+    | MultiTokensEvent_TokenGroupDestroyed
+    | MultiTokensEvent_TokenGroupRemoved
+    | MultiTokensEvent_TokenGroupsUpdated
     | MultiTokensEvent_TokenMutated
     | MultiTokensEvent_TokenUpdated
+    | MultiTokensEvent_TokenUpgraded
     | MultiTokensEvent_Transferred
     | MultiTokensEvent_Unapproved
     | MultiTokensEvent_Unreserved
@@ -7407,7 +7917,7 @@ export interface MultiTokensEvent_AttributeSet {
      */
     collectionId: bigint
     /**
-     * [`TokenId`](Config::TokenId) of [`Token`](ep_multi_tokens::Token) modified
+     * token id of Token modified
      */
     tokenId?: bigint | undefined
     /**
@@ -7426,15 +7936,15 @@ export interface MultiTokensEvent_AttributeSet {
 export interface MultiTokensEvent_BalanceSet {
     __kind: 'BalanceSet'
     /**
-     * The [`CollectionId`](Config::CollectionId) for which balance was set
+     * The collection id for which balance was set
      */
     collectionId: bigint
     /**
-     * The [`TokenId`](Config::TokenId) for which balance was set
+     * The token id for which balance was set
      */
     tokenId: bigint
     /**
-     * The [`AccountId`](frame_system::Config::AccountId) that balance was set for
+     * The account id that balance was set for
      */
     accountId: AccountId32
     /**
@@ -7543,16 +8053,50 @@ export interface MultiTokensEvent_ClaimedTokens {
 }
 
 /**
+ * A given collection expiration list doesn't its current approvals
+ */
+export interface MultiTokensEvent_CollectionAccountApprovalsMismatch {
+    __kind: 'CollectionAccountApprovalsMismatch'
+    /**
+     * The collection id
+     */
+    collectionId: bigint
+    /**
+     * The account that owns the collection
+     */
+    accountId: AccountId32
+}
+
+/**
+ * A collection was upgraded
+ */
+export interface MultiTokensEvent_CollectionAccountApprovalsUpdated {
+    __kind: 'CollectionAccountApprovalsUpdated'
+    /**
+     * The collection id
+     */
+    collectionId: bigint
+    /**
+     * The account that owns the collection
+     */
+    accountId: AccountId32
+    /**
+     * Approval expirations before the update call
+     */
+    oldApprovals: [AccountId32, number | undefined][]
+}
+
+/**
  * A new collection account was created
  */
 export interface MultiTokensEvent_CollectionAccountCreated {
     __kind: 'CollectionAccountCreated'
     /**
-     * The [`CollectionId`](Config::CollectionId) for which the account is created
+     * The collection id for which the account is created
      */
     collectionId: bigint
     /**
-     * The [`AccountId`](frame_system::Config::AccountId) of the account
+     * The account id of the collection account
      */
     accountId: AccountId32
 }
@@ -7563,26 +8107,26 @@ export interface MultiTokensEvent_CollectionAccountCreated {
 export interface MultiTokensEvent_CollectionAccountDestroyed {
     __kind: 'CollectionAccountDestroyed'
     /**
-     * The [`CollectionId`](Config::CollectionId) of the destroyed account
+     * The collection id of the destroyed token account
      */
     collectionId: bigint
     /**
-     * The [`AccountId`](frame_system::Config::AccountId) of the destroyed account
+     * The account id of the destroyed token account
      */
     accountId: AccountId32
 }
 
 /**
- * TokenAccount storage was set to `value`
+ * CollectionAccount storage was set to `value`
  */
 export interface MultiTokensEvent_CollectionAccountUpdated {
     __kind: 'CollectionAccountUpdated'
     /**
-     * The [`CollectionId`](Config::CollectionId) for which the value is set
+     * The collection id for which the value is set
      */
     collectionId: bigint
     /**
-     * The [`AccountId`](frame_system::Config::AccountId) that owned the token account
+     * The account id that owned the token account
      */
     accountId: AccountId32
     /**
@@ -7597,11 +8141,11 @@ export interface MultiTokensEvent_CollectionAccountUpdated {
 export interface MultiTokensEvent_CollectionCreated {
     __kind: 'CollectionCreated'
     /**
-     * The id of the [`Collection`](ep_multi_tokens::Collection)
+     * The id of the Collection
      */
     collectionId: bigint
     /**
-     * The owner of the [`Collection`](ep_multi_tokens::Collection)
+     * The owner of the Collection
      */
     owner: AccountId32
 }
@@ -7616,7 +8160,7 @@ export interface MultiTokensEvent_CollectionDestroyed {
      */
     collectionId: bigint
     /**
-     * The [`AccountId`](frame_system::Config::AccountId) that destroyed the collection
+     * The AccountId that destroyed the collection
      */
     caller: AccountId32
 }
@@ -7627,8 +8171,7 @@ export interface MultiTokensEvent_CollectionDestroyed {
 export interface MultiTokensEvent_CollectionMutated {
     __kind: 'CollectionMutated'
     /**
-     * [`CollectionId`](Config::CollectionId) of the
-     * [`Collection`](ep_multi_tokens::Collection)
+     * collection id of the Collection
      */
     collectionId: bigint
     /**
@@ -7669,7 +8212,7 @@ export interface MultiTokensEvent_CollectionTransferred {
 export interface MultiTokensEvent_CollectionUpdated {
     __kind: 'CollectionUpdated'
     /**
-     * The [`CollectionId`](Config::CollectionId) for which the value is set
+     * The collection id for which the value is set
      */
     collectionId: bigint
     /**
@@ -7679,20 +8222,35 @@ export interface MultiTokensEvent_CollectionUpdated {
 }
 
 /**
+ * A collection was upgraded
+ */
+export interface MultiTokensEvent_CollectionUpgraded {
+    __kind: 'CollectionUpgraded'
+    /**
+     * The collection id
+     */
+    collectionId: bigint
+    /**
+     * The version of the storage this element was migrated to
+     */
+    storageVersion: number
+}
+
+/**
  * Token units were deposited
  */
 export interface MultiTokensEvent_Deposit {
     __kind: 'Deposit'
     /**
-     * The [`CollectionId`](Config::CollectionId) of the tokens deposited
+     * The collection id of the tokens deposited
      */
     collectionId: bigint
     /**
-     * The [`TokenId`](Config::TokenId) of the tokens deposited
+     * The token id of the tokens deposited
      */
     tokenId: bigint
     /**
-     * The [`AccountId`](frame_system::Config::AccountId) deposited to
+     * The account id deposited to
      */
     accountId: AccountId32
     /**
@@ -7725,11 +8283,12 @@ export interface MultiTokensEvent_Infused {
     /**
      * The account that infused the token
      */
-    accountId: AccountId32
+    accountId: RootOrSigned
     /**
-     * The amount that was infused
+     * The amount that was infused. This is the total infusion that was added, not the per
+     * unit amount.
      */
-    amount: bigint
+    totalAmount: bigint
 }
 
 /**
@@ -7753,11 +8312,11 @@ export interface MultiTokensEvent_MigrationStep {
 export interface MultiTokensEvent_Minted {
     __kind: 'Minted'
     /**
-     * [`CollectionId`](Config::CollectionId) of minted token
+     * collection id of minted token
      */
     collectionId: bigint
     /**
-     * The [`TokenId`](Config::TokenId) minted
+     * The token id minted
      */
     tokenId: bigint
     /**
@@ -7780,11 +8339,11 @@ export interface MultiTokensEvent_Minted {
 export interface MultiTokensEvent_MovedReserves {
     __kind: 'MovedReserves'
     /**
-     * The [`CollectionId`](Config::CollectionId) in which token was moved
+     * The collection id in which token was moved
      */
     collectionId: bigint
     /**
-     * The [`TokenId`](Config::TokenId) that was moved
+     * The token id that was moved
      */
     tokenId: bigint
     /**
@@ -7802,7 +8361,7 @@ export interface MultiTokensEvent_MovedReserves {
     /**
      * The identifier of the moved reserves
      */
-    reserveId?: Bytes | undefined
+    reserveId: RuntimeHoldReason
 }
 
 /**
@@ -7819,11 +8378,11 @@ export interface MultiTokensEvent_NextCollectionIdUpdated {
 export interface MultiTokensEvent_ReserveRepatriated {
     __kind: 'ReserveRepatriated'
     /**
-     * The [`CollectionId`](Config::CollectionId) in which token was moved
+     * The collection id in which token was moved
      */
     collectionId: bigint
     /**
-     * The [`TokenId`](Config::TokenId) that was moved
+     * The token id that was moved
      */
     tokenId: bigint
     /**
@@ -7841,7 +8400,7 @@ export interface MultiTokensEvent_ReserveRepatriated {
     /**
      * The identifier of the moved reserves
      */
-    reserveId?: Bytes | undefined
+    reserveId: RuntimeHoldReason
 }
 
 /**
@@ -7868,7 +8427,7 @@ export interface MultiTokensEvent_Reserved {
     /**
      * The identifier of the reserves
      */
-    reserveId?: Bytes | undefined
+    reserveId: RuntimeHoldReason
 }
 
 /**
@@ -7877,15 +8436,15 @@ export interface MultiTokensEvent_Reserved {
 export interface MultiTokensEvent_Slashed {
     __kind: 'Slashed'
     /**
-     * The [`CollectionId`](Config::CollectionId) of the tokens slashed
+     * The collection id of the tokens slashed
      */
     collectionId: bigint
     /**
-     * The [`TokenId`](Config::TokenId) of the tokens slashed
+     * The token id of the tokens slashed
      */
     tokenId: bigint
     /**
-     * The [`AccountId`](frame_system::Config::AccountId) slashed
+     * The account id slashed
      */
     accountId: AccountId32
     /**
@@ -7908,19 +8467,19 @@ export interface MultiTokensEvent_Thawed {
 export interface MultiTokensEvent_TokenAccountCreated {
     __kind: 'TokenAccountCreated'
     /**
-     * The [`CollectionId`](Config::CollectionId) for which the account is created
+     * The collection id for which the token account is created
      */
     collectionId: bigint
     /**
-     * The [`TokenId`](Config::TokenId) for which the account is created
+     * The token id for which the token account is created
      */
     tokenId: bigint
     /**
-     * The [`AccountId`](frame_system::Config::AccountId) of the account
+     * The account id of the token account
      */
     accountId: AccountId32
     /**
-     * The balance that this account holds
+     * The balance that this token account holds
      */
     balance: bigint
 }
@@ -7931,11 +8490,11 @@ export interface MultiTokensEvent_TokenAccountCreated {
 export interface MultiTokensEvent_TokenAccountDepositUpdated {
     __kind: 'TokenAccountDepositUpdated'
     /**
-     * The [`CollectionId`](Config::CollectionId) for which the account is created
+     * The collection id for which the token account is created
      */
     collectionId: bigint
     /**
-     * The [`TokenId`](Config::TokenId) fof the destroyed account
+     * The token id fof the destroyed token account
      */
     tokenId: bigint
     /**
@@ -7954,15 +8513,15 @@ export interface MultiTokensEvent_TokenAccountDepositUpdated {
 export interface MultiTokensEvent_TokenAccountDestroyed {
     __kind: 'TokenAccountDestroyed'
     /**
-     * The [`CollectionId`](Config::CollectionId) for which the account is created
+     * The collection id for which the token account is created
      */
     collectionId: bigint
     /**
-     * The [`TokenId`](Config::TokenId) fof the destroyed account
+     * The token id of the destroyed token account
      */
     tokenId: bigint
     /**
-     * The [`AccountId`](frame_system::Config::AccountId) of the destroyed account
+     * The account id of the destroyed token account
      */
     accountId: AccountId32
 }
@@ -7973,15 +8532,15 @@ export interface MultiTokensEvent_TokenAccountDestroyed {
 export interface MultiTokensEvent_TokenAccountUpdated {
     __kind: 'TokenAccountUpdated'
     /**
-     * The [`CollectionId`](Config::CollectionId) for which the value is set
+     * The collection id for which the value is set
      */
     collectionId: bigint
     /**
-     * The [`TokenId`](Config::TokenId) of the destroyed account
+     * The token id of the updated account
      */
     tokenId: bigint
     /**
-     * The [`AccountId`](frame_system::Config::AccountId) that owned the token account
+     * The account id that owned the token account
      */
     accountId: AccountId32
     /**
@@ -7991,24 +8550,47 @@ export interface MultiTokensEvent_TokenAccountUpdated {
 }
 
 /**
+ * A token account was upgraded
+ */
+export interface MultiTokensEvent_TokenAccountUpgraded {
+    __kind: 'TokenAccountUpgraded'
+    /**
+     * The account's collection id
+     */
+    collectionId: bigint
+    /**
+     * The account's token id
+     */
+    tokenId: bigint
+    /**
+     * The holder of the account
+     */
+    accountId: AccountId32
+    /**
+     * The version of the storage this element was migrated to
+     */
+    storageVersion: number
+}
+
+/**
  * A token was created
  */
 export interface MultiTokensEvent_TokenCreated {
     __kind: 'TokenCreated'
     /**
-     * The [`CollectionId`](Config::CollectionId) minted
+     * The collection id minted
      */
     collectionId: bigint
     /**
-     * The [`TokenId`](Config::TokenId) minted
+     * The token id minted
      */
     tokenId: bigint
     /**
-     * issuer of minted [`Token`](ep_multi_tokens::Token)
+     * issuer of minted Token
      */
     issuer: RootOrSigned
     /**
-     * the initial supply of the [`Token`](ep_multi_tokens::Token)
+     * the initial supply of the Token
      */
     initialSupply: bigint
 }
@@ -8019,18 +8601,135 @@ export interface MultiTokensEvent_TokenCreated {
 export interface MultiTokensEvent_TokenDestroyed {
     __kind: 'TokenDestroyed'
     /**
-     * The [`CollectionId`](Config::CollectionId) destroyed
+     * The collection id destroyed
      */
     collectionId: bigint
     /**
-     * The [`TokenId`](Config::TokenId) destroyed
+     * The token id destroyed
      */
     tokenId: bigint
     /**
-     * the [`AccountId`](frame_system::Config::AccountId) that destroyed the
-     * [`Token`](ep_multi_tokens::Token)
+     * the AccountId that destroyed the
+     * Token
      */
     caller: AccountId32
+}
+
+/**
+ * A token was added to a group
+ */
+export interface MultiTokensEvent_TokenGroupAdded {
+    __kind: 'TokenGroupAdded'
+    /**
+     * collection id of the token
+     */
+    collectionId: bigint
+    /**
+     * id of the token
+     */
+    tokenId: bigint
+    /**
+     * id of the token group
+     */
+    tokenGroupId: bigint
+}
+
+/**
+ * An attribute has been removed from a token group
+ */
+export interface MultiTokensEvent_TokenGroupAttributeRemoved {
+    __kind: 'TokenGroupAttributeRemoved'
+    /**
+     * id of the token group
+     */
+    tokenGroupId: bigint
+    /**
+     * key of attribute cleared
+     */
+    key: Bytes
+}
+
+/**
+ * New attribute has been set on a token group
+ */
+export interface MultiTokensEvent_TokenGroupAttributeSet {
+    __kind: 'TokenGroupAttributeSet'
+    /**
+     * id of the token group
+     */
+    tokenGroupId: bigint
+    /**
+     * key of attribute set
+     */
+    key: Bytes
+    /**
+     * value of attribute set
+     */
+    value: Bytes
+}
+
+/**
+ * A new token group was created
+ */
+export interface MultiTokensEvent_TokenGroupCreated {
+    __kind: 'TokenGroupCreated'
+    /**
+     * collection where the token group belongs
+     */
+    collectionId: bigint
+    /**
+     * id of the token group
+     */
+    tokenGroupId: bigint
+}
+
+/**
+ * A token group was destroyed
+ */
+export interface MultiTokensEvent_TokenGroupDestroyed {
+    __kind: 'TokenGroupDestroyed'
+    /**
+     * id of the token group
+     */
+    tokenGroupId: bigint
+}
+
+/**
+ * A token was removed from a group
+ */
+export interface MultiTokensEvent_TokenGroupRemoved {
+    __kind: 'TokenGroupRemoved'
+    /**
+     * collection id of the token
+     */
+    collectionId: bigint
+    /**
+     * id of the token
+     */
+    tokenId: bigint
+    /**
+     * id of the token group
+     */
+    tokenGroupId: bigint
+}
+
+/**
+ * A token's group list was set
+ */
+export interface MultiTokensEvent_TokenGroupsUpdated {
+    __kind: 'TokenGroupsUpdated'
+    /**
+     * collection id of the group
+     */
+    collectionId: bigint
+    /**
+     * token id of the groups
+     */
+    tokenId: bigint
+    /**
+     * ids of the token groups
+     */
+    tokenGroups: bigint[]
 }
 
 /**
@@ -8039,16 +8738,15 @@ export interface MultiTokensEvent_TokenDestroyed {
 export interface MultiTokensEvent_TokenMutated {
     __kind: 'TokenMutated'
     /**
-     * The [`CollectionId`](Config::CollectionId) [`Token`](ep_multi_tokens::Token)
-     * belongs to
+     * The collection id where the Token belongs
      */
     collectionId: bigint
     /**
-     * Id of the [`Token`](ep_multi_tokens::Token) mutated
+     * Id of the Token mutated
      */
     tokenId: bigint
     /**
-     * mutation that was applied to the [`Token`](ep_multi_tokens::Token)
+     * mutation that was applied to the Token
      */
     mutation: DefaultTokenMutation
 }
@@ -8059,17 +8757,36 @@ export interface MultiTokensEvent_TokenMutated {
 export interface MultiTokensEvent_TokenUpdated {
     __kind: 'TokenUpdated'
     /**
-     * The [`CollectionId`](Config::CollectionId) for which the value is set
+     * The collection id for which the value is set
      */
     collectionId: bigint
     /**
-     * The [`TokenId`](Config::TokenId) for which the value is set
+     * The token id for which the value is set
      */
     tokenId: bigint
     /**
      * new value of Token storage
      */
     value?: Token | undefined
+}
+
+/**
+ * A token was upgraded
+ */
+export interface MultiTokensEvent_TokenUpgraded {
+    __kind: 'TokenUpgraded'
+    /**
+     * The collection id of the token
+     */
+    collectionId: bigint
+    /**
+     * The token id
+     */
+    tokenId: bigint
+    /**
+     * The version of the storage this element was migrated to
+     */
+    storageVersion: number
 }
 
 /**
@@ -8082,11 +8799,11 @@ export interface MultiTokensEvent_Transferred {
      */
     collectionId: bigint
     /**
-     * [`TokenId`](Config::TokenId) transferred
+     * token id transferred
      */
     tokenId: bigint
     /**
-     * The [`AccountId`](frame_system::Config::AccountId) that performed the transfer
+     * The AccountId that performed the transfer
      */
     operator: AccountId32
     /**
@@ -8132,11 +8849,11 @@ export interface MultiTokensEvent_Unapproved {
 export interface MultiTokensEvent_Unreserved {
     __kind: 'Unreserved'
     /**
-     * The [`CollectionId`](Config::CollectionId) in which token was unreserved
+     * The collection id in which token was unreserved
      */
     collectionId: bigint
     /**
-     * The [`TokenId`](Config::TokenId) that was unreserved
+     * The token id that was unreserved
      */
     tokenId: bigint
     /**
@@ -8150,7 +8867,7 @@ export interface MultiTokensEvent_Unreserved {
     /**
      * The identifier of the unreserved tokens
      */
-    reserveId?: Bytes | undefined
+    reserveId: RuntimeHoldReason
 }
 
 /**
@@ -8159,15 +8876,15 @@ export interface MultiTokensEvent_Unreserved {
 export interface MultiTokensEvent_Withdraw {
     __kind: 'Withdraw'
     /**
-     * The [`CollectionId`](Config::CollectionId) of the tokens withdrawn
+     * The collection id of the tokens withdrawn
      */
     collectionId: bigint
     /**
-     * The [`TokenId`](Config::TokenId) of the tokens withdrawn
+     * The token id of the tokens withdrawn
      */
     tokenId: bigint
     /**
-     * The [`AccountId`](frame_system::Config::AccountId) withdrawn from
+     * The account id withdrawn from
      */
     accountId: AccountId32
     /**
@@ -8177,41 +8894,41 @@ export interface MultiTokensEvent_Withdraw {
 }
 
 export interface DefaultTokenMutation {
-    behavior: Type_218
-    listingForbidden: Type_221
-    anyoneCanInfuse: Type_221
-    name: Type_222
+    behavior: Type_591
+    listingForbidden: Type_594
+    anyoneCanInfuse: Type_594
+    name: Type_595
 }
 
-export type Type_222 = Type_222_NoMutation | Type_222_SomeMutation
+export type Type_595 = Type_595_NoMutation | Type_595_SomeMutation
 
-export interface Type_222_NoMutation {
+export interface Type_595_NoMutation {
     __kind: 'NoMutation'
 }
 
-export interface Type_222_SomeMutation {
+export interface Type_595_SomeMutation {
     __kind: 'SomeMutation'
     value: BoundedString
 }
 
-export type Type_221 = Type_221_NoMutation | Type_221_SomeMutation
+export type Type_594 = Type_594_NoMutation | Type_594_SomeMutation
 
-export interface Type_221_NoMutation {
+export interface Type_594_NoMutation {
     __kind: 'NoMutation'
 }
 
-export interface Type_221_SomeMutation {
+export interface Type_594_SomeMutation {
     __kind: 'SomeMutation'
     value: boolean
 }
 
-export type Type_218 = Type_218_NoMutation | Type_218_SomeMutation
+export type Type_591 = Type_591_NoMutation | Type_591_SomeMutation
 
-export interface Type_218_NoMutation {
+export interface Type_591_NoMutation {
     __kind: 'NoMutation'
 }
 
-export interface Type_218_SomeMutation {
+export interface Type_591_SomeMutation {
     __kind: 'SomeMutation'
     value?: TokenMarketBehavior | undefined
 }
@@ -8261,17 +8978,17 @@ export interface FreezeType_TokenAccount {
 
 export interface DefaultCollectionMutation {
     owner?: AccountId32 | undefined
-    royalty: Type_210
+    royalty: Type_585
     explicitRoyaltyCurrencies?: AssetId[] | undefined
 }
 
-export type Type_210 = Type_210_NoMutation | Type_210_SomeMutation
+export type Type_585 = Type_585_NoMutation | Type_585_SomeMutation
 
-export interface Type_210_NoMutation {
+export interface Type_585_NoMutation {
     __kind: 'NoMutation'
 }
 
-export interface Type_210_SomeMutation {
+export interface Type_585_SomeMutation {
     __kind: 'SomeMutation'
     value?: DefaultRoyalty | undefined
 }
@@ -8507,6 +9224,7 @@ export type ProcessMessageError =
     | ProcessMessageError_BadFormat
     | ProcessMessageError_Corrupt
     | ProcessMessageError_Overweight
+    | ProcessMessageError_StackLimitReached
     | ProcessMessageError_Unsupported
     | ProcessMessageError_Yield
 
@@ -8521,6 +9239,10 @@ export interface ProcessMessageError_Corrupt {
 export interface ProcessMessageError_Overweight {
     __kind: 'Overweight'
     value: Weight
+}
+
+export interface ProcessMessageError_StackLimitReached {
+    __kind: 'StackLimitReached'
 }
 
 export interface ProcessMessageError_Unsupported {
@@ -8553,13 +9275,17 @@ export type MarketplaceEvent =
     | MarketplaceEvent_BidPlaced
     | MarketplaceEvent_CounterOfferAnswered
     | MarketplaceEvent_CounterOfferPlaced
+    | MarketplaceEvent_CounterOfferRemoved
     | MarketplaceEvent_ExpiredListingRemoved
     | MarketplaceEvent_ListingCancelled
-    | MarketplaceEvent_ListingConverted
     | MarketplaceEvent_ListingCreated
     | MarketplaceEvent_ListingFilled
+    | MarketplaceEvent_ListingRemovedUnderMinimum
+    | MarketplaceEvent_ListingUpgraded
     | MarketplaceEvent_MigrationStep
     | MarketplaceEvent_ProtocolFeeSet
+    | MarketplaceEvent_WhitelistedAccountsAdded
+    | MarketplaceEvent_WhitelistedAccountsRemoved
 
 /**
  * An auction was finalized
@@ -8609,9 +9335,13 @@ export interface MarketplaceEvent_CounterOfferAnswered {
      */
     listingId: H256
     /**
-     * If the offer was accepted
+     * The account that created the counter offer
      */
-    accepted: boolean
+    creator: AccountId32
+    /**
+     * The response to the counter offer
+     */
+    response: CounterOfferResponse
 }
 
 /**
@@ -8630,6 +9360,21 @@ export interface MarketplaceEvent_CounterOfferPlaced {
 }
 
 /**
+ * A counter offer was removed
+ */
+export interface MarketplaceEvent_CounterOfferRemoved {
+    __kind: 'CounterOfferRemoved'
+    /**
+     * Id of the listing
+     */
+    listingId: H256
+    /**
+     * The account that created the counter offer
+     */
+    creator: AccountId32
+}
+
+/**
  * An expired listing was removed
  */
 export interface MarketplaceEvent_ExpiredListingRemoved {
@@ -8645,17 +9390,6 @@ export interface MarketplaceEvent_ExpiredListingRemoved {
  */
 export interface MarketplaceEvent_ListingCancelled {
     __kind: 'ListingCancelled'
-    /**
-     * Id for the listing
-     */
-    listingId: H256
-}
-
-/**
- * A listing was converted to the correct format
- */
-export interface MarketplaceEvent_ListingConverted {
-    __kind: 'ListingConverted'
     /**
      * Id for the listing
      */
@@ -8691,6 +9425,10 @@ export interface MarketplaceEvent_ListingFilled {
      */
     buyer: AccountId32
     /**
+     * The price it was filled with
+     */
+    price: bigint
+    /**
      * The amount that was filled
      */
     amountFilled: bigint
@@ -8706,6 +9444,32 @@ export interface MarketplaceEvent_ListingFilled {
      * Amount that went to royalties
      */
     royalty: bigint
+}
+
+/**
+ * Tried to settle a listing with take value under the minimum requirement
+ */
+export interface MarketplaceEvent_ListingRemovedUnderMinimum {
+    __kind: 'ListingRemovedUnderMinimum'
+    /**
+     * Id for the listing
+     */
+    listingId: H256
+}
+
+/**
+ * A listing has been upgraded
+ */
+export interface MarketplaceEvent_ListingUpgraded {
+    __kind: 'ListingUpgraded'
+    /**
+     * The listing id
+     */
+    listingId: H256
+    /**
+     * The version of the storage this element was migrated to
+     */
+    storageVersion: number
 }
 
 /**
@@ -8735,42 +9499,62 @@ export interface MarketplaceEvent_ProtocolFeeSet {
 }
 
 /**
- * The `Event` enum of this pallet
+ * Whitelisted accounts were added to a listing
  */
-export type ImOnlineEvent = ImOnlineEvent_AllGood | ImOnlineEvent_HeartbeatReceived | ImOnlineEvent_SomeOffline
-
-/**
- * At the end of the session, no offence was committed.
- */
-export interface ImOnlineEvent_AllGood {
-    __kind: 'AllGood'
+export interface MarketplaceEvent_WhitelistedAccountsAdded {
+    __kind: 'WhitelistedAccountsAdded'
+    /**
+     * The listing id
+     */
+    listingId: H256
+    /**
+     * The accounts that were added
+     */
+    accounts: WhitelistAddAccount[]
 }
 
 /**
- * A new heartbeat was received from `AuthorityId`.
+ * Whitelisted accounts were removed from a listing
  */
-export interface ImOnlineEvent_HeartbeatReceived {
-    __kind: 'HeartbeatReceived'
-    authorityId: Bytes
+export interface MarketplaceEvent_WhitelistedAccountsRemoved {
+    __kind: 'WhitelistedAccountsRemoved'
+    /**
+     * The listing id
+     */
+    listingId: H256
+    /**
+     * The account ids that were removed
+     */
+    accountIds: AccountId32[]
 }
 
-/**
- * At the end of the session, at least one validator was found to be offline.
- */
-export interface ImOnlineEvent_SomeOffline {
-    __kind: 'SomeOffline'
-    offline: [AccountId32, Exposure][]
+export interface WhitelistAddAccount {
+    accountId: AccountId32
+    allowance?: bigint | undefined
 }
 
-export interface Exposure {
-    total: bigint
-    own: bigint
-    others: IndividualExposure[]
+export interface CounterOffer {
+    sellerPrice: bigint
+    buyerPrice?: bigint | undefined
+    deposit: Deposit
 }
 
-export interface IndividualExposure {
-    who: AccountId32
+export type CounterOfferResponse =
+    | CounterOfferResponse_Accept
+    | CounterOfferResponse_Counter
+    | CounterOfferResponse_Reject
+
+export interface CounterOfferResponse_Accept {
+    __kind: 'Accept'
+}
+
+export interface CounterOfferResponse_Counter {
+    __kind: 'Counter'
     value: bigint
+}
+
+export interface CounterOfferResponse_Reject {
+    __kind: 'Reject'
 }
 
 /**
@@ -8789,11 +9573,16 @@ export type IdentityEvent =
     | IdentityEvent_PreapprovalExpired
     | IdentityEvent_PrimaryUsernameSet
     | IdentityEvent_RegistrarAdded
+    | IdentityEvent_SubIdentitiesSet
     | IdentityEvent_SubIdentityAdded
     | IdentityEvent_SubIdentityRemoved
+    | IdentityEvent_SubIdentityRenamed
     | IdentityEvent_SubIdentityRevoked
+    | IdentityEvent_UsernameKilled
     | IdentityEvent_UsernameQueued
+    | IdentityEvent_UsernameRemoved
     | IdentityEvent_UsernameSet
+    | IdentityEvent_UsernameUnbound
 
 /**
  * A username authority was added.
@@ -8900,6 +9689,16 @@ export interface IdentityEvent_RegistrarAdded {
 }
 
 /**
+ * An account's sub-identities were set (in bulk).
+ */
+export interface IdentityEvent_SubIdentitiesSet {
+    __kind: 'SubIdentitiesSet'
+    main: AccountId32
+    numberOfSubs: number
+    newDeposit: bigint
+}
+
+/**
  * A sub-identity was added to an identity and the deposit paid.
  */
 export interface IdentityEvent_SubIdentityAdded {
@@ -8920,6 +9719,15 @@ export interface IdentityEvent_SubIdentityRemoved {
 }
 
 /**
+ * A given sub-account's associated name was changed by its super-identity.
+ */
+export interface IdentityEvent_SubIdentityRenamed {
+    __kind: 'SubIdentityRenamed'
+    sub: AccountId32
+    main: AccountId32
+}
+
+/**
  * A sub-identity was cleared, and the given deposit repatriated from the
  * main identity account to the sub-identity account.
  */
@@ -8928,6 +9736,14 @@ export interface IdentityEvent_SubIdentityRevoked {
     sub: AccountId32
     main: AccountId32
     deposit: bigint
+}
+
+/**
+ * A username has been killed.
+ */
+export interface IdentityEvent_UsernameKilled {
+    __kind: 'UsernameKilled'
+    username: Bytes
 }
 
 /**
@@ -8941,11 +9757,27 @@ export interface IdentityEvent_UsernameQueued {
 }
 
 /**
+ * A username has been removed.
+ */
+export interface IdentityEvent_UsernameRemoved {
+    __kind: 'UsernameRemoved'
+    username: Bytes
+}
+
+/**
  * A username was set for `who`.
  */
 export interface IdentityEvent_UsernameSet {
     __kind: 'UsernameSet'
     who: AccountId32
+    username: Bytes
+}
+
+/**
+ * A username has been unbound.
+ */
+export interface IdentityEvent_UsernameUnbound {
+    __kind: 'UsernameUnbound'
     username: Bytes
 }
 
@@ -8982,7 +9814,7 @@ export interface HrmpEvent_HrmpChannelForceOpened {
 }
 
 /**
- * An HRMP channel was opened between two system chains.
+ * An HRMP channel was opened with a system chain.
  */
 export interface HrmpEvent_HrmpSystemChannelOpened {
     __kind: 'HrmpSystemChannelOpened'
@@ -9038,6 +9870,27 @@ export interface HrmpChannelId {
 /**
  * The `Event` enum of this pallet
  */
+export type HistoricalEvent = HistoricalEvent_RootStored | HistoricalEvent_RootsPruned
+
+/**
+ * The merkle root of the validators of the said session were stored
+ */
+export interface HistoricalEvent_RootStored {
+    __kind: 'RootStored'
+    index: number
+}
+
+/**
+ * The merkle roots of up to this session index were pruned
+ */
+export interface HistoricalEvent_RootsPruned {
+    __kind: 'RootsPruned'
+    upTo: number
+}
+
+/**
+ * The `Event` enum of this pallet
+ */
 export type GrandpaEvent = GrandpaEvent_NewAuthorities | GrandpaEvent_Paused | GrandpaEvent_Resumed
 
 /**
@@ -9062,8 +9915,6 @@ export interface GrandpaEvent_Resumed {
     __kind: 'Resumed'
 }
 
-export type Public = Bytes
-
 /**
  * The `Event` enum of this pallet
  */
@@ -9073,6 +9924,7 @@ export type FuelTanksEvent =
     | FuelTanksEvent_AccountRuleDataRemoved
     | FuelTanksEvent_CallDispatched
     | FuelTanksEvent_ConsumptionSet
+    | FuelTanksEvent_DestroyFuelTankScheduled
     | FuelTanksEvent_DispatchFailed
     | FuelTanksEvent_FreezeStateMutated
     | FuelTanksEvent_FuelTankCreated
@@ -9083,59 +9935,54 @@ export type FuelTanksEvent =
     | FuelTanksEvent_RuleSetRemoved
 
 /**
- * An account was added to a [`FuelTank`]
+ * An account was added to a fuel tank
  */
 export interface FuelTanksEvent_AccountAdded {
     __kind: 'AccountAdded'
     /**
-     * The [`AccountId`](frame_system::Config::AccountId) of the [`FuelTank`]
+     * The account id of the fuel tank
      */
     tankId: AccountId32
     /**
-     * The [`AccountId`](frame_system::Config::AccountId) that was added
+     * The account id that was added
      */
     userId: AccountId32
     /**
-     * The deposit reserved by the [`FuelTank`] for this account
+     * The deposit reserved by the fuel tank for this account
      */
     tankDeposit: bigint
     /**
      * The deposit reserved by the user for this account
      */
     userDeposit: bigint
-    /**
-     * The amount the fuel tank has transferred to this account
-     */
-    totalReceived: bigint
 }
 
 /**
- * An account was removed from a [`FuelTank`]
+ * An account was removed from a fuel tank
  */
 export interface FuelTanksEvent_AccountRemoved {
     __kind: 'AccountRemoved'
     /**
-     * The [`AccountId`](frame_system::Config::AccountId) of the [`FuelTank`]
+     * The account id of the fuel tank
      */
     tankId: AccountId32
     /**
-     * The [`AccountId`](frame_system::Config::AccountId) that was removed
+     * The account id that was removed
      */
     userId: AccountId32
 }
 
 /**
- * Account data of [`AccountId`](frame_system::Config::AccountId) was removed from
- * [`RuleSetId`](Config::RuleSetId)
+ * Account data of account id was removed from a rule set
  */
 export interface FuelTanksEvent_AccountRuleDataRemoved {
     __kind: 'AccountRuleDataRemoved'
     /**
-     * The [`AccountId`](frame_system::Config::AccountId) of the [`FuelTank`]
+     * The account id of the fuel tank
      */
     tankId: AccountId32
     /**
-     * The [`AccountId`](frame_system::Config::AccountId) that was removed
+     * The account id that was removed
      */
     userId: AccountId32
     /**
@@ -9143,48 +9990,58 @@ export interface FuelTanksEvent_AccountRuleDataRemoved {
      */
     ruleSetId: number
     /**
-     * The [`DispatchRuleKind`] that was removed
+     * The DispatchRuleKind that was removed
      */
     ruleKind: DispatchRuleKind
 }
 
 /**
- * A call was dispatched through a [`FuelTank`].
+ * A call was dispatched through a fuel tank
  */
 export interface FuelTanksEvent_CallDispatched {
     __kind: 'CallDispatched'
     /**
-     * The [`AccountId`](frame_system::Config::AccountId) that dispatched the call
+     * The account id that dispatched the call
      */
     caller: AccountId32
     /**
-     * The [`AccountId`](frame_system::Config::AccountId) of the [`FuelTank`]
+     * The account id of the fuel tank
      */
     tankId: AccountId32
 }
 
 /**
- * The consumption for an account was set for a rule set on a [`FuelTank`]
+ * The consumption for an account was set for a rule set on a fuel tank
  */
 export interface FuelTanksEvent_ConsumptionSet {
     __kind: 'ConsumptionSet'
     /**
-     * The [`AccountId`](frame_system::Config::AccountId) of the [`FuelTank`]
+     * The account id of the fuel tank
      */
     tankId: AccountId32
     /**
-     * The possible user [`AccountId`](frame_system::Config::AccountId) whose consumption
-     * was set
+     * The possible user account id whose consumption was set
      */
     userId?: AccountId32 | undefined
     /**
-     * The [`RuleSetId`](Config::RuleSetId)
+     * The id of the rule set
      */
     ruleSetId: number
     /**
-     * The new [`Consumption`](crate::Consumption)
+     * The new consumption value
      */
     consumption: Consumption
+}
+
+/**
+ * A fuel tank has been scheduled to be destroyed
+ */
+export interface FuelTanksEvent_DestroyFuelTankScheduled {
+    __kind: 'DestroyFuelTankScheduled'
+    /**
+     * The account id
+     */
+    tankId: AccountId32
 }
 
 /**
@@ -9193,11 +10050,11 @@ export interface FuelTanksEvent_ConsumptionSet {
 export interface FuelTanksEvent_DispatchFailed {
     __kind: 'DispatchFailed'
     /**
-     * The [`AccountId`](frame_system::Config::AccountId) of the [`FuelTank`]
+     * The account id of the fuel tank
      */
     tankId: AccountId32
     /**
-     * The [`AccountId`](frame_system::Config::AccountId) that dispatched the call
+     * The account id that dispatched the call
      */
     caller: AccountId32
     /**
@@ -9212,11 +10069,11 @@ export interface FuelTanksEvent_DispatchFailed {
 export interface FuelTanksEvent_FreezeStateMutated {
     __kind: 'FreezeStateMutated'
     /**
-     * The [`AccountId`](frame_system::Config::AccountId) of the [`FuelTank`]
+     * The account id of the fuel tank
      */
     tankId: AccountId32
     /**
-     * The possible [`RuleSetId`](Config::RuleSetId)
+     * The id of the rule set if any
      */
     ruleSetId?: number | undefined
     /**
@@ -9226,42 +10083,42 @@ export interface FuelTanksEvent_FreezeStateMutated {
 }
 
 /**
- * A new [`FuelTank`] was created.
+ * A new fuel tank was created.
  */
 export interface FuelTanksEvent_FuelTankCreated {
     __kind: 'FuelTankCreated'
     /**
-     * The [`AccountId`](frame_system::Config::AccountId) that owns the [`FuelTank`]
+     * The account id that owns the fuel tank
      */
     owner: AccountId32
     /**
-     * The name of the [`FuelTank`]
+     * The name of the fuel tank
      */
     name: Bytes
     /**
-     * The account id of the [`FuelTank`]
+     * The account id of the fuel tank
      */
     tankId: AccountId32
 }
 
 /**
- * A [`FuelTank`] was destroyed
+ * A fuel tank was destroyed
  */
 export interface FuelTanksEvent_FuelTankDestroyed {
     __kind: 'FuelTankDestroyed'
     /**
-     * The [`AccountId`](frame_system::Config::AccountId) of the [`FuelTank`]
+     * The account id of the fuel tank
      */
     tankId: AccountId32
 }
 
 /**
- * A [`FuelTank`] was mutated
+ * A fuel tank was mutated
  */
 export interface FuelTanksEvent_FuelTankMutated {
     __kind: 'FuelTankMutated'
     /**
-     * The [`AccountId`](frame_system::Config::AccountId) of the [`FuelTank`]
+     * The account id of the fuel tank
      */
     tankId: AccountId32
     /**
@@ -9286,12 +10143,12 @@ export interface FuelTanksEvent_MigrationStep {
 }
 
 /**
- * A new rule set was added to [`FuelTank`]
+ * A new rule set was added to fuel tank
  */
 export interface FuelTanksEvent_RuleSetInserted {
     __kind: 'RuleSetInserted'
     /**
-     * The [`AccountId`](frame_system::Config::AccountId) of the [`FuelTank`]
+     * The account id of the fuel tank
      */
     tankId: AccountId32
     /**
@@ -9301,12 +10158,12 @@ export interface FuelTanksEvent_RuleSetInserted {
 }
 
 /**
- * A rule set was removed from [`FuelTank`]
+ * A rule set was removed from fuel tank
  */
 export interface FuelTanksEvent_RuleSetRemoved {
     __kind: 'RuleSetRemoved'
     /**
-     * The [`AccountId`](frame_system::Config::AccountId) of the [`FuelTank`]
+     * The account id of the fuel tank
      */
     tankId: AccountId32
     /**
@@ -9316,9 +10173,23 @@ export interface FuelTanksEvent_RuleSetRemoved {
 }
 
 export interface DefaultTankMutation {
-    userAccountManagement: Type_288
+    userAccountManagement: Type_727
     coveragePolicy?: CoveragePolicy | undefined
     accountRules?: AccountRuleDescriptor[] | undefined
+    owner?: AccountId32 | undefined
+    accountExpiration: Type_730
+    name?: Bytes | undefined
+}
+
+export type Type_730 = Type_730_NoMutation | Type_730_SomeMutation
+
+export interface Type_730_NoMutation {
+    __kind: 'NoMutation'
+}
+
+export interface Type_730_SomeMutation {
+    __kind: 'SomeMutation'
+    value?: number | undefined
 }
 
 export type AccountRuleDescriptor = AccountRuleDescriptor_RequireToken | AccountRuleDescriptor_WhitelistedCallers
@@ -9333,13 +10204,13 @@ export interface AccountRuleDescriptor_WhitelistedCallers {
     value: AccountId32[]
 }
 
-export type Type_288 = Type_288_NoMutation | Type_288_SomeMutation
+export type Type_727 = Type_727_NoMutation | Type_727_SomeMutation
 
-export interface Type_288_NoMutation {
+export interface Type_727_NoMutation {
     __kind: 'NoMutation'
 }
 
-export interface Type_288_SomeMutation {
+export interface Type_727_SomeMutation {
     __kind: 'SomeMutation'
     value?: UserAccountManagement | undefined
 }
@@ -9388,7 +10259,7 @@ export interface FellowshipReferendaEvent_Cancelled {
     /**
      * The final tally of votes in this referendum.
      */
-    tally: Type_718
+    tally: Type_750
 }
 
 export interface FellowshipReferendaEvent_ConfirmAborted {
@@ -9419,7 +10290,7 @@ export interface FellowshipReferendaEvent_Confirmed {
     /**
      * The final tally of votes in this referendum.
      */
-    tally: Type_718
+    tally: Type_750
 }
 
 /**
@@ -9480,7 +10351,7 @@ export interface FellowshipReferendaEvent_DecisionStarted {
     /**
      * The current tally of votes in this referendum.
      */
-    tally: Type_718
+    tally: Type_750
 }
 
 /**
@@ -9510,7 +10381,7 @@ export interface FellowshipReferendaEvent_Killed {
     /**
      * The final tally of votes in this referendum.
      */
-    tally: Type_718
+    tally: Type_750
 }
 
 /**
@@ -9555,7 +10426,7 @@ export interface FellowshipReferendaEvent_Rejected {
     /**
      * The final tally of votes in this referendum.
      */
-    tally: Type_718
+    tally: Type_750
 }
 
 /**
@@ -9608,7 +10479,7 @@ export interface FellowshipReferendaEvent_TimedOut {
     /**
      * The final tally of votes in this referendum.
      */
-    tally: Type_718
+    tally: Type_750
 }
 
 /**
@@ -9665,7 +10536,7 @@ export interface FellowshipCollectiveEvent_Voted {
     who: AccountId32
     poll: number
     vote: VoteRecord
-    tally: Type_718
+    tally: Type_750
 }
 
 export type VoteRecord = VoteRecord_Aye | VoteRecord_Nay
@@ -9784,7 +10655,7 @@ export interface ElectionProviderMultiPhaseEvent_Slashed {
  * A solution was stored with the given compute.
  *
  * The `origin` indicates the origin of the solution. If `origin` is `Some(AccountId)`,
- * the stored solution was submited in the signed phase by a miner with the `AccountId`.
+ * the stored solution was submitted in the signed phase by a miner with the `AccountId`.
  * Otherwise, the solution was stored either during the unsigned phase or by
  * `T::ForceOrigin`. The `bool` is `true` when a previous solution was ejected to make
  * room for this one.
@@ -9954,7 +10825,33 @@ export interface CrowdloanEvent_Withdrew {
 /**
  * The `Event` enum of this pallet
  */
-export type ConvictionVotingEvent = ConvictionVotingEvent_Delegated | ConvictionVotingEvent_Undelegated
+export type CoretimeEvent = CoretimeEvent_CoreAssigned | CoretimeEvent_RevenueInfoRequested
+
+/**
+ * A core has received a new assignment from the broker chain.
+ */
+export interface CoretimeEvent_CoreAssigned {
+    __kind: 'CoreAssigned'
+    core: V8CoreIndex
+}
+
+/**
+ * The broker chain has asked for revenue information for a specific block.
+ */
+export interface CoretimeEvent_RevenueInfoRequested {
+    __kind: 'RevenueInfoRequested'
+    when: number
+}
+
+/**
+ * The `Event` enum of this pallet
+ */
+export type ConvictionVotingEvent =
+    | ConvictionVotingEvent_Delegated
+    | ConvictionVotingEvent_Undelegated
+    | ConvictionVotingEvent_VoteRemoved
+    | ConvictionVotingEvent_VoteUnlocked
+    | ConvictionVotingEvent_Voted
 
 /**
  * An account has delegated their vote to another account. \[who, target\]
@@ -9970,6 +10867,33 @@ export interface ConvictionVotingEvent_Delegated {
 export interface ConvictionVotingEvent_Undelegated {
     __kind: 'Undelegated'
     value: AccountId32
+}
+
+/**
+ * A vote has been removed
+ */
+export interface ConvictionVotingEvent_VoteRemoved {
+    __kind: 'VoteRemoved'
+    who: AccountId32
+    vote: AccountVote
+}
+
+/**
+ * The lockup period of a conviction vote expired, and the funds have been unlocked.
+ */
+export interface ConvictionVotingEvent_VoteUnlocked {
+    __kind: 'VoteUnlocked'
+    who: AccountId32
+    class: number
+}
+
+/**
+ * An account has voted
+ */
+export interface ConvictionVotingEvent_Voted {
+    __kind: 'Voted'
+    who: AccountId32
+    vote: AccountVote
 }
 
 /**
@@ -10334,24 +11258,24 @@ export interface AssignedSlotsEvent_TemporarySlotAssigned {
     value: Id
 }
 
-export type Type_722 = Type_722_ApplyExtrinsic | Type_722_Finalization | Type_722_Initialization
+export type Type_778 = Type_778_ApplyExtrinsic | Type_778_Finalization | Type_778_Initialization
 
-export interface Type_722_ApplyExtrinsic {
+export interface Type_778_ApplyExtrinsic {
     __kind: 'ApplyExtrinsic'
     value: number
 }
 
-export interface Type_722_Finalization {
+export interface Type_778_Finalization {
     __kind: 'Finalization'
 }
 
-export interface Type_722_Initialization {
+export interface Type_778_Initialization {
     __kind: 'Initialization'
 }
 
 export const EventRecord: sts.Type<EventRecord> = sts.struct(() => {
     return {
-        phase: Type_722,
+        phase: Type_778,
         event: Event,
         topics: sts.array(() => H256),
     }
@@ -10363,6 +11287,7 @@ export const Event: sts.Type<Event> = sts.closedEnum(() => {
         Auctions: AuctionsEvent,
         Balances: BalancesEvent,
         ConvictionVoting: ConvictionVotingEvent,
+        Coretime: CoretimeEvent,
         Crowdloan: CrowdloanEvent,
         ElectionProviderMultiPhase: ElectionProviderMultiPhaseEvent,
         ExtrinsicPause: ExtrinsicPauseEvent,
@@ -10370,9 +11295,9 @@ export const Event: sts.Type<Event> = sts.closedEnum(() => {
         FellowshipReferenda: FellowshipReferendaEvent,
         FuelTanks: FuelTanksEvent,
         Grandpa: GrandpaEvent,
+        Historical: HistoricalEvent,
         Hrmp: HrmpEvent,
         Identity: IdentityEvent,
-        ImOnline: ImOnlineEvent,
         Marketplace: MarketplaceEvent,
         MessageQueue: MessageQueueEvent,
         Migrations: MigrationsEvent,
@@ -10380,6 +11305,7 @@ export const Event: sts.Type<Event> = sts.closedEnum(() => {
         Multisig: MultisigEvent,
         NominationPools: NominationPoolsEvent,
         Offences: OffencesEvent,
+        OnDemandAssignmentProvider: OnDemandAssignmentProviderEvent,
         ParaInclusion: ParaInclusionEvent,
         Paras: ParasEvent,
         ParasDisputes: ParasDisputesEvent,
@@ -10411,40 +11337,52 @@ export const Event: sts.Type<Event> = sts.closedEnum(() => {
  */
 export const XcmPalletEvent: sts.Type<XcmPalletEvent> = sts.closedEnum(() => {
     return {
+        AliasAuthorizationRemoved: sts.enumStruct({
+            aliaser: V5Location,
+            target: V5Location,
+        }),
+        AliasAuthorized: sts.enumStruct({
+            aliaser: V5Location,
+            target: V5Location,
+            expiry: sts.option(() => sts.bigint()),
+        }),
+        AliasesAuthorizationsRemoved: sts.enumStruct({
+            target: V5Location,
+        }),
         AssetsClaimed: sts.enumStruct({
             hash: H256,
-            origin: V4Location,
+            origin: V5Location,
             assets: VersionedAssets,
         }),
         AssetsTrapped: sts.enumStruct({
             hash: H256,
-            origin: V4Location,
+            origin: V5Location,
             assets: VersionedAssets,
         }),
         Attempted: sts.enumStruct({
-            outcome: V4Outcome,
+            outcome: V5Outcome,
         }),
         FeesPaid: sts.enumStruct({
-            paying: V4Location,
-            fees: sts.array(() => V4Asset),
+            paying: V5Location,
+            fees: sts.array(() => V5Asset),
         }),
         InvalidQuerier: sts.enumStruct({
-            origin: V4Location,
+            origin: V5Location,
             queryId: sts.bigint(),
-            expectedQuerier: V4Location,
-            maybeActualQuerier: sts.option(() => V4Location),
+            expectedQuerier: V5Location,
+            maybeActualQuerier: sts.option(() => V5Location),
         }),
         InvalidQuerierVersion: sts.enumStruct({
-            origin: V4Location,
+            origin: V5Location,
             queryId: sts.bigint(),
         }),
         InvalidResponder: sts.enumStruct({
-            origin: V4Location,
+            origin: V5Location,
             queryId: sts.bigint(),
-            expectedLocation: sts.option(() => V4Location),
+            expectedLocation: sts.option(() => V5Location),
         }),
         InvalidResponderVersion: sts.enumStruct({
-            origin: V4Location,
+            origin: V5Location,
             queryId: sts.bigint(),
         }),
         Notified: sts.enumStruct({
@@ -10474,53 +11412,64 @@ export const XcmPalletEvent: sts.Type<XcmPalletEvent> = sts.closedEnum(() => {
             queryId: sts.bigint(),
         }),
         NotifyTargetSendFail: sts.enumStruct({
-            location: V4Location,
+            location: V5Location,
             queryId: sts.bigint(),
-            error: V3Error,
+            error: V5Error,
+        }),
+        ProcessXcmError: sts.enumStruct({
+            origin: V5Location,
+            error: V5Error,
+            messageId: sts.bytes(),
         }),
         ResponseReady: sts.enumStruct({
             queryId: sts.bigint(),
-            response: V4Response,
+            response: V5Response,
         }),
         ResponseTaken: sts.enumStruct({
             queryId: sts.bigint(),
         }),
+        SendFailed: sts.enumStruct({
+            origin: V5Location,
+            destination: V5Location,
+            error: V3SendError,
+            messageId: sts.bytes(),
+        }),
         Sent: sts.enumStruct({
-            origin: V4Location,
-            destination: V4Location,
-            message: sts.array(() => V4Instruction),
+            origin: V5Location,
+            destination: V5Location,
+            message: sts.array(() => V5Instruction),
             messageId: sts.bytes(),
         }),
         SupportedVersionChanged: sts.enumStruct({
-            location: V4Location,
+            location: V5Location,
             version: sts.number(),
         }),
         UnexpectedResponse: sts.enumStruct({
-            origin: V4Location,
+            origin: V5Location,
             queryId: sts.bigint(),
         }),
         VersionChangeNotified: sts.enumStruct({
-            destination: V4Location,
+            destination: V5Location,
             result: sts.number(),
-            cost: sts.array(() => V4Asset),
+            cost: sts.array(() => V5Asset),
             messageId: sts.bytes(),
         }),
         VersionMigrationFinished: sts.enumStruct({
             version: sts.number(),
         }),
         VersionNotifyRequested: sts.enumStruct({
-            destination: V4Location,
-            cost: sts.array(() => V4Asset),
+            destination: V5Location,
+            cost: sts.array(() => V5Asset),
             messageId: sts.bytes(),
         }),
         VersionNotifyStarted: sts.enumStruct({
-            destination: V4Location,
-            cost: sts.array(() => V4Asset),
+            destination: V5Location,
+            cost: sts.array(() => V5Asset),
             messageId: sts.bytes(),
         }),
         VersionNotifyUnrequested: sts.enumStruct({
-            destination: V4Location,
-            cost: sts.array(() => V4Asset),
+            destination: V5Location,
+            cost: sts.array(() => V5Asset),
             messageId: sts.bytes(),
         }),
     }
@@ -10544,27 +11493,6 @@ export const WhitelistEvent: sts.Type<WhitelistEvent> = sts.closedEnum(() => {
         WhitelistedCallRemoved: sts.enumStruct({
             callHash: H256,
         }),
-    }
-})
-
-export const DispatchErrorWithPostInfo: sts.Type<DispatchErrorWithPostInfo> = sts.struct(() => {
-    return {
-        postInfo: PostDispatchInfo,
-        error: DispatchError,
-    }
-})
-
-export const PostDispatchInfo: sts.Type<PostDispatchInfo> = sts.struct(() => {
-    return {
-        actualWeight: sts.option(() => Weight),
-        paysFee: Pays,
-    }
-})
-
-export const Pays: sts.Type<Pays> = sts.closedEnum(() => {
-    return {
-        No: sts.unit(),
-        Yes: sts.unit(),
     }
 })
 
@@ -10645,6 +11573,10 @@ export const UtilityEvent: sts.Type<UtilityEvent> = sts.closedEnum(() => {
                 () => DispatchError
             ),
         }),
+        IfElseFallbackCalled: sts.enumStruct({
+            mainError: DispatchError,
+        }),
+        IfElseMainSuccess: sts.unit(),
         ItemCompleted: sts.unit(),
         ItemFailed: sts.enumStruct({
             error: DispatchError,
@@ -10683,13 +11615,6 @@ export const TreasuryEvent: sts.Type<TreasuryEvent> = sts.closedEnum(() => {
         }),
         PaymentFailed: sts.enumStruct({
             index: sts.number(),
-        }),
-        Proposed: sts.enumStruct({
-            proposalIndex: sts.number(),
-        }),
-        Rejected: sts.enumStruct({
-            proposalIndex: sts.number(),
-            slashed: sts.bigint(),
         }),
         Rollover: sts.enumStruct({
             rolloverBalance: sts.bigint(),
@@ -10733,16 +11658,20 @@ export const SystemEvent: sts.Type<SystemEvent> = sts.closedEnum(() => {
         CodeUpdated: sts.unit(),
         ExtrinsicFailed: sts.enumStruct({
             dispatchError: DispatchError,
-            dispatchInfo: DispatchInfo,
+            dispatchInfo: DispatchEventInfo,
         }),
         ExtrinsicSuccess: sts.enumStruct({
-            dispatchInfo: DispatchInfo,
+            dispatchInfo: DispatchEventInfo,
         }),
         KilledAccount: sts.enumStruct({
             account: AccountId32,
         }),
         NewAccount: sts.enumStruct({
             account: AccountId32,
+        }),
+        RejectedInvalidAuthorizedUpgrade: sts.enumStruct({
+            codeHash: H256,
+            error: DispatchError,
         }),
         Remarked: sts.enumStruct({
             sender: AccountId32,
@@ -10752,22 +11681,6 @@ export const SystemEvent: sts.Type<SystemEvent> = sts.closedEnum(() => {
             codeHash: H256,
             checkVersion: sts.boolean(),
         }),
-    }
-})
-
-export const DispatchInfo: sts.Type<DispatchInfo> = sts.struct(() => {
-    return {
-        weight: Weight,
-        class: DispatchClass,
-        paysFee: Pays,
-    }
-})
-
-export const DispatchClass: sts.Type<DispatchClass> = sts.closedEnum(() => {
-    return {
-        Mandatory: sts.unit(),
-        Normal: sts.unit(),
-        Operational: sts.unit(),
     }
 })
 
@@ -10811,6 +11724,10 @@ export const StakingEvent: sts.Type<StakingEvent> = sts.closedEnum(() => {
         ControllerBatchDeprecated: sts.enumStruct({
             failures: sts.number(),
         }),
+        CurrencyMigrated: sts.enumStruct({
+            stash: AccountId32,
+            forceWithdraw: sts.bigint(),
+        }),
         EraPaid: sts.enumStruct({
             eraIndex: sts.number(),
             validatorPayout: sts.bigint(),
@@ -10829,6 +11746,8 @@ export const StakingEvent: sts.Type<StakingEvent> = sts.closedEnum(() => {
         PayoutStarted: sts.enumStruct({
             eraIndex: sts.number(),
             validatorStash: AccountId32,
+            page: sts.number(),
+            next: sts.option(() => sts.number()),
         }),
         Rewarded: sts.enumStruct({
             stash: AccountId32,
@@ -10874,6 +11793,16 @@ export const ValidatorPrefs: sts.Type<ValidatorPrefs> = sts.struct(() => {
     }
 })
 
+export const RewardDestination: sts.Type<RewardDestination> = sts.closedEnum(() => {
+    return {
+        Account: AccountId32,
+        Controller: sts.unit(),
+        None: sts.unit(),
+        Staked: sts.unit(),
+        Stash: sts.unit(),
+    }
+})
+
 export const Forcing: sts.Type<Forcing> = sts.closedEnum(() => {
     return {
         ForceAlways: sts.unit(),
@@ -10894,6 +11823,7 @@ export const StakeExchangeEvent: sts.Type<StakeExchangeEvent> = sts.closedEnum((
             amount: sts.bigint(),
             rate: Perbill,
             offerCreator: AccountId32,
+            offerId: sts.bigint(),
         }),
         LiquidityAdded: sts.enumStruct({
             who: AccountId32,
@@ -10969,8 +11899,15 @@ export const SlotsEvent: sts.Type<SlotsEvent> = sts.closedEnum(() => {
  */
 export const SessionEvent: sts.Type<SessionEvent> = sts.closedEnum(() => {
     return {
+        NewQueued: sts.unit(),
         NewSession: sts.enumStruct({
             sessionIndex: sts.number(),
+        }),
+        ValidatorDisabled: sts.enumStruct({
+            validator: AccountId32,
+        }),
+        ValidatorReenabled: sts.enumStruct({
+            validator: AccountId32,
         }),
     }
 })
@@ -10980,6 +11917,9 @@ export const SessionEvent: sts.Type<SessionEvent> = sts.closedEnum(() => {
  */
 export const SchedulerEvent: sts.Type<SchedulerEvent> = sts.closedEnum(() => {
     return {
+        AgendaIncomplete: sts.enumStruct({
+            when: sts.number(),
+        }),
         CallUnavailable: sts.enumStruct({
             task: sts.tuple(() => [sts.number(), sts.number()]),
             id: sts.option(() => sts.bytes()),
@@ -11171,6 +12111,12 @@ export const ProxyEvent: sts.Type<ProxyEvent> = sts.closedEnum(() => {
             proxy: AccountId32,
             callHash: H256,
         }),
+        DepositPoked: sts.enumStruct({
+            who: AccountId32,
+            kind: DepositKind,
+            oldDeposit: sts.bigint(),
+            newDeposit: sts.bigint(),
+        }),
         ProxyAdded: sts.enumStruct({
             delegator: AccountId32,
             delegatee: AccountId32,
@@ -11195,6 +12141,19 @@ export const ProxyEvent: sts.Type<ProxyEvent> = sts.closedEnum(() => {
             proxyType: ProxyType,
             disambiguationIndex: sts.number(),
         }),
+        PureKilled: sts.enumStruct({
+            pure: AccountId32,
+            spawner: AccountId32,
+            proxyType: ProxyType,
+            disambiguationIndex: sts.number(),
+        }),
+    }
+})
+
+export const DepositKind: sts.Type<DepositKind> = sts.closedEnum(() => {
+    return {
+        Announcements: sts.unit(),
+        Proxies: sts.unit(),
     }
 })
 
@@ -11246,6 +12205,11 @@ export const DisputeResult: sts.Type<DisputeResult> = sts.closedEnum(() => {
 export const ParasEvent: sts.Type<ParasEvent> = sts.closedEnum(() => {
     return {
         ActionQueued: sts.tuple(() => [Id, sts.number()]),
+        CodeAuthorized: sts.enumStruct({
+            paraId: Id,
+            codeHash: ValidationCodeHash,
+            expireAt: sts.number(),
+        }),
         CodeUpgradeScheduled: Id,
         CurrentCodeUpdated: Id,
         CurrentHeadUpdated: Id,
@@ -11253,6 +12217,9 @@ export const ParasEvent: sts.Type<ParasEvent> = sts.closedEnum(() => {
         PvfCheckAccepted: sts.tuple(() => [ValidationCodeHash, Id]),
         PvfCheckRejected: sts.tuple(() => [ValidationCodeHash, Id]),
         PvfCheckStarted: sts.tuple(() => [ValidationCodeHash, Id]),
+        UpgradeCooldownRemoved: sts.enumStruct({
+            paraId: Id,
+        }),
     }
 })
 
@@ -11261,9 +12228,9 @@ export const ParasEvent: sts.Type<ParasEvent> = sts.closedEnum(() => {
  */
 export const ParaInclusionEvent: sts.Type<ParaInclusionEvent> = sts.closedEnum(() => {
     return {
-        CandidateBacked: sts.tuple(() => [V6CandidateReceipt, HeadData, V6CoreIndex, V6GroupIndex]),
-        CandidateIncluded: sts.tuple(() => [V6CandidateReceipt, HeadData, V6CoreIndex, V6GroupIndex]),
-        CandidateTimedOut: sts.tuple(() => [V6CandidateReceipt, HeadData, V6CoreIndex]),
+        CandidateBacked: sts.tuple(() => [CandidateReceiptV2, HeadData, V8CoreIndex, V8GroupIndex]),
+        CandidateIncluded: sts.tuple(() => [CandidateReceiptV2, HeadData, V8CoreIndex, V8GroupIndex]),
+        CandidateTimedOut: sts.tuple(() => [CandidateReceiptV2, HeadData, V8CoreIndex]),
         UpwardMessagesReceived: sts.enumStruct({
             from: Id,
             count: sts.number(),
@@ -11271,9 +12238,25 @@ export const ParaInclusionEvent: sts.Type<ParaInclusionEvent> = sts.closedEnum((
     }
 })
 
-export const V6GroupIndex = sts.number()
-
-export const HeadData = sts.bytes()
+/**
+ * The `Event` enum of this pallet
+ */
+export const OnDemandAssignmentProviderEvent: sts.Type<OnDemandAssignmentProviderEvent> = sts.closedEnum(() => {
+    return {
+        AccountCredited: sts.enumStruct({
+            who: AccountId32,
+            amount: sts.bigint(),
+        }),
+        OnDemandOrderPlaced: sts.enumStruct({
+            paraId: Id,
+            spotPrice: sts.bigint(),
+            orderedBy: AccountId32,
+        }),
+        SpotPriceSet: sts.enumStruct({
+            spotPrice: sts.bigint(),
+        }),
+    }
+})
 
 /**
  * Events type.
@@ -11309,33 +12292,8 @@ export const NominationPoolsEvent: sts.Type<NominationPoolsEvent> = sts.closedEn
         Destroyed: sts.enumStruct({
             poolId: sts.number(),
         }),
-        EarlyBirdBonusCalculated: sts.enumStruct({
-            totalAmount: sts.bigint(),
-        }),
-        EarlyBirdBonusDistributed: sts.enumStruct({
-            poolId: sts.number(),
-            amount: sts.bigint(),
-        }),
-        EarlyBirdBonusPaid: sts.enumStruct({
-            poolId: sts.number(),
-            paymentId: sts.number(),
-            totalAccounts: sts.number(),
-        }),
-        EarlyBirdBonusPaymentUnlocked: sts.enumStruct({
-            paymentId: sts.number(),
-            nextPaymentBlock: sts.number(),
-        }),
-        EarlyBirdSharesCaptured: sts.enumStruct({
-            poolId: sts.number(),
-            totalAccounts: sts.number(),
-        }),
-        EraRewardsProcessed: sts.enumStruct({
-            poolId: sts.number(),
-            era: sts.number(),
-            commission: sts.option(() => CommissionPayment),
-            bonus: sts.bigint(),
-            reinvested: sts.bigint(),
-            bonusCycleEnded: sts.boolean(),
+        EarlyBirdSharesRemoved: sts.enumStruct({
+            count: sts.number(),
         }),
         Nominated: sts.enumStruct({
             poolId: sts.number(),
@@ -11354,7 +12312,7 @@ export const NominationPoolsEvent: sts.Type<NominationPoolsEvent> = sts.closedEn
             era: sts.number(),
             validatorStash: AccountId32,
             reward: sts.bigint(),
-            bonus: sts.bigint(),
+            commission: sts.option(() => CommissionPayment),
         }),
         StateChanged: sts.enumStruct({
             poolId: sts.number(),
@@ -11367,10 +12325,19 @@ export const NominationPoolsEvent: sts.Type<NominationPoolsEvent> = sts.closedEn
             points: sts.bigint(),
             era: sts.number(),
         }),
+        UnbondingMemberRemoved: sts.enumStruct({
+            poolId: sts.number(),
+            member: AccountId32,
+        }),
         UnbondingPoolSlashed: sts.enumStruct({
             poolId: sts.number(),
             era: sts.number(),
             balance: sts.bigint(),
+        }),
+        ValidatorBonusPaid: sts.enumStruct({
+            era: sts.number(),
+            total: sts.bigint(),
+            rewards: sts.array(() => sts.tuple(() => [AccountId32, sts.bigint()])),
         }),
         Withdrawn: sts.enumStruct({
             member: AccountId32,
@@ -11381,52 +12348,17 @@ export const NominationPoolsEvent: sts.Type<NominationPoolsEvent> = sts.closedEn
     }
 })
 
-export const PoolState: sts.Type<PoolState> = sts.closedEnum(() => {
-    return {
-        Destroying: sts.unit(),
-        Open: sts.unit(),
-    }
-})
-
-export const PoolMutation: sts.Type<PoolMutation> = sts.struct(() => {
-    return {
-        duration: sts.option(() => sts.number()),
-        newCommission: ShouldMutate,
-        maxCommission: sts.option(() => Perbill),
-        changeRate: sts.option(() => CommissionChangeRate),
-        capacity: sts.option(() => sts.bigint()),
-        name: sts.option(() => BoundedVec),
-    }
-})
-
-export const BoundedVec = sts.bytes()
-
-export const CommissionChangeRate: sts.Type<CommissionChangeRate> = sts.struct(() => {
-    return {
-        maxDelta: Perbill,
-        minDelay: sts.number(),
-    }
-})
-
-export const ShouldMutate: sts.Type<ShouldMutate> = sts.closedEnum(() => {
-    return {
-        NoMutation: sts.unit(),
-        SomeMutation: sts.option(() => Perbill),
-    }
-})
-
-export const CommissionPayment: sts.Type<CommissionPayment> = sts.struct(() => {
-    return {
-        beneficiary: AccountId32,
-        amount: sts.bigint(),
-    }
-})
-
 /**
  * The `Event` enum of this pallet
  */
 export const MultisigEvent: sts.Type<MultisigEvent> = sts.closedEnum(() => {
     return {
+        DepositPoked: sts.enumStruct({
+            who: AccountId32,
+            callHash: sts.bytes(),
+            oldDeposit: sts.bigint(),
+            newDeposit: sts.bigint(),
+        }),
         MultisigApproval: sts.enumStruct({
             approving: AccountId32,
             timepoint: Timepoint,
@@ -11513,6 +12445,15 @@ export const MultiTokensEvent: sts.Type<MultiTokensEvent> = sts.closedEnum(() =>
             assetIds: sts.array(() => AssetIdWithEth),
             moreTokensRemain: sts.boolean(),
         }),
+        CollectionAccountApprovalsMismatch: sts.enumStruct({
+            collectionId: sts.bigint(),
+            accountId: AccountId32,
+        }),
+        CollectionAccountApprovalsUpdated: sts.enumStruct({
+            collectionId: sts.bigint(),
+            accountId: AccountId32,
+            oldApprovals: sts.array(() => sts.tuple(() => [AccountId32, sts.option(() => sts.number())])),
+        }),
         CollectionAccountCreated: sts.enumStruct({
             collectionId: sts.bigint(),
             accountId: AccountId32,
@@ -11549,6 +12490,10 @@ export const MultiTokensEvent: sts.Type<MultiTokensEvent> = sts.closedEnum(() =>
             collectionId: sts.bigint(),
             value: sts.option(() => Collection),
         }),
+        CollectionUpgraded: sts.enumStruct({
+            collectionId: sts.bigint(),
+            storageVersion: sts.number(),
+        }),
         Deposit: sts.enumStruct({
             collectionId: sts.bigint(),
             tokenId: sts.bigint(),
@@ -11559,8 +12504,8 @@ export const MultiTokensEvent: sts.Type<MultiTokensEvent> = sts.closedEnum(() =>
         Infused: sts.enumStruct({
             collectionId: sts.bigint(),
             tokenId: sts.bigint(),
-            accountId: AccountId32,
-            amount: sts.bigint(),
+            accountId: RootOrSigned,
+            totalAmount: sts.bigint(),
         }),
         MigrationStep: sts.enumStruct({
             itemsProcessed: sts.number(),
@@ -11579,7 +12524,7 @@ export const MultiTokensEvent: sts.Type<MultiTokensEvent> = sts.closedEnum(() =>
             source: AccountId32,
             destination: AccountId32,
             amount: sts.bigint(),
-            reserveId: sts.option(() => sts.bytes()),
+            reserveId: RuntimeHoldReason,
         }),
         NextCollectionIdUpdated: sts.enumStruct({
             collectionId: sts.bigint(),
@@ -11590,14 +12535,14 @@ export const MultiTokensEvent: sts.Type<MultiTokensEvent> = sts.closedEnum(() =>
             source: AccountId32,
             destination: AccountId32,
             amount: sts.bigint(),
-            reserveId: sts.option(() => sts.bytes()),
+            reserveId: RuntimeHoldReason,
         }),
         Reserved: sts.enumStruct({
             collectionId: sts.bigint(),
             tokenId: sts.bigint(),
             accountId: AccountId32,
             amount: sts.bigint(),
-            reserveId: sts.option(() => sts.bytes()),
+            reserveId: RuntimeHoldReason,
         }),
         Slashed: sts.enumStruct({
             collectionId: sts.bigint(),
@@ -11629,6 +12574,12 @@ export const MultiTokensEvent: sts.Type<MultiTokensEvent> = sts.closedEnum(() =>
             accountId: AccountId32,
             value: sts.option(() => TokenAccount),
         }),
+        TokenAccountUpgraded: sts.enumStruct({
+            collectionId: sts.bigint(),
+            tokenId: sts.bigint(),
+            accountId: AccountId32,
+            storageVersion: sts.number(),
+        }),
         TokenCreated: sts.enumStruct({
             collectionId: sts.bigint(),
             tokenId: sts.bigint(),
@@ -11640,6 +12591,37 @@ export const MultiTokensEvent: sts.Type<MultiTokensEvent> = sts.closedEnum(() =>
             tokenId: sts.bigint(),
             caller: AccountId32,
         }),
+        TokenGroupAdded: sts.enumStruct({
+            collectionId: sts.bigint(),
+            tokenId: sts.bigint(),
+            tokenGroupId: sts.bigint(),
+        }),
+        TokenGroupAttributeRemoved: sts.enumStruct({
+            tokenGroupId: sts.bigint(),
+            key: sts.bytes(),
+        }),
+        TokenGroupAttributeSet: sts.enumStruct({
+            tokenGroupId: sts.bigint(),
+            key: sts.bytes(),
+            value: sts.bytes(),
+        }),
+        TokenGroupCreated: sts.enumStruct({
+            collectionId: sts.bigint(),
+            tokenGroupId: sts.bigint(),
+        }),
+        TokenGroupDestroyed: sts.enumStruct({
+            tokenGroupId: sts.bigint(),
+        }),
+        TokenGroupRemoved: sts.enumStruct({
+            collectionId: sts.bigint(),
+            tokenId: sts.bigint(),
+            tokenGroupId: sts.bigint(),
+        }),
+        TokenGroupsUpdated: sts.enumStruct({
+            collectionId: sts.bigint(),
+            tokenId: sts.bigint(),
+            tokenGroups: sts.array(() => sts.bigint()),
+        }),
         TokenMutated: sts.enumStruct({
             collectionId: sts.bigint(),
             tokenId: sts.bigint(),
@@ -11649,6 +12631,11 @@ export const MultiTokensEvent: sts.Type<MultiTokensEvent> = sts.closedEnum(() =>
             collectionId: sts.bigint(),
             tokenId: sts.bigint(),
             value: sts.option(() => Token),
+        }),
+        TokenUpgraded: sts.enumStruct({
+            collectionId: sts.bigint(),
+            tokenId: sts.bigint(),
+            storageVersion: sts.number(),
         }),
         Transferred: sts.enumStruct({
             collectionId: sts.bigint(),
@@ -11669,7 +12656,7 @@ export const MultiTokensEvent: sts.Type<MultiTokensEvent> = sts.closedEnum(() =>
             tokenId: sts.bigint(),
             accountId: AccountId32,
             amount: sts.bigint(),
-            reserveId: sts.option(() => sts.bytes()),
+            reserveId: RuntimeHoldReason,
         }),
         Withdraw: sts.enumStruct({
             collectionId: sts.bigint(),
@@ -11680,10 +12667,55 @@ export const MultiTokensEvent: sts.Type<MultiTokensEvent> = sts.closedEnum(() =>
     }
 })
 
-export const RootOrSigned: sts.Type<RootOrSigned> = sts.closedEnum(() => {
+export const DefaultTokenMutation: sts.Type<DefaultTokenMutation> = sts.struct(() => {
     return {
-        Root: sts.unit(),
-        Signed: AccountId32,
+        behavior: Type_591,
+        listingForbidden: Type_594,
+        anyoneCanInfuse: Type_594,
+        name: Type_595,
+    }
+})
+
+export const Type_595: sts.Type<Type_595> = sts.closedEnum(() => {
+    return {
+        NoMutation: sts.unit(),
+        SomeMutation: BoundedString,
+    }
+})
+
+export const BoundedString = sts.bytes()
+
+export const Type_594: sts.Type<Type_594> = sts.closedEnum(() => {
+    return {
+        NoMutation: sts.unit(),
+        SomeMutation: sts.boolean(),
+    }
+})
+
+export const Type_591: sts.Type<Type_591> = sts.closedEnum(() => {
+    return {
+        NoMutation: sts.unit(),
+        SomeMutation: sts.option(() => TokenMarketBehavior),
+    }
+})
+
+export const TokenMarketBehavior: sts.Type<TokenMarketBehavior> = sts.closedEnum(() => {
+    return {
+        HasRoyalty: DefaultRoyalty,
+        IsCurrency: sts.unit(),
+    }
+})
+
+export const DefaultRoyalty: sts.Type<DefaultRoyalty> = sts.struct(() => {
+    return {
+        beneficiaries: sts.array(() => DefaultRoyaltyInfo),
+    }
+})
+
+export const DefaultRoyaltyInfo: sts.Type<DefaultRoyaltyInfo> = sts.struct(() => {
+    return {
+        beneficiary: AccountId32,
+        percentage: sts.number(),
     }
 })
 
@@ -11720,22 +12752,15 @@ export const FreezeState: sts.Type<FreezeState> = sts.closedEnum(() => {
 export const DefaultCollectionMutation: sts.Type<DefaultCollectionMutation> = sts.struct(() => {
     return {
         owner: sts.option(() => AccountId32),
-        royalty: Type_210,
+        royalty: Type_585,
         explicitRoyaltyCurrencies: sts.option(() => sts.array(() => AssetId)),
     }
 })
 
-export const Type_210: sts.Type<Type_210> = sts.closedEnum(() => {
+export const Type_585: sts.Type<Type_585> = sts.closedEnum(() => {
     return {
         NoMutation: sts.unit(),
         SomeMutation: sts.option(() => DefaultRoyalty),
-    }
-})
-
-export const DefaultRoyalty: sts.Type<DefaultRoyalty> = sts.struct(() => {
-    return {
-        beneficiary: AccountId32,
-        percentage: sts.number(),
     }
 })
 
@@ -11820,6 +12845,7 @@ export const ProcessMessageError: sts.Type<ProcessMessageError> = sts.closedEnum
         BadFormat: sts.unit(),
         Corrupt: sts.unit(),
         Overweight: Weight,
+        StackLimitReached: sts.unit(),
         Unsupported: sts.unit(),
         Yield: sts.unit(),
     }
@@ -11854,19 +12880,21 @@ export const MarketplaceEvent: sts.Type<MarketplaceEvent> = sts.closedEnum(() =>
         }),
         CounterOfferAnswered: sts.enumStruct({
             listingId: H256,
-            accepted: sts.boolean(),
+            creator: AccountId32,
+            response: CounterOfferResponse,
         }),
         CounterOfferPlaced: sts.enumStruct({
             listingId: H256,
             counterOffer: CounterOffer,
         }),
+        CounterOfferRemoved: sts.enumStruct({
+            listingId: H256,
+            creator: AccountId32,
+        }),
         ExpiredListingRemoved: sts.enumStruct({
             listingId: H256,
         }),
         ListingCancelled: sts.enumStruct({
-            listingId: H256,
-        }),
-        ListingConverted: sts.enumStruct({
             listingId: H256,
         }),
         ListingCreated: sts.enumStruct({
@@ -11876,10 +12904,18 @@ export const MarketplaceEvent: sts.Type<MarketplaceEvent> = sts.closedEnum(() =>
         ListingFilled: sts.enumStruct({
             listingId: H256,
             buyer: AccountId32,
+            price: sts.bigint(),
             amountFilled: sts.bigint(),
             amountRemaining: sts.bigint(),
             protocolFee: sts.bigint(),
             royalty: sts.bigint(),
+        }),
+        ListingRemovedUnderMinimum: sts.enumStruct({
+            listingId: H256,
+        }),
+        ListingUpgraded: sts.enumStruct({
+            listingId: H256,
+            storageVersion: sts.number(),
         }),
         MigrationStep: sts.enumStruct({
             itemsProcessed: sts.number(),
@@ -11888,43 +12924,44 @@ export const MarketplaceEvent: sts.Type<MarketplaceEvent> = sts.closedEnum(() =>
         ProtocolFeeSet: sts.enumStruct({
             protocolFee: Perbill,
         }),
-    }
-})
-
-export const Bid: sts.Type<Bid> = sts.struct(() => {
-    return {
-        bidder: AccountId32,
-        price: sts.bigint(),
-    }
-})
-
-/**
- * The `Event` enum of this pallet
- */
-export const ImOnlineEvent: sts.Type<ImOnlineEvent> = sts.closedEnum(() => {
-    return {
-        AllGood: sts.unit(),
-        HeartbeatReceived: sts.enumStruct({
-            authorityId: sts.bytes(),
+        WhitelistedAccountsAdded: sts.enumStruct({
+            listingId: H256,
+            accounts: sts.array(() => WhitelistAddAccount),
         }),
-        SomeOffline: sts.enumStruct({
-            offline: sts.array(() => sts.tuple(() => [AccountId32, Exposure])),
+        WhitelistedAccountsRemoved: sts.enumStruct({
+            listingId: H256,
+            accountIds: sts.array(() => AccountId32),
         }),
     }
 })
 
-export const Exposure: sts.Type<Exposure> = sts.struct(() => {
+export const WhitelistAddAccount: sts.Type<WhitelistAddAccount> = sts.struct(() => {
     return {
-        total: sts.bigint(),
-        own: sts.bigint(),
-        others: sts.array(() => IndividualExposure),
+        accountId: AccountId32,
+        allowance: sts.option(() => sts.bigint()),
     }
 })
 
-export const IndividualExposure: sts.Type<IndividualExposure> = sts.struct(() => {
+export const CounterOffer: sts.Type<CounterOffer> = sts.struct(() => {
     return {
-        who: AccountId32,
-        value: sts.bigint(),
+        sellerPrice: sts.bigint(),
+        buyerPrice: sts.option(() => sts.bigint()),
+        deposit: Deposit,
+    }
+})
+
+export const Deposit: sts.Type<Deposit> = sts.struct(() => {
+    return {
+        depositor: AccountId32,
+        amount: sts.bigint(),
+    }
+})
+
+export const CounterOfferResponse: sts.Type<CounterOfferResponse> = sts.closedEnum(() => {
+    return {
+        Accept: sts.unit(),
+        Counter: sts.bigint(),
+        Reject: sts.unit(),
     }
 })
 
@@ -11976,6 +13013,11 @@ export const IdentityEvent: sts.Type<IdentityEvent> = sts.closedEnum(() => {
         RegistrarAdded: sts.enumStruct({
             registrarIndex: sts.number(),
         }),
+        SubIdentitiesSet: sts.enumStruct({
+            main: AccountId32,
+            numberOfSubs: sts.number(),
+            newDeposit: sts.bigint(),
+        }),
         SubIdentityAdded: sts.enumStruct({
             sub: AccountId32,
             main: AccountId32,
@@ -11986,18 +13028,31 @@ export const IdentityEvent: sts.Type<IdentityEvent> = sts.closedEnum(() => {
             main: AccountId32,
             deposit: sts.bigint(),
         }),
+        SubIdentityRenamed: sts.enumStruct({
+            sub: AccountId32,
+            main: AccountId32,
+        }),
         SubIdentityRevoked: sts.enumStruct({
             sub: AccountId32,
             main: AccountId32,
             deposit: sts.bigint(),
+        }),
+        UsernameKilled: sts.enumStruct({
+            username: sts.bytes(),
         }),
         UsernameQueued: sts.enumStruct({
             who: AccountId32,
             username: sts.bytes(),
             expiration: sts.number(),
         }),
+        UsernameRemoved: sts.enumStruct({
+            username: sts.bytes(),
+        }),
         UsernameSet: sts.enumStruct({
             who: AccountId32,
+            username: sts.bytes(),
+        }),
+        UsernameUnbound: sts.enumStruct({
             username: sts.bytes(),
         }),
     }
@@ -12045,6 +13100,27 @@ export const HrmpEvent: sts.Type<HrmpEvent> = sts.closedEnum(() => {
     }
 })
 
+export const HrmpChannelId: sts.Type<HrmpChannelId> = sts.struct(() => {
+    return {
+        sender: Id,
+        recipient: Id,
+    }
+})
+
+/**
+ * The `Event` enum of this pallet
+ */
+export const HistoricalEvent: sts.Type<HistoricalEvent> = sts.closedEnum(() => {
+    return {
+        RootStored: sts.enumStruct({
+            index: sts.number(),
+        }),
+        RootsPruned: sts.enumStruct({
+            upTo: sts.number(),
+        }),
+    }
+})
+
 /**
  * The `Event` enum of this pallet
  */
@@ -12070,7 +13146,6 @@ export const FuelTanksEvent: sts.Type<FuelTanksEvent> = sts.closedEnum(() => {
             userId: AccountId32,
             tankDeposit: sts.bigint(),
             userDeposit: sts.bigint(),
-            totalReceived: sts.bigint(),
         }),
         AccountRemoved: sts.enumStruct({
             tankId: AccountId32,
@@ -12091,6 +13166,9 @@ export const FuelTanksEvent: sts.Type<FuelTanksEvent> = sts.closedEnum(() => {
             userId: sts.option(() => AccountId32),
             ruleSetId: sts.number(),
             consumption: Consumption,
+        }),
+        DestroyFuelTankScheduled: sts.enumStruct({
+            tankId: AccountId32,
         }),
         DispatchFailed: sts.enumStruct({
             tankId: AccountId32,
@@ -12139,7 +13217,7 @@ export const FellowshipReferendaEvent: sts.Type<FellowshipReferendaEvent> = sts.
         }),
         Cancelled: sts.enumStruct({
             index: sts.number(),
-            tally: Type_718,
+            tally: Type_750,
         }),
         ConfirmAborted: sts.enumStruct({
             index: sts.number(),
@@ -12149,7 +13227,7 @@ export const FellowshipReferendaEvent: sts.Type<FellowshipReferendaEvent> = sts.
         }),
         Confirmed: sts.enumStruct({
             index: sts.number(),
-            tally: Type_718,
+            tally: Type_750,
         }),
         DecisionDepositPlaced: sts.enumStruct({
             index: sts.number(),
@@ -12165,7 +13243,7 @@ export const FellowshipReferendaEvent: sts.Type<FellowshipReferendaEvent> = sts.
             index: sts.number(),
             track: sts.number(),
             proposal: Bounded,
-            tally: Type_718,
+            tally: Type_750,
         }),
         DepositSlashed: sts.enumStruct({
             who: AccountId32,
@@ -12173,7 +13251,7 @@ export const FellowshipReferendaEvent: sts.Type<FellowshipReferendaEvent> = sts.
         }),
         Killed: sts.enumStruct({
             index: sts.number(),
-            tally: Type_718,
+            tally: Type_750,
         }),
         MetadataCleared: sts.enumStruct({
             index: sts.number(),
@@ -12185,7 +13263,7 @@ export const FellowshipReferendaEvent: sts.Type<FellowshipReferendaEvent> = sts.
         }),
         Rejected: sts.enumStruct({
             index: sts.number(),
-            tally: Type_718,
+            tally: Type_750,
         }),
         SubmissionDepositRefunded: sts.enumStruct({
             index: sts.number(),
@@ -12199,7 +13277,7 @@ export const FellowshipReferendaEvent: sts.Type<FellowshipReferendaEvent> = sts.
         }),
         TimedOut: sts.enumStruct({
             index: sts.number(),
-            tally: Type_718,
+            tally: Type_750,
         }),
     }
 })
@@ -12228,7 +13306,7 @@ export const FellowshipCollectiveEvent: sts.Type<FellowshipCollectiveEvent> = st
             who: AccountId32,
             poll: sts.number(),
             vote: VoteRecord,
-            tally: Type_718,
+            tally: Type_750,
         }),
     }
 })
@@ -12371,10 +13449,36 @@ export const CrowdloanEvent: sts.Type<CrowdloanEvent> = sts.closedEnum(() => {
 /**
  * The `Event` enum of this pallet
  */
+export const CoretimeEvent: sts.Type<CoretimeEvent> = sts.closedEnum(() => {
+    return {
+        CoreAssigned: sts.enumStruct({
+            core: V8CoreIndex,
+        }),
+        RevenueInfoRequested: sts.enumStruct({
+            when: sts.number(),
+        }),
+    }
+})
+
+/**
+ * The `Event` enum of this pallet
+ */
 export const ConvictionVotingEvent: sts.Type<ConvictionVotingEvent> = sts.closedEnum(() => {
     return {
         Delegated: sts.tuple(() => [AccountId32, AccountId32]),
         Undelegated: AccountId32,
+        VoteRemoved: sts.enumStruct({
+            who: AccountId32,
+            vote: AccountVote,
+        }),
+        VoteUnlocked: sts.enumStruct({
+            who: AccountId32,
+            class: sts.number(),
+        }),
+        Voted: sts.enumStruct({
+            who: AccountId32,
+            vote: AccountVote,
+        }),
     }
 })
 
@@ -12538,11 +13642,21 @@ export const AssignedSlotsEvent: sts.Type<AssignedSlotsEvent> = sts.closedEnum((
     }
 })
 
-export const Type_722: sts.Type<Type_722> = sts.closedEnum(() => {
+export const Type_778: sts.Type<Type_778> = sts.closedEnum(() => {
     return {
         ApplyExtrinsic: sts.number(),
         Finalization: sts.unit(),
         Initialization: sts.unit(),
+    }
+})
+
+export const PartsOf57600 = sts.number()
+
+export const CoreAssignment: sts.Type<CoreAssignment> = sts.closedEnum(() => {
+    return {
+        Idle: sts.unit(),
+        Pool: sts.unit(),
+        Task: sts.number(),
     }
 })
 
@@ -12566,6 +13680,53 @@ export const Bounded: sts.Type<Bounded> = sts.closedEnum(() => {
     }
 })
 
+export const VersionedAssetId: sts.Type<VersionedAssetId> = sts.closedEnum(() => {
+    return {
+        V3: V3AssetId,
+        V4: V4AssetId,
+        V5: V5AssetId,
+    }
+})
+
+export const V5AssetId: sts.Type<V5AssetId> = sts.struct(() => {
+    return {
+        parents: sts.number(),
+        interior: V5Junctions,
+    }
+})
+
+export const TransferType: sts.Type<TransferType> = sts.closedEnum(() => {
+    return {
+        DestinationReserve: sts.unit(),
+        LocalReserve: sts.unit(),
+        RemoteReserve: VersionedLocation,
+        Teleport: sts.unit(),
+    }
+})
+
+export type TransferType =
+    | TransferType_DestinationReserve
+    | TransferType_LocalReserve
+    | TransferType_RemoteReserve
+    | TransferType_Teleport
+
+export interface TransferType_DestinationReserve {
+    __kind: 'DestinationReserve'
+}
+
+export interface TransferType_LocalReserve {
+    __kind: 'LocalReserve'
+}
+
+export interface TransferType_RemoteReserve {
+    __kind: 'RemoteReserve'
+    value: VersionedLocation
+}
+
+export interface TransferType_Teleport {
+    __kind: 'Teleport'
+}
+
 export const V3WeightLimit: sts.Type<V3WeightLimit> = sts.closedEnum(() => {
     return {
         Limited: Weight,
@@ -12573,15 +13734,595 @@ export const V3WeightLimit: sts.Type<V3WeightLimit> = sts.closedEnum(() => {
     }
 })
 
-export const Type_556: sts.Type<Type_556> = sts.closedEnum(() => {
+export const Type_460: sts.Type<Type_460> = sts.closedEnum(() => {
     return {
-        V2: sts.array(() => Type_559),
-        V3: sts.array(() => Type_563),
-        V4: sts.array(() => Type_566),
+        V3: sts.array(() => Type_463),
+        V4: sts.array(() => Type_467),
+        V5: sts.array(() => Type_470),
     }
 })
 
-export const Type_566: sts.Type<Type_566> = sts.closedEnum(() => {
+export const Type_470: sts.Type<Type_470> = sts.closedEnum(() => {
+    return {
+        AliasOrigin: V5Location,
+        BurnAsset: sts.array(() => V5Asset),
+        BuyExecution: sts.enumStruct({
+            fees: V5Asset,
+            weightLimit: V3WeightLimit,
+        }),
+        ClaimAsset: sts.enumStruct({
+            assets: sts.array(() => V5Asset),
+            ticket: V5Location,
+        }),
+        ClearError: sts.unit(),
+        ClearOrigin: sts.unit(),
+        ClearTopic: sts.unit(),
+        ClearTransactStatus: sts.unit(),
+        DepositAsset: sts.enumStruct({
+            assets: V5AssetFilter,
+            beneficiary: V5Location,
+        }),
+        DepositReserveAsset: sts.enumStruct({
+            assets: V5AssetFilter,
+            dest: V5Location,
+            xcm: sts.array(() => V5Instruction),
+        }),
+        DescendOrigin: V5Junctions,
+        ExchangeAsset: sts.enumStruct({
+            give: V5AssetFilter,
+            want: sts.array(() => V5Asset),
+            maximal: sts.boolean(),
+        }),
+        ExecuteWithOrigin: sts.enumStruct({
+            descendantOrigin: sts.option(() => V5Junctions),
+            xcm: sts.array(() => Type_470),
+        }),
+        ExpectAsset: sts.array(() => V5Asset),
+        ExpectError: sts.option(() => sts.tuple(() => [sts.number(), V5Error])),
+        ExpectOrigin: sts.option(() => V5Location),
+        ExpectPallet: sts.enumStruct({
+            index: sts.number(),
+            name: sts.bytes(),
+            moduleName: sts.bytes(),
+            crateMajor: sts.number(),
+            minCrateMinor: sts.number(),
+        }),
+        ExpectTransactStatus: V3MaybeErrorCode,
+        ExportMessage: sts.enumStruct({
+            network: V5NetworkId,
+            destination: V5Junctions,
+            xcm: sts.array(() => V5Instruction),
+        }),
+        HrmpChannelAccepted: sts.enumStruct({
+            recipient: sts.number(),
+        }),
+        HrmpChannelClosing: sts.enumStruct({
+            initiator: sts.number(),
+            sender: sts.number(),
+            recipient: sts.number(),
+        }),
+        HrmpNewChannelOpenRequest: sts.enumStruct({
+            sender: sts.number(),
+            maxMessageSize: sts.number(),
+            maxCapacity: sts.number(),
+        }),
+        InitiateReserveWithdraw: sts.enumStruct({
+            assets: V5AssetFilter,
+            reserve: V5Location,
+            xcm: sts.array(() => V5Instruction),
+        }),
+        InitiateTeleport: sts.enumStruct({
+            assets: V5AssetFilter,
+            dest: V5Location,
+            xcm: sts.array(() => V5Instruction),
+        }),
+        InitiateTransfer: sts.enumStruct({
+            destination: V5Location,
+            remoteFees: sts.option(() => V5AssetTransferFilter),
+            preserveOrigin: sts.boolean(),
+            assets: sts.array(() => V5AssetTransferFilter),
+            remoteXcm: sts.array(() => V5Instruction),
+        }),
+        LockAsset: sts.enumStruct({
+            asset: V5Asset,
+            unlocker: V5Location,
+        }),
+        NoteUnlockable: sts.enumStruct({
+            asset: V5Asset,
+            owner: V5Location,
+        }),
+        PayFees: sts.enumStruct({
+            asset: V5Asset,
+        }),
+        QueryPallet: sts.enumStruct({
+            moduleName: sts.bytes(),
+            responseInfo: V5QueryResponseInfo,
+        }),
+        QueryResponse: sts.enumStruct({
+            queryId: sts.bigint(),
+            response: V5Response,
+            maxWeight: Weight,
+            querier: sts.option(() => V5Location),
+        }),
+        ReceiveTeleportedAsset: sts.array(() => V5Asset),
+        RefundSurplus: sts.unit(),
+        ReportError: V5QueryResponseInfo,
+        ReportHolding: sts.enumStruct({
+            responseInfo: V5QueryResponseInfo,
+            assets: V5AssetFilter,
+        }),
+        ReportTransactStatus: V5QueryResponseInfo,
+        RequestUnlock: sts.enumStruct({
+            asset: V5Asset,
+            locker: V5Location,
+        }),
+        ReserveAssetDeposited: sts.array(() => V5Asset),
+        SetAppendix: sts.array(() => Type_470),
+        SetErrorHandler: sts.array(() => Type_470),
+        SetFeesMode: sts.enumStruct({
+            jitWithdraw: sts.boolean(),
+        }),
+        SetHints: sts.enumStruct({
+            hints: sts.array(() => V5Hint),
+        }),
+        SetTopic: sts.bytes(),
+        SubscribeVersion: sts.enumStruct({
+            queryId: sts.bigint(),
+            maxResponseWeight: Weight,
+        }),
+        Transact: sts.enumStruct({
+            originKind: V3OriginKind,
+            fallbackMaxWeight: sts.option(() => Weight),
+            call: Type_464,
+        }),
+        TransferAsset: sts.enumStruct({
+            assets: sts.array(() => V5Asset),
+            beneficiary: V5Location,
+        }),
+        TransferReserveAsset: sts.enumStruct({
+            assets: sts.array(() => V5Asset),
+            dest: V5Location,
+            xcm: sts.array(() => V5Instruction),
+        }),
+        Trap: sts.bigint(),
+        UniversalOrigin: V5Junction,
+        UnlockAsset: sts.enumStruct({
+            asset: V5Asset,
+            target: V5Location,
+        }),
+        UnpaidExecution: sts.enumStruct({
+            weightLimit: V3WeightLimit,
+            checkOrigin: sts.option(() => V5Location),
+        }),
+        UnsubscribeVersion: sts.unit(),
+        WithdrawAsset: sts.array(() => V5Asset),
+    }
+})
+
+export const Type_464: sts.Type<Type_464> = sts.struct(() => {
+    return {
+        encoded: sts.bytes(),
+    }
+})
+
+export interface Type_464 {
+    encoded: Bytes
+}
+
+export const V3OriginKind: sts.Type<V3OriginKind> = sts.closedEnum(() => {
+    return {
+        Native: sts.unit(),
+        SovereignAccount: sts.unit(),
+        Superuser: sts.unit(),
+        Xcm: sts.unit(),
+    }
+})
+
+export const V5Hint: sts.Type<V5Hint> = sts.closedEnum(() => {
+    return {
+        AssetClaimer: sts.enumStruct({
+            location: V5Location,
+        }),
+    }
+})
+
+export const V5QueryResponseInfo: sts.Type<V5QueryResponseInfo> = sts.struct(() => {
+    return {
+        destination: V5Location,
+        queryId: sts.bigint(),
+        maxWeight: Weight,
+    }
+})
+
+export const V5AssetTransferFilter: sts.Type<V5AssetTransferFilter> = sts.closedEnum(() => {
+    return {
+        ReserveDeposit: V5AssetFilter,
+        ReserveWithdraw: V5AssetFilter,
+        Teleport: V5AssetFilter,
+    }
+})
+
+export const V5AssetFilter: sts.Type<V5AssetFilter> = sts.closedEnum(() => {
+    return {
+        Definite: sts.array(() => V5Asset),
+        Wild: V5WildAsset,
+    }
+})
+
+export const V5WildAsset: sts.Type<V5WildAsset> = sts.closedEnum(() => {
+    return {
+        All: sts.unit(),
+        AllCounted: sts.number(),
+        AllOf: sts.enumStruct({
+            id: V5AssetId,
+            fun: V5WildFungibility,
+        }),
+        AllOfCounted: sts.enumStruct({
+            id: V5AssetId,
+            fun: V5WildFungibility,
+            count: sts.number(),
+        }),
+    }
+})
+
+export const V5WildFungibility: sts.Type<V5WildFungibility> = sts.closedEnum(() => {
+    return {
+        Fungible: sts.unit(),
+        NonFungible: sts.unit(),
+    }
+})
+
+export type Type_470 =
+    | Type_470_AliasOrigin
+    | Type_470_BurnAsset
+    | Type_470_BuyExecution
+    | Type_470_ClaimAsset
+    | Type_470_ClearError
+    | Type_470_ClearOrigin
+    | Type_470_ClearTopic
+    | Type_470_ClearTransactStatus
+    | Type_470_DepositAsset
+    | Type_470_DepositReserveAsset
+    | Type_470_DescendOrigin
+    | Type_470_ExchangeAsset
+    | Type_470_ExecuteWithOrigin
+    | Type_470_ExpectAsset
+    | Type_470_ExpectError
+    | Type_470_ExpectOrigin
+    | Type_470_ExpectPallet
+    | Type_470_ExpectTransactStatus
+    | Type_470_ExportMessage
+    | Type_470_HrmpChannelAccepted
+    | Type_470_HrmpChannelClosing
+    | Type_470_HrmpNewChannelOpenRequest
+    | Type_470_InitiateReserveWithdraw
+    | Type_470_InitiateTeleport
+    | Type_470_InitiateTransfer
+    | Type_470_LockAsset
+    | Type_470_NoteUnlockable
+    | Type_470_PayFees
+    | Type_470_QueryPallet
+    | Type_470_QueryResponse
+    | Type_470_ReceiveTeleportedAsset
+    | Type_470_RefundSurplus
+    | Type_470_ReportError
+    | Type_470_ReportHolding
+    | Type_470_ReportTransactStatus
+    | Type_470_RequestUnlock
+    | Type_470_ReserveAssetDeposited
+    | Type_470_SetAppendix
+    | Type_470_SetErrorHandler
+    | Type_470_SetFeesMode
+    | Type_470_SetHints
+    | Type_470_SetTopic
+    | Type_470_SubscribeVersion
+    | Type_470_Transact
+    | Type_470_TransferAsset
+    | Type_470_TransferReserveAsset
+    | Type_470_Trap
+    | Type_470_UniversalOrigin
+    | Type_470_UnlockAsset
+    | Type_470_UnpaidExecution
+    | Type_470_UnsubscribeVersion
+    | Type_470_WithdrawAsset
+
+export interface Type_470_AliasOrigin {
+    __kind: 'AliasOrigin'
+    value: V5Location
+}
+
+export interface Type_470_BurnAsset {
+    __kind: 'BurnAsset'
+    value: V5Asset[]
+}
+
+export interface Type_470_BuyExecution {
+    __kind: 'BuyExecution'
+    fees: V5Asset
+    weightLimit: V3WeightLimit
+}
+
+export interface Type_470_ClaimAsset {
+    __kind: 'ClaimAsset'
+    assets: V5Asset[]
+    ticket: V5Location
+}
+
+export interface Type_470_ClearError {
+    __kind: 'ClearError'
+}
+
+export interface Type_470_ClearOrigin {
+    __kind: 'ClearOrigin'
+}
+
+export interface Type_470_ClearTopic {
+    __kind: 'ClearTopic'
+}
+
+export interface Type_470_ClearTransactStatus {
+    __kind: 'ClearTransactStatus'
+}
+
+export interface Type_470_DepositAsset {
+    __kind: 'DepositAsset'
+    assets: V5AssetFilter
+    beneficiary: V5Location
+}
+
+export interface Type_470_DepositReserveAsset {
+    __kind: 'DepositReserveAsset'
+    assets: V5AssetFilter
+    dest: V5Location
+    xcm: V5Instruction[]
+}
+
+export interface Type_470_DescendOrigin {
+    __kind: 'DescendOrigin'
+    value: V5Junctions
+}
+
+export interface Type_470_ExchangeAsset {
+    __kind: 'ExchangeAsset'
+    give: V5AssetFilter
+    want: V5Asset[]
+    maximal: boolean
+}
+
+export interface Type_470_ExecuteWithOrigin {
+    __kind: 'ExecuteWithOrigin'
+    descendantOrigin?: V5Junctions | undefined
+    xcm: Type_470[]
+}
+
+export interface Type_470_ExpectAsset {
+    __kind: 'ExpectAsset'
+    value: V5Asset[]
+}
+
+export interface Type_470_ExpectError {
+    __kind: 'ExpectError'
+    value?: [number, V5Error] | undefined
+}
+
+export interface Type_470_ExpectOrigin {
+    __kind: 'ExpectOrigin'
+    value?: V5Location | undefined
+}
+
+export interface Type_470_ExpectPallet {
+    __kind: 'ExpectPallet'
+    index: number
+    name: Bytes
+    moduleName: Bytes
+    crateMajor: number
+    minCrateMinor: number
+}
+
+export interface Type_470_ExpectTransactStatus {
+    __kind: 'ExpectTransactStatus'
+    value: V3MaybeErrorCode
+}
+
+export interface Type_470_ExportMessage {
+    __kind: 'ExportMessage'
+    network: V5NetworkId
+    destination: V5Junctions
+    xcm: V5Instruction[]
+}
+
+export interface Type_470_HrmpChannelAccepted {
+    __kind: 'HrmpChannelAccepted'
+    recipient: number
+}
+
+export interface Type_470_HrmpChannelClosing {
+    __kind: 'HrmpChannelClosing'
+    initiator: number
+    sender: number
+    recipient: number
+}
+
+export interface Type_470_HrmpNewChannelOpenRequest {
+    __kind: 'HrmpNewChannelOpenRequest'
+    sender: number
+    maxMessageSize: number
+    maxCapacity: number
+}
+
+export interface Type_470_InitiateReserveWithdraw {
+    __kind: 'InitiateReserveWithdraw'
+    assets: V5AssetFilter
+    reserve: V5Location
+    xcm: V5Instruction[]
+}
+
+export interface Type_470_InitiateTeleport {
+    __kind: 'InitiateTeleport'
+    assets: V5AssetFilter
+    dest: V5Location
+    xcm: V5Instruction[]
+}
+
+export interface Type_470_InitiateTransfer {
+    __kind: 'InitiateTransfer'
+    destination: V5Location
+    remoteFees?: V5AssetTransferFilter | undefined
+    preserveOrigin: boolean
+    assets: V5AssetTransferFilter[]
+    remoteXcm: V5Instruction[]
+}
+
+export interface Type_470_LockAsset {
+    __kind: 'LockAsset'
+    asset: V5Asset
+    unlocker: V5Location
+}
+
+export interface Type_470_NoteUnlockable {
+    __kind: 'NoteUnlockable'
+    asset: V5Asset
+    owner: V5Location
+}
+
+export interface Type_470_PayFees {
+    __kind: 'PayFees'
+    asset: V5Asset
+}
+
+export interface Type_470_QueryPallet {
+    __kind: 'QueryPallet'
+    moduleName: Bytes
+    responseInfo: V5QueryResponseInfo
+}
+
+export interface Type_470_QueryResponse {
+    __kind: 'QueryResponse'
+    queryId: bigint
+    response: V5Response
+    maxWeight: Weight
+    querier?: V5Location | undefined
+}
+
+export interface Type_470_ReceiveTeleportedAsset {
+    __kind: 'ReceiveTeleportedAsset'
+    value: V5Asset[]
+}
+
+export interface Type_470_RefundSurplus {
+    __kind: 'RefundSurplus'
+}
+
+export interface Type_470_ReportError {
+    __kind: 'ReportError'
+    value: V5QueryResponseInfo
+}
+
+export interface Type_470_ReportHolding {
+    __kind: 'ReportHolding'
+    responseInfo: V5QueryResponseInfo
+    assets: V5AssetFilter
+}
+
+export interface Type_470_ReportTransactStatus {
+    __kind: 'ReportTransactStatus'
+    value: V5QueryResponseInfo
+}
+
+export interface Type_470_RequestUnlock {
+    __kind: 'RequestUnlock'
+    asset: V5Asset
+    locker: V5Location
+}
+
+export interface Type_470_ReserveAssetDeposited {
+    __kind: 'ReserveAssetDeposited'
+    value: V5Asset[]
+}
+
+export interface Type_470_SetAppendix {
+    __kind: 'SetAppendix'
+    value: Type_470[]
+}
+
+export interface Type_470_SetErrorHandler {
+    __kind: 'SetErrorHandler'
+    value: Type_470[]
+}
+
+export interface Type_470_SetFeesMode {
+    __kind: 'SetFeesMode'
+    jitWithdraw: boolean
+}
+
+export interface Type_470_SetHints {
+    __kind: 'SetHints'
+    hints: V5Hint[]
+}
+
+export interface Type_470_SetTopic {
+    __kind: 'SetTopic'
+    value: Bytes
+}
+
+export interface Type_470_SubscribeVersion {
+    __kind: 'SubscribeVersion'
+    queryId: bigint
+    maxResponseWeight: Weight
+}
+
+export interface Type_470_Transact {
+    __kind: 'Transact'
+    originKind: V3OriginKind
+    fallbackMaxWeight?: Weight | undefined
+    call: Type_464
+}
+
+export interface Type_470_TransferAsset {
+    __kind: 'TransferAsset'
+    assets: V5Asset[]
+    beneficiary: V5Location
+}
+
+export interface Type_470_TransferReserveAsset {
+    __kind: 'TransferReserveAsset'
+    assets: V5Asset[]
+    dest: V5Location
+    xcm: V5Instruction[]
+}
+
+export interface Type_470_Trap {
+    __kind: 'Trap'
+    value: bigint
+}
+
+export interface Type_470_UniversalOrigin {
+    __kind: 'UniversalOrigin'
+    value: V5Junction
+}
+
+export interface Type_470_UnlockAsset {
+    __kind: 'UnlockAsset'
+    asset: V5Asset
+    target: V5Location
+}
+
+export interface Type_470_UnpaidExecution {
+    __kind: 'UnpaidExecution'
+    weightLimit: V3WeightLimit
+    checkOrigin?: V5Location | undefined
+}
+
+export interface Type_470_UnsubscribeVersion {
+    __kind: 'UnsubscribeVersion'
+}
+
+export interface Type_470_WithdrawAsset {
+    __kind: 'WithdrawAsset'
+    value: V5Asset[]
+}
+
+export const Type_467: sts.Type<Type_467> = sts.closedEnum(() => {
     return {
         AliasOrigin: V4Location,
         BurnAsset: sts.array(() => V4Asset),
@@ -12682,8 +14423,8 @@ export const Type_566: sts.Type<Type_566> = sts.closedEnum(() => {
             locker: V4Location,
         }),
         ReserveAssetDeposited: sts.array(() => V4Asset),
-        SetAppendix: sts.array(() => Type_566),
-        SetErrorHandler: sts.array(() => Type_566),
+        SetAppendix: sts.array(() => Type_467),
+        SetErrorHandler: sts.array(() => Type_467),
         SetFeesMode: sts.enumStruct({
             jitWithdraw: sts.boolean(),
         }),
@@ -12693,9 +14434,9 @@ export const Type_566: sts.Type<Type_566> = sts.closedEnum(() => {
             maxResponseWeight: Weight,
         }),
         Transact: sts.enumStruct({
-            originKind: V2OriginKind,
+            originKind: V3OriginKind,
             requireWeightAtMost: Weight,
-            call: Type_560,
+            call: Type_464,
         }),
         TransferAsset: sts.enumStruct({
             assets: sts.array(() => V4Asset),
@@ -12721,25 +14462,6 @@ export const Type_566: sts.Type<Type_566> = sts.closedEnum(() => {
     }
 })
 
-export const Type_560: sts.Type<Type_560> = sts.struct(() => {
-    return {
-        encoded: sts.bytes(),
-    }
-})
-
-export interface Type_560 {
-    encoded: Bytes
-}
-
-export const V2OriginKind: sts.Type<V2OriginKind> = sts.closedEnum(() => {
-    return {
-        Native: sts.unit(),
-        SovereignAccount: sts.unit(),
-        Superuser: sts.unit(),
-        Xcm: sts.unit(),
-    }
-})
-
 export const V4QueryResponseInfo: sts.Type<V4QueryResponseInfo> = sts.struct(() => {
     return {
         destination: V4Location,
@@ -12747,6 +14469,525 @@ export const V4QueryResponseInfo: sts.Type<V4QueryResponseInfo> = sts.struct(() 
         maxWeight: Weight,
     }
 })
+
+export interface V4QueryResponseInfo {
+    destination: V4Location
+    queryId: bigint
+    maxWeight: Weight
+}
+
+export const V4Instruction: sts.Type<V4Instruction> = sts.closedEnum(() => {
+    return {
+        AliasOrigin: V4Location,
+        BurnAsset: sts.array(() => V4Asset),
+        BuyExecution: sts.enumStruct({
+            fees: V4Asset,
+            weightLimit: V3WeightLimit,
+        }),
+        ClaimAsset: sts.enumStruct({
+            assets: sts.array(() => V4Asset),
+            ticket: V4Location,
+        }),
+        ClearError: sts.unit(),
+        ClearOrigin: sts.unit(),
+        ClearTopic: sts.unit(),
+        ClearTransactStatus: sts.unit(),
+        DepositAsset: sts.enumStruct({
+            assets: V4AssetFilter,
+            beneficiary: V4Location,
+        }),
+        DepositReserveAsset: sts.enumStruct({
+            assets: V4AssetFilter,
+            dest: V4Location,
+            xcm: sts.array(() => V4Instruction),
+        }),
+        DescendOrigin: V4Junctions,
+        ExchangeAsset: sts.enumStruct({
+            give: V4AssetFilter,
+            want: sts.array(() => V4Asset),
+            maximal: sts.boolean(),
+        }),
+        ExpectAsset: sts.array(() => V4Asset),
+        ExpectError: sts.option(() => sts.tuple(() => [sts.number(), V3Error])),
+        ExpectOrigin: sts.option(() => V4Location),
+        ExpectPallet: sts.enumStruct({
+            index: sts.number(),
+            name: sts.bytes(),
+            moduleName: sts.bytes(),
+            crateMajor: sts.number(),
+            minCrateMinor: sts.number(),
+        }),
+        ExpectTransactStatus: V3MaybeErrorCode,
+        ExportMessage: sts.enumStruct({
+            network: V4NetworkId,
+            destination: V4Junctions,
+            xcm: sts.array(() => V4Instruction),
+        }),
+        HrmpChannelAccepted: sts.enumStruct({
+            recipient: sts.number(),
+        }),
+        HrmpChannelClosing: sts.enumStruct({
+            initiator: sts.number(),
+            sender: sts.number(),
+            recipient: sts.number(),
+        }),
+        HrmpNewChannelOpenRequest: sts.enumStruct({
+            sender: sts.number(),
+            maxMessageSize: sts.number(),
+            maxCapacity: sts.number(),
+        }),
+        InitiateReserveWithdraw: sts.enumStruct({
+            assets: V4AssetFilter,
+            reserve: V4Location,
+            xcm: sts.array(() => V4Instruction),
+        }),
+        InitiateTeleport: sts.enumStruct({
+            assets: V4AssetFilter,
+            dest: V4Location,
+            xcm: sts.array(() => V4Instruction),
+        }),
+        LockAsset: sts.enumStruct({
+            asset: V4Asset,
+            unlocker: V4Location,
+        }),
+        NoteUnlockable: sts.enumStruct({
+            asset: V4Asset,
+            owner: V4Location,
+        }),
+        QueryPallet: sts.enumStruct({
+            moduleName: sts.bytes(),
+            responseInfo: V4QueryResponseInfo,
+        }),
+        QueryResponse: sts.enumStruct({
+            queryId: sts.bigint(),
+            response: V4Response,
+            maxWeight: Weight,
+            querier: sts.option(() => V4Location),
+        }),
+        ReceiveTeleportedAsset: sts.array(() => V4Asset),
+        RefundSurplus: sts.unit(),
+        ReportError: V4QueryResponseInfo,
+        ReportHolding: sts.enumStruct({
+            responseInfo: V4QueryResponseInfo,
+            assets: V4AssetFilter,
+        }),
+        ReportTransactStatus: V4QueryResponseInfo,
+        RequestUnlock: sts.enumStruct({
+            asset: V4Asset,
+            locker: V4Location,
+        }),
+        ReserveAssetDeposited: sts.array(() => V4Asset),
+        SetAppendix: sts.array(() => V4Instruction),
+        SetErrorHandler: sts.array(() => V4Instruction),
+        SetFeesMode: sts.enumStruct({
+            jitWithdraw: sts.boolean(),
+        }),
+        SetTopic: sts.bytes(),
+        SubscribeVersion: sts.enumStruct({
+            queryId: sts.bigint(),
+            maxResponseWeight: Weight,
+        }),
+        Transact: sts.enumStruct({
+            originKind: V3OriginKind,
+            requireWeightAtMost: Weight,
+            call: DoubleEncoded,
+        }),
+        TransferAsset: sts.enumStruct({
+            assets: sts.array(() => V4Asset),
+            beneficiary: V4Location,
+        }),
+        TransferReserveAsset: sts.enumStruct({
+            assets: sts.array(() => V4Asset),
+            dest: V4Location,
+            xcm: sts.array(() => V4Instruction),
+        }),
+        Trap: sts.bigint(),
+        UniversalOrigin: V4Junction,
+        UnlockAsset: sts.enumStruct({
+            asset: V4Asset,
+            target: V4Location,
+        }),
+        UnpaidExecution: sts.enumStruct({
+            weightLimit: V3WeightLimit,
+            checkOrigin: sts.option(() => V4Location),
+        }),
+        UnsubscribeVersion: sts.unit(),
+        WithdrawAsset: sts.array(() => V4Asset),
+    }
+})
+
+export const DoubleEncoded: sts.Type<DoubleEncoded> = sts.struct(() => {
+    return {
+        encoded: sts.bytes(),
+    }
+})
+
+export type V4Instruction =
+    | V4Instruction_AliasOrigin
+    | V4Instruction_BurnAsset
+    | V4Instruction_BuyExecution
+    | V4Instruction_ClaimAsset
+    | V4Instruction_ClearError
+    | V4Instruction_ClearOrigin
+    | V4Instruction_ClearTopic
+    | V4Instruction_ClearTransactStatus
+    | V4Instruction_DepositAsset
+    | V4Instruction_DepositReserveAsset
+    | V4Instruction_DescendOrigin
+    | V4Instruction_ExchangeAsset
+    | V4Instruction_ExpectAsset
+    | V4Instruction_ExpectError
+    | V4Instruction_ExpectOrigin
+    | V4Instruction_ExpectPallet
+    | V4Instruction_ExpectTransactStatus
+    | V4Instruction_ExportMessage
+    | V4Instruction_HrmpChannelAccepted
+    | V4Instruction_HrmpChannelClosing
+    | V4Instruction_HrmpNewChannelOpenRequest
+    | V4Instruction_InitiateReserveWithdraw
+    | V4Instruction_InitiateTeleport
+    | V4Instruction_LockAsset
+    | V4Instruction_NoteUnlockable
+    | V4Instruction_QueryPallet
+    | V4Instruction_QueryResponse
+    | V4Instruction_ReceiveTeleportedAsset
+    | V4Instruction_RefundSurplus
+    | V4Instruction_ReportError
+    | V4Instruction_ReportHolding
+    | V4Instruction_ReportTransactStatus
+    | V4Instruction_RequestUnlock
+    | V4Instruction_ReserveAssetDeposited
+    | V4Instruction_SetAppendix
+    | V4Instruction_SetErrorHandler
+    | V4Instruction_SetFeesMode
+    | V4Instruction_SetTopic
+    | V4Instruction_SubscribeVersion
+    | V4Instruction_Transact
+    | V4Instruction_TransferAsset
+    | V4Instruction_TransferReserveAsset
+    | V4Instruction_Trap
+    | V4Instruction_UniversalOrigin
+    | V4Instruction_UnlockAsset
+    | V4Instruction_UnpaidExecution
+    | V4Instruction_UnsubscribeVersion
+    | V4Instruction_WithdrawAsset
+
+export interface V4Instruction_AliasOrigin {
+    __kind: 'AliasOrigin'
+    value: V4Location
+}
+
+export interface V4Instruction_BurnAsset {
+    __kind: 'BurnAsset'
+    value: V4Asset[]
+}
+
+export interface V4Instruction_BuyExecution {
+    __kind: 'BuyExecution'
+    fees: V4Asset
+    weightLimit: V3WeightLimit
+}
+
+export interface V4Instruction_ClaimAsset {
+    __kind: 'ClaimAsset'
+    assets: V4Asset[]
+    ticket: V4Location
+}
+
+export interface V4Instruction_ClearError {
+    __kind: 'ClearError'
+}
+
+export interface V4Instruction_ClearOrigin {
+    __kind: 'ClearOrigin'
+}
+
+export interface V4Instruction_ClearTopic {
+    __kind: 'ClearTopic'
+}
+
+export interface V4Instruction_ClearTransactStatus {
+    __kind: 'ClearTransactStatus'
+}
+
+export interface V4Instruction_DepositAsset {
+    __kind: 'DepositAsset'
+    assets: V4AssetFilter
+    beneficiary: V4Location
+}
+
+export interface V4Instruction_DepositReserveAsset {
+    __kind: 'DepositReserveAsset'
+    assets: V4AssetFilter
+    dest: V4Location
+    xcm: V4Instruction[]
+}
+
+export interface V4Instruction_DescendOrigin {
+    __kind: 'DescendOrigin'
+    value: V4Junctions
+}
+
+export interface V4Instruction_ExchangeAsset {
+    __kind: 'ExchangeAsset'
+    give: V4AssetFilter
+    want: V4Asset[]
+    maximal: boolean
+}
+
+export interface V4Instruction_ExpectAsset {
+    __kind: 'ExpectAsset'
+    value: V4Asset[]
+}
+
+export interface V4Instruction_ExpectError {
+    __kind: 'ExpectError'
+    value?: [number, V3Error] | undefined
+}
+
+export interface V4Instruction_ExpectOrigin {
+    __kind: 'ExpectOrigin'
+    value?: V4Location | undefined
+}
+
+export interface V4Instruction_ExpectPallet {
+    __kind: 'ExpectPallet'
+    index: number
+    name: Bytes
+    moduleName: Bytes
+    crateMajor: number
+    minCrateMinor: number
+}
+
+export interface V4Instruction_ExpectTransactStatus {
+    __kind: 'ExpectTransactStatus'
+    value: V3MaybeErrorCode
+}
+
+export interface V4Instruction_ExportMessage {
+    __kind: 'ExportMessage'
+    network: V4NetworkId
+    destination: V4Junctions
+    xcm: V4Instruction[]
+}
+
+export interface V4Instruction_HrmpChannelAccepted {
+    __kind: 'HrmpChannelAccepted'
+    recipient: number
+}
+
+export interface V4Instruction_HrmpChannelClosing {
+    __kind: 'HrmpChannelClosing'
+    initiator: number
+    sender: number
+    recipient: number
+}
+
+export interface V4Instruction_HrmpNewChannelOpenRequest {
+    __kind: 'HrmpNewChannelOpenRequest'
+    sender: number
+    maxMessageSize: number
+    maxCapacity: number
+}
+
+export interface V4Instruction_InitiateReserveWithdraw {
+    __kind: 'InitiateReserveWithdraw'
+    assets: V4AssetFilter
+    reserve: V4Location
+    xcm: V4Instruction[]
+}
+
+export interface V4Instruction_InitiateTeleport {
+    __kind: 'InitiateTeleport'
+    assets: V4AssetFilter
+    dest: V4Location
+    xcm: V4Instruction[]
+}
+
+export interface V4Instruction_LockAsset {
+    __kind: 'LockAsset'
+    asset: V4Asset
+    unlocker: V4Location
+}
+
+export interface V4Instruction_NoteUnlockable {
+    __kind: 'NoteUnlockable'
+    asset: V4Asset
+    owner: V4Location
+}
+
+export interface V4Instruction_QueryPallet {
+    __kind: 'QueryPallet'
+    moduleName: Bytes
+    responseInfo: V4QueryResponseInfo
+}
+
+export interface V4Instruction_QueryResponse {
+    __kind: 'QueryResponse'
+    queryId: bigint
+    response: V4Response
+    maxWeight: Weight
+    querier?: V4Location | undefined
+}
+
+export interface V4Instruction_ReceiveTeleportedAsset {
+    __kind: 'ReceiveTeleportedAsset'
+    value: V4Asset[]
+}
+
+export interface V4Instruction_RefundSurplus {
+    __kind: 'RefundSurplus'
+}
+
+export interface V4Instruction_ReportError {
+    __kind: 'ReportError'
+    value: V4QueryResponseInfo
+}
+
+export interface V4Instruction_ReportHolding {
+    __kind: 'ReportHolding'
+    responseInfo: V4QueryResponseInfo
+    assets: V4AssetFilter
+}
+
+export interface V4Instruction_ReportTransactStatus {
+    __kind: 'ReportTransactStatus'
+    value: V4QueryResponseInfo
+}
+
+export interface V4Instruction_RequestUnlock {
+    __kind: 'RequestUnlock'
+    asset: V4Asset
+    locker: V4Location
+}
+
+export interface V4Instruction_ReserveAssetDeposited {
+    __kind: 'ReserveAssetDeposited'
+    value: V4Asset[]
+}
+
+export interface V4Instruction_SetAppendix {
+    __kind: 'SetAppendix'
+    value: V4Instruction[]
+}
+
+export interface V4Instruction_SetErrorHandler {
+    __kind: 'SetErrorHandler'
+    value: V4Instruction[]
+}
+
+export interface V4Instruction_SetFeesMode {
+    __kind: 'SetFeesMode'
+    jitWithdraw: boolean
+}
+
+export interface V4Instruction_SetTopic {
+    __kind: 'SetTopic'
+    value: Bytes
+}
+
+export interface V4Instruction_SubscribeVersion {
+    __kind: 'SubscribeVersion'
+    queryId: bigint
+    maxResponseWeight: Weight
+}
+
+export interface V4Instruction_Transact {
+    __kind: 'Transact'
+    originKind: V3OriginKind
+    requireWeightAtMost: Weight
+    call: DoubleEncoded
+}
+
+export interface V4Instruction_TransferAsset {
+    __kind: 'TransferAsset'
+    assets: V4Asset[]
+    beneficiary: V4Location
+}
+
+export interface V4Instruction_TransferReserveAsset {
+    __kind: 'TransferReserveAsset'
+    assets: V4Asset[]
+    dest: V4Location
+    xcm: V4Instruction[]
+}
+
+export interface V4Instruction_Trap {
+    __kind: 'Trap'
+    value: bigint
+}
+
+export interface V4Instruction_UniversalOrigin {
+    __kind: 'UniversalOrigin'
+    value: V4Junction
+}
+
+export interface V4Instruction_UnlockAsset {
+    __kind: 'UnlockAsset'
+    asset: V4Asset
+    target: V4Location
+}
+
+export interface V4Instruction_UnpaidExecution {
+    __kind: 'UnpaidExecution'
+    weightLimit: V3WeightLimit
+    checkOrigin?: V4Location | undefined
+}
+
+export interface V4Instruction_UnsubscribeVersion {
+    __kind: 'UnsubscribeVersion'
+}
+
+export interface V4Instruction_WithdrawAsset {
+    __kind: 'WithdrawAsset'
+    value: V4Asset[]
+}
+
+export type V4AssetFilter = V4AssetFilter_Definite | V4AssetFilter_Wild
+
+export interface V4AssetFilter_Definite {
+    __kind: 'Definite'
+    value: V4Asset[]
+}
+
+export interface V4AssetFilter_Wild {
+    __kind: 'Wild'
+    value: V4WildAsset
+}
+
+export type V4WildAsset = V4WildAsset_All | V4WildAsset_AllCounted | V4WildAsset_AllOf | V4WildAsset_AllOfCounted
+
+export interface V4WildAsset_All {
+    __kind: 'All'
+}
+
+export interface V4WildAsset_AllCounted {
+    __kind: 'AllCounted'
+    value: number
+}
+
+export interface V4WildAsset_AllOf {
+    __kind: 'AllOf'
+    id: V4AssetId
+    fun: V4WildFungibility
+}
+
+export interface V4WildAsset_AllOfCounted {
+    __kind: 'AllOfCounted'
+    id: V4AssetId
+    fun: V4WildFungibility
+    count: number
+}
+
+export type V4WildFungibility = V4WildFungibility_Fungible | V4WildFungibility_NonFungible
+
+export interface V4WildFungibility_Fungible {
+    __kind: 'Fungible'
+}
+
+export interface V4WildFungibility_NonFungible {
+    __kind: 'NonFungible'
+}
 
 export const V4AssetFilter: sts.Type<V4AssetFilter> = sts.closedEnum(() => {
     return {
@@ -12778,135 +15019,142 @@ export const V4WildFungibility: sts.Type<V4WildFungibility> = sts.closedEnum(() 
     }
 })
 
-export type Type_566 =
-    | Type_566_AliasOrigin
-    | Type_566_BurnAsset
-    | Type_566_BuyExecution
-    | Type_566_ClaimAsset
-    | Type_566_ClearError
-    | Type_566_ClearOrigin
-    | Type_566_ClearTopic
-    | Type_566_ClearTransactStatus
-    | Type_566_DepositAsset
-    | Type_566_DepositReserveAsset
-    | Type_566_DescendOrigin
-    | Type_566_ExchangeAsset
-    | Type_566_ExpectAsset
-    | Type_566_ExpectError
-    | Type_566_ExpectOrigin
-    | Type_566_ExpectPallet
-    | Type_566_ExpectTransactStatus
-    | Type_566_ExportMessage
-    | Type_566_HrmpChannelAccepted
-    | Type_566_HrmpChannelClosing
-    | Type_566_HrmpNewChannelOpenRequest
-    | Type_566_InitiateReserveWithdraw
-    | Type_566_InitiateTeleport
-    | Type_566_LockAsset
-    | Type_566_NoteUnlockable
-    | Type_566_QueryPallet
-    | Type_566_QueryResponse
-    | Type_566_ReceiveTeleportedAsset
-    | Type_566_RefundSurplus
-    | Type_566_ReportError
-    | Type_566_ReportHolding
-    | Type_566_ReportTransactStatus
-    | Type_566_RequestUnlock
-    | Type_566_ReserveAssetDeposited
-    | Type_566_SetAppendix
-    | Type_566_SetErrorHandler
-    | Type_566_SetFeesMode
-    | Type_566_SetTopic
-    | Type_566_SubscribeVersion
-    | Type_566_Transact
-    | Type_566_TransferAsset
-    | Type_566_TransferReserveAsset
-    | Type_566_Trap
-    | Type_566_UniversalOrigin
-    | Type_566_UnlockAsset
-    | Type_566_UnpaidExecution
-    | Type_566_UnsubscribeVersion
-    | Type_566_WithdrawAsset
+export const V4Location: sts.Type<V4Location> = sts.struct(() => {
+    return {
+        parents: sts.number(),
+        interior: V4Junctions,
+    }
+})
 
-export interface Type_566_AliasOrigin {
+export type Type_467 =
+    | Type_467_AliasOrigin
+    | Type_467_BurnAsset
+    | Type_467_BuyExecution
+    | Type_467_ClaimAsset
+    | Type_467_ClearError
+    | Type_467_ClearOrigin
+    | Type_467_ClearTopic
+    | Type_467_ClearTransactStatus
+    | Type_467_DepositAsset
+    | Type_467_DepositReserveAsset
+    | Type_467_DescendOrigin
+    | Type_467_ExchangeAsset
+    | Type_467_ExpectAsset
+    | Type_467_ExpectError
+    | Type_467_ExpectOrigin
+    | Type_467_ExpectPallet
+    | Type_467_ExpectTransactStatus
+    | Type_467_ExportMessage
+    | Type_467_HrmpChannelAccepted
+    | Type_467_HrmpChannelClosing
+    | Type_467_HrmpNewChannelOpenRequest
+    | Type_467_InitiateReserveWithdraw
+    | Type_467_InitiateTeleport
+    | Type_467_LockAsset
+    | Type_467_NoteUnlockable
+    | Type_467_QueryPallet
+    | Type_467_QueryResponse
+    | Type_467_ReceiveTeleportedAsset
+    | Type_467_RefundSurplus
+    | Type_467_ReportError
+    | Type_467_ReportHolding
+    | Type_467_ReportTransactStatus
+    | Type_467_RequestUnlock
+    | Type_467_ReserveAssetDeposited
+    | Type_467_SetAppendix
+    | Type_467_SetErrorHandler
+    | Type_467_SetFeesMode
+    | Type_467_SetTopic
+    | Type_467_SubscribeVersion
+    | Type_467_Transact
+    | Type_467_TransferAsset
+    | Type_467_TransferReserveAsset
+    | Type_467_Trap
+    | Type_467_UniversalOrigin
+    | Type_467_UnlockAsset
+    | Type_467_UnpaidExecution
+    | Type_467_UnsubscribeVersion
+    | Type_467_WithdrawAsset
+
+export interface Type_467_AliasOrigin {
     __kind: 'AliasOrigin'
     value: V4Location
 }
 
-export interface Type_566_BurnAsset {
+export interface Type_467_BurnAsset {
     __kind: 'BurnAsset'
     value: V4Asset[]
 }
 
-export interface Type_566_BuyExecution {
+export interface Type_467_BuyExecution {
     __kind: 'BuyExecution'
     fees: V4Asset
     weightLimit: V3WeightLimit
 }
 
-export interface Type_566_ClaimAsset {
+export interface Type_467_ClaimAsset {
     __kind: 'ClaimAsset'
     assets: V4Asset[]
     ticket: V4Location
 }
 
-export interface Type_566_ClearError {
+export interface Type_467_ClearError {
     __kind: 'ClearError'
 }
 
-export interface Type_566_ClearOrigin {
+export interface Type_467_ClearOrigin {
     __kind: 'ClearOrigin'
 }
 
-export interface Type_566_ClearTopic {
+export interface Type_467_ClearTopic {
     __kind: 'ClearTopic'
 }
 
-export interface Type_566_ClearTransactStatus {
+export interface Type_467_ClearTransactStatus {
     __kind: 'ClearTransactStatus'
 }
 
-export interface Type_566_DepositAsset {
+export interface Type_467_DepositAsset {
     __kind: 'DepositAsset'
     assets: V4AssetFilter
     beneficiary: V4Location
 }
 
-export interface Type_566_DepositReserveAsset {
+export interface Type_467_DepositReserveAsset {
     __kind: 'DepositReserveAsset'
     assets: V4AssetFilter
     dest: V4Location
     xcm: V4Instruction[]
 }
 
-export interface Type_566_DescendOrigin {
+export interface Type_467_DescendOrigin {
     __kind: 'DescendOrigin'
     value: V4Junctions
 }
 
-export interface Type_566_ExchangeAsset {
+export interface Type_467_ExchangeAsset {
     __kind: 'ExchangeAsset'
     give: V4AssetFilter
     want: V4Asset[]
     maximal: boolean
 }
 
-export interface Type_566_ExpectAsset {
+export interface Type_467_ExpectAsset {
     __kind: 'ExpectAsset'
     value: V4Asset[]
 }
 
-export interface Type_566_ExpectError {
+export interface Type_467_ExpectError {
     __kind: 'ExpectError'
     value?: [number, V3Error] | undefined
 }
 
-export interface Type_566_ExpectOrigin {
+export interface Type_467_ExpectOrigin {
     __kind: 'ExpectOrigin'
     value?: V4Location | undefined
 }
 
-export interface Type_566_ExpectPallet {
+export interface Type_467_ExpectPallet {
     __kind: 'ExpectPallet'
     index: number
     name: Bytes
@@ -12915,70 +15163,70 @@ export interface Type_566_ExpectPallet {
     minCrateMinor: number
 }
 
-export interface Type_566_ExpectTransactStatus {
+export interface Type_467_ExpectTransactStatus {
     __kind: 'ExpectTransactStatus'
     value: V3MaybeErrorCode
 }
 
-export interface Type_566_ExportMessage {
+export interface Type_467_ExportMessage {
     __kind: 'ExportMessage'
     network: V4NetworkId
     destination: V4Junctions
     xcm: V4Instruction[]
 }
 
-export interface Type_566_HrmpChannelAccepted {
+export interface Type_467_HrmpChannelAccepted {
     __kind: 'HrmpChannelAccepted'
     recipient: number
 }
 
-export interface Type_566_HrmpChannelClosing {
+export interface Type_467_HrmpChannelClosing {
     __kind: 'HrmpChannelClosing'
     initiator: number
     sender: number
     recipient: number
 }
 
-export interface Type_566_HrmpNewChannelOpenRequest {
+export interface Type_467_HrmpNewChannelOpenRequest {
     __kind: 'HrmpNewChannelOpenRequest'
     sender: number
     maxMessageSize: number
     maxCapacity: number
 }
 
-export interface Type_566_InitiateReserveWithdraw {
+export interface Type_467_InitiateReserveWithdraw {
     __kind: 'InitiateReserveWithdraw'
     assets: V4AssetFilter
     reserve: V4Location
     xcm: V4Instruction[]
 }
 
-export interface Type_566_InitiateTeleport {
+export interface Type_467_InitiateTeleport {
     __kind: 'InitiateTeleport'
     assets: V4AssetFilter
     dest: V4Location
     xcm: V4Instruction[]
 }
 
-export interface Type_566_LockAsset {
+export interface Type_467_LockAsset {
     __kind: 'LockAsset'
     asset: V4Asset
     unlocker: V4Location
 }
 
-export interface Type_566_NoteUnlockable {
+export interface Type_467_NoteUnlockable {
     __kind: 'NoteUnlockable'
     asset: V4Asset
     owner: V4Location
 }
 
-export interface Type_566_QueryPallet {
+export interface Type_467_QueryPallet {
     __kind: 'QueryPallet'
     moduleName: Bytes
     responseInfo: V4QueryResponseInfo
 }
 
-export interface Type_566_QueryResponse {
+export interface Type_467_QueryResponse {
     __kind: 'QueryResponse'
     queryId: bigint
     response: V4Response
@@ -12986,120 +15234,120 @@ export interface Type_566_QueryResponse {
     querier?: V4Location | undefined
 }
 
-export interface Type_566_ReceiveTeleportedAsset {
+export interface Type_467_ReceiveTeleportedAsset {
     __kind: 'ReceiveTeleportedAsset'
     value: V4Asset[]
 }
 
-export interface Type_566_RefundSurplus {
+export interface Type_467_RefundSurplus {
     __kind: 'RefundSurplus'
 }
 
-export interface Type_566_ReportError {
+export interface Type_467_ReportError {
     __kind: 'ReportError'
     value: V4QueryResponseInfo
 }
 
-export interface Type_566_ReportHolding {
+export interface Type_467_ReportHolding {
     __kind: 'ReportHolding'
     responseInfo: V4QueryResponseInfo
     assets: V4AssetFilter
 }
 
-export interface Type_566_ReportTransactStatus {
+export interface Type_467_ReportTransactStatus {
     __kind: 'ReportTransactStatus'
     value: V4QueryResponseInfo
 }
 
-export interface Type_566_RequestUnlock {
+export interface Type_467_RequestUnlock {
     __kind: 'RequestUnlock'
     asset: V4Asset
     locker: V4Location
 }
 
-export interface Type_566_ReserveAssetDeposited {
+export interface Type_467_ReserveAssetDeposited {
     __kind: 'ReserveAssetDeposited'
     value: V4Asset[]
 }
 
-export interface Type_566_SetAppendix {
+export interface Type_467_SetAppendix {
     __kind: 'SetAppendix'
-    value: Type_566[]
+    value: Type_467[]
 }
 
-export interface Type_566_SetErrorHandler {
+export interface Type_467_SetErrorHandler {
     __kind: 'SetErrorHandler'
-    value: Type_566[]
+    value: Type_467[]
 }
 
-export interface Type_566_SetFeesMode {
+export interface Type_467_SetFeesMode {
     __kind: 'SetFeesMode'
     jitWithdraw: boolean
 }
 
-export interface Type_566_SetTopic {
+export interface Type_467_SetTopic {
     __kind: 'SetTopic'
     value: Bytes
 }
 
-export interface Type_566_SubscribeVersion {
+export interface Type_467_SubscribeVersion {
     __kind: 'SubscribeVersion'
     queryId: bigint
     maxResponseWeight: Weight
 }
 
-export interface Type_566_Transact {
+export interface Type_467_Transact {
     __kind: 'Transact'
-    originKind: V2OriginKind
+    originKind: V3OriginKind
     requireWeightAtMost: Weight
-    call: Type_560
+    call: Type_464
 }
 
-export interface Type_566_TransferAsset {
+export interface Type_467_TransferAsset {
     __kind: 'TransferAsset'
     assets: V4Asset[]
     beneficiary: V4Location
 }
 
-export interface Type_566_TransferReserveAsset {
+export interface Type_467_TransferReserveAsset {
     __kind: 'TransferReserveAsset'
     assets: V4Asset[]
     dest: V4Location
     xcm: V4Instruction[]
 }
 
-export interface Type_566_Trap {
+export interface Type_467_Trap {
     __kind: 'Trap'
     value: bigint
 }
 
-export interface Type_566_UniversalOrigin {
+export interface Type_467_UniversalOrigin {
     __kind: 'UniversalOrigin'
     value: V4Junction
 }
 
-export interface Type_566_UnlockAsset {
+export interface Type_467_UnlockAsset {
     __kind: 'UnlockAsset'
     asset: V4Asset
     target: V4Location
 }
 
-export interface Type_566_UnpaidExecution {
+export interface Type_467_UnpaidExecution {
     __kind: 'UnpaidExecution'
     weightLimit: V3WeightLimit
     checkOrigin?: V4Location | undefined
 }
 
-export interface Type_566_UnsubscribeVersion {
+export interface Type_467_UnsubscribeVersion {
     __kind: 'UnsubscribeVersion'
 }
 
-export interface Type_566_WithdrawAsset {
+export interface Type_467_WithdrawAsset {
     __kind: 'WithdrawAsset'
     value: V4Asset[]
 }
 
-export const Type_563: sts.Type<Type_563> = sts.closedEnum(() => {
+export const Type_463: sts.Type<Type_463> = sts.closedEnum(() => {
     return {
         AliasOrigin: V3MultiLocation,
         BurnAsset: sts.array(() => V3MultiAsset),
@@ -13200,8 +15448,8 @@ export const Type_563: sts.Type<Type_563> = sts.closedEnum(() => {
             locker: V3MultiLocation,
         }),
         ReserveAssetDeposited: sts.array(() => V3MultiAsset),
-        SetAppendix: sts.array(() => Type_563),
-        SetErrorHandler: sts.array(() => Type_563),
+        SetAppendix: sts.array(() => Type_463),
+        SetErrorHandler: sts.array(() => Type_463),
         SetFeesMode: sts.enumStruct({
             jitWithdraw: sts.boolean(),
         }),
@@ -13211,9 +15459,9 @@ export const Type_563: sts.Type<Type_563> = sts.closedEnum(() => {
             maxResponseWeight: Weight,
         }),
         Transact: sts.enumStruct({
-            originKind: V2OriginKind,
+            originKind: V3OriginKind,
             requireWeightAtMost: Weight,
-            call: Type_560,
+            call: Type_464,
         }),
         TransferAsset: sts.enumStruct({
             assets: sts.array(() => V3MultiAsset),
@@ -13365,7 +15613,7 @@ export const V3Instruction: sts.Type<V3Instruction> = sts.closedEnum(() => {
             maxResponseWeight: Weight,
         }),
         Transact: sts.enumStruct({
-            originKind: V2OriginKind,
+            originKind: V3OriginKind,
             requireWeightAtMost: Weight,
             call: DoubleEncoded,
         }),
@@ -13390,12 +15638,6 @@ export const V3Instruction: sts.Type<V3Instruction> = sts.closedEnum(() => {
         }),
         UnsubscribeVersion: sts.unit(),
         WithdrawAsset: sts.array(() => V3MultiAsset),
-    }
-})
-
-export const DoubleEncoded: sts.Type<DoubleEncoded> = sts.struct(() => {
-    return {
-        encoded: sts.bytes(),
     }
 })
 
@@ -13671,7 +15913,7 @@ export interface V3Instruction_SubscribeVersion {
 
 export interface V3Instruction_Transact {
     __kind: 'Transact'
-    originKind: V2OriginKind
+    originKind: V3OriginKind
     requireWeightAtMost: Weight
     call: DoubleEncoded
 }
@@ -13800,135 +16042,135 @@ export const V3WildFungibility: sts.Type<V3WildFungibility> = sts.closedEnum(() 
     }
 })
 
-export type Type_563 =
-    | Type_563_AliasOrigin
-    | Type_563_BurnAsset
-    | Type_563_BuyExecution
-    | Type_563_ClaimAsset
-    | Type_563_ClearError
-    | Type_563_ClearOrigin
-    | Type_563_ClearTopic
-    | Type_563_ClearTransactStatus
-    | Type_563_DepositAsset
-    | Type_563_DepositReserveAsset
-    | Type_563_DescendOrigin
-    | Type_563_ExchangeAsset
-    | Type_563_ExpectAsset
-    | Type_563_ExpectError
-    | Type_563_ExpectOrigin
-    | Type_563_ExpectPallet
-    | Type_563_ExpectTransactStatus
-    | Type_563_ExportMessage
-    | Type_563_HrmpChannelAccepted
-    | Type_563_HrmpChannelClosing
-    | Type_563_HrmpNewChannelOpenRequest
-    | Type_563_InitiateReserveWithdraw
-    | Type_563_InitiateTeleport
-    | Type_563_LockAsset
-    | Type_563_NoteUnlockable
-    | Type_563_QueryPallet
-    | Type_563_QueryResponse
-    | Type_563_ReceiveTeleportedAsset
-    | Type_563_RefundSurplus
-    | Type_563_ReportError
-    | Type_563_ReportHolding
-    | Type_563_ReportTransactStatus
-    | Type_563_RequestUnlock
-    | Type_563_ReserveAssetDeposited
-    | Type_563_SetAppendix
-    | Type_563_SetErrorHandler
-    | Type_563_SetFeesMode
-    | Type_563_SetTopic
-    | Type_563_SubscribeVersion
-    | Type_563_Transact
-    | Type_563_TransferAsset
-    | Type_563_TransferReserveAsset
-    | Type_563_Trap
-    | Type_563_UniversalOrigin
-    | Type_563_UnlockAsset
-    | Type_563_UnpaidExecution
-    | Type_563_UnsubscribeVersion
-    | Type_563_WithdrawAsset
+export type Type_463 =
+    | Type_463_AliasOrigin
+    | Type_463_BurnAsset
+    | Type_463_BuyExecution
+    | Type_463_ClaimAsset
+    | Type_463_ClearError
+    | Type_463_ClearOrigin
+    | Type_463_ClearTopic
+    | Type_463_ClearTransactStatus
+    | Type_463_DepositAsset
+    | Type_463_DepositReserveAsset
+    | Type_463_DescendOrigin
+    | Type_463_ExchangeAsset
+    | Type_463_ExpectAsset
+    | Type_463_ExpectError
+    | Type_463_ExpectOrigin
+    | Type_463_ExpectPallet
+    | Type_463_ExpectTransactStatus
+    | Type_463_ExportMessage
+    | Type_463_HrmpChannelAccepted
+    | Type_463_HrmpChannelClosing
+    | Type_463_HrmpNewChannelOpenRequest
+    | Type_463_InitiateReserveWithdraw
+    | Type_463_InitiateTeleport
+    | Type_463_LockAsset
+    | Type_463_NoteUnlockable
+    | Type_463_QueryPallet
+    | Type_463_QueryResponse
+    | Type_463_ReceiveTeleportedAsset
+    | Type_463_RefundSurplus
+    | Type_463_ReportError
+    | Type_463_ReportHolding
+    | Type_463_ReportTransactStatus
+    | Type_463_RequestUnlock
+    | Type_463_ReserveAssetDeposited
+    | Type_463_SetAppendix
+    | Type_463_SetErrorHandler
+    | Type_463_SetFeesMode
+    | Type_463_SetTopic
+    | Type_463_SubscribeVersion
+    | Type_463_Transact
+    | Type_463_TransferAsset
+    | Type_463_TransferReserveAsset
+    | Type_463_Trap
+    | Type_463_UniversalOrigin
+    | Type_463_UnlockAsset
+    | Type_463_UnpaidExecution
+    | Type_463_UnsubscribeVersion
+    | Type_463_WithdrawAsset
 
-export interface Type_563_AliasOrigin {
+export interface Type_463_AliasOrigin {
     __kind: 'AliasOrigin'
     value: V3MultiLocation
 }
 
-export interface Type_563_BurnAsset {
+export interface Type_463_BurnAsset {
     __kind: 'BurnAsset'
     value: V3MultiAsset[]
 }
 
-export interface Type_563_BuyExecution {
+export interface Type_463_BuyExecution {
     __kind: 'BuyExecution'
     fees: V3MultiAsset
     weightLimit: V3WeightLimit
 }
 
-export interface Type_563_ClaimAsset {
+export interface Type_463_ClaimAsset {
     __kind: 'ClaimAsset'
     assets: V3MultiAsset[]
     ticket: V3MultiLocation
 }
 
-export interface Type_563_ClearError {
+export interface Type_463_ClearError {
     __kind: 'ClearError'
 }
 
-export interface Type_563_ClearOrigin {
+export interface Type_463_ClearOrigin {
     __kind: 'ClearOrigin'
 }
 
-export interface Type_563_ClearTopic {
+export interface Type_463_ClearTopic {
     __kind: 'ClearTopic'
 }
 
-export interface Type_563_ClearTransactStatus {
+export interface Type_463_ClearTransactStatus {
     __kind: 'ClearTransactStatus'
 }
 
-export interface Type_563_DepositAsset {
+export interface Type_463_DepositAsset {
     __kind: 'DepositAsset'
     assets: V3MultiAssetFilter
     beneficiary: V3MultiLocation
 }
 
-export interface Type_563_DepositReserveAsset {
+export interface Type_463_DepositReserveAsset {
     __kind: 'DepositReserveAsset'
     assets: V3MultiAssetFilter
     dest: V3MultiLocation
     xcm: V3Instruction[]
 }
 
-export interface Type_563_DescendOrigin {
+export interface Type_463_DescendOrigin {
     __kind: 'DescendOrigin'
     value: V3Junctions
 }
 
-export interface Type_563_ExchangeAsset {
+export interface Type_463_ExchangeAsset {
     __kind: 'ExchangeAsset'
     give: V3MultiAssetFilter
     want: V3MultiAsset[]
     maximal: boolean
 }
 
-export interface Type_563_ExpectAsset {
+export interface Type_463_ExpectAsset {
     __kind: 'ExpectAsset'
     value: V3MultiAsset[]
 }
 
-export interface Type_563_ExpectError {
+export interface Type_463_ExpectError {
     __kind: 'ExpectError'
     value?: [number, V3Error] | undefined
 }
 
-export interface Type_563_ExpectOrigin {
+export interface Type_463_ExpectOrigin {
     __kind: 'ExpectOrigin'
     value?: V3MultiLocation | undefined
 }
 
-export interface Type_563_ExpectPallet {
+export interface Type_463_ExpectPallet {
     __kind: 'ExpectPallet'
     index: number
     name: Bytes
@@ -13937,70 +16179,70 @@ export interface Type_563_ExpectPallet {
     minCrateMinor: number
 }
 
-export interface Type_563_ExpectTransactStatus {
+export interface Type_463_ExpectTransactStatus {
     __kind: 'ExpectTransactStatus'
     value: V3MaybeErrorCode
 }
 
-export interface Type_563_ExportMessage {
+export interface Type_463_ExportMessage {
     __kind: 'ExportMessage'
     network: V3NetworkId
     destination: V3Junctions
     xcm: V3Instruction[]
 }
 
-export interface Type_563_HrmpChannelAccepted {
+export interface Type_463_HrmpChannelAccepted {
     __kind: 'HrmpChannelAccepted'
     recipient: number
 }
 
-export interface Type_563_HrmpChannelClosing {
+export interface Type_463_HrmpChannelClosing {
     __kind: 'HrmpChannelClosing'
     initiator: number
     sender: number
     recipient: number
 }
 
-export interface Type_563_HrmpNewChannelOpenRequest {
+export interface Type_463_HrmpNewChannelOpenRequest {
     __kind: 'HrmpNewChannelOpenRequest'
     sender: number
     maxMessageSize: number
     maxCapacity: number
 }
 
-export interface Type_563_InitiateReserveWithdraw {
+export interface Type_463_InitiateReserveWithdraw {
     __kind: 'InitiateReserveWithdraw'
     assets: V3MultiAssetFilter
     reserve: V3MultiLocation
     xcm: V3Instruction[]
 }
 
-export interface Type_563_InitiateTeleport {
+export interface Type_463_InitiateTeleport {
     __kind: 'InitiateTeleport'
     assets: V3MultiAssetFilter
     dest: V3MultiLocation
     xcm: V3Instruction[]
 }
 
-export interface Type_563_LockAsset {
+export interface Type_463_LockAsset {
     __kind: 'LockAsset'
     asset: V3MultiAsset
     unlocker: V3MultiLocation
 }
 
-export interface Type_563_NoteUnlockable {
+export interface Type_463_NoteUnlockable {
     __kind: 'NoteUnlockable'
     asset: V3MultiAsset
     owner: V3MultiLocation
 }
 
-export interface Type_563_QueryPallet {
+export interface Type_463_QueryPallet {
     __kind: 'QueryPallet'
     moduleName: Bytes
     responseInfo: V3QueryResponseInfo
 }
 
-export interface Type_563_QueryResponse {
+export interface Type_463_QueryResponse {
     __kind: 'QueryResponse'
     queryId: bigint
     response: V3Response
@@ -14008,808 +16250,145 @@ export interface Type_563_QueryResponse {
     querier?: V3MultiLocation | undefined
 }
 
-export interface Type_563_ReceiveTeleportedAsset {
+export interface Type_463_ReceiveTeleportedAsset {
     __kind: 'ReceiveTeleportedAsset'
     value: V3MultiAsset[]
 }
 
-export interface Type_563_RefundSurplus {
+export interface Type_463_RefundSurplus {
     __kind: 'RefundSurplus'
 }
 
-export interface Type_563_ReportError {
+export interface Type_463_ReportError {
     __kind: 'ReportError'
     value: V3QueryResponseInfo
 }
 
-export interface Type_563_ReportHolding {
+export interface Type_463_ReportHolding {
     __kind: 'ReportHolding'
     responseInfo: V3QueryResponseInfo
     assets: V3MultiAssetFilter
 }
 
-export interface Type_563_ReportTransactStatus {
+export interface Type_463_ReportTransactStatus {
     __kind: 'ReportTransactStatus'
     value: V3QueryResponseInfo
 }
 
-export interface Type_563_RequestUnlock {
+export interface Type_463_RequestUnlock {
     __kind: 'RequestUnlock'
     asset: V3MultiAsset
     locker: V3MultiLocation
 }
 
-export interface Type_563_ReserveAssetDeposited {
+export interface Type_463_ReserveAssetDeposited {
     __kind: 'ReserveAssetDeposited'
     value: V3MultiAsset[]
 }
 
-export interface Type_563_SetAppendix {
+export interface Type_463_SetAppendix {
     __kind: 'SetAppendix'
-    value: Type_563[]
+    value: Type_463[]
 }
 
-export interface Type_563_SetErrorHandler {
+export interface Type_463_SetErrorHandler {
     __kind: 'SetErrorHandler'
-    value: Type_563[]
+    value: Type_463[]
 }
 
-export interface Type_563_SetFeesMode {
+export interface Type_463_SetFeesMode {
     __kind: 'SetFeesMode'
     jitWithdraw: boolean
 }
 
-export interface Type_563_SetTopic {
+export interface Type_463_SetTopic {
     __kind: 'SetTopic'
     value: Bytes
 }
 
-export interface Type_563_SubscribeVersion {
+export interface Type_463_SubscribeVersion {
     __kind: 'SubscribeVersion'
     queryId: bigint
     maxResponseWeight: Weight
 }
 
-export interface Type_563_Transact {
+export interface Type_463_Transact {
     __kind: 'Transact'
-    originKind: V2OriginKind
+    originKind: V3OriginKind
     requireWeightAtMost: Weight
-    call: Type_560
+    call: Type_464
 }
 
-export interface Type_563_TransferAsset {
+export interface Type_463_TransferAsset {
     __kind: 'TransferAsset'
     assets: V3MultiAsset[]
     beneficiary: V3MultiLocation
 }
 
-export interface Type_563_TransferReserveAsset {
+export interface Type_463_TransferReserveAsset {
     __kind: 'TransferReserveAsset'
     assets: V3MultiAsset[]
     dest: V3MultiLocation
     xcm: V3Instruction[]
 }
 
-export interface Type_563_Trap {
+export interface Type_463_Trap {
     __kind: 'Trap'
     value: bigint
 }
 
-export interface Type_563_UniversalOrigin {
+export interface Type_463_UniversalOrigin {
     __kind: 'UniversalOrigin'
     value: V3Junction
 }
 
-export interface Type_563_UnlockAsset {
+export interface Type_463_UnlockAsset {
     __kind: 'UnlockAsset'
     asset: V3MultiAsset
     target: V3MultiLocation
 }
 
-export interface Type_563_UnpaidExecution {
+export interface Type_463_UnpaidExecution {
     __kind: 'UnpaidExecution'
     weightLimit: V3WeightLimit
     checkOrigin?: V3MultiLocation | undefined
 }
 
-export interface Type_563_UnsubscribeVersion {
+export interface Type_463_UnsubscribeVersion {
     __kind: 'UnsubscribeVersion'
 }
 
-export interface Type_563_WithdrawAsset {
+export interface Type_463_WithdrawAsset {
     __kind: 'WithdrawAsset'
     value: V3MultiAsset[]
 }
 
-export const Type_559: sts.Type<Type_559> = sts.closedEnum(() => {
-    return {
-        BuyExecution: sts.enumStruct({
-            fees: V2MultiAsset,
-            weightLimit: V2WeightLimit,
-        }),
-        ClaimAsset: sts.enumStruct({
-            assets: sts.array(() => V2MultiAsset),
-            ticket: V2MultiLocation,
-        }),
-        ClearError: sts.unit(),
-        ClearOrigin: sts.unit(),
-        DepositAsset: sts.enumStruct({
-            assets: V2MultiAssetFilter,
-            maxAssets: sts.number(),
-            beneficiary: V2MultiLocation,
-        }),
-        DepositReserveAsset: sts.enumStruct({
-            assets: V2MultiAssetFilter,
-            maxAssets: sts.number(),
-            dest: V2MultiLocation,
-            xcm: sts.array(() => V2Instruction),
-        }),
-        DescendOrigin: V2Junctions,
-        ExchangeAsset: sts.enumStruct({
-            give: V2MultiAssetFilter,
-            receive: sts.array(() => V2MultiAsset),
-        }),
-        HrmpChannelAccepted: sts.enumStruct({
-            recipient: sts.number(),
-        }),
-        HrmpChannelClosing: sts.enumStruct({
-            initiator: sts.number(),
-            sender: sts.number(),
-            recipient: sts.number(),
-        }),
-        HrmpNewChannelOpenRequest: sts.enumStruct({
-            sender: sts.number(),
-            maxMessageSize: sts.number(),
-            maxCapacity: sts.number(),
-        }),
-        InitiateReserveWithdraw: sts.enumStruct({
-            assets: V2MultiAssetFilter,
-            reserve: V2MultiLocation,
-            xcm: sts.array(() => V2Instruction),
-        }),
-        InitiateTeleport: sts.enumStruct({
-            assets: V2MultiAssetFilter,
-            dest: V2MultiLocation,
-            xcm: sts.array(() => V2Instruction),
-        }),
-        QueryHolding: sts.enumStruct({
-            queryId: sts.bigint(),
-            dest: V2MultiLocation,
-            assets: V2MultiAssetFilter,
-            maxResponseWeight: sts.bigint(),
-        }),
-        QueryResponse: sts.enumStruct({
-            queryId: sts.bigint(),
-            response: V2Response,
-            maxWeight: sts.bigint(),
-        }),
-        ReceiveTeleportedAsset: sts.array(() => V2MultiAsset),
-        RefundSurplus: sts.unit(),
-        ReportError: sts.enumStruct({
-            queryId: sts.bigint(),
-            dest: V2MultiLocation,
-            maxResponseWeight: sts.bigint(),
-        }),
-        ReserveAssetDeposited: sts.array(() => V2MultiAsset),
-        SetAppendix: sts.array(() => Type_559),
-        SetErrorHandler: sts.array(() => Type_559),
-        SubscribeVersion: sts.enumStruct({
-            queryId: sts.bigint(),
-            maxResponseWeight: sts.bigint(),
-        }),
-        Transact: sts.enumStruct({
-            originType: V2OriginKind,
-            requireWeightAtMost: sts.bigint(),
-            call: Type_560,
-        }),
-        TransferAsset: sts.enumStruct({
-            assets: sts.array(() => V2MultiAsset),
-            beneficiary: V2MultiLocation,
-        }),
-        TransferReserveAsset: sts.enumStruct({
-            assets: sts.array(() => V2MultiAsset),
-            dest: V2MultiLocation,
-            xcm: sts.array(() => V2Instruction),
-        }),
-        Trap: sts.bigint(),
-        UnsubscribeVersion: sts.unit(),
-        WithdrawAsset: sts.array(() => V2MultiAsset),
-    }
-})
+export type Type_460 = Type_460_V3 | Type_460_V4 | Type_460_V5
 
-export const V2Instruction: sts.Type<V2Instruction> = sts.closedEnum(() => {
-    return {
-        BuyExecution: sts.enumStruct({
-            fees: V2MultiAsset,
-            weightLimit: V2WeightLimit,
-        }),
-        ClaimAsset: sts.enumStruct({
-            assets: sts.array(() => V2MultiAsset),
-            ticket: V2MultiLocation,
-        }),
-        ClearError: sts.unit(),
-        ClearOrigin: sts.unit(),
-        DepositAsset: sts.enumStruct({
-            assets: V2MultiAssetFilter,
-            maxAssets: sts.number(),
-            beneficiary: V2MultiLocation,
-        }),
-        DepositReserveAsset: sts.enumStruct({
-            assets: V2MultiAssetFilter,
-            maxAssets: sts.number(),
-            dest: V2MultiLocation,
-            xcm: sts.array(() => V2Instruction),
-        }),
-        DescendOrigin: V2Junctions,
-        ExchangeAsset: sts.enumStruct({
-            give: V2MultiAssetFilter,
-            receive: sts.array(() => V2MultiAsset),
-        }),
-        HrmpChannelAccepted: sts.enumStruct({
-            recipient: sts.number(),
-        }),
-        HrmpChannelClosing: sts.enumStruct({
-            initiator: sts.number(),
-            sender: sts.number(),
-            recipient: sts.number(),
-        }),
-        HrmpNewChannelOpenRequest: sts.enumStruct({
-            sender: sts.number(),
-            maxMessageSize: sts.number(),
-            maxCapacity: sts.number(),
-        }),
-        InitiateReserveWithdraw: sts.enumStruct({
-            assets: V2MultiAssetFilter,
-            reserve: V2MultiLocation,
-            xcm: sts.array(() => V2Instruction),
-        }),
-        InitiateTeleport: sts.enumStruct({
-            assets: V2MultiAssetFilter,
-            dest: V2MultiLocation,
-            xcm: sts.array(() => V2Instruction),
-        }),
-        QueryHolding: sts.enumStruct({
-            queryId: sts.bigint(),
-            dest: V2MultiLocation,
-            assets: V2MultiAssetFilter,
-            maxResponseWeight: sts.bigint(),
-        }),
-        QueryResponse: sts.enumStruct({
-            queryId: sts.bigint(),
-            response: V2Response,
-            maxWeight: sts.bigint(),
-        }),
-        ReceiveTeleportedAsset: sts.array(() => V2MultiAsset),
-        RefundSurplus: sts.unit(),
-        ReportError: sts.enumStruct({
-            queryId: sts.bigint(),
-            dest: V2MultiLocation,
-            maxResponseWeight: sts.bigint(),
-        }),
-        ReserveAssetDeposited: sts.array(() => V2MultiAsset),
-        SetAppendix: sts.array(() => V2Instruction),
-        SetErrorHandler: sts.array(() => V2Instruction),
-        SubscribeVersion: sts.enumStruct({
-            queryId: sts.bigint(),
-            maxResponseWeight: sts.bigint(),
-        }),
-        Transact: sts.enumStruct({
-            originType: V2OriginKind,
-            requireWeightAtMost: sts.bigint(),
-            call: DoubleEncoded,
-        }),
-        TransferAsset: sts.enumStruct({
-            assets: sts.array(() => V2MultiAsset),
-            beneficiary: V2MultiLocation,
-        }),
-        TransferReserveAsset: sts.enumStruct({
-            assets: sts.array(() => V2MultiAsset),
-            dest: V2MultiLocation,
-            xcm: sts.array(() => V2Instruction),
-        }),
-        Trap: sts.bigint(),
-        UnsubscribeVersion: sts.unit(),
-        WithdrawAsset: sts.array(() => V2MultiAsset),
-    }
-})
-
-export type V2Instruction =
-    | V2Instruction_BuyExecution
-    | V2Instruction_ClaimAsset
-    | V2Instruction_ClearError
-    | V2Instruction_ClearOrigin
-    | V2Instruction_DepositAsset
-    | V2Instruction_DepositReserveAsset
-    | V2Instruction_DescendOrigin
-    | V2Instruction_ExchangeAsset
-    | V2Instruction_HrmpChannelAccepted
-    | V2Instruction_HrmpChannelClosing
-    | V2Instruction_HrmpNewChannelOpenRequest
-    | V2Instruction_InitiateReserveWithdraw
-    | V2Instruction_InitiateTeleport
-    | V2Instruction_QueryHolding
-    | V2Instruction_QueryResponse
-    | V2Instruction_ReceiveTeleportedAsset
-    | V2Instruction_RefundSurplus
-    | V2Instruction_ReportError
-    | V2Instruction_ReserveAssetDeposited
-    | V2Instruction_SetAppendix
-    | V2Instruction_SetErrorHandler
-    | V2Instruction_SubscribeVersion
-    | V2Instruction_Transact
-    | V2Instruction_TransferAsset
-    | V2Instruction_TransferReserveAsset
-    | V2Instruction_Trap
-    | V2Instruction_UnsubscribeVersion
-    | V2Instruction_WithdrawAsset
-
-export interface V2Instruction_BuyExecution {
-    __kind: 'BuyExecution'
-    fees: V2MultiAsset
-    weightLimit: V2WeightLimit
-}
-
-export interface V2Instruction_ClaimAsset {
-    __kind: 'ClaimAsset'
-    assets: V2MultiAsset[]
-    ticket: V2MultiLocation
-}
-
-export interface V2Instruction_ClearError {
-    __kind: 'ClearError'
-}
-
-export interface V2Instruction_ClearOrigin {
-    __kind: 'ClearOrigin'
-}
-
-export interface V2Instruction_DepositAsset {
-    __kind: 'DepositAsset'
-    assets: V2MultiAssetFilter
-    maxAssets: number
-    beneficiary: V2MultiLocation
-}
-
-export interface V2Instruction_DepositReserveAsset {
-    __kind: 'DepositReserveAsset'
-    assets: V2MultiAssetFilter
-    maxAssets: number
-    dest: V2MultiLocation
-    xcm: V2Instruction[]
-}
-
-export interface V2Instruction_DescendOrigin {
-    __kind: 'DescendOrigin'
-    value: V2Junctions
-}
-
-export interface V2Instruction_ExchangeAsset {
-    __kind: 'ExchangeAsset'
-    give: V2MultiAssetFilter
-    receive: V2MultiAsset[]
-}
-
-export interface V2Instruction_HrmpChannelAccepted {
-    __kind: 'HrmpChannelAccepted'
-    recipient: number
-}
-
-export interface V2Instruction_HrmpChannelClosing {
-    __kind: 'HrmpChannelClosing'
-    initiator: number
-    sender: number
-    recipient: number
-}
-
-export interface V2Instruction_HrmpNewChannelOpenRequest {
-    __kind: 'HrmpNewChannelOpenRequest'
-    sender: number
-    maxMessageSize: number
-    maxCapacity: number
-}
-
-export interface V2Instruction_InitiateReserveWithdraw {
-    __kind: 'InitiateReserveWithdraw'
-    assets: V2MultiAssetFilter
-    reserve: V2MultiLocation
-    xcm: V2Instruction[]
-}
-
-export interface V2Instruction_InitiateTeleport {
-    __kind: 'InitiateTeleport'
-    assets: V2MultiAssetFilter
-    dest: V2MultiLocation
-    xcm: V2Instruction[]
-}
-
-export interface V2Instruction_QueryHolding {
-    __kind: 'QueryHolding'
-    queryId: bigint
-    dest: V2MultiLocation
-    assets: V2MultiAssetFilter
-    maxResponseWeight: bigint
-}
-
-export interface V2Instruction_QueryResponse {
-    __kind: 'QueryResponse'
-    queryId: bigint
-    response: V2Response
-    maxWeight: bigint
-}
-
-export interface V2Instruction_ReceiveTeleportedAsset {
-    __kind: 'ReceiveTeleportedAsset'
-    value: V2MultiAsset[]
-}
-
-export interface V2Instruction_RefundSurplus {
-    __kind: 'RefundSurplus'
-}
-
-export interface V2Instruction_ReportError {
-    __kind: 'ReportError'
-    queryId: bigint
-    dest: V2MultiLocation
-    maxResponseWeight: bigint
-}
-
-export interface V2Instruction_ReserveAssetDeposited {
-    __kind: 'ReserveAssetDeposited'
-    value: V2MultiAsset[]
-}
-
-export interface V2Instruction_SetAppendix {
-    __kind: 'SetAppendix'
-    value: V2Instruction[]
-}
-
-export interface V2Instruction_SetErrorHandler {
-    __kind: 'SetErrorHandler'
-    value: V2Instruction[]
-}
-
-export interface V2Instruction_SubscribeVersion {
-    __kind: 'SubscribeVersion'
-    queryId: bigint
-    maxResponseWeight: bigint
-}
-
-export interface V2Instruction_Transact {
-    __kind: 'Transact'
-    originType: V2OriginKind
-    requireWeightAtMost: bigint
-    call: DoubleEncoded
-}
-
-export interface V2Instruction_TransferAsset {
-    __kind: 'TransferAsset'
-    assets: V2MultiAsset[]
-    beneficiary: V2MultiLocation
-}
-
-export interface V2Instruction_TransferReserveAsset {
-    __kind: 'TransferReserveAsset'
-    assets: V2MultiAsset[]
-    dest: V2MultiLocation
-    xcm: V2Instruction[]
-}
-
-export interface V2Instruction_Trap {
-    __kind: 'Trap'
-    value: bigint
-}
-
-export interface V2Instruction_UnsubscribeVersion {
-    __kind: 'UnsubscribeVersion'
-}
-
-export interface V2Instruction_WithdrawAsset {
-    __kind: 'WithdrawAsset'
-    value: V2MultiAsset[]
-}
-
-export type V2MultiAssetFilter = V2MultiAssetFilter_Definite | V2MultiAssetFilter_Wild
-
-export interface V2MultiAssetFilter_Definite {
-    __kind: 'Definite'
-    value: V2MultiAsset[]
-}
-
-export interface V2MultiAssetFilter_Wild {
-    __kind: 'Wild'
-    value: V2WildMultiAsset
-}
-
-export type V2WildMultiAsset = V2WildMultiAsset_All | V2WildMultiAsset_AllOf
-
-export interface V2WildMultiAsset_All {
-    __kind: 'All'
-}
-
-export interface V2WildMultiAsset_AllOf {
-    __kind: 'AllOf'
-    id: V2AssetId
-    fun: V2WildFungibility
-}
-
-export type V2WildFungibility = V2WildFungibility_Fungible | V2WildFungibility_NonFungible
-
-export interface V2WildFungibility_Fungible {
-    __kind: 'Fungible'
-}
-
-export interface V2WildFungibility_NonFungible {
-    __kind: 'NonFungible'
-}
-
-export type V2WeightLimit = V2WeightLimit_Limited | V2WeightLimit_Unlimited
-
-export interface V2WeightLimit_Limited {
-    __kind: 'Limited'
-    value: bigint
-}
-
-export interface V2WeightLimit_Unlimited {
-    __kind: 'Unlimited'
-}
-
-export const V2MultiAssetFilter: sts.Type<V2MultiAssetFilter> = sts.closedEnum(() => {
-    return {
-        Definite: sts.array(() => V2MultiAsset),
-        Wild: V2WildMultiAsset,
-    }
-})
-
-export const V2WildMultiAsset: sts.Type<V2WildMultiAsset> = sts.closedEnum(() => {
-    return {
-        All: sts.unit(),
-        AllOf: sts.enumStruct({
-            id: V2AssetId,
-            fun: V2WildFungibility,
-        }),
-    }
-})
-
-export const V2WildFungibility: sts.Type<V2WildFungibility> = sts.closedEnum(() => {
-    return {
-        Fungible: sts.unit(),
-        NonFungible: sts.unit(),
-    }
-})
-
-export const V2WeightLimit: sts.Type<V2WeightLimit> = sts.closedEnum(() => {
-    return {
-        Limited: sts.bigint(),
-        Unlimited: sts.unit(),
-    }
-})
-
-export type Type_559 =
-    | Type_559_BuyExecution
-    | Type_559_ClaimAsset
-    | Type_559_ClearError
-    | Type_559_ClearOrigin
-    | Type_559_DepositAsset
-    | Type_559_DepositReserveAsset
-    | Type_559_DescendOrigin
-    | Type_559_ExchangeAsset
-    | Type_559_HrmpChannelAccepted
-    | Type_559_HrmpChannelClosing
-    | Type_559_HrmpNewChannelOpenRequest
-    | Type_559_InitiateReserveWithdraw
-    | Type_559_InitiateTeleport
-    | Type_559_QueryHolding
-    | Type_559_QueryResponse
-    | Type_559_ReceiveTeleportedAsset
-    | Type_559_RefundSurplus
-    | Type_559_ReportError
-    | Type_559_ReserveAssetDeposited
-    | Type_559_SetAppendix
-    | Type_559_SetErrorHandler
-    | Type_559_SubscribeVersion
-    | Type_559_Transact
-    | Type_559_TransferAsset
-    | Type_559_TransferReserveAsset
-    | Type_559_Trap
-    | Type_559_UnsubscribeVersion
-    | Type_559_WithdrawAsset
-
-export interface Type_559_BuyExecution {
-    __kind: 'BuyExecution'
-    fees: V2MultiAsset
-    weightLimit: V2WeightLimit
-}
-
-export interface Type_559_ClaimAsset {
-    __kind: 'ClaimAsset'
-    assets: V2MultiAsset[]
-    ticket: V2MultiLocation
-}
-
-export interface Type_559_ClearError {
-    __kind: 'ClearError'
-}
-
-export interface Type_559_ClearOrigin {
-    __kind: 'ClearOrigin'
-}
-
-export interface Type_559_DepositAsset {
-    __kind: 'DepositAsset'
-    assets: V2MultiAssetFilter
-    maxAssets: number
-    beneficiary: V2MultiLocation
-}
-
-export interface Type_559_DepositReserveAsset {
-    __kind: 'DepositReserveAsset'
-    assets: V2MultiAssetFilter
-    maxAssets: number
-    dest: V2MultiLocation
-    xcm: V2Instruction[]
-}
-
-export interface Type_559_DescendOrigin {
-    __kind: 'DescendOrigin'
-    value: V2Junctions
-}
-
-export interface Type_559_ExchangeAsset {
-    __kind: 'ExchangeAsset'
-    give: V2MultiAssetFilter
-    receive: V2MultiAsset[]
-}
-
-export interface Type_559_HrmpChannelAccepted {
-    __kind: 'HrmpChannelAccepted'
-    recipient: number
-}
-
-export interface Type_559_HrmpChannelClosing {
-    __kind: 'HrmpChannelClosing'
-    initiator: number
-    sender: number
-    recipient: number
-}
-
-export interface Type_559_HrmpNewChannelOpenRequest {
-    __kind: 'HrmpNewChannelOpenRequest'
-    sender: number
-    maxMessageSize: number
-    maxCapacity: number
-}
-
-export interface Type_559_InitiateReserveWithdraw {
-    __kind: 'InitiateReserveWithdraw'
-    assets: V2MultiAssetFilter
-    reserve: V2MultiLocation
-    xcm: V2Instruction[]
-}
-
-export interface Type_559_InitiateTeleport {
-    __kind: 'InitiateTeleport'
-    assets: V2MultiAssetFilter
-    dest: V2MultiLocation
-    xcm: V2Instruction[]
-}
-
-export interface Type_559_QueryHolding {
-    __kind: 'QueryHolding'
-    queryId: bigint
-    dest: V2MultiLocation
-    assets: V2MultiAssetFilter
-    maxResponseWeight: bigint
-}
-
-export interface Type_559_QueryResponse {
-    __kind: 'QueryResponse'
-    queryId: bigint
-    response: V2Response
-    maxWeight: bigint
-}
-
-export interface Type_559_ReceiveTeleportedAsset {
-    __kind: 'ReceiveTeleportedAsset'
-    value: V2MultiAsset[]
-}
-
-export interface Type_559_RefundSurplus {
-    __kind: 'RefundSurplus'
-}
-
-export interface Type_559_ReportError {
-    __kind: 'ReportError'
-    queryId: bigint
-    dest: V2MultiLocation
-    maxResponseWeight: bigint
-}
-
-export interface Type_559_ReserveAssetDeposited {
-    __kind: 'ReserveAssetDeposited'
-    value: V2MultiAsset[]
-}
-
-export interface Type_559_SetAppendix {
-    __kind: 'SetAppendix'
-    value: Type_559[]
-}
-
-export interface Type_559_SetErrorHandler {
-    __kind: 'SetErrorHandler'
-    value: Type_559[]
-}
-
-export interface Type_559_SubscribeVersion {
-    __kind: 'SubscribeVersion'
-    queryId: bigint
-    maxResponseWeight: bigint
-}
-
-export interface Type_559_Transact {
-    __kind: 'Transact'
-    originType: V2OriginKind
-    requireWeightAtMost: bigint
-    call: Type_560
-}
-
-export interface Type_559_TransferAsset {
-    __kind: 'TransferAsset'
-    assets: V2MultiAsset[]
-    beneficiary: V2MultiLocation
-}
-
-export interface Type_559_TransferReserveAsset {
-    __kind: 'TransferReserveAsset'
-    assets: V2MultiAsset[]
-    dest: V2MultiLocation
-    xcm: V2Instruction[]
-}
-
-export interface Type_559_Trap {
-    __kind: 'Trap'
-    value: bigint
-}
-
-export interface Type_559_UnsubscribeVersion {
-    __kind: 'UnsubscribeVersion'
-}
-
-export interface Type_559_WithdrawAsset {
-    __kind: 'WithdrawAsset'
-    value: V2MultiAsset[]
-}
-
-export type Type_556 = Type_556_V2 | Type_556_V3 | Type_556_V4
-
-export interface Type_556_V2 {
-    __kind: 'V2'
-    value: Type_559[]
-}
-
-export interface Type_556_V3 {
+export interface Type_460_V3 {
     __kind: 'V3'
-    value: Type_563[]
+    value: Type_463[]
 }
 
-export interface Type_556_V4 {
+export interface Type_460_V4 {
     __kind: 'V4'
-    value: Type_566[]
+    value: Type_467[]
+}
+
+export interface Type_460_V5 {
+    __kind: 'V5'
+    value: Type_470[]
 }
 
 export const VersionedXcm: sts.Type<VersionedXcm> = sts.closedEnum(() => {
     return {
-        V2: sts.array(() => V2Instruction),
         V3: sts.array(() => V3Instruction),
         V4: sts.array(() => V4Instruction),
+        V5: sts.array(() => V5Instruction),
     }
 })
 
-export type VersionedXcm = VersionedXcm_V2 | VersionedXcm_V3 | VersionedXcm_V4
-
-export interface VersionedXcm_V2 {
-    __kind: 'V2'
-    value: V2Instruction[]
-}
+export type VersionedXcm = VersionedXcm_V3 | VersionedXcm_V4 | VersionedXcm_V5
 
 export interface VersionedXcm_V3 {
     __kind: 'V3'
@@ -14821,11 +16400,60 @@ export interface VersionedXcm_V4 {
     value: V4Instruction[]
 }
 
-export const V6InherentData: sts.Type<V6InherentData> = sts.struct(() => {
+export interface VersionedXcm_V5 {
+    __kind: 'V5'
+    value: V5Instruction[]
+}
+
+export const MembershipProof: sts.Type<MembershipProof> = sts.struct(() => {
     return {
-        bitfields: sts.array(() => V6UncheckedSigned),
-        backedCandidates: sts.array(() => V6BackedCandidate),
-        disputes: sts.array(() => V6DisputeStatementSet),
+        session: sts.number(),
+        trieNodes: sts.array(() => sts.bytes()),
+        validatorCount: sts.number(),
+    }
+})
+
+export interface MembershipProof {
+    session: number
+    trieNodes: Bytes[]
+    validatorCount: number
+}
+
+export const DisputeProof: sts.Type<DisputeProof> = sts.struct(() => {
+    return {
+        timeSlot: V8DisputesTimeSlot,
+        kind: DisputeOffenceKind,
+        validatorIndex: V8ValidatorIndex,
+        validatorId: V8Public,
+    }
+})
+
+export const V8DisputesTimeSlot: sts.Type<V8DisputesTimeSlot> = sts.struct(() => {
+    return {
+        sessionIndex: sts.number(),
+        candidateHash: CandidateHash,
+    }
+})
+
+export interface V8DisputesTimeSlot {
+    sessionIndex: number
+    candidateHash: CandidateHash
+}
+
+export interface DisputeProof {
+    timeSlot: V8DisputesTimeSlot
+    kind: DisputeOffenceKind
+    validatorIndex: V8ValidatorIndex
+    validatorId: V8Public
+}
+
+export const ValidationCode = sts.bytes()
+
+export const InherentData: sts.Type<InherentData> = sts.struct(() => {
+    return {
+        bitfields: sts.array(() => V8UncheckedSigned),
+        backedCandidates: sts.array(() => BackedCandidate),
+        disputes: sts.array(() => V8DisputeStatementSet),
         parentHeader: Header,
     }
 })
@@ -14899,128 +16527,101 @@ export interface Header {
     digest: Digest
 }
 
-export const V6BackedCandidate: sts.Type<V6BackedCandidate> = sts.struct(() => {
+export const BackedCandidate: sts.Type<BackedCandidate> = sts.struct(() => {
     return {
-        candidate: V6CommittedCandidateReceipt,
-        validityVotes: sts.array(() => V6ValidityAttestation),
+        candidate: CommittedCandidateReceiptV2,
+        validityVotes: sts.array(() => V8ValidityAttestation),
         validatorIndices: sts.bitseq(),
     }
 })
 
-export const V6CommittedCandidateReceipt: sts.Type<V6CommittedCandidateReceipt> = sts.struct(() => {
+export const CommittedCandidateReceiptV2: sts.Type<CommittedCandidateReceiptV2> = sts.struct(() => {
     return {
-        descriptor: V6CandidateDescriptor,
-        commitments: V6CandidateCommitments,
+        descriptor: CandidateDescriptorV2,
+        commitments: V8CandidateCommitments,
     }
 })
 
-export const V6CandidateCommitments: sts.Type<V6CandidateCommitments> = sts.struct(() => {
-    return {
-        upwardMessages: sts.array(() => sts.bytes()),
-        horizontalMessages: sts.array(() => OutboundHrmpMessage),
-        newValidationCode: sts.option(() => ValidationCode),
-        headData: HeadData,
-        processedDownwardMessages: sts.number(),
-        hrmpWatermark: sts.number(),
-    }
-})
-
-export const ValidationCode = sts.bytes()
-
-export const OutboundHrmpMessage: sts.Type<OutboundHrmpMessage> = sts.struct(() => {
-    return {
-        recipient: Id,
-        data: sts.bytes(),
-    }
-})
-
-export interface OutboundHrmpMessage {
-    recipient: Id
-    data: Bytes
+export interface CommittedCandidateReceiptV2 {
+    descriptor: CandidateDescriptorV2
+    commitments: V8CandidateCommitments
 }
 
-export interface V6CandidateCommitments {
-    upwardMessages: Bytes[]
-    horizontalMessages: OutboundHrmpMessage[]
-    newValidationCode?: ValidationCode | undefined
-    headData: HeadData
-    processedDownwardMessages: number
-    hrmpWatermark: number
-}
-
-export type ValidationCode = Bytes
-
-export interface V6CommittedCandidateReceipt {
-    descriptor: V6CandidateDescriptor
-    commitments: V6CandidateCommitments
-}
-
-export interface V6BackedCandidate {
-    candidate: V6CommittedCandidateReceipt
-    validityVotes: V6ValidityAttestation[]
+export interface BackedCandidate {
+    candidate: CommittedCandidateReceiptV2
+    validityVotes: V8ValidityAttestation[]
     validatorIndices: BitSequence
 }
 
-export const V6UncheckedSigned: sts.Type<V6UncheckedSigned> = sts.struct(() => {
+export const V8UncheckedSigned: sts.Type<V8UncheckedSigned> = sts.struct(() => {
     return {
-        payload: V6AvailabilityBitfield,
-        validatorIndex: V6ValidatorIndex,
-        signature: sts.bytes(),
+        payload: V8AvailabilityBitfield,
+        validatorIndex: V8ValidatorIndex,
+        signature: V8Signature,
     }
 })
 
-export const V6AvailabilityBitfield = sts.bitseq()
+export const V8AvailabilityBitfield = sts.bitseq()
 
-export interface V6UncheckedSigned {
-    payload: V6AvailabilityBitfield
-    validatorIndex: V6ValidatorIndex
-    signature: Bytes
+export interface V8UncheckedSigned {
+    payload: V8AvailabilityBitfield
+    validatorIndex: V8ValidatorIndex
+    signature: V8Signature
 }
 
-export type V6AvailabilityBitfield = BitSequence
+export type V8AvailabilityBitfield = BitSequence
 
-export interface V6InherentData {
-    bitfields: V6UncheckedSigned[]
-    backedCandidates: V6BackedCandidate[]
-    disputes: V6DisputeStatementSet[]
+export interface InherentData {
+    bitfields: V8UncheckedSigned[]
+    backedCandidates: BackedCandidate[]
+    disputes: V8DisputeStatementSet[]
     parentHeader: Header
 }
 
-export const V6ExecutorParam: sts.Type<V6ExecutorParam> = sts.closedEnum(() => {
+export const PayoutRewardsPayload: sts.Type<PayoutRewardsPayload> = sts.struct(() => {
     return {
-        MaxMemoryPages: sts.number(),
-        PrecheckingMaxMemory: sts.bigint(),
-        PvfExecTimeout: sts.tuple(() => [V6PvfExecKind, sts.bigint()]),
-        PvfPrepTimeout: sts.tuple(() => [V6PvfPrepKind, sts.bigint()]),
-        StackLogicalMax: sts.number(),
-        StackNativeMax: sts.number(),
-        WasmExtBulkMemory: sts.unit(),
+        validatorStash: AccountId32,
+        era: sts.number(),
+        blockNumber: sts.number(),
+        public: MultiSigner,
+        signerAccount: AccountId32,
     }
 })
 
-export const V6PvfPrepKind: sts.Type<V6PvfPrepKind> = sts.closedEnum(() => {
+export const MultiSigner: sts.Type<MultiSigner> = sts.closedEnum(() => {
     return {
-        Precheck: sts.unit(),
-        Prepare: sts.unit(),
+        Ecdsa: sts.bytes(),
+        Ed25519: sts.bytes(),
+        Sr25519: sts.bytes(),
     }
 })
 
-export const V6PvfExecKind: sts.Type<V6PvfExecKind> = sts.closedEnum(() => {
-    return {
-        Approval: sts.unit(),
-        Backing: sts.unit(),
-    }
-})
+export type MultiSigner = MultiSigner_Ecdsa | MultiSigner_Ed25519 | MultiSigner_Sr25519
 
-export const StakingInfo: sts.Type<StakingInfo> = sts.struct(() => {
-    return {
-        annualInflationRate: Perbill,
-        collatorPayoutCut: Perbill,
-        treasuryPayoutCut: Perbill,
-    }
-})
+export interface MultiSigner_Ecdsa {
+    __kind: 'Ecdsa'
+    value: Bytes
+}
 
-export const Type_415: sts.Type<Type_415> = sts.closedEnum(() => {
+export interface MultiSigner_Ed25519 {
+    __kind: 'Ed25519'
+    value: Bytes
+}
+
+export interface MultiSigner_Sr25519 {
+    __kind: 'Sr25519'
+    value: Bytes
+}
+
+export interface PayoutRewardsPayload {
+    validatorStash: AccountId32
+    era: number
+    blockNumber: number
+    public: MultiSigner
+    signerAccount: AccountId32
+}
+
+export const Type_333: sts.Type<Type_333> = sts.closedEnum(() => {
     return {
         Noop: sts.unit(),
         Remove: sts.unit(),
@@ -15028,72 +16629,22 @@ export const Type_415: sts.Type<Type_415> = sts.closedEnum(() => {
     }
 })
 
-export type Type_415 = Type_415_Noop | Type_415_Remove | Type_415_Set
+export type Type_333 = Type_333_Noop | Type_333_Remove | Type_333_Set
 
-export interface Type_415_Noop {
+export interface Type_333_Noop {
     __kind: 'Noop'
 }
 
-export interface Type_415_Remove {
+export interface Type_333_Remove {
     __kind: 'Remove'
 }
 
-export interface Type_415_Set {
+export interface Type_333_Set {
     __kind: 'Set'
     value: Perbill
 }
 
-export const Type_414: sts.Type<Type_414> = sts.closedEnum(() => {
-    return {
-        Noop: sts.unit(),
-        Remove: sts.unit(),
-        Set: Percent,
-    }
-})
-
-export const Percent = sts.number()
-
-export type Type_414 = Type_414_Noop | Type_414_Remove | Type_414_Set
-
-export interface Type_414_Noop {
-    __kind: 'Noop'
-}
-
-export interface Type_414_Remove {
-    __kind: 'Remove'
-}
-
-export interface Type_414_Set {
-    __kind: 'Set'
-    value: Percent
-}
-
-export type Percent = number
-
-export const Type_413: sts.Type<Type_413> = sts.closedEnum(() => {
-    return {
-        Noop: sts.unit(),
-        Remove: sts.unit(),
-        Set: sts.number(),
-    }
-})
-
-export type Type_413 = Type_413_Noop | Type_413_Remove | Type_413_Set
-
-export interface Type_413_Noop {
-    __kind: 'Noop'
-}
-
-export interface Type_413_Remove {
-    __kind: 'Remove'
-}
-
-export interface Type_413_Set {
-    __kind: 'Set'
-    value: number
-}
-
-export const ConfigOp: sts.Type<ConfigOp> = sts.closedEnum(() => {
+export const Type_332: sts.Type<Type_332> = sts.closedEnum(() => {
     return {
         Noop: sts.unit(),
         Remove: sts.unit(),
@@ -15101,30 +16652,32 @@ export const ConfigOp: sts.Type<ConfigOp> = sts.closedEnum(() => {
     }
 })
 
-export type ConfigOp = ConfigOp_Noop | ConfigOp_Remove | ConfigOp_Set
+export type Type_332 = Type_332_Noop | Type_332_Remove | Type_332_Set
 
-export interface ConfigOp_Noop {
+export interface Type_332_Noop {
     __kind: 'Noop'
 }
 
-export interface ConfigOp_Remove {
+export interface Type_332_Remove {
     __kind: 'Remove'
 }
 
-export interface ConfigOp_Set {
+export interface Type_332_Set {
     __kind: 'Set'
     value: bigint
 }
+
+export const BoundedVec = sts.bytes()
+
+export const Perbill = sts.number()
 
 export const MultiSignature: sts.Type<MultiSignature> = sts.closedEnum(() => {
     return {
         Ecdsa: sts.bytes(),
         Ed25519: sts.bytes(),
-        Sr25519: Signature,
+        Sr25519: sts.bytes(),
     }
 })
-
-export const Signature = sts.bytes()
 
 export type MultiSignature = MultiSignature_Ecdsa | MultiSignature_Ed25519 | MultiSignature_Sr25519
 
@@ -15140,10 +16693,21 @@ export interface MultiSignature_Ed25519 {
 
 export interface MultiSignature_Sr25519 {
     __kind: 'Sr25519'
-    value: Signature
+    value: Bytes
 }
 
-export type Signature = Bytes
+export const ListingDescriptor: sts.Type<ListingDescriptor> = sts.struct(() => {
+    return {
+        makeAssetId: AssetId,
+        takeAssetId: AssetId,
+        amount: sts.bigint(),
+        price: sts.bigint(),
+        startBlock: sts.option(() => sts.number()),
+        salt: sts.bytes(),
+        usesWhitelist: sts.boolean(),
+        data: ListingData,
+    }
+})
 
 export const ListingData: sts.Type<ListingData> = sts.closedEnum(() => {
     return {
@@ -15161,17 +16725,20 @@ export const OfferData: sts.Type<OfferData> = sts.struct(() => {
 
 export const AuctionData: sts.Type<AuctionData> = sts.struct(() => {
     return {
-        startBlock: sts.number(),
         endBlock: sts.number(),
     }
 })
 
-export const AssetId: sts.Type<AssetId> = sts.struct(() => {
-    return {
-        collectionId: sts.bigint(),
-        tokenId: sts.bigint(),
-    }
-})
+export interface ListingDescriptor {
+    makeAssetId: AssetId
+    takeAssetId: AssetId
+    amount: bigint
+    price: bigint
+    startBlock?: number | undefined
+    salt: Bytes
+    usesWhitelist: boolean
+    data: ListingData
+}
 
 export const RuleSetDescriptor: sts.Type<RuleSetDescriptor> = sts.struct(() => {
     return {
@@ -15183,6 +16750,7 @@ export const RuleSetDescriptor: sts.Type<RuleSetDescriptor> = sts.struct(() => {
 export const DispatchRuleDescriptor: sts.Type<DispatchRuleDescriptor> = sts.closedEnum(() => {
     return {
         MaxFuelBurnPerTransaction: MaxFuelBurnPerTransactionRule,
+        MinimumInfusion: MinimumInfusionRule,
         PermittedCalls: sts.array(() => sts.bytes()),
         PermittedExtrinsics: sts.array(() => Call),
         RequireSignature: RequireSignatureRule,
@@ -15221,6 +16789,7 @@ export interface TankFuelBudgetRuleDescriptor {
 
 export type DispatchRuleDescriptor =
     | DispatchRuleDescriptor_MaxFuelBurnPerTransaction
+    | DispatchRuleDescriptor_MinimumInfusion
     | DispatchRuleDescriptor_PermittedCalls
     | DispatchRuleDescriptor_PermittedExtrinsics
     | DispatchRuleDescriptor_RequireSignature
@@ -15234,6 +16803,11 @@ export type DispatchRuleDescriptor =
 export interface DispatchRuleDescriptor_MaxFuelBurnPerTransaction {
     __kind: 'MaxFuelBurnPerTransaction'
     value: MaxFuelBurnPerTransactionRule
+}
+
+export interface DispatchRuleDescriptor_MinimumInfusion {
+    __kind: 'MinimumInfusion'
+    value: MinimumInfusionRule
 }
 
 export interface DispatchRuleDescriptor_PermittedCalls {
@@ -15289,6 +16863,7 @@ export type Call =
     | Call_Beefy
     | Call_Configuration
     | Call_ConvictionVoting
+    | Call_Coretime
     | Call_Crowdloan
     | Call_ElectionProviderMultiPhase
     | Call_ExtrinsicPause
@@ -15298,7 +16873,6 @@ export type Call =
     | Call_Grandpa
     | Call_Hrmp
     | Call_Identity
-    | Call_ImOnline
     | Call_Initializer
     | Call_Marketplace
     | Call_MessageQueue
@@ -15306,6 +16880,7 @@ export type Call =
     | Call_MultiTokens
     | Call_Multisig
     | Call_NominationPools
+    | Call_OnDemandAssignmentProvider
     | Call_ParaInclusion
     | Call_ParaInherent
     | Call_Paras
@@ -15369,6 +16944,11 @@ export interface Call_ConvictionVoting {
     value: ConvictionVotingCall
 }
 
+export interface Call_Coretime {
+    __kind: 'Coretime'
+    value: CoretimeCall
+}
+
 export interface Call_Crowdloan {
     __kind: 'Crowdloan'
     value: CrowdloanCall
@@ -15414,11 +16994,6 @@ export interface Call_Identity {
     value: IdentityCall
 }
 
-export interface Call_ImOnline {
-    __kind: 'ImOnline'
-    value: ImOnlineCall
-}
-
 export interface Call_Initializer {
     __kind: 'Initializer'
     value: InitializerCall
@@ -15452,6 +17027,11 @@ export interface Call_Multisig {
 export interface Call_NominationPools {
     __kind: 'NominationPools'
     value: NominationPoolsCall
+}
+
+export interface Call_OnDemandAssignmentProvider {
+    __kind: 'OnDemandAssignmentProvider'
+    value: OnDemandAssignmentProviderCall
 }
 
 export interface Call_ParaInclusion {
@@ -15593,6 +17173,7 @@ export interface Call_XcmPallet {
  * Contains a variant per dispatchable extrinsic that this pallet has.
  */
 export type XcmPalletCall =
+    | XcmPalletCall_add_authorized_alias
     | XcmPalletCall_claim_assets
     | XcmPalletCall_execute
     | XcmPalletCall_force_default_xcm_version
@@ -15602,10 +17183,32 @@ export type XcmPalletCall =
     | XcmPalletCall_force_xcm_version
     | XcmPalletCall_limited_reserve_transfer_assets
     | XcmPalletCall_limited_teleport_assets
+    | XcmPalletCall_remove_all_authorized_aliases
+    | XcmPalletCall_remove_authorized_alias
     | XcmPalletCall_reserve_transfer_assets
     | XcmPalletCall_send
     | XcmPalletCall_teleport_assets
     | XcmPalletCall_transfer_assets
+    | XcmPalletCall_transfer_assets_using_type_and_then
+
+/**
+ * Authorize another `aliaser` location to alias into the local `origin` making this call.
+ * The `aliaser` is only authorized until the provided `expiry` block number.
+ * The call can also be used for a previously authorized alias in order to update its
+ * `expiry` block number.
+ *
+ * Usually useful to allow your local account to be aliased into from a remote location
+ * also under your control (like your account on another chain).
+ *
+ * WARNING: make sure the caller `origin` (you) trusts the `aliaser` location to act in
+ * their/your name. Once authorized using this call, the `aliaser` can freely impersonate
+ * `origin` in XCM programs executed on the local chain.
+ */
+export interface XcmPalletCall_add_authorized_alias {
+    __kind: 'add_authorized_alias'
+    aliaser: VersionedLocation
+    expires?: bigint | undefined
+}
 
 /**
  * Claims assets trapped on this pallet because of leftover assets during XCM execution.
@@ -15633,7 +17236,7 @@ export interface XcmPalletCall_claim_assets {
  */
 export interface XcmPalletCall_execute {
     __kind: 'execute'
-    message: Type_556
+    message: Type_460
     maxWeight: Weight
 }
 
@@ -15694,7 +17297,7 @@ export interface XcmPalletCall_force_unsubscribe_version_notify {
  */
 export interface XcmPalletCall_force_xcm_version {
     __kind: 'force_xcm_version'
-    location: V4Location
+    location: V5Location
     version: number
 }
 
@@ -15715,7 +17318,7 @@ export interface XcmPalletCall_force_xcm_version {
  *
  * Fee payment on the destination side is made from the asset in the `assets` vector of
  * index `fee_asset_item`, up to enough to pay for `weight_limit` of weight. If more weight
- * is needed than `weight_limit`, then the operation will fail and the assets send may be
+ * is needed than `weight_limit`, then the operation will fail and the sent assets may be
  * at risk.
  *
  * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
@@ -15744,7 +17347,7 @@ export interface XcmPalletCall_limited_reserve_transfer_assets {
  *
  * Fee payment on the destination side is made from the asset in the `assets` vector of
  * index `fee_asset_item`, up to enough to pay for `weight_limit` of weight. If more weight
- * is needed than `weight_limit`, then the operation will fail and the assets send may be
+ * is needed than `weight_limit`, then the operation will fail and the sent assets may be
  * at risk.
  *
  * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
@@ -15766,6 +17369,23 @@ export interface XcmPalletCall_limited_teleport_assets {
     assets: VersionedAssets
     feeAssetItem: number
     weightLimit: V3WeightLimit
+}
+
+/**
+ * Remove all previously authorized `aliaser`s that can alias into the local `origin`
+ * making this call.
+ */
+export interface XcmPalletCall_remove_all_authorized_aliases {
+    __kind: 'remove_all_authorized_aliases'
+}
+
+/**
+ * Remove a previously authorized `aliaser` from the list of locations that can alias into
+ * the local `origin` making this call.
+ */
+export interface XcmPalletCall_remove_authorized_alias {
+    __kind: 'remove_authorized_alias'
+    aliaser: VersionedLocation
 }
 
 /**
@@ -15849,7 +17469,7 @@ export interface XcmPalletCall_teleport_assets {
  * Fee payment on the destination side is made from the asset in the `assets` vector of
  * index `fee_asset_item` (hence referred to as `fees`), up to enough to pay for
  * `weight_limit` of weight. If more weight is needed than `weight_limit`, then the
- * operation will fail and the assets sent may be at risk.
+ * operation will fail and the sent assets may be at risk.
  *
  * `assets` (excluding `fees`) must have same reserve location or otherwise be teleportable
  * to `dest`, no limitations imposed on `fees`.
@@ -15883,6 +17503,67 @@ export interface XcmPalletCall_transfer_assets {
     beneficiary: VersionedLocation
     assets: VersionedAssets
     feeAssetItem: number
+    weightLimit: V3WeightLimit
+}
+
+/**
+ * Transfer assets from the local chain to the destination chain using explicit transfer
+ * types for assets and fees.
+ *
+ * `assets` must have same reserve location or may be teleportable to `dest`. Caller must
+ * provide the `assets_transfer_type` to be used for `assets`:
+ *  - `TransferType::LocalReserve`: transfer assets to sovereign account of destination
+ *    chain and forward a notification XCM to `dest` to mint and deposit reserve-based
+ *    assets to `beneficiary`.
+ *  - `TransferType::DestinationReserve`: burn local assets and forward a notification to
+ *    `dest` chain to withdraw the reserve assets from this chain's sovereign account and
+ *    deposit them to `beneficiary`.
+ *  - `TransferType::RemoteReserve(reserve)`: burn local assets, forward XCM to `reserve`
+ *    chain to move reserves from this chain's SA to `dest` chain's SA, and forward another
+ *    XCM to `dest` to mint and deposit reserve-based assets to `beneficiary`. Typically
+ *    the remote `reserve` is Asset Hub.
+ *  - `TransferType::Teleport`: burn local assets and forward XCM to `dest` chain to
+ *    mint/teleport assets and deposit them to `beneficiary`.
+ *
+ * On the destination chain, as well as any intermediary hops, `BuyExecution` is used to
+ * buy execution using transferred `assets` identified by `remote_fees_id`.
+ * Make sure enough of the specified `remote_fees_id` asset is included in the given list
+ * of `assets`. `remote_fees_id` should be enough to pay for `weight_limit`. If more weight
+ * is needed than `weight_limit`, then the operation will fail and the sent assets may be
+ * at risk.
+ *
+ * `remote_fees_id` may use different transfer type than rest of `assets` and can be
+ * specified through `fees_transfer_type`.
+ *
+ * The caller needs to specify what should happen to the transferred assets once they reach
+ * the `dest` chain. This is done through the `custom_xcm_on_dest` parameter, which
+ * contains the instructions to execute on `dest` as a final step.
+ *   This is usually as simple as:
+ *   `Xcm(vec![DepositAsset { assets: Wild(AllCounted(assets.len())), beneficiary }])`,
+ *   but could be something more exotic like sending the `assets` even further.
+ *
+ * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
+ * - `dest`: Destination context for the assets. Will typically be `[Parent,
+ *   Parachain(..)]` to send from parachain to parachain, or `[Parachain(..)]` to send from
+ *   relay to parachain, or `(parents: 2, (GlobalConsensus(..), ..))` to send from
+ *   parachain across a bridge to another ecosystem destination.
+ * - `assets`: The assets to be withdrawn. This should include the assets used to pay the
+ *   fee on the `dest` (and possibly reserve) chains.
+ * - `assets_transfer_type`: The XCM `TransferType` used to transfer the `assets`.
+ * - `remote_fees_id`: One of the included `assets` to be used to pay fees.
+ * - `fees_transfer_type`: The XCM `TransferType` used to transfer the `fees` assets.
+ * - `custom_xcm_on_dest`: The XCM to be executed on `dest` chain as the last step of the
+ *   transfer, which also determines what happens to the assets on the destination chain.
+ * - `weight_limit`: The remote-side weight limit, if any, for the XCM fee purchase.
+ */
+export interface XcmPalletCall_transfer_assets_using_type_and_then {
+    __kind: 'transfer_assets_using_type_and_then'
+    dest: VersionedLocation
+    assets: VersionedAssets
+    assetsTransferType: TransferType
+    remoteFeesId: VersionedAssetId
+    feesTransferType: TransferType
+    customXcmOnDest: VersionedXcm
     weightLimit: V3WeightLimit
 }
 
@@ -16149,7 +17830,9 @@ export type UtilityCall =
     | UtilityCall_batch
     | UtilityCall_batch_all
     | UtilityCall_dispatch_as
+    | UtilityCall_dispatch_as_fallible
     | UtilityCall_force_batch
+    | UtilityCall_if_else
     | UtilityCall_with_weight
 
 /**
@@ -16233,6 +17916,19 @@ export interface UtilityCall_dispatch_as {
 }
 
 /**
+ * Dispatches a function call with a provided origin.
+ *
+ * Almost the same as [`Pallet::dispatch_as`] but forwards any error of the inner call.
+ *
+ * The dispatch origin for this call must be _Root_.
+ */
+export interface UtilityCall_dispatch_as_fallible {
+    __kind: 'dispatch_as_fallible'
+    asOrigin: OriginCaller
+    call: Call
+}
+
+/**
  * Send a batch of dispatch calls.
  * Unlike `batch`, it allows errors and won't interrupt.
  *
@@ -16253,6 +17949,37 @@ export interface UtilityCall_force_batch {
 }
 
 /**
+ * Dispatch a fallback call in the event the main call fails to execute.
+ * May be called from any origin except `None`.
+ *
+ * This function first attempts to dispatch the `main` call.
+ * If the `main` call fails, the `fallback` is attemted.
+ * if the fallback is successfully dispatched, the weights of both calls
+ * are accumulated and an event containing the main call error is deposited.
+ *
+ * In the event of a fallback failure the whole call fails
+ * with the weights returned.
+ *
+ * - `main`: The main call to be dispatched. This is the primary action to execute.
+ * - `fallback`: The fallback call to be dispatched in case the `main` call fails.
+ *
+ * ## Dispatch Logic
+ * - If the origin is `root`, both the main and fallback calls are executed without
+ *   applying any origin filters.
+ * - If the origin is not `root`, the origin filter is applied to both the `main` and
+ *   `fallback` calls.
+ *
+ * ## Use Case
+ * - Some use cases might involve submitting a `batch` type call in either main, fallback
+ *   or both.
+ */
+export interface UtilityCall_if_else {
+    __kind: 'if_else'
+    main: Call
+    fallback: Call
+}
+
+/**
  * Dispatch a function call with a specified weight.
  *
  * This function does not check the weight of the call, and instead allows the
@@ -16270,39 +17997,12 @@ export interface UtilityCall_with_weight {
  * Contains a variant per dispatchable extrinsic that this pallet has.
  */
 export type TreasuryCall =
-    | TreasuryCall_approve_proposal
     | TreasuryCall_check_status
     | TreasuryCall_payout
-    | TreasuryCall_propose_spend
-    | TreasuryCall_reject_proposal
     | TreasuryCall_remove_approval
     | TreasuryCall_spend
     | TreasuryCall_spend_local
     | TreasuryCall_void_spend
-
-/**
- * Approve a proposal.
- *
- * ## Dispatch Origin
- *
- * Must be [`Config::ApproveOrigin`].
- *
- * ## Details
- *
- * At a later time, the proposal will be allocated to the beneficiary and the original
- * deposit will be returned.
- *
- * ### Complexity
- *  - O(1).
- *
- * ## Events
- *
- * No events are emitted from this dispatch.
- */
-export interface TreasuryCall_approve_proposal {
-    __kind: 'approve_proposal'
-    proposalId: number
-}
 
 /**
  * Check the status of the spend and remove it from the storage if processed.
@@ -16335,7 +18035,7 @@ export interface TreasuryCall_check_status {
  *
  * ## Dispatch Origin
  *
- * Must be signed.
+ * Must be signed
  *
  * ## Details
  *
@@ -16354,52 +18054,6 @@ export interface TreasuryCall_check_status {
 export interface TreasuryCall_payout {
     __kind: 'payout'
     index: number
-}
-
-/**
- * Put forward a suggestion for spending.
- *
- * ## Dispatch Origin
- *
- * Must be signed.
- *
- * ## Details
- * A deposit proportional to the value is reserved and slashed if the proposal is rejected.
- * It is returned once the proposal is awarded.
- *
- * ### Complexity
- * - O(1)
- *
- * ## Events
- *
- * Emits [`Event::Proposed`] if successful.
- */
-export interface TreasuryCall_propose_spend {
-    __kind: 'propose_spend'
-    value: bigint
-    beneficiary: MultiAddress
-}
-
-/**
- * Reject a proposed spend.
- *
- * ## Dispatch Origin
- *
- * Must be [`Config::RejectOrigin`].
- *
- * ## Details
- * The original deposit will be slashed.
- *
- * ### Complexity
- * - O(1)
- *
- * ## Events
- *
- * Emits [`Event::Rejected`] if successful.
- */
-export interface TreasuryCall_reject_proposal {
-    __kind: 'reject_proposal'
-    proposalId: number
 }
 
 /**
@@ -16753,11 +18407,14 @@ export type StakingCall =
     | StakingCall_force_unstake
     | StakingCall_increase_validator_count
     | StakingCall_kick
+    | StakingCall_manual_slash
+    | StakingCall_migrate_currency
     | StakingCall_nominate
     | StakingCall_payout_stakers
     | StakingCall_payout_stakers_by_page
     | StakingCall_reap_stash
     | StakingCall_rebond
+    | StakingCall_restore_ledger
     | StakingCall_scale_validator_count
     | StakingCall_set_controller
     | StakingCall_set_invulnerables
@@ -16785,7 +18442,8 @@ export type StakingCall =
  * - Three extra DB entries.
  *
  * NOTE: Two of the storage writes (`Self::bonded`, `Self::payee`) are _never_ cleaned
- * unless the `origin` falls below _existential deposit_ and gets removed as dust.
+ * unless the `origin` falls below _existential deposit_ (or equal to 0) and gets removed
+ * as dust.
  */
 export interface StakingCall_bond {
     __kind: 'bond'
@@ -16820,6 +18478,7 @@ export interface StakingCall_bond_extra {
  * Can be called by the `T::AdminOrigin`.
  *
  * Parameters: era and indices of the slashes for that era to kill.
+ * They **must** be sorted in ascending order, *and* unique.
  */
 export interface StakingCall_cancel_deferred_slash {
     __kind: 'cancel_deferred_slash'
@@ -16971,7 +18630,7 @@ export interface StakingCall_force_unstake {
 }
 
 /**
- * Increments the ideal number of validators upto maximum of
+ * Increments the ideal number of validators up to maximum of
  * `ElectionProviderBase::MaxWinners`.
  *
  * The dispatch origin must be Root.
@@ -17000,6 +18659,50 @@ export interface StakingCall_increase_validator_count {
 export interface StakingCall_kick {
     __kind: 'kick'
     who: MultiAddress[]
+}
+
+/**
+ * This function allows governance to manually slash a validator and is a
+ * **fallback mechanism**.
+ *
+ * The dispatch origin must be `T::AdminOrigin`.
+ *
+ * ## Parameters
+ * - `validator_stash` - The stash account of the validator to slash.
+ * - `era` - The era in which the validator was in the active set.
+ * - `slash_fraction` - The percentage of the stake to slash, expressed as a Perbill.
+ *
+ * ## Behavior
+ *
+ * The slash will be applied using the standard slashing mechanics, respecting the
+ * configured `SlashDeferDuration`.
+ *
+ * This means:
+ * - If the validator was already slashed by a higher percentage for the same era, this
+ *   slash will have no additional effect.
+ * - If the validator was previously slashed by a lower percentage, only the difference
+ *   will be applied.
+ * - The slash will be deferred by `SlashDeferDuration` eras before being enacted.
+ */
+export interface StakingCall_manual_slash {
+    __kind: 'manual_slash'
+    validatorStash: AccountId32
+    era: number
+    slashFraction: Perbill
+}
+
+/**
+ * Removes the legacy Staking locks if they exist.
+ *
+ * This removes the legacy lock on the stake with [`Config::OldCurrency`] and creates a
+ * hold on it if needed. If all stake cannot be held, the best effort is made to hold as
+ * much as possible. The remaining stake is forced withdrawn from the ledger.
+ *
+ * The fee is waived if the migration is successful.
+ */
+export interface StakingCall_migrate_currency {
+    __kind: 'migrate_currency'
+    stash: AccountId32
 }
 
 /**
@@ -17072,6 +18775,7 @@ export interface StakingCall_payout_stakers_by_page {
  *
  * 1. the `total_balance` of the stash is below existential deposit.
  * 2. or, the `ledger.total` of the stash is below existential deposit.
+ * 3. or, existential deposit is zero and either `total_balance` or `ledger.total` is zero.
  *
  * The former can happen in cases like a slash; the latter when a fully unbonded account
  * is still receiving staking rewards in `RewardDestination::Staked`.
@@ -17106,7 +18810,28 @@ export interface StakingCall_rebond {
 }
 
 /**
- * Scale up the ideal number of validators by a factor upto maximum of
+ * Restores the state of a ledger which is in an inconsistent state.
+ *
+ * The requirements to restore a ledger are the following:
+ * * The stash is bonded; or
+ * * The stash is not bonded but it has a staking lock left behind; or
+ * * If the stash has an associated ledger and its state is inconsistent; or
+ * * If the ledger is not corrupted *but* its staking lock is out of sync.
+ *
+ * The `maybe_*` input parameters will overwrite the corresponding data and metadata of the
+ * ledger associated with the stash. If the input parameters are not set, the ledger will
+ * be reset values from on-chain state.
+ */
+export interface StakingCall_restore_ledger {
+    __kind: 'restore_ledger'
+    stash: AccountId32
+    maybeController?: AccountId32 | undefined
+    maybeTotal?: bigint | undefined
+    maybeUnlocking?: UnlockChunk[] | undefined
+}
+
+/**
+ * Scale up the ideal number of validators by a factor up to maximum of
  * `ElectionProviderBase::MaxWinners`.
  *
  * The dispatch origin must be Root.
@@ -17202,11 +18927,11 @@ export interface StakingCall_set_staking_configs {
     __kind: 'set_staking_configs'
     minNominatorBond: ConfigOp
     minValidatorBond: ConfigOp
-    maxNominatorCount: Type_413
-    maxValidatorCount: Type_413
-    chillThreshold: Type_414
-    minCommission: Type_415
-    maxStakedRewards: Type_414
+    maxNominatorCount: Type_304
+    maxValidatorCount: Type_304
+    chillThreshold: Type_305
+    minCommission: Type_306
+    maxStakedRewards: Type_305
 }
 
 /**
@@ -17225,7 +18950,9 @@ export interface StakingCall_set_validator_count {
 /**
  * Schedule a portion of the stash to be unlocked ready for transfer out after the bond
  * period ends. If this leaves an amount actively bonded less than
- * T::Currency::minimum_balance(), then it is increased to the full amount.
+ * [`asset::existential_deposit`], then it is increased to the full amount.
+ *
+ * The stash may be chilled if the ledger total amount falls to 0 after unbonding.
  *
  * The dispatch origin for this call must be _Signed_ by the controller, not the stash.
  *
@@ -17291,7 +19018,7 @@ export interface StakingCall_validate {
  * this call results in a complete removal of all the data related to the stash account.
  * In this case, the `num_slashing_spans` must be larger or equal to the number of
  * slashing spans associated with the stash account in the [`SlashingSpans`] storage type,
- * otherwise the call will fail. The call weight is directly propotional to
+ * otherwise the call will fail. The call weight is directly proportional to
  * `num_slashing_spans`.
  *
  * ## Complexity
@@ -17301,6 +19028,73 @@ export interface StakingCall_validate {
 export interface StakingCall_withdraw_unbonded {
     __kind: 'withdraw_unbonded'
     numSlashingSpans: number
+}
+
+export type Type_306 = Type_306_Noop | Type_306_Remove | Type_306_Set
+
+export interface Type_306_Noop {
+    __kind: 'Noop'
+}
+
+export interface Type_306_Remove {
+    __kind: 'Remove'
+}
+
+export interface Type_306_Set {
+    __kind: 'Set'
+    value: Perbill
+}
+
+export type Type_305 = Type_305_Noop | Type_305_Remove | Type_305_Set
+
+export interface Type_305_Noop {
+    __kind: 'Noop'
+}
+
+export interface Type_305_Remove {
+    __kind: 'Remove'
+}
+
+export interface Type_305_Set {
+    __kind: 'Set'
+    value: Percent
+}
+
+export type Type_304 = Type_304_Noop | Type_304_Remove | Type_304_Set
+
+export interface Type_304_Noop {
+    __kind: 'Noop'
+}
+
+export interface Type_304_Remove {
+    __kind: 'Remove'
+}
+
+export interface Type_304_Set {
+    __kind: 'Set'
+    value: number
+}
+
+export type ConfigOp = ConfigOp_Noop | ConfigOp_Remove | ConfigOp_Set
+
+export interface ConfigOp_Noop {
+    __kind: 'Noop'
+}
+
+export interface ConfigOp_Remove {
+    __kind: 'Remove'
+}
+
+export interface ConfigOp_Set {
+    __kind: 'Set'
+    value: bigint
+}
+
+export type Percent = number
+
+export interface UnlockChunk {
+    value: bigint
+    era: number
 }
 
 /**
@@ -17329,7 +19123,8 @@ export interface StakeExchangeCall_add_liquidity {
 
 /**
  * Buy from a current active offer, returning the native currency by exchanging the staked
- * tokens
+ * tokens. If there will be less than [`Config::BuyDustThreshold`] of the staked currency
+ * left in the buyer's account, `amount` will be increased so that no balance remains.
  *
  * # Errors
  * - [`Error::CallerNotOfferCreator`] if the caller account does not match bidding account.
@@ -17481,15 +19276,6 @@ export interface SessionCall_set_keys {
     __kind: 'set_keys'
     keys: SessionKeys
     proof: Bytes
-}
-
-export interface SessionKeys {
-    grandpa: Public
-    babe: Bytes
-    imOnline: Bytes
-    paraValidator: Bytes
-    paraAssignment: Bytes
-    authorityDiscovery: Bytes
 }
 
 /**
@@ -17885,6 +19671,13 @@ export interface RegistrarCall_reserve {
 /**
  * Schedule a parachain upgrade.
  *
+ * This will kick off a check of `new_code` by all validators. After the majority of the
+ * validators have reported on the validity of the code, the code will either be enacted
+ * or the upgrade will be rejected. If the code will be enacted, the current code of the
+ * parachain will be overwritten directly. This means that any PoV will be checked by this
+ * new code. The parachain itself will not be informed explicitly that the validation code
+ * has changed.
+ *
  * Can be called by Root, the parachain, or the parachain manager if the parachain is
  * unlocked.
  */
@@ -18077,6 +19870,7 @@ export type ProxyCall =
     | ProxyCall_announce
     | ProxyCall_create_pure
     | ProxyCall_kill_pure
+    | ProxyCall_poke_deposit
     | ProxyCall_proxy
     | ProxyCall_proxy_announced
     | ProxyCall_reject_announcement
@@ -18162,7 +19956,7 @@ export interface ProxyCall_create_pure {
  * `pure` with corresponding parameters.
  *
  * - `spawner`: The account that originally called `pure` to create this account.
- * - `index`: The disambiguation index originally passed to `pure`. Probably `0`.
+ * - `index`: The disambiguation index originally passed to `create_pure`. Probably `0`.
  * - `proxy_type`: The proxy type originally passed to `pure`.
  * - `height`: The height of the chain when the call to `pure` was processed.
  * - `ext_index`: The extrinsic index in which the call to `pure` was processed.
@@ -18177,6 +19971,20 @@ export interface ProxyCall_kill_pure {
     index: number
     height: number
     extIndex: number
+}
+
+/**
+ * Poke / Adjust deposits made for proxies and announcements based on current values.
+ * This can be used by accounts to possibly lower their locked amount.
+ *
+ * The dispatch origin for this call must be _Signed_.
+ *
+ * The transaction fee is waived if the deposit amount has changed.
+ *
+ * Emits `DepositPoked` if successful.
+ */
+export interface ProxyCall_poke_deposit {
+    __kind: 'poke_deposit'
 }
 
 /**
@@ -18293,7 +20101,7 @@ export type PreimageCall =
     | PreimageCall_unrequest_preimage
 
 /**
- * Ensure that the a bulk of pre-images is upgraded.
+ * Ensure that the bulk of pre-images is upgraded.
  *
  * The caller pays no fee if at least 90% of pre-images were successfully updated.
  */
@@ -18434,36 +20242,8 @@ export type ParasSlashingCall = ParasSlashingCall_report_dispute_lost_unsigned
 
 export interface ParasSlashingCall_report_dispute_lost_unsigned {
     __kind: 'report_dispute_lost_unsigned'
-    disputeProof: V6DisputeProof
+    disputeProof: DisputeProof
     keyOwnerProof: MembershipProof
-}
-
-export interface MembershipProof {
-    session: number
-    trieNodes: Bytes[]
-    validatorCount: number
-}
-
-export interface V6DisputeProof {
-    timeSlot: V6DisputesTimeSlot
-    kind: V6SlashingOffenceKind
-    validatorIndex: V6ValidatorIndex
-    validatorId: Bytes
-}
-
-export type V6SlashingOffenceKind = V6SlashingOffenceKind_AgainstValid | V6SlashingOffenceKind_ForInvalid
-
-export interface V6SlashingOffenceKind_AgainstValid {
-    __kind: 'AgainstValid'
-}
-
-export interface V6SlashingOffenceKind_ForInvalid {
-    __kind: 'ForInvalid'
-}
-
-export interface V6DisputesTimeSlot {
-    sessionIndex: number
-    candidateHash: CandidateHash
 }
 
 /**
@@ -18485,6 +20265,8 @@ export interface ParasDisputesCall_force_unfreeze {
  */
 export type ParasCall =
     | ParasCall_add_trusted_validation_code
+    | ParasCall_apply_authorized_force_set_current_code
+    | ParasCall_authorize_force_set_current_code_hash
     | ParasCall_force_note_new_head
     | ParasCall_force_queue_action
     | ParasCall_force_schedule_code_upgrade
@@ -18493,6 +20275,7 @@ export type ParasCall =
     | ParasCall_force_set_most_recent_context
     | ParasCall_include_pvf_check_statement
     | ParasCall_poke_unused_validation_code
+    | ParasCall_remove_upgrade_cooldown
 
 /**
  * Adds the validation code to the storage.
@@ -18513,6 +20296,36 @@ export type ParasCall =
 export interface ParasCall_add_trusted_validation_code {
     __kind: 'add_trusted_validation_code'
     validationCode: ValidationCode
+}
+
+/**
+ * Applies the already authorized current code for the parachain,
+ * triggering the same functionality as `force_set_current_code`.
+ */
+export interface ParasCall_apply_authorized_force_set_current_code {
+    __kind: 'apply_authorized_force_set_current_code'
+    para: Id
+    newCode: ValidationCode
+}
+
+/**
+ * Sets the storage for the authorized current code hash of the parachain.
+ * If not applied, it will be removed at the `System::block_number() + valid_period` block.
+ *
+ * This can be useful, when triggering `Paras::force_set_current_code(para, code)`
+ * from a different chain than the one where the `Paras` pallet is deployed.
+ *
+ * The main purpose is to avoid transferring the entire `code` Wasm blob between chains.
+ * Instead, we authorize `code_hash` with `root`, which can later be applied by
+ * `Paras::apply_authorized_force_set_current_code(para, code)` by anyone.
+ *
+ * Authorizations are stored in an **overwriting manner**.
+ */
+export interface ParasCall_authorize_force_set_current_code_hash {
+    __kind: 'authorize_force_set_current_code_hash'
+    para: Id
+    newCodeHash: ValidationCodeHash
+    validPeriod: number
 }
 
 /**
@@ -18577,8 +20390,8 @@ export interface ParasCall_force_set_most_recent_context {
  */
 export interface ParasCall_include_pvf_check_statement {
     __kind: 'include_pvf_check_statement'
-    stmt: V6PvfCheckStatement
-    signature: Bytes
+    stmt: V8PvfCheckStatement
+    signature: V8Signature
 }
 
 /**
@@ -18593,11 +20406,22 @@ export interface ParasCall_poke_unused_validation_code {
     validationCodeHash: ValidationCodeHash
 }
 
-export interface V6PvfCheckStatement {
+/**
+ * Remove an upgrade cooldown for a parachain.
+ *
+ * The cost for removing the cooldown earlier depends on the time left for the cooldown
+ * multiplied by [`Config::CooldownRemovalMultiplier`]. The paid tokens are burned.
+ */
+export interface ParasCall_remove_upgrade_cooldown {
+    __kind: 'remove_upgrade_cooldown'
+    para: Id
+}
+
+export interface V8PvfCheckStatement {
     accept: boolean
     subject: ValidationCodeHash
     sessionIndex: number
-    validatorIndex: V6ValidatorIndex
+    validatorIndex: V8ValidatorIndex
 }
 
 /**
@@ -18610,7 +20434,7 @@ export type ParaInherentCall = ParaInherentCall_enter
  */
 export interface ParaInherentCall_enter {
     __kind: 'enter'
-    data: V6InherentData
+    data: InherentData
 }
 
 /**
@@ -18621,24 +20445,102 @@ export type ParaInclusionCall = never
 /**
  * Contains a variant per dispatchable extrinsic that this pallet has.
  */
+export type OnDemandAssignmentProviderCall =
+    | OnDemandAssignmentProviderCall_place_order_allow_death
+    | OnDemandAssignmentProviderCall_place_order_keep_alive
+    | OnDemandAssignmentProviderCall_place_order_with_credits
+
+/**
+ * Create a single on demand core order.
+ * Will use the spot price for the current block and will reap the account if needed.
+ *
+ * Parameters:
+ * - `origin`: The sender of the call, funds will be withdrawn from this account.
+ * - `max_amount`: The maximum balance to withdraw from the origin to place an order.
+ * - `para_id`: A `ParaId` the origin wants to provide blockspace for.
+ *
+ * Errors:
+ * - `InsufficientBalance`: from the Currency implementation
+ * - `QueueFull`
+ * - `SpotPriceHigherThanMaxAmount`
+ *
+ * Events:
+ * - `OnDemandOrderPlaced`
+ */
+export interface OnDemandAssignmentProviderCall_place_order_allow_death {
+    __kind: 'place_order_allow_death'
+    maxAmount: bigint
+    paraId: Id
+}
+
+/**
+ * Same as the [`place_order_allow_death`](Self::place_order_allow_death) call , but with a
+ * check that placing the order will not reap the account.
+ *
+ * Parameters:
+ * - `origin`: The sender of the call, funds will be withdrawn from this account.
+ * - `max_amount`: The maximum balance to withdraw from the origin to place an order.
+ * - `para_id`: A `ParaId` the origin wants to provide blockspace for.
+ *
+ * Errors:
+ * - `InsufficientBalance`: from the Currency implementation
+ * - `QueueFull`
+ * - `SpotPriceHigherThanMaxAmount`
+ *
+ * Events:
+ * - `OnDemandOrderPlaced`
+ */
+export interface OnDemandAssignmentProviderCall_place_order_keep_alive {
+    __kind: 'place_order_keep_alive'
+    maxAmount: bigint
+    paraId: Id
+}
+
+/**
+ * Create a single on demand core order with credits.
+ * Will charge the owner's on-demand credit account the spot price for the current block.
+ *
+ * Parameters:
+ * - `origin`: The sender of the call, on-demand credits will be withdrawn from this
+ *   account.
+ * - `max_amount`: The maximum number of credits to spend from the origin to place an
+ *   order.
+ * - `para_id`: A `ParaId` the origin wants to provide blockspace for.
+ *
+ * Errors:
+ * - `InsufficientCredits`
+ * - `QueueFull`
+ * - `SpotPriceHigherThanMaxAmount`
+ *
+ * Events:
+ * - `OnDemandOrderPlaced`
+ */
+export interface OnDemandAssignmentProviderCall_place_order_with_credits {
+    __kind: 'place_order_with_credits'
+    maxAmount: bigint
+    paraId: Id
+}
+
+/**
+ * Contains a variant per dispatchable extrinsic that this pallet has.
+ */
 export type NominationPoolsCall =
     | NominationPoolsCall_bond
-    | NominationPoolsCall_calculate_early_bird_bonus
-    | NominationPoolsCall_capture_early_bird_bonus_shares
     | NominationPoolsCall_chill
     | NominationPoolsCall_create
     | NominationPoolsCall_destroy
     | NominationPoolsCall_mutate
     | NominationPoolsCall_nominate
-    | NominationPoolsCall_pay_early_bird_bonus
     | NominationPoolsCall_payout_rewards
+    | NominationPoolsCall_payout_rewards_unsigned
+    | NominationPoolsCall_payout_validator_bonus
     | NominationPoolsCall_pool_withdraw_unbonded
-    | NominationPoolsCall_process_payouts
+    | NominationPoolsCall_remove_empty_unbonding_members
     | NominationPoolsCall_set_configs
     | NominationPoolsCall_set_staking_info
+    | NominationPoolsCall_set_validator_bonus_config
     | NominationPoolsCall_unbond
     | NominationPoolsCall_unbond_deposit
-    | NominationPoolsCall_unlock_early_bird_bonus
     | NominationPoolsCall_withdraw_deposit
     | NominationPoolsCall_withdraw_free_balance
     | NominationPoolsCall_withdraw_unbonded
@@ -18668,34 +20570,6 @@ export interface NominationPoolsCall_bond {
 }
 
 /**
- * Calculate and prepare early bird bonus if it is ready to be queued.
- *
- * Callable by any signed origin after [`Config::EarlyBirdBonusDistributionBlock`].
- *
- * ## Details
- *
- * 1. Calculates the normalized weights for each pool by calling
- *    [`Pallet::early_bird_normalized_weight`]. Factors for the weight are each pool's
- *    total points and the creation date.
- * 2. Each pool's weight is multiplied by the total reward to determine each pool's reward.
- * 3. The rewards are stored in [`PoolBonusInfos`] and can be distributed by calling
- *    [`Self::pay_early_bird_bonus`].
- */
-export interface NominationPoolsCall_calculate_early_bird_bonus {
-    __kind: 'calculate_early_bird_bonus'
-    poolCount: number
-}
-
-/**
- * Stores the share of sENJ balance for each account staked in `pool_id`.
- */
-export interface NominationPoolsCall_capture_early_bird_bonus_shares {
-    __kind: 'capture_early_bird_bonus_shares'
-    poolId: number
-    accountCount: number
-}
-
-/**
  * Chill on behalf of the pool.
  *
  * The dispatch origin of this call must be signed by the pool token holder, same as
@@ -18720,20 +20594,18 @@ export interface NominationPoolsCall_chill {
  *   because the pool's creator cannot fully unbond funds until the pool is destroyed.
  * * `capacity` - The maximum total balance allowed in the pool. This is measured in sENJ.
  *   It must be below the pool's capacity. See `Capacity` section in crate level docs.
- * * `duration` - The duration in blocks of the pool's bonus cycle
- *
+ * * `name` - The name of the pool
  * # Note
  *
  * In addition to `deposit`, the caller will transfer the existential deposit for the
- * pool's accounts; so the caller needs at have at least `deposit + existential_deposit *
- * 2` transferable.
+ * pool's accounts; so the caller needs at have at least `deposit + existential_deposit
+ * transferable.
  */
 export interface NominationPoolsCall_create {
     __kind: 'create'
     tokenId: bigint
     deposit: bigint
     capacity: bigint
-    duration: number
     name: BoundedVec
 }
 
@@ -18775,37 +20647,10 @@ export interface NominationPoolsCall_nominate {
 }
 
 /**
- * Pay early bird bonus to pools. The `account_count` parameter is the max number
- * of pool user accounts to be paid in this call.
- *
- * Callable by any signed origin after the bonus has been unlocked
- */
-export interface NominationPoolsCall_pay_early_bird_bonus {
-    __kind: 'pay_early_bird_bonus'
-    poolId: number
-    paymentId: number
-    accountCount: number
-}
-
-/**
  * Pays rewards to `validator_stash` and also distributes rewards to the reward accounts of
- * the pools nominating it. The appropriate bonus is also calculated and stored in the
- * bonus account.
+ * the pools nominating it.
  *
- * This should be called once per era per validator. It is a permissionless call. It also
- * processes rewards for the previous era if [`Self::process_payouts`] was not called.
- *
- * ## Bonus Calculation
- *
- * 1. Minimum duration and max duration are found for all pools nominating
- *    `validator_stash`
- * 2. [`Config::BonusPercentage`] is set aside from rewards for bonus
- * 3. Normalized weight is calculated and then scaled according to the total bonus. See
- *    `functions::calculate_real_weight`.
- * 4. The scaled weight is offset according to [`Config::BaseBonusRewardPercentage`] so
- *    that all pools at least get the minimum weight
- * 5. Final calculation is done in [`traits::Bonus::calculate_bonus`] and then transferred
- *    to the bonus account
+ * This should be called once per era per validator. It is a permissionless call.
  */
 export interface NominationPoolsCall_payout_rewards {
     __kind: 'payout_rewards'
@@ -18814,9 +20659,34 @@ export interface NominationPoolsCall_payout_rewards {
 }
 
 /**
+ * Unsigned transaction to pay rewards to a validator and distribute to pools
+ */
+export interface NominationPoolsCall_payout_rewards_unsigned {
+    __kind: 'payout_rewards_unsigned'
+    payload: PayoutRewardsPayload
+    signature: MultiSignature
+}
+
+/**
+ * Pay out the validator bonus according to the config stored at [`ValidatorBonusInfo`]. It
+ * can only be called at least `cycle_duration` after `last_paid_era`. To receive the
+ * payment, the validators must have a `KnownGood` or `Reasonable` judgement, they must
+ * meet the `performance_threshold`, and they must have participated in
+ * `minimum_good_eras`.
+ *
+ * The payment that is sent is set in `bonus_amounts`, and the actual amount sent varies
+ * according to how many sub-identities the validator has.
+ */
+export interface NominationPoolsCall_payout_validator_bonus {
+    __kind: 'payout_validator_bonus'
+    era: number
+    validatorCount: number
+}
+
+/**
  * Call `withdraw_unbonded` for the pools account. This call can be made by any account.
  *
- * This is useful if their are too many unlocking chunks to call `unbond`, and some
+ * This is useful if there are too many unlocking chunks to call `unbond`, and some
  * can be cleared by withdrawing. In the case there are too many unlocking chunks, the user
  * would probably see an error like `NoMoreChunks` emitted from the staking system when
  * they attempt to unbond.
@@ -18828,22 +20698,11 @@ export interface NominationPoolsCall_pool_withdraw_unbonded {
 }
 
 /**
- * Processes the rewards for all pools that were distributed in [`Self::payout_rewards`].
- * It will only succeed if it is called on the same era that payouts were made. It uses the
- * [`EraPayoutInfo`] storage to verify this. This extrinsic is permissionless.
- *
- * The following is done for each pool:
- * 1. If the pool has reached the end of its cycle, it cycles the pool.
- * 2. Sends bonus for the current era from the bonus account to the rewards account.
- * 3. Sends reward commission to the depositor.
- * 4. It bonds the pool's reward balance.
- *
- * It is not required to call this extrinsic. If it is not called, the rewards will be
- * processed when `payout_rewards` is called in the next era.
+ * Removes `limit` items from `UnbondingMembers` that are empty
  */
-export interface NominationPoolsCall_process_payouts {
-    __kind: 'process_payouts'
-    poolCount: number
+export interface NominationPoolsCall_remove_empty_unbonding_members {
+    __kind: 'remove_empty_unbonding_members'
+    limit: number
 }
 
 /**
@@ -18858,10 +20717,9 @@ export interface NominationPoolsCall_process_payouts {
  */
 export interface NominationPoolsCall_set_configs {
     __kind: 'set_configs'
-    minJoinBond: Type_441
-    minCreateBond: Type_441
-    globalMaxCommission: Type_442
-    requiredPayoutCount: Type_442
+    minJoinBond: Type_332
+    minCreateBond: Type_332
+    globalMaxCommission: Type_333
 }
 
 /**
@@ -18872,6 +20730,20 @@ export interface NominationPoolsCall_set_configs {
 export interface NominationPoolsCall_set_staking_info {
     __kind: 'set_staking_info'
     info: StakingInfo
+}
+
+/**
+ * Sets config values for validator bonuses stored in [`ValidatorBonusInfo`]. The
+ * `last_paid_era` will be set to `0` if `reset_last_paid_era` is true.
+ */
+export interface NominationPoolsCall_set_validator_bonus_config {
+    __kind: 'set_validator_bonus_config'
+    cycleDuration?: number | undefined
+    performanceThreshold?: Perbill | undefined
+    minimumGoodEras?: number | undefined
+    payoutAccount?: AccountId32 | undefined
+    bonusAmounts?: bigint[] | undefined
+    resetLastPaidEra: boolean
 }
 
 /**
@@ -18912,16 +20784,8 @@ export interface NominationPoolsCall_unbond {
 }
 
 /**
- * Unbonds the deposit
- *
- * This call is permissionless but certain conditions must be met before the deposit can
- * be unbonded:
- *
- * - Pool must be in [`PoolState::Destroying`] mode
- * - Deposit points must be the only points in the pool
- * - [`UnbondingMembers`] must be empty
- *
- * This will unbond the deposit from the pool.
+ * Unbonds the deposit from the pool. This call is permissionless and requires the pool to
+ * be in the destroying state.
  */
 export interface NominationPoolsCall_unbond_deposit {
     __kind: 'unbond_deposit'
@@ -18929,18 +20793,10 @@ export interface NominationPoolsCall_unbond_deposit {
 }
 
 /**
- * Unlock early bird bonus to pools. This extrinsic will ensure the
- * EarlyBirdBonusDistributionBlock has passed before the bonus is unlocked.
- * Callable by any signed origin after the bonus has been queued.
- */
-export interface NominationPoolsCall_unlock_early_bird_bonus {
-    __kind: 'unlock_early_bird_bonus'
-}
-
-/**
  * Withdraws the deposit
  *
  * This call is permissionless and should be called after the deposit has been unbonded.
+ * It must be the last balance withdrawn from the pool.
  */
 export interface NominationPoolsCall_withdraw_deposit {
     __kind: 'withdraw_deposit'
@@ -18986,34 +20842,10 @@ export interface NominationPoolsCall_withdraw_unbonded {
     numSlashingSpans: number
 }
 
-export type Type_442 = Type_442_Noop | Type_442_Remove | Type_442_Set
-
-export interface Type_442_Noop {
-    __kind: 'Noop'
-}
-
-export interface Type_442_Remove {
-    __kind: 'Remove'
-}
-
-export interface Type_442_Set {
-    __kind: 'Set'
-    value: Perbill
-}
-
-export type Type_441 = Type_441_Noop | Type_441_Remove | Type_441_Set
-
-export interface Type_441_Noop {
-    __kind: 'Noop'
-}
-
-export interface Type_441_Remove {
-    __kind: 'Remove'
-}
-
-export interface Type_441_Set {
-    __kind: 'Set'
-    value: bigint
+export interface StakingInfo {
+    annualInflationRate: Perbill
+    collatorPayoutCut: Perbill
+    treasuryPayoutCut: Perbill
 }
 
 export type BondValue = BondValue_Amount | BondValue_Fill
@@ -19035,6 +20867,7 @@ export type MultisigCall =
     | MultisigCall_as_multi
     | MultisigCall_as_multi_threshold_1
     | MultisigCall_cancel_as_multi
+    | MultisigCall_poke_deposit
 
 /**
  * Register approval for a dispatch to be made from a deterministic composite account if
@@ -19179,12 +21012,36 @@ export interface MultisigCall_cancel_as_multi {
 }
 
 /**
+ * Poke the deposit reserved for an existing multisig operation.
+ *
+ * The dispatch origin for this call must be _Signed_ and must be the original depositor of
+ * the multisig operation.
+ *
+ * The transaction fee is waived if the deposit amount has changed.
+ *
+ * - `threshold`: The total number of approvals needed for this multisig.
+ * - `other_signatories`: The accounts (other than the sender) who are part of the
+ *   multisig.
+ * - `call_hash`: The hash of the call this deposit is reserved for.
+ *
+ * Emits `DepositPoked` if successful.
+ */
+export interface MultisigCall_poke_deposit {
+    __kind: 'poke_deposit'
+    threshold: number
+    otherSignatories: AccountId32[]
+    callHash: Bytes
+}
+
+/**
  * Contains a variant per dispatchable extrinsic that this pallet has.
  */
 export type MultiTokensCall =
     | MultiTokensCall_accept_collection_transfer
+    | MultiTokensCall_add_token_to_group
     | MultiTokensCall_approve_collection
     | MultiTokensCall_approve_token
+    | MultiTokensCall_batch_infuse
     | MultiTokensCall_batch_mint
     | MultiTokensCall_batch_set_attribute
     | MultiTokensCall_batch_transfer
@@ -19193,7 +21050,9 @@ export type MultiTokensCall =
     | MultiTokensCall_claim_collections
     | MultiTokensCall_claim_tokens
     | MultiTokensCall_create_collection
+    | MultiTokensCall_create_token_group
     | MultiTokensCall_destroy_collection
+    | MultiTokensCall_destroy_token_group
     | MultiTokensCall_finish_claim_tokens
     | MultiTokensCall_force_approve_collection
     | MultiTokensCall_force_burn
@@ -19220,7 +21079,11 @@ export type MultiTokensCall =
     | MultiTokensCall_mutate_token
     | MultiTokensCall_remove_all_attributes
     | MultiTokensCall_remove_attribute
+    | MultiTokensCall_remove_token_from_group
+    | MultiTokensCall_remove_token_group_attribute
     | MultiTokensCall_set_attribute
+    | MultiTokensCall_set_token_group_attribute
+    | MultiTokensCall_set_token_groups
     | MultiTokensCall_thaw
     | MultiTokensCall_transfer
     | MultiTokensCall_unapprove_collection
@@ -19237,7 +21100,29 @@ export interface MultiTokensCall_accept_collection_transfer {
 }
 
 /**
- * Approve the `operator` to manage all of `origin`'s tokens belonging to `collection_id`.
+ * Adds the token to a token group.
+ *
+ * # Errors
+ *
+ * - [`Error::CollectionNotFound`] if `collection_id` does not exist.
+ * - [`Error::TokenNotFound`] if Token does not exist
+ * - [`Error::TokenGroupNotFound`] if `token_group_id` does not exist.
+ * - [`Error::IncompatibleTokenGroup`] if the token and the group are not in the same
+ *   collection.
+ * - [`Error::NoPermission`] if `origin` is not the owner of the collection.
+ * - [`Error::MaxTokenGroupsExceeded`] if the token already belongs to its maximum number
+ *   of groups.
+ * - [`Error::TokenAlreadyInGroup`] if the token already belongs to the group.
+ */
+export interface MultiTokensCall_add_token_to_group {
+    __kind: 'add_token_to_group'
+    collectionId: bigint
+    tokenId: bigint
+    tokenGroupId: bigint
+}
+
+/**
+ * Allow `operator` to manage all of `origin`'s tokens belonging to `collection_id`.
  * If an `expiration` is provided, the approval will end when it expires.
  *
  * # Errors
@@ -19256,10 +21141,13 @@ export interface MultiTokensCall_approve_collection {
 
 /**
  * Approve `operator` to transfer up to `amount` of `caller`'s balance for `token_id` of
- * `collection_id`. An `expiration` can be provided. `current_amount` must match the
- * current approved amount.
+ * `collection_id`. An `expiration` can be provided.
+ *
+ * For security reasons, `current_amount` must match the amount of the previous approval,
+ * or `0` if there's none.
  *
  * # Errors
+ *
  * - [`Error::CannotApproveSelf`] if `origin == operator`
  * - [`Error::CollectionAlreadyApproved`] if `collection_id` is already approved
  * - [`Error::AlreadyExpired`] if `expiration` is earlier than now
@@ -19279,9 +21167,21 @@ export interface MultiTokensCall_approve_token {
 }
 
 /**
+ * Batch version of `infuse`. Supports multiple infusions in a single collection.
+ */
+export interface MultiTokensCall_batch_infuse {
+    __kind: 'batch_infuse'
+    collectionId: bigint
+    infusions: BatchInfusion[]
+}
+
+/**
  * Collection owner mints tokens of `collection_id` to `recipients` consisting of an
  * [`AccountId`](frame_system::Config::AccountId) and [`MintParams`]. A single mint failure
  * will fail all of them in the batch.
+ *
+ * Batch minting is slightly less expensive than performing the same number of mint calls
+ * sequentially.
  *
  * # Errors
  * - [`Error::AmountZero`] if `amount == 0`.
@@ -19295,7 +21195,7 @@ export interface MultiTokensCall_approve_token {
 export interface MultiTokensCall_batch_mint {
     __kind: 'batch_mint'
     collectionId: bigint
-    recipients: Type_597[]
+    recipients: Type_619[]
 }
 
 /**
@@ -19318,12 +21218,14 @@ export interface MultiTokensCall_batch_set_attribute {
     collectionId: bigint
     tokenId?: bigint | undefined
     attributes: AttributeKeyValuePair[]
-    depositor?: MultiAddress | undefined
 }
 
 /**
  * Transfers the specific amount of tokens of `collection` to `recipients` from `origin`
  * account. A single failure will fail all transfers.
+ *
+ * Performs multiple transfers in a single call. Can optionally continue if any calls fail,
+ * depending on the `continueOnFailure` parameter.
  *
  * # Errors
  *
@@ -19348,6 +21250,8 @@ export interface MultiTokensCall_batch_transfer {
  *   unreserve
  * - [`Error::DestroyForbiddenByAttributeCount`] if removing token from storage but the
  *   attribute count is greater than zero
+ * - [`Error::DestroyForbiddenByTokenGroupCount`] if removing token from storage but it is
+ *   still in a group
  */
 export interface MultiTokensCall_burn {
     __kind: 'burn'
@@ -19428,6 +21332,30 @@ export interface MultiTokensCall_claim_tokens {
 /**
  * Creates a new [`Collection`](ep_multi_tokens::Collection) from `descriptor`
  *
+ * See [`CollectionDescriptor`](ep_multi_tokens::DefaultCollectionDescriptor) and
+ * [`CollectionPolicyDescriptor`](ep_multi_tokens::DefaultCollectionPolicyDescriptor)
+ * for more info about specific parameters. The [Mint
+ * Policy](ep_multi_tokens::DefaultMintPolicyDescriptor) has the most parameters.
+ *
+ * **Minting Policy**
+ *
+ * - Max token count (optional)
+ * - Max token supply (optional)
+ * - Force Single Mint
+ *   - If Yes, each token minted in the collection MUST be an NFT with a cap of 1.
+ *
+ * **Royalty (optional)**
+ *
+ *   - Beneficiary address
+ *   - The percentage of marketplace sale royalty that will be sent to the beneficiary.
+ *
+ * **Explicit Royalty Currencies (optional)**
+ *
+ *   Optionally provide a list of tokens (must be currencies).
+ *   - If no currencies are provided here, then ALL currencies are allowed for royalties.
+ *   - If one or more currencies are provided here, they will be whitelisted for use as a
+ *     royalty currency and ONLY this list of currencies will be allowed for royalties.
+ *
  * # Errors
  *
  * - [`Error::DepositReserveFailed`] if the deposit cannot be reserved
@@ -19435,6 +21363,19 @@ export interface MultiTokensCall_claim_tokens {
 export interface MultiTokensCall_create_collection {
     __kind: 'create_collection'
     descriptor: DefaultCollectionDescriptor
+}
+
+/**
+ * Creates a [`TokenGroup`] belonging to `collection_id`
+ *
+ * # Errors
+ *
+ * - [`Error::CollectionNotFound`] if `collection_id` does not exist.
+ * - [`Error::NoPermission`] if `origin` is not the owner of `collection`.
+ */
+export interface MultiTokensCall_create_token_group {
+    __kind: 'create_token_group'
+    collectionId: bigint
 }
 
 /**
@@ -19451,11 +21392,26 @@ export interface MultiTokensCall_create_collection {
  *   destroying
  * - [`Error::DestroyForbiddenByAttributeCount`] if collection still has attributes when
  *   destroying
- * current number of collection attributes.
+ * - [`Error::DestroyForbiddenByTokenGroupCount`] if collection still has token groups
  */
 export interface MultiTokensCall_destroy_collection {
     __kind: 'destroy_collection'
     collectionId: bigint
+}
+
+/**
+ * Destroys a [`TokenGroup`]
+ *
+ * # Errors
+ *
+ * - [`Error::TokenGroupNotFound`] if `token_group_id` does not exist.
+ * - [`Error::NoPermission`] if `origin` is not the owner of the token group's collection.
+ * - [`Error::DestroyForbiddenByRemainingTokens`] if there are still tokens in the group
+ * - [`Error::DestroyForbiddenByAttributeCount`] if there are still attributes in the group
+ */
+export interface MultiTokensCall_destroy_token_group {
+    __kind: 'destroy_token_group'
+    tokenGroupId: bigint
 }
 
 /**
@@ -19503,6 +21459,7 @@ export interface MultiTokensCall_force_create_collection {
     owner: AccountId32
     collectionId: bigint
     descriptor: DefaultCollectionDescriptor
+    depositor?: AccountId32 | undefined
 }
 
 /**
@@ -19690,6 +21647,14 @@ export interface MultiTokensCall_freeze {
 /**
  * Infuses ENJ into the token. The actual amount reserved is amount * supply
  * It is permissionless if the anyone_can_infuse is true
+ *
+ * See [Infusion](crate#infusions)
+ *
+ * The function calculates the total amount to be reserved by multiplying the infusion
+ * amount by the token's supply.
+ *
+ * Note: If the caller is not the collection owner, the infusion amount is transferred from
+ * the caller to the owner. The amount is then reserved in the owner's account.
  */
 export interface MultiTokensCall_infuse {
     __kind: 'infuse'
@@ -19701,6 +21666,22 @@ export interface MultiTokensCall_infuse {
 /**
  * `origin` mints to `recipient` for `collection_id` with `params` using the pallet's
  * [`MintPolicy`](traits::CollectionPolicy::Mint).
+ *
+ * Tokens are minted using [`MintParams`], and it may only be done by the collection's
+ * owner. There are two types of mint operations:
+ *
+ * **Create**
+ *
+ * This must be called the first time a token is being created. Any token id can be chosen
+ * when creating a token. They do not have to be sequential.
+ *
+ * You can specify additional parameters that can apply constraints to the token or give it
+ * a royalty. Some of these values can be changed later using the
+ * [`mutateToken`](Self::mutate_token) extrinsic.
+ *
+ * **Mint**
+ *
+ * After a token is created, you can mint additional balance using this variant.
  *
  * # Errors
  *
@@ -19724,7 +21705,12 @@ export interface MultiTokensCall_mint {
 }
 
 /**
- * Modify [`Collection`](ep_multi_tokens::Collection) with `id` by applying `mutation`
+ * Modify [`Collection`](ep_multi_tokens::Collection) with `id` by applying `mutation`. See
+ * ['CollectionMutation'] for more info.
+ *
+ * A new owner of the collection can be assigned. (optional)
+ * Explicit Royalty Currencies can be set for the entire collection (see the Explicit
+ * Royalty Currencies section for a detailed description)
  *
  * # Errors
  *
@@ -19740,6 +21726,16 @@ export interface MultiTokensCall_mutate_collection {
 /**
  * Modify [`Token`](ep_multi_tokens::Token) with `token_id`  from
  * [`Collection`](ep_multi_tokens::Collection) with `collection_id` by applying `mutation`
+ *
+ * The collection creator/owner can mutate the settings of a token.
+ * See [DefaultTokenMutation](ep_multi_tokens::DefaultTokenMutation) for specific fields
+ * and descriptions.
+ *
+ * Note that `behavior` is a nested option of type
+ * [TokenMarketBehavior](ep_multi_tokens::TokenMarketBehavior). This can either be set to
+ * `None`, a `Currency`, or a royalty.
+ *
+ * All fields are `Optional`, so only set the specific fields you want to change to `Some`.
  *
  * # Errors
  *
@@ -19776,6 +21772,7 @@ export interface MultiTokensCall_remove_all_attributes {
 
 /**
  * Removes the `key` attribute from the given `collection_id` or `token_id`.
+ * Only callable by the collection owner.
  *
  * # Errors
  * - [`Error::InvalidAttributeKey`] if `key.len() == 0`
@@ -19792,9 +21789,43 @@ export interface MultiTokensCall_remove_attribute {
 }
 
 /**
+ * Removes the token from a token group.
+ *
+ * # Errors
+ *
+ * - [`Error::CollectionNotFound`] if `collection_id` does not exist.
+ * - [`Error::TokenNotFound`] if Token does not exist
+ * - [`Error::TokenGroupNotFound`] if `token_group_id` does not exist or the token is not
+ *   part of it.
+ * - [`Error::NoPermission`] if `origin` is not the owner of the collection.
+ */
+export interface MultiTokensCall_remove_token_from_group {
+    __kind: 'remove_token_from_group'
+    collectionId: bigint
+    tokenId: bigint
+    tokenGroupId: bigint
+}
+
+/**
+ * Removes the `key` attribute from the given `token_group_id`.
+ * Only callable by the collection owner.
+ *
+ * # Errors
+ * - [`Error::InvalidAttributeKey`] if `key.len() == 0`
+ * - [`Error::TokenGroupNotFound`] if `token_group_id` does not exist.
+ * - [`Error::NoPermission`] if `caller` is not the owner of the collection.
+ */
+export interface MultiTokensCall_remove_token_group_attribute {
+    __kind: 'remove_token_group_attribute'
+    tokenGroupId: bigint
+    key: Bytes
+}
+
+/**
  * Sets the attribute `key` to `value` for `collection_id`.
  * If `token_id` is [`None`], the attribute is added to the collection. If it is [`Some`],
  * the attribute is added to the token.
+ * Only callable by the collection's owner.
  *
  * # Errors
  * - [`Error::InvalidAttributeKey`] if `key.len() == 0`
@@ -19810,7 +21841,43 @@ export interface MultiTokensCall_set_attribute {
     tokenId?: bigint | undefined
     key: Bytes
     value: Bytes
-    depositor?: MultiAddress | undefined
+}
+
+/**
+ * Sets the attribute `key` to `value` for `token_group_id`.
+ * Only callable by the collection's owner.
+ *
+ * # Errors
+ * - [`Error::InvalidAttributeKey`] if `key.len() == 0`
+ * - [`Error::TokenGroupNotFound`] if `token_group_id` does not exist.
+ * - [`Error::NoPermission`] if `source` account is not the owner of the collection.
+ * - [`Error::DepositReserveFailed`] if unable to reserve the deposit for the attribute
+ *   storage.
+ */
+export interface MultiTokensCall_set_token_group_attribute {
+    __kind: 'set_token_group_attribute'
+    tokenGroupId: bigint
+    key: Bytes
+    value: Bytes
+}
+
+/**
+ * Set the list of [`TokenGroup`] that a token is part of
+ *
+ * # Errors
+ *
+ * - [`Error::CollectionNotFound`] if `collection_id` does not exist.
+ * - [`Error::TokenNotFound`] if Token does not exist
+ * - [`Error::TokenGroupNotFound`] if any token group does not exist.
+ * - [`Error::IncompatibleTokenGroup`] if any group is from a different collection than the
+ *   token.
+ * - [`Error::NoPermission`] if `origin` is not the owner of the collection.
+ */
+export interface MultiTokensCall_set_token_groups {
+    __kind: 'set_token_groups'
+    collectionId: bigint
+    tokenId: bigint
+    tokenGroups: bigint[]
 }
 
 /**
@@ -19823,6 +21890,12 @@ export interface MultiTokensCall_thaw {
 
 /**
  * `operator` transfers to `recipient` for `collection_id` with `params`
+ *
+ * Can accept [`DefaultTransferParams`](ep_multi_tokens::DefaultTransferParams):
+ *
+ * - The `Simple` transfer is a regular transfer
+ * - The `Operator` transfer is the same as `transfer_from` and requires approval. See
+ *   [Operator](crate#operator) in the pallet's documentation for more info.
  *
  * # Errors
  *
@@ -19837,7 +21910,9 @@ export interface MultiTokensCall_transfer {
 }
 
 /**
- * Unapprove the `operator` to manage all of `origin`'s tokens belonging to `collection`
+ * Disallows `operator` from managing all of `origin`'s tokens belonging to `collection`.
+ * It will only undo a previous `approveCollection` call. It does not affect individual
+ * token approvals.
  *
  * # Errors
  *
@@ -19850,7 +21925,8 @@ export interface MultiTokensCall_unapprove_collection {
 }
 
 /**
- * Unapprove `operator` to transfer `origin`'s `token_id` of `collection_id`
+ * Disallows `operator` from transfering previously approved `origin`'s `token_id` of
+ * `collection_id`. Completely removes any previous approval.
  *
  * # Errors
  *
@@ -19866,6 +21942,7 @@ export interface MultiTokensCall_unapprove_token {
 /**
  * Can add or remove deposit for the number of accounts the token can accommodate. It is
  * permissionless if increased. Only the collection owner can decrease.
+ * The locked amount is stored in the collection owner's account.
  */
 export interface MultiTokensCall_update_account_deposit {
     __kind: 'update_account_deposit'
@@ -19880,7 +21957,7 @@ export interface DefaultMintParams_CreateToken {
     __kind: 'CreateToken'
     tokenId: bigint
     initialSupply: bigint
-    accountDepositCount: number
+    accountDepositCount?: number | undefined
     cap?: TokenCap | undefined
     behavior?: TokenMarketBehavior | undefined
     listingForbidden: boolean
@@ -19890,23 +21967,22 @@ export interface DefaultMintParams_CreateToken {
     anyoneCanInfuse: boolean
     metadata: CreateTokenMetadata
     privilegedParams?: PrivilegedCreateTokenParams | undefined
+    groups: bigint[]
 }
 
 export interface DefaultMintParams_Mint {
     __kind: 'Mint'
     tokenId: bigint
     amount: bigint
-    depositor?: AccountId32 | undefined
 }
 
 export interface PrivilegedCreateTokenParams {
     requiresDeposit: boolean
     foreignParams?: ForeignTokenCreationParams | undefined
-    depositor?: AccountId32 | undefined
 }
 
 export interface ForeignTokenCreationParams {
-    location?: V4Location | undefined
+    location?: V5Location | undefined
     unitsPerSecond?: bigint | undefined
 }
 
@@ -19923,13 +21999,18 @@ export interface DefaultTransferParams_Operator {
     tokenId: bigint
     source: AccountId32
     amount: bigint
-    depositor?: AccountId32 | undefined
+    operatorPaysDeposit: boolean
 }
 
 export interface DefaultTransferParams_Simple {
     __kind: 'Simple'
     tokenId: bigint
     amount: bigint
+}
+
+export interface Attribute {
+    value: Bytes
+    deposit: bigint
     depositor?: AccountId32 | undefined
 }
 
@@ -19944,13 +22025,12 @@ export interface FlexibleMintParams_Mint {
     __kind: 'Mint'
     tokenId: bigint
     amount: bigint
-    depositor?: AccountId32 | undefined
 }
 
 export interface CreateTokenParams {
     tokenId: bigint
     amount: bigint
-    accountDepositCount: number
+    accountDepositCount?: number | undefined
     cap?: TokenCap | undefined
     behavior?: TokenMarketBehavior | undefined
     listingForbidden: boolean
@@ -19960,11 +22040,11 @@ export interface CreateTokenParams {
     anyoneCanInfuse: boolean
     metadata: CreateTokenMetadata
     privilegedParams?: PrivilegedCreateTokenParams | undefined
+    groups: bigint[]
 }
 
 export interface DefaultCollectionDescriptor {
     policy: DefaultCollectionPolicyDescriptor
-    depositor?: AccountId32 | undefined
     explicitRoyaltyCurrencies: AssetId[]
     attributes: AttributeKeyValuePair[]
 }
@@ -20000,9 +22080,14 @@ export interface AttributeKeyValuePair {
     value: Bytes
 }
 
-export interface Type_597 {
+export interface Type_619 {
     accountId: AccountId32
     params: DefaultMintParams
+}
+
+export interface BatchInfusion {
+    tokenId: bigint
+    amount: bigint
 }
 
 /**
@@ -20134,28 +22219,50 @@ export interface MessageQueueCall_reap_page {
  * Contains a variant per dispatchable extrinsic that this pallet has.
  */
 export type MarketplaceCall =
+    | MarketplaceCall_add_whitelisted_accounts
     | MarketplaceCall_answer_counter_offer
     | MarketplaceCall_cancel_listing
-    | MarketplaceCall_convert_listings
     | MarketplaceCall_create_listing
     | MarketplaceCall_fill_listing
     | MarketplaceCall_finalize_auction
+    | MarketplaceCall_finalize_auction_unsigned
+    | MarketplaceCall_force_cancel_listing
     | MarketplaceCall_force_create_listing
     | MarketplaceCall_force_place_bid
     | MarketplaceCall_place_bid
     | MarketplaceCall_place_counter_offer
     | MarketplaceCall_remove_expired_listing
+    | MarketplaceCall_remove_expired_listing_unsigned
+    | MarketplaceCall_remove_whitelisted_accounts
     | MarketplaceCall_set_protocol_fee
 
 /**
- * Responds to a counter offer on a listing. The caller must be the seller of the listing.
- * If the counter offer is accepted, the listing will be filled. If it's rejected, the
- * counter offer is deleted.
+ * Whitelist accounts in a listing
+ */
+export interface MarketplaceCall_add_whitelisted_accounts {
+    __kind: 'add_whitelisted_accounts'
+    listingId: H256
+    accounts: WhitelistAddAccount[]
+}
+
+/**
+ * Responds to a counter offer on a listing. If the counter offer is accepted, the listing
+ * will be filled. If it's rejected, the counter offer is deleted. It can also be updated
+ * with a `Counter` response. Only the buyer and seller may call this extrinsic.
+ *
+ * ### Parameters
+ * - `listing_id` - the id of the offer that will be countered
+ * - `creator` - the account that created the counter offer (the seller)
+ * - `response` - whether the counter is accepted, rejected, or countered
+ * - `current_price` - must match the price being countered
  */
 export interface MarketplaceCall_answer_counter_offer {
     __kind: 'answer_counter_offer'
     listingId: H256
-    accept: boolean
+    creator: AccountId32
+    response: CounterOfferResponse
+    currentPrice: bigint
+    royaltyBeneficiaryCount: number
 }
 
 /**
@@ -20176,17 +22283,14 @@ export interface MarketplaceCall_cancel_listing {
 }
 
 /**
- * Fix encoding of `listing_ids`. It will fail if the listing already has the correct
- * encoding.
- */
-export interface MarketplaceCall_convert_listings {
-    __kind: 'convert_listings'
-    listingIds: H256[]
-}
-
-/**
  * Places a sell order. Requires `make_asset_id` or `take_asset_id` to be a currency.
  * The id for the listing is generated by hashing the encoded bytes of the listing.
+ *
+ * The listing does not become active until after the `listingActiveDelay` (5 blocks) has
+ * passed. If it's an auction, it starts when its `start_block` is reached.
+ *
+ * A `Token` cannot be listed on the marketplace if its `listing_forbidden` field is set to
+ * true.
  *
  * # Parameters
  *
@@ -20202,7 +22306,7 @@ export interface MarketplaceCall_convert_listings {
  *
  * # Errors
  *
- * - [`Error::InvalidAuctionStart`] if the start is less than the current block +
+ * - [`Error::InvalidListingStart`] if the start is less than the current block +
  *   `T::ListingActiveDelay`
  * - [`Error::NoCurrency`] Neither the make or take side is considered a currency
  * - [`Error::ListingForbidden`] if make or take side tokens are not allowed to be listed
@@ -20213,13 +22317,7 @@ export interface MarketplaceCall_convert_listings {
  */
 export interface MarketplaceCall_create_listing {
     __kind: 'create_listing'
-    makeAssetId: AssetId
-    takeAssetId: AssetId
-    amount: bigint
-    price: bigint
-    salt: Bytes
-    listingData: ListingData
-    depositor?: MultiAddress | undefined
+    descriptor: ListingDescriptor
 }
 
 /**
@@ -20245,11 +22343,12 @@ export interface MarketplaceCall_fill_listing {
     __kind: 'fill_listing'
     listingId: H256
     amount: bigint
+    royaltyBeneficiaryCount: number
 }
 
 /**
  * Finalize the auction with id: `listing_id`. This will end the auction and transfer
- * funds. It fails if the auction is not over.
+ * funds. It fails if the auction is not over. It can be called by anyone.
  *
  * # Parameters
  *
@@ -20259,12 +22358,32 @@ export interface MarketplaceCall_fill_listing {
  *
  * - [`Error::ListingNotFound`] if listing under `listing_id` does not exist
  * - [`Error::ListingIsWrongType`] if listing is not an auction
- * - [`Error::AuctionNotOver`] if the auction has not finished yet
+ * - [`Error::AuctionNotOver`] if the auction has not finished yet, or if it's in a bid
+ *   extension and the caller is not the seller
  * - [`Error::ReceivedValueUnderMinimum`] if the take value is less than the minimum
  *   required
  */
 export interface MarketplaceCall_finalize_auction {
     __kind: 'finalize_auction'
+    listingId: H256
+    royaltyBeneficiaryCount: number
+}
+
+/**
+ * Finalize an auction via unsigned transaction.
+ * This is called by offchain workers and validates the payload signature.
+ */
+export interface MarketplaceCall_finalize_auction_unsigned {
+    __kind: 'finalize_auction_unsigned'
+    payload: FinalizeAuctionPayload
+    signature: MultiSignature
+}
+
+/**
+ * Force cancel a listing. This is only callable by the [`Config::ForceOrigin`].
+ */
+export interface MarketplaceCall_force_cancel_listing {
+    __kind: 'force_cancel_listing'
     listingId: H256
 }
 
@@ -20284,12 +22403,7 @@ export interface MarketplaceCall_finalize_auction {
 export interface MarketplaceCall_force_create_listing {
     __kind: 'force_create_listing'
     seller: MultiAddress
-    makeAssetId: AssetId
-    takeAssetId: AssetId
-    amount: bigint
-    price: bigint
-    salt: Bytes
-    listingData: ListingData
+    descriptor: ListingDescriptor
     depositBacker?: MultiAddress | undefined
 }
 
@@ -20309,6 +22423,10 @@ export interface MarketplaceCall_force_place_bid {
 /**
  * Places a bid on a listing. The listing must be an auction, and it must be currently
  * active.
+ * An auction is considered active if the current block is between the start and end blocks
+ * of the auction. Only the latest bid is stored on an auction. All bids must increase by
+ * the `minimumBidIncreasePercentage`, and the first bid must be higher than the price set
+ * when the listing was created.
  *
  * # Parameters
  *
@@ -20331,8 +22449,14 @@ export interface MarketplaceCall_place_bid {
 
 /**
  * Places a counter offer on a listing. The listing must be an offer. The caller must own
- * the token that the offer is requesting. Only one counter offer can be made at a time and
- * it cannot be replaced.
+ * the token that the offer is requesting. The counter offer can only be updated by calling
+ * [`Self::answer_counter_offer`]. Only one counter offer can be made at a time and it
+ * cannot be replaced.
+ *
+ * ### Parameters
+ * - `listing_id` - the id of the offer that will be countered
+ * - `price` - the price for the counter offer. It must be higher than the offer price.
+ * - `depositor` - must be set to `None`. It is only usable internally by fuel tanks.
  */
 export interface MarketplaceCall_place_counter_offer {
     __kind: 'place_counter_offer'
@@ -20349,7 +22473,26 @@ export interface MarketplaceCall_remove_expired_listing {
 }
 
 /**
- * Change the protocol fee to `protocol_fee`. Fails if `origin` is invalid.
+ * Remove an expired listing via unsigned transaction.
+ * This is called by offchain workers and validates the payload signature.
+ */
+export interface MarketplaceCall_remove_expired_listing_unsigned {
+    __kind: 'remove_expired_listing_unsigned'
+    payload: RemoveExpiredListingPayload
+    signature: MultiSignature
+}
+
+/**
+ * Remove accounts from a listing's whitelist
+ */
+export interface MarketplaceCall_remove_whitelisted_accounts {
+    __kind: 'remove_whitelisted_accounts'
+    listingId: H256
+    accountIds: AccountId32[]
+}
+
+/**
+ * Change the protocol fee to `protocol_fee`. Can only be called by `ForceOrigin`.
  *
  * #Parameters
  *
@@ -20358,6 +22501,21 @@ export interface MarketplaceCall_remove_expired_listing {
 export interface MarketplaceCall_set_protocol_fee {
     __kind: 'set_protocol_fee'
     protocolFee: Perbill
+}
+
+export interface RemoveExpiredListingPayload {
+    listingId: H256
+    blockNumber: number
+    caller: AccountId32
+    public: MultiSigner
+}
+
+export interface FinalizeAuctionPayload {
+    listingId: H256
+    royaltyBeneficiaryCount: number
+    blockNumber: number
+    caller: AccountId32
+    public: MultiSigner
 }
 
 /**
@@ -20376,29 +22534,6 @@ export interface InitializerCall_force_approve {
 }
 
 /**
- * Contains a variant per dispatchable extrinsic that this pallet has.
- */
-export type ImOnlineCall = ImOnlineCall_heartbeat
-
-/**
- * ## Complexity:
- * - `O(K)` where K is length of `Keys` (heartbeat.validators_len)
- *   - `O(K)`: decoding of length `K`
- */
-export interface ImOnlineCall_heartbeat {
-    __kind: 'heartbeat'
-    heartbeat: Heartbeat
-    signature: Bytes
-}
-
-export interface Heartbeat {
-    blockNumber: number
-    sessionIndex: number
-    authorityIndex: number
-    validatorsLen: number
-}
-
-/**
  * Identity pallet declaration.
  */
 export type IdentityCall =
@@ -20409,11 +22544,12 @@ export type IdentityCall =
     | IdentityCall_cancel_request
     | IdentityCall_clear_identity
     | IdentityCall_kill_identity
+    | IdentityCall_kill_username
     | IdentityCall_provide_judgement
     | IdentityCall_quit_sub
-    | IdentityCall_remove_dangling_username
     | IdentityCall_remove_expired_approval
     | IdentityCall_remove_sub
+    | IdentityCall_remove_username
     | IdentityCall_remove_username_authority
     | IdentityCall_rename_sub
     | IdentityCall_request_judgement
@@ -20424,6 +22560,7 @@ export type IdentityCall =
     | IdentityCall_set_primary_username
     | IdentityCall_set_subs
     | IdentityCall_set_username_for
+    | IdentityCall_unbind_username
 
 /**
  * Accept a given username that an `authority` granted. The call must include the full
@@ -20466,8 +22603,9 @@ export interface IdentityCall_add_sub {
 /**
  * Add an `AccountId` with permission to grant usernames with a given `suffix` appended.
  *
- * The authority can grant up to `allocation` usernames. To top up their allocation, they
- * should just issue (or request via governance) a new `add_username_authority` call.
+ * The authority can grant up to `allocation` usernames. To top up the allocation or
+ * change the account used to grant usernames, this call can be used with the updated
+ * parameters to overwrite the existing configuration.
  */
 export interface IdentityCall_add_username_authority {
     __kind: 'add_username_authority'
@@ -20527,6 +22665,15 @@ export interface IdentityCall_kill_identity {
 }
 
 /**
+ * Call with [ForceOrigin](crate::Config::ForceOrigin) privileges which deletes a username
+ * and slashes any deposit associated with it.
+ */
+export interface IdentityCall_kill_username {
+    __kind: 'kill_username'
+    username: Bytes
+}
+
+/**
  * Provide a judgement for an account's identity.
  *
  * The dispatch origin for this call must be _Signed_ and the sender must be the account
@@ -20568,15 +22715,6 @@ export interface IdentityCall_quit_sub {
 }
 
 /**
- * Remove a username that corresponds to an account with no identity. Exists when a user
- * gets a username but then calls `clear_identity`.
- */
-export interface IdentityCall_remove_dangling_username {
-    __kind: 'remove_dangling_username'
-    username: Bytes
-}
-
-/**
  * Remove an expired username approval. The username was approved by an authority but never
  * accepted by the user and must now be beyond its expiration. The call must include the
  * full username, as in `username.suffix`.
@@ -20601,10 +22739,20 @@ export interface IdentityCall_remove_sub {
 }
 
 /**
+ * Permanently delete a username which has been unbinding for longer than the grace period.
+ * Caller is refunded the fee if the username expired and the removal was successful.
+ */
+export interface IdentityCall_remove_username {
+    __kind: 'remove_username'
+    username: Bytes
+}
+
+/**
  * Remove `authority` from the username authorities.
  */
 export interface IdentityCall_remove_username_authority {
     __kind: 'remove_username_authority'
+    suffix: Bytes
     authority: MultiAddress
 }
 
@@ -20633,7 +22781,7 @@ export interface IdentityCall_rename_sub {
  * - `max_fee`: The maximum fee that may be paid. This should just be auto-populated as:
  *
  * ```nocompile
- * Self::registrars().get(reg_index).unwrap().fee
+ * Registrars::<T>::get().get(reg_index).unwrap().fee
  * ```
  *
  * Emits `JudgementRequested` if successful.
@@ -20733,7 +22881,11 @@ export interface IdentityCall_set_subs {
 /**
  * Set the username for `who`. Must be called by a username authority.
  *
- * The authority must have an `allocation`. Users can either pre-sign their usernames or
+ * If `use_allocation` is set, the authority must have a username allocation available to
+ * spend. Otherwise, the authority will need to put up a deposit for registering the
+ * username.
+ *
+ * Users can either pre-sign their usernames or
  * accept them later.
  *
  * Usernames must:
@@ -20746,12 +22898,24 @@ export interface IdentityCall_set_username_for {
     who: MultiAddress
     username: Bytes
     signature?: MultiSignature | undefined
+    useAllocation: boolean
+}
+
+/**
+ * Start the process of removing a username by placing it in the unbinding usernames map.
+ * Once the grace period has passed, the username can be deleted by calling
+ * [remove_username](crate::Call::remove_username).
+ */
+export interface IdentityCall_unbind_username {
+    __kind: 'unbind_username'
+    username: Bytes
 }
 
 /**
  * Contains a variant per dispatchable extrinsic that this pallet has.
  */
 export type HrmpCall =
+    | HrmpCall_establish_channel_with_system
     | HrmpCall_establish_system_channel
     | HrmpCall_force_clean_hrmp
     | HrmpCall_force_open_hrmp_channel
@@ -20762,6 +22926,20 @@ export type HrmpCall =
     | HrmpCall_hrmp_close_channel
     | HrmpCall_hrmp_init_open_channel
     | HrmpCall_poke_channel_deposits
+
+/**
+ * Establish a bidirectional HRMP channel between a parachain and a system chain.
+ *
+ * Arguments:
+ *
+ * - `target_system_chain`: A system chain, `ParaId`.
+ *
+ * The origin needs to be the parachain origin.
+ */
+export interface HrmpCall_establish_channel_with_system {
+    __kind: 'establish_channel_with_system'
+    targetSystemChain: Id
+}
 
 /**
  * Establish an HRMP channel between two system chains. If the channel does not already
@@ -20956,7 +23134,7 @@ export interface GrandpaCall_note_stalled {
  */
 export interface GrandpaCall_report_equivocation {
     __kind: 'report_equivocation'
-    equivocationProof: Type_423
+    equivocationProof: Type_318
     keyOwnerProof: MembershipProof
 }
 
@@ -20973,11 +23151,11 @@ export interface GrandpaCall_report_equivocation {
  */
 export interface GrandpaCall_report_equivocation_unsigned {
     __kind: 'report_equivocation_unsigned'
-    equivocationProof: Type_423
+    equivocationProof: Type_318
     keyOwnerProof: MembershipProof
 }
 
-export interface Type_423 {
+export interface Type_318 {
     setId: bigint
     equivocation: Equivocation
 }
@@ -20986,31 +23164,33 @@ export type Equivocation = Equivocation_Precommit | Equivocation_Prevote
 
 export interface Equivocation_Precommit {
     __kind: 'Precommit'
-    value: Type_430
+    value: Type_324
 }
 
 export interface Equivocation_Prevote {
     __kind: 'Prevote'
-    value: Type_425
+    value: Type_320
 }
 
-export interface Type_425 {
+export interface Type_320 {
     roundNumber: bigint
     identity: Public
-    first: [Prevote, Bytes]
-    second: [Prevote, Bytes]
+    first: [Prevote, Signature]
+    second: [Prevote, Signature]
 }
+
+export type Signature = Bytes
 
 export interface Prevote {
     targetHash: H256
     targetNumber: number
 }
 
-export interface Type_430 {
+export interface Type_324 {
     roundNumber: bigint
     identity: Public
-    first: [Precommit, Bytes]
-    second: [Precommit, Bytes]
+    first: [Precommit, Signature]
+    second: [Precommit, Signature]
 }
 
 export interface Precommit {
@@ -21031,18 +23211,23 @@ export type FuelTanksCall =
     | FuelTanksCall_dispatch_and_touch
     | FuelTanksCall_force_batch_add_account
     | FuelTanksCall_force_create_fuel_tank
+    | FuelTanksCall_force_insert_rule_set
     | FuelTanksCall_force_set_consumption
     | FuelTanksCall_insert_rule_set
     | FuelTanksCall_mutate_freeze_state
     | FuelTanksCall_mutate_fuel_tank
     | FuelTanksCall_remove_account
     | FuelTanksCall_remove_account_rule_data
+    | FuelTanksCall_remove_expired_account
+    | FuelTanksCall_remove_expired_account_unsigned
     | FuelTanksCall_remove_rule_set
 
 /**
  * Adds new account for `user_id` to fuel tank at `tank_id`. An account is
- * required to dispatch calls. A deposit is required, and may be paid by
- * the user or the fuel tank, depending on the settings.
+ * required to dispatch calls. A deposit of [`Config::AccountCreationDeposit`] is required.
+ *
+ * If called by the owner, the deposit is always paid from the fuel tank, otherwise it may
+ * be paid by the user or the fuel tank, depending on the tank's `user_account_management`.
  *
  * ### Errors
  *
@@ -21085,7 +23270,10 @@ export interface FuelTanksCall_batch_remove_account {
 }
 
 /**
- * Creates a fuel tank, given a descriptor
+ * Creates a fuel tank, given a `descriptor`.
+ *
+ * Generates a discrete `AccountId` for the fuel tank based on passed in parameters, it
+ * takes a storage deposit and emits `FuelTankCreated` event in the success case.
  *
  * # Errors
  *
@@ -21098,17 +23286,15 @@ export interface FuelTanksCall_create_fuel_tank {
 }
 
 /**
- * Destroy the fuel tank by scheduling the deletion for `on_finalize` to execute
- * Only callable by owner
- * The fuel tank must be frozen
- * Can only be destroyed if all accounts are removed
+ * Destroy the fuel tank. Only callable by owner. Can only be destroyed if all accounts are
+ * removed.
  *
  * # Errors
  *
  * - [`Error::FuelTankNotFound`] if tank_id does not exist
  * - [`Error::NoPermission`] if caller is not owner
- * - [`Error::DestroyUnfrozenTank`] if tank is not frozen
- * - [`Error::DestroyWithExistingAccounts`] if there are still accounts on the tank
+ * - [`Error::DestroyedFuelTanksLimitExceeded`] if the number of accounts in
+ *   `DestroyedTanks`
  */
 export interface FuelTanksCall_destroy_fuel_tank {
     __kind: 'destroy_fuel_tank'
@@ -21135,7 +23321,8 @@ export interface FuelTanksCall_dispatch {
 
 /**
  * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
- * exist and is allowed by the fuel tank's `user_account_management` settings.
+ * exist, is required, and is allowed by the fuel tank's `user_account_management`
+ * settings.
  *
  * # Errors
  *
@@ -21174,6 +23361,16 @@ export interface FuelTanksCall_force_create_fuel_tank {
 }
 
 /**
+ * Force inserting a ruleset using the force origin
+ */
+export interface FuelTanksCall_force_insert_rule_set {
+    __kind: 'force_insert_rule_set'
+    tankId: MultiAddress
+    ruleSetId: number
+    ruleSet: RuleSetDescriptor
+}
+
+/**
  * Force set the fuel tank consumption
  * If `user_id` is [`Some`], it sets the consumption for that account.
  * If it is [`None`], it sets the consumption on the fuel tank directly.
@@ -21205,7 +23402,6 @@ export interface FuelTanksCall_force_set_consumption {
  * ### Errors
  * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
  * - [`Error::NoPermission`] if caller is not the fuel tank owner
- * - [`Error::RequiresFrozenTankOrRuleset`] if tank or rule set is not frozen
  * - [`Error::CannotRemoveRuleThatIsStoringAccountData`] if removing a rule that is storing
  *   account data
  * - [`Error::MaxRuleSetsExceeded`] if max number of rule sets was exceeded
@@ -21236,6 +23432,8 @@ export interface FuelTanksCall_mutate_freeze_state {
 /**
  * Apply `mutation` to fuel tank with `tank_id`.
  *
+ * Caller must be the owner of the fuel tank.
+ *
  * # Errors
  *
  * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
@@ -21264,8 +23462,7 @@ export interface FuelTanksCall_remove_account {
 }
 
 /**
- * Remove account rule data if it exists. Only callable by the fuel tank's owner. Requires
- * the fuel tank or the rule set to be frozen.
+ * Remove account rule data if it exists. Only callable by the fuel tank's owner.
  *
  * ### Errors
  *
@@ -21273,7 +23470,6 @@ export interface FuelTanksCall_remove_account {
  * - [`Error::NoPermission`] if called by non-owner
  * - [`Error::AccountNotFound`] if account does not exist for `user_id`
  * - [`Error::RuleSetNotFound`] if rule set does not exist for `rule_set_id`
- * - [`Error::RequiresFrozenTankOrRuleset`] if tank or rule set is not frozen
  * - [`Error::RuleNotFound`] if rule does not exist for `rule_kind`
  */
 export interface FuelTanksCall_remove_account_rule_data {
@@ -21285,6 +23481,43 @@ export interface FuelTanksCall_remove_account_rule_data {
 }
 
 /**
+ * Removes an expired account if the fuel tank supports account expiration. The expiration
+ * block is calculated by checking the `last_used_block` of the account and adding it to
+ * the `account_expiration` value on the `FuelTank`. This call is permissionless.
+ *
+ * # Parameters
+ *
+ * - `origin`: The origin of the call. This must be a signed origin.
+ * - `tank_id`: The identifier of the fuel tank to which the account belongs.
+ * - `user_id`: The identifier of the user account to be removed.
+ *
+ * # Errors
+ *
+ * - [`Error::FuelTankNotFound`] if no fuel tank exists with the provided `tank_id`.
+ * - [`Error::AccountExpirationDisabled`] if account expiration is not enabled for the
+ *   specified fuel tank.
+ * - [`Error::AccountNotFound`] if no account exists with the provided `user_id` in the
+ *   associated tank.
+ * - [`Error::AccountNotExpired`] if the account has not yet expired
+ * - also includes the same errors as [`remove_account`](Self::remove_account)
+ */
+export interface FuelTanksCall_remove_expired_account {
+    __kind: 'remove_expired_account'
+    tankId: MultiAddress
+    userId: MultiAddress
+}
+
+/**
+ * Remove an expired account via unsigned transaction.
+ * This is called by offchain workers and validates the payload signature.
+ */
+export interface FuelTanksCall_remove_expired_account_unsigned {
+    __kind: 'remove_expired_account_unsigned'
+    payload: RemoveExpiredAccountPayload
+    signature: MultiSignature
+}
+
+/**
  * Remove rule set for `tank_id` and `rule_set_id`. A rule that is storing data on
  * any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove the
  * data first. This is only callable by the fuel tank's owner.
@@ -21292,7 +23525,6 @@ export interface FuelTanksCall_remove_account_rule_data {
  *
  * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
  * - [`Error::NoPermission`] if caller is not the fuel tank owner
- * - [`Error::RequiresFrozenTankOrRuleset`] if tank or rule set is not frozen
  * - [`Error::CannotRemoveRuleThatIsStoringAccountData`] if removing a rule that is storing
  *   account data
  */
@@ -21302,6 +23534,14 @@ export interface FuelTanksCall_remove_rule_set {
     ruleSetId: number
 }
 
+export interface RemoveExpiredAccountPayload {
+    tankId: AccountId32
+    userId: AccountId32
+    blockNumber: number
+    caller: AccountId32
+    public: MultiSigner
+}
+
 export interface DispatchSettings {
     useNoneOrigin: boolean
     paysRemainingFee: boolean
@@ -21309,7 +23549,7 @@ export interface DispatchSettings {
 }
 
 export interface ExpirableSignature {
-    signature: Signature
+    signature: Bytes
     expiryBlock: number
 }
 
@@ -21319,6 +23559,7 @@ export interface FuelTankDescriptor {
     ruleSets: [number, RuleSetDescriptor][]
     coveragePolicy: CoveragePolicy
     accountRules: AccountRuleDescriptor[]
+    accountExpiration?: number | undefined
 }
 
 /**
@@ -21641,8 +23882,6 @@ export type ElectionProviderMultiPhaseCall =
  */
 export interface ElectionProviderMultiPhaseCall_governance_fallback {
     __kind: 'governance_fallback'
-    maybeMaxVoters?: number | undefined
-    maybeMaxTargets?: number | undefined
 }
 
 /**
@@ -21879,21 +24118,62 @@ export interface CrowdloanCall_withdraw {
     index: number
 }
 
-export type MultiSigner = MultiSigner_Ecdsa | MultiSigner_Ed25519 | MultiSigner_Sr25519
+/**
+ * Contains a variant per dispatchable extrinsic that this pallet has.
+ */
+export type CoretimeCall =
+    | CoretimeCall_assign_core
+    | CoretimeCall_credit_account
+    | CoretimeCall_request_core_count
+    | CoretimeCall_request_revenue_at
 
-export interface MultiSigner_Ecdsa {
-    __kind: 'Ecdsa'
-    value: Bytes
+/**
+ * Receive instructions from the `ExternalBrokerOrigin`, detailing how a specific core is
+ * to be used.
+ *
+ * Parameters:
+ * -`origin`: The `ExternalBrokerOrigin`, assumed to be the coretime chain.
+ * -`core`: The core that should be scheduled.
+ * -`begin`: The starting blockheight of the instruction.
+ * -`assignment`: How the blockspace should be utilised.
+ * -`end_hint`: An optional hint as to when this particular set of instructions will end.
+ */
+export interface CoretimeCall_assign_core {
+    __kind: 'assign_core'
+    core: number
+    begin: number
+    assignment: [CoreAssignment, PartsOf57600][]
+    endHint?: number | undefined
 }
 
-export interface MultiSigner_Ed25519 {
-    __kind: 'Ed25519'
-    value: Bytes
+export interface CoretimeCall_credit_account {
+    __kind: 'credit_account'
+    who: AccountId32
+    amount: bigint
 }
 
-export interface MultiSigner_Sr25519 {
-    __kind: 'Sr25519'
-    value: Bytes
+/**
+ * Request the configuration to be updated with the specified number of cores. Warning:
+ * Since this only schedules a configuration update, it takes two sessions to come into
+ * effect.
+ *
+ * - `origin`: Root or the Coretime Chain
+ * - `count`: total number of cores
+ */
+export interface CoretimeCall_request_core_count {
+    __kind: 'request_core_count'
+    count: number
+}
+
+/**
+ * Request to claim the instantaneous coretime sales revenue starting from the block it was
+ * last claimed until and up to the block specified. The claimed amount value is sent back
+ * to the Coretime chain in a `notify_revenue` message. At the same time, the amount is
+ * teleported to the Coretime chain.
+ */
+export interface CoretimeCall_request_revenue_at {
+    __kind: 'request_revenue_at'
+    when: number
 }
 
 /**
@@ -22116,7 +24396,6 @@ export type ConfigurationCall =
     | ConfigurationCall_set_hrmp_open_request_ttl
     | ConfigurationCall_set_hrmp_recipient_deposit
     | ConfigurationCall_set_hrmp_sender_deposit
-    | ConfigurationCall_set_max_availability_timeouts
     | ConfigurationCall_set_max_code_size
     | ConfigurationCall_set_max_downward_message_size
     | ConfigurationCall_set_max_head_data_size
@@ -22137,7 +24416,6 @@ export type ConfigurationCall =
     | ConfigurationCall_set_on_demand_fee_variability
     | ConfigurationCall_set_on_demand_queue_max_size
     | ConfigurationCall_set_on_demand_target_queue_utilization
-    | ConfigurationCall_set_on_demand_ttl
     | ConfigurationCall_set_paras_availability_period
     | ConfigurationCall_set_pvf_voting_ttl
     | ConfigurationCall_set_relay_vrf_modulo_samples
@@ -22152,7 +24430,7 @@ export type ConfigurationCall =
  */
 export interface ConfigurationCall_set_approval_voting_params {
     __kind: 'set_approval_voting_params'
-    new: ApprovalVotingParams
+    new: V8ApprovalVotingParams
 }
 
 /**
@@ -22160,7 +24438,7 @@ export interface ConfigurationCall_set_approval_voting_params {
  */
 export interface ConfigurationCall_set_async_backing_params {
     __kind: 'set_async_backing_params'
-    new: V6AsyncBackingParams
+    new: V8AsyncBackingParams
 }
 
 /**
@@ -22183,7 +24461,7 @@ export interface ConfigurationCall_set_code_retention_period {
 /**
  * Set the number of coretime execution cores.
  *
- * Note that this configuration is managed by the coretime chain. Only manually change
+ * NOTE: that this configuration is managed by the coretime chain. Only manually change
  * this, if you really know what you are doing!
  */
 export interface ConfigurationCall_set_coretime_cores {
@@ -22212,7 +24490,7 @@ export interface ConfigurationCall_set_dispute_post_conclusion_acceptance_period
  */
 export interface ConfigurationCall_set_executor_params {
     __kind: 'set_executor_params'
-    new: V6ExecutorParam[]
+    new: V8ExecutorParam[]
 }
 
 /**
@@ -22294,14 +24572,6 @@ export interface ConfigurationCall_set_hrmp_recipient_deposit {
 export interface ConfigurationCall_set_hrmp_sender_deposit {
     __kind: 'set_hrmp_sender_deposit'
     new: bigint
-}
-
-/**
- * Set the max number of times a claim may timeout on a core before it is abandoned
- */
-export interface ConfigurationCall_set_max_availability_timeouts {
-    __kind: 'set_max_availability_timeouts'
-    new: number
 }
 
 /**
@@ -22471,14 +24741,6 @@ export interface ConfigurationCall_set_on_demand_target_queue_utilization {
 }
 
 /**
- * Set the on demand (parathreads) ttl in the claimqueue.
- */
-export interface ConfigurationCall_set_on_demand_ttl {
-    __kind: 'set_on_demand_ttl'
-    new: number
-}
-
-/**
  * Set the availability period for paras.
  */
 export interface ConfigurationCall_set_paras_availability_period {
@@ -22507,7 +24769,7 @@ export interface ConfigurationCall_set_relay_vrf_modulo_samples {
  */
 export interface ConfigurationCall_set_scheduler_params {
     __kind: 'set_scheduler_params'
-    new: SchedulerParams
+    new: V8SchedulerParams
 }
 
 /**
@@ -22542,12 +24804,102 @@ export interface ConfigurationCall_set_zeroth_delay_tranche_width {
     new: number
 }
 
+export interface V8SchedulerParams {
+    groupRotationFrequency: number
+    parasAvailabilityPeriod: number
+    maxValidatorsPerCore?: number | undefined
+    lookahead: number
+    numCores: number
+    maxAvailabilityTimeouts: number
+    onDemandQueueMaxSize: number
+    onDemandTargetQueueUtilization: Perbill
+    onDemandFeeVariability: Perbill
+    onDemandBaseFee: bigint
+    ttl: number
+}
+
+export type V8ExecutorParam =
+    | V8ExecutorParam_MaxMemoryPages
+    | V8ExecutorParam_PrecheckingMaxMemory
+    | V8ExecutorParam_PvfExecTimeout
+    | V8ExecutorParam_PvfPrepTimeout
+    | V8ExecutorParam_StackLogicalMax
+    | V8ExecutorParam_StackNativeMax
+    | V8ExecutorParam_WasmExtBulkMemory
+
+export interface V8ExecutorParam_MaxMemoryPages {
+    __kind: 'MaxMemoryPages'
+    value: number
+}
+
+export interface V8ExecutorParam_PrecheckingMaxMemory {
+    __kind: 'PrecheckingMaxMemory'
+    value: bigint
+}
+
+export interface V8ExecutorParam_PvfExecTimeout {
+    __kind: 'PvfExecTimeout'
+    value: [V8PvfExecKind, bigint]
+}
+
+export interface V8ExecutorParam_PvfPrepTimeout {
+    __kind: 'PvfPrepTimeout'
+    value: [V8PvfPrepKind, bigint]
+}
+
+export interface V8ExecutorParam_StackLogicalMax {
+    __kind: 'StackLogicalMax'
+    value: number
+}
+
+export interface V8ExecutorParam_StackNativeMax {
+    __kind: 'StackNativeMax'
+    value: number
+}
+
+export interface V8ExecutorParam_WasmExtBulkMemory {
+    __kind: 'WasmExtBulkMemory'
+}
+
+export type V8PvfPrepKind = V8PvfPrepKind_Precheck | V8PvfPrepKind_Prepare
+
+export interface V8PvfPrepKind_Precheck {
+    __kind: 'Precheck'
+}
+
+export interface V8PvfPrepKind_Prepare {
+    __kind: 'Prepare'
+}
+
+export type V8PvfExecKind = V8PvfExecKind_Approval | V8PvfExecKind_Backing
+
+export interface V8PvfExecKind_Approval {
+    __kind: 'Approval'
+}
+
+export interface V8PvfExecKind_Backing {
+    __kind: 'Backing'
+}
+
+export interface V8AsyncBackingParams {
+    maxCandidateDepth: number
+    allowedAncestryLen: number
+}
+
+export interface V8ApprovalVotingParams {
+    maxApprovalCoalesceCount: number
+}
+
 /**
  * Contains a variant per dispatchable extrinsic that this pallet has.
  */
 export type BeefyCall =
-    | BeefyCall_report_equivocation
-    | BeefyCall_report_equivocation_unsigned
+    | BeefyCall_report_double_voting
+    | BeefyCall_report_double_voting_unsigned
+    | BeefyCall_report_fork_voting
+    | BeefyCall_report_fork_voting_unsigned
+    | BeefyCall_report_future_block_voting
+    | BeefyCall_report_future_block_voting_unsigned
     | BeefyCall_set_new_genesis
 
 /**
@@ -22556,9 +24908,9 @@ export type BeefyCall =
  * against the extracted offender. If both are valid, the offence
  * will be reported.
  */
-export interface BeefyCall_report_equivocation {
-    __kind: 'report_equivocation'
-    equivocationProof: Type_645
+export interface BeefyCall_report_double_voting {
+    __kind: 'report_double_voting'
+    equivocationProof: DoubleVotingProof
     keyOwnerProof: MembershipProof
 }
 
@@ -22573,9 +24925,63 @@ export interface BeefyCall_report_equivocation {
  * if the block author is defined it will be defined as the equivocation
  * reporter.
  */
-export interface BeefyCall_report_equivocation_unsigned {
-    __kind: 'report_equivocation_unsigned'
-    equivocationProof: Type_645
+export interface BeefyCall_report_double_voting_unsigned {
+    __kind: 'report_double_voting_unsigned'
+    equivocationProof: DoubleVotingProof
+    keyOwnerProof: MembershipProof
+}
+
+/**
+ * Report fork voting equivocation. This method will verify the equivocation proof
+ * and validate the given key ownership proof against the extracted offender.
+ * If both are valid, the offence will be reported.
+ */
+export interface BeefyCall_report_fork_voting {
+    __kind: 'report_fork_voting'
+    equivocationProof: ForkVotingProof
+    keyOwnerProof: MembershipProof
+}
+
+/**
+ * Report fork voting equivocation. This method will verify the equivocation proof
+ * and validate the given key ownership proof against the extracted offender.
+ * If both are valid, the offence will be reported.
+ *
+ * This extrinsic must be called unsigned and it is expected that only
+ * block authors will call it (validated in `ValidateUnsigned`), as such
+ * if the block author is defined it will be defined as the equivocation
+ * reporter.
+ */
+export interface BeefyCall_report_fork_voting_unsigned {
+    __kind: 'report_fork_voting_unsigned'
+    equivocationProof: ForkVotingProof
+    keyOwnerProof: MembershipProof
+}
+
+/**
+ * Report future block voting equivocation. This method will verify the equivocation proof
+ * and validate the given key ownership proof against the extracted offender.
+ * If both are valid, the offence will be reported.
+ */
+export interface BeefyCall_report_future_block_voting {
+    __kind: 'report_future_block_voting'
+    equivocationProof: FutureBlockVotingProof
+    keyOwnerProof: MembershipProof
+}
+
+/**
+ * Report future block voting equivocation. This method will verify the equivocation proof
+ * and validate the given key ownership proof against the extracted offender.
+ * If both are valid, the offence will be reported.
+ *
+ * This extrinsic must be called unsigned and it is expected that only
+ * block authors will call it (validated in `ValidateUnsigned`), as such
+ * if the block author is defined it will be defined as the equivocation
+ * reporter.
+ */
+export interface BeefyCall_report_future_block_voting_unsigned {
+    __kind: 'report_future_block_voting_unsigned'
+    equivocationProof: FutureBlockVotingProof
     keyOwnerProof: MembershipProof
 }
 
@@ -22590,9 +24996,8 @@ export interface BeefyCall_set_new_genesis {
     delayInBlocks: number
 }
 
-export interface Type_645 {
-    first: VoteMessage
-    second: VoteMessage
+export interface FutureBlockVotingProof {
+    vote: VoteMessage
 }
 
 export interface VoteMessage {
@@ -22607,10 +25012,29 @@ export interface Commitment {
     validatorSetId: bigint
 }
 
+export interface ForkVotingProof {
+    vote: VoteMessage
+    ancestryProof: AncestryProof
+    header: Header
+}
+
+export interface AncestryProof {
+    prevPeaks: H256[]
+    prevLeafCount: bigint
+    leafCount: bigint
+    items: [bigint, H256][]
+}
+
+export interface DoubleVotingProof {
+    first: VoteMessage
+    second: VoteMessage
+}
+
 /**
  * Contains a variant per dispatchable extrinsic that this pallet has.
  */
 export type BalancesCall =
+    | BalancesCall_burn
     | BalancesCall_force_adjust_total_issuance
     | BalancesCall_force_set_balance
     | BalancesCall_force_transfer
@@ -22619,6 +25043,21 @@ export type BalancesCall =
     | BalancesCall_transfer_allow_death
     | BalancesCall_transfer_keep_alive
     | BalancesCall_upgrade_accounts
+
+/**
+ * Burn the specified liquid free balance from the origin account.
+ *
+ * If the origin's account ends up below the existential deposit as a result
+ * of the burn and `keep_alive` is false, the account will be reaped.
+ *
+ * Unlike sending funds to a _burn_ address, which merely makes the funds inaccessible,
+ * this `burn` operation will reduce total issuance by the amount _burned_.
+ */
+export interface BalancesCall_burn {
+    __kind: 'burn'
+    value: bigint
+    keepAlive: boolean
+}
 
 /**
  * Adjust the total issuance in a saturating way.
@@ -22726,7 +25165,7 @@ export interface BalancesCall_transfer_keep_alive {
  *
  * This will waive the transaction fee if at least all but 10% of the accounts needed to
  * be upgraded. (We let some not have to be upgraded just in order to allow for the
- * possibililty of churn).
+ * possibility of churn).
  */
 export interface BalancesCall_upgrade_accounts {
     __kind: 'upgrade_accounts'
@@ -22796,6 +25235,8 @@ export interface EquivocationProof {
     firstHeader: Header
     secondHeader: Header
 }
+
+export type Slot = bigint
 
 export type NextConfigDescriptor = NextConfigDescriptor_V1
 
@@ -22954,7 +25395,7 @@ export const DispatchSettings: sts.Type<DispatchSettings> = sts.struct(() => {
 
 export const ExpirableSignature: sts.Type<ExpirableSignature> = sts.struct(() => {
     return {
-        signature: Signature,
+        signature: sts.bytes(),
         expiryBlock: sts.number(),
     }
 })
@@ -22966,6 +25407,7 @@ export const FuelTankDescriptor: sts.Type<FuelTankDescriptor> = sts.struct(() =>
         ruleSets: sts.array(() => sts.tuple(() => [sts.number(), RuleSetDescriptor])),
         coveragePolicy: CoveragePolicy,
         accountRules: sts.array(() => AccountRuleDescriptor),
+        accountExpiration: sts.option(() => sts.number()),
     }
 })
 
@@ -22984,7 +25426,6 @@ export const FlexibleMintParams: sts.Type<FlexibleMintParams> = sts.closedEnum((
         Mint: sts.enumStruct({
             tokenId: sts.bigint(),
             amount: sts.bigint(),
-            depositor: sts.option(() => AccountId32),
         }),
     }
 })
@@ -22993,7 +25434,7 @@ export const CreateTokenParams: sts.Type<CreateTokenParams> = sts.struct(() => {
     return {
         tokenId: sts.bigint(),
         amount: sts.bigint(),
-        accountDepositCount: sts.number(),
+        accountDepositCount: sts.option(() => sts.number()),
         cap: sts.option(() => TokenCap),
         behavior: sts.option(() => TokenMarketBehavior),
         listingForbidden: sts.boolean(),
@@ -23003,6 +25444,7 @@ export const CreateTokenParams: sts.Type<CreateTokenParams> = sts.struct(() => {
         anyoneCanInfuse: sts.boolean(),
         metadata: CreateTokenMetadata,
         privilegedParams: sts.option(() => PrivilegedCreateTokenParams),
+        groups: sts.array(() => sts.bigint()),
     }
 })
 
@@ -23010,13 +25452,12 @@ export const PrivilegedCreateTokenParams: sts.Type<PrivilegedCreateTokenParams> 
     return {
         requiresDeposit: sts.boolean(),
         foreignParams: sts.option(() => ForeignTokenCreationParams),
-        depositor: sts.option(() => AccountId32),
     }
 })
 
 export const ForeignTokenCreationParams: sts.Type<ForeignTokenCreationParams> = sts.struct(() => {
     return {
-        location: sts.option(() => V4Location),
+        location: sts.option(() => V5Location),
         unitsPerSecond: sts.option(() => sts.bigint()),
     }
 })
@@ -23029,27 +25470,10 @@ export const CreateTokenMetadata: sts.Type<CreateTokenMetadata> = sts.struct(() 
     }
 })
 
-export const BoundedString = sts.bytes()
-
-export const TokenMarketBehavior: sts.Type<TokenMarketBehavior> = sts.closedEnum(() => {
-    return {
-        HasRoyalty: DefaultRoyalty,
-        IsCurrency: sts.unit(),
-    }
-})
-
 export const TokenCap: sts.Type<TokenCap> = sts.closedEnum(() => {
     return {
         CollapsingSupply: sts.bigint(),
         Supply: sts.bigint(),
-    }
-})
-
-export const Attribute: sts.Type<Attribute> = sts.struct(() => {
-    return {
-        value: sts.bytes(),
-        deposit: sts.bigint(),
-        depositor: sts.option(() => AccountId32),
     }
 })
 
@@ -23060,7 +25484,7 @@ export const AttributeKeyValuePair: sts.Type<AttributeKeyValuePair> = sts.struct
     }
 })
 
-export const Type_597: sts.Type<Type_597> = sts.struct(() => {
+export const Type_619: sts.Type<Type_619> = sts.struct(() => {
     return {
         accountId: AccountId32,
         params: DefaultMintParams,
@@ -23080,21 +25504,12 @@ export const DefaultTransferParams: sts.Type<DefaultTransferParams> = sts.closed
             tokenId: sts.bigint(),
             source: AccountId32,
             amount: sts.bigint(),
-            depositor: sts.option(() => AccountId32),
+            operatorPaysDeposit: sts.boolean(),
         }),
         Simple: sts.enumStruct({
             tokenId: sts.bigint(),
             amount: sts.bigint(),
-            depositor: sts.option(() => AccountId32),
         }),
-    }
-})
-
-export const DefaultBurnParams: sts.Type<DefaultBurnParams> = sts.struct(() => {
-    return {
-        tokenId: sts.bigint(),
-        amount: sts.bigint(),
-        removeTokenStorage: sts.boolean(),
     }
 })
 
@@ -23103,7 +25518,7 @@ export const DefaultMintParams: sts.Type<DefaultMintParams> = sts.closedEnum(() 
         CreateToken: sts.enumStruct({
             tokenId: sts.bigint(),
             initialSupply: sts.bigint(),
-            accountDepositCount: sts.number(),
+            accountDepositCount: sts.option(() => sts.number()),
             cap: sts.option(() => TokenCap),
             behavior: sts.option(() => TokenMarketBehavior),
             listingForbidden: sts.boolean(),
@@ -23113,11 +25528,11 @@ export const DefaultMintParams: sts.Type<DefaultMintParams> = sts.closedEnum(() 
             anyoneCanInfuse: sts.boolean(),
             metadata: CreateTokenMetadata,
             privilegedParams: sts.option(() => PrivilegedCreateTokenParams),
+            groups: sts.array(() => sts.bigint()),
         }),
         Mint: sts.enumStruct({
             tokenId: sts.bigint(),
             amount: sts.bigint(),
-            depositor: sts.option(() => AccountId32),
         }),
     }
 })
@@ -23135,7 +25550,6 @@ export const MultiAddress: sts.Type<MultiAddress> = sts.closedEnum(() => {
 export const DefaultCollectionDescriptor: sts.Type<DefaultCollectionDescriptor> = sts.struct(() => {
     return {
         policy: DefaultCollectionPolicyDescriptor,
-        depositor: sts.option(() => AccountId32),
         explicitRoyaltyCurrencies: sts.array(() => AssetId),
         attributes: sts.array(() => AttributeKeyValuePair),
     }
@@ -23162,10 +25576,13 @@ export const DefaultMintPolicyDescriptor: sts.Type<DefaultMintPolicyDescriptor> 
     }
 })
 
-export const Timepoint: sts.Type<Timepoint> = sts.struct(() => {
+export const SessionKeys: sts.Type<SessionKeys> = sts.struct(() => {
     return {
-        height: sts.number(),
-        index: sts.number(),
+        grandpa: Public,
+        babe: sts.bytes(),
+        paraValidator: V8Public,
+        paraAssignment: sts.bytes(),
+        authorityDiscovery: sts.bytes(),
     }
 })
 
@@ -23178,31 +25595,28 @@ export const Weight: sts.Type<Weight> = sts.struct(() => {
 
 export const OriginCaller: sts.Type<OriginCaller> = sts.closedEnum(() => {
     return {
-        Origins: Type_452,
+        FuelTanks: Type_351,
+        Origins: Type_350,
         ParachainsOrigin: Origin,
-        Void: Void,
-        XcmPallet: Type_451,
+        XcmPallet: Type_349,
         system: RawOrigin,
     }
 })
 
 export const RawOrigin: sts.Type<RawOrigin> = sts.closedEnum(() => {
     return {
+        Authorized: sts.unit(),
         None: sts.unit(),
         Root: sts.unit(),
         Signed: AccountId32,
     }
 })
 
-export const Type_451: sts.Type<Type_451> = sts.closedEnum(() => {
+export const Type_349: sts.Type<Type_349> = sts.closedEnum(() => {
     return {
-        Response: V4Location,
-        Xcm: V4Location,
+        Response: V5Location,
+        Xcm: V5Location,
     }
-})
-
-export const Void: sts.Type<Void> = sts.closedEnum(() => {
-    return {}
 })
 
 export const Origin: sts.Type<Origin> = sts.closedEnum(() => {
@@ -23211,7 +25625,7 @@ export const Origin: sts.Type<Origin> = sts.closedEnum(() => {
     }
 })
 
-export const Type_452: sts.Type<Type_452> = sts.closedEnum(() => {
+export const Type_350: sts.Type<Type_350> = sts.closedEnum(() => {
     return {
         AuctionAdmin: sts.unit(),
         BigSpender: sts.unit(),
@@ -23247,6 +25661,16 @@ export const Type_452: sts.Type<Type_452> = sts.closedEnum(() => {
     }
 })
 
+export const Type_351: sts.Type<Type_351> = sts.closedEnum(() => {
+    return {
+        FuelTank: sts.enumStruct({
+            caller: AccountId32,
+            tankId: AccountId32,
+            providesDeposit: sts.boolean(),
+        }),
+    }
+})
+
 export const Call: sts.Type<Call> = sts.closedEnum(() => {
     return {
         AssignedSlots: AssignedSlotsCall,
@@ -23256,6 +25680,7 @@ export const Call: sts.Type<Call> = sts.closedEnum(() => {
         Beefy: BeefyCall,
         Configuration: ConfigurationCall,
         ConvictionVoting: ConvictionVotingCall,
+        Coretime: CoretimeCall,
         Crowdloan: CrowdloanCall,
         ElectionProviderMultiPhase: ElectionProviderMultiPhaseCall,
         ExtrinsicPause: ExtrinsicPauseCall,
@@ -23265,7 +25690,6 @@ export const Call: sts.Type<Call> = sts.closedEnum(() => {
         Grandpa: GrandpaCall,
         Hrmp: HrmpCall,
         Identity: IdentityCall,
-        ImOnline: ImOnlineCall,
         Initializer: InitializerCall,
         Marketplace: MarketplaceCall,
         MessageQueue: MessageQueueCall,
@@ -23273,6 +25697,7 @@ export const Call: sts.Type<Call> = sts.closedEnum(() => {
         MultiTokens: MultiTokensCall,
         Multisig: MultisigCall,
         NominationPools: NominationPoolsCall,
+        OnDemandAssignmentProvider: OnDemandAssignmentProviderCall,
         ParaInclusion: ParaInclusionCall,
         ParaInherent: ParaInherentCall,
         Paras: ParasCall,
@@ -23308,12 +25733,16 @@ export const Call: sts.Type<Call> = sts.closedEnum(() => {
  */
 export const XcmPalletCall: sts.Type<XcmPalletCall> = sts.closedEnum(() => {
     return {
+        add_authorized_alias: sts.enumStruct({
+            aliaser: VersionedLocation,
+            expires: sts.option(() => sts.bigint()),
+        }),
         claim_assets: sts.enumStruct({
             assets: VersionedAssets,
             beneficiary: VersionedLocation,
         }),
         execute: sts.enumStruct({
-            message: Type_556,
+            message: Type_460,
             maxWeight: Weight,
         }),
         force_default_xcm_version: sts.enumStruct({
@@ -23329,7 +25758,7 @@ export const XcmPalletCall: sts.Type<XcmPalletCall> = sts.closedEnum(() => {
             location: VersionedLocation,
         }),
         force_xcm_version: sts.enumStruct({
-            location: V4Location,
+            location: V5Location,
             version: sts.number(),
         }),
         limited_reserve_transfer_assets: sts.enumStruct({
@@ -23345,6 +25774,10 @@ export const XcmPalletCall: sts.Type<XcmPalletCall> = sts.closedEnum(() => {
             assets: VersionedAssets,
             feeAssetItem: sts.number(),
             weightLimit: V3WeightLimit,
+        }),
+        remove_all_authorized_aliases: sts.unit(),
+        remove_authorized_alias: sts.enumStruct({
+            aliaser: VersionedLocation,
         }),
         reserve_transfer_assets: sts.enumStruct({
             dest: VersionedLocation,
@@ -23367,6 +25800,15 @@ export const XcmPalletCall: sts.Type<XcmPalletCall> = sts.closedEnum(() => {
             beneficiary: VersionedLocation,
             assets: VersionedAssets,
             feeAssetItem: sts.number(),
+            weightLimit: V3WeightLimit,
+        }),
+        transfer_assets_using_type_and_then: sts.enumStruct({
+            dest: VersionedLocation,
+            assets: VersionedAssets,
+            assetsTransferType: TransferType,
+            remoteFeesId: VersionedAssetId,
+            feesTransferType: TransferType,
+            customXcmOnDest: VersionedXcm,
             weightLimit: V3WeightLimit,
         }),
     }
@@ -23479,8 +25921,16 @@ export const UtilityCall: sts.Type<UtilityCall> = sts.closedEnum(() => {
             asOrigin: OriginCaller,
             call: Call,
         }),
+        dispatch_as_fallible: sts.enumStruct({
+            asOrigin: OriginCaller,
+            call: Call,
+        }),
         force_batch: sts.enumStruct({
             calls: sts.array(() => Call),
+        }),
+        if_else: sts.enumStruct({
+            main: Call,
+            fallback: Call,
         }),
         with_weight: sts.enumStruct({
             call: Call,
@@ -23494,21 +25944,11 @@ export const UtilityCall: sts.Type<UtilityCall> = sts.closedEnum(() => {
  */
 export const TreasuryCall: sts.Type<TreasuryCall> = sts.closedEnum(() => {
     return {
-        approve_proposal: sts.enumStruct({
-            proposalId: sts.number(),
-        }),
         check_status: sts.enumStruct({
             index: sts.number(),
         }),
         payout: sts.enumStruct({
             index: sts.number(),
-        }),
-        propose_spend: sts.enumStruct({
-            value: sts.bigint(),
-            beneficiary: MultiAddress,
-        }),
-        reject_proposal: sts.enumStruct({
-            proposalId: sts.number(),
         }),
         remove_approval: sts.enumStruct({
             proposalId: sts.number(),
@@ -23643,6 +26083,14 @@ export const StakingCall: sts.Type<StakingCall> = sts.closedEnum(() => {
         kick: sts.enumStruct({
             who: sts.array(() => MultiAddress),
         }),
+        manual_slash: sts.enumStruct({
+            validatorStash: AccountId32,
+            era: sts.number(),
+            slashFraction: Perbill,
+        }),
+        migrate_currency: sts.enumStruct({
+            stash: AccountId32,
+        }),
         nominate: sts.enumStruct({
             targets: sts.array(() => MultiAddress),
         }),
@@ -23662,6 +26110,12 @@ export const StakingCall: sts.Type<StakingCall> = sts.closedEnum(() => {
         rebond: sts.enumStruct({
             value: sts.bigint(),
         }),
+        restore_ledger: sts.enumStruct({
+            stash: AccountId32,
+            maybeController: sts.option(() => AccountId32),
+            maybeTotal: sts.option(() => sts.bigint()),
+            maybeUnlocking: sts.option(() => sts.array(() => UnlockChunk)),
+        }),
         scale_validator_count: sts.enumStruct({
             factor: Percent,
         }),
@@ -23678,11 +26132,11 @@ export const StakingCall: sts.Type<StakingCall> = sts.closedEnum(() => {
         set_staking_configs: sts.enumStruct({
             minNominatorBond: ConfigOp,
             minValidatorBond: ConfigOp,
-            maxNominatorCount: Type_413,
-            maxValidatorCount: Type_413,
-            chillThreshold: Type_414,
-            minCommission: Type_415,
-            maxStakedRewards: Type_414,
+            maxNominatorCount: Type_304,
+            maxValidatorCount: Type_304,
+            chillThreshold: Type_305,
+            minCommission: Type_306,
+            maxStakedRewards: Type_305,
         }),
         set_validator_count: sts.enumStruct({
             new: sts.number(),
@@ -23699,6 +26153,47 @@ export const StakingCall: sts.Type<StakingCall> = sts.closedEnum(() => {
         withdraw_unbonded: sts.enumStruct({
             numSlashingSpans: sts.number(),
         }),
+    }
+})
+
+export const Type_306: sts.Type<Type_306> = sts.closedEnum(() => {
+    return {
+        Noop: sts.unit(),
+        Remove: sts.unit(),
+        Set: Perbill,
+    }
+})
+
+export const Type_305: sts.Type<Type_305> = sts.closedEnum(() => {
+    return {
+        Noop: sts.unit(),
+        Remove: sts.unit(),
+        Set: Percent,
+    }
+})
+
+export const Type_304: sts.Type<Type_304> = sts.closedEnum(() => {
+    return {
+        Noop: sts.unit(),
+        Remove: sts.unit(),
+        Set: sts.number(),
+    }
+})
+
+export const ConfigOp: sts.Type<ConfigOp> = sts.closedEnum(() => {
+    return {
+        Noop: sts.unit(),
+        Remove: sts.unit(),
+        Set: sts.bigint(),
+    }
+})
+
+export const Percent = sts.number()
+
+export const UnlockChunk: sts.Type<UnlockChunk> = sts.struct(() => {
+    return {
+        value: sts.bigint(),
+        era: sts.number(),
     }
 })
 
@@ -23773,17 +26268,6 @@ export const SessionCall: sts.Type<SessionCall> = sts.closedEnum(() => {
             keys: SessionKeys,
             proof: sts.bytes(),
         }),
-    }
-})
-
-export const SessionKeys: sts.Type<SessionKeys> = sts.struct(() => {
-    return {
-        grandpa: Public,
-        babe: sts.bytes(),
-        imOnline: sts.bytes(),
-        paraValidator: sts.bytes(),
-        paraAssignment: sts.bytes(),
-        authorityDiscovery: sts.bytes(),
     }
 })
 
@@ -23975,6 +26459,7 @@ export const ProxyCall: sts.Type<ProxyCall> = sts.closedEnum(() => {
             height: sts.number(),
             extIndex: sts.number(),
         }),
+        poke_deposit: sts.unit(),
         proxy: sts.enumStruct({
             real: MultiAddress,
             forceProxyType: sts.option(() => ProxyType),
@@ -24071,40 +26556,9 @@ export const ParaGenesisArgs: sts.Type<ParaGenesisArgs> = sts.struct(() => {
 export const ParasSlashingCall: sts.Type<ParasSlashingCall> = sts.closedEnum(() => {
     return {
         report_dispute_lost_unsigned: sts.enumStruct({
-            disputeProof: V6DisputeProof,
+            disputeProof: DisputeProof,
             keyOwnerProof: MembershipProof,
         }),
-    }
-})
-
-export const MembershipProof: sts.Type<MembershipProof> = sts.struct(() => {
-    return {
-        session: sts.number(),
-        trieNodes: sts.array(() => sts.bytes()),
-        validatorCount: sts.number(),
-    }
-})
-
-export const V6DisputeProof: sts.Type<V6DisputeProof> = sts.struct(() => {
-    return {
-        timeSlot: V6DisputesTimeSlot,
-        kind: V6SlashingOffenceKind,
-        validatorIndex: V6ValidatorIndex,
-        validatorId: sts.bytes(),
-    }
-})
-
-export const V6SlashingOffenceKind: sts.Type<V6SlashingOffenceKind> = sts.closedEnum(() => {
-    return {
-        AgainstValid: sts.unit(),
-        ForInvalid: sts.unit(),
-    }
-})
-
-export const V6DisputesTimeSlot: sts.Type<V6DisputesTimeSlot> = sts.struct(() => {
-    return {
-        sessionIndex: sts.number(),
-        candidateHash: CandidateHash,
     }
 })
 
@@ -24132,6 +26586,15 @@ export const ParasCall: sts.Type<ParasCall> = sts.closedEnum(() => {
         add_trusted_validation_code: sts.enumStruct({
             validationCode: ValidationCode,
         }),
+        apply_authorized_force_set_current_code: sts.enumStruct({
+            para: Id,
+            newCode: ValidationCode,
+        }),
+        authorize_force_set_current_code_hash: sts.enumStruct({
+            para: Id,
+            newCodeHash: ValidationCodeHash,
+            validPeriod: sts.number(),
+        }),
         force_note_new_head: sts.enumStruct({
             para: Id,
             newHead: HeadData,
@@ -24157,21 +26620,24 @@ export const ParasCall: sts.Type<ParasCall> = sts.closedEnum(() => {
             context: sts.number(),
         }),
         include_pvf_check_statement: sts.enumStruct({
-            stmt: V6PvfCheckStatement,
-            signature: sts.bytes(),
+            stmt: V8PvfCheckStatement,
+            signature: V8Signature,
         }),
         poke_unused_validation_code: sts.enumStruct({
             validationCodeHash: ValidationCodeHash,
         }),
+        remove_upgrade_cooldown: sts.enumStruct({
+            para: Id,
+        }),
     }
 })
 
-export const V6PvfCheckStatement: sts.Type<V6PvfCheckStatement> = sts.struct(() => {
+export const V8PvfCheckStatement: sts.Type<V8PvfCheckStatement> = sts.struct(() => {
     return {
         accept: sts.boolean(),
         subject: ValidationCodeHash,
         sessionIndex: sts.number(),
-        validatorIndex: V6ValidatorIndex,
+        validatorIndex: V8ValidatorIndex,
     }
 })
 
@@ -24181,7 +26647,7 @@ export const V6PvfCheckStatement: sts.Type<V6PvfCheckStatement> = sts.struct(() 
 export const ParaInherentCall: sts.Type<ParaInherentCall> = sts.closedEnum(() => {
     return {
         enter: sts.enumStruct({
-            data: V6InherentData,
+            data: InherentData,
         }),
     }
 })
@@ -24196,18 +26662,31 @@ export const ParaInclusionCall: sts.Type<ParaInclusionCall> = sts.closedEnum(() 
 /**
  * Contains a variant per dispatchable extrinsic that this pallet has.
  */
+export const OnDemandAssignmentProviderCall: sts.Type<OnDemandAssignmentProviderCall> = sts.closedEnum(() => {
+    return {
+        place_order_allow_death: sts.enumStruct({
+            maxAmount: sts.bigint(),
+            paraId: Id,
+        }),
+        place_order_keep_alive: sts.enumStruct({
+            maxAmount: sts.bigint(),
+            paraId: Id,
+        }),
+        place_order_with_credits: sts.enumStruct({
+            maxAmount: sts.bigint(),
+            paraId: Id,
+        }),
+    }
+})
+
+/**
+ * Contains a variant per dispatchable extrinsic that this pallet has.
+ */
 export const NominationPoolsCall: sts.Type<NominationPoolsCall> = sts.closedEnum(() => {
     return {
         bond: sts.enumStruct({
             poolId: sts.number(),
             amount: BondValue,
-        }),
-        calculate_early_bird_bonus: sts.enumStruct({
-            poolCount: sts.number(),
-        }),
-        capture_early_bird_bonus_shares: sts.enumStruct({
-            poolId: sts.number(),
-            accountCount: sts.number(),
         }),
         chill: sts.enumStruct({
             poolId: sts.number(),
@@ -24216,7 +26695,6 @@ export const NominationPoolsCall: sts.Type<NominationPoolsCall> = sts.closedEnum
             tokenId: sts.bigint(),
             deposit: sts.bigint(),
             capacity: sts.bigint(),
-            duration: sts.number(),
             name: BoundedVec,
         }),
         destroy: sts.enumStruct({
@@ -24230,30 +26708,40 @@ export const NominationPoolsCall: sts.Type<NominationPoolsCall> = sts.closedEnum
             poolId: sts.number(),
             validators: sts.array(() => AccountId32),
         }),
-        pay_early_bird_bonus: sts.enumStruct({
-            poolId: sts.number(),
-            paymentId: sts.number(),
-            accountCount: sts.number(),
-        }),
         payout_rewards: sts.enumStruct({
             validatorStash: AccountId32,
             era: sts.number(),
+        }),
+        payout_rewards_unsigned: sts.enumStruct({
+            payload: PayoutRewardsPayload,
+            signature: MultiSignature,
+        }),
+        payout_validator_bonus: sts.enumStruct({
+            era: sts.number(),
+            validatorCount: sts.number(),
         }),
         pool_withdraw_unbonded: sts.enumStruct({
             poolId: sts.number(),
             numSlashingSpans: sts.number(),
         }),
-        process_payouts: sts.enumStruct({
-            poolCount: sts.number(),
+        remove_empty_unbonding_members: sts.enumStruct({
+            limit: sts.number(),
         }),
         set_configs: sts.enumStruct({
-            minJoinBond: Type_441,
-            minCreateBond: Type_441,
-            globalMaxCommission: Type_442,
-            requiredPayoutCount: Type_442,
+            minJoinBond: Type_332,
+            minCreateBond: Type_332,
+            globalMaxCommission: Type_333,
         }),
         set_staking_info: sts.enumStruct({
             info: StakingInfo,
+        }),
+        set_validator_bonus_config: sts.enumStruct({
+            cycleDuration: sts.option(() => sts.number()),
+            performanceThreshold: sts.option(() => Perbill),
+            minimumGoodEras: sts.option(() => sts.number()),
+            payoutAccount: sts.option(() => AccountId32),
+            bonusAmounts: sts.option(() => sts.array(() => sts.bigint())),
+            resetLastPaidEra: sts.boolean(),
         }),
         unbond: sts.enumStruct({
             poolId: sts.number(),
@@ -24263,7 +26751,6 @@ export const NominationPoolsCall: sts.Type<NominationPoolsCall> = sts.closedEnum
         unbond_deposit: sts.enumStruct({
             poolId: sts.number(),
         }),
-        unlock_early_bird_bonus: sts.unit(),
         withdraw_deposit: sts.enumStruct({
             poolId: sts.number(),
         }),
@@ -24280,19 +26767,11 @@ export const NominationPoolsCall: sts.Type<NominationPoolsCall> = sts.closedEnum
     }
 })
 
-export const Type_442: sts.Type<Type_442> = sts.closedEnum(() => {
+export const StakingInfo: sts.Type<StakingInfo> = sts.struct(() => {
     return {
-        Noop: sts.unit(),
-        Remove: sts.unit(),
-        Set: Perbill,
-    }
-})
-
-export const Type_441: sts.Type<Type_441> = sts.closedEnum(() => {
-    return {
-        Noop: sts.unit(),
-        Remove: sts.unit(),
-        Set: sts.bigint(),
+        annualInflationRate: Perbill,
+        collatorPayoutCut: Perbill,
+        treasuryPayoutCut: Perbill,
     }
 })
 
@@ -24332,6 +26811,11 @@ export const MultisigCall: sts.Type<MultisigCall> = sts.closedEnum(() => {
             timepoint: Timepoint,
             callHash: sts.bytes(),
         }),
+        poke_deposit: sts.enumStruct({
+            threshold: sts.number(),
+            otherSignatories: sts.array(() => AccountId32),
+            callHash: sts.bytes(),
+        }),
     }
 })
 
@@ -24342,6 +26826,11 @@ export const MultiTokensCall: sts.Type<MultiTokensCall> = sts.closedEnum(() => {
     return {
         accept_collection_transfer: sts.enumStruct({
             collectionId: sts.bigint(),
+        }),
+        add_token_to_group: sts.enumStruct({
+            collectionId: sts.bigint(),
+            tokenId: sts.bigint(),
+            tokenGroupId: sts.bigint(),
         }),
         approve_collection: sts.enumStruct({
             collectionId: sts.bigint(),
@@ -24356,15 +26845,18 @@ export const MultiTokensCall: sts.Type<MultiTokensCall> = sts.closedEnum(() => {
             expiration: sts.option(() => sts.number()),
             currentAmount: sts.bigint(),
         }),
+        batch_infuse: sts.enumStruct({
+            collectionId: sts.bigint(),
+            infusions: sts.array(() => BatchInfusion),
+        }),
         batch_mint: sts.enumStruct({
             collectionId: sts.bigint(),
-            recipients: sts.array(() => Type_597),
+            recipients: sts.array(() => Type_619),
         }),
         batch_set_attribute: sts.enumStruct({
             collectionId: sts.bigint(),
             tokenId: sts.option(() => sts.bigint()),
             attributes: sts.array(() => AttributeKeyValuePair),
-            depositor: sts.option(() => MultiAddress),
         }),
         batch_transfer: sts.enumStruct({
             collectionId: sts.bigint(),
@@ -24391,8 +26883,14 @@ export const MultiTokensCall: sts.Type<MultiTokensCall> = sts.closedEnum(() => {
         create_collection: sts.enumStruct({
             descriptor: DefaultCollectionDescriptor,
         }),
+        create_token_group: sts.enumStruct({
+            collectionId: sts.bigint(),
+        }),
         destroy_collection: sts.enumStruct({
             collectionId: sts.bigint(),
+        }),
+        destroy_token_group: sts.enumStruct({
+            tokenGroupId: sts.bigint(),
         }),
         finish_claim_tokens: sts.enumStruct({
             destination: AccountId32,
@@ -24413,6 +26911,7 @@ export const MultiTokensCall: sts.Type<MultiTokensCall> = sts.closedEnum(() => {
             owner: AccountId32,
             collectionId: sts.bigint(),
             descriptor: DefaultCollectionDescriptor,
+            depositor: sts.option(() => AccountId32),
         }),
         force_create_ethereum_collection: sts.enumStruct({
             owner: AccountId32,
@@ -24519,12 +27018,30 @@ export const MultiTokensCall: sts.Type<MultiTokensCall> = sts.closedEnum(() => {
             tokenId: sts.option(() => sts.bigint()),
             key: sts.bytes(),
         }),
+        remove_token_from_group: sts.enumStruct({
+            collectionId: sts.bigint(),
+            tokenId: sts.bigint(),
+            tokenGroupId: sts.bigint(),
+        }),
+        remove_token_group_attribute: sts.enumStruct({
+            tokenGroupId: sts.bigint(),
+            key: sts.bytes(),
+        }),
         set_attribute: sts.enumStruct({
             collectionId: sts.bigint(),
             tokenId: sts.option(() => sts.bigint()),
             key: sts.bytes(),
             value: sts.bytes(),
-            depositor: sts.option(() => MultiAddress),
+        }),
+        set_token_group_attribute: sts.enumStruct({
+            tokenGroupId: sts.bigint(),
+            key: sts.bytes(),
+            value: sts.bytes(),
+        }),
+        set_token_groups: sts.enumStruct({
+            collectionId: sts.bigint(),
+            tokenId: sts.bigint(),
+            tokenGroups: sts.array(() => sts.bigint()),
         }),
         thaw: sts.enumStruct({
             info: Freeze,
@@ -24548,6 +27065,29 @@ export const MultiTokensCall: sts.Type<MultiTokensCall> = sts.closedEnum(() => {
             tokenId: sts.bigint(),
             deltaAccountCount: sts.number(),
         }),
+    }
+})
+
+export const Attribute: sts.Type<Attribute> = sts.struct(() => {
+    return {
+        value: sts.bytes(),
+        deposit: sts.bigint(),
+        depositor: sts.option(() => AccountId32),
+    }
+})
+
+export const DefaultBurnParams: sts.Type<DefaultBurnParams> = sts.struct(() => {
+    return {
+        tokenId: sts.bigint(),
+        amount: sts.bigint(),
+        removeTokenStorage: sts.boolean(),
+    }
+})
+
+export const BatchInfusion: sts.Type<BatchInfusion> = sts.struct(() => {
+    return {
+        tokenId: sts.bigint(),
+        amount: sts.bigint(),
     }
 })
 
@@ -24619,40 +27159,42 @@ export const MessageQueueCall: sts.Type<MessageQueueCall> = sts.closedEnum(() =>
  */
 export const MarketplaceCall: sts.Type<MarketplaceCall> = sts.closedEnum(() => {
     return {
+        add_whitelisted_accounts: sts.enumStruct({
+            listingId: H256,
+            accounts: sts.array(() => WhitelistAddAccount),
+        }),
         answer_counter_offer: sts.enumStruct({
             listingId: H256,
-            accept: sts.boolean(),
+            creator: AccountId32,
+            response: CounterOfferResponse,
+            currentPrice: sts.bigint(),
+            royaltyBeneficiaryCount: sts.number(),
         }),
         cancel_listing: sts.enumStruct({
             listingId: H256,
         }),
-        convert_listings: sts.enumStruct({
-            listingIds: sts.array(() => H256),
-        }),
         create_listing: sts.enumStruct({
-            makeAssetId: AssetId,
-            takeAssetId: AssetId,
-            amount: sts.bigint(),
-            price: sts.bigint(),
-            salt: sts.bytes(),
-            listingData: ListingData,
-            depositor: sts.option(() => MultiAddress),
+            descriptor: ListingDescriptor,
         }),
         fill_listing: sts.enumStruct({
             listingId: H256,
             amount: sts.bigint(),
+            royaltyBeneficiaryCount: sts.number(),
         }),
         finalize_auction: sts.enumStruct({
+            listingId: H256,
+            royaltyBeneficiaryCount: sts.number(),
+        }),
+        finalize_auction_unsigned: sts.enumStruct({
+            payload: FinalizeAuctionPayload,
+            signature: MultiSignature,
+        }),
+        force_cancel_listing: sts.enumStruct({
             listingId: H256,
         }),
         force_create_listing: sts.enumStruct({
             seller: MultiAddress,
-            makeAssetId: AssetId,
-            takeAssetId: AssetId,
-            amount: sts.bigint(),
-            price: sts.bigint(),
-            salt: sts.bytes(),
-            listingData: ListingData,
+            descriptor: ListingDescriptor,
             depositBacker: sts.option(() => MultiAddress),
         }),
         force_place_bid: sts.enumStruct({
@@ -24672,9 +27214,36 @@ export const MarketplaceCall: sts.Type<MarketplaceCall> = sts.closedEnum(() => {
         remove_expired_listing: sts.enumStruct({
             listingId: H256,
         }),
+        remove_expired_listing_unsigned: sts.enumStruct({
+            payload: RemoveExpiredListingPayload,
+            signature: MultiSignature,
+        }),
+        remove_whitelisted_accounts: sts.enumStruct({
+            listingId: H256,
+            accountIds: sts.array(() => AccountId32),
+        }),
         set_protocol_fee: sts.enumStruct({
             protocolFee: Perbill,
         }),
+    }
+})
+
+export const RemoveExpiredListingPayload: sts.Type<RemoveExpiredListingPayload> = sts.struct(() => {
+    return {
+        listingId: H256,
+        blockNumber: sts.number(),
+        caller: AccountId32,
+        public: MultiSigner,
+    }
+})
+
+export const FinalizeAuctionPayload: sts.Type<FinalizeAuctionPayload> = sts.struct(() => {
+    return {
+        listingId: H256,
+        royaltyBeneficiaryCount: sts.number(),
+        blockNumber: sts.number(),
+        caller: AccountId32,
+        public: MultiSigner,
     }
 })
 
@@ -24686,27 +27255,6 @@ export const InitializerCall: sts.Type<InitializerCall> = sts.closedEnum(() => {
         force_approve: sts.enumStruct({
             upTo: sts.number(),
         }),
-    }
-})
-
-/**
- * Contains a variant per dispatchable extrinsic that this pallet has.
- */
-export const ImOnlineCall: sts.Type<ImOnlineCall> = sts.closedEnum(() => {
-    return {
-        heartbeat: sts.enumStruct({
-            heartbeat: Heartbeat,
-            signature: sts.bytes(),
-        }),
-    }
-})
-
-export const Heartbeat: sts.Type<Heartbeat> = sts.struct(() => {
-    return {
-        blockNumber: sts.number(),
-        sessionIndex: sts.number(),
-        authorityIndex: sts.number(),
-        validatorsLen: sts.number(),
     }
 })
 
@@ -24737,6 +27285,9 @@ export const IdentityCall: sts.Type<IdentityCall> = sts.closedEnum(() => {
         kill_identity: sts.enumStruct({
             target: MultiAddress,
         }),
+        kill_username: sts.enumStruct({
+            username: sts.bytes(),
+        }),
         provide_judgement: sts.enumStruct({
             regIndex: sts.number(),
             target: MultiAddress,
@@ -24744,16 +27295,17 @@ export const IdentityCall: sts.Type<IdentityCall> = sts.closedEnum(() => {
             identity: H256,
         }),
         quit_sub: sts.unit(),
-        remove_dangling_username: sts.enumStruct({
-            username: sts.bytes(),
-        }),
         remove_expired_approval: sts.enumStruct({
             username: sts.bytes(),
         }),
         remove_sub: sts.enumStruct({
             sub: MultiAddress,
         }),
+        remove_username: sts.enumStruct({
+            username: sts.bytes(),
+        }),
         remove_username_authority: sts.enumStruct({
+            suffix: sts.bytes(),
             authority: MultiAddress,
         }),
         rename_sub: sts.enumStruct({
@@ -24789,6 +27341,10 @@ export const IdentityCall: sts.Type<IdentityCall> = sts.closedEnum(() => {
             who: MultiAddress,
             username: sts.bytes(),
             signature: sts.option(() => MultiSignature),
+            useAllocation: sts.boolean(),
+        }),
+        unbind_username: sts.enumStruct({
+            username: sts.bytes(),
         }),
     }
 })
@@ -24798,6 +27354,9 @@ export const IdentityCall: sts.Type<IdentityCall> = sts.closedEnum(() => {
  */
 export const HrmpCall: sts.Type<HrmpCall> = sts.closedEnum(() => {
     return {
+        establish_channel_with_system: sts.enumStruct({
+            targetSystemChain: Id,
+        }),
         establish_system_channel: sts.enumStruct({
             sender: Id,
             recipient: Id,
@@ -24851,17 +27410,17 @@ export const GrandpaCall: sts.Type<GrandpaCall> = sts.closedEnum(() => {
             bestFinalizedBlockNumber: sts.number(),
         }),
         report_equivocation: sts.enumStruct({
-            equivocationProof: Type_423,
+            equivocationProof: Type_318,
             keyOwnerProof: MembershipProof,
         }),
         report_equivocation_unsigned: sts.enumStruct({
-            equivocationProof: Type_423,
+            equivocationProof: Type_318,
             keyOwnerProof: MembershipProof,
         }),
     }
 })
 
-export const Type_423: sts.Type<Type_423> = sts.struct(() => {
+export const Type_318: sts.Type<Type_318> = sts.struct(() => {
     return {
         setId: sts.bigint(),
         equivocation: Equivocation,
@@ -24870,19 +27429,21 @@ export const Type_423: sts.Type<Type_423> = sts.struct(() => {
 
 export const Equivocation: sts.Type<Equivocation> = sts.closedEnum(() => {
     return {
-        Precommit: Type_430,
-        Prevote: Type_425,
+        Precommit: Type_324,
+        Prevote: Type_320,
     }
 })
 
-export const Type_425: sts.Type<Type_425> = sts.struct(() => {
+export const Type_320: sts.Type<Type_320> = sts.struct(() => {
     return {
         roundNumber: sts.bigint(),
         identity: Public,
-        first: sts.tuple(() => [Prevote, sts.bytes()]),
-        second: sts.tuple(() => [Prevote, sts.bytes()]),
+        first: sts.tuple(() => [Prevote, Signature]),
+        second: sts.tuple(() => [Prevote, Signature]),
     }
 })
+
+export const Signature = sts.bytes()
 
 export const Prevote: sts.Type<Prevote> = sts.struct(() => {
     return {
@@ -24891,12 +27452,12 @@ export const Prevote: sts.Type<Prevote> = sts.struct(() => {
     }
 })
 
-export const Type_430: sts.Type<Type_430> = sts.struct(() => {
+export const Type_324: sts.Type<Type_324> = sts.struct(() => {
     return {
         roundNumber: sts.bigint(),
         identity: Public,
-        first: sts.tuple(() => [Precommit, sts.bytes()]),
-        second: sts.tuple(() => [Precommit, sts.bytes()]),
+        first: sts.tuple(() => [Precommit, Signature]),
+        second: sts.tuple(() => [Precommit, Signature]),
     }
 })
 
@@ -24951,6 +27512,11 @@ export const FuelTanksCall: sts.Type<FuelTanksCall> = sts.closedEnum(() => {
             owner: MultiAddress,
             descriptor: FuelTankDescriptor,
         }),
+        force_insert_rule_set: sts.enumStruct({
+            tankId: MultiAddress,
+            ruleSetId: sts.number(),
+            ruleSet: RuleSetDescriptor,
+        }),
         force_set_consumption: sts.enumStruct({
             tankId: MultiAddress,
             userId: sts.option(() => MultiAddress),
@@ -24981,10 +27547,28 @@ export const FuelTanksCall: sts.Type<FuelTanksCall> = sts.closedEnum(() => {
             ruleSetId: sts.number(),
             ruleKind: DispatchRuleKind,
         }),
+        remove_expired_account: sts.enumStruct({
+            tankId: MultiAddress,
+            userId: MultiAddress,
+        }),
+        remove_expired_account_unsigned: sts.enumStruct({
+            payload: RemoveExpiredAccountPayload,
+            signature: MultiSignature,
+        }),
         remove_rule_set: sts.enumStruct({
             tankId: MultiAddress,
             ruleSetId: sts.number(),
         }),
+    }
+})
+
+export const RemoveExpiredAccountPayload: sts.Type<RemoveExpiredAccountPayload> = sts.struct(() => {
+    return {
+        tankId: AccountId32,
+        userId: AccountId32,
+        blockNumber: sts.number(),
+        caller: AccountId32,
+        public: MultiSigner,
     }
 })
 
@@ -25080,10 +27664,7 @@ export const ExtrinsicPauseCall: sts.Type<ExtrinsicPauseCall> = sts.closedEnum((
  */
 export const ElectionProviderMultiPhaseCall: sts.Type<ElectionProviderMultiPhaseCall> = sts.closedEnum(() => {
     return {
-        governance_fallback: sts.enumStruct({
-            maybeMaxVoters: sts.option(() => sts.number()),
-            maybeMaxTargets: sts.option(() => sts.number()),
-        }),
+        governance_fallback: sts.unit(),
         set_emergency_election_result: sts.enumStruct({
             supports: sts.array(() => sts.tuple(() => [AccountId32, Support])),
         }),
@@ -25279,11 +27860,27 @@ export const CrowdloanCall: sts.Type<CrowdloanCall> = sts.closedEnum(() => {
     }
 })
 
-export const MultiSigner: sts.Type<MultiSigner> = sts.closedEnum(() => {
+/**
+ * Contains a variant per dispatchable extrinsic that this pallet has.
+ */
+export const CoretimeCall: sts.Type<CoretimeCall> = sts.closedEnum(() => {
     return {
-        Ecdsa: sts.bytes(),
-        Ed25519: sts.bytes(),
-        Sr25519: sts.bytes(),
+        assign_core: sts.enumStruct({
+            core: sts.number(),
+            begin: sts.number(),
+            assignment: sts.array(() => sts.tuple(() => [CoreAssignment, PartsOf57600])),
+            endHint: sts.option(() => sts.number()),
+        }),
+        credit_account: sts.enumStruct({
+            who: AccountId32,
+            amount: sts.bigint(),
+        }),
+        request_core_count: sts.enumStruct({
+            count: sts.number(),
+        }),
+        request_revenue_at: sts.enumStruct({
+            when: sts.number(),
+        }),
     }
 })
 
@@ -25339,10 +27936,10 @@ export const Conviction: sts.Type<Conviction> = sts.closedEnum(() => {
 export const ConfigurationCall: sts.Type<ConfigurationCall> = sts.closedEnum(() => {
     return {
         set_approval_voting_params: sts.enumStruct({
-            new: ApprovalVotingParams,
+            new: V8ApprovalVotingParams,
         }),
         set_async_backing_params: sts.enumStruct({
-            new: V6AsyncBackingParams,
+            new: V8AsyncBackingParams,
         }),
         set_bypass_consistency_check: sts.enumStruct({
             new: sts.boolean(),
@@ -25360,7 +27957,7 @@ export const ConfigurationCall: sts.Type<ConfigurationCall> = sts.closedEnum(() 
             new: sts.number(),
         }),
         set_executor_params: sts.enumStruct({
-            new: sts.array(() => V6ExecutorParam),
+            new: sts.array(() => V8ExecutorParam),
         }),
         set_group_rotation_frequency: sts.enumStruct({
             new: sts.number(),
@@ -25391,9 +27988,6 @@ export const ConfigurationCall: sts.Type<ConfigurationCall> = sts.closedEnum(() 
         }),
         set_hrmp_sender_deposit: sts.enumStruct({
             new: sts.bigint(),
-        }),
-        set_max_availability_timeouts: sts.enumStruct({
-            new: sts.number(),
         }),
         set_max_code_size: sts.enumStruct({
             new: sts.number(),
@@ -25456,9 +28050,6 @@ export const ConfigurationCall: sts.Type<ConfigurationCall> = sts.closedEnum(() 
         set_on_demand_target_queue_utilization: sts.enumStruct({
             new: Perbill,
         }),
-        set_on_demand_ttl: sts.enumStruct({
-            new: sts.number(),
-        }),
         set_paras_availability_period: sts.enumStruct({
             new: sts.number(),
         }),
@@ -25469,7 +28060,7 @@ export const ConfigurationCall: sts.Type<ConfigurationCall> = sts.closedEnum(() 
             new: sts.number(),
         }),
         set_scheduler_params: sts.enumStruct({
-            new: SchedulerParams,
+            new: V8SchedulerParams,
         }),
         set_scheduling_lookahead: sts.enumStruct({
             new: sts.number(),
@@ -25486,17 +28077,88 @@ export const ConfigurationCall: sts.Type<ConfigurationCall> = sts.closedEnum(() 
     }
 })
 
+export const V8SchedulerParams: sts.Type<V8SchedulerParams> = sts.struct(() => {
+    return {
+        groupRotationFrequency: sts.number(),
+        parasAvailabilityPeriod: sts.number(),
+        maxValidatorsPerCore: sts.option(() => sts.number()),
+        lookahead: sts.number(),
+        numCores: sts.number(),
+        maxAvailabilityTimeouts: sts.number(),
+        onDemandQueueMaxSize: sts.number(),
+        onDemandTargetQueueUtilization: Perbill,
+        onDemandFeeVariability: Perbill,
+        onDemandBaseFee: sts.bigint(),
+        ttl: sts.number(),
+    }
+})
+
+export const V8ExecutorParam: sts.Type<V8ExecutorParam> = sts.closedEnum(() => {
+    return {
+        MaxMemoryPages: sts.number(),
+        PrecheckingMaxMemory: sts.bigint(),
+        PvfExecTimeout: sts.tuple(() => [V8PvfExecKind, sts.bigint()]),
+        PvfPrepTimeout: sts.tuple(() => [V8PvfPrepKind, sts.bigint()]),
+        StackLogicalMax: sts.number(),
+        StackNativeMax: sts.number(),
+        WasmExtBulkMemory: sts.unit(),
+    }
+})
+
+export const V8PvfPrepKind: sts.Type<V8PvfPrepKind> = sts.closedEnum(() => {
+    return {
+        Precheck: sts.unit(),
+        Prepare: sts.unit(),
+    }
+})
+
+export const V8PvfExecKind: sts.Type<V8PvfExecKind> = sts.closedEnum(() => {
+    return {
+        Approval: sts.unit(),
+        Backing: sts.unit(),
+    }
+})
+
+export const V8AsyncBackingParams: sts.Type<V8AsyncBackingParams> = sts.struct(() => {
+    return {
+        maxCandidateDepth: sts.number(),
+        allowedAncestryLen: sts.number(),
+    }
+})
+
+export const V8ApprovalVotingParams: sts.Type<V8ApprovalVotingParams> = sts.struct(() => {
+    return {
+        maxApprovalCoalesceCount: sts.number(),
+    }
+})
+
 /**
  * Contains a variant per dispatchable extrinsic that this pallet has.
  */
 export const BeefyCall: sts.Type<BeefyCall> = sts.closedEnum(() => {
     return {
-        report_equivocation: sts.enumStruct({
-            equivocationProof: Type_645,
+        report_double_voting: sts.enumStruct({
+            equivocationProof: DoubleVotingProof,
             keyOwnerProof: MembershipProof,
         }),
-        report_equivocation_unsigned: sts.enumStruct({
-            equivocationProof: Type_645,
+        report_double_voting_unsigned: sts.enumStruct({
+            equivocationProof: DoubleVotingProof,
+            keyOwnerProof: MembershipProof,
+        }),
+        report_fork_voting: sts.enumStruct({
+            equivocationProof: ForkVotingProof,
+            keyOwnerProof: MembershipProof,
+        }),
+        report_fork_voting_unsigned: sts.enumStruct({
+            equivocationProof: ForkVotingProof,
+            keyOwnerProof: MembershipProof,
+        }),
+        report_future_block_voting: sts.enumStruct({
+            equivocationProof: FutureBlockVotingProof,
+            keyOwnerProof: MembershipProof,
+        }),
+        report_future_block_voting_unsigned: sts.enumStruct({
+            equivocationProof: FutureBlockVotingProof,
             keyOwnerProof: MembershipProof,
         }),
         set_new_genesis: sts.enumStruct({
@@ -25505,10 +28167,9 @@ export const BeefyCall: sts.Type<BeefyCall> = sts.closedEnum(() => {
     }
 })
 
-export const Type_645: sts.Type<Type_645> = sts.struct(() => {
+export const FutureBlockVotingProof: sts.Type<FutureBlockVotingProof> = sts.struct(() => {
     return {
-        first: VoteMessage,
-        second: VoteMessage,
+        vote: VoteMessage,
     }
 })
 
@@ -25528,11 +28189,39 @@ export const Commitment: sts.Type<Commitment> = sts.struct(() => {
     }
 })
 
+export const ForkVotingProof: sts.Type<ForkVotingProof> = sts.struct(() => {
+    return {
+        vote: VoteMessage,
+        ancestryProof: AncestryProof,
+        header: Header,
+    }
+})
+
+export const AncestryProof: sts.Type<AncestryProof> = sts.struct(() => {
+    return {
+        prevPeaks: sts.array(() => H256),
+        prevLeafCount: sts.bigint(),
+        leafCount: sts.bigint(),
+        items: sts.array(() => sts.tuple(() => [sts.bigint(), H256])),
+    }
+})
+
+export const DoubleVotingProof: sts.Type<DoubleVotingProof> = sts.struct(() => {
+    return {
+        first: VoteMessage,
+        second: VoteMessage,
+    }
+})
+
 /**
  * Contains a variant per dispatchable extrinsic that this pallet has.
  */
 export const BalancesCall: sts.Type<BalancesCall> = sts.closedEnum(() => {
     return {
+        burn: sts.enumStruct({
+            value: sts.bigint(),
+            keepAlive: sts.boolean(),
+        }),
         force_adjust_total_issuance: sts.enumStruct({
             direction: AdjustmentDirection,
             delta: sts.bigint(),
@@ -25603,6 +28292,8 @@ export const EquivocationProof: sts.Type<EquivocationProof> = sts.struct(() => {
     }
 })
 
+export const Slot = sts.bigint()
+
 export const NextConfigDescriptor: sts.Type<NextConfigDescriptor> = sts.closedEnum(() => {
     return {
         V1: sts.enumStruct({
@@ -25671,15 +28362,48 @@ export const SlotLeasePeriodStart: sts.Type<SlotLeasePeriodStart> = sts.closedEn
     }
 })
 
-export const VersionedLocation: sts.Type<VersionedLocation> = sts.closedEnum(() => {
+export const DispatchErrorWithPostInfo: sts.Type<DispatchErrorWithPostInfo> = sts.struct(() => {
     return {
-        V2: V2MultiLocation,
-        V3: V3MultiLocation,
-        V4: V4Location,
+        postInfo: PostDispatchInfo,
+        error: DispatchError,
     }
 })
 
-export const V3Error: sts.Type<V3Error> = sts.closedEnum(() => {
+export const PostDispatchInfo: sts.Type<PostDispatchInfo> = sts.struct(() => {
+    return {
+        actualWeight: sts.option(() => Weight),
+        paysFee: Pays,
+    }
+})
+
+export const Pays: sts.Type<Pays> = sts.closedEnum(() => {
+    return {
+        No: sts.unit(),
+        Yes: sts.unit(),
+    }
+})
+
+export const V3SendError: sts.Type<V3SendError> = sts.closedEnum(() => {
+    return {
+        DestinationUnsupported: sts.unit(),
+        ExceedsMaxMessageSize: sts.unit(),
+        Fees: sts.unit(),
+        MissingArgument: sts.unit(),
+        NotApplicable: sts.unit(),
+        Transport: sts.unit(),
+        Unroutable: sts.unit(),
+    }
+})
+
+export const VersionedLocation: sts.Type<VersionedLocation> = sts.closedEnum(() => {
+    return {
+        V3: V3MultiLocation,
+        V4: V4Location,
+        V5: V5Location,
+    }
+})
+
+export const V5Error: sts.Type<V5Error> = sts.closedEnum(() => {
     return {
         AssetNotFound: sts.unit(),
         BadOrigin: sts.unit(),
@@ -25709,6 +28433,7 @@ export const V3Error: sts.Type<V3Error> = sts.closedEnum(() => {
         PalletNotFound: sts.unit(),
         ReanchorFailed: sts.unit(),
         TooExpensive: sts.unit(),
+        TooManyAssets: sts.unit(),
         Transport: sts.unit(),
         Trap: sts.bigint(),
         Unanchored: sts.unit(),
@@ -25724,21 +28449,21 @@ export const V3Error: sts.Type<V3Error> = sts.closedEnum(() => {
     }
 })
 
-export const V4Asset: sts.Type<V4Asset> = sts.struct(() => {
+export const V5Asset: sts.Type<V5Asset> = sts.struct(() => {
     return {
-        id: V4AssetId,
-        fun: V4Fungibility,
+        id: V5AssetId,
+        fun: V5Fungibility,
     }
 })
 
-export const V4Fungibility: sts.Type<V4Fungibility> = sts.closedEnum(() => {
+export const V5Fungibility: sts.Type<V5Fungibility> = sts.closedEnum(() => {
     return {
         Fungible: sts.bigint(),
-        NonFungible: V4AssetInstance,
+        NonFungible: V5AssetInstance,
     }
 })
 
-export const V4AssetInstance: sts.Type<V4AssetInstance> = sts.closedEnum(() => {
+export const V5AssetInstance: sts.Type<V5AssetInstance> = sts.closedEnum(() => {
     return {
         Array16: sts.bytes(),
         Array32: sts.bytes(),
@@ -25751,24 +28476,24 @@ export const V4AssetInstance: sts.Type<V4AssetInstance> = sts.closedEnum(() => {
 
 export const VersionedAssets: sts.Type<VersionedAssets> = sts.closedEnum(() => {
     return {
-        V2: sts.array(() => V2MultiAsset),
         V3: sts.array(() => V3MultiAsset),
         V4: sts.array(() => V4Asset),
+        V5: sts.array(() => V5Asset),
     }
 })
 
-export const V4Response: sts.Type<V4Response> = sts.closedEnum(() => {
+export const V5Response: sts.Type<V5Response> = sts.closedEnum(() => {
     return {
-        Assets: sts.array(() => V4Asset),
+        Assets: sts.array(() => V5Asset),
         DispatchResult: V3MaybeErrorCode,
-        ExecutionResult: sts.option(() => sts.tuple(() => [sts.number(), V3Error])),
+        ExecutionResult: sts.option(() => sts.tuple(() => [sts.number(), V5Error])),
         Null: sts.unit(),
-        PalletsInfo: sts.array(() => V4PalletInfo),
+        PalletsInfo: sts.array(() => V5PalletInfo),
         Version: sts.number(),
     }
 })
 
-export const V4PalletInfo: sts.Type<V4PalletInfo> = sts.struct(() => {
+export const V5PalletInfo: sts.Type<V5PalletInfo> = sts.struct(() => {
     return {
         index: sts.number(),
         name: sts.bytes(),
@@ -25779,40 +28504,44 @@ export const V4PalletInfo: sts.Type<V4PalletInfo> = sts.struct(() => {
     }
 })
 
-export const V4Instruction: sts.Type<V4Instruction> = sts.closedEnum(() => {
+export const V5Instruction: sts.Type<V5Instruction> = sts.closedEnum(() => {
     return {
-        AliasOrigin: V4Location,
-        BurnAsset: sts.array(() => V4Asset),
+        AliasOrigin: V5Location,
+        BurnAsset: sts.array(() => V5Asset),
         BuyExecution: sts.enumStruct({
-            fees: V4Asset,
+            fees: V5Asset,
             weightLimit: V3WeightLimit,
         }),
         ClaimAsset: sts.enumStruct({
-            assets: sts.array(() => V4Asset),
-            ticket: V4Location,
+            assets: sts.array(() => V5Asset),
+            ticket: V5Location,
         }),
         ClearError: sts.unit(),
         ClearOrigin: sts.unit(),
         ClearTopic: sts.unit(),
         ClearTransactStatus: sts.unit(),
         DepositAsset: sts.enumStruct({
-            assets: V4AssetFilter,
-            beneficiary: V4Location,
+            assets: V5AssetFilter,
+            beneficiary: V5Location,
         }),
         DepositReserveAsset: sts.enumStruct({
-            assets: V4AssetFilter,
-            dest: V4Location,
-            xcm: sts.array(() => V4Instruction),
+            assets: V5AssetFilter,
+            dest: V5Location,
+            xcm: sts.array(() => V5Instruction),
         }),
-        DescendOrigin: V4Junctions,
+        DescendOrigin: V5Junctions,
         ExchangeAsset: sts.enumStruct({
-            give: V4AssetFilter,
-            want: sts.array(() => V4Asset),
+            give: V5AssetFilter,
+            want: sts.array(() => V5Asset),
             maximal: sts.boolean(),
         }),
-        ExpectAsset: sts.array(() => V4Asset),
-        ExpectError: sts.option(() => sts.tuple(() => [sts.number(), V3Error])),
-        ExpectOrigin: sts.option(() => V4Location),
+        ExecuteWithOrigin: sts.enumStruct({
+            descendantOrigin: sts.option(() => V5Junctions),
+            xcm: sts.array(() => V5Instruction),
+        }),
+        ExpectAsset: sts.array(() => V5Asset),
+        ExpectError: sts.option(() => sts.tuple(() => [sts.number(), V5Error])),
+        ExpectOrigin: sts.option(() => V5Location),
         ExpectPallet: sts.enumStruct({
             index: sts.number(),
             name: sts.bytes(),
@@ -25822,9 +28551,9 @@ export const V4Instruction: sts.Type<V4Instruction> = sts.closedEnum(() => {
         }),
         ExpectTransactStatus: V3MaybeErrorCode,
         ExportMessage: sts.enumStruct({
-            network: V4NetworkId,
-            destination: V4Junctions,
-            xcm: sts.array(() => V4Instruction),
+            network: V5NetworkId,
+            destination: V5Junctions,
+            xcm: sts.array(() => V5Instruction),
         }),
         HrmpChannelAccepted: sts.enumStruct({
             recipient: sts.number(),
@@ -25840,50 +28569,63 @@ export const V4Instruction: sts.Type<V4Instruction> = sts.closedEnum(() => {
             maxCapacity: sts.number(),
         }),
         InitiateReserveWithdraw: sts.enumStruct({
-            assets: V4AssetFilter,
-            reserve: V4Location,
-            xcm: sts.array(() => V4Instruction),
+            assets: V5AssetFilter,
+            reserve: V5Location,
+            xcm: sts.array(() => V5Instruction),
         }),
         InitiateTeleport: sts.enumStruct({
-            assets: V4AssetFilter,
-            dest: V4Location,
-            xcm: sts.array(() => V4Instruction),
+            assets: V5AssetFilter,
+            dest: V5Location,
+            xcm: sts.array(() => V5Instruction),
+        }),
+        InitiateTransfer: sts.enumStruct({
+            destination: V5Location,
+            remoteFees: sts.option(() => V5AssetTransferFilter),
+            preserveOrigin: sts.boolean(),
+            assets: sts.array(() => V5AssetTransferFilter),
+            remoteXcm: sts.array(() => V5Instruction),
         }),
         LockAsset: sts.enumStruct({
-            asset: V4Asset,
-            unlocker: V4Location,
+            asset: V5Asset,
+            unlocker: V5Location,
         }),
         NoteUnlockable: sts.enumStruct({
-            asset: V4Asset,
-            owner: V4Location,
+            asset: V5Asset,
+            owner: V5Location,
+        }),
+        PayFees: sts.enumStruct({
+            asset: V5Asset,
         }),
         QueryPallet: sts.enumStruct({
             moduleName: sts.bytes(),
-            responseInfo: V4QueryResponseInfo,
+            responseInfo: V5QueryResponseInfo,
         }),
         QueryResponse: sts.enumStruct({
             queryId: sts.bigint(),
-            response: V4Response,
+            response: V5Response,
             maxWeight: Weight,
-            querier: sts.option(() => V4Location),
+            querier: sts.option(() => V5Location),
         }),
-        ReceiveTeleportedAsset: sts.array(() => V4Asset),
+        ReceiveTeleportedAsset: sts.array(() => V5Asset),
         RefundSurplus: sts.unit(),
-        ReportError: V4QueryResponseInfo,
+        ReportError: V5QueryResponseInfo,
         ReportHolding: sts.enumStruct({
-            responseInfo: V4QueryResponseInfo,
-            assets: V4AssetFilter,
+            responseInfo: V5QueryResponseInfo,
+            assets: V5AssetFilter,
         }),
-        ReportTransactStatus: V4QueryResponseInfo,
+        ReportTransactStatus: V5QueryResponseInfo,
         RequestUnlock: sts.enumStruct({
-            asset: V4Asset,
-            locker: V4Location,
+            asset: V5Asset,
+            locker: V5Location,
         }),
-        ReserveAssetDeposited: sts.array(() => V4Asset),
-        SetAppendix: sts.array(() => V4Instruction),
-        SetErrorHandler: sts.array(() => V4Instruction),
+        ReserveAssetDeposited: sts.array(() => V5Asset),
+        SetAppendix: sts.array(() => V5Instruction),
+        SetErrorHandler: sts.array(() => V5Instruction),
         SetFeesMode: sts.enumStruct({
             jitWithdraw: sts.boolean(),
+        }),
+        SetHints: sts.enumStruct({
+            hints: sts.array(() => V5Hint),
         }),
         SetTopic: sts.bytes(),
         SubscribeVersion: sts.enumStruct({
@@ -25891,80 +28633,403 @@ export const V4Instruction: sts.Type<V4Instruction> = sts.closedEnum(() => {
             maxResponseWeight: Weight,
         }),
         Transact: sts.enumStruct({
-            originKind: V2OriginKind,
-            requireWeightAtMost: Weight,
+            originKind: V3OriginKind,
+            fallbackMaxWeight: sts.option(() => Weight),
             call: DoubleEncoded,
         }),
         TransferAsset: sts.enumStruct({
-            assets: sts.array(() => V4Asset),
-            beneficiary: V4Location,
+            assets: sts.array(() => V5Asset),
+            beneficiary: V5Location,
         }),
         TransferReserveAsset: sts.enumStruct({
-            assets: sts.array(() => V4Asset),
-            dest: V4Location,
-            xcm: sts.array(() => V4Instruction),
+            assets: sts.array(() => V5Asset),
+            dest: V5Location,
+            xcm: sts.array(() => V5Instruction),
         }),
         Trap: sts.bigint(),
-        UniversalOrigin: V4Junction,
+        UniversalOrigin: V5Junction,
         UnlockAsset: sts.enumStruct({
-            asset: V4Asset,
-            target: V4Location,
+            asset: V5Asset,
+            target: V5Location,
         }),
         UnpaidExecution: sts.enumStruct({
             weightLimit: V3WeightLimit,
-            checkOrigin: sts.option(() => V4Location),
+            checkOrigin: sts.option(() => V5Location),
         }),
         UnsubscribeVersion: sts.unit(),
-        WithdrawAsset: sts.array(() => V4Asset),
+        WithdrawAsset: sts.array(() => V5Asset),
     }
 })
 
-export const V4Location: sts.Type<V4Location> = sts.struct(() => {
+export const V5Location: sts.Type<V5Location> = sts.struct(() => {
     return {
         parents: sts.number(),
-        interior: V4Junctions,
+        interior: V5Junctions,
     }
 })
 
-export const V4Outcome: sts.Type<V4Outcome> = sts.closedEnum(() => {
+export const V5Outcome: sts.Type<V5Outcome> = sts.closedEnum(() => {
     return {
         Complete: sts.enumStruct({
             used: Weight,
         }),
-        Error: sts.enumStruct({
-            error: V3Error,
-        }),
+        Error: V5InstructionError,
         Incomplete: sts.enumStruct({
             used: Weight,
-            error: V3Error,
+            error: V5InstructionError,
         }),
     }
 })
 
-export const HrmpChannelId: sts.Type<HrmpChannelId> = sts.struct(() => {
+export const V5InstructionError: sts.Type<V5InstructionError> = sts.struct(() => {
     return {
-        sender: Id,
-        recipient: Id,
+        index: sts.number(),
+        error: V5Error,
     }
 })
+
+export const ValidationCodeHash = sts.bytes()
 
 export const Id = sts.number()
 
-export const RewardDestination: sts.Type<RewardDestination> = sts.closedEnum(() => {
+export const V8GroupIndex = sts.number()
+
+export const V8CoreIndex = sts.number()
+
+export const HeadData = sts.bytes()
+
+export const CandidateReceiptV2: sts.Type<CandidateReceiptV2> = sts.struct(() => {
     return {
-        Account: AccountId32,
-        Controller: sts.unit(),
-        None: sts.unit(),
-        Staked: sts.unit(),
-        Stash: sts.unit(),
+        descriptor: CandidateDescriptorV2,
+        commitmentsHash: H256,
+    }
+})
+
+export const PoolMutation: sts.Type<PoolMutation> = sts.struct(() => {
+    return {
+        newCommission: ShouldMutate,
+        maxCommission: sts.option(() => Perbill),
+        changeRate: sts.option(() => CommissionChangeRate),
+        capacity: sts.option(() => sts.bigint()),
+        name: sts.option(() => BoundedVec),
+    }
+})
+
+export const ShouldMutate: sts.Type<ShouldMutate> = sts.closedEnum(() => {
+    return {
+        NoMutation: sts.unit(),
+        SomeMutation: sts.option(() => Perbill),
+    }
+})
+
+export const CommissionPayment: sts.Type<CommissionPayment> = sts.struct(() => {
+    return {
+        beneficiary: AccountId32,
+        amount: sts.bigint(),
     }
 })
 
 export const ProxyType: sts.Type<ProxyType> = sts.closedEnum(() => {
     return {
         Any: sts.unit(),
+        CancelProxy: sts.unit(),
+        FuelTanks: sts.unit(),
         Governance: sts.unit(),
+        Marketplace: sts.unit(),
+        MultiTokens: sts.unit(),
+        NominationPools: sts.unit(),
+        Staking: sts.unit(),
         Tokens: sts.unit(),
+    }
+})
+
+export const Bid: sts.Type<Bid> = sts.struct(() => {
+    return {
+        bidder: AccountId32,
+        price: sts.bigint(),
+        blockNumber: sts.number(),
+    }
+})
+
+export const Listing: sts.Type<Listing> = sts.struct(() => {
+    return {
+        creator: AccountId32,
+        makeAssetId: AssetId,
+        takeAssetId: AssetId,
+        amount: sts.bigint(),
+        price: sts.bigint(),
+        minReceived: sts.bigint(),
+        feeSide: FeeSide,
+        creationBlock: sts.number(),
+        startBlock: sts.option(() => sts.number()),
+        whitelistedAccountCount: sts.option(() => sts.number()),
+        deposit: Deposit,
+        salt: sts.bytes(),
+        data: ListingData,
+        state: ListingState,
+    }
+})
+
+export const ListingState: sts.Type<ListingState> = sts.closedEnum(() => {
+    return {
+        Auction: AuctionState,
+        FixedPrice: sts.enumStruct({
+            amountFilled: sts.bigint(),
+        }),
+        Offer: OfferState,
+    }
+})
+
+export const OfferState: sts.Type<OfferState> = sts.struct(() => {
+    return {
+        counterOfferCount: sts.number(),
+    }
+})
+
+export const AuctionState: sts.Type<AuctionState> = sts.struct(() => {
+    return {
+        highBid: sts.option(() => Bid),
+    }
+})
+
+export const FeeSide: sts.Type<FeeSide> = sts.closedEnum(() => {
+    return {
+        Make: sts.unit(),
+        NoFee: sts.unit(),
+        Take: sts.unit(),
+    }
+})
+
+export const H256 = sts.bytes()
+
+export const DefaultTankMutation: sts.Type<DefaultTankMutation> = sts.struct(() => {
+    return {
+        userAccountManagement: Type_727,
+        coveragePolicy: sts.option(() => CoveragePolicy),
+        accountRules: sts.option(() => sts.array(() => AccountRuleDescriptor)),
+        owner: sts.option(() => AccountId32),
+        accountExpiration: Type_730,
+        name: sts.option(() => sts.bytes()),
+    }
+})
+
+export const Type_730: sts.Type<Type_730> = sts.closedEnum(() => {
+    return {
+        NoMutation: sts.unit(),
+        SomeMutation: sts.option(() => sts.number()),
+    }
+})
+
+export const Type_727: sts.Type<Type_727> = sts.closedEnum(() => {
+    return {
+        NoMutation: sts.unit(),
+        SomeMutation: sts.option(() => UserAccountManagement),
+    }
+})
+
+export const RootOrSigned: sts.Type<RootOrSigned> = sts.closedEnum(() => {
+    return {
+        Root: sts.unit(),
+        Signed: AccountId32,
+    }
+})
+
+export const TokenAccount: sts.Type<TokenAccount> = sts.struct(() => {
+    return {
+        balance: sts.bigint(),
+        reservedBalance: sts.bigint(),
+        lockedBalance: sts.bigint(),
+        holds: sts.array(() => TokenAccountReserve),
+        locks: sts.array(() => sts.tuple(() => [sts.bytes(), sts.bigint()])),
+        approvals: sts.array(() => sts.tuple(() => [AccountId32, Approval])),
+        isFrozen: sts.boolean(),
+        deposit: sts.option(() => Deposit),
+        storageVersion: sts.number(),
+    }
+})
+
+export const Approval: sts.Type<Approval> = sts.struct(() => {
+    return {
+        amount: sts.bigint(),
+        expiration: sts.option(() => sts.number()),
+    }
+})
+
+export const TokenAccountReserve: sts.Type<TokenAccountReserve> = sts.struct(() => {
+    return {
+        reason: RuntimeHoldReason,
+        balance: sts.bigint(),
+    }
+})
+
+export const Token: sts.Type<Token> = sts.struct(() => {
+    return {
+        supply: sts.bigint(),
+        cap: sts.option(() => TokenCap),
+        freezeState: sts.option(() => FreezeState),
+        requiresDeposit: sts.boolean(),
+        creationDeposit: AmbiguousDeposit,
+        ownerDeposit: sts.bigint(),
+        totalTokenAccountDeposit: sts.bigint(),
+        attributeCount: sts.number(),
+        accountCount: sts.number(),
+        marketBehavior: sts.option(() => TokenMarketBehavior),
+        listingForbidden: sts.boolean(),
+        metadata: DefaultTokenMetadata,
+        infusion: sts.bigint(),
+        anyoneCanInfuse: sts.boolean(),
+        groups: sts.array(() => sts.bigint()),
+    }
+})
+
+export const DefaultTokenMetadata: sts.Type<DefaultTokenMetadata> = sts.struct(() => {
+    return {
+        decimalCount: sts.number(),
+        name: BoundedString,
+        symbol: sts.bytes(),
+        foreign: sts.option(() => DefaultForeignTokenMetadata),
+    }
+})
+
+export const DefaultForeignTokenMetadata: sts.Type<DefaultForeignTokenMetadata> = sts.struct(() => {
+    return {
+        location: sts.option(() => V5Location),
+        unitsPerSecond: sts.option(() => sts.bigint()),
+    }
+})
+
+export const AmbiguousDeposit: sts.Type<AmbiguousDeposit> = sts.struct(() => {
+    return {
+        depositor: sts.option(() => AccountId32),
+        amount: sts.bigint(),
+    }
+})
+
+export const Collection: sts.Type<Collection> = sts.struct(() => {
+    return {
+        owner: AccountId32,
+        policy: DefaultCollectionPolicy,
+        tokenCount: sts.bigint(),
+        attributeCount: sts.number(),
+        creationDeposit: Deposit,
+        totalDeposit: sts.bigint(),
+        explicitRoyaltyCurrencies: sts.array(() => sts.tuple(() => [AssetId, sts.unit()])),
+        totalInfusion: sts.bigint(),
+        tokenGroupCount: sts.number(),
+    }
+})
+
+export const DefaultCollectionPolicy: sts.Type<DefaultCollectionPolicy> = sts.struct(() => {
+    return {
+        mint: DefaultMintPolicy,
+        transfer: DefaultTransferPolicy,
+        market: DefaultMarketPolicy,
+    }
+})
+
+export const DefaultMarketPolicy: sts.Type<DefaultMarketPolicy> = sts.struct(() => {
+    return {
+        royalty: sts.option(() => DefaultRoyalty),
+    }
+})
+
+export const DefaultTransferPolicy: sts.Type<DefaultTransferPolicy> = sts.struct(() => {
+    return {
+        isFrozen: sts.boolean(),
+    }
+})
+
+export const DefaultMintPolicy: sts.Type<DefaultMintPolicy> = sts.struct(() => {
+    return {
+        maxTokenCount: sts.option(() => sts.bigint()),
+        maxTokenSupply: sts.option(() => sts.bigint()),
+        forceCollapsingSupply: sts.boolean(),
+    }
+})
+
+export const RuntimeHoldReason: sts.Type<RuntimeHoldReason> = sts.closedEnum(() => {
+    return {
+        FuelTanks: Type_664,
+        Marketplace: Type_662,
+        MultiTokens: Type_663,
+        Preimage: Type_661,
+        SafeMode: Type_659,
+        StakeExchange: Type_658,
+        Staking: HoldReason,
+        XcmPallet: Type_660,
+    }
+})
+
+export const Type_660: sts.Type<Type_660> = sts.closedEnum(() => {
+    return {
+        AuthorizeAlias: sts.unit(),
+    }
+})
+
+export const HoldReason: sts.Type<HoldReason> = sts.closedEnum(() => {
+    return {
+        Staking: sts.unit(),
+    }
+})
+
+export const Type_658: sts.Type<Type_658> = sts.closedEnum(() => {
+    return {
+        StakeExchange: sts.unit(),
+    }
+})
+
+export const Type_659: sts.Type<Type_659> = sts.closedEnum(() => {
+    return {
+        EnterOrExtend: sts.unit(),
+    }
+})
+
+export const Type_661: sts.Type<Type_661> = sts.closedEnum(() => {
+    return {
+        Preimage: sts.unit(),
+    }
+})
+
+export const Type_663: sts.Type<Type_663> = sts.closedEnum(() => {
+    return {
+        MultiTokens: sts.unit(),
+    }
+})
+
+export const Type_662: sts.Type<Type_662> = sts.closedEnum(() => {
+    return {
+        Marketplace: sts.unit(),
+    }
+})
+
+export const Type_664: sts.Type<Type_664> = sts.closedEnum(() => {
+    return {
+        FuelTanks: sts.unit(),
+    }
+})
+
+export const Timepoint: sts.Type<Timepoint> = sts.struct(() => {
+    return {
+        height: sts.number(),
+        index: sts.number(),
+    }
+})
+
+export const AccountId32 = sts.bytes()
+
+export const DispatchEventInfo: sts.Type<DispatchEventInfo> = sts.struct(() => {
+    return {
+        weight: Weight,
+        class: DispatchClass,
+        paysFee: Pays,
+    }
+})
+
+export const DispatchClass: sts.Type<DispatchClass> = sts.closedEnum(() => {
+    return {
+        Mandatory: sts.unit(),
+        Normal: sts.unit(),
+        Operational: sts.unit(),
     }
 })
 
@@ -25983,7 +29048,27 @@ export const DispatchError: sts.Type<DispatchError> = sts.closedEnum(() => {
         Token: TokenError,
         TooManyConsumers: sts.unit(),
         Transactional: TransactionalError,
+        Trie: TrieError,
         Unavailable: sts.unit(),
+    }
+})
+
+export const TrieError: sts.Type<TrieError> = sts.closedEnum(() => {
+    return {
+        DecodeError: sts.unit(),
+        DecoderError: sts.unit(),
+        DuplicateKey: sts.unit(),
+        ExtraneousHashReference: sts.unit(),
+        ExtraneousNode: sts.unit(),
+        ExtraneousValue: sts.unit(),
+        IncompleteDatabase: sts.unit(),
+        IncompleteProof: sts.unit(),
+        InvalidChildReference: sts.unit(),
+        InvalidHash: sts.unit(),
+        InvalidStateRoot: sts.unit(),
+        RootMismatch: sts.unit(),
+        ValueAtIncompleteKey: sts.unit(),
+        ValueMismatch: sts.unit(),
     }
 })
 
@@ -26021,234 +29106,5 @@ export const ArithmeticError: sts.Type<ArithmeticError> = sts.closedEnum(() => {
         DivisionByZero: sts.unit(),
         Overflow: sts.unit(),
         Underflow: sts.unit(),
-    }
-})
-
-export const CounterOffer: sts.Type<CounterOffer> = sts.struct(() => {
-    return {
-        accountId: AccountId32,
-        price: sts.bigint(),
-    }
-})
-
-export const Listing: sts.Type<Listing> = sts.struct(() => {
-    return {
-        creator: AccountId32,
-        makeAssetId: AssetId,
-        takeAssetId: AssetId,
-        amount: sts.bigint(),
-        price: sts.bigint(),
-        minReceived: sts.bigint(),
-        feeSide: FeeSide,
-        creationBlock: sts.number(),
-        deposit: Deposit,
-        salt: sts.bytes(),
-        data: ListingData,
-        state: ListingState,
-    }
-})
-
-export const ListingState: sts.Type<ListingState> = sts.closedEnum(() => {
-    return {
-        Auction: AuctionState,
-        FixedPrice: sts.enumStruct({
-            amountFilled: sts.bigint(),
-        }),
-        Offer: OfferState,
-    }
-})
-
-export const OfferState: sts.Type<OfferState> = sts.struct(() => {
-    return {
-        counter: sts.option(() => CounterOffer),
-    }
-})
-
-export const AuctionState: sts.Type<AuctionState> = sts.struct(() => {
-    return {
-        highBid: sts.option(() => Bid),
-    }
-})
-
-export const Deposit: sts.Type<Deposit> = sts.struct(() => {
-    return {
-        depositor: AccountId32,
-        amount: sts.bigint(),
-    }
-})
-
-export const FeeSide: sts.Type<FeeSide> = sts.closedEnum(() => {
-    return {
-        Make: sts.unit(),
-        NoFee: sts.unit(),
-        Take: sts.unit(),
-    }
-})
-
-export const H256 = sts.bytes()
-
-export const DispatchRuleKind: sts.Type<DispatchRuleKind> = sts.closedEnum(() => {
-    return {
-        MaxFuelBurnPerTransaction: sts.unit(),
-        PermittedCalls: sts.unit(),
-        PermittedExtrinsics: sts.unit(),
-        RequireSignature: sts.unit(),
-        RequireToken: sts.unit(),
-        TankFuelBudget: sts.unit(),
-        UserFuelBudget: sts.unit(),
-        WhitelistedCallers: sts.unit(),
-        WhitelistedCollections: sts.unit(),
-        WhitelistedPallets: sts.unit(),
-    }
-})
-
-export const DefaultTankMutation: sts.Type<DefaultTankMutation> = sts.struct(() => {
-    return {
-        userAccountManagement: Type_288,
-        coveragePolicy: sts.option(() => CoveragePolicy),
-        accountRules: sts.option(() => sts.array(() => AccountRuleDescriptor)),
-    }
-})
-
-export const Type_288: sts.Type<Type_288> = sts.closedEnum(() => {
-    return {
-        NoMutation: sts.unit(),
-        SomeMutation: sts.option(() => UserAccountManagement),
-    }
-})
-
-export const TokenAccount: sts.Type<TokenAccount> = sts.struct(() => {
-    return {
-        balance: sts.bigint(),
-        reservedBalance: sts.bigint(),
-        lockedBalance: sts.bigint(),
-        namedReserves: sts.array(() => sts.tuple(() => [sts.bytes(), sts.bigint()])),
-        locks: sts.array(() => sts.tuple(() => [sts.bytes(), sts.bigint()])),
-        approvals: sts.array(() => sts.tuple(() => [AccountId32, Approval])),
-        isFrozen: sts.boolean(),
-        deposit: sts.option(() => Deposit),
-    }
-})
-
-export const Approval: sts.Type<Approval> = sts.struct(() => {
-    return {
-        amount: sts.bigint(),
-        expiration: sts.option(() => sts.number()),
-    }
-})
-
-export const AccountId32 = sts.bytes()
-
-export const Token: sts.Type<Token> = sts.struct(() => {
-    return {
-        supply: sts.bigint(),
-        cap: sts.option(() => TokenCap),
-        freezeState: sts.option(() => FreezeState),
-        requiresDeposit: sts.boolean(),
-        creationDeposit: AmbiguousDeposit,
-        ownerDeposit: sts.bigint(),
-        totalTokenAccountDeposit: sts.bigint(),
-        attributeCount: sts.number(),
-        accountCount: sts.number(),
-        marketBehavior: sts.option(() => TokenMarketBehavior),
-        listingForbidden: sts.boolean(),
-        metadata: DefaultTokenMetadata,
-        infusion: sts.bigint(),
-        anyoneCanInfuse: sts.boolean(),
-        groups: sts.array(() => sts.bigint()),
-    }
-})
-
-export const DefaultTokenMetadata: sts.Type<DefaultTokenMetadata> = sts.struct(() => {
-    return {
-        decimalCount: sts.number(),
-        name: BoundedString,
-        symbol: sts.bytes(),
-        foreign: sts.option(() => DefaultForeignTokenMetadata),
-    }
-})
-
-export const DefaultForeignTokenMetadata: sts.Type<DefaultForeignTokenMetadata> = sts.struct(() => {
-    return {
-        location: sts.option(() => V4Location),
-        unitsPerSecond: sts.option(() => sts.bigint()),
-    }
-})
-
-export const AmbiguousDeposit: sts.Type<AmbiguousDeposit> = sts.struct(() => {
-    return {
-        depositor: sts.option(() => AccountId32),
-        amount: sts.bigint(),
-    }
-})
-
-export const Collection: sts.Type<Collection> = sts.struct(() => {
-    return {
-        owner: AccountId32,
-        policy: DefaultCollectionPolicy,
-        tokenCount: sts.bigint(),
-        attributeCount: sts.number(),
-        creationDeposit: Deposit,
-        totalDeposit: sts.bigint(),
-        explicitRoyaltyCurrencies: sts.array(() => sts.tuple(() => [AssetId, sts.unit()])),
-        totalInfusion: sts.bigint(),
-    }
-})
-
-export const DefaultCollectionPolicy: sts.Type<DefaultCollectionPolicy> = sts.struct(() => {
-    return {
-        mint: DefaultMintPolicy,
-        transfer: DefaultTransferPolicy,
-        market: DefaultMarketPolicy,
-    }
-})
-
-export const DefaultMarketPolicy: sts.Type<DefaultMarketPolicy> = sts.struct(() => {
-    return {
-        royalty: sts.option(() => DefaultRoyalty),
-    }
-})
-
-export const DefaultTransferPolicy: sts.Type<DefaultTransferPolicy> = sts.struct(() => {
-    return {
-        isFrozen: sts.boolean(),
-    }
-})
-
-export const DefaultMintPolicy: sts.Type<DefaultMintPolicy> = sts.struct(() => {
-    return {
-        maxTokenCount: sts.option(() => sts.bigint()),
-        maxTokenSupply: sts.option(() => sts.bigint()),
-        forceCollapsingSupply: sts.boolean(),
-    }
-})
-
-export const DefaultTokenMutation: sts.Type<DefaultTokenMutation> = sts.struct(() => {
-    return {
-        behavior: Type_218,
-        listingForbidden: Type_221,
-        anyoneCanInfuse: Type_221,
-        name: Type_222,
-    }
-})
-
-export const Type_222: sts.Type<Type_222> = sts.closedEnum(() => {
-    return {
-        NoMutation: sts.unit(),
-        SomeMutation: BoundedString,
-    }
-})
-
-export const Type_221: sts.Type<Type_221> = sts.closedEnum(() => {
-    return {
-        NoMutation: sts.unit(),
-        SomeMutation: sts.boolean(),
-    }
-})
-
-export const Type_218: sts.Type<Type_218> = sts.closedEnum(() => {
-    return {
-        NoMutation: sts.unit(),
-        SomeMutation: sts.option(() => TokenMarketBehavior),
     }
 })

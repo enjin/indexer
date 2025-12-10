@@ -1,6 +1,6 @@
 import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
 import * as enjinV100 from '../enjinV100'
-import * as v1060 from '../v1060'
+import * as enjinV1062 from '../enjinV1062'
 
 export const currentCodeUpdated = {
     name: 'Paras.CurrentCodeUpdated',
@@ -74,13 +74,13 @@ export const upgradeCooldownRemoved = {
     /**
      * The upgrade cooldown was removed.
      */
-    v1060: new EventType(
+    enjinV1062: new EventType(
         'Paras.UpgradeCooldownRemoved',
         sts.struct({
             /**
              * The parachain for which the cooldown got removed.
              */
-            paraId: v1060.Id,
+            paraId: enjinV1062.Id,
         })
     ),
 }
@@ -90,17 +90,17 @@ export const codeAuthorized = {
     /**
      * A new code hash has been authorized for a Para.
      */
-    v1060: new EventType(
+    enjinV1062: new EventType(
         'Paras.CodeAuthorized',
         sts.struct({
             /**
              * Para
              */
-            paraId: v1060.Id,
+            paraId: enjinV1062.Id,
             /**
              * Authorized code hash.
              */
-            codeHash: v1060.ValidationCodeHash,
+            codeHash: enjinV1062.ValidationCodeHash,
             /**
              * Block at which authorization expires and will be removed.
              */

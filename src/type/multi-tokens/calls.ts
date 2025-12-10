@@ -30,6 +30,7 @@ import * as enjinV1032 from '../enjinV1032'
 import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 import * as v1060 from '../v1060'
+import * as enjinV1062 from '../enjinV1062'
 
 export const createCollection = {
     name: 'MultiTokens.create_collection',
@@ -305,6 +306,43 @@ export const createCollection = {
         'MultiTokens.create_collection',
         sts.struct({
             descriptor: enjinV1050.DefaultCollectionDescriptor,
+        })
+    ),
+    /**
+     * Creates a new [`Collection`](ep_multi_tokens::Collection) from `descriptor`
+     *
+     * See [`CollectionDescriptor`](ep_multi_tokens::DefaultCollectionDescriptor) and
+     * [`CollectionPolicyDescriptor`](ep_multi_tokens::DefaultCollectionPolicyDescriptor)
+     * for more info about specific parameters. The [Mint
+     * Policy](ep_multi_tokens::DefaultMintPolicyDescriptor) has the most parameters.
+     *
+     * **Minting Policy**
+     *
+     * - Max token count (optional)
+     * - Max token supply (optional)
+     * - Force Single Mint
+     *   - If Yes, each token minted in the collection MUST be an NFT with a cap of 1.
+     *
+     * **Royalty (optional)**
+     *
+     *   - Beneficiary address
+     *   - The percentage of marketplace sale royalty that will be sent to the beneficiary.
+     *
+     * **Explicit Royalty Currencies (optional)**
+     *
+     *   Optionally provide a list of tokens (must be currencies).
+     *   - If no currencies are provided here, then ALL currencies are allowed for royalties.
+     *   - If one or more currencies are provided here, they will be whitelisted for use as a
+     *     royalty currency and ONLY this list of currencies will be allowed for royalties.
+     *
+     * # Errors
+     *
+     * - [`Error::DepositReserveFailed`] if the deposit cannot be reserved
+     */
+    enjinV1062: new CallType(
+        'MultiTokens.create_collection',
+        sts.struct({
+            descriptor: enjinV1062.DefaultCollectionDescriptor,
         })
     ),
     /**
@@ -1271,6 +1309,48 @@ export const mint = {
      * `origin` mints to `recipient` for `collection_id` with `params` using the pallet's
      * [`MintPolicy`](traits::CollectionPolicy::Mint).
      *
+     * Tokens are minted using [`MintParams`], and it may only be done by the collection's
+     * owner. There are two types of mint operations:
+     *
+     * **Create**
+     *
+     * This must be called the first time a token is being created. Any token id can be chosen
+     * when creating a token. They do not have to be sequential.
+     *
+     * You can specify additional parameters that can apply constraints to the token or give it
+     * a royalty. Some of these values can be changed later using the
+     * [`mutateToken`](Self::mutate_token) extrinsic.
+     *
+     * **Mint**
+     *
+     * After a token is created, you can mint additional balance using this variant.
+     *
+     * # Errors
+     *
+     * - [`Error::AmountZero`] if `amount == 0`.
+     * - [`Error::CollectionNotFound`] if `Collection` does not exist.
+     * - [`Error::TokenNotFound`] if `Token` does not exist.
+     * - [`Error::TokenAlreadyExists`] if attempting to create a token that already exists
+     * - [`Error::NoPermission`] if `caller` is not allowed to mint the `collection`.
+     * - [`Error::TokenMintCapExceeded`] if the mint policy TokenCap does not allow minting
+     * - `MaxTokenCountExceeded` if the mint policy max_token_count is exceeded
+     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficient balance for
+     *   token deposit
+     * - [`Error::ConflictingLocation`] if the token is foreign and the location is already
+     *   mapped to another asset in `AssetIdsByLocation`
+     */
+    enjinV1062: new CallType(
+        'MultiTokens.mint',
+        sts.struct({
+            recipient: enjinV1062.MultiAddress,
+            collectionId: sts.bigint(),
+            params: enjinV1062.DefaultMintParams,
+        })
+    ),
+    /**
+     * `origin` mints to `recipient` for `collection_id` with `params` using the pallet's
+     * [`MintPolicy`](traits::CollectionPolicy::Mint).
+     *
      * # Errors
      *
      * - [`Error::AmountZero`] if `amount == 0`.
@@ -1768,6 +1848,28 @@ export const transfer = {
     /**
      * `operator` transfers to `recipient` for `collection_id` with `params`
      *
+     * Can accept [`DefaultTransferParams`](ep_multi_tokens::DefaultTransferParams):
+     *
+     * - The `Simple` transfer is a regular transfer
+     * - The `Operator` transfer is the same as `transfer_from` and requires approval. See
+     *   [Operator](crate#operator) in the pallet's documentation for more info.
+     *
+     * # Errors
+     *
+     * - [`Error::AmountZero`] if `amount == 0`.
+     * - [`Error::BalanceLow`] if `source` does not own enough amount of `collection`.
+     */
+    enjinV1062: new CallType(
+        'MultiTokens.transfer',
+        sts.struct({
+            recipient: enjinV1062.MultiAddress,
+            collectionId: sts.bigint(),
+            params: enjinV1062.DefaultTransferParams,
+        })
+    ),
+    /**
+     * `operator` transfers to `recipient` for `collection_id` with `params`
+     *
      * # Errors
      *
      * - [`Error::AmountZero`] if `amount == 0`.
@@ -1991,6 +2093,7 @@ export const setAttribute = {
      * Sets the attribute `key` to `value` for `collection_id`.
      * If `token_id` is [`None`], the attribute is added to the collection. If it is [`Some`],
      * the attribute is added to the token.
+     * Only callable by the collection's owner.
      *
      * # Errors
      * - [`Error::InvalidAttributeKey`] if `key.len() == 0`
@@ -2000,7 +2103,7 @@ export const setAttribute = {
      * - [`Error::DepositReserveFailed`] if unable to reserve the deposit for the attribute
      *   storage.
      */
-    v100: new CallType(
+    enjinV1062: new CallType(
         'MultiTokens.set_attribute',
         sts.struct({
             collectionId: sts.bigint(),
@@ -2261,6 +2364,25 @@ export const batchTransfer = {
         sts.struct({
             collectionId: sts.bigint(),
             recipients: sts.array(() => enjinV1032.Recipient),
+        })
+    ),
+    /**
+     * Transfers the specific amount of tokens of `collection` to `recipients` from `origin`
+     * account. A single failure will fail all transfers.
+     *
+     * Performs multiple transfers in a single call. Can optionally continue if any calls fail,
+     * depending on the `continueOnFailure` parameter.
+     *
+     * # Errors
+     *
+     * - [`Error::AmountZero`] if `amount == 0`.
+     * - [`Error::BalanceLow`] if `source` does not own enough amount of `collection`.
+     */
+    enjinV1062: new CallType(
+        'MultiTokens.batch_transfer',
+        sts.struct({
+            collectionId: sts.bigint(),
+            recipients: sts.array(() => enjinV1062.Recipient),
         })
     ),
     /**
@@ -2572,6 +2694,30 @@ export const batchMint = {
      * [`AccountId`](frame_system::Config::AccountId) and [`MintParams`]. A single mint failure
      * will fail all of them in the batch.
      *
+     * Batch minting is slightly less expensive than performing the same number of mint calls
+     * sequentially.
+     *
+     * # Errors
+     * - [`Error::AmountZero`] if `amount == 0`.
+     * - [`Error::CollectionNotFound`] if `collection` does **not** exist.
+     * - [`Error::NoPermission`] if `caller` is not allowed to mint the `collection`.
+     * - [`Error::TokenMintCapExceeded`] if the mint policy TokenCap does not allow minting
+     * - [`Error::MaxTokenCountExceeded`] if the mint policy max_token_count is exceeded
+     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficient balance for
+     *   token deposit
+     */
+    enjinV1062: new CallType(
+        'MultiTokens.batch_mint',
+        sts.struct({
+            collectionId: sts.bigint(),
+            recipients: sts.array(() => enjinV1062.Type_619),
+        })
+    ),
+    /**
+     * Collection owner mints tokens of `collection_id` to `recipients` consisting of an
+     * [`AccountId`](frame_system::Config::AccountId) and [`MintParams`]. A single mint failure
+     * will fail all of them in the batch.
+     *
      * # Errors
      * - [`Error::AmountZero`] if `amount == 0`.
      * - [`Error::CollectionNotFound`] if `collection` does **not** exist.
@@ -2838,12 +2984,12 @@ export const batchSetAttribute = {
      * - [`Error::DepositReserveFailed`] if unable to reserve the deposit for the attribute
      *   storage.
      */
-    v100: new CallType(
+    enjinV1062: new CallType(
         'MultiTokens.batch_set_attribute',
         sts.struct({
             collectionId: sts.bigint(),
             tokenId: sts.option(() => sts.bigint()),
-            attributes: sts.array(() => v100.AttributeKeyValuePair),
+            attributes: sts.array(() => enjinV1062.AttributeKeyValuePair),
         })
     ),
     /**
@@ -3575,6 +3721,23 @@ export const forceTransfer = {
      *
      * Same as [`transfer`](Self::transfer)
      */
+    enjinV1062: new CallType(
+        'MultiTokens.force_transfer',
+        sts.struct({
+            source: enjinV1062.MultiAddress,
+            destination: enjinV1062.MultiAddress,
+            collectionId: sts.bigint(),
+            params: enjinV1062.DefaultTransferParams,
+        })
+    ),
+    /**
+     * Exactly as [`transfer`](Self::transfer), except the origin must be root and the source
+     * account should be specified.
+     *
+     * # Errors
+     *
+     * Same as [`transfer`](Self::transfer)
+     */
     v100: new CallType(
         'MultiTokens.force_transfer',
         sts.struct({
@@ -3710,6 +3873,16 @@ export const forceSetCollection = {
         sts.struct({
             collectionId: sts.bigint(),
             value: sts.option(() => enjinV1050.Collection),
+        })
+    ),
+    /**
+     * Set the Collections storage to the given `value`, origin must be root
+     */
+    enjinV1062: new CallType(
+        'MultiTokens.force_set_collection',
+        sts.struct({
+            collectionId: sts.bigint(),
+            value: sts.option(() => enjinV1062.Collection),
         })
     ),
     /**
@@ -3875,6 +4048,17 @@ export const forceSetToken = {
             collectionId: sts.bigint(),
             tokenId: sts.bigint(),
             value: sts.option(() => enjinV1050.Token),
+        })
+    ),
+    /**
+     * Set the Tokens storage to the given `value`, origin must be root
+     */
+    enjinV1062: new CallType(
+        'MultiTokens.force_set_token',
+        sts.struct({
+            collectionId: sts.bigint(),
+            tokenId: sts.bigint(),
+            value: sts.option(() => enjinV1062.Token),
         })
     ),
     /**
@@ -4186,6 +4370,18 @@ export const forceSetTokenAccount = {
     /**
      * Set the TokenAccounts storage to the given `value`, origin must be root
      */
+    enjinV1062: new CallType(
+        'MultiTokens.force_set_token_account',
+        sts.struct({
+            collectionId: sts.bigint(),
+            tokenId: sts.bigint(),
+            accountId: enjinV1062.MultiAddress,
+            value: sts.option(() => enjinV1062.TokenAccount),
+        })
+    ),
+    /**
+     * Set the TokenAccounts storage to the given `value`, origin must be root
+     */
     v100: new CallType(
         'MultiTokens.force_set_token_account',
         sts.struct({
@@ -4384,6 +4580,22 @@ export const forceCreateCollection = {
             owner: enjinV1050.AccountId32,
             collectionId: sts.bigint(),
             descriptor: enjinV1050.DefaultCollectionDescriptor,
+        })
+    ),
+    /**
+     * Creates a new collection from `descriptor` at `collection_id`, origin must be root
+     *
+     * # Errors
+     * - [`Error::DepositReserveFailed`] if the deposit cannot be reserved
+     * - [`Error::CollectionIdAlreadyInUse`] if the collection id is already in use
+     */
+    enjinV1062: new CallType(
+        'MultiTokens.force_create_collection',
+        sts.struct({
+            owner: enjinV1062.AccountId32,
+            collectionId: sts.bigint(),
+            descriptor: enjinV1062.DefaultCollectionDescriptor,
+            depositor: sts.option(() => enjinV1062.AccountId32),
         })
     ),
     /**
@@ -4641,6 +4853,21 @@ export const forceMint = {
             collectionId: sts.bigint(),
             params: enjinV1050.FlexibleMintParams,
             depositor: sts.option(() => enjinV1050.MultiAddress),
+        })
+    ),
+    /**
+     * Same as [`mint`](Self::mint), but it is callable by
+     * [`Config::EthereumMigrationOrigin`]. If `caller` is None, it will use the collection
+     * owner. If `depositor` is `Some`, they will pay the deposit for minting.
+     */
+    enjinV1062: new CallType(
+        'MultiTokens.force_mint',
+        sts.struct({
+            caller: sts.option(() => enjinV1062.MultiAddress),
+            recipient: enjinV1062.MultiAddress,
+            collectionId: sts.bigint(),
+            params: enjinV1062.FlexibleMintParams,
+            depositor: sts.option(() => enjinV1062.MultiAddress),
         })
     ),
     /**
@@ -5215,6 +5442,29 @@ export const forceCreateEthereumCollection = {
             claimer: enjinV1050.H160,
             ethereumCollectionId: sts.bigint(),
             descriptor: enjinV1050.DefaultCollectionDescriptor,
+        })
+    ),
+    /**
+     * Creates a new collection from `descriptor` at `collection_id`, origin must be
+     * [`Config::EthereumMigrationOrigin`]. It differs from `force_create_collection`
+     * since it writes to `NativeCollectionIds` and `ClaimableCollectionIds`.
+     *
+     * # Params
+     * - `owner` - the account that will own the new collection
+     * - `claimer` - the ethereum address that will be able to claim the collection
+     * - `ethereum_collection_id` - the collection id on ethereum
+     *
+     * # Errors
+     * - [`Error::DepositReserveFailed`] if the deposit cannot be reserved
+     * - [`Error::CollectionIdAlreadyInUse`] if the collection id is already in use
+     */
+    enjinV1062: new CallType(
+        'MultiTokens.force_create_ethereum_collection',
+        sts.struct({
+            owner: enjinV1062.AccountId32,
+            claimer: enjinV1062.H160,
+            ethereumCollectionId: sts.bigint(),
+            descriptor: enjinV1062.DefaultCollectionDescriptor,
         })
     ),
     /**

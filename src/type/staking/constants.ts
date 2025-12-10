@@ -104,5 +104,5 @@ export const maxValidatorSet = {
     /**
      *  The absolute maximum of winner validators this pallet should return.
      */
-    v1060: new ConstantType('Staking.MaxValidatorSet', sts.number()),
+    enjinV1062: new ConstantType('Staking.MaxValidatorSet', sts.number()),
 }

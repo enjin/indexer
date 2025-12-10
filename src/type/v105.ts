@@ -16659,13 +16659,6 @@ export const MultiAddress: sts.Type<MultiAddress> = sts.closedEnum(() => {
     }
 })
 
-export const Timepoint: sts.Type<Timepoint> = sts.struct(() => {
-    return {
-        height: sts.number(),
-        index: sts.number(),
-    }
-})
-
 export const Weight: sts.Type<Weight> = sts.struct(() => {
     return {
         refTime: sts.bigint(),
@@ -19389,6 +19382,13 @@ export const AggregateMessageOrigin: sts.Type<AggregateMessageOrigin> = sts.clos
 export const UmpQueueId: sts.Type<UmpQueueId> = sts.closedEnum(() => {
     return {
         Para: Id,
+    }
+})
+
+export const Timepoint: sts.Type<Timepoint> = sts.struct(() => {
+    return {
+        height: sts.number(),
+        index: sts.number(),
     }
 })
 

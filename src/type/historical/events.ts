@@ -5,7 +5,7 @@ export const rootStored = {
     /**
      * The merkle root of the validators of the said session were stored
      */
-    v1060: new EventType(
+    enjinV1062: new EventType(
         'Historical.RootStored',
         sts.struct({
             index: sts.number(),
@@ -18,7 +18,7 @@ export const rootsPruned = {
     /**
      * The merkle roots of up to this session index were pruned
      */
-    v1060: new EventType(
+    enjinV1062: new EventType(
         'Historical.RootsPruned',
         sts.struct({
             upTo: sts.number(),

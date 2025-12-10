@@ -4,6 +4,7 @@ import * as v100 from '../v100'
 import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
 import * as v1060 from '../v1060'
+import * as enjinV1062 from '../enjinV1062'
 
 export const validatorGroups = {
     /**
@@ -291,6 +292,27 @@ export const claimQueue = {
      *  One entry for each availability core. The `VecDeque` represents the assignments to be
      *  scheduled on that core.
      */
+    enjinV1062: new StorageType(
+        'ParaScheduler.ClaimQueue',
+        'Default',
+        [],
+        sts.array(() => sts.tuple(() => [enjinV1062.V8CoreIndex, sts.array(() => enjinV1062.Assignment)]))
+    ) as ClaimQueueEnjinV1062,
+    /**
+     *  One entry for each availability core. The `VecDeque` represents the assignments to be
+     *  scheduled on that core. The value contained here will not be valid after the end of
+     *  a block. Runtime APIs should be used to determine scheduled cores for the upcoming block.
+     */
+    v1030: new StorageType(
+        'ParaScheduler.ClaimQueue',
+        'Default',
+        [],
+        sts.array(() => sts.tuple(() => [v1030.V6CoreIndex, sts.array(() => v1030.ParasEntry)]))
+    ) as ClaimQueueV1030,
+    /**
+     *  One entry for each availability core. The `VecDeque` represents the assignments to be
+     *  scheduled on that core.
+     */
     v1060: new StorageType(
         'ParaScheduler.ClaimQueue',
         'Default',
@@ -308,6 +330,27 @@ export interface ClaimQueueEnjinV1032 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): [enjinV1032.V6CoreIndex, enjinV1032.ParasEntry[]][]
     get(block: Block): Promise<[enjinV1032.V6CoreIndex, enjinV1032.ParasEntry[]][] | undefined>
+}
+
+/**
+ *  One entry for each availability core. The `VecDeque` represents the assignments to be
+ *  scheduled on that core.
+ */
+export interface ClaimQueueEnjinV1062 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): [enjinV1062.V8CoreIndex, enjinV1062.Assignment[]][]
+    get(block: Block): Promise<[enjinV1062.V8CoreIndex, enjinV1062.Assignment[]][] | undefined>
+}
+
+/**
+ *  One entry for each availability core. The `VecDeque` represents the assignments to be
+ *  scheduled on that core. The value contained here will not be valid after the end of
+ *  a block. Runtime APIs should be used to determine scheduled cores for the upcoming block.
+ */
+export interface ClaimQueueV1030 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): [v1030.V6CoreIndex, v1030.ParasEntry[]][]
+    get(block: Block): Promise<[v1030.V6CoreIndex, v1030.ParasEntry[]][] | undefined>
 }
 
 /**

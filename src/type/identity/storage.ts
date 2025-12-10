@@ -1,5 +1,4 @@
 import { sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx } from '../support'
-import * as v110 from '../v110'
 import * as matrixEnjinV1000 from '../matrixEnjinV1000'
 import * as matrixV1000 from '../matrixV1000'
 import * as matrixV1010 from '../matrixV1010'
@@ -8,6 +7,7 @@ import * as matrixV1030 from '../matrixV1030'
 import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
 import * as v1060 from '../v1060'
+import * as enjinV1062 from '../enjinV1062'
 
 export const identityOf = {
     /**
@@ -81,11 +81,17 @@ export const identityOf = {
         sts.tuple(() => [enjinV1032.Registration, sts.option(() => sts.bytes())])
     ) as IdentityOfEnjinV1032,
     /**
-     *  Information that is pertinent to identify the entity behind an account.
+     *  Information that is pertinent to identify the entity behind an account. First item is the
+     *  registration, second is the account's primary username.
      *
      *  TWOX-NOTE: OK ― `AccountId` is a secure hash.
      */
-    v110: new StorageType('Identity.IdentityOf', 'Optional', [v110.AccountId32], v110.Registration) as IdentityOfV110,
+    enjinV1062: new StorageType(
+        'Identity.IdentityOf',
+        'Optional',
+        [enjinV1062.AccountId32],
+        enjinV1062.Registration
+    ) as IdentityOfEnjinV1062,
     /**
      *  Information that is pertinent to identify the entity behind an account. First item is the
      *  registration, second is the account's primary username.
@@ -321,29 +327,33 @@ export interface IdentityOfEnjinV1032 {
 }
 
 /**
- *  Information that is pertinent to identify the entity behind an account.
+ *  Information that is pertinent to identify the entity behind an account. First item is the
+ *  registration, second is the account's primary username.
  *
  *  TWOX-NOTE: OK ― `AccountId` is a secure hash.
  */
-export interface IdentityOfV110 {
+export interface IdentityOfEnjinV1062 {
     is(block: RuntimeCtx): boolean
-    get(block: Block, key: v110.AccountId32): Promise<v110.Registration | undefined>
-    getMany(block: Block, keys: v110.AccountId32[]): Promise<(v110.Registration | undefined)[]>
-    getKeys(block: Block): Promise<v110.AccountId32[]>
-    getKeys(block: Block, key: v110.AccountId32): Promise<v110.AccountId32[]>
-    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v110.AccountId32[]>
-    getKeysPaged(pageSize: number, block: Block, key: v110.AccountId32): AsyncIterable<v110.AccountId32[]>
-    getPairs(block: Block): Promise<[k: v110.AccountId32, v: v110.Registration | undefined][]>
-    getPairs(block: Block, key: v110.AccountId32): Promise<[k: v110.AccountId32, v: v110.Registration | undefined][]>
+    get(block: Block, key: enjinV1062.AccountId32): Promise<enjinV1062.Registration | undefined>
+    getMany(block: Block, keys: enjinV1062.AccountId32[]): Promise<(enjinV1062.Registration | undefined)[]>
+    getKeys(block: Block): Promise<enjinV1062.AccountId32[]>
+    getKeys(block: Block, key: enjinV1062.AccountId32): Promise<enjinV1062.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<enjinV1062.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block, key: enjinV1062.AccountId32): AsyncIterable<enjinV1062.AccountId32[]>
+    getPairs(block: Block): Promise<[k: enjinV1062.AccountId32, v: enjinV1062.Registration | undefined][]>
+    getPairs(
+        block: Block,
+        key: enjinV1062.AccountId32
+    ): Promise<[k: enjinV1062.AccountId32, v: enjinV1062.Registration | undefined][]>
     getPairsPaged(
         pageSize: number,
         block: Block
-    ): AsyncIterable<[k: v110.AccountId32, v: v110.Registration | undefined][]>
+    ): AsyncIterable<[k: enjinV1062.AccountId32, v: enjinV1062.Registration | undefined][]>
     getPairsPaged(
         pageSize: number,
         block: Block,
-        key: v110.AccountId32
-    ): AsyncIterable<[k: v110.AccountId32, v: v110.Registration | undefined][]>
+        key: enjinV1062.AccountId32
+    ): AsyncIterable<[k: enjinV1062.AccountId32, v: enjinV1062.Registration | undefined][]>
 }
 
 /**
@@ -691,6 +701,34 @@ export const pendingUsernames = {
      *
      *  First tuple item is the account and second is the acceptance deadline.
      */
+    enjinV1062: new StorageType(
+        'Identity.PendingUsernames',
+        'Optional',
+        [sts.bytes()],
+        sts.tuple(() => [enjinV1062.AccountId32, sts.number(), enjinV1062.Provider])
+    ) as PendingUsernamesEnjinV1062,
+    /**
+     *  Usernames that an authority has granted, but that the account controller has not confirmed
+     *  that they want it. Used primarily in cases where the `AccountId` cannot provide a signature
+     *  because they are a pure proxy, multisig, etc. In order to confirm it, they should call
+     *  [`Call::accept_username`].
+     *
+     *  First tuple item is the account and second is the acceptance deadline.
+     */
+    v1030: new StorageType(
+        'Identity.PendingUsernames',
+        'Optional',
+        [sts.bytes()],
+        sts.tuple(() => [v1030.AccountId32, sts.number()])
+    ) as PendingUsernamesV1030,
+    /**
+     *  Usernames that an authority has granted, but that the account controller has not confirmed
+     *  that they want it. Used primarily in cases where the `AccountId` cannot provide a signature
+     *  because they are a pure proxy, multisig, etc. In order to confirm it, they should call
+     *  [accept_username](`Call::accept_username`).
+     *
+     *  First tuple item is the account and second is the acceptance deadline.
+     */
     v1060: new StorageType(
         'Identity.PendingUsernames',
         'Optional',
@@ -792,6 +830,67 @@ export interface PendingUsernamesEnjinV1032 {
         block: Block,
         key: Bytes
     ): AsyncIterable<[k: Bytes, v: [enjinV1032.AccountId32, number] | undefined][]>
+}
+
+/**
+ *  Usernames that an authority has granted, but that the account controller has not confirmed
+ *  that they want it. Used primarily in cases where the `AccountId` cannot provide a signature
+ *  because they are a pure proxy, multisig, etc. In order to confirm it, they should call
+ *  [accept_username](`Call::accept_username`).
+ *
+ *  First tuple item is the account and second is the acceptance deadline.
+ */
+export interface PendingUsernamesEnjinV1062 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: Bytes): Promise<[enjinV1062.AccountId32, number, enjinV1062.Provider] | undefined>
+    getMany(block: Block, keys: Bytes[]): Promise<([enjinV1062.AccountId32, number, enjinV1062.Provider] | undefined)[]>
+    getKeys(block: Block): Promise<Bytes[]>
+    getKeys(block: Block, key: Bytes): Promise<Bytes[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<Bytes[]>
+    getKeysPaged(pageSize: number, block: Block, key: Bytes): AsyncIterable<Bytes[]>
+    getPairs(block: Block): Promise<[k: Bytes, v: [enjinV1062.AccountId32, number, enjinV1062.Provider] | undefined][]>
+    getPairs(
+        block: Block,
+        key: Bytes
+    ): Promise<[k: Bytes, v: [enjinV1062.AccountId32, number, enjinV1062.Provider] | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: Bytes, v: [enjinV1062.AccountId32, number, enjinV1062.Provider] | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: Bytes
+    ): AsyncIterable<[k: Bytes, v: [enjinV1062.AccountId32, number, enjinV1062.Provider] | undefined][]>
+}
+
+/**
+ *  Usernames that an authority has granted, but that the account controller has not confirmed
+ *  that they want it. Used primarily in cases where the `AccountId` cannot provide a signature
+ *  because they are a pure proxy, multisig, etc. In order to confirm it, they should call
+ *  [`Call::accept_username`].
+ *
+ *  First tuple item is the account and second is the acceptance deadline.
+ */
+export interface PendingUsernamesV1030 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: Bytes): Promise<[v1030.AccountId32, number] | undefined>
+    getMany(block: Block, keys: Bytes[]): Promise<([v1030.AccountId32, number] | undefined)[]>
+    getKeys(block: Block): Promise<Bytes[]>
+    getKeys(block: Block, key: Bytes): Promise<Bytes[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<Bytes[]>
+    getKeysPaged(pageSize: number, block: Block, key: Bytes): AsyncIterable<Bytes[]>
+    getPairs(block: Block): Promise<[k: Bytes, v: [v1030.AccountId32, number] | undefined][]>
+    getPairs(block: Block, key: Bytes): Promise<[k: Bytes, v: [v1030.AccountId32, number] | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: Bytes, v: [v1030.AccountId32, number] | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: Bytes
+    ): AsyncIterable<[k: Bytes, v: [v1030.AccountId32, number] | undefined][]>
 }
 
 /**

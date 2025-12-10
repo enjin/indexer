@@ -104,7 +104,7 @@ export const lock = {
      *  If any nodes needs updating, removal or addition due to a temporary lock, the
      *  [`Call::rebag`] can be used.
      */
-    v1060: new StorageType('VoterList.Lock', 'Optional', [], sts.unit()) as LockV1060,
+    enjinV1062: new StorageType('VoterList.Lock', 'Optional', [], sts.unit()) as LockEnjinV1062,
 }
 
 /**
@@ -113,7 +113,7 @@ export const lock = {
  *  If any nodes needs updating, removal or addition due to a temporary lock, the
  *  [`Call::rebag`] can be used.
  */
-export interface LockV1060 {
+export interface LockEnjinV1062 {
     is(block: RuntimeCtx): boolean
     get(block: Block): Promise<null | undefined>
 }

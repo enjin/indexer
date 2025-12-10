@@ -20,6 +20,7 @@ import * as v1023 from '../v1023'
 import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
 import * as v1060 from '../v1060'
+import * as enjinV1062 from '../enjinV1062'
 
 export const minJoinBond = {
     /**
@@ -163,6 +164,15 @@ export const bondedPools = {
         [sts.number()],
         enjinV1023.BondedPoolInner
     ) as BondedPoolsEnjinV1023,
+    /**
+     *  Storage for bonded pools.
+     */
+    enjinV1062: new StorageType(
+        'NominationPools.BondedPools',
+        'Optional',
+        [sts.number()],
+        enjinV1062.BondedPoolInner
+    ) as BondedPoolsEnjinV1062,
     /**
      *  Storage for bonded pools.
      */
@@ -340,6 +350,30 @@ export interface BondedPoolsEnjinV1023 {
         block: Block,
         key: number
     ): AsyncIterable<[k: number, v: enjinV1023.BondedPoolInner | undefined][]>
+}
+
+/**
+ *  Storage for bonded pools.
+ */
+export interface BondedPoolsEnjinV1062 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: number): Promise<enjinV1062.BondedPoolInner | undefined>
+    getMany(block: Block, keys: number[]): Promise<(enjinV1062.BondedPoolInner | undefined)[]>
+    getKeys(block: Block): Promise<number[]>
+    getKeys(block: Block, key: number): Promise<number[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<number[]>
+    getKeysPaged(pageSize: number, block: Block, key: number): AsyncIterable<number[]>
+    getPairs(block: Block): Promise<[k: number, v: enjinV1062.BondedPoolInner | undefined][]>
+    getPairs(block: Block, key: number): Promise<[k: number, v: enjinV1062.BondedPoolInner | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: number, v: enjinV1062.BondedPoolInner | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: number
+    ): AsyncIterable<[k: number, v: enjinV1062.BondedPoolInner | undefined][]>
 }
 
 /**
@@ -1229,6 +1263,27 @@ export interface EarlyBirdSharesEnjinV1022 {
     ): AsyncIterable<[k: [number, enjinV1022.AccountId32], v: enjinV1022.Perquintill | undefined][]>
 }
 
+export const validatorBonusInfo = {
+    /**
+     *  Configuration for the validator bonus payout
+     */
+    enjinV1062: new StorageType(
+        'NominationPools.ValidatorBonusInfo',
+        'Default',
+        [],
+        enjinV1062.ValidatorBonusInformation
+    ) as ValidatorBonusInfoEnjinV1062,
+}
+
+/**
+ *  Configuration for the validator bonus payout
+ */
+export interface ValidatorBonusInfoEnjinV1062 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): enjinV1062.ValidatorBonusInformation
+    get(block: Block): Promise<enjinV1062.ValidatorBonusInformation | undefined>
+}
+
 export const lastPoolId = {
     /**
      *  Ever increasing number of all pools created so far.
@@ -1243,25 +1298,4 @@ export interface LastPoolIdV100 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): number
     get(block: Block): Promise<number | undefined>
-}
-
-export const validatorBonusInfo = {
-    /**
-     *  Configuration for the validator bonus payout
-     */
-    v1060: new StorageType(
-        'NominationPools.ValidatorBonusInfo',
-        'Default',
-        [],
-        v1060.ValidatorBonusInformation
-    ) as ValidatorBonusInfoV1060,
-}
-
-/**
- *  Configuration for the validator bonus payout
- */
-export interface ValidatorBonusInfoV1060 {
-    is(block: RuntimeCtx): boolean
-    getDefault(block: Block): v1060.ValidatorBonusInformation
-    get(block: Block): Promise<v1060.ValidatorBonusInformation | undefined>
 }

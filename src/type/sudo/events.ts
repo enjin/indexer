@@ -12,6 +12,7 @@ import * as matrixV1030 from '../matrixV1030'
 import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
 import * as v1060 from '../v1060'
+import * as enjinV1062 from '../enjinV1062'
 
 export const sudid = {
     name: 'Sudo.Sudid',
@@ -87,6 +88,21 @@ export const sudid = {
             sudoResult: sts.result(
                 () => sts.unit(),
                 () => enjinV101.DispatchError
+            ),
+        })
+    ),
+    /**
+     * A sudo call just took place.
+     */
+    enjinV1062: new EventType(
+        'Sudo.Sudid',
+        sts.struct({
+            /**
+             * The result of the call made by the sudo user.
+             */
+            sudoResult: sts.result(
+                () => sts.unit(),
+                () => enjinV1062.DispatchError
             ),
         })
     ),
@@ -296,6 +312,21 @@ export const sudoAsDone = {
             sudoResult: sts.result(
                 () => sts.unit(),
                 () => enjinV101.DispatchError
+            ),
+        })
+    ),
+    /**
+     * A [sudo_as](Pallet::sudo_as) call just took place.
+     */
+    enjinV1062: new EventType(
+        'Sudo.SudoAsDone',
+        sts.struct({
+            /**
+             * The result of the call made by the sudo user.
+             */
+            sudoResult: sts.result(
+                () => sts.unit(),
+                () => enjinV1062.DispatchError
             ),
         })
     ),

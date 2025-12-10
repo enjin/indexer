@@ -1,7 +1,9 @@
 import { sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx } from '../support'
 import * as enjinV100 from '../enjinV100'
+import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
 import * as v1060 from '../v1060'
+import * as enjinV1062 from '../enjinV1062'
 
 export const currentSessionIndex = {
     /**
@@ -83,6 +85,24 @@ export const allowedRelayParents = {
     /**
      *  All allowed relay-parents.
      */
+    enjinV1062: new StorageType(
+        'ParasShared.AllowedRelayParents',
+        'Default',
+        [],
+        enjinV1062.AllowedRelayParentsTracker
+    ) as AllowedRelayParentsEnjinV1062,
+    /**
+     *  All allowed relay-parents.
+     */
+    v1030: new StorageType(
+        'ParasShared.AllowedRelayParents',
+        'Default',
+        [],
+        v1030.AllowedRelayParentsTracker
+    ) as AllowedRelayParentsV1030,
+    /**
+     *  All allowed relay-parents.
+     */
     v1060: new StorageType(
         'ParasShared.AllowedRelayParents',
         'Default',
@@ -98,6 +118,24 @@ export interface AllowedRelayParentsEnjinV1032 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): enjinV1032.AllowedRelayParentsTracker
     get(block: Block): Promise<enjinV1032.AllowedRelayParentsTracker | undefined>
+}
+
+/**
+ *  All allowed relay-parents.
+ */
+export interface AllowedRelayParentsEnjinV1062 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): enjinV1062.AllowedRelayParentsTracker
+    get(block: Block): Promise<enjinV1062.AllowedRelayParentsTracker | undefined>
+}
+
+/**
+ *  All allowed relay-parents.
+ */
+export interface AllowedRelayParentsV1030 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): v1030.AllowedRelayParentsTracker
+    get(block: Block): Promise<v1030.AllowedRelayParentsTracker | undefined>
 }
 
 /**

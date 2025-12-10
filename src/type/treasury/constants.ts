@@ -1,6 +1,6 @@
 import { sts, Block, Bytes, Option, Result, ConstantType, RuntimeCtx } from '../support'
 import * as enjinV100 from '../enjinV100'
-import * as v1060 from '../v1060'
+import * as enjinV1062 from '../enjinV1062'
 
 export const proposalBond = {
     /**
@@ -68,5 +68,5 @@ export const potAccount = {
     /**
      *  Gets this pallet's derived pot account.
      */
-    v1060: new ConstantType('Treasury.pot_account', v1060.AccountId32),
+    enjinV1062: new ConstantType('Treasury.pot_account', enjinV1062.AccountId32),
 }

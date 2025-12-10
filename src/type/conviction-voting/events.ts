@@ -1,7 +1,7 @@
 import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
 import * as enjinV100 from '../enjinV100'
 import * as enjinV1050 from '../enjinV1050'
-import * as v1060 from '../v1060'
+import * as enjinV1062 from '../enjinV1062'
 
 export const delegated = {
     name: 'ConvictionVoting.Delegated',
@@ -52,10 +52,10 @@ export const voteUnlocked = {
     /**
      * The lockup period of a conviction vote expired, and the funds have been unlocked.
      */
-    v1060: new EventType(
+    enjinV1062: new EventType(
         'ConvictionVoting.VoteUnlocked',
         sts.struct({
-            who: v1060.AccountId32,
+            who: enjinV1062.AccountId32,
             class: sts.number(),
         })
     ),

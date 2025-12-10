@@ -11,6 +11,7 @@ import * as v110 from '../v110'
 import * as enjinV1023 from '../enjinV1023'
 import * as v1023 from '../v1023'
 import * as v1060 from '../v1060'
+import * as enjinV1062 from '../enjinV1062'
 
 export const created = {
     name: 'NominationPools.Created',
@@ -413,6 +414,62 @@ export const rewardPaid = {
     /**
      * Rewards were paid to a pool
      */
+    enjinV1062: new EventType(
+        'NominationPools.RewardPaid',
+        sts.struct({
+            /**
+             * The id of the pool
+             */
+            poolId: sts.number(),
+            /**
+             * The era that was processed.
+             */
+            era: sts.number(),
+            /**
+             * The validator that the payment was received from
+             */
+            validatorStash: enjinV1062.AccountId32,
+            /**
+             * The amount added to the pool's reward account
+             */
+            reward: sts.bigint(),
+            /**
+             * The commission that was paid
+             */
+            commission: sts.option(() => enjinV1062.CommissionPayment),
+        })
+    ),
+    /**
+     * Rewards were paid to a pool
+     */
+    v102: new EventType(
+        'NominationPools.RewardPaid',
+        sts.struct({
+            /**
+             * The id of the pool
+             */
+            poolId: sts.number(),
+            /**
+             * The era that was processed.
+             */
+            era: sts.number(),
+            /**
+             * The validator that the payment was received from
+             */
+            validatorStash: v102.AccountId32,
+            /**
+             * The amount added to the pool's reward account
+             */
+            reward: sts.bigint(),
+            /**
+             * The amount that was added to the pool's bonus account
+             */
+            bonus: sts.bigint(),
+        })
+    ),
+    /**
+     * Rewards were paid to a pool
+     */
     v1060: new EventType(
         'NominationPools.RewardPaid',
         sts.struct({
@@ -470,6 +527,16 @@ export const poolMutated = {
         sts.struct({
             poolId: sts.number(),
             mutation: enjinV1023.PoolMutation,
+        })
+    ),
+    /**
+     * Pool has been mutated.
+     */
+    enjinV1062: new EventType(
+        'NominationPools.PoolMutated',
+        sts.struct({
+            poolId: sts.number(),
+            mutation: enjinV1062.PoolMutation,
         })
     ),
     /**
@@ -677,6 +744,50 @@ export const earlyBirdSharesRemoved = {
     ),
 }
 
+export const unbondingMemberRemoved = {
+    name: 'NominationPools.UnbondingMemberRemoved',
+    /**
+     * An item was removed from the `UnbondingMembers` storage
+     */
+    enjinV1062: new EventType(
+        'NominationPools.UnbondingMemberRemoved',
+        sts.struct({
+            /**
+             * The pool id that was removed
+             */
+            poolId: sts.number(),
+            /**
+             * The member that was removed
+             */
+            member: enjinV1062.AccountId32,
+        })
+    ),
+}
+
+export const validatorBonusPaid = {
+    name: 'NominationPools.ValidatorBonusPaid',
+    /**
+     * A bonus was paid to validators
+     */
+    enjinV1062: new EventType(
+        'NominationPools.ValidatorBonusPaid',
+        sts.struct({
+            /**
+             * The era for the payment
+             */
+            era: sts.number(),
+            /**
+             * The total amount rewarded
+             */
+            total: sts.bigint(),
+            /**
+             * The bonuses rewarded to individual validators
+             */
+            rewards: sts.array(() => sts.tuple(() => [enjinV1062.AccountId32, sts.bigint()])),
+        })
+    ),
+}
+
 export const rolesUpdated = {
     name: 'NominationPools.RolesUpdated',
     /**
@@ -815,50 +926,6 @@ export const rewardReinvested = {
         sts.struct({
             poolId: sts.number(),
             amount: sts.bigint(),
-        })
-    ),
-}
-
-export const unbondingMemberRemoved = {
-    name: 'NominationPools.UnbondingMemberRemoved',
-    /**
-     * An item was removed from the `UnbondingMembers` storage
-     */
-    v1060: new EventType(
-        'NominationPools.UnbondingMemberRemoved',
-        sts.struct({
-            /**
-             * The pool id that was removed
-             */
-            poolId: sts.number(),
-            /**
-             * The member that was removed
-             */
-            member: v1060.AccountId32,
-        })
-    ),
-}
-
-export const validatorBonusPaid = {
-    name: 'NominationPools.ValidatorBonusPaid',
-    /**
-     * A bonus was paid to validators
-     */
-    v1060: new EventType(
-        'NominationPools.ValidatorBonusPaid',
-        sts.struct({
-            /**
-             * The era for the payment
-             */
-            era: sts.number(),
-            /**
-             * The total amount rewarded
-             */
-            total: sts.bigint(),
-            /**
-             * The bonuses rewarded to individual validators
-             */
-            rewards: sts.array(() => sts.tuple(() => [v1060.AccountId32, sts.bigint()])),
         })
     ),
 }

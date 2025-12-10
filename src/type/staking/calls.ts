@@ -6,7 +6,7 @@ import * as v105 from '../v105'
 import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
 import * as enjinV1050 from '../enjinV1050'
-import * as v1060 from '../v1060'
+import * as enjinV1062 from '../enjinV1062'
 
 export const bond = {
     name: 'Staking.bond',
@@ -1011,10 +1011,10 @@ export const migrateCurrency = {
      *
      * The fee is waived if the migration is successful.
      */
-    v1060: new CallType(
+    enjinV1062: new CallType(
         'Staking.migrate_currency',
         sts.struct({
-            stash: v1060.AccountId32,
+            stash: enjinV1062.AccountId32,
         })
     ),
 }
@@ -1044,12 +1044,12 @@ export const manualSlash = {
      *   will be applied.
      * - The slash will be deferred by `SlashDeferDuration` eras before being enacted.
      */
-    v1060: new CallType(
+    enjinV1062: new CallType(
         'Staking.manual_slash',
         sts.struct({
-            validatorStash: v1060.AccountId32,
+            validatorStash: enjinV1062.AccountId32,
             era: sts.number(),
-            slashFraction: v1060.Perbill,
+            slashFraction: enjinV1062.Perbill,
         })
     ),
 }
