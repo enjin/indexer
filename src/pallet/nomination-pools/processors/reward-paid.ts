@@ -243,7 +243,7 @@ export async function rewardPaid(ctx: CommonContext, block: Block, item: EventIt
     const eraIndex = eventData.era + 1
 
     if (!nominationPools.rewardPaid.v1060.is(item)) {
-        return rewardPaidEventModel(item, eventData, stashValidator.id, eraIndex)
+        return rewardPaidEventModel(item, eventData, stashValidator.id)
     }
 
     let reward: EraReward | undefined = undefined
@@ -299,5 +299,5 @@ export async function rewardPaid(ctx: CommonContext, block: Block, item: EventIt
         },
     }
 
-    return [rewardPaidEventModel(item, eventData, stashValidator.id, eraIndex), snsEvent]
+    return [rewardPaidEventModel(item, eventData, stashValidator.id), snsEvent]
 }
