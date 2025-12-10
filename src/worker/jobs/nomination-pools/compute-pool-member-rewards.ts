@@ -81,8 +81,6 @@ async function calculateMemberRewards(
             accumulatedRewards: newAccumulated,
         }
 
-        
-
         inserts.push(new PoolMemberRewards(pmrData))
     }
 
@@ -99,7 +97,6 @@ export async function computePoolMemberRewards(_job: Job, eraIndex: number): Pro
     if (!era) {
         throw new Error(`Era not found: ${eraIndex}`)
     }
-
 
     const eraRewards = await ctx.store.find(EraReward, {
         where: { era: { index: eraIndex } },
@@ -119,9 +116,7 @@ export async function computePoolMemberRewards(_job: Job, eraIndex: number): Pro
             throw new Error(`Pool not found: ${eraReward.pool?.id}`)
         }
 
-
         const memberBalances = await getMembersBalance(era.startBlock, parseInt(pool.id))
-
 
         const { inserts, members } = await calculateMemberRewards(ctx, eraIndex, pool, memberBalances, eraReward, _job)
 
