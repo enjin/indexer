@@ -50,7 +50,7 @@ export async function computeEraRewards(_job: Job, eraIndex: number): Promise<vo
         where: {
             name: 'NominationPoolsRewardPaid',
             data: {
-                era: eraIndex,
+                era: parseInt(eraIndex.toString()),
             },
         },
     })
