@@ -9,6 +9,10 @@ export const forceMint = withDispatchCheck((call: CallItem): ForceMint => {
     return match(call)
         .returnType<ForceMint>()
         .when(
+            () => calls.multiTokens.forceMint.matrixEnjinV1031.is(call),
+            () => calls.multiTokens.forceMint.matrixEnjinV1031.decode(call)
+        )
+        .when(
             () => calls.multiTokens.forceMint.matrixEnjinV1022.is(call),
             () => calls.multiTokens.forceMint.matrixEnjinV1022.decode(call)
         )

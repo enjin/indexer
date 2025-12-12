@@ -15,10 +15,10 @@ export function bigIntReplacer(_key: string, value: unknown): unknown {
 const DEFAULT_NETWORK: Network = 'enjin-matrixchain'
 
 const LATEST_SPEC_VERSIONS: Record<Network, number> = {
-    'enjin-relaychain': 1050,
-    'enjin-matrixchain': 1022,
-    'canary-relaychain': 1060,
-    'canary-matrixchain': 1030,
+    'enjin-relaychain': 1062,
+    'enjin-matrixchain': 1031,
+    'canary-relaychain': 1062,
+    'canary-matrixchain': 1031,
 }
 
 function getLatestSpecVersion(network: Network): number {
