@@ -22,7 +22,7 @@ async function getMembersBalance(blockNumber: number, poolId: number): Promise<R
         const tokenAccount = value.toJSON() as { balance: string } | null
 
         if (tokenAccount && accountId) {
-            const address = encodeAddress(decodeAddress(accountId.toString()), 1110)
+            const address = encodeAddress(decodeAddress(accountId.toString()), 2135)
             accountMap[address] = BigInt(tokenAccount.balance || 0)
         }
     }
