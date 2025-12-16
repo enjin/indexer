@@ -5,6 +5,37 @@ import type { EntityManager } from 'typeorm'
 import { Validate } from 'class-validator'
 import { Collection, Token, TokenAccount } from '~/model'
 import { IsPublicKey } from './helpers'
+import Axios from 'axios'
+import https from 'https'
+
+async function fetchMetadataFromUri(url: string): Promise<Record<string, unknown> | null> {
+    const api = Axios.create({
+        headers: {
+            'Cache-Control': 'no-cache',
+            'Content-Type': 'application/json',
+            'accept-encoding': 'gzip;q=0,deflate,sdch',
+        },
+        withCredentials: false,
+        timeout: 15000,
+        maxRedirects: 3,
+        httpsAgent: new https.Agent({ keepAlive: true, rejectUnauthorized: false }),
+    })
+
+    let finalUrl = url.replace('ipfs://', 'https://ipfs.io/ipfs/')
+
+    try {
+        const { status, data } = await api.get(finalUrl)
+        if (status >= 200 && status < 300) {
+            if (data && typeof data === 'object' && !Array.isArray(data)) {
+                return data
+            }
+        }
+    } catch {
+        // Silently fail - we'll return null and keep existing metadata
+    }
+
+    return null
+}
 
 @ArgsType()
 class SearchTokensArgs {
@@ -154,6 +185,42 @@ export class SearchTokensResolver {
 
         builder.orderBy('token.created_at', 'DESC')
 
-        return (await builder.getMany()) as any[]
+        const buildResponse = await builder.getMany()
+
+        const result = await Promise.all(
+            buildResponse.map(async (collection) => {
+                const collectionObj = { ...collection } as any
+
+                const collectionUriAttr = collection.attributes?.find((attr) => attr.key === 'uri')
+                if (collectionUriAttr?.value) {
+                    const fetchedMetadata = await fetchMetadataFromUri(collectionUriAttr.value)
+                    if (fetchedMetadata) {
+                        collectionObj.metadata = fetchedMetadata
+                    }
+                }
+
+                if (collection.tokens) {
+                    collectionObj.tokens = await Promise.all(
+                        collection.tokens.map(async (token) => {
+                            const tokenObj = { ...token } as any
+
+                            const tokenUriAttr = token.attributes?.find((attr) => attr.key === 'uri')
+                            if (tokenUriAttr?.value) {
+                                const fetchedMetadata = await fetchMetadataFromUri(tokenUriAttr.value)
+                                if (fetchedMetadata) {
+                                    tokenObj.metadata = fetchedMetadata
+                                }
+                            }
+
+                            return tokenObj
+                        })
+                    )
+                }
+
+                return collectionObj
+            })
+        )
+
+        return result as any[]
     }
 }
