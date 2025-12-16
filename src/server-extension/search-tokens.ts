@@ -25,6 +25,7 @@ async function fetchMetadataFromUri(url: string): Promise<Record<string, unknown
 
     try {
         const { status, data } = await api.get(finalUrl)
+        console.log(data)
         if (status >= 200 && status < 300) {
             if (data && typeof data === 'object' && !Array.isArray(data)) {
                 return data
