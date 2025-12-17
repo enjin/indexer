@@ -8,28 +8,40 @@ import { IsPublicKey } from './helpers'
 import Axios from 'axios'
 import https from 'https'
 
+const METADATA_QUERY = `
+query BasicMetadataInfo($url: String!) {
+  result: Metadata(url: $url) {
+    metadata {
+      name
+      media {
+        url
+        type
+        alt
+      }
+    }
+  }
+}
+`
+
 async function fetchMetadataFromUri(url: string): Promise<Record<string, unknown> | null> {
     const api = Axios.create({
         headers: {
-            'Cache-Control': 'no-cache',
             'Content-Type': 'application/json',
-            'accept-encoding': 'gzip;q=0,deflate,sdch',
         },
-        withCredentials: false,
         timeout: 15000,
-        maxRedirects: 3,
         httpsAgent: new https.Agent({ keepAlive: true, rejectUnauthorized: false }),
     })
 
-    let finalUrl = url.replace('ipfs://', 'https://ipfs.io/ipfs/')
-
     try {
-        const { status, data } = await api.get(finalUrl)
+        const { status, data } = await api.post('https://metadata.svc.enjops.com/graphql', {
+            query: METADATA_QUERY,
+            variables: { url },
+        })
+
         console.log(data)
-        if (status >= 200 && status < 300) {
-            if (data && typeof data === 'object' && !Array.isArray(data)) {
-                return data
-            }
+
+        if (status >= 200 && status < 300 && data?.data?.result?.metadata) {
+            return data.data.result.metadata
         }
     } catch {
         // Silently fail - we'll return null and keep existing metadata
