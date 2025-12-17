@@ -23,7 +23,16 @@ query BasicMetadataInfo($url: String!) {
 }
 `
 
-async function fetchMetadataFromUri(url: string): Promise<Record<string, unknown> | null> {
+const BACKOFF_DELAYS_MS = [60_000, 300_000, 900_000] // 60s, 300s, 900s
+
+function sleep(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+async function fetchMetadataWithRetry(
+    url: string,
+    backoffDelays: number[] = BACKOFF_DELAYS_MS
+): Promise<Record<string, unknown> | null> {
     const api = Axios.create({
         headers: {
             'Content-Type': 'application/json',
@@ -32,19 +41,41 @@ async function fetchMetadataFromUri(url: string): Promise<Record<string, unknown
         httpsAgent: new https.Agent({ keepAlive: true, rejectUnauthorized: false }),
     })
 
-    try {
-        const { status, data } = await api.post('https://metadata.svc.enjops.com/graphql', {
-            query: METADATA_QUERY,
-            variables: { url },
-        })
+    let attempt = 0
+    const maxAttempts = backoffDelays.length + 1
 
-        console.log(data)
+    while (attempt < maxAttempts) {
+        try {
+            const { status, data } = await api.post('https://metadata.svc.enjops.com/graphql', {
+                query: METADATA_QUERY,
+                variables: { url },
+            })
 
-        if (status >= 200 && status < 300 && data?.data?.result?.metadata) {
-            return data.data.result.metadata
+            if (status >= 200 && status < 300 && data?.data?.result?.metadata) {
+                const metadata = data.data.result.metadata
+
+                // If metadata has actual data (name is not 'Unnamed'), return it
+                if (metadata.name && metadata.name !== 'Unnamed') {
+                    return metadata
+                }
+            }
+
+            // If no metadata or name is 'Unnamed', retry with backoff
+            if (attempt < backoffDelays.length) {
+                await sleep(backoffDelays[attempt])
+                attempt++
+            } else {
+                break
+            }
+        } catch {
+            // On error, retry with backoff
+            if (attempt < backoffDelays.length) {
+                await sleep(backoffDelays[attempt])
+                attempt++
+            } else {
+                break
+            }
         }
-    } catch {
-        // Silently fail - we'll return null and keep existing metadata
     }
 
     return null
@@ -206,7 +237,7 @@ export class SearchTokensResolver {
 
                 const collectionUriAttr = collection.attributes?.find((attr) => attr.key === 'uri')
                 if (collectionUriAttr?.value) {
-                    const fetchedMetadata = await fetchMetadataFromUri(collectionUriAttr.value)
+                    const fetchedMetadata = await fetchMetadataWithRetry(collectionUriAttr.value)
                     if (fetchedMetadata) {
                         collectionObj.metadata = fetchedMetadata
                     }
@@ -217,9 +248,15 @@ export class SearchTokensResolver {
                         collection.tokens.map(async (token) => {
                             const tokenObj = { ...token } as any
 
-                            const tokenUriAttr = token.attributes?.find((attr) => attr.key === 'uri')
+                            let tokenUriAttr: any = token.attributes?.find((attr) => attr.key === 'uri')
+                            if (collectionUriAttr?.value?.includes('{id}')) {
+                                tokenUriAttr = {
+                                    ...tokenUriAttr,
+                                    value: collectionUriAttr?.value.replace('{id}', token.id) ?? '',
+                                }
+                            }
                             if (tokenUriAttr?.value) {
-                                const fetchedMetadata = await fetchMetadataFromUri(tokenUriAttr.value)
+                                const fetchedMetadata = await fetchMetadataWithRetry(tokenUriAttr.value)
                                 if (fetchedMetadata) {
                                     tokenObj.metadata = fetchedMetadata
                                 }
