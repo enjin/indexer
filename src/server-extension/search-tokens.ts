@@ -38,7 +38,7 @@ async function fetchMetadataWithRetry(
             'Content-Type': 'application/json',
         },
         timeout: 15000,
-        httpsAgent: new https.Agent({ keepAlive: true, rejectUnauthorized: false }),
+        httpsAgent: new https.Agent({ keepAlive: true }),
     })
 
     let attempt = 0
