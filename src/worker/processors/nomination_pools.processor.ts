@@ -11,6 +11,7 @@ import {
     syncPools,
     syncOrphanedEarlyBirdRewards,
     syncStakeExchangeOffersEvents,
+    computeEraRewards,
 } from '~/worker/jobs'
 
 export class NominationPoolsProcessor implements ProcessorDef {
@@ -21,6 +22,9 @@ export class NominationPoolsProcessor implements ProcessorDef {
                 break
             case JobsEnum.COMPUTE_POOL_REWARDS:
                 await computePoolRewards(job, job.data.id)
+                break
+            case JobsEnum.COMPUTE_ERA_REWARDS:
+                await computeEraRewards(job, job.data.id)
                 break
             case JobsEnum.COMPUTE_POOL_MEMBER_REWARDS:
                 await computePoolMemberRewards(job, job.data.id)
