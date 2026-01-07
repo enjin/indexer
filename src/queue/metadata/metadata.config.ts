@@ -12,10 +12,9 @@ const config: QueueConfigType = {
     telemetry: new BullMQOtel('enjin'),
     queueName: QueuesEnum.METADATA,
     defaultJobOptions: {
-        attempts: 8,
+        attempts: 6,
         backoff: {
-            type: 'exponential',
-            delay: 2000,
+            type: 'custom',
         },
         removeOnComplete: {
             age: 172800, // 2 days

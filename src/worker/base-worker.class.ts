@@ -29,6 +29,14 @@ export class BaseWorker {
             connection,
             useWorkerThreads: options.useWorkerThreads ?? true,
             concurrency: options.concurrency ?? 5,
+            settings: {
+                backoffStrategy: (attemptsMade: number) => {
+                    // Custom retry delays: 3s, 15s, 60s, 150s, 300s, 600s
+                    const delays = [3000, 15000, 60000, 150000, 300000, 600000]
+                    // Return the delay for the current attempt, or the last delay if we exceed the array
+                    return delays[Math.min(attemptsMade - 1, delays.length - 1)]
+                },
+            },
         }
 
         this.worker = new Worker(queueName, processorHandler, workerOptions)
