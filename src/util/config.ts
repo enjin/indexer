@@ -91,7 +91,7 @@ const config: Config = {
     wsReconnectDelay: process.env.WS_RECONNECT_DELAY ? parseInt(process.env.WS_RECONNECT_DELAY, 10) : 1000,
     truncateDatabase: process.env.TRUNCATE_DATABASE === 'true',
     skipSync: process.env.SKIP_SYNC === 'true',
-    metadataSupportedProps: process.env.METADATA_SUPPORTED_PROPS || '',
+    metadataSupportedProps: process.env.METADATA_SUPPORTED_PROPS || 'name,fallbackImage,description,media,keywords,attributes',
 }
 
 export default config
