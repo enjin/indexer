@@ -163,7 +163,7 @@ export function metadataParser(
         attributes: unknown
     } | null
 ): Metadata {
-    const supportedProps = config.metadataSupportedProps.split(',').map((prop) => prop.trim())
+    const supportedProps = config.metadataSupportedProps
 
     if (externalMetadata?.name && supportedProps.includes('name')) {
         metadata.name = safeString(externalMetadata.name)
