@@ -187,13 +187,21 @@ export function metadataParser(
     if (externalMetadata?.media && supportedProps.includes('media')) {
         metadata.media = parseMedia(externalMetadata.media)
     }
-    if (externalMetadata?.properties && typeof externalMetadata.properties === 'object' && supportedProps.includes('properties')) {
+    if (
+        externalMetadata?.properties &&
+        typeof externalMetadata.properties === 'object' &&
+        supportedProps.includes('properties')
+    ) {
         metadata.attributes = parseObjectProperties(externalMetadata.properties)
         if (Array.isArray(externalMetadata.properties)) {
             metadata.attributes = parseArrayAttributes(externalMetadata.properties)
         }
     }
-    if (externalMetadata?.attributes && typeof externalMetadata.attributes === 'object' && supportedProps.includes('attributes')) {
+    if (
+        externalMetadata?.attributes &&
+        typeof externalMetadata.attributes === 'object' &&
+        supportedProps.includes('attributes')
+    ) {
         metadata.attributes = parseObjectProperties(externalMetadata.attributes)
         if (Array.isArray(externalMetadata.attributes)) {
             metadata.attributes = parseArrayAttributes(externalMetadata.attributes)
