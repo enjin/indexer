@@ -39,6 +39,7 @@ export interface Config {
     wsReconnectDelay: number
     truncateDatabase: boolean
     skipSync: boolean
+    metadataSupportedProps: string[]
 }
 
 const config: Config = {
@@ -90,6 +91,12 @@ const config: Config = {
     wsReconnectDelay: process.env.WS_RECONNECT_DELAY ? parseInt(process.env.WS_RECONNECT_DELAY, 10) : 1000,
     truncateDatabase: process.env.TRUNCATE_DATABASE === 'true',
     skipSync: process.env.SKIP_SYNC === 'true',
+    metadataSupportedProps: (
+        process.env.METADATA_SUPPORTED_PROPS ||
+        'name,fallback_image,description,media,keywords,attributes,external_url,image,properties'
+    )
+        .split(',')
+        .map((prop) => prop.trim()),
 }
 
 export default config

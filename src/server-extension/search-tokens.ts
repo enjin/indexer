@@ -1,85 +1,10 @@
-import { Field, ObjectType, Query, Resolver, ID, Int, ArgsType, Args } from 'type-graphql'
+import { Field, ObjectType, Query, Resolver, ID, ArgsType, Args } from 'type-graphql'
 import { Json, BigInteger } from '@subsquid/graphql-server'
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
 import { Validate } from 'class-validator'
-import { Collection, Token, TokenAccount } from '~/model'
+import { Collection } from '~/model'
 import { IsPublicKey } from './helpers'
-import Axios from 'axios'
-import https from 'https'
-
-const METADATA_QUERY = `
-query BasicMetadataInfo($url: String!) {
-  result: Metadata(url: $url) {
-    metadata {
-      name
-      media {
-        url
-        type
-        alt
-      }
-    }
-  }
-}
-`
-
-const BACKOFF_DELAYS_MS = [60_000, 300_000, 900_000] // 60s, 300s, 900s
-
-function sleep(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms))
-}
-
-async function fetchMetadataWithRetry(
-    url: string,
-    backoffDelays: number[] = BACKOFF_DELAYS_MS
-): Promise<Record<string, unknown> | null> {
-    const api = Axios.create({
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        timeout: 15000,
-        httpsAgent: new https.Agent({ keepAlive: true }),
-    })
-
-    let attempt = 0
-    const maxAttempts = backoffDelays.length + 1
-
-    while (attempt < maxAttempts) {
-        try {
-            const { status, data } = await api.post('https://metadata.svc.enjops.com/graphql', {
-                query: METADATA_QUERY,
-                variables: { url },
-            })
-
-            if (status >= 200 && status < 300 && data?.data?.result?.metadata) {
-                const metadata = data.data.result.metadata
-
-                // If metadata has actual data (name is not 'Unnamed'), return it
-                if (metadata.name && metadata.name !== 'Unnamed') {
-                    return metadata
-                }
-            }
-
-            // If no metadata or name is 'Unnamed', retry with backoff
-            if (attempt < backoffDelays.length) {
-                await sleep(backoffDelays[attempt])
-                attempt++
-            } else {
-                break
-            }
-        } catch {
-            // On error, retry with backoff
-            if (attempt < backoffDelays.length) {
-                await sleep(backoffDelays[attempt])
-                attempt++
-            } else {
-                break
-            }
-        }
-    }
-
-    return null
-}
 
 @ArgsType()
 class SearchTokensArgs {
@@ -231,46 +156,6 @@ export class SearchTokensResolver {
 
         const buildResponse = await builder.getMany()
 
-        const result = await Promise.all(
-            buildResponse.map(async (collection) => {
-                const collectionObj = { ...collection } as any
-
-                const collectionUriAttr = collection.attributes?.find((attr) => attr.key === 'uri')
-                if (collectionUriAttr?.value) {
-                    const fetchedMetadata = await fetchMetadataWithRetry(collectionUriAttr.value)
-                    if (fetchedMetadata) {
-                        collectionObj.metadata = fetchedMetadata
-                    }
-                }
-
-                if (collection.tokens) {
-                    collectionObj.tokens = await Promise.all(
-                        collection.tokens.map(async (token) => {
-                            const tokenObj = { ...token } as any
-
-                            let tokenUriAttr: any = token.attributes?.find((attr) => attr.key === 'uri')
-                            if (collectionUriAttr?.value?.includes('{id}')) {
-                                tokenUriAttr = {
-                                    ...tokenUriAttr,
-                                    value: collectionUriAttr?.value.replace('{id}', token.id) ?? '',
-                                }
-                            }
-                            if (tokenUriAttr?.value) {
-                                const fetchedMetadata = await fetchMetadataWithRetry(tokenUriAttr.value)
-                                if (fetchedMetadata) {
-                                    tokenObj.metadata = fetchedMetadata
-                                }
-                            }
-
-                            return tokenObj
-                        })
-                    )
-                }
-
-                return collectionObj
-            })
-        )
-
-        return result as any[]
+        return buildResponse as any[]
     }
 }

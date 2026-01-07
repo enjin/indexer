@@ -4,6 +4,7 @@ import Queue from 'bullmq'
 import mime from 'mime-types'
 import { safeString } from './tools'
 import { Attribute, Metadata, MetadataMedia } from '~/model'
+import config from '~/util/config'
 
 type Media = {
     url: string
@@ -162,35 +163,45 @@ export function metadataParser(
         attributes: unknown
     } | null
 ): Metadata {
-    if (externalMetadata?.name) {
+    const supportedProps = config.metadataSupportedProps
+
+    if (externalMetadata?.name && supportedProps.includes('name')) {
         metadata.name = safeString(externalMetadata.name)
     }
-    if (externalMetadata?.description) {
+    if (externalMetadata?.description && supportedProps.includes('description')) {
         metadata.description = safeString(externalMetadata.description)
     }
-    if (externalMetadata?.external_url) {
+    if (externalMetadata?.external_url && supportedProps.includes('external_url')) {
         metadata.externalUrl = safeString(externalMetadata.external_url)
     }
-    if (externalMetadata?.keywords && Array.isArray(externalMetadata.keywords)) {
+    if (externalMetadata?.keywords && Array.isArray(externalMetadata.keywords) && supportedProps.includes('keywords')) {
         metadata.keywords = externalMetadata.keywords
     }
-    if (externalMetadata?.image) {
+    if (externalMetadata?.image && supportedProps.includes('image')) {
         metadata.fallbackImage = safeString(externalMetadata.image)
         metadata.media = imageToMedia(externalMetadata.image)
     }
-    if (externalMetadata?.fallback_image) {
+    if (externalMetadata?.fallback_image && supportedProps.includes('fallback_image')) {
         metadata.fallbackImage = safeString(externalMetadata.fallback_image)
     }
-    if (externalMetadata?.media) {
+    if (externalMetadata?.media && supportedProps.includes('media')) {
         metadata.media = parseMedia(externalMetadata.media)
     }
-    if (externalMetadata?.properties && typeof externalMetadata.properties === 'object') {
+    if (
+        externalMetadata?.properties &&
+        typeof externalMetadata.properties === 'object' &&
+        supportedProps.includes('properties')
+    ) {
         metadata.attributes = parseObjectProperties(externalMetadata.properties)
         if (Array.isArray(externalMetadata.properties)) {
             metadata.attributes = parseArrayAttributes(externalMetadata.properties)
         }
     }
-    if (externalMetadata?.attributes && typeof externalMetadata.attributes === 'object') {
+    if (
+        externalMetadata?.attributes &&
+        typeof externalMetadata.attributes === 'object' &&
+        supportedProps.includes('attributes')
+    ) {
         metadata.attributes = parseObjectProperties(externalMetadata.attributes)
         if (Array.isArray(externalMetadata.attributes)) {
             metadata.attributes = parseArrayAttributes(externalMetadata.attributes)
