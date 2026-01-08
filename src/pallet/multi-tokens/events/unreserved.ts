@@ -39,6 +39,10 @@ export function unreserved(event: EventItem): Unreserved {
             () => multiTokens.unreserved.v1050.is(event),
             () => multiTokens.unreserved.v1050.decode(event)
         )
+        .when(
+            () => multiTokens.unreserved.v1060.is(event),
+            () => multiTokens.unreserved.v1060.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })
