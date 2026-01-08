@@ -5,6 +5,7 @@ import mime from 'mime-types'
 import { safeString } from './tools'
 import { Attribute, Metadata, MetadataMedia } from '~/model'
 import config from '~/util/config'
+import { validateUrlForSSRF } from './ssrf-protection'
 
 type Media = {
     url: string
@@ -32,6 +33,14 @@ export async function fetchMetadata(url: string, job: Queue.Job) {
             api.defaults.headers['x-pinata-gateway-token'] = process.env.PINATA_GATEWAY_TOKEN as string
         }
         await job.log(`Fetching metadata from ${finalUrl} attempt ${job.attemptsMade}`)
+    }
+
+    // SSRF protection: validate URL before making request
+    try {
+        await validateUrlForSSRF(finalUrl)
+    } catch (error: any) {
+        await job.log(`SSRF validation failed for ${finalUrl}: ${error.message}`)
+        throw error
     }
 
     try {
