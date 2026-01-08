@@ -67,7 +67,7 @@ export async function validateUrlForSSRF(url: string): Promise<void> {
 
     try {
         parsedUrl = new URL(url)
-    } catch (error) {
+    } catch {
         throw new Error(`Invalid URL: ${url}`)
     }
 
@@ -93,13 +93,15 @@ export async function validateUrlForSSRF(url: string): Promise<void> {
         if (isPrivateIP(resolved.address)) {
             throw new Error(`SSRF attempt detected: ${hostname} resolves to private IP range (${resolved.address})`)
         }
-    } catch (error: any) {
+    } catch (error: unknown) {
         // If DNS lookup fails, let it propagate
-        if (error.message?.includes('SSRF attempt detected')) {
+        if (error instanceof Error && error.message?.includes('SSRF attempt detected')) {
             throw error
         }
         // For DNS resolution errors, we might want to let the request fail naturally
         // or we could throw here - depends on desired behavior
-        throw new Error(`Failed to resolve hostname ${hostname}: ${error.message}`)
+        throw new Error(
+            `Failed to resolve hostname ${hostname}: ${error instanceof Error ? error.message : String(error)}`
+        )
     }
 }

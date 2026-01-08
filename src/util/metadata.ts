@@ -38,8 +38,8 @@ export async function fetchMetadata(url: string, job: Queue.Job) {
     // SSRF protection: validate URL before making request
     try {
         await validateUrlForSSRF(finalUrl)
-    } catch (error: any) {
-        await job.log(`SSRF validation failed for ${finalUrl}: ${error.message}`)
+    } catch (error: unknown) {
+        await job.log(`SSRF validation failed for ${finalUrl}: ${error instanceof Error ? error.message : String(error)}`)
         throw error
     }
 
