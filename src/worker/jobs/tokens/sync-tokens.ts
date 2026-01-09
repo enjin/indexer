@@ -20,6 +20,7 @@ export async function syncTokens(job: Job) {
         QueueUtils.dispatchComputeTokenInfusion(id)
         QueueUtils.dispatchComputeTokenSupply(id)
         QueueUtils.dispatchComputeTokenBestListing(id)
+        QueueUtils.dispatchComputeTokenCreationSupply(id)
         count++
     })
 

@@ -399,6 +399,19 @@ export function dispatchComputeTokenInfusion(id: string): void {
     })
 }
 
+export function dispatchComputeTokenCreationSupply(id: string): void {
+    TokensQueue.add(
+        JobsEnum.COMPUTE_TOKEN_CREATION_SUPPLY,
+        { id },
+        {
+            delay: 6000,
+            jobId: `tokens.creation-supply.${id}`,
+        }
+    ).catch(() => {
+        Logger.error('Failed to dispatch compute token creation supply', LOGGER_NAMESPACE)
+    })
+}
+
 export function dispatchSyncPools(): void {
     NominationPoolsQueue.add(
         JobsEnum.SYNC_POOLS,
