@@ -39,7 +39,9 @@ export async function fetchMetadata(url: string, job: Queue.Job) {
     try {
         await validateUrlForSSRF(finalUrl)
     } catch (error: unknown) {
-        await job.log(`SSRF validation failed for ${finalUrl}: ${error instanceof Error ? error.message : String(error)}`)
+        await job.log(
+            `SSRF validation failed for ${finalUrl}: ${error instanceof Error ? error.message : String(error)}`
+        )
         throw error
     }
 
