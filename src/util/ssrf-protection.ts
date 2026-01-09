@@ -1,6 +1,6 @@
 import { URL } from 'url'
 import dns from 'dns'
-import { promisify } from 'util'
+import { promisify } from 'node:util'
 import net from 'net'
 
 const dnsLookup = promisify(dns.lookup)
