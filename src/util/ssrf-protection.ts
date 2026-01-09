@@ -95,7 +95,7 @@ export async function validateUrlForSSRF(url: string): Promise<void> {
         }
     } catch (error: unknown) {
         // If DNS lookup fails, let it propagate
-        if (error instanceof Error && error.message?.includes('SSRF attempt detected')) {
+        if (error instanceof Error && error.message.includes('SSRF attempt detected')) {
             throw error
         }
         // For DNS resolution errors, we might want to let the request fail naturally
