@@ -73,8 +73,8 @@ export class Token {
     @BigIntColumn_({nullable: true})
     bestListingPrice!: bigint | undefined | null
 
-    @BigIntColumn_({nullable: false})
-    creationSupply!: bigint
+    @BigIntColumn_({nullable: true})
+    creationSupply!: bigint | undefined | null
 
     @Index_()
     @ManyToOne_(() => Collection, {nullable: true})
