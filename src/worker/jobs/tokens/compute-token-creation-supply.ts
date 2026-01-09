@@ -2,7 +2,7 @@ import { dataHandlerContext } from '~/contexts'
 import { Token, Event as EventModel, MultiTokensTokenCreated } from '~/model'
 import { Job } from 'bullmq'
 
-export async function computeTokenBestListing(_job: Job, id: string): Promise<void> {
+export async function computeTokenCreationSupply(_job: Job, id: string): Promise<void> {
     const ctx = await dataHandlerContext()
 
     const token = await ctx.store.findOne<Token>(Token, { where: { id }, relations: { collection: true } })
