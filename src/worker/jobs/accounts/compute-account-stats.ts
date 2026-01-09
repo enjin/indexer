@@ -16,23 +16,19 @@ export async function computeAccountStats(job: Job) {
         .addSelect('COALESCE(tokens_value_sum.tokensValue, 0)', 'tokensValue')
         .addSelect('COALESCE(total_infused_sum.totalInfused, 0)', 'totalInfused')
         .from(Account, 'account')
+        .leftJoin(`(SELECT COUNT(*) as count FROM collection WHERE owner_id = :accountId)`, 'collection_count', '1=1')
         .leftJoin(
-            `(SELECT COUNT(*) as count FROM collection WHERE owner_id = '${accountId}')`,
-            'collection_count',
-            '1=1'
-        )
-        .leftJoin(
-            `(SELECT COUNT(*) as count FROM token_account WHERE account_id = '${accountId}' AND collection_id NOT IN ('1'))`,
+            `(SELECT COUNT(*) as count FROM token_account WHERE account_id = :accountId AND collection_id NOT IN ('1'))`,
             'token_count',
             '1=1'
         )
         .leftJoin(
-            `(SELECT COALESCE(SUM(amount * price), 0) as volume FROM listing_sale WHERE listing_id NOT IN (SELECT id FROM listing WHERE type = 'Offer') AND buyer_id = '${accountId}')`,
+            `(SELECT COALESCE(SUM(amount * price), 0) as volume FROM listing_sale WHERE listing_id NOT IN (SELECT id FROM listing WHERE type = 'Offer') AND buyer_id = :accountId)`,
             'volume_sum',
             '1=1'
         )
         .leftJoin(
-            `(SELECT COALESCE(SUM(ls.amount * ls.price), 0) as volume FROM listing_sale as ls INNER JOIN listing as l ON ls.listing_id = l.id WHERE l.type = 'Offer' AND l.seller_id = '${accountId}')`,
+            `(SELECT COALESCE(SUM(ls.amount * ls.price), 0) as volume FROM listing_sale as ls INNER JOIN listing as l ON ls.listing_id = l.id WHERE l.type = 'Offer' AND l.seller_id = :accountId)`,
             'volume_sum_offer',
             '1=1'
         )
@@ -40,14 +36,14 @@ export async function computeAccountStats(job: Job) {
             `(SELECT COALESCE(SUM((collection.stats->>'floorPrice')::numeric * token_account.total_balance::numeric), 0) as tokensValue 
               FROM token_account 
               INNER JOIN collection ON token_account.collection_id = collection.id 
-              WHERE token_account.account_id = '${accountId}' 
+              WHERE token_account.account_id = :accountId 
               AND token_account.collection_id NOT IN ('1')
               AND collection.stats->>'floorPrice' IS NOT NULL)`,
             'tokens_value_sum',
             '1=1'
         )
         .leftJoin(
-            `(SELECT COALESCE(SUM((event.data->>'amount')::numeric), 0) as totalInfused FROM event WHERE event.name = 'MultiTokensInfused' AND event.data->>'accountId' = '${accountId}')`,
+            `(SELECT COALESCE(SUM((event.data->>'amount')::numeric), 0) as totalInfused FROM event WHERE event.name = 'MultiTokensInfused' AND event.data->>'accountId' = :accountId)`,
             'total_infused_sum',
             '1=1'
         )

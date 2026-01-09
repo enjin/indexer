@@ -1,7 +1,7 @@
 import { Query, Resolver, Arg, ArgsType, Field, Args, registerEnumType } from 'type-graphql'
 import 'reflect-metadata'
 import { QueueUtils } from '~/queue'
-import { decodeAddress } from '~/util/tools'
+import { decodeAddress, isValidAddress } from '~/util/tools'
 
 export enum EntityType {
     COLLECTION_EXTRA = 'collection_extra',
@@ -105,6 +105,10 @@ export class RefreshEntityResolver {
                 break
             case EntityType.COMPUTE_ACCOUNT_STATS:
                 for (const id of args.ids) {
+                    // Validate account ID is a valid public key
+                    if (!isValidAddress(id)) {
+                        throw new Error(`Invalid account ID (must be a valid public key): ${id}`)
+                    }
                     QueueUtils.dispatchComputeAccountStats(id)
                 }
                 break
