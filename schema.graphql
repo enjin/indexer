@@ -743,6 +743,7 @@ type Token @entity {
   anyoneCanInfuse: Boolean!
   infusion: BigInt!
   bestListingPrice: BigInt
+  creationSupply: BigInt!
 
   # Relations
   collection: Collection! @index
