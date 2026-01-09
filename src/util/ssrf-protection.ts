@@ -2,6 +2,7 @@ import { URL } from 'url'
 import dns from 'dns'
 import { promisify } from 'node:util'
 import net from 'net'
+import config from '~/util/config'
 
 const dnsLookup = promisify(dns.lookup)
 
@@ -63,6 +64,10 @@ function isPrivateIP(ip: string): boolean {
  * @throws Error if the URL is invalid or resolves to a private IP
  */
 export async function validateUrlForSSRF(url: string): Promise<void> {
+    if (config.allowLocalRequests) {
+        return
+    }
+
     let parsedUrl: URL
 
     try {
