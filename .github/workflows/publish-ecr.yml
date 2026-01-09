@@ -1,9 +1,6 @@
 name: Amazon ECR
 on:
   workflow_dispatch:
-  push:
-    tags:
-      - v*
 
 jobs:
   push:
