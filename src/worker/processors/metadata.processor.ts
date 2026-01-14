@@ -1,7 +1,13 @@
 import { Job } from 'bullmq'
 import { ProcessorDef } from '~/worker/processors/processor.def'
 import { JobsEnum } from '~/queue/constants'
-import { computeMetadata, syncMetadata, syncFuelTanks } from '~/worker/jobs'
+import {
+    computeMetadata,
+    syncMetadata,
+    syncFuelTanks,
+    syncTokenGroupMetadata,
+    computeTokenGroupMetadata,
+} from '~/worker/jobs'
 import { logDebug, logError } from '~/worker/utils'
 
 export class MetadataProcessor implements ProcessorDef {
@@ -15,6 +21,12 @@ export class MetadataProcessor implements ProcessorDef {
                 break
             case JobsEnum.SYNC_FUEL_TANKS:
                 await syncFuelTanks(job)
+                break
+            case JobsEnum.COMPUTE_TOKEN_GROUP_METADATA:
+                await computeTokenGroupMetadata(job)
+                break
+            case JobsEnum.SYNC_TOKEN_GROUP_METADATA:
+                await syncTokenGroupMetadata(job)
                 break
             default:
                 throw new Error(`${job.name} is not a valid job for this processor`)

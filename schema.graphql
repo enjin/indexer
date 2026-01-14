@@ -644,6 +644,7 @@ type TokenGroup @entity {
   id: ID!
   collection: Collection! @index
   attributes: [Attribute] @derivedFrom(field: "tokenGroup")
+  metadata: Metadata
   tokenGroupTokens: [TokenGroupToken] @derivedFrom(field: "tokenGroup")
   createdAt: DateTime
 }
