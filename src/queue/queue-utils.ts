@@ -215,6 +215,32 @@ export async function dispatchComputeMetadata({
     })
 }
 
+export function dispatchComputeTokenGroupMetadata(id: string): void {
+    MetadataQueue.add(
+        JobsEnum.COMPUTE_TOKEN_GROUP_METADATA,
+        { id },
+        {
+            delay: 60000,
+            jobId: `metadata.tokenGroup.${id}`,
+        }
+    ).catch(() => {
+        Logger.error('Failed to dispatch a job on metadata queue', LOGGER_NAMESPACE)
+    })
+}
+
+export function dispatchSyncTokenGroupMetadata(): void {
+    MetadataQueue.add(
+        JobsEnum.SYNC_TOKEN_GROUP_METADATA,
+        {},
+        {
+            delay: 6000,
+            jobId: 'metadata.tokenGroup.all',
+        }
+    ).catch(() => {
+        Logger.error('Failed to dispatch sync token group metadata', LOGGER_NAMESPACE)
+    })
+}
+
 export function dispatchSyncAllMetadata(): void {
     MetadataQueue.add(
         JobsEnum.SYNC_METADATA,
