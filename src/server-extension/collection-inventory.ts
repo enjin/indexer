@@ -81,7 +81,7 @@ class CollectionInventoryArgs {
     after?: string
 
     @Field(() => CollectionInventoryOrderByInput, { defaultValue: CollectionInventoryOrderByInput.OWNED_COUNT })
-    sorting: CollectionInventoryOrderByInput = CollectionInventoryOrderByInput.OWNED_COUNT
+    orderBy: CollectionInventoryOrderByInput = CollectionInventoryOrderByInput.OWNED_COUNT
 
     @Field(() => CollectionInventoryOrderInput, { defaultValue: CollectionInventoryOrderInput.DESC })
     order: CollectionInventoryOrderInput = CollectionInventoryOrderInput.DESC
@@ -198,7 +198,7 @@ export class CollectionInventoryResolver {
      */
     @Query(() => CollectionInventoryConnection)
     async collectionInventory(@Args() args: CollectionInventoryArgs): Promise<CollectionInventoryConnection> {
-        const { accountIds, collectionId, first, after, sorting, order, query } = args
+        const { accountIds, collectionId, first, after, orderBy, order, query } = args
 
         if (!accountIds?.length) {
             return new CollectionInventoryConnection({
@@ -253,7 +253,7 @@ export class CollectionInventoryResolver {
             }
         }
 
-        const sortColumn = getSortColumn(sorting)
+        const sortColumn = getSortColumn(orderBy)
         const sortOrder = order === CollectionInventoryOrderInput.ASC ? 'ASC' : 'DESC'
         const comparison = order === CollectionInventoryOrderInput.ASC ? '>' : '<'
 
@@ -651,7 +651,7 @@ export class CollectionInventoryResolver {
             // Extract the order value based on the sorting column
             let orderValue: string = ''
             if (pageItem) {
-                switch (sorting) {
+                switch (orderBy) {
                     case CollectionInventoryOrderByInput.OWNED_COUNT:
                         orderValue = pageItem.owned_count?.toString() || ''
                         break
