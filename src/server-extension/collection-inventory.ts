@@ -1,4 +1,15 @@
-import { Args, ArgsType, Field, ID, Int, ObjectType, Query, Resolver, createUnionType } from 'type-graphql'
+import {
+    Args,
+    ArgsType,
+    Field,
+    ID,
+    Int,
+    ObjectType,
+    Query,
+    Resolver,
+    createUnionType,
+    registerEnumType,
+} from 'type-graphql'
 import { BigInteger, Json } from '@subsquid/graphql-server'
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
@@ -6,6 +17,25 @@ import { Validate } from 'class-validator'
 import { TokenAccount, Attribute, Token, TokenGroup, Collection } from '~/model'
 import { decodeCursor, encodeCursor, IsPublicKeyArray } from './helpers'
 import { PageInfo } from './types'
+
+export enum CollectionInventoryOrderByInput {
+    OWNED_COUNT = 'owned_count',
+    CREATED_AT = 'created_at',
+    TOKEN_ID = 'token_id',
+}
+
+export enum CollectionInventoryOrderInput {
+    ASC = 'ASC',
+    DESC = 'DESC',
+}
+
+registerEnumType(CollectionInventoryOrderByInput, {
+    name: 'CollectionInventoryOrderByInput',
+})
+
+registerEnumType(CollectionInventoryOrderInput, {
+    name: 'CollectionInventoryOrderInput',
+})
 
 @ObjectType()
 class CollectionInventoryItemAttribute {
@@ -49,6 +79,15 @@ class CollectionInventoryArgs {
 
     @Field(() => String, { nullable: true })
     after?: string
+
+    @Field(() => CollectionInventoryOrderByInput, { defaultValue: CollectionInventoryOrderByInput.OWNED_COUNT })
+    orderBy: CollectionInventoryOrderByInput = CollectionInventoryOrderByInput.OWNED_COUNT
+
+    @Field(() => CollectionInventoryOrderInput, { defaultValue: CollectionInventoryOrderInput.DESC })
+    order: CollectionInventoryOrderInput = CollectionInventoryOrderInput.DESC
+
+    @Field(() => String, { nullable: true })
+    query?: string
 }
 
 @ObjectType()
@@ -95,6 +134,12 @@ class CollectionInventoryToken {
 
     @Field(() => Boolean)
     nonFungible!: boolean
+
+    @Field(() => BigInteger)
+    balance!: typeof BigInteger
+
+    @Field(() => BigInteger)
+    reservedBalance!: typeof BigInteger
 
     @Field()
     createdAt!: Date
@@ -159,7 +204,7 @@ export class CollectionInventoryResolver {
      */
     @Query(() => CollectionInventoryConnection)
     async collectionInventory(@Args() args: CollectionInventoryArgs): Promise<CollectionInventoryConnection> {
-        const { accountIds, collectionId, first, after } = args
+        const { accountIds, collectionId, first, after, orderBy, order, query } = args
 
         if (!accountIds?.length) {
             return new CollectionInventoryConnection({
@@ -181,57 +226,72 @@ export class CollectionInventoryResolver {
         const limit = Math.min(requested, 100)
 
         let afterId: string | null = null
-        let afterType: 'GROUP' | 'TOKEN' | null = null
+        let afterOrderValue: string | null = null
 
         if (after) {
-            const { id, orderValue } = decodeCursor(after)
-            if (orderValue !== 'GROUP' && orderValue !== 'TOKEN') {
-                throw new Error('Invalid cursor')
-            }
-            afterId = id
-            afterType = orderValue as 'GROUP' | 'TOKEN'
+            const decoded = decodeCursor(after)
+            afterId = decoded.id
+            afterOrderValue = decoded.orderValue
         }
 
         const manager = await this.tx()
 
         // Decode cursor to get keyset pagination anchor
-        let cursorType: 'GROUP' | 'TOKEN' | null = null
-        let cursorOwnedCount: number | null = null
+        let cursorOrderValue: string | null = null
         let cursorId: string | null = null
 
-        if (afterId && afterType) {
-            cursorType = afterType
-            // For cursor comparison, we need ownedCount. Groups have variable counts, tokens always 1.
-            // We'll fetch a small window and find it, or pass as parameter
+        if (afterId && afterOrderValue !== undefined) {
+            cursorOrderValue = afterOrderValue
             cursorId = afterId
-            if (afterType === 'GROUP') {
-                // Fetch the group to get its ownedCount for keyset comparison
-                const groupRow = await manager
-                    .getRepository(TokenAccount)
-                    .createQueryBuilder('token_account')
-                    .innerJoin('token_account.token', 'token')
-                    .innerJoin('token.collection', 'collection')
-                    .innerJoin('token.tokenGroupTokens', 'tgt')
-                    .innerJoin('tgt.tokenGroup', 'tg')
-                    .select('COUNT(DISTINCT token.id)', 'count')
-                    .where('token_account.account IN (:...accountIds)', { accountIds })
-                    .andWhere('token_account.totalBalance > 0')
-                    .andWhere('collection.collectionId = :collectionId', { collectionId })
-                    .andWhere('tg.id = :groupId', { groupId: cursorId })
-                    .getRawOne()
-                cursorOwnedCount = groupRow?.count ? parseInt(groupRow.count, 10) : 0
-            } else {
-                cursorOwnedCount = 1
+        }
+
+        // Determine SQL column name and order direction for sorting
+        const getSortColumn = (sortBy: CollectionInventoryOrderByInput): string => {
+            switch (sortBy) {
+                case CollectionInventoryOrderByInput.OWNED_COUNT:
+                    return 'owned_count'
+                case CollectionInventoryOrderByInput.CREATED_AT:
+                    return 'created_at'
+                case CollectionInventoryOrderByInput.TOKEN_ID:
+                    return 'token_id'
+                default:
+                    return 'owned_count'
             }
+        }
+
+        const sortColumn = getSortColumn(orderBy)
+        const sortOrder = order === CollectionInventoryOrderInput.ASC ? 'ASC' : 'DESC'
+        const comparison = order === CollectionInventoryOrderInput.ASC ? '>' : '<'
+
+        // Build search condition for query parameter
+        let searchCondition = ''
+        const queryParams: any[] = [...accountIds, collectionId]
+
+        if (query) {
+            const queryParamIndex = queryParams.length + 1
+            searchCondition = `AND (collection.name ILIKE $${queryParamIndex} OR token.name ILIKE $${queryParamIndex})`
+            queryParams.push(`%${query}%`)
         }
 
         // Keyset pagination query: fetch groups and ungrouped tokens in one pass
         const accountIdPlaceholders = accountIds.map((_, i) => `$${i + 1}`).join(', ')
         const collectionIdPlaceholder = `$${accountIds.length + 1}`
-        const cursorTypeParam = cursorType === 'GROUP' ? 0 : cursorType === 'TOKEN' ? 1 : -1
-        // For descending owned_count, start from MAX_SAFE_INTEGER on first page to include all groups
-        const cursorOwnedCountParam = cursorOwnedCount ?? Number.MAX_SAFE_INTEGER
-        const cursorIdParam = cursorId ?? ''
+
+        // Build cursor condition
+        let cursorCondition = ''
+        if (cursorOrderValue !== null && cursorId !== null) {
+            const cursorOrderValueIndex = queryParams.length + 1
+            const cursorIdIndex = queryParams.length + 2
+
+            // Handle NULL order values (encoded as empty string)
+            if (cursorOrderValue === '') {
+                cursorCondition = `AND (${sortColumn} IS NOT NULL OR (${sortColumn} IS NULL AND id ${comparison} $${cursorIdIndex}))`
+                queryParams.push(cursorId)
+            } else {
+                cursorCondition = `AND (${sortColumn} ${comparison} $${cursorOrderValueIndex} OR (${sortColumn} = $${cursorOrderValueIndex} AND id ${comparison} $${cursorIdIndex}))`
+                queryParams.push(cursorOrderValue, cursorId)
+            }
+        }
 
         const pageItems = await manager.query(
             `
@@ -240,7 +300,9 @@ export class CollectionInventoryResolver {
                 SELECT
                     tg.id AS id,
                     COUNT(DISTINCT token.id) AS owned_count,
-                    0 AS sort_priority
+                    0 AS sort_priority,
+                    MIN(token.created_at) AS created_at,
+                    MIN(token.token_id) AS token_id
                 FROM token_account
                 INNER JOIN token ON token_account.token_id = token.id
                 INNER JOIN collection ON token.collection_id = collection.id
@@ -249,6 +311,7 @@ export class CollectionInventoryResolver {
                 WHERE token_account.account_id IN (${accountIdPlaceholders})
                     AND token_account.total_balance > 0
                     AND collection.collection_id = ${collectionIdPlaceholder}
+                    ${searchCondition}
                 GROUP BY tg.id
                 HAVING COUNT(DISTINCT token.id) >= 2
             ),
@@ -257,7 +320,9 @@ export class CollectionInventoryResolver {
                 SELECT
                     token.id AS id,
                     1 AS owned_count,
-                    1 AS sort_priority
+                    1 AS sort_priority,
+                    token.created_at AS created_at,
+                    token.token_id AS token_id
                 FROM token_account
                 INNER JOIN token ON token_account.token_id = token.id
                 INNER JOIN collection ON token.collection_id = collection.id
@@ -267,32 +332,27 @@ export class CollectionInventoryResolver {
                 WHERE token_account.account_id IN (${accountIdPlaceholders})
                     AND token_account.total_balance > 0
                     AND collection.collection_id = ${collectionIdPlaceholder}
+                    ${searchCondition}
                     AND tg.id IS NULL
                 GROUP BY token.id
             ),
             -- merged: union groups and standalone tokens for unified ordering
             merged AS (
-                SELECT id, owned_count, sort_priority FROM groups_data
+                SELECT id, owned_count, sort_priority, created_at, token_id FROM groups_data
                 UNION ALL
-                SELECT id, owned_count, sort_priority FROM ungrouped_tokens
+                SELECT id, owned_count, sort_priority, created_at, token_id FROM ungrouped_tokens
             )
-            SELECT id, owned_count, sort_priority
+            SELECT id, owned_count, sort_priority, created_at, token_id
             FROM merged
-            -- keyset pagination: compare sort_priority (ASC), owned_count (DESC), id (ASC)
-            WHERE (
-                sort_priority > $${accountIds.length + 2}
-                OR (sort_priority = $${accountIds.length + 2} AND owned_count < $${accountIds.length + 3})
-                OR (sort_priority = $${accountIds.length + 2} AND owned_count = $${accountIds.length + 3} AND id ${
-                    cursorType && cursorId && cursorOwnedCount !== null ? '>' : '>='
-                } $${accountIds.length + 4})
-            )
-            ORDER BY sort_priority, owned_count DESC, id
+            WHERE 1=1 ${cursorCondition}
+            ORDER BY sort_priority ASC, ${sortColumn} ${sortOrder}, id ASC
             LIMIT ${limit + 1}
         `,
-            [...accountIds, collectionId, cursorTypeParam, cursorOwnedCountParam, cursorIdParam]
+            queryParams
         )
 
         // Fetch total count of matching items (without LIMIT)
+        const totalCountParams = query ? [...accountIds, collectionId, `%${query}%`] : [...accountIds, collectionId]
         const totalCountResult = await manager.query(
             `
             -- groups_data: token groups owned by the account(s) with at least two tokens
@@ -307,6 +367,7 @@ export class CollectionInventoryResolver {
                 WHERE token_account.account_id IN (${accountIdPlaceholders})
                     AND token_account.total_balance > 0
                     AND collection.collection_id = ${collectionIdPlaceholder}
+                    ${searchCondition}
                 GROUP BY tg.id
                 HAVING COUNT(DISTINCT token.id) >= 2
             ),
@@ -323,6 +384,7 @@ export class CollectionInventoryResolver {
                 WHERE token_account.account_id IN (${accountIdPlaceholders})
                     AND token_account.total_balance > 0
                     AND collection.collection_id = ${collectionIdPlaceholder}
+                    ${searchCondition}
                     AND tg.id IS NULL
                 GROUP BY token.id
             )
@@ -333,7 +395,7 @@ export class CollectionInventoryResolver {
                 SELECT id FROM ungrouped_tokens
             ) AS merged
         `,
-            [...accountIds, collectionId]
+            totalCountParams
         )
         const totalCount = parseInt(totalCountResult[0]?.count ?? 0, 10)
 
@@ -479,6 +541,8 @@ export class CollectionInventoryResolver {
                 createdAt: Date
                 collection?: CollectionInventoryItemCollection
                 attributes: CollectionInventoryItemAttribute[]
+                balance: bigint
+                reservedBalance: bigint
             }
         >()
         if (allTokenIds.length > 0) {
@@ -508,6 +572,36 @@ export class CollectionInventoryResolver {
                 .where('token.id IN (:...tokenIds)', { tokenIds: allTokenIds })
                 .getMany()
 
+            // Fetch TokenAccount balances using a simple aggregation query
+            const tokenIdPlaceholders = allTokenIds.map((_: any, i: number) => `$${i + 1}`).join(', ')
+            const accountIdsPlaceholders = accountIds
+                .map((_: any, i: number) => `$${allTokenIds.length + i + 1}`)
+                .join(', ')
+
+            const tokenBalances = await manager.query(
+                `
+                SELECT 
+                    token_id,
+                    COALESCE(SUM(balance), 0) AS balance,
+                    COALESCE(SUM(reserved_balance), 0) AS reserved_balance
+                FROM token_account
+                WHERE token_id IN (${tokenIdPlaceholders})
+                    AND account_id IN (${accountIdsPlaceholders})
+                GROUP BY token_id
+                `,
+                [...allTokenIds, ...accountIds]
+            )
+
+            // Create a map of tokenId -> {balance, reservedBalance}
+            const tokenBalanceMap = new Map<string, { balance: bigint; reservedBalance: bigint }>()
+            for (const row of tokenBalances) {
+                tokenBalanceMap.set(String(row.token_id), {
+                    balance: BigInt(row.balance ?? 0),
+                    reservedBalance: BigInt(row.reserved_balance ?? 0),
+                })
+            }
+
+            // comment
             for (const token of tokenDetails) {
                 const collectionAttrs = (token.collection?.attributes || [])
                     .filter((attr: any) => !attr.token)
@@ -516,7 +610,10 @@ export class CollectionInventoryResolver {
                         value: attr.value,
                     }))
 
-                tokensMap.set(String(token.id), {
+                const tokenId = String(token.id)
+                const balances = tokenBalanceMap.get(tokenId) || { balance: 0n, reservedBalance: 0n }
+
+                tokensMap.set(tokenId, {
                     tokenId: token.tokenId,
                     supply: token.supply,
                     isFrozen: token.isFrozen,
@@ -535,6 +632,8 @@ export class CollectionInventoryResolver {
                         key: attr.key,
                         value: attr.value,
                     })),
+                    balance: balances.balance,
+                    reservedBalance: balances.reservedBalance,
                 })
             }
         }
@@ -553,6 +652,8 @@ export class CollectionInventoryResolver {
                         isFrozen: tokenData?.isFrozen ?? false,
                         metadata: tokenData?.metadata,
                         nonFungible: tokenData?.nonFungible ?? false,
+                        balance: (tokenData?.balance ?? 0n) as any,
+                        reservedBalance: (tokenData?.reservedBalance ?? 0n) as any,
                         createdAt: tokenData?.createdAt ?? new Date(),
                         collection:
                             tokenData?.collection ||
@@ -579,6 +680,8 @@ export class CollectionInventoryResolver {
                     isFrozen: tokenData?.isFrozen ?? false,
                     metadata: tokenData?.metadata,
                     nonFungible: tokenData?.nonFungible ?? false,
+                    balance: (tokenData?.balance ?? 0n) as any,
+                    reservedBalance: (tokenData?.reservedBalance ?? 0n) as any,
                     createdAt: tokenData?.createdAt ?? new Date(),
                     collection:
                         tokenData?.collection ||
@@ -588,10 +691,27 @@ export class CollectionInventoryResolver {
             }
         })
 
-        const edges = items.map((node: CollectionInventoryGroup | CollectionInventoryToken) => {
+        const edges = items.map((node: CollectionInventoryGroup | CollectionInventoryToken, index: number) => {
             const itemId = node instanceof CollectionInventoryGroup ? node.id : node.id
-            const itemType = node instanceof CollectionInventoryGroup ? 'GROUP' : 'TOKEN'
-            const cursor = encodeCursor(itemId, itemType)
+            const pageItem = pageItems[index]
+
+            // Extract the order value based on the sorting column
+            let orderValue: string = ''
+            if (pageItem) {
+                switch (orderBy) {
+                    case CollectionInventoryOrderByInput.OWNED_COUNT:
+                        orderValue = pageItem.owned_count?.toString() || ''
+                        break
+                    case CollectionInventoryOrderByInput.CREATED_AT:
+                        orderValue = pageItem.created_at ? new Date(pageItem.created_at).toISOString() : ''
+                        break
+                    case CollectionInventoryOrderByInput.TOKEN_ID:
+                        orderValue = pageItem.token_id?.toString() || ''
+                        break
+                }
+            }
+
+            const cursor = encodeCursor(itemId, orderValue)
             return new CollectionInventoryEdge({ cursor, node })
         })
 
