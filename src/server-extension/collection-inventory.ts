@@ -135,6 +135,12 @@ class CollectionInventoryToken {
     @Field(() => Boolean)
     nonFungible!: boolean
 
+    @Field(() => BigInteger)
+    balance!: typeof BigInteger
+
+    @Field(() => BigInteger)
+    reservedBalance!: typeof BigInteger
+
     @Field()
     createdAt!: Date
 
@@ -535,6 +541,8 @@ export class CollectionInventoryResolver {
                 createdAt: Date
                 collection?: CollectionInventoryItemCollection
                 attributes: CollectionInventoryItemAttribute[]
+                balance: bigint
+                reservedBalance: bigint
             }
         >()
         if (allTokenIds.length > 0) {
@@ -564,6 +572,36 @@ export class CollectionInventoryResolver {
                 .where('token.id IN (:...tokenIds)', { tokenIds: allTokenIds })
                 .getMany()
 
+            // Fetch TokenAccount balances using a simple aggregation query
+            const tokenIdPlaceholders = allTokenIds.map((_: any, i: number) => `$${i + 1}`).join(', ')
+            const accountIdsPlaceholders = accountIds
+                .map((_: any, i: number) => `$${allTokenIds.length + i + 1}`)
+                .join(', ')
+
+            const tokenBalances = await manager.query(
+                `
+                SELECT 
+                    token_id,
+                    COALESCE(SUM(balance), 0) AS balance,
+                    COALESCE(SUM(reserved_balance), 0) AS reserved_balance
+                FROM token_account
+                WHERE token_id IN (${tokenIdPlaceholders})
+                    AND account_id IN (${accountIdsPlaceholders})
+                GROUP BY token_id
+                `,
+                [...allTokenIds, ...accountIds]
+            )
+
+            // Create a map of tokenId -> {balance, reservedBalance}
+            const tokenBalanceMap = new Map<string, { balance: bigint; reservedBalance: bigint }>()
+            for (const row of tokenBalances) {
+                tokenBalanceMap.set(String(row.token_id), {
+                    balance: BigInt(row.balance ?? 0),
+                    reservedBalance: BigInt(row.reserved_balance ?? 0),
+                })
+            }
+
+            // comment
             for (const token of tokenDetails) {
                 const collectionAttrs = (token.collection?.attributes || [])
                     .filter((attr: any) => !attr.token)
@@ -572,7 +610,10 @@ export class CollectionInventoryResolver {
                         value: attr.value,
                     }))
 
-                tokensMap.set(String(token.id), {
+                const tokenId = String(token.id)
+                const balances = tokenBalanceMap.get(tokenId) || { balance: 0n, reservedBalance: 0n }
+
+                tokensMap.set(tokenId, {
                     tokenId: token.tokenId,
                     supply: token.supply,
                     isFrozen: token.isFrozen,
@@ -591,6 +632,8 @@ export class CollectionInventoryResolver {
                         key: attr.key,
                         value: attr.value,
                     })),
+                    balance: balances.balance,
+                    reservedBalance: balances.reservedBalance,
                 })
             }
         }
@@ -609,6 +652,8 @@ export class CollectionInventoryResolver {
                         isFrozen: tokenData?.isFrozen ?? false,
                         metadata: tokenData?.metadata,
                         nonFungible: tokenData?.nonFungible ?? false,
+                        balance: (tokenData?.balance ?? 0n) as any,
+                        reservedBalance: (tokenData?.reservedBalance ?? 0n) as any,
                         createdAt: tokenData?.createdAt ?? new Date(),
                         collection:
                             tokenData?.collection ||
@@ -635,6 +680,8 @@ export class CollectionInventoryResolver {
                     isFrozen: tokenData?.isFrozen ?? false,
                     metadata: tokenData?.metadata,
                     nonFungible: tokenData?.nonFungible ?? false,
+                    balance: (tokenData?.balance ?? 0n) as any,
+                    reservedBalance: (tokenData?.reservedBalance ?? 0n) as any,
                     createdAt: tokenData?.createdAt ?? new Date(),
                     collection:
                         tokenData?.collection ||
