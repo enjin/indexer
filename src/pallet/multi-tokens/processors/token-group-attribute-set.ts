@@ -4,6 +4,7 @@ import { Block, CommonContext, EventItem } from '~/contexts'
 import * as mappings from '~/pallet/index'
 import { safeString } from '~/util/tools'
 import { EventHandlerResult } from '~/processor.handler'
+import { QueueUtils } from '~/queue'
 
 export async function tokenGroupAttributeSet(
     ctx: CommonContext,
@@ -48,6 +49,8 @@ export async function tokenGroupAttributeSet(
 
         await ctx.store.insert(newAttribute)
     }
+
+    await QueueUtils.dispatchComputeTokenGroupMetadata(tokenGroup.id.toString())
 
     return mappings.multiTokens.events.tokenGroupAttributeSetEventModel(item, data)
 }
