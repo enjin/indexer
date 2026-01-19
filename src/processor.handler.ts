@@ -167,6 +167,7 @@ export async function eventHandler(
             .with(marketplace.listingRemovedUnderMinimum.name, () =>
                 p.marketplace.processors.listingRemovedUnderMinimum(ctx, block, item)
             )
+            .with(marketplace.expiredListingRemoved.name, () => p.marketplace.processors.expiredListingRemoved(ctx, block, item))
             .with(polkadotXcm.attempted.name, () => p.polkadotXcm.processors.attempted(ctx, block, item))
             .with(fuelTanks.accountAdded.name, () => p.fuelTanks.processors.accountAdded(ctx, block, item))
             .with(fuelTanks.accountRemoved.name, () => p.fuelTanks.processors.accountRemoved(ctx, block, item))
