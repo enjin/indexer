@@ -97,6 +97,9 @@ class CollectionInventoryGroup {
     @Field(() => Int)
     ownedCount!: number
 
+    @Field(() => Json, { nullable: true })
+    metadata!: typeof Json
+
     @Field(() => CollectionInventoryItemCollection)
     collection!: CollectionInventoryItemCollection
 
@@ -420,6 +423,7 @@ export class CollectionInventoryResolver {
             string,
             {
                 ownedCount: number
+                metadata?: any
                 attributes: CollectionInventoryItemAttribute[]
                 tokenIds: string[]
                 collection?: CollectionInventoryItemCollection
@@ -433,6 +437,7 @@ export class CollectionInventoryResolver {
                 .leftJoinAndSelect('tg.collection', 'collection')
                 .leftJoinAndSelect('tg.attributes', 'tgAttrs')
                 .leftJoinAndSelect('collection.attributes', 'collectionAttrs', 'collectionAttrs.token IS NULL')
+                .addSelect('tg.metadata')
                 .where('tg.id IN (:...groupIds)', { groupIds: pageGroupIds })
                 .getMany()
 
@@ -470,6 +475,7 @@ export class CollectionInventoryResolver {
 
                 groupsMap.set(groupId, {
                     ownedCount,
+                    metadata: group.metadata as any,
                     attributes: (group.attributes || []).map((attr: any) => ({
                         key: attr.key,
                         value: attr.value,
@@ -663,6 +669,7 @@ export class CollectionInventoryResolver {
                 return new CollectionInventoryGroup({
                     id: row.id,
                     ownedCount: groupData?.ownedCount ?? 0,
+                    metadata: groupData?.metadata,
                     collection:
                         groupData?.collection ||
                         new CollectionInventoryItemCollection({ id: '', collectionId: 0n as any }),
