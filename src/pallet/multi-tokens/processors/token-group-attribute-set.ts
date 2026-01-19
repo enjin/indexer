@@ -50,7 +50,7 @@ export async function tokenGroupAttributeSet(
         await ctx.store.insert(newAttribute)
     }
 
-    QueueUtils.dispatchComputeTokenGroupMetadata(tokenGroup.id.toString())
+    await QueueUtils.dispatchComputeTokenGroupMetadata(tokenGroup.id.toString())
 
     return mappings.multiTokens.events.tokenGroupAttributeSetEventModel(item, data)
 }
