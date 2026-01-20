@@ -14,14 +14,13 @@ import { BigInteger, Json } from '@subsquid/graphql-server'
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
 import { Validate } from 'class-validator'
-import { TokenAccount, Attribute, Token, TokenGroup, Collection } from '~/model'
+import { TokenAccount, Token, TokenGroup } from '~/model'
 import { decodeCursor, encodeCursor, IsPublicKeyArray } from './helpers'
 import { PageInfo } from './types'
 
 export enum CollectionInventoryOrderByInput {
-    OWNED_COUNT = 'owned_count',
     CREATED_AT = 'created_at',
-    TOKEN_ID = 'token_id',
+    TOKEN_NAME = 'token_name',
 }
 
 export enum CollectionInventoryOrderInput {
@@ -80,8 +79,8 @@ class CollectionInventoryArgs {
     @Field(() => String, { nullable: true })
     after?: string
 
-    @Field(() => CollectionInventoryOrderByInput, { defaultValue: CollectionInventoryOrderByInput.OWNED_COUNT })
-    orderBy: CollectionInventoryOrderByInput = CollectionInventoryOrderByInput.OWNED_COUNT
+    @Field(() => CollectionInventoryOrderByInput, { defaultValue: CollectionInventoryOrderByInput.CREATED_AT })
+    orderBy: CollectionInventoryOrderByInput = CollectionInventoryOrderByInput.CREATED_AT
 
     @Field(() => CollectionInventoryOrderInput, { defaultValue: CollectionInventoryOrderInput.DESC })
     order: CollectionInventoryOrderInput = CollectionInventoryOrderInput.DESC
@@ -97,6 +96,9 @@ class CollectionInventoryGroup {
 
     @Field(() => Int)
     ownedCount!: number
+
+    @Field(() => Json, { nullable: true })
+    metadata!: typeof Json
 
     @Field(() => CollectionInventoryItemCollection)
     collection!: CollectionInventoryItemCollection
@@ -248,14 +250,12 @@ export class CollectionInventoryResolver {
         // Determine SQL column name and order direction for sorting
         const getSortColumn = (sortBy: CollectionInventoryOrderByInput): string => {
             switch (sortBy) {
-                case CollectionInventoryOrderByInput.OWNED_COUNT:
-                    return 'owned_count'
                 case CollectionInventoryOrderByInput.CREATED_AT:
                     return 'created_at'
-                case CollectionInventoryOrderByInput.TOKEN_ID:
-                    return 'token_id'
+                case CollectionInventoryOrderByInput.TOKEN_NAME:
+                    return 'token_name'
                 default:
-                    return 'owned_count'
+                    return 'created_at'
             }
         }
 
@@ -302,7 +302,8 @@ export class CollectionInventoryResolver {
                     COUNT(DISTINCT token.id) AS owned_count,
                     0 AS sort_priority,
                     MIN(token.created_at) AS created_at,
-                    MIN(token.token_id) AS token_id
+                    MIN(token.token_id) AS token_id,
+                    MIN(token.name) AS token_name
                 FROM token_account
                 INNER JOIN token ON token_account.token_id = token.id
                 INNER JOIN collection ON token.collection_id = collection.id
@@ -322,7 +323,8 @@ export class CollectionInventoryResolver {
                     1 AS owned_count,
                     1 AS sort_priority,
                     token.created_at AS created_at,
-                    token.token_id AS token_id
+                    token.token_id AS token_id,
+                    token.name AS token_name
                 FROM token_account
                 INNER JOIN token ON token_account.token_id = token.id
                 INNER JOIN collection ON token.collection_id = collection.id
@@ -338,11 +340,11 @@ export class CollectionInventoryResolver {
             ),
             -- merged: union groups and standalone tokens for unified ordering
             merged AS (
-                SELECT id, owned_count, sort_priority, created_at, token_id FROM groups_data
+                SELECT id, owned_count, sort_priority, created_at, token_id, token_name FROM groups_data
                 UNION ALL
-                SELECT id, owned_count, sort_priority, created_at, token_id FROM ungrouped_tokens
+                SELECT id, owned_count, sort_priority, created_at, token_id, token_name FROM ungrouped_tokens
             )
-            SELECT id, owned_count, sort_priority, created_at, token_id
+            SELECT id, owned_count, sort_priority, created_at, token_id, token_name
             FROM merged
             WHERE 1=1 ${cursorCondition}
             ORDER BY sort_priority ASC, ${sortColumn} ${sortOrder}, id ASC
@@ -421,6 +423,7 @@ export class CollectionInventoryResolver {
             string,
             {
                 ownedCount: number
+                metadata?: any
                 attributes: CollectionInventoryItemAttribute[]
                 tokenIds: string[]
                 collection?: CollectionInventoryItemCollection
@@ -434,6 +437,7 @@ export class CollectionInventoryResolver {
                 .leftJoinAndSelect('tg.collection', 'collection')
                 .leftJoinAndSelect('tg.attributes', 'tgAttrs')
                 .leftJoinAndSelect('collection.attributes', 'collectionAttrs', 'collectionAttrs.token IS NULL')
+                .addSelect('tg.metadata')
                 .where('tg.id IN (:...groupIds)', { groupIds: pageGroupIds })
                 .getMany()
 
@@ -471,6 +475,7 @@ export class CollectionInventoryResolver {
 
                 groupsMap.set(groupId, {
                     ownedCount,
+                    metadata: group.metadata as any,
                     attributes: (group.attributes || []).map((attr: any) => ({
                         key: attr.key,
                         value: attr.value,
@@ -664,6 +669,7 @@ export class CollectionInventoryResolver {
                 return new CollectionInventoryGroup({
                     id: row.id,
                     ownedCount: groupData?.ownedCount ?? 0,
+                    metadata: groupData?.metadata,
                     collection:
                         groupData?.collection ||
                         new CollectionInventoryItemCollection({ id: '', collectionId: 0n as any }),
@@ -699,14 +705,11 @@ export class CollectionInventoryResolver {
             let orderValue: string = ''
             if (pageItem) {
                 switch (orderBy) {
-                    case CollectionInventoryOrderByInput.OWNED_COUNT:
-                        orderValue = pageItem.owned_count?.toString() || ''
-                        break
                     case CollectionInventoryOrderByInput.CREATED_AT:
                         orderValue = pageItem.created_at ? new Date(pageItem.created_at).toISOString() : ''
                         break
-                    case CollectionInventoryOrderByInput.TOKEN_ID:
-                        orderValue = pageItem.token_id?.toString() || ''
+                    case CollectionInventoryOrderByInput.TOKEN_NAME:
+                        orderValue = pageItem.token_name || ''
                         break
                 }
             }
