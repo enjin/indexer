@@ -81,6 +81,8 @@ export async function poolMutated(ctx: CommonContext, block: Block, item: EventI
             extrinsic: item.extrinsic.id,
             name: pool.name,
             tokenId: `2-${pool.tokenId}`,
+            createdAt: pool.createdAt,
+            updatedAt: new Date(block.timestamp ?? 0),
             owner,
         },
     }
