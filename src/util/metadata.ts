@@ -168,6 +168,7 @@ export function metadataParser(
         external_url: string | null | undefined
         image: string | null | undefined
         fallback_image: string | null | undefined
+        banner_image: string | null | undefined
         media: Media[]
         keywords: string[] | undefined
         properties: unknown
@@ -194,6 +195,9 @@ export function metadataParser(
     }
     if (externalMetadata?.fallback_image && supportedProps.includes('fallback_image')) {
         metadata.fallbackImage = safeString(externalMetadata.fallback_image)
+    }
+    if (externalMetadata?.banner_image && supportedProps.includes('banner_image')) {
+        metadata.bannerImage = safeString(externalMetadata.banner_image)
     }
     if (externalMetadata?.media && supportedProps.includes('media')) {
         metadata.media = parseMedia(externalMetadata.media)
@@ -225,6 +229,8 @@ export function metadataParser(
         metadata.description = attribute.value
     } else if (attribute.key === 'fallback_image') {
         metadata.fallbackImage = attribute.value
+    } else if (attribute.key === 'banner_image') {
+        metadata.bannerImage = attribute.value
     } else if (attribute.key === 'media') {
         metadata.media = parseMedia(attribute.value)
     } else if (attribute.key === 'attributes') {

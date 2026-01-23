@@ -94,7 +94,7 @@ const config: Config = {
     skipSync: process.env.SKIP_SYNC === 'true',
     metadataSupportedProps: (
         process.env.METADATA_SUPPORTED_PROPS ||
-        'name,fallback_image,description,media,keywords,attributes,external_url,image,properties'
+        'name,fallback_image,banner_image,description,media,keywords,attributes,external_url,image,properties'
     )
         .split(',')
         .map((prop) => prop.trim()),
