@@ -72,6 +72,9 @@ export async function poolMutated(ctx: CommonContext, block: Block, item: EventI
 
     const owner: string = pool.degenToken.tokenAccounts[0].account.id
 
+    const updatedAt = new Date(block.timestamp ?? 0)
+    const recentlyCreated = updatedAt.getTime() - pool.createdAt.getTime() < 120000 // Less than 2 minutes
+
     const snsEvent: SnsEvent = {
         id: item.id,
         name: item.name,
@@ -81,8 +84,7 @@ export async function poolMutated(ctx: CommonContext, block: Block, item: EventI
             extrinsic: item.extrinsic.id,
             name: pool.name,
             tokenId: `2-${pool.tokenId}`,
-            createdAt: pool.createdAt,
-            updatedAt: new Date(block.timestamp ?? 0),
+            recentlyCreated,
             owner,
         },
     }
