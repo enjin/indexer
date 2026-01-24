@@ -23,6 +23,7 @@ export async function syncMetadata(job: Job) {
 
 function processAttribute(job: Job, stream: ReadStream) {
     let count = 0
+    const force = job.data.force
 
     stream.on('data', (data: any) => {
         try {
@@ -36,7 +37,7 @@ function processAttribute(job: Job, stream: ReadStream) {
                 return
             }
 
-            QueueUtils.dispatchComputeMetadata({ id: resourceId, type: resourceType, allTokens: true })
+            QueueUtils.dispatchComputeMetadata({ id: resourceId, type: resourceType, allTokens: true, force })
             count++
         } catch (error) {
             console.error('Failed to process attribute stream data:', error)
