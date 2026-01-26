@@ -1,5 +1,4 @@
-import { Era, PoolMember, PoolMemberRewards } from '~/model'
-import { EraReward, NominationPool } from '~/model/overridden'
+import { Era, EraReward, NominationPool, PoolMember, PoolMemberRewards } from '~/model'
 import { CommonContext, dataHandlerContext } from '~/contexts'
 import { Job } from 'bullmq'
 import { In } from 'typeorm'
