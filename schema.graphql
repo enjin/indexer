@@ -841,6 +841,7 @@ type Metadata {
   externalUrl: String
   keywords: [String]
   fallbackImage: String
+  bannerImage: String
   media: [MetadataMedia]
   meta: MetadataMeta
   originUrl: String
