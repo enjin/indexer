@@ -1,2 +1,2 @@
 export * from './generated'
-export { NominationPool, EraReward } from './overridden'
+export { NominationPool } from './overridden'

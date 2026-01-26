@@ -1,14 +1,23 @@
-import { NominationPool as NominationPoolGenerated, PoolState } from '../generated'
-import { Entity as Entity_, OneToMany as OneToMany_ } from '@subsquid/typeorm-store'
-import { EraReward } from './eraReward.model'
+import { NominationPool, PoolState } from '../generated'
 
-@Entity_()
-export class NominationPool extends NominationPoolGenerated {
-    @OneToMany_(() => EraReward, (e) => e.pool)
-    eraRewards!: EraReward[]
-    isOpen: () => boolean = (): boolean => this.state === PoolState.Open
-
-    isDestroying: () => boolean = (): boolean => this.state === PoolState.Destroying
-
-    isDestroyed: () => boolean = (): boolean => this.state === PoolState.Destroyed
+declare module '../generated/nominationPool.model' {
+    interface NominationPool {
+        isOpen(): boolean
+        isDestroying(): boolean
+        isDestroyed(): boolean
+    }
 }
+
+NominationPool.prototype.isOpen = function (): boolean {
+    return this.state === PoolState.Open
+}
+
+NominationPool.prototype.isDestroying = function (): boolean {
+    return this.state === PoolState.Destroying
+}
+
+NominationPool.prototype.isDestroyed = function (): boolean {
+    return this.state === PoolState.Destroyed
+}
+
+export { NominationPool }
