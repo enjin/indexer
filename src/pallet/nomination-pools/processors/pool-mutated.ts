@@ -1,5 +1,6 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { CommissionChangeRate, NominationPool } from '~/model'
+import { CommissionChangeRate } from '~/model'
+import { NominationPool } from '~/model/overridden'
 import { SnsEvent } from '~/util/sns'
 import { hexToString } from '@polkadot/util'
 import * as mappings from '~/pallet/index'

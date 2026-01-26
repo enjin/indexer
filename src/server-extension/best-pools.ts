@@ -1,6 +1,7 @@
 import { Query, Resolver, Args, ArgsType, Field, ObjectType, ID, InputType, Int } from 'type-graphql'
 import type { EntityManager } from 'typeorm'
-import { Account, NominationPool, PoolState } from '~/model'
+import { Account, PoolState } from '~/model'
+import { NominationPool } from '~/model/overridden'
 import { Validate } from 'class-validator'
 import { IsPublicKey } from './helpers'
 import { Big } from 'big.js'

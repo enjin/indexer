@@ -1,7 +1,6 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
 import {
     Account,
-    NominationPool,
     PoolsOffers,
     PoolState,
     StakeExchangeOffer,
@@ -9,6 +8,7 @@ import {
     StakeExchangeTokenFilter,
     StakeExchangeTokenFilterType,
 } from '~/model'
+import { NominationPool } from '~/model/overridden'
 import { getOrCreateAccount } from '~/util/entities'
 import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'

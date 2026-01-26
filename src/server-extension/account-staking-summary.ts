@@ -2,7 +2,8 @@ import { Field, ObjectType, Query, Resolver, Args, ArgsType, registerEnumType } 
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
 import { Validate } from 'class-validator'
-import { PoolMember, NominationPool, TokenAccount, EraReward, PoolMemberRewards, PoolState, Token } from '~/model'
+import { PoolMember, TokenAccount, PoolMemberRewards, PoolState, Token } from '~/model'
+import { NominationPool } from '~/model/overridden'
 import { IsPublicKey, IsPublicKeyArray } from './helpers'
 
 const stakingTimeFrameMap = {

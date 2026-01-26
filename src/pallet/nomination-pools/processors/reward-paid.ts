@@ -1,5 +1,6 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { CommissionPayment, Era, EraReward, NominationPool, PoolMember, PoolMemberRewards, TokenAccount } from '~/model'
+import { CommissionPayment, Era, EraReward, PoolMember, PoolMemberRewards, TokenAccount } from '~/model'
+import { NominationPool } from '~/model/overridden'
 import { getOrCreateAccount } from '~/util/entities'
 import * as mappings from '~/pallet/index'
 import { EventHandlerResult } from '~/processor.handler'

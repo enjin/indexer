@@ -1,11 +1,5 @@
-import {
-    Era,
-    NominationPool,
-    Event as EventModel,
-    NominationPoolsRewardPaid,
-    EraReward,
-    CommissionPayment,
-} from '~/model'
+import { Era, Event as EventModel, NominationPoolsRewardPaid, EraReward, CommissionPayment } from '~/model'
+import { NominationPool } from '~/model/overridden'
 import { CommonContext, connectionManager, dataHandlerContext } from '~/contexts'
 import { Job } from 'bullmq'
 import { In, LessThan } from 'typeorm'
