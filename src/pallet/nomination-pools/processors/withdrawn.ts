@@ -1,5 +1,5 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { Era, PoolMember, PoolState, TokenAccount } from '~/model'
+import { Era, PoolMember, TokenAccount } from '~/model'
 import { getOrCreateAccount } from '~/util/entities'
 import { updatePool } from '~/pallet/nomination-pools/processors/pool'
 import { Sns, SnsEvent } from '~/util/sns'
@@ -93,7 +93,7 @@ export async function withdrawn(ctx: CommonContext, block: Block, item: EventIte
         },
     }
 
-    if (!isStashWithdrawing && unbondingMembers.length === 0 && pool.state === PoolState.Destroying) {
+    if (!isStashWithdrawing && unbondingMembers.length === 0 && pool.isDestroying()) {
         await Sns.getInstance().send({
             id: `${item.id}-all-members-withdrawn`,
             name: CustomStakingEvent.AllMembersWithdrawn,

@@ -54,7 +54,7 @@ async function dispatchStakePoolsEvents(ctx: CommonContext, eraIndex: number, it
     })
 
     for (const pool of pools) {
-        if (pool.state !== PoolState.Destroying) {
+        if (!pool.isDestroying()) {
             const unbondingMembers = pool.members.filter((member) => member.unbondingEras && !member.isStash)
             for (const member of unbondingMembers) {
                 if (member.unbondingEras?.length) {

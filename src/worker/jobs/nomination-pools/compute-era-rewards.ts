@@ -1,7 +1,7 @@
 import {
     Era,
-    NominationPool,
     Event as EventModel,
+    NominationPool,
     NominationPoolsRewardPaid,
     EraReward,
     CommissionPayment,

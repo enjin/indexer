@@ -1,4 +1,4 @@
-import { NominationPool, PoolState, Token } from '~/model'
+import { NominationPool, Token } from '~/model'
 import { connectionManager } from '~/contexts'
 import { Job } from 'bullmq'
 import Rpc from '~/util/rpc'
@@ -32,7 +32,7 @@ export async function refreshPool(job: Job, poolId: string) {
         }
     }
 
-    if (pool.state === PoolState.Destroyed) {
+    if (pool.isDestroyed()) {
         if (pool.degenToken === null) {
             pool.degenToken = await em.findOneOrFail(Token, {
                 where: {

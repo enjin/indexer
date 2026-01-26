@@ -1,4 +1,4 @@
-import { PoolMember, NominationPool, Era, PoolMemberRewards, EarlyBirdMintEvent } from '~/model'
+import { PoolMember, Era, NominationPool, PoolMemberRewards, EarlyBirdMintEvent } from '~/model'
 import { CommonContext } from '~/contexts'
 
 export async function needEarlyBirdMerge(ctx: CommonContext, eraIndex: number): Promise<boolean> {

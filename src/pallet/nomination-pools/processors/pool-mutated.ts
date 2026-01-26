@@ -21,6 +21,7 @@ export async function poolMutated(ctx: CommonContext, block: Block, item: EventI
                     account: true,
                 },
             },
+            validators: true,
         },
     })
 
@@ -81,6 +82,7 @@ export async function poolMutated(ctx: CommonContext, block: Block, item: EventI
             extrinsic: item.extrinsic.id,
             name: pool.name,
             tokenId: `2-${pool.tokenId}`,
+            isActive: pool.isOpen() && pool.validators.length > 0,
             owner,
         },
     }

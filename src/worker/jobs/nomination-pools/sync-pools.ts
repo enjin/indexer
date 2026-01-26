@@ -1,8 +1,7 @@
 import { connectionManager } from '~/contexts'
 import { Job } from 'bullmq'
-import { NominationPool, PoolState } from '~/model'
+import { NominationPool } from '~/model'
 import { QueueUtils } from '~/queue'
-import { Not } from 'typeorm'
 
 export async function syncPools(job: Job): Promise<void> {
     const em = await connectionManager()

@@ -1,6 +1,6 @@
 import Big from 'big.js'
 import * as Sentry from '@sentry/node'
-import { BonusCycle, CommissionPayment, Era, EraReward, PoolMember, PoolMemberRewards, PoolState } from '~/model'
+import { BonusCycle, CommissionPayment, Era, EraReward, PoolMember, PoolMemberRewards } from '~/model'
 import { updatePool } from '~/pallet/nomination-pools/processors/pool'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { SnsEvent } from '~/util/sns'
@@ -105,7 +105,7 @@ export async function eraRewardsProcessed(
         )
     }
 
-    if (pool.state === PoolState.Destroying) {
+    if (pool.isDestroying()) {
         return undefined
     }
 
