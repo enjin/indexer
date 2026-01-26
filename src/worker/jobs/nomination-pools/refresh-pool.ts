@@ -1,5 +1,4 @@
-import { Token } from '~/model'
-import { NominationPool } from '~/model/overridden'
+import { NominationPool, Token } from '~/model'
 import { connectionManager } from '~/contexts'
 import { Job } from 'bullmq'
 import Rpc from '~/util/rpc'

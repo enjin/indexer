@@ -1,7 +1,6 @@
 import { SnsEvent } from '~/util/sns'
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { PoolState } from '~/model'
-import { NominationPool } from '~/model/overridden'
+import { NominationPool, PoolState } from '~/model'
 import * as mappings from '~/pallet/index'
 import { EventHandlerResult } from '~/processor.handler'
 import { CustomStakingEvent } from '~/pallet/common/types'

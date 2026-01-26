@@ -1,5 +1,4 @@
-import { PoolState, StakeExchangeOffer, StakeExchangeOfferState, Token } from '~/model'
-import { NominationPool } from '~/model/overridden'
+import { NominationPool, PoolState, StakeExchangeOffer, StakeExchangeOfferState, Token } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { connectionManager } from '~/contexts'
 import * as mappings from '~/pallet/index'

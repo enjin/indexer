@@ -1,6 +1,5 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { Account, Era, PoolMember, StakeExchangeOffer, TokenAccount } from '~/model'
-import { NominationPool } from '~/model/overridden'
+import { Account, Era, NominationPool, PoolMember, StakeExchangeOffer, TokenAccount } from '~/model'
 import { getOrCreateAccount } from '~/util/entities'
 import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'

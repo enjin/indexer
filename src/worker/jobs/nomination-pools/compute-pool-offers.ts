@@ -1,7 +1,12 @@
 import { connectionManager } from '~/contexts'
 import { Job } from 'bullmq'
-import { PoolsOffers, StakeExchangeOffer, StakeExchangeOfferState, StakeExchangeTokenFilterType } from '~/model'
-import { NominationPool } from '~/model/overridden'
+import {
+    NominationPool,
+    PoolsOffers,
+    StakeExchangeOffer,
+    StakeExchangeOfferState,
+    StakeExchangeTokenFilterType,
+} from '~/model'
 import { EntityManager } from 'typeorm'
 
 export async function computePoolOffers(job: Job, poolId: string): Promise<void> {

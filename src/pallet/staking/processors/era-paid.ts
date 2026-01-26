@@ -1,7 +1,6 @@
 import { Not } from 'typeorm'
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { Era, PoolState, TokenAccount } from '~/model'
-import { NominationPool } from '~/model/overridden'
+import { Era, NominationPool, PoolState, TokenAccount } from '~/model'
 import { CustomStakingEvent } from '~/pallet/common/types'
 import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'

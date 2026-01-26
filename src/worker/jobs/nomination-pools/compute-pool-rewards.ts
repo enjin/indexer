@@ -1,4 +1,4 @@
-import { NominationPool } from '~/model/overridden'
+import { NominationPool } from '~/model'
 import { dataHandlerContext } from '~/contexts'
 import { Job } from 'bullmq'
 import { computeEraApy } from '~/pallet/nomination-pools/processors'

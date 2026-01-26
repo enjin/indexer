@@ -1,6 +1,5 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { Account, EarlyBirdShares } from '~/model'
-import { NominationPool } from '~/model/overridden'
+import { Account, EarlyBirdShares, NominationPool } from '~/model'
 import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { EventHandlerResult } from '~/processor.handler'

@@ -1,6 +1,6 @@
 import { connectionManager } from '~/contexts'
 import { Job } from 'bullmq'
-import { NominationPool } from '~/model/overridden'
+import { NominationPool } from '~/model'
 import { QueueUtils } from '~/queue'
 
 export async function syncPools(job: Job): Promise<void> {

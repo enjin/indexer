@@ -1,6 +1,5 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { PoolValidator, Validator } from '~/model'
-import { NominationPool } from '~/model/overridden'
+import { NominationPool, PoolValidator, Validator } from '~/model'
 import { getOrCreateAccount } from '~/util/entities'
 import * as mappings from '~/pallet/index'
 import { EventHandlerResult } from '~/processor.handler'
