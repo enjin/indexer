@@ -106,4 +106,10 @@ export class NominationPool {
 
     @IntColumn_({nullable: false})
     nodeCount!: number
+
+    isOpen: () => boolean = (): boolean => this.state === PoolState.Open;
+
+    isDestroying: () => boolean = (): boolean => this.state === PoolState.Destroying;
+
+    isDestroyed: () => boolean = (): boolean => this.state === PoolState.Destroyed;
 }

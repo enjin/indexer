@@ -82,7 +82,7 @@ export async function poolMutated(ctx: CommonContext, block: Block, item: EventI
             extrinsic: item.extrinsic.id,
             name: pool.name,
             tokenId: `2-${pool.tokenId}`,
-            hasValidators: pool.validators.length > 0,
+            isActive: pool.isOpen() && pool.validators.length > 0,
             owner,
         },
     }

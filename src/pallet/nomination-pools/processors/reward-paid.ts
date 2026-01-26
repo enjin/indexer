@@ -1,14 +1,5 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
-import {
-    CommissionPayment,
-    Era,
-    EraReward,
-    NominationPool,
-    PoolMember,
-    PoolMemberRewards,
-    PoolState,
-    TokenAccount,
-} from '~/model'
+import { CommissionPayment, Era, EraReward, NominationPool, PoolMember, PoolMemberRewards, TokenAccount } from '~/model'
 import { getOrCreateAccount } from '~/util/entities'
 import * as mappings from '~/pallet/index'
 import { EventHandlerResult } from '~/processor.handler'
@@ -258,7 +249,7 @@ export async function rewardPaid(ctx: CommonContext, block: Block, item: EventIt
 
     let pool = await updatePool(ctx, block, eventData.poolId.toString())
 
-    if (pool.state === PoolState.Destroying) {
+    if (pool.isDestroying()) {
         return undefined
     }
 

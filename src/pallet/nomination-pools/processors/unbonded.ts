@@ -1,5 +1,5 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { PoolMember, PoolState, TokenAccount, UnbondingEras } from '~/model'
+import { PoolMember, TokenAccount, UnbondingEras } from '~/model'
 import { getOrCreateAccount } from '~/util/entities'
 import { updatePool } from '~/pallet/nomination-pools/processors/pool'
 import { Sns, SnsEvent } from '~/util/sns'
@@ -63,7 +63,7 @@ export async function unbonded(ctx: CommonContext, block: Block, item: EventItem
         },
     }
 
-    if (!poolMember.isStash && bondedMembers.length === 0 && pool.state === PoolState.Destroying) {
+    if (!poolMember.isStash && bondedMembers.length === 0 && pool.isDestroying()) {
         await Sns.getInstance().send({
             id: `${item.id}-all-members-unbonded`,
             name: CustomStakingEvent.AllMembersUnbond,

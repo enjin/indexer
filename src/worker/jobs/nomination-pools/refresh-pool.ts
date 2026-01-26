@@ -32,7 +32,7 @@ export async function refreshPool(job: Job, poolId: string) {
         }
     }
 
-    if (pool.state === PoolState.Destroyed) {
+    if (pool.isDestroyed()) {
         if (pool.degenToken === null) {
             pool.degenToken = await em.findOneOrFail(Token, {
                 where: {
