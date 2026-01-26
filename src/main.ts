@@ -11,6 +11,8 @@ import {
     FuelTank,
     FuelTankData,
     Listing,
+    ListingStatus,
+    ListingStatusType,
     ListingType,
     OfferState,
 } from '~/model'
@@ -367,7 +369,15 @@ async function checkListingState(ctx: CommonContext, block: Block) {
             ) {
                 const highBid = listing.state.highBid
                 listing.state = new AuctionState({ listingType: ListingType.Auction, highBid, isExpired: true })
+                const listingStatus = new ListingStatus({
+                    id: `${listing.id}-${block.height}`,
+                    type: ListingStatusType.Cancelled,
+                    listing,
+                    height: block.height,
+                    createdAt: new Date(block.timestamp ?? 0),
+                })
                 listing.isActive = false
+                await ctx.store.save(listingStatus)
                 await ctx.store.save(listing)
             } else if (listing.state.isTypeOf === 'AuctionState' && listing.state.isExpired === undefined) {
                 const highBid = listing.state.highBid
@@ -387,7 +397,15 @@ async function checkListingState(ctx: CommonContext, block: Block) {
                     counterOfferCount: listing.state.counterOfferCount,
                     isExpired: true,
                 })
+                const listingStatus = new ListingStatus({
+                    id: `${listing.id}-${block.height}`,
+                    type: ListingStatusType.Cancelled,
+                    listing,
+                    height: block.height,
+                    createdAt: new Date(block.timestamp ?? 0),
+                })
                 listing.isActive = false
+                await ctx.store.save(listingStatus)
                 await ctx.store.save(listing)
             } else if (listing.state.isTypeOf === 'OfferState' && listing.state.isExpired === undefined) {
                 listing.state = new OfferState({
