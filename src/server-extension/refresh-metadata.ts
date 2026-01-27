@@ -68,23 +68,6 @@ export class RefreshMetadataResolver {
                 let resource!: Collection | Token | TokenGroup | null
                 let collectionId: string | null = null
 
-                // Handle rate limiting for collections
-                if (item.type === RefreshMetadataType.COLLECTION) {
-                    const rateLimit = rateLimitMap.get<number>(item.id)
-
-                    if (rateLimit) {
-                        const timeLeft = Math.ceil((rateLimit + mins30 - Date.now()) / 1000)
-
-                        if (timeLeft > 0) {
-                            errors.push(
-                                `Rate limit exceeded for collection ${item.id}. Retry after ${timeLeft} seconds.`
-                            )
-                            continue
-                        }
-                    }
-                    rateLimitMap.set(item.id, Date.now())
-                }
-
                 // Find the resource based on type
                 if (item.type === RefreshMetadataType.TOKEN) {
                     resource = await manager.findOne(Token, {
