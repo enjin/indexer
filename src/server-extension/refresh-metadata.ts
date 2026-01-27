@@ -17,7 +17,7 @@ registerEnumType(RefreshMetadataResponseStatus, {
 enum RefreshMetadataType {
     COLLECTION = 'collection',
     TOKEN = 'token',
-    GROUP = 'group',
+    TOKEN_GROUP = 'token_group',
 }
 
 registerEnumType(RefreshMetadataType, {
@@ -125,7 +125,7 @@ export class RefreshMetadataResolver {
                             urisToRefresh.add(uri)
                         }
                     }
-                } else if (item.type === RefreshMetadataType.GROUP) {
+                } else if (item.type === RefreshMetadataType.TOKEN_GROUP) {
                     resource = await manager.findOne(TokenGroup, {
                         where: { id: item.id },
                         relations: {
