@@ -125,7 +125,6 @@ export class RefreshMetadataResolver {
                             urisToRefresh.add(uri)
                         }
                     }
-
                 } else if (item.type === RefreshMetadataType.GROUP) {
                     resource = await manager.findOne(TokenGroup, {
                         where: { id: item.id },
@@ -163,7 +162,11 @@ export class RefreshMetadataResolver {
                 })
 
                 // Dispatch stats computation for collections (only once per collection)
-                if (item.type === RefreshMetadataType.COLLECTION && collectionId && !processedCollections.has(collectionId)) {
+                if (
+                    item.type === RefreshMetadataType.COLLECTION &&
+                    collectionId &&
+                    !processedCollections.has(collectionId)
+                ) {
                     await QueueUtils.dispatchComputeStats(collectionId)
                     processedCollections.add(collectionId)
                 }
