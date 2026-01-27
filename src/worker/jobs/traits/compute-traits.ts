@@ -12,6 +12,7 @@ export async function computeTraits(job: Job, id: string) {
 
     const traitTypeMap = new Map<string, TraitValueMap>()
     const tokenTraitMap = new Map<string, string[]>()
+    const displayValueMap = new Map<string, string>()
 
     const tokens = await em
         .getRepository(Token)
@@ -34,7 +35,7 @@ export async function computeTraits(job: Job, id: string) {
         if (!token.metadata || !token.metadata.attributes || !isPlainObject(token.metadata.attributes)) return
         const attributes = token.metadata.attributes as Record<
             string,
-            { value: string; display_name?: string } | string
+            { value: string; display_name?: string; display_value?: string } | string
         >
         Object.entries(attributes).forEach(([traitType, data]) => {
             let value = data as string
@@ -42,6 +43,9 @@ export async function computeTraits(job: Job, id: string) {
                 value = data.value
                 if (data.display_name) {
                     traitType = data.display_name
+                }
+                if (data.display_value) {
+                    displayValueMap.set(value, data.display_value)
                 }
             }
 
@@ -52,6 +56,7 @@ export async function computeTraits(job: Job, id: string) {
             if (!traitTypeMap.has(traitType)) {
                 traitTypeMap.set(traitType, new Map())
             }
+
             const tType = traitTypeMap.get(traitType) as TraitValueMap
             if (tType.has(value)) {
                 tType.set(value, (tType.get(value) as bigint) + token.supply)
@@ -79,6 +84,7 @@ export async function computeTraits(job: Job, id: string) {
                     collection: new Collection({ id: id }),
                     traitType,
                     value,
+                    displayValue: displayValueMap.get(value) ?? undefined,
                     count,
                 })
             )

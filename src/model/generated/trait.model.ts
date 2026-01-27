@@ -21,6 +21,9 @@ export class Trait {
     @StringColumn_({nullable: false})
     value!: string
 
+    @StringColumn_({nullable: true})
+    displayValue!: string | undefined | null
+
     @BigIntColumn_({nullable: false})
     count!: bigint
 
