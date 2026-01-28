@@ -4,6 +4,7 @@ import { QueueUtils } from '~/queue'
 import { decodeAddress, isValidAddress } from '~/util/tools'
 
 export enum EntityType {
+    COMPUTE_METADATA = 'compute_metadata',
     COLLECTION_EXTRA = 'collection_extra',
     COLLECTION_STATS = 'collection_stats',
     TOKEN = 'token',
@@ -110,6 +111,12 @@ export class RefreshEntityResolver {
                         throw new Error(`Invalid account ID (must be a valid public key): ${id}`)
                     }
                     QueueUtils.dispatchComputeAccountStats(id)
+                }
+                break
+            case EntityType.COMPUTE_METADATA:
+                for (const id of args.ids) {
+                    const resourceType = id.includes('-') ? 'token' : 'collection'
+                    QueueUtils.dispatchComputeMetadata({ id: id, type: resourceType, allTokens: true, force: true })
                 }
                 break
         }
