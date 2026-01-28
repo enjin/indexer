@@ -5,7 +5,7 @@ import { Validate } from 'class-validator'
 import { IsPublicKey } from './helpers'
 import { Big } from 'big.js'
 import { DateTimeColumn as DateTimeColumn_ } from '@subsquid/typeorm-store/lib/decorators/columns/DateTimeColumn'
-import { BigInteger } from '@subsquid/graphql-server'
+import { BigInteger, Json } from '@subsquid/graphql-server'
 
 @ArgsType()
 class BestPoolsArgs {
@@ -27,12 +27,6 @@ class TokenFilterCondition {
 
     @Field(() => [String], { nullable: true })
     key_in?: string[]
-}
-
-@InputType()
-class TokenAttributeWhereInput {
-    @Field(() => [TokenFilterCondition], { nullable: true })
-    AND?: TokenFilterCondition[]
 }
 
 @ObjectType()
@@ -85,6 +79,9 @@ class DegenCollection {
     @Field(() => [DegenCollectionAttribute], { nullable: true })
     attributes!: DegenCollectionAttribute[]
 
+    @Field(() => Json, { nullable: true })
+    metadata!: typeof Json
+
     constructor(props: Partial<DegenCollection>) {
         Object.assign(this, props)
     }
@@ -97,6 +94,9 @@ class DegenToken {
 
     @Field(() => [TokenAttribute], { nullable: true })
     attributes!: TokenAttribute[]
+
+    @Field(() => Json, { nullable: true })
+    metadata!: typeof Json
 
     @Field(() => DegenCollection)
     collection!: DegenCollection
@@ -180,6 +180,7 @@ export class BestPoolsResolver {
                 'pool.availableStakePoints AS "availableStakePoints"',
                 'pool.createdAt AS "createdAt"',
                 'token.id AS "tokenId"',
+                'token.metadata AS "tokenMetadata"',
             ])
             .addSelect(
                 `(SELECT json_agg(json_build_object('id', attr.id, 'key', attr.key, 'value', attr.value, 'deposit', attr.deposit)) 
@@ -192,6 +193,11 @@ export class BestPoolsResolver {
                           WHERE attr.collection_id = token.collection_id) AS "collectionAttributes"`
             )
             .addSelect('token.collection_id AS "collectionId"')
+            .addSelect(
+                `(SELECT metadata 
+                          FROM collection 
+                          WHERE collection.id = token.collection_id) AS "collectionMetadata"`
+            )
             .addSelect('COALESCE(SUM(ta.balance), 0)', 'totalStake')
             .where('pool.state = :state', { state: PoolState.Open })
             .andWhere('pool.availableStakePoints >= :amount', { amount })
@@ -263,11 +269,13 @@ export class BestPoolsResolver {
                             }
                             return p.tokenAttributes ?? []
                         })(),
+                        metadata: p.tokenMetadata ?? null,
                         collection: new DegenCollection({
                             id: p.collectionId,
                             attributes: (() => {
                                 return p.collectionAttributes ?? []
                             })(),
+                            metadata: p.collectionMetadata ?? null,
                         }),
                     }),
                 })
