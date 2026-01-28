@@ -76,10 +76,10 @@ export async function computeMetadata(job: Job) {
         }
 
         if (!resource) {
-            await job.log(`Resource ${jobData.id} not found`)
+            await job.log(`Resource ${jobData.id} not found!`)
             return
         } else {
-            await job.log(`Resource ${resource.id} found`)
+            await job.log(`Resource ${resource.id} found!`)
         }
 
         let uriAttribute = null
