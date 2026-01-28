@@ -12,7 +12,6 @@ const addressesQuery = `query AddressesQuery($ids: [String!]) {
     }
   }`
 
-
 const collectionsQuery = `query CollectionsQuery($ids: [String!]) {
     result: CollectionsExtra(collectionIds:$ids){
       collectionId
