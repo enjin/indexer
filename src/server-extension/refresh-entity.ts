@@ -85,7 +85,7 @@ export class RefreshEntityResolver {
                 }
                 break
             case EntityType.ACCOUNT:
-                ; (() => {
+                ;(() => {
                     const publicKeys = args.ids.map((id) => {
                         return decodeAddress(id)
                     })
@@ -94,7 +94,7 @@ export class RefreshEntityResolver {
 
                 break
             case EntityType.ACCOUNT_BALANCES:
-                ; (() => {
+                ;(() => {
                     const publicKeys = args.ids.map((id) => {
                         return decodeAddress(id)
                     })
