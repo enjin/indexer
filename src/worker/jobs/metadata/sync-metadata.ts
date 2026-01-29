@@ -18,38 +18,42 @@ export async function syncMetadata(job: Job) {
         .where('attr.collection_id IS NOT NULL')
         .stream()
 
-    processAttribute(job, collectionStream)
+    await processAttribute(job, collectionStream)
 }
 
-function processAttribute(job: Job, stream: ReadStream) {
-    let count = 0
-    const force = job.data.force
+function processAttribute(job: Job, stream: ReadStream): Promise<void> {
+    return new Promise((resolve, reject) => {
+        let count = 0
+        const force = job.data.force
 
-    stream.on('data', (data: any) => {
-        try {
-            const parsed = data as AttributeStream
-            console.log(`collection ${parsed.collection_id} // token ${parsed.token_id}`)
+        stream.on('data', (data: any) => {
+            try {
+                const parsed = data as AttributeStream
+                console.log(`collection ${parsed.collection_id} // token ${parsed.token_id}`)
 
-            const resourceType = parsed.collection_id !== undefined ? 'collection' : 'token'
-            const resourceId = resourceType === 'collection' ? parsed.collection_id : parsed.token_id
-            if (resourceId === undefined) {
-                console.error('Failed to process attribute stream data')
-                return
+                const resourceType = parsed.collection_id !== undefined ? 'collection' : 'token'
+                const resourceId = resourceType === 'collection' ? parsed.collection_id : parsed.token_id
+                if (resourceId === undefined) {
+                    console.error('Failed to process attribute stream data')
+                    return
+                }
+
+                QueueUtils.dispatchComputeMetadata({ id: resourceId, type: resourceType, allTokens: true, force })
+                count++
+            } catch (error) {
+                console.error('Failed to process attribute stream data:', error)
             }
+        })
 
-            QueueUtils.dispatchComputeMetadata({ id: resourceId, type: resourceType, allTokens: true, force })
-            count++
-        } catch (error) {
-            console.error('Failed to process attribute stream data:', error)
-        }
-    })
+        stream.on('end', async () => {
+            console.log(`Dispatched computeMetadata for ${count} collections`)
+            await job.log(`Dispatched computeMetadata for ${count} collections`)
+            resolve()
+        })
 
-    stream.on('end', async () => {
-        console.log(`Dispatched computeMetadata for ${count} collections`)
-        await job.log(`Dispatched computeMetadata for ${count} collections`)
-    })
-
-    stream.on('error', (error) => {
-        console.error('Failed to process attribute stream:', error)
+        stream.on('error', (error) => {
+            console.error('Failed to process attribute stream:', error)
+            reject(error)
+        })
     })
 }
