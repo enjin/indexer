@@ -37,9 +37,6 @@ export class BaseWorker {
                     return delays[Math.min(attemptsMade - 1, delays.length - 1)]
                 },
             },
-            lockDuration: 300000, // 5 minutes - time before a job is considered stalled
-            maxStalledCount: 3, // Allow jobs to stall up to 3 times before being considered unrecoverable
-            stalledInterval: 60000, // Check for stalled jobs every 60 seconds
         }
 
         this.worker = new Worker(queueName, processorHandler, workerOptions)
