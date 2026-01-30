@@ -19,6 +19,8 @@ export async function computeTokenGroupMetadata(job: Job) {
         let resource: TokenGroup | null
         let attributes: Attribute[] = []
 
+        await job.updateProgress(10)
+
         resource = await em.findOne(TokenGroup, {
             where: {
                 id: jobData.id,
@@ -34,6 +36,7 @@ export async function computeTokenGroupMetadata(job: Job) {
         }
 
         await job.log(`TokenGroup ${resource.id} found`)
+        await job.updateProgress(20)
 
         attributes = resource.attributes ?? []
 
@@ -42,11 +45,15 @@ export async function computeTokenGroupMetadata(job: Job) {
         let externalMetadata: any = {}
         let metadata = new Metadata()
 
+        await job.updateProgress(30)
+
         if (uriAttribute) {
             const response = await em.connection.query<MetadataType[]>(
                 'select * from metadata.metadata where id = $1 LIMIT 1',
                 [jobData.id]
             )
+
+            await job.updateProgress(40)
 
             if (
                 response.length > 0 &&
@@ -55,8 +62,11 @@ export async function computeTokenGroupMetadata(job: Job) {
                 !jobData.force
             ) {
                 externalMetadata = response[0].metadata
+                await job.updateProgress(70)
             } else {
                 const externalResponse = await fetchMetadata(uriAttribute.value, job)
+                await job.updateProgress(60)
+                
                 if (externalResponse) {
                     if (response.length > 0) {
                         await em.connection.query(
@@ -72,9 +82,11 @@ export async function computeTokenGroupMetadata(job: Job) {
 
                     externalMetadata = externalResponse
                 }
+                await job.updateProgress(70)
             }
 
             metadata = metadataParser(metadata, uriAttribute, externalMetadata)
+            await job.updateProgress(80)
         }
 
         // add other attributes
@@ -84,10 +96,13 @@ export async function computeTokenGroupMetadata(job: Job) {
                 metadata = metadataParser(metadata, a, null)
             })
 
+        await job.updateProgress(90)
+
         resource.metadata = metadata
 
         await em.save(resource)
 
         await job.log(`TokenGroup ${resource.id} metadata computed successfully`)
+        await job.updateProgress(100)
     })
 }

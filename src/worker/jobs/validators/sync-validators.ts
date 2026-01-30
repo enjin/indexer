@@ -12,11 +12,15 @@ function getJudgement(identity: Identity | null | undefined): JudgementType {
 export async function syncValidators(job: Job): Promise<void> {
     const em = await connectionManager()
 
+    await job.updateProgress(5)
+
     const validators = await em
         .getRepository(Validator)
         .createQueryBuilder('validator')
         .leftJoinAndSelect('validator.account', 'account')
         .getMany()
+
+    await job.updateProgress(15)
 
     const currentBlock = await em
         .getRepository(ChainInfo)
@@ -30,6 +34,8 @@ export async function syncValidators(job: Job): Promise<void> {
 
     const blocksInDay = 10 * 60 * 24
     const length28dBlock = currentBlock.blockNumber - 28 * blocksInDay
+
+    await job.updateProgress(20)
 
     for (let b = 0; b < 28; b++) {
         const fromBlock = length28dBlock + b * blocksInDay
@@ -90,9 +96,14 @@ export async function syncValidators(job: Job): Promise<void> {
                 await job.log(`Error saving validator ${validators[i].id}: ${error}`)
             }
         }
+        
+        // Update progress for each day batch (20% -> 95%)
+        const progress = Math.min(95, 20 + Math.floor(((b + 1) / 28) * 75))
+        await job.updateProgress(progress)
     }
 
     await job.log(`Synced ${validators.length} validators`)
+    await job.updateProgress(100)
 }
 
 async function getValidatorDetails(

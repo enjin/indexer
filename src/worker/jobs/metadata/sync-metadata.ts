@@ -10,6 +10,7 @@ interface AttributeStream {
 }
 
 export async function syncMetadata(job: Job) {
+    await job.updateProgress(10)
     const em = await connectionManager()
     const collectionStream = await em
         .getRepository(Attribute)
@@ -18,13 +19,16 @@ export async function syncMetadata(job: Job) {
         .where('attr.collection_id IS NOT NULL')
         .stream()
 
+    await job.updateProgress(20)
     await processAttribute(job, collectionStream)
+    await job.updateProgress(100)
 }
 
 function processAttribute(job: Job, stream: ReadStream): Promise<void> {
     return new Promise((resolve, reject) => {
         let count = 0
         const force = job.data.force
+        let progressUpdate = 0
 
         stream.on('data', (data: any) => {
             try {
@@ -40,6 +44,12 @@ function processAttribute(job: Job, stream: ReadStream): Promise<void> {
 
                 QueueUtils.dispatchComputeMetadata({ id: resourceId, type: resourceType, allTokens: true, force })
                 count++
+                
+                // Update progress every 10 items (20% -> 90%)
+                if (count % 10 === 0 && progressUpdate < 70) {
+                    progressUpdate += 7
+                    job.updateProgress(20 + progressUpdate).catch(() => {})
+                }
             } catch (error) {
                 console.error('Failed to process attribute stream data:', error)
             }
@@ -48,6 +58,7 @@ function processAttribute(job: Job, stream: ReadStream): Promise<void> {
         stream.on('end', async () => {
             console.log(`Dispatched computeMetadata for ${count} collections`)
             await job.log(`Dispatched computeMetadata for ${count} collections`)
+            await job.updateProgress(90)
             resolve()
         })
 

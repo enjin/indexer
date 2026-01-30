@@ -5,6 +5,9 @@ import { QueueUtils } from '~/queue'
 
 export async function syncTokens(job: Job) {
     const em = await connectionManager()
+    
+    await job.updateProgress(10)
+    
     const stream = await em.getRepository(Token).createQueryBuilder('token').select('token.id', 'id').stream()
 
     let count = 0
@@ -22,10 +25,16 @@ export async function syncTokens(job: Job) {
         QueueUtils.dispatchComputeTokenBestListing(id)
         QueueUtils.dispatchComputeTokenCreationSupply(id)
         count++
+        
+        // Update progress every 100 tokens (10% -> 90%)
+        if (count % 100 === 0) {
+            job.updateProgress(Math.min(90, 10 + Math.floor(count / 10))).catch(() => {})
+        }
     })
 
     stream.on('end', async () => {
         await job.log(`Dispatched sync for ${count} tokens`)
+        await job.updateProgress(100)
     })
 
     stream.on('error', (error) => {

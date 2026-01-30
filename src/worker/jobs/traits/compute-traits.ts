@@ -10,6 +10,8 @@ type TraitValueMap = Map<string, bigint>
 export async function computeTraits(job: Job, id: string) {
     const em = await connectionManager()
 
+    await job.updateProgress(5)
+
     const traitTypeMap = new Map<string, TraitValueMap>()
     const tokenTraitMap = new Map<string, string[]>()
     const displayValueMap = new Map<string, string>()
@@ -24,12 +26,16 @@ export async function computeTraits(job: Job, id: string) {
         .andWhere('token.supply > 0')
         .getMany()
 
+    await job.updateProgress(20)
+
     await em.query(
         `DELETE FROM trait_token USING trait WHERE trait.id = trait_token.trait_id AND trait.collection_id = $1`,
         [id]
     )
 
     await em.query(`DELETE FROM trait WHERE collection_id = $1`, [id])
+
+    await job.updateProgress(30)
 
     tokens.forEach((token) => {
         if (!token.metadata || !token.metadata.attributes || !isPlainObject(token.metadata.attributes)) return
@@ -68,8 +74,11 @@ export async function computeTraits(job: Job, id: string) {
         })
     })
 
+    await job.updateProgress(50)
+
     if (!traitTypeMap.size) {
         await job.log(`No traits found for collection ${id}`)
+        await job.updateProgress(100)
         return
     }
 
@@ -91,8 +100,13 @@ export async function computeTraits(job: Job, id: string) {
         })
     })
 
+    await job.updateProgress(60)
+
     await job.log(`Saving ${traitsToSave.length} traits`)
     await em.save(Trait, traitsToSave, { chunk: 1000 })
+    
+    await job.updateProgress(75)
+    
     const traitTokensToSave: TraitToken[] = []
 
     tokenTraitMap.forEach((traits, tokenId) => {
@@ -108,11 +122,17 @@ export async function computeTraits(job: Job, id: string) {
         })
     })
 
+    await job.updateProgress(85)
+
     if (traitTokensToSave.length) {
         await job.log(`Saving ${traitsToSave.length} token traits`)
         await em.save(TraitToken, traitTokensToSave, { chunk: 1000 })
     }
 
+    await job.updateProgress(95)
+
     // delay to avoid rollback issue on fork
     QueueUtils.dispatchComputeRarity({ id, delay: 120000 })
+    
+    await job.updateProgress(100)
 }

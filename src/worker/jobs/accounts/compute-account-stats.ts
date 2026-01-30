@@ -5,6 +5,8 @@ import { Account, AccountStats } from '~/model'
 export async function computeAccountStats(job: Job) {
     const em = await connectionManager()
 
+    await job.updateProgress(5)
+
     const accountId = job.data.id
 
     const data = await em
@@ -50,6 +52,8 @@ export async function computeAccountStats(job: Job) {
         .where('account.id = :accountId', { accountId })
         .getRawOne()
 
+    await job.updateProgress(60)
+
     const tokensValue = BigInt(data.tokensValue || '0')
     const totalInfused = BigInt(data.totalInfused || '0')
 
@@ -58,6 +62,8 @@ export async function computeAccountStats(job: Job) {
     await job.log(`Volume: ${data.volume}`)
     await job.log(`Tokens value: ${tokensValue}`)
     await job.log(`Total infused: ${totalInfused}`)
+
+    await job.updateProgress(80)
 
     await em.update(
         Account,
@@ -74,4 +80,5 @@ export async function computeAccountStats(job: Job) {
     )
 
     await job.log(`Computed stats for ${accountId}`)
+    await job.updateProgress(100)
 }

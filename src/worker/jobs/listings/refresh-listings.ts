@@ -8,6 +8,8 @@ export async function refreshListings(job: Job, ids: string[]) {
     const em = await connectionManager()
     const { api } = await Rpc.getInstance()
 
+    await job.updateProgress(10)
+
     const listings = await em.find(Listing, {
         where: { id: In(ids) },
         relations: {
@@ -21,6 +23,11 @@ export async function refreshListings(job: Job, ids: string[]) {
             },
         },
     })
+
+    await job.updateProgress(30)
+
+    const totalListings = listings.length
+    let processed = 0
 
     for (const listing of listings) {
         let hasChanged = false
@@ -61,7 +68,13 @@ export async function refreshListings(job: Job, ids: string[]) {
             await em.save(listing)
             await job.log(`Refreshed listing ${listing.id}`)
         }
+        
+        processed++
+        // Update progress (30% -> 90%)
+        const progress = Math.min(90, 30 + Math.floor((processed / totalListings) * 60))
+        await job.updateProgress(progress)
     }
 
     await job.log(`Refreshed ${ids.length} listings`)
+    await job.updateProgress(100)
 }
