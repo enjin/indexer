@@ -35,9 +35,10 @@ async function* tokensInBatch(em: EntityManager, collectionId: string) {
 }
 
 export async function computeMetadata(job: Job) {
-    const con = await connectionManager()
+    try {
+        const con = await connectionManager()
 
-    await con.transaction('READ COMMITTED', async (em) => {
+        await con.transaction('READ COMMITTED', async (em) => {
         const jobData = job.data
 
         let resource: Collection | Token | null
@@ -184,6 +185,19 @@ export async function computeMetadata(job: Job) {
             QueueUtils.dispatchComputeTraits(collectionId)
         }
 
-        await job.updateProgress(100)
-    })
+            await job.updateProgress(100)
+        })
+    } catch (error) {
+        // Ensure errors are properly serializable across worker threads
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        const errorStack = error instanceof Error ? error.stack : undefined
+        
+        await job.log(`Error in computeMetadata: ${errorMessage}`)
+        if (errorStack) {
+            await job.log(`Stack: ${errorStack}`)
+        }
+        
+        // Re-throw as a standard Error to ensure proper serialization
+        throw new Error(`Failed to compute metadata for ${job.data.type} ${job.data.id}: ${errorMessage}`)
+    }
 }

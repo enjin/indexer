@@ -17,6 +17,15 @@ export const connection: ConnectionOptions = {
     keepAlive: 30000, // Send keep-alive packets every 30 seconds
     connectTimeout: 60000, // 60 second connection timeout
     commandTimeout: 120000, // 2 minute command timeout for long operations
+    lazyConnect: false, // Connect immediately
+    reconnectOnError: (err) => {
+        // Reconnect on common errors
+        const targetError = 'READONLY'
+        if (err.message.includes(targetError)) {
+            return true
+        }
+        return false
+    },
 }
 
 export default {

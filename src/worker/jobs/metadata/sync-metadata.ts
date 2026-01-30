@@ -10,18 +10,30 @@ interface AttributeStream {
 }
 
 export async function syncMetadata(job: Job) {
-    await job.updateProgress(10)
-    const em = await connectionManager()
-    const collectionStream = await em
-        .getRepository(Attribute)
-        .createQueryBuilder('attr')
-        .select('DISTINCT attr.collection_id')
-        .where('attr.collection_id IS NOT NULL')
-        .stream()
+    try {
+        await job.updateProgress(10)
+        const em = await connectionManager()
+        const collectionStream = await em
+            .getRepository(Attribute)
+            .createQueryBuilder('attr')
+            .select('DISTINCT attr.collection_id')
+            .where('attr.collection_id IS NOT NULL')
+            .stream()
 
-    await job.updateProgress(20)
-    await processAttribute(job, collectionStream)
-    await job.updateProgress(100)
+        await job.updateProgress(20)
+        await processAttribute(job, collectionStream)
+        await job.updateProgress(100)
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        const errorStack = error instanceof Error ? error.stack : undefined
+        
+        await job.log(`Error in syncMetadata: ${errorMessage}`)
+        if (errorStack) {
+            await job.log(`Stack: ${errorStack}`)
+        }
+        
+        throw new Error(`Failed to sync metadata: ${errorMessage}`)
+    }
 }
 
 function processAttribute(job: Job, stream: ReadStream): Promise<void> {

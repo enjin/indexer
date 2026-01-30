@@ -9,20 +9,32 @@ interface TokenGroupStream {
 }
 
 export async function syncTokenGroupMetadata(job: Job) {
-    const em = await connectionManager()
+    try {
+        const em = await connectionManager()
 
-    await job.updateProgress(10)
+        await job.updateProgress(10)
 
-    const tokenGroupStream = await em
-        .getRepository(Attribute)
-        .createQueryBuilder('attr')
-        .select('DISTINCT attr.token_group_id')
-        .where('attr.token_group_id IS NOT NULL')
-        .stream()
+        const tokenGroupStream = await em
+            .getRepository(Attribute)
+            .createQueryBuilder('attr')
+            .select('DISTINCT attr.token_group_id')
+            .where('attr.token_group_id IS NOT NULL')
+            .stream()
 
-    await job.updateProgress(20)
+        await job.updateProgress(20)
 
-    processTokenGroup(job, tokenGroupStream)
+        processTokenGroup(job, tokenGroupStream)
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        const errorStack = error instanceof Error ? error.stack : undefined
+        
+        await job.log(`Error in syncTokenGroupMetadata: ${errorMessage}`)
+        if (errorStack) {
+            await job.log(`Stack: ${errorStack}`)
+        }
+        
+        throw new Error(`Failed to sync token group metadata: ${errorMessage}`)
+    }
 }
 
 function processTokenGroup(job: Job, stream: ReadStream) {

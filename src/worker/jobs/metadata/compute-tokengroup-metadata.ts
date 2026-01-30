@@ -11,9 +11,10 @@ type MetadataType = {
 }
 
 export async function computeTokenGroupMetadata(job: Job) {
-    const con = await connectionManager()
+    try {
+        const con = await connectionManager()
 
-    await con.transaction('READ COMMITTED', async (em) => {
+        await con.transaction('READ COMMITTED', async (em) => {
         const jobData = job.data
 
         let resource: TokenGroup | null
@@ -102,7 +103,18 @@ export async function computeTokenGroupMetadata(job: Job) {
 
         await em.save(resource)
 
-        await job.log(`TokenGroup ${resource.id} metadata computed successfully`)
-        await job.updateProgress(100)
-    })
+            await job.log(`TokenGroup ${resource.id} metadata computed successfully`)
+            await job.updateProgress(100)
+        })
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        const errorStack = error instanceof Error ? error.stack : undefined
+        
+        await job.log(`Error in computeTokenGroupMetadata: ${errorMessage}`)
+        if (errorStack) {
+            await job.log(`Stack: ${errorStack}`)
+        }
+        
+        throw new Error(`Failed to compute token group metadata for ${job.data.id}: ${errorMessage}`)
+    }
 }
