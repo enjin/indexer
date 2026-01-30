@@ -109,6 +109,7 @@ export async function computeMetadata(job: Job) {
                 [jobData.id]
             )
 
+
             if (
                 response.length > 0 &&
                 response[0].uri === uriAttribute.value &&
