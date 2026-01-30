@@ -116,7 +116,6 @@ export async function computeMetadata(job: Job) {
 
             await job.updateProgress(35)
 
-
             if (
                 response.length > 0 &&
                 response[0].uri === uriAttribute.value &&
@@ -128,7 +127,7 @@ export async function computeMetadata(job: Job) {
             } else {
                 const externalResponse = await fetchMetadata(uriAttribute.value, job)
                 await job.updateProgress(50)
-                
+
                 if (externalResponse) {
                     if (response.length > 0) {
                         await em.connection.query(

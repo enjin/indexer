@@ -104,9 +104,9 @@ export async function computeTraits(job: Job, id: string) {
 
     await job.log(`Saving ${traitsToSave.length} traits`)
     await em.save(Trait, traitsToSave, { chunk: 1000 })
-    
+
     await job.updateProgress(75)
-    
+
     const traitTokensToSave: TraitToken[] = []
 
     tokenTraitMap.forEach((traits, tokenId) => {
@@ -133,6 +133,6 @@ export async function computeTraits(job: Job, id: string) {
 
     // delay to avoid rollback issue on fork
     QueueUtils.dispatchComputeRarity({ id, delay: 120000 })
-    
+
     await job.updateProgress(100)
 }

@@ -79,6 +79,6 @@ export async function computeStats(_job: Job, collectionId: string) {
     await _job.updateProgress(90)
 
     await em.update(Collection, { id: collectionId }, { stats })
-    
+
     await _job.updateProgress(100)
 }

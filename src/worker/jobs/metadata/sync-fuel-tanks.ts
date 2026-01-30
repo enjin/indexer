@@ -31,7 +31,7 @@ export async function syncFuelTanks(job: Job) {
 
             await em.save(fuelTank)
         }
-        
+
         processed++
         // Update progress (30% -> 90%)
         const progress = Math.min(90, 30 + Math.floor((processed / totalTanks) * 60))

@@ -45,9 +45,9 @@ export async function computeTokenSupply(job: Job, tokenId: string) {
 
     const rpcToken = await api.query.multiTokens.tokens(token.collection.id, token.tokenId)
     const rpcTokenJson: any = rpcToken.toJSON()
-    
+
     await job.updateProgress(60)
-    
+
     if (!rpcTokenJson) {
         await job.log(`RPC token ${tokenId} not found`)
         await job.updateProgress(100)

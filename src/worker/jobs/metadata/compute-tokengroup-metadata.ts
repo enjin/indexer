@@ -66,7 +66,7 @@ export async function computeTokenGroupMetadata(job: Job) {
             } else {
                 const externalResponse = await fetchMetadata(uriAttribute.value, job)
                 await job.updateProgress(60)
-                
+
                 if (externalResponse) {
                     if (response.length > 0) {
                         await em.connection.query(

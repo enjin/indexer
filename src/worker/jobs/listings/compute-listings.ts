@@ -10,18 +10,18 @@ export async function computeListings(_job: Job) {
 
     await con.transaction('READ COMMITTED', async (em) => {
         const status: { height: number }[] = await em.query(`SELECT height FROM squid_processor.status WHERE id = 0`)
-        
+
         await _job.updateProgress(30)
-        
+
         if (status.length === 0) {
             await _job.updateProgress(100)
             return
         }
 
         const { height } = status[0]
-        
+
         await _job.updateProgress(50)
-        
+
         await em
             .getRepository(Listing)
             .createQueryBuilder('listing')
@@ -42,9 +42,9 @@ export async function computeListings(_job: Job) {
             )
             .returning('id')
             .execute()
-            
+
         await _job.updateProgress(90)
     })
-    
+
     await _job.updateProgress(100)
 }

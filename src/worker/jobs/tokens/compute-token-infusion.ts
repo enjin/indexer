@@ -15,9 +15,9 @@ export async function computeTokenInfusion(_job: Job, id: string): Promise<void>
 
     const rpcToken = await api.query.multiTokens.tokens(token.collection.id, token.tokenId)
     const rpcTokenJson: any = rpcToken.toJSON()
-    
+
     await _job.updateProgress(70)
-    
+
     if (!rpcTokenJson) {
         await _job.log(`RPC token ${token.id} not found`)
         await _job.updateProgress(100)

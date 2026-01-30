@@ -10,9 +10,9 @@ interface TokenGroupStream {
 
 export async function syncTokenGroupMetadata(job: Job) {
     const em = await connectionManager()
-    
+
     await job.updateProgress(10)
-    
+
     const tokenGroupStream = await em
         .getRepository(Attribute)
         .createQueryBuilder('attr')
@@ -40,7 +40,7 @@ function processTokenGroup(job: Job, stream: ReadStream) {
 
             QueueUtils.dispatchComputeTokenGroupMetadata(parsed.token_group_id)
             count++
-            
+
             // Update progress every 10 items (20% -> 90%)
             if (count % 10 === 0) {
                 job.updateProgress(Math.min(90, 20 + Math.floor(count / 10))).catch(() => {})

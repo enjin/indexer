@@ -31,7 +31,7 @@ export async function syncBalances(_job: Job, ids: string[] | null) {
             account.balance.feeFrozen = 0n
 
             promises.push(ctx.store.save<Account>(account))
-            
+
             processed++
             // Update progress every 100 accounts (30% -> 80%)
             if (processed % 100 === 0) {

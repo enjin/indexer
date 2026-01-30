@@ -4,9 +4,9 @@ import { AccountTokenEvent, Listing, MarketplaceOfferCancelled, MarketplaceOffer
 
 export async function syncOffers(job: Job): Promise<void> {
     const em = await connectionManager()
-    
+
     await job.updateProgress(10)
-    
+
     const accountTokenEvents = await em.find(AccountTokenEvent, {
         select: ['id', 'event'],
         where: [
@@ -62,7 +62,7 @@ export async function syncOffers(job: Job): Promise<void> {
             promises.push(em.save(accountEvent))
             promises.push(em.save(event))
         }
-        
+
         processed++
         // Update progress every 10 items (30% -> 80%)
         if (processed % 10 === 0) {

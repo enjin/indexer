@@ -8,9 +8,9 @@ import { isNotNullOrEmpty } from '~/worker/utils'
 
 export async function syncAccounts(_job: Job, ids: string[] | null): Promise<void> {
     const ctx = await dataHandlerContext()
-    
+
     await _job.updateProgress(10)
-    
+
     const data = await fetchAccountsDetail(ids!)
 
     await _job.updateProgress(40)
@@ -33,6 +33,6 @@ export async function syncAccounts(_job: Job, ids: string[] | null): Promise<voi
     await _job.updateProgress(80)
 
     await ctx.store.save<Account>(accounts)
-    
+
     await _job.updateProgress(100)
 }

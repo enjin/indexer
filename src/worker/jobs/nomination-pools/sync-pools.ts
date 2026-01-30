@@ -28,7 +28,7 @@ export async function syncPools(job: Job): Promise<void> {
         // for (const member of pool.members) {
         // QueueUtils.dispatchComputePoolMemberRewards(member.id)
         // }
-        
+
         processed++
         // Update progress (30% -> 90%)
         if (processed % 10 === 0) {

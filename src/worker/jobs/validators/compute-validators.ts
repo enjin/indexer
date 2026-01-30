@@ -113,7 +113,7 @@ export async function computeValidators(job: Job) {
         } catch (error) {
             await job.log(`Error saving validator ${validator.id}: ${error}`)
         }
-        
+
         processed++
         // Update progress (60% -> 95%)
         if (processed % 5 === 0) {
@@ -121,7 +121,7 @@ export async function computeValidators(job: Job) {
             await job.updateProgress(progress)
         }
     }
-    
+
     await job.updateProgress(100)
 }
 

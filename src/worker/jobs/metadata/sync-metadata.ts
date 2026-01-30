@@ -44,7 +44,7 @@ function processAttribute(job: Job, stream: ReadStream): Promise<void> {
 
                 QueueUtils.dispatchComputeMetadata({ id: resourceId, type: resourceType, allTokens: true, force })
                 count++
-                
+
                 // Update progress every 10 items (20% -> 90%)
                 if (count % 10 === 0 && progressUpdate < 70) {
                     progressUpdate += 7

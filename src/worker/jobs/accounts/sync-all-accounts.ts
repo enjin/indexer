@@ -5,9 +5,9 @@ import { Job } from 'bullmq'
 
 export async function syncAllAccounts(job: Job) {
     const em = await connectionManager()
-    
+
     await job.updateProgress(10)
-    
+
     const accounts = await em.find(Account, {
         select: ['id'],
     })
@@ -19,7 +19,7 @@ export async function syncAllAccounts(job: Job) {
 
     for (let i = 0; i < accounts.length; i += 50) {
         QueueUtils.dispatchFetchAccounts(accounts.slice(i, i + 50).map((account) => account.id))
-        
+
         processed++
         // Update progress (30% -> 90%)
         const progress = Math.min(90, 30 + Math.floor((processed / totalBatches) * 60))

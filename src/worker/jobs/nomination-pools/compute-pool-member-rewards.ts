@@ -136,7 +136,7 @@ export async function computePoolMemberRewards(_job: Job, eraIndex: number): Pro
         if (members.length > 0) {
             await ctx.store.save(members)
         }
-        
+
         processed++
         // Update progress (40% -> 90%)
         const progress = Math.min(90, 40 + Math.floor((processed / totalRewards) * 50))

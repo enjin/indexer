@@ -68,7 +68,7 @@ export async function refreshListings(job: Job, ids: string[]) {
             await em.save(listing)
             await job.log(`Refreshed listing ${listing.id}`)
         }
-        
+
         processed++
         // Update progress (30% -> 90%)
         const progress = Math.min(90, 30 + Math.floor((processed / totalListings) * 60))

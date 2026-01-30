@@ -13,9 +13,9 @@ export async function refreshPool(job: Job, poolId: string) {
     const bondedPools = await api.query.nominationPools.bondedPools(poolId)
 
     const bondedPoolsJson: any = bondedPools.toJSON()
-    
+
     await job.updateProgress(30)
-    
+
     const pool = await em.findOneOrFail(NominationPool, {
         where: { id: poolId },
         relations: {

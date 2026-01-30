@@ -47,7 +47,7 @@ export async function computePoolRewards(_job: Job, id?: string): Promise<void> 
             poolApy = apy.toNumber()
             await ctx.store.save(eraReward)
         }
-        
+
         processed++
         // Update progress (40% -> 80%)
         if (processed % 10 === 0) {

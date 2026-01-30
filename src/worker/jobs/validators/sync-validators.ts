@@ -96,7 +96,7 @@ export async function syncValidators(job: Job): Promise<void> {
                 await job.log(`Error saving validator ${validators[i].id}: ${error}`)
             }
         }
-        
+
         // Update progress for each day batch (20% -> 95%)
         const progress = Math.min(95, 20 + Math.floor(((b + 1) / 28) * 75))
         await job.updateProgress(progress)
