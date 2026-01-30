@@ -44,6 +44,8 @@ export async function computeMetadata(job: Job) {
         let attributes: Attribute[] = []
         let collectionUriAttribute: Attribute | null = null
 
+        await job.updateProgress(5)
+
         if (jobData.type === 'collection') {
             ;[resource, attributes] = await Promise.all([
                 em.findOne(Collection, {
@@ -80,6 +82,7 @@ export async function computeMetadata(job: Job) {
             return
         } else {
             await job.log(`Resource ${resource.id} found!`)
+            await job.updateProgress(15)
         }
 
         let uriAttribute = null
@@ -100,6 +103,8 @@ export async function computeMetadata(job: Job) {
             uriAttribute = { ...uriAttribute, value: uriAttribute.value.replace('{id}', resource.id) }
         }
 
+        await job.updateProgress(25)
+
         let externalMetadata: any = {}
         let metadata = new Metadata()
 
@@ -109,6 +114,8 @@ export async function computeMetadata(job: Job) {
                 [jobData.id]
             )
 
+            await job.updateProgress(35)
+
 
             if (
                 response.length > 0 &&
@@ -117,8 +124,11 @@ export async function computeMetadata(job: Job) {
                 !jobData.force
             ) {
                 externalMetadata = response[0].metadata
+                await job.updateProgress(60)
             } else {
                 const externalResponse = await fetchMetadata(uriAttribute.value, job)
+                await job.updateProgress(50)
+                
                 if (externalResponse) {
                     if (response.length > 0) {
                         await em.connection.query(
@@ -134,9 +144,11 @@ export async function computeMetadata(job: Job) {
 
                     externalMetadata = externalResponse
                 }
+                await job.updateProgress(60)
             }
 
             metadata = metadataParser(metadata, uriAttribute, externalMetadata)
+            await job.updateProgress(70)
         }
 
         // add other attributes
@@ -146,14 +158,19 @@ export async function computeMetadata(job: Job) {
                 metadata = metadataParser(metadata, a, null)
             })
 
+        await job.updateProgress(80)
+
         resource.name = metadata.name
         resource.metadata = metadata
         resource.metadata.lastUpdated = new Date()
 
         await em.save(resource)
 
+        await job.updateProgress(90)
+
         if (jobData.type === 'collection' && jobData.allTokens) {
             const batch = tokensInBatch(em, jobData.id)
+            let batchCount = 0
 
             for await (const tokens of batch) {
                 tokens.forEach((token) => {
@@ -167,5 +184,7 @@ export async function computeMetadata(job: Job) {
             const collectionId = resource instanceof Token ? resource.collection.id : resource.id
             QueueUtils.dispatchComputeTraits(collectionId)
         }
+
+        await job.updateProgress(100)
     })
 }
