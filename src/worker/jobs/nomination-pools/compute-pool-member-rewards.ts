@@ -90,6 +90,8 @@ async function calculateMemberRewards(
 export async function computePoolMemberRewards(_job: Job, eraIndex: number): Promise<void> {
     const ctx = await dataHandlerContext()
 
+    await _job.updateProgress(10)
+
     const era = await ctx.store.findOne(Era, {
         where: { index: eraIndex },
     })
@@ -97,6 +99,8 @@ export async function computePoolMemberRewards(_job: Job, eraIndex: number): Pro
     if (!era) {
         throw new Error(`Era not found: ${eraIndex}`)
     }
+
+    await _job.updateProgress(25)
 
     const eraRewards = await ctx.store.find(EraReward, {
         where: { era: { index: eraIndex } },
@@ -108,6 +112,11 @@ export async function computePoolMemberRewards(_job: Job, eraIndex: number): Pro
     if (eraRewards.length === 0) {
         throw new Error(`Era rewards not found: ${eraIndex}`)
     }
+
+    await _job.updateProgress(40)
+
+    const totalRewards = eraRewards.length
+    let processed = 0
 
     for (const eraReward of eraRewards) {
         const pool = eraReward.pool
@@ -127,7 +136,14 @@ export async function computePoolMemberRewards(_job: Job, eraIndex: number): Pro
         if (members.length > 0) {
             await ctx.store.save(members)
         }
+
+        processed++
+        // Update progress (40% -> 90%)
+        const progress = Math.min(90, 40 + Math.floor((processed / totalRewards) * 50))
+        await _job.updateProgress(progress)
     }
+
+    await _job.updateProgress(100)
 
     // const member = await ctx.store.findOne(PoolMember, {
     //     where: { id },

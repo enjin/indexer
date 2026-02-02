@@ -40,6 +40,8 @@ export const informationContentScoring = {
 export async function computeRarity(job: Job, id: string) {
     const em = await connectionManager()
 
+    await job.updateProgress(5)
+
     try {
         const [collection, tokens] = await Promise.all([
             em.findOneOrFail(Collection, {
@@ -58,18 +60,26 @@ export async function computeRarity(job: Job, id: string) {
             }),
         ])
 
+        await job.updateProgress(30)
+
         const totalSupply = collection.stats?.supply ?? 0
         if (!totalSupply || totalSupply <= 0) {
+            await job.updateProgress(100)
             return
         }
         const entropy = informationContentScoring.collectionEntropy(totalSupply, collection.traits)
         if (!entropy || collection.traits.length === 0) {
+            await job.updateProgress(100)
             return
         }
+
+        await job.updateProgress(40)
 
         const tokenRarities = tokens.map((token) => {
             return { score: informationContentScoring.scoreToken(totalSupply, entropy, token), token }
         })
+
+        await job.updateProgress(60)
 
         tokenRarities.sort((a, b) => Number(mathjs.compare(b.score, a.score)))
 
@@ -79,6 +89,8 @@ export async function computeRarity(job: Job, id: string) {
             }
             return 0
         })
+
+        await job.updateProgress(70)
 
         const tokenRanks = tokenRarities.map((tokenRarity, index) => {
             return new TokenRarity({
@@ -92,9 +104,15 @@ export async function computeRarity(job: Job, id: string) {
 
         await job.log(`Token ranks: ${tokenRanks.length}`)
 
+        await job.updateProgress(80)
+
         await em.delete(TokenRarity, { collection: { id } })
 
+        await job.updateProgress(85)
+
         await em.save(tokenRanks, { chunk: 1000 })
+
+        await job.updateProgress(100)
     } catch (error) {
         await job.log(`Error in rarity ranker ${id} ${error}`)
         return

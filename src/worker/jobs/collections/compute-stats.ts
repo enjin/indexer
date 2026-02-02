@@ -9,6 +9,8 @@ const activeListingsAmountQuery = `SELECT COALESCE(SUM("listing"."amount"), 0) A
 export async function computeStats(_job: Job, collectionId: string) {
     const em = await connectionManager()
 
+    await _job.updateProgress(10)
+
     const promises: Promise<any>[] = [
         em
             .createQueryBuilder()
@@ -59,6 +61,8 @@ export async function computeStats(_job: Job, collectionId: string) {
     const [sales, [{ floor_price }], [{ active_listings_amount }], { tokenCount, supply }, { total_infused }] =
         await Promise.all(promises)
 
+    await _job.updateProgress(70)
+
     const stats = new CollectionStats({
         tokenCount: Number(tokenCount),
         supply: BigInt(supply ?? 0n),
@@ -72,5 +76,9 @@ export async function computeStats(_job: Job, collectionId: string) {
         totalInfused: BigInt(total_infused ?? 0n),
     })
 
+    await _job.updateProgress(90)
+
     await em.update(Collection, { id: collectionId }, { stats })
+
+    await _job.updateProgress(100)
 }

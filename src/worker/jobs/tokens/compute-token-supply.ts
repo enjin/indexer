@@ -23,6 +23,8 @@ export async function computeTokenSupply(job: Job, tokenId: string) {
     const em = await connectionManager()
     const { api } = await Rpc.getInstance()
 
+    await job.updateProgress(10)
+
     const token = await em
         .getRepository(Token)
         .createQueryBuilder('token')
@@ -33,15 +35,22 @@ export async function computeTokenSupply(job: Job, tokenId: string) {
         .where('token.id = :tokenId', { tokenId })
         .getOne()
 
+    await job.updateProgress(30)
+
     if (!token) {
         await job.log(`Token ${tokenId} not found`)
+        await job.updateProgress(100)
         return
     }
 
     const rpcToken = await api.query.multiTokens.tokens(token.collection.id, token.tokenId)
     const rpcTokenJson: any = rpcToken.toJSON()
+
+    await job.updateProgress(60)
+
     if (!rpcTokenJson) {
         await job.log(`RPC token ${tokenId} not found`)
+        await job.updateProgress(100)
         return
     }
 
@@ -55,7 +64,10 @@ export async function computeTokenSupply(job: Job, tokenId: string) {
         await job.log(`Token ${tokenId} cap not found`)
     }
 
+    await job.updateProgress(80)
+
     await em.save(Token, token)
 
     await job.log(`Token ${tokenId} with cap ${token.cap?.type} and supply ${token.cap?.supply} saved`)
+    await job.updateProgress(100)
 }

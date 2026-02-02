@@ -14,6 +14,8 @@ export async function computeValidators(job: Job) {
     const em = await connectionManager()
     const { api } = await Rpc.getInstance()
 
+    await job.updateProgress(5)
+
     const validators = await em
         .getRepository(Validator)
         .createQueryBuilder('validator')
@@ -21,7 +23,10 @@ export async function computeValidators(job: Job) {
         .leftJoinAndSelect(Identity, 'identity', 'identity.account = account.id')
         .getMany()
 
+    await job.updateProgress(15)
+
     if (validators.length === 0) {
+        await job.updateProgress(100)
         return
     }
 
@@ -30,13 +35,19 @@ export async function computeValidators(job: Job) {
         validators.map((v) => v.id)
     )
 
+    await job.updateProgress(30)
+
     const nodeCount = validatorDetails.filter((v) => v.producedBlocks24h > 0).length
     const era = await em.getRepository(Era).createQueryBuilder('era').addOrderBy('index', 'DESC').getOneOrFail()
     era.nodeCount = nodeCount
     await em.save<Era>(era)
 
+    await job.updateProgress(40)
+
     const rpcNominators = await api.query.staking.nominators.entries()
     const nominatorsCount = new Map<string, number>()
+
+    await job.updateProgress(50)
 
     for (const [storageKey, nominations] of rpcNominators) {
         const targets = JSON.parse(nominations.toString()).targets
@@ -44,6 +55,11 @@ export async function computeValidators(job: Job) {
             nominatorsCount.set(target, (nominatorsCount.get(target) ?? 0) + 1)
         }
     }
+
+    await job.updateProgress(60)
+
+    const totalValidators = validators.length
+    let processed = 0
 
     for (const validator of validators) {
         try {
@@ -97,7 +113,16 @@ export async function computeValidators(job: Job) {
         } catch (error) {
             await job.log(`Error saving validator ${validator.id}: ${error}`)
         }
+
+        processed++
+        // Update progress (60% -> 95%)
+        if (processed % 5 === 0) {
+            const progress = Math.min(95, 60 + Math.floor((processed / totalValidators) * 35))
+            await job.updateProgress(progress)
+        }
     }
+
+    await job.updateProgress(100)
 }
 
 // eslint-disable-next-line

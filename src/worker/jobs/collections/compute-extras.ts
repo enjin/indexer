@@ -6,7 +6,12 @@ import { isNotNullOrEmpty } from '~/worker/utils'
 
 export async function computeExtras(_job: Job, ids: string[]): Promise<void> {
     const ctx = await dataHandlerContext()
+
+    await _job.updateProgress(10)
+
     const data = await fetchCollectionsExtra(ids)
+
+    await _job.updateProgress(40)
 
     const collections = await Promise.all(
         data.filter(isNotNullOrEmpty).map(async (_c) => {
@@ -33,5 +38,9 @@ export async function computeExtras(_job: Job, ids: string[]): Promise<void> {
         })
     )
 
+    await _job.updateProgress(80)
+
     await ctx.store.save<Collection>(collections)
+
+    await _job.updateProgress(100)
 }
