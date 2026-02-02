@@ -27,12 +27,12 @@ export async function syncTokenGroupMetadata(job: Job) {
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error)
         const errorStack = error instanceof Error ? error.stack : undefined
-        
+
         await job.log(`Error in syncTokenGroupMetadata: ${errorMessage}`)
         if (errorStack) {
             await job.log(`Stack: ${errorStack}`)
         }
-        
+
         throw new Error(`Failed to sync token group metadata: ${errorMessage}`)
     }
 }

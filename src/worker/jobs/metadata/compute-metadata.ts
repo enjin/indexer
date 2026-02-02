@@ -39,151 +39,151 @@ export async function computeMetadata(job: Job) {
         const con = await connectionManager()
 
         await con.transaction('READ COMMITTED', async (em) => {
-        const jobData = job.data
+            const jobData = job.data
 
-        let resource: Collection | Token | null
-        let attributes: Attribute[] = []
-        let collectionUriAttribute: Attribute | null = null
+            let resource: Collection | Token | null
+            let attributes: Attribute[] = []
+            let collectionUriAttribute: Attribute | null = null
 
-        await job.updateProgress(5)
+            await job.updateProgress(5)
 
-        if (jobData.type === 'collection') {
-            ;[resource, attributes] = await Promise.all([
-                em.findOne(Collection, {
-                    where: { id: jobData.id },
-                }),
-                em.find(Attribute, {
-                    where: { collection: { id: jobData.id }, token: IsNull() },
-                }),
-            ])
-        } else {
-            resource = await em.findOne(Token, {
-                where: {
-                    id: jobData.id,
-                },
-                relations: {
-                    attributes: true,
-                    collection: true,
-                },
-            })
-
-            collectionUriAttribute = await em.findOne(Attribute, {
-                where: {
-                    collection: { id: jobData.id.split('-')[0] },
-                    key: 'uri',
-                    token: IsNull(),
-                },
-            })
-
-            attributes = resource?.attributes ?? []
-        }
-
-        if (!resource) {
-            await job.log(`Resource ${jobData.id} not found!`)
-            return
-        } else {
-            await job.log(`Resource ${resource.id} found!`)
-            await job.updateProgress(15)
-        }
-
-        let uriAttribute = null
-
-        if (collectionUriAttribute && collectionUriAttribute.value.includes('{id}')) {
-            uriAttribute = {
-                ...collectionUriAttribute,
-                value: collectionUriAttribute.value.replace('{id}', resource.id),
-            }
-        }
-
-        if (attributes.some((a) => a.key === 'uri')) {
-            uriAttribute = attributes.find((a) => a.key === 'uri')
-        }
-
-        // Check if a token / collection has {id} placeholder in its own attribute
-        if (uriAttribute && uriAttribute.value.includes('{id}')) {
-            uriAttribute = { ...uriAttribute, value: uriAttribute.value.replace('{id}', resource.id) }
-        }
-
-        await job.updateProgress(25)
-
-        let externalMetadata: any = {}
-        let metadata = new Metadata()
-
-        if (uriAttribute) {
-            const response = await em.connection.query<MetadataType[]>(
-                'select * from metadata.metadata where id = $1 LIMIT 1',
-                [jobData.id]
-            )
-
-            await job.updateProgress(35)
-
-            if (
-                response.length > 0 &&
-                response[0].uri === uriAttribute.value &&
-                typeof response[0].metadata === 'object' &&
-                !jobData.force
-            ) {
-                externalMetadata = response[0].metadata
-                await job.updateProgress(60)
+            if (jobData.type === 'collection') {
+                ;[resource, attributes] = await Promise.all([
+                    em.findOne(Collection, {
+                        where: { id: jobData.id },
+                    }),
+                    em.find(Attribute, {
+                        where: { collection: { id: jobData.id }, token: IsNull() },
+                    }),
+                ])
             } else {
-                const externalResponse = await fetchMetadata(uriAttribute.value, job)
-                await job.updateProgress(50)
-
-                if (externalResponse) {
-                    if (response.length > 0) {
-                        await em.connection.query(
-                            'update metadata.metadata set metadata = $1, uri = $2, last_updated_at = NOW() where id = $3',
-                            [externalResponse, uriAttribute.value, jobData.id]
-                        )
-                    } else {
-                        await em.connection.query(
-                            'insert into metadata.metadata (id, metadata, uri, last_updated_at) values ($1, $2, $3, NOW())',
-                            [jobData.id, externalResponse, uriAttribute.value]
-                        )
-                    }
-
-                    externalMetadata = externalResponse
-                }
-                await job.updateProgress(60)
-            }
-
-            metadata = metadataParser(metadata, uriAttribute, externalMetadata)
-            await job.updateProgress(70)
-        }
-
-        // add other attributes
-        attributes
-            .filter((a) => a.key !== 'uri')
-            .forEach(async (a) => {
-                metadata = metadataParser(metadata, a, null)
-            })
-
-        await job.updateProgress(80)
-
-        resource.name = metadata.name
-        resource.metadata = metadata
-        resource.metadata.lastUpdated = new Date()
-
-        await em.save(resource)
-
-        await job.updateProgress(90)
-
-        if (jobData.type === 'collection' && jobData.allTokens) {
-            const batch = tokensInBatch(em, jobData.id)
-            let batchCount = 0
-
-            for await (const tokens of batch) {
-                tokens.forEach((token) => {
-                    QueueUtils.dispatchComputeMetadata({ id: token.id, type: 'token', force: jobData.force })
+                resource = await em.findOne(Token, {
+                    where: {
+                        id: jobData.id,
+                    },
+                    relations: {
+                        attributes: true,
+                        collection: true,
+                    },
                 })
-            }
-        }
 
-        if (jobData.traits) {
-            await job.log(`Compute traits ${JSON.stringify(metadata.attributes)}`)
-            const collectionId = resource instanceof Token ? resource.collection.id : resource.id
-            QueueUtils.dispatchComputeTraits(collectionId)
-        }
+                collectionUriAttribute = await em.findOne(Attribute, {
+                    where: {
+                        collection: { id: jobData.id.split('-')[0] },
+                        key: 'uri',
+                        token: IsNull(),
+                    },
+                })
+
+                attributes = resource?.attributes ?? []
+            }
+
+            if (!resource) {
+                await job.log(`Resource ${jobData.id} not found!`)
+                return
+            } else {
+                await job.log(`Resource ${resource.id} found!`)
+                await job.updateProgress(15)
+            }
+
+            let uriAttribute = null
+
+            if (collectionUriAttribute && collectionUriAttribute.value.includes('{id}')) {
+                uriAttribute = {
+                    ...collectionUriAttribute,
+                    value: collectionUriAttribute.value.replace('{id}', resource.id),
+                }
+            }
+
+            if (attributes.some((a) => a.key === 'uri')) {
+                uriAttribute = attributes.find((a) => a.key === 'uri')
+            }
+
+            // Check if a token / collection has {id} placeholder in its own attribute
+            if (uriAttribute && uriAttribute.value.includes('{id}')) {
+                uriAttribute = { ...uriAttribute, value: uriAttribute.value.replace('{id}', resource.id) }
+            }
+
+            await job.updateProgress(25)
+
+            let externalMetadata: any = {}
+            let metadata = new Metadata()
+
+            if (uriAttribute) {
+                const response = await em.connection.query<MetadataType[]>(
+                    'select * from metadata.metadata where id = $1 LIMIT 1',
+                    [jobData.id]
+                )
+
+                await job.updateProgress(35)
+
+                if (
+                    response.length > 0 &&
+                    response[0].uri === uriAttribute.value &&
+                    typeof response[0].metadata === 'object' &&
+                    !jobData.force
+                ) {
+                    externalMetadata = response[0].metadata
+                    await job.updateProgress(60)
+                } else {
+                    const externalResponse = await fetchMetadata(uriAttribute.value, job)
+                    await job.updateProgress(50)
+
+                    if (externalResponse) {
+                        if (response.length > 0) {
+                            await em.connection.query(
+                                'update metadata.metadata set metadata = $1, uri = $2, last_updated_at = NOW() where id = $3',
+                                [externalResponse, uriAttribute.value, jobData.id]
+                            )
+                        } else {
+                            await em.connection.query(
+                                'insert into metadata.metadata (id, metadata, uri, last_updated_at) values ($1, $2, $3, NOW())',
+                                [jobData.id, externalResponse, uriAttribute.value]
+                            )
+                        }
+
+                        externalMetadata = externalResponse
+                    }
+                    await job.updateProgress(60)
+                }
+
+                metadata = metadataParser(metadata, uriAttribute, externalMetadata)
+                await job.updateProgress(70)
+            }
+
+            // add other attributes
+            attributes
+                .filter((a) => a.key !== 'uri')
+                .forEach(async (a) => {
+                    metadata = metadataParser(metadata, a, null)
+                })
+
+            await job.updateProgress(80)
+
+            resource.name = metadata.name
+            resource.metadata = metadata
+            resource.metadata.lastUpdated = new Date()
+
+            await em.save(resource)
+
+            await job.updateProgress(90)
+
+            if (jobData.type === 'collection' && jobData.allTokens) {
+                const batch = tokensInBatch(em, jobData.id)
+                let batchCount = 0
+
+                for await (const tokens of batch) {
+                    tokens.forEach((token) => {
+                        QueueUtils.dispatchComputeMetadata({ id: token.id, type: 'token', force: jobData.force })
+                    })
+                }
+            }
+
+            if (jobData.traits) {
+                await job.log(`Compute traits ${JSON.stringify(metadata.attributes)}`)
+                const collectionId = resource instanceof Token ? resource.collection.id : resource.id
+                QueueUtils.dispatchComputeTraits(collectionId)
+            }
 
             await job.updateProgress(100)
         })
@@ -191,12 +191,12 @@ export async function computeMetadata(job: Job) {
         // Ensure errors are properly serializable across worker threads
         const errorMessage = error instanceof Error ? error.message : String(error)
         const errorStack = error instanceof Error ? error.stack : undefined
-        
+
         await job.log(`Error in computeMetadata: ${errorMessage}`)
         if (errorStack) {
             await job.log(`Stack: ${errorStack}`)
         }
-        
+
         // Re-throw as a standard Error to ensure proper serialization
         throw new Error(`Failed to compute metadata for ${job.data.type} ${job.data.id}: ${errorMessage}`)
     }
