@@ -136,7 +136,7 @@ export async function computeTraits(job: Job, id: string) {
     await job.updateProgress(95)
 
     // delay to avoid rollback issue on fork
-    QueueUtils.dispatchComputeRarity({ id, delay: 120000 })
+    QueueUtils.dispatchComputeRarity({ id })
 
     await job.updateProgress(100)
 }
