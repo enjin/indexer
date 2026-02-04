@@ -68,13 +68,23 @@ export async function infused(
         return 0n
     })()
 
-    const userInfusion = new UserInfusion({
-        id: `${account.id}-${token.id}`,
-        account: account,
-        token: token,
-        amount: amount,
-        createdAt: new Date(block.timestamp ?? 0),
+    const userInfusionId = `${account.id}-${token.id}`
+    let userInfusion = await ctx.store.findOne(UserInfusion, {
+        where: { id: userInfusionId },
     })
+
+    if (userInfusion) {
+        userInfusion.amount += amount
+    } else {
+        userInfusion = new UserInfusion({
+            id: userInfusionId,
+            account: account,
+            token: token,
+            amount: amount,
+            createdAt: new Date(block.timestamp ?? 0),
+        })
+    }
+
     await ctx.store.save(userInfusion)
 
     await QueueUtils.dispatchComputeStats(data.collectionId.toString())
