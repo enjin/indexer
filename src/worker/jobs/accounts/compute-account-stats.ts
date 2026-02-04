@@ -48,11 +48,11 @@ export async function computeAccountStats(job: Job) {
             `(SELECT COALESCE(SUM(token.infusion * token.supply), 0) as totalInfused 
               FROM token 
               INNER JOIN (
-                  SELECT DISTINCT event.collection_id as collectionId, event.token_id as tokenId 
+                  SELECT DISTINCT event.token_id as tokenId
                   FROM event 
                   WHERE event.name = 'MultiTokensInfused' 
                   AND event.data->>'accountId' = :accountId
-              ) infused_events ON token.id = infused_events.collectionId || '-' || infused_events.tokenId)`,
+              ) infused_events ON token.id = infused_events.tokenId)`,
             'total_infused_sum',
             '1=1'
         )
