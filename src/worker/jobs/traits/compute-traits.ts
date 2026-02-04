@@ -108,9 +108,13 @@ export async function computeTraits(job: Job, id: string) {
     await job.updateProgress(75)
 
     const traitTokensToSave: TraitToken[] = []
+    const validTokenIds = new Set(tokens.map((t) => t.id))
 
     tokenTraitMap.forEach((traits, tokenId) => {
         if (!traits.length) return
+        // Only create trait_token records for tokens that were processed (have supply > 0)
+        if (!validTokenIds.has(tokenId)) return
+
         traits.forEach((trait) => {
             traitTokensToSave.push(
                 new TraitToken({
@@ -132,7 +136,7 @@ export async function computeTraits(job: Job, id: string) {
     await job.updateProgress(95)
 
     // delay to avoid rollback issue on fork
-    QueueUtils.dispatchComputeRarity({ id, delay: 120000 })
+    QueueUtils.dispatchComputeRarity({ id })
 
     await job.updateProgress(100)
 }
