@@ -1,5 +1,14 @@
 import { throwFatalError } from '~/util/errors'
-import { Extrinsic, NominationPool, PoolMember, Token, TokenAccount, EarlyBirdMintEvent, Era, UserInfusion } from '~/model'
+import {
+    Extrinsic,
+    NominationPool,
+    PoolMember,
+    Token,
+    TokenAccount,
+    EarlyBirdMintEvent,
+    Era,
+    UserInfusion,
+} from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
 import { SnsEvent } from '~/util/sns'
