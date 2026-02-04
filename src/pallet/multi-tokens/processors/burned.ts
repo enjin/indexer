@@ -1,5 +1,5 @@
 import { throwFatalError } from '~/util/errors'
-import { Token, TokenAccount } from '~/model'
+import { Token, TokenAccount, UserInfusion } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
@@ -47,6 +47,7 @@ export async function burned(
     } else {
         throwFatalError(`[Burned] We have not found token account ${account.id}-${data.collectionId}-${data.tokenId}.`)
     }
+    const totalTokenInfusion = token.infusion * token.supply
 
     token.supply -= data.amount
     if (token.supply < 1n) {
@@ -58,6 +59,24 @@ export async function burned(
     }
 
     await ctx.store.save(token)
+
+    const tokenInfusions = await ctx.store.find(UserInfusion, {
+        where: {
+            token: {
+                id: token.id,
+            },
+        },
+    })
+
+    const newTotalTokenInfusion = token.infusion * token.supply
+    // percentage of the total infusion to remove
+    const infusionToRemove = (totalTokenInfusion - newTotalTokenInfusion) / totalTokenInfusion
+    const newUserInfusionsPromises = []
+    for (const tokenInfusion of tokenInfusions) {
+        tokenInfusion.amount = tokenInfusion.amount * infusionToRemove
+        newUserInfusionsPromises.push(ctx.store.save(tokenInfusion))
+    }
+    await Promise.all(newUserInfusionsPromises)
 
     const snsEvent: SnsEvent = {
         id: item.id,
