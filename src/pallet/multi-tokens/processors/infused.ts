@@ -1,6 +1,6 @@
 import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
-import { Token } from '~/model'
+import { Token, UserInfusion } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
 import { EventHandlerResult } from '~/processor.handler'
@@ -21,6 +21,17 @@ export async function infused(
             collection: true,
         },
     })
+
+    const totalAmount = (() => {
+        if (data.amount) {
+            return data.amount * (token?.supply ?? 0n)
+        }
+        if (data.totalAmount) {
+            return data.totalAmount
+        }
+        return 0n
+    })()
+
     if (skipSave || !token) {
         return [
             ...mappings.multiTokens.events.infusedEventModel(
@@ -28,7 +39,8 @@ export async function infused(
                 data,
                 account,
                 token?.collection ?? null,
-                token ?? null
+                token ?? null,
+                totalAmount
             ),
             undefined,
         ]
@@ -46,6 +58,25 @@ export async function infused(
         await ctx.store.save(token)
     }
 
+    const amount = (() => {
+        if (data.amount) {
+            return data.amount * token.supply
+        }
+        if (data.totalAmount) {
+            return data.totalAmount
+        }
+        return 0n
+    })()
+
+    const userInfusion = new UserInfusion({
+        id: `${account.id}-${token.id}`,
+        account: account,
+        token: token,
+        amount: amount,
+        createdAt: new Date(block.timestamp ?? 0),
+    })
+    await ctx.store.save(userInfusion)
+
     await QueueUtils.dispatchComputeStats(data.collectionId.toString())
     await QueueUtils.dispatchComputeAccountStats(account.id)
 
@@ -62,5 +93,8 @@ export async function infused(
         },
     }
 
-    return [...mappings.multiTokens.events.infusedEventModel(item, data, account, token.collection, token), snsEvent]
+    return [
+        ...mappings.multiTokens.events.infusedEventModel(item, data, account, token.collection, token, amount),
+        snsEvent,
+    ]
 }
