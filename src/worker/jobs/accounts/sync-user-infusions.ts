@@ -158,7 +158,6 @@ export async function syncUserInfusions(job: Job) {
                         account,
                         token,
                         amount: infusionData.amount,
-                        createdAt: new Date(),
                     })
                     entitiesToSave.push(userInfusion)
                     createdCount++

@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, BigIntColumn as BigIntColumn_, DateTimeColumn as DateTimeColumn_} from "@subsquid/typeorm-store"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, BigIntColumn as BigIntColumn_} from "@subsquid/typeorm-store"
 import {Account} from "./account.model"
 import {Token} from "./token.model"
 
@@ -21,7 +21,4 @@ export class UserInfusion {
 
     @BigIntColumn_({nullable: false})
     amount!: bigint
-
-    @DateTimeColumn_({nullable: false})
-    createdAt!: Date
 }

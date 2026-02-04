@@ -508,6 +508,7 @@ type Account @entity {
   tokenFilter: StakeExchangeTokenFilter @derivedFrom(field: "account")
   identity: Identity @derivedFrom(field: "account")
   registrar: IdentityRegistrar @derivedFrom(field: "account")
+  userInfusions: [UserInfusion] @derivedFrom(field: "account")
 
   # Extras
   lastUpdateBlock: Int
@@ -776,7 +777,6 @@ type UserInfusion @entity {
   account: Account! @index
   token: Token! @index
   amount: BigInt!
-  createdAt: DateTime!
 }
 
 type TokenRarity @entity {

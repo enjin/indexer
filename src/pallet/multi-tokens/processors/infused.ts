@@ -81,7 +81,6 @@ export async function infused(
             account: account,
             token: token,
             amount: amount,
-            createdAt: new Date(block.timestamp ?? 0),
         })
     }
 
