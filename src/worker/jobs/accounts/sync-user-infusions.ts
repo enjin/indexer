@@ -1,24 +1,3 @@
-/**
- * Sync User Infusions Worker Job
- *
- * This job syncs existing accounts that have already infused tokens by:
- * 1. Querying all MultiTokensInfused events from the Event table
- * 2. Aggregating infusion amounts for each account-token pair (multiple infusions are summed)
- * 3. Creating or updating UserInfusion entries with the aggregated amounts
- * 4. Processing in batches for efficiency
- *
- * To trigger this job manually:
- * - Use the QueueUtils.dispatchSyncUserInfusions() function
- * - Or add it to the AccountsQueue directly with JobsEnum.SYNC_USER_INFUSIONS
- *
- * The job will:
- * - Aggregate multiple infusion events for the same user-token pair
- * - Update existing UserInfusion entries by adding new amounts to existing amounts
- * - Create new UserInfusion entries for user-token pairs that don't exist
- * - Skip events with invalid or missing data
- * - Log progress and statistics throughout the process
- */
-
 import { Job } from 'bullmq'
 import { connectionManager } from '~/contexts'
 import { Account, Event, Token, UserInfusion } from '~/model'
