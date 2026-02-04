@@ -6,6 +6,7 @@ import * as mappings from '~/pallet/index'
 import { getOrCreateAccount } from '~/util/entities'
 import { QueueUtils } from '~/queue'
 import { EventHandlerResult } from '~/processor.handler'
+import Big from 'big.js'
 
 export async function burned(
     ctx: CommonContext,
@@ -47,7 +48,6 @@ export async function burned(
     } else {
         throwFatalError(`[Burned] We have not found token account ${account.id}-${data.collectionId}-${data.tokenId}.`)
     }
-    const totalTokenInfusion = token.infusion * token.supply
 
     token.supply -= data.amount
     if (token.supply < 1n) {
@@ -68,12 +68,11 @@ export async function burned(
         },
     })
 
-    const newTotalTokenInfusion = token.infusion * token.supply
-    // percentage of the total infusion to remove
-    const infusionToRemove = (totalTokenInfusion - newTotalTokenInfusion) / totalTokenInfusion
+    // amount of the total infusion to remove
+    const infusionToRemove = Big(token.infusion.toString()).div(tokenInfusions.length)
     const newUserInfusionsPromises = []
     for (const tokenInfusion of tokenInfusions) {
-        tokenInfusion.amount = tokenInfusion.amount * infusionToRemove
+        tokenInfusion.amount = BigInt(Big(tokenInfusion.amount.toString()).sub(infusionToRemove).toString())
         newUserInfusionsPromises.push(ctx.store.save(tokenInfusion))
     }
     await Promise.all(newUserInfusionsPromises)
