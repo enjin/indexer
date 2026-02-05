@@ -49,6 +49,9 @@ export async function burned(
         throwFatalError(`[Burned] We have not found token account ${account.id}-${data.collectionId}-${data.tokenId}.`)
     }
 
+    const infusionToRemove = Big(token.infusion.toString()).times(data.amount.toString())
+    const totalTokenInfusion = Big(token.infusion.toString()).times(token.supply.toString())
+
     token.supply -= data.amount
     if (token.supply < 1n) {
         token.infusion = 0n
@@ -68,11 +71,11 @@ export async function burned(
         },
     })
 
-    // amount of the total infusion to remove
-    const infusionToRemove = Big(token.infusion.toString()).div(tokenInfusions.length)
+    // percentage of the total infusion to remove
+    const infusionToRemovePerUser = Big(infusionToRemove.toString()).div(totalTokenInfusion.toString()).toString()
     const newUserInfusionsPromises = []
     for (const tokenInfusion of tokenInfusions) {
-        tokenInfusion.amount = BigInt(Big(tokenInfusion.amount.toString()).sub(infusionToRemove).toString())
+        tokenInfusion.amount = BigInt(Big(tokenInfusion.amount.toString()).times(infusionToRemovePerUser).toString())
         newUserInfusionsPromises.push(ctx.store.save(tokenInfusion))
     }
     await Promise.all(newUserInfusionsPromises)
