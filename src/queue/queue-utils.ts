@@ -510,3 +510,16 @@ export async function dispatchComputeAccountStats(id: string): Promise<void> {
         Logger.error('Failed to dispatch compute account stats', LOGGER_NAMESPACE)
     })
 }
+
+export function dispatchSyncUserInfusions(): void {
+    AccountsQueue.add(
+        JobsEnum.SYNC_USER_INFUSIONS,
+        {},
+        {
+            delay: 6000,
+            jobId: 'accounts.sync-user-infusions',
+        }
+    ).catch(() => {
+        Logger.error('Failed to dispatch sync user infusions', LOGGER_NAMESPACE)
+    })
+}

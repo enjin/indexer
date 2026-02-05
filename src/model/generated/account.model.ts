@@ -11,6 +11,7 @@ import {EarlyBirdShares} from "./earlyBirdShares.model"
 import {StakeExchangeTokenFilter} from "./stakeExchangeTokenFilter.model"
 import {Identity} from "./identity.model"
 import {IdentityRegistrar} from "./identityRegistrar.model"
+import {UserInfusion} from "./userInfusion.model"
 import {AccountStats} from "./_accountStats"
 
 @Entity_()
@@ -61,6 +62,9 @@ export class Account {
 
     @OneToOne_(() => IdentityRegistrar, e => e.account)
     registrar!: IdentityRegistrar | undefined | null
+
+    @OneToMany_(() => UserInfusion, e => e.account)
+    userInfusions!: UserInfusion[]
 
     @IntColumn_({nullable: true})
     lastUpdateBlock!: number | undefined | null

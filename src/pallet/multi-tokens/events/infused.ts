@@ -50,7 +50,8 @@ export function infusedEventModel(
     data: Infused,
     account: Account,
     collection: Collection | null,
-    token: Token | null
+    token: Token | null,
+    amount: bigint
 ): [EventModel, AccountTokenEvent] {
     const collectionId = collection ? collection.id : data.collectionId.toString()
     const tokenId = token ? token.id : `${collectionId}-${data.tokenId}`
@@ -64,7 +65,7 @@ export function infusedEventModel(
         data: new MultiTokensInfused({
             collectionId: data.collectionId,
             tokenId: data.tokenId,
-            amount: data.amount ?? data.totalAmount,
+            amount: amount,
             accountId: account.id,
         }),
     })
