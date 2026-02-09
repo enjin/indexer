@@ -19,6 +19,7 @@ import { getOrCreateAccount } from '~/util/entities'
 import { getCapType, getFreezeState, isTokenFrozen } from '~/synchronize/common'
 import { EventHandlerResult } from '~/processor.handler'
 import { isDispatchCall, unwrapFuelTankCall } from '~/pallet/fuel-tanks/utils'
+import { Call } from '~/pallet/common/types'
 
 type TokenMarketBehavior = TokenMarketBehavior500 | TokenMarketBehavior1020
 
@@ -239,7 +240,7 @@ export async function tokenCreated(
         }
 
         // If we processed any batch_mint calls, return early
-        if (calls.some((c: any) => c?.value?.__kind === 'batch_mint')) {
+        if (calls.some((c: Call) => c?.value?.__kind === 'batch_mint')) {
             return mappings.multiTokens.events.tokenCreatedEventModel(item, event)
         }
     }
