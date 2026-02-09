@@ -227,11 +227,19 @@ export async function tokenCreated(
     if (item.call && isDispatchCall(item.call)) {
         const unwrappedCall = unwrapFuelTankCall(item.call)
         // @ts-ignore
-        const batchMintCall = unwrappedCall?.calls?.[0]?.value
-        if (batchMintCall?.__kind === 'batch_mint') {
-            const tokens = await tokenFromBatchCall(ctx, block, event, batchMintCall)
-            await ctx.store.save(tokens)
+        const calls = unwrappedCall?.calls || []
 
+        // Process all batch_mint calls in the batch
+        for (const call of calls) {
+            const batchMintCall = call?.value
+            if (batchMintCall?.__kind === 'batch_mint') {
+                const tokens = await tokenFromBatchCall(ctx, block, event, batchMintCall)
+                await ctx.store.save(tokens)
+            }
+        }
+
+        // If we processed any batch_mint calls, return early
+        if (calls.some((c: any) => c?.value?.__kind === 'batch_mint')) {
             return mappings.multiTokens.events.tokenCreatedEventModel(item, event)
         }
     }
