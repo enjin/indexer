@@ -232,7 +232,7 @@ export async function tokenCreated(
 
         // Process all batch_mint calls in the batch
         for (const call of calls) {
-            const batchMintCall = call?.value
+            const batchMintCall = call.value
             if (batchMintCall?.__kind === 'batch_mint') {
                 const tokens = await tokenFromBatchCall(ctx, block, event, batchMintCall)
                 await ctx.store.save(tokens)
@@ -240,7 +240,7 @@ export async function tokenCreated(
         }
 
         // If we processed any batch_mint calls, return early
-        if (calls.some((c: Call) => c?.value?.__kind === 'batch_mint')) {
+        if (calls.some((c: Call) => c.value.__kind === 'batch_mint')) {
             return mappings.multiTokens.events.tokenCreatedEventModel(item, event)
         }
     }
