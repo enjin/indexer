@@ -12,6 +12,7 @@ import {TraitToken} from "./traitToken.model"
 import {TokenRarity} from "./tokenRarity.model"
 import {NominationPool} from "./nominationPool.model"
 import {TokenGroupToken} from "./tokenGroupToken.model"
+import {UserInfusion} from "./userInfusion.model"
 import {ListingSale} from "./listingSale.model"
 import {Metadata} from "./_metadata"
 
@@ -104,6 +105,9 @@ export class Token {
 
     @OneToMany_(() => TokenGroupToken, e => e.token)
     tokenGroupTokens!: TokenGroupToken[]
+
+    @OneToMany_(() => UserInfusion, e => e.token)
+    userInfusions!: UserInfusion[]
 
     @Index_()
     @ManyToOne_(() => Listing, {nullable: true})
