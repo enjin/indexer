@@ -3,7 +3,7 @@ import { Json, BigInteger } from '@subsquid/graphql-server'
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
 import { Validate } from 'class-validator'
-import { Listing, Token, TokenAccount} from '~/model'
+import { Listing, Token, TokenAccount } from '~/model'
 import { IsPublicKeyArray, encodeCursor, decodeCursor } from './helpers'
 import { PageInfo } from './types'
 
@@ -255,7 +255,17 @@ export class AccountsTokensConnectionResolver {
     @Query(() => AccountsTokensConnection)
     async accountsTokensConnection(
         @Args()
-        { accountIds, collectionId, tokenGroupId, first, after, order, orderBy, query, listingFilter }: AccountsTokensConnectionArgs
+        {
+            accountIds,
+            collectionId,
+            tokenGroupId,
+            first,
+            after,
+            order,
+            orderBy,
+            query,
+            listingFilter,
+        }: AccountsTokensConnectionArgs
     ): Promise<AccountsTokensConnection> {
         const manager = await this.tx()
 
