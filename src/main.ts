@@ -96,10 +96,12 @@ async function bootstrap() {
                         if (e) eventsCollection.push(e)
                         if (a) accountTokenEvents.push(a)
                         if (s) {
+                            ctx.log.info(`Processing SNS event ${s.id} - ${block.header.height} - ${eventIndex}`)
                             const eventCacheKey = getEventCacheKey(block.header.height, eventIndex)
                             const cachedSnsEvent = snsEventsCache.get(eventCacheKey)
 
                             if (!cachedSnsEvent) {
+                                ctx.log.info(`Setting SNS event cache for ${s.id} - ${block.header.height} - ${eventIndex}`)
                                 snsEventsCache.set(eventCacheKey, {
                                     eventId: s.id,
                                     blockHash: block.header.hash,
@@ -107,6 +109,7 @@ async function bootstrap() {
                                 })
                                 snsEvents.push(s)
                             } else if (cachedSnsEvent.blockHash !== block.header.hash) {
+                                ctx.log.info(`Reorganizing SNS event ${s.id} - ${block.header.height} - ${eventIndex} (Cached block hash: ${cachedSnsEvent.blockHash}, New block hash: ${block.header.hash})`)
                                 snsEvents.push({
                                     ...s,
                                     body: {
