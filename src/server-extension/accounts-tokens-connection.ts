@@ -3,7 +3,7 @@ import { Json, BigInteger } from '@subsquid/graphql-server'
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
 import { Validate } from 'class-validator'
-import { Collection, Listing, Token, TokenAccount, TokenGroupToken, TokenGroup, Attribute } from '~/model'
+import { Listing, Token, TokenAccount } from '~/model'
 import { IsPublicKeyArray, encodeCursor, decodeCursor } from './helpers'
 import { PageInfo } from './types'
 
@@ -11,6 +11,7 @@ export enum AccountsTokensOrderByInput {
     COLLECTION_NAME = 'collection.name',
     TOKEN_NAME = 'token.name',
     DATE = 'token.createdAt',
+    BEST_LISTING_HIGHEST_PRICE = 'token.bestListingPrice',
 }
 
 export enum AccountsTokensOrderInput {
@@ -24,6 +25,12 @@ export enum AccountsTokensFreezeState {
     Never = 'Never',
 }
 
+export enum TokenListingFilterInput {
+    ALL = 'ALL',
+    LISTED = 'LISTED',
+    NOT_LISTED = 'NOT_LISTED',
+}
+
 registerEnumType(AccountsTokensOrderByInput, {
     name: 'AccountsTokensOrderByInput',
 })
@@ -34,6 +41,10 @@ registerEnumType(AccountsTokensOrderInput, {
 
 registerEnumType(AccountsTokensFreezeState, {
     name: 'AccountsTokensFreezeState',
+})
+
+registerEnumType(TokenListingFilterInput, {
+    name: 'TokenListingFilterInput',
 })
 
 @ObjectType()
@@ -200,6 +211,9 @@ class AccountsTokensConnectionArgs {
 
     @Field(() => String, { nullable: true })
     tokenGroupId?: string
+
+    @Field(() => TokenListingFilterInput, { nullable: true, defaultValue: TokenListingFilterInput.ALL })
+    listingFilter: TokenListingFilterInput = TokenListingFilterInput.ALL
 }
 
 @ObjectType()
@@ -241,7 +255,17 @@ export class AccountsTokensConnectionResolver {
     @Query(() => AccountsTokensConnection)
     async accountsTokensConnection(
         @Args()
-        { accountIds, collectionId, tokenGroupId, first, after, order, orderBy, query }: AccountsTokensConnectionArgs
+        {
+            accountIds,
+            collectionId,
+            tokenGroupId,
+            first,
+            after,
+            order,
+            orderBy,
+            query,
+            listingFilter,
+        }: AccountsTokensConnectionArgs
     ): Promise<AccountsTokensConnection> {
         const manager = await this.tx()
 
@@ -295,6 +319,12 @@ export class AccountsTokensConnectionResolver {
             baseQuery.andWhere('(collection.name ILIKE :query OR token.name ILIKE :query)', {
                 query: `%${query}%`,
             })
+        }
+
+        if (listingFilter === TokenListingFilterInput.LISTED) {
+            baseQuery.andWhere('token.bestListingPrice IS NOT NULL')
+        } else if (listingFilter === TokenListingFilterInput.NOT_LISTED) {
+            baseQuery.andWhere('token.bestListingPrice IS NULL')
         }
 
         const totalCount = await baseQuery.clone().getCount()
