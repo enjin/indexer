@@ -17,6 +17,7 @@ import { Validate } from 'class-validator'
 import { TokenAccount, Token, TokenGroup } from '~/model'
 import { decodeCursor, encodeCursor, IsPublicKeyArray } from './helpers'
 import { PageInfo } from './types'
+import { TokenListingFilterInput } from './accounts-tokens-connection'
 
 export enum CollectionInventoryOrderByInput {
     CREATED_AT = 'created_at',
@@ -84,6 +85,9 @@ class CollectionInventoryArgs {
 
     @Field(() => CollectionInventoryOrderInput, { defaultValue: CollectionInventoryOrderInput.DESC })
     order: CollectionInventoryOrderInput = CollectionInventoryOrderInput.DESC
+
+    @Field(() => TokenListingFilterInput, { nullable: true, defaultValue: TokenListingFilterInput.ALL })
+    listingFilter: TokenListingFilterInput = TokenListingFilterInput.ALL
 
     @Field(() => String, { nullable: true })
     query?: string
@@ -206,7 +210,7 @@ export class CollectionInventoryResolver {
      */
     @Query(() => CollectionInventoryConnection)
     async collectionInventory(@Args() args: CollectionInventoryArgs): Promise<CollectionInventoryConnection> {
-        const { accountIds, collectionId, first, after, orderBy, order, query } = args
+        const { accountIds, collectionId, first, after, orderBy, order, query, listingFilter } = args
 
         if (!accountIds?.length) {
             return new CollectionInventoryConnection({
@@ -273,6 +277,13 @@ export class CollectionInventoryResolver {
             queryParams.push(`%${query}%`)
         }
 
+        let listingCondition = ''
+        if (listingFilter === TokenListingFilterInput.LISTED) {
+            listingCondition = 'AND token.best_listing_price IS NOT NULL'
+        } else if (listingFilter === TokenListingFilterInput.NOT_LISTED) {
+            listingCondition = 'AND token.best_listing_price IS NULL'
+        }
+
         // Keyset pagination query: fetch groups and ungrouped tokens in one pass
         const accountIdPlaceholders = accountIds.map((_, i) => `$${i + 1}`).join(', ')
         const collectionIdPlaceholder = `$${accountIds.length + 1}`
@@ -313,6 +324,7 @@ export class CollectionInventoryResolver {
                     AND token_account.total_balance > 0
                     AND collection.collection_id = ${collectionIdPlaceholder}
                     ${searchCondition}
+                    ${listingCondition}
                 GROUP BY tg.id
                 HAVING COUNT(DISTINCT token.id) >= 2
             ),
@@ -335,6 +347,7 @@ export class CollectionInventoryResolver {
                     AND token_account.total_balance > 0
                     AND collection.collection_id = ${collectionIdPlaceholder}
                     ${searchCondition}
+                    ${listingCondition}
                     AND tg.id IS NULL
                 GROUP BY token.id
             ),
@@ -370,6 +383,7 @@ export class CollectionInventoryResolver {
                     AND token_account.total_balance > 0
                     AND collection.collection_id = ${collectionIdPlaceholder}
                     ${searchCondition}
+                    ${listingCondition}
                 GROUP BY tg.id
                 HAVING COUNT(DISTINCT token.id) >= 2
             ),
@@ -387,6 +401,7 @@ export class CollectionInventoryResolver {
                     AND token_account.total_balance > 0
                     AND collection.collection_id = ${collectionIdPlaceholder}
                     ${searchCondition}
+                    ${listingCondition}
                     AND tg.id IS NULL
                 GROUP BY token.id
             )
