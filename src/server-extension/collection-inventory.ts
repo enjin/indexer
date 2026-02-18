@@ -732,8 +732,7 @@ export class CollectionInventoryResolver {
                         orderValue = pageItem.token_name || ''
                         break
                     case CollectionInventoryOrderByInput.BEST_LISTING_HIGHEST_PRICE:
-                        orderValue =
-                            pageItem.best_listing_price != null ? String(pageItem.best_listing_price) : ''
+                        orderValue = pageItem.best_listing_price != null ? String(pageItem.best_listing_price) : ''
                         break
                 }
             }
