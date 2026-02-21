@@ -13,7 +13,7 @@ export async function fetchBalance(_job: Job, id: string) {
     await _job.updateProgress(10)
 
     const address = encodeAddress(id)
-    
+
     const account: Account = await getOrCreateAccount(ctx, decode(address).bytes)
     const balance = await api.query.system.account(address)
 
