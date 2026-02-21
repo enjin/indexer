@@ -33,7 +33,7 @@ import { QueueUtils } from '~/queue'
 import { QueuesEnum } from '~/queue/constants'
 import { Logger } from '~/util/logger'
 import { getEventCacheKey, isRelay } from '~/util/tools'
-import { In, Not } from 'typeorm'
+import { In } from 'typeorm'
 import { isSnsEvent, Sns, SnsEvent } from '~/util/sns'
 
 const logger = new Logger('sqd:processor', config.logLevel)
