@@ -1,12 +1,5 @@
 import { connectionManager } from '~/contexts'
-import {
-    AuctionState,
-    Listing,
-    ListingStatus,
-    ListingStatusType,
-    ListingType,
-    OfferState,
-} from '~/model'
+import { AuctionState, Listing, ListingStatus, ListingStatusType, ListingType, OfferState } from '~/model'
 import { Brackets } from 'typeorm'
 import { Job } from 'bullmq'
 
@@ -42,10 +35,13 @@ export async function computeListings(_job: Job) {
             .where('listing.type IN (:...types)', { types: [ListingType.Auction, ListingType.Offer] })
             .andWhere(
                 new Brackets((qb) => {
-                    qb.where("listing.type = :auctionType AND (listing.data->>'endHeight')::int < :height AND (listing.data->>'endHeight')::int > 0", {
-                        auctionType: ListingType.Auction,
-                        height,
-                    }).orWhere("listing.type = :offerType AND (listing.data->>'expiration')::int < :height", {
+                    qb.where(
+                        "listing.type = :auctionType AND (listing.data->>'endHeight')::int < :height AND (listing.data->>'endHeight')::int > 0",
+                        {
+                            auctionType: ListingType.Auction,
+                            height,
+                        }
+                    ).orWhere("listing.type = :offerType AND (listing.data->>'expiration')::int < :height", {
                         offerType: ListingType.Offer,
                         height,
                     })
@@ -97,7 +93,8 @@ export async function computeListings(_job: Job) {
                 const offerData = listing.data
                 if (
                     listing.state.isTypeOf === 'OfferState' &&
-                    ((offerData.expiration != null && offerData.expiration < height) || listing.state.isExpired === true)
+                    ((offerData.expiration != null && offerData.expiration < height) ||
+                        listing.state.isExpired === true)
                 ) {
                     listing.state = new OfferState({
                         listingType: ListingType.Offer,
