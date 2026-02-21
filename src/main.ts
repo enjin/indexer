@@ -33,7 +33,7 @@ import { QueueUtils } from '~/queue'
 import { QueuesEnum } from '~/queue/constants'
 import { Logger } from '~/util/logger'
 import { getEventCacheKey, isRelay } from '~/util/tools'
-import { In } from 'typeorm'
+import { In, Not } from 'typeorm'
 import { isSnsEvent, Sns, SnsEvent } from '~/util/sns'
 
 const logger = new Logger('sqd:processor', config.logLevel)
@@ -355,8 +355,20 @@ function getParticipants(args: Json, _events: EventItem[], signer: string): stri
 }
 
 async function checkListingState(ctx: CommonContext, block: Block) {
+    const cancelledStatuses = await ctx.store.find(ListingStatus, {
+        where: { type: ListingStatusType.Cancelled },
+        relations: { listing: true },
+    })
+    const cancelledListingIds = [...new Set(cancelledStatuses.map((s) => s.listing.id))]
+
     const listings = await ctx.store.find(Listing, {
-        where: { type: In([ListingType.Auction, ListingType.Offer]), isActive: true },
+        where:
+            cancelledListingIds.length > 0
+                ? {
+                      type: In([ListingType.Auction, ListingType.Offer]),
+                      id: Not(In(cancelledListingIds)),
+                  }
+                : { type: In([ListingType.Auction, ListingType.Offer]) },
     })
     for (const listing of listings) {
         if (listing.data.isTypeOf === 'AuctionData') {
