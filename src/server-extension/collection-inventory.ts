@@ -20,8 +20,9 @@ import { PageInfo } from './types'
 import { TokenListingFilterInput } from './accounts-tokens-connection'
 
 export enum CollectionInventoryOrderByInput {
-    CREATED_AT = 'created_at',
+    DATE = 'created_at',
     TOKEN_NAME = 'token_name',
+    BEST_LISTING_HIGHEST_PRICE = 'best_listing_price',
 }
 
 export enum CollectionInventoryOrderInput {
@@ -80,8 +81,8 @@ class CollectionInventoryArgs {
     @Field(() => String, { nullable: true })
     after?: string
 
-    @Field(() => CollectionInventoryOrderByInput, { defaultValue: CollectionInventoryOrderByInput.CREATED_AT })
-    orderBy: CollectionInventoryOrderByInput = CollectionInventoryOrderByInput.CREATED_AT
+    @Field(() => CollectionInventoryOrderByInput, { defaultValue: CollectionInventoryOrderByInput.DATE })
+    orderBy: CollectionInventoryOrderByInput = CollectionInventoryOrderByInput.DATE
 
     @Field(() => CollectionInventoryOrderInput, { defaultValue: CollectionInventoryOrderInput.DESC })
     order: CollectionInventoryOrderInput = CollectionInventoryOrderInput.DESC
@@ -254,10 +255,12 @@ export class CollectionInventoryResolver {
         // Determine SQL column name and order direction for sorting
         const getSortColumn = (sortBy: CollectionInventoryOrderByInput): string => {
             switch (sortBy) {
-                case CollectionInventoryOrderByInput.CREATED_AT:
+                case CollectionInventoryOrderByInput.DATE:
                     return 'created_at'
                 case CollectionInventoryOrderByInput.TOKEN_NAME:
                     return 'token_name'
+                case CollectionInventoryOrderByInput.BEST_LISTING_HIGHEST_PRICE:
+                    return 'best_listing_price'
                 default:
                     return 'created_at'
             }
@@ -314,7 +317,8 @@ export class CollectionInventoryResolver {
                     0 AS sort_priority,
                     MIN(token.created_at) AS created_at,
                     MIN(token.token_id) AS token_id,
-                    MIN(token.name) AS token_name
+                    MIN(token.name) AS token_name,
+                    MAX(token.best_listing_price) AS best_listing_price
                 FROM token_account
                 INNER JOIN token ON token_account.token_id = token.id
                 INNER JOIN collection ON token.collection_id = collection.id
@@ -336,7 +340,8 @@ export class CollectionInventoryResolver {
                     1 AS sort_priority,
                     token.created_at AS created_at,
                     token.token_id AS token_id,
-                    token.name AS token_name
+                    token.name AS token_name,
+                    token.best_listing_price AS best_listing_price
                 FROM token_account
                 INNER JOIN token ON token_account.token_id = token.id
                 INNER JOIN collection ON token.collection_id = collection.id
@@ -353,11 +358,11 @@ export class CollectionInventoryResolver {
             ),
             -- merged: union groups and standalone tokens for unified ordering
             merged AS (
-                SELECT id, owned_count, sort_priority, created_at, token_id, token_name FROM groups_data
+                SELECT id, owned_count, sort_priority, created_at, token_id, token_name, best_listing_price FROM groups_data
                 UNION ALL
-                SELECT id, owned_count, sort_priority, created_at, token_id, token_name FROM ungrouped_tokens
+                SELECT id, owned_count, sort_priority, created_at, token_id, token_name, best_listing_price FROM ungrouped_tokens
             )
-            SELECT id, owned_count, sort_priority, created_at, token_id, token_name
+            SELECT id, owned_count, sort_priority, created_at, token_id, token_name, best_listing_price
             FROM merged
             WHERE 1=1 ${cursorCondition}
             ORDER BY sort_priority ASC, ${sortColumn} ${sortOrder}, id ASC
@@ -720,11 +725,14 @@ export class CollectionInventoryResolver {
             let orderValue: string = ''
             if (pageItem) {
                 switch (orderBy) {
-                    case CollectionInventoryOrderByInput.CREATED_AT:
+                    case CollectionInventoryOrderByInput.DATE:
                         orderValue = pageItem.created_at ? new Date(pageItem.created_at).toISOString() : ''
                         break
                     case CollectionInventoryOrderByInput.TOKEN_NAME:
                         orderValue = pageItem.token_name || ''
+                        break
+                    case CollectionInventoryOrderByInput.BEST_LISTING_HIGHEST_PRICE:
+                        orderValue = pageItem.best_listing_price != null ? String(pageItem.best_listing_price) : ''
                         break
                 }
             }
