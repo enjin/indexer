@@ -1,5 +1,14 @@
 import { throwFatalError } from '~/util/errors'
-import { Extrinsic, NominationPool, PoolMember, Token, TokenAccount, EarlyBirdMintEvent, Era } from '~/model'
+import {
+    Extrinsic,
+    NominationPool,
+    PoolMember,
+    Token,
+    TokenAccount,
+    EarlyBirdMintEvent,
+    Era,
+    UserInfusion,
+} from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
 import { SnsEvent } from '~/util/sns'
@@ -149,6 +158,31 @@ export async function minted(
     tokenAccount.updatedAt = new Date(block.timestamp ?? 0)
     await ctx.store.save(tokenAccount)
 
+    // Handle UserInfusion if the token has infusion
+    if (token.infusion > 0n) {
+        const infusionAmount = token.infusion * data.amount
+        const userInfusionId = `${recipient.id}-${token.id}`
+
+        let userInfusion = await ctx.store.findOne(UserInfusion, {
+            where: { id: userInfusionId },
+        })
+
+        if (userInfusion) {
+            // Add to existing infusion
+            userInfusion.amount += infusionAmount
+        } else {
+            // Create new UserInfusion
+            userInfusion = new UserInfusion({
+                id: userInfusionId,
+                account: recipient,
+                token: token,
+                amount: infusionAmount,
+            })
+        }
+
+        await ctx.store.save(userInfusion)
+    }
+
     if (data.collectionId === 1n) {
         const poolMember = await ctx.store.findOneBy<PoolMember>(PoolMember, {
             id: `${data.tokenId}-${data.recipient}`,
@@ -176,6 +210,7 @@ export async function minted(
 
     await QueueUtils.dispatchComputeMetadata({ id: token.id, type: 'token', traits: true })
     await QueueUtils.dispatchComputeStats(data.collectionId.toString())
+    await QueueUtils.dispatchComputeAccountStats(recipient.id)
 
     return [
         ...mappings.multiTokens.events.mintedEventModel(item.id, data, {

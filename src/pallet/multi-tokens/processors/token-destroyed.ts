@@ -12,6 +12,7 @@ import {
     TokenAccount,
     TokenRarity,
     TraitToken,
+    UserInfusion,
 } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { SnsEvent } from '~/util/sns'
@@ -58,6 +59,7 @@ export async function tokenDestroyed(
         tokenRarity,
         attributes,
         bids,
+        userInfusions,
     ] = await Promise.all([
         ctx.store.find(AccountTokenEvent, {
             where: {
@@ -163,6 +165,13 @@ export async function tokenDestroyed(
                 },
             },
         }),
+        ctx.store.find(UserInfusion, {
+            where: {
+                token: {
+                    id: token.id,
+                },
+            },
+        }),
     ])
 
     const events = accountTokenEvents.map((e: AccountTokenEvent): AccountTokenEvent => {
@@ -203,6 +212,7 @@ export async function tokenDestroyed(
         ctx.store.remove(listingSales),
         ctx.store.remove(listingStatus),
         ctx.store.remove(listingsMake),
+        ctx.store.remove(userInfusions),
         ctx.store.remove(listingTake),
         ctx.store.remove(royaltyCurrencies),
         ctx.store.remove(traitTokens),
