@@ -17,6 +17,7 @@ export enum EntityType {
     SYNC_COLLECTIONS = 'sync_collections',
     SYNC_ACCOUNTS = 'sync_accounts',
     SYNC_BALANCES = 'sync_balances',
+    FETCH_ACCOUNT_BALANCE = 'fetch_account_balance',
     SYNC_OFFERS = 'sync_offers',
     SYNC_VALIDATORS = 'sync_validators',
     SYNC_METADATA = 'sync_metadata',
@@ -100,6 +101,11 @@ export class RefreshEntityResolver {
                     })
                     QueueUtils.dispatchFetchBalances(publicKeys)
                 })()
+                break
+            case EntityType.FETCH_ACCOUNT_BALANCE:
+                for (const id of args.ids) {
+                    QueueUtils.dispatchFetchAccountBalance(id)
+                }
                 break
             case EntityType.LISTING:
                 QueueUtils.dispatchRefreshListings(args.ids)

@@ -1,6 +1,6 @@
 import { Job } from 'bullmq'
 import { ProcessorDef } from '~/worker/processors/processor.def'
-import { syncBalances } from '~/worker/jobs'
+import { fetchBalance, syncBalances } from '~/worker/jobs'
 import { JobsEnum } from '~/queue/constants'
 import { logDebug, logError } from '~/worker/utils'
 
@@ -9,6 +9,9 @@ export class BalancesProcessor implements ProcessorDef {
         switch (job.name as JobsEnum) {
             case JobsEnum.FETCH_BALANCES:
                 await syncBalances(job, job.data.ids)
+                break
+            case JobsEnum.FETCH_BALANCE:
+                await fetchBalance(job, job.data.id)
                 break
             default:
                 throw new Error(`${job.name} is not a valid job for this processor`)

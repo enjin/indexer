@@ -76,6 +76,23 @@ export function dispatchFetchBalances(ids: string[]): void {
         })
 }
 
+export async function dispatchFetchAccountBalance(id: string): Promise<void> {
+    const job = await BalancesQueue.getJob(`balances.${id}`)
+    if (job && job.id) {
+        await BalancesQueue.remove(job.id)
+    }
+    BalancesQueue.add(
+        JobsEnum.FETCH_BALANCE,
+        { id },
+        {
+            delay: 6000,
+            jobId: `balances.fetch-balance.${id}`,
+        }
+    ).catch(() => {
+        Logger.error('Failed to dispatch a job on balances queue', LOGGER_NAMESPACE)
+    })
+}
+
 export function dispatchFetchAccounts(ids: string[]): void {
     xxhasher
         .createId(ids)
