@@ -72,17 +72,17 @@ export async function burned(
     })
 
     // percentage of the total infusion to remove
-    if (totalTokenInfusion.toString() !== '0') {
-        const infusionToRemovePerUser = Big(infusionToRemove.toString()).div(totalTokenInfusion.toString()).toString()
-        const newUserInfusionsPromises = []
-        for (const tokenInfusion of tokenInfusions) {
-            tokenInfusion.amount = BigInt(
-                Big(tokenInfusion.amount.toString()).times(infusionToRemovePerUser).toString()
-            )
-            newUserInfusionsPromises.push(ctx.store.save(tokenInfusion))
-        }
-        await Promise.all(newUserInfusionsPromises)
-    }
+    // if (totalTokenInfusion.toString() !== '0') {
+    //     const infusionToRemovePerUser = Big(infusionToRemove.toString()).div(totalTokenInfusion.toString()).toString()
+    //     const newUserInfusionsPromises = []
+    //     for (const tokenInfusion of tokenInfusions) {
+    //         tokenInfusion.amount = BigInt(
+    //             Big(tokenInfusion.amount.toString()).times(infusionToRemovePerUser).toString()
+    //         )
+    //         newUserInfusionsPromises.push(ctx.store.save(tokenInfusion))
+    //     }
+    //     await Promise.all(newUserInfusionsPromises)
+    // }
 
     const snsEvent: SnsEvent = {
         id: item.id,
