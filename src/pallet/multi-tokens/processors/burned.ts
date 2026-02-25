@@ -87,7 +87,7 @@ export async function burned(
             await Promise.all(newUserInfusionsPromises)
         }
     } catch (error) {
-        ctx.log.error(`Error processing burned event ${item.id}: ${error}`)
+        ctx.log.error(`Error processing burned event ${item.id} : ${error}`)
     }
 
     const snsEvent: SnsEvent = {
