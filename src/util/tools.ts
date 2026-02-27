@@ -50,7 +50,8 @@ export function safeJsonString(data: Record<string, unknown>): string {
 }
 
 export function getSnsEventHash(name: string, body: Record<string, unknown>): string {
-    const { extrinsic, ...bodyWithoutExtrinsic } = body
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { extrinsic: _extrinsic, ...bodyWithoutExtrinsic } = body
     const content = JSON.stringify({ name, body: bodyWithoutExtrinsic }, (_key, value) =>
         typeof value === 'bigint' ? value.toString() : value
     )
