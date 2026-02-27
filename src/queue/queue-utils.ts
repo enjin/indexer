@@ -209,12 +209,14 @@ export async function dispatchComputeMetadata({
     force = false,
     allTokens = false,
     traits = false,
+    delay = 60000,
 }: {
     id: string
     type: 'token' | 'collection'
     force?: boolean
     allTokens?: boolean
     traits?: boolean
+    delay?: number
 }) {
     const job = await MetadataQueue.getJob(`metadata.${id}`)
     if (job && job.id) {
@@ -224,7 +226,7 @@ export async function dispatchComputeMetadata({
         JobsEnum.COMPUTE_METADATA,
         { id, type, force, allTokens, traits },
         {
-            delay: 60000,
+            delay,
             jobId: `metadata.${id}`,
         }
     ).catch(() => {
@@ -232,7 +234,7 @@ export async function dispatchComputeMetadata({
     })
 }
 
-export async function dispatchComputeTokenGroupMetadata(id: string): Promise<void> {
+export async function dispatchComputeTokenGroupMetadata(id: string, delay?: number): Promise<void> {
     const job = await MetadataQueue.getJob(`metadata.tokenGroup.${id}`)
     if (job && job.id) {
         await MetadataQueue.remove(job.id)
@@ -241,7 +243,7 @@ export async function dispatchComputeTokenGroupMetadata(id: string): Promise<voi
         JobsEnum.COMPUTE_TOKEN_GROUP_METADATA,
         { id },
         {
-            delay: 60000,
+            delay,
             jobId: `metadata.tokenGroup.${id}`,
         }
     ).catch(() => {
