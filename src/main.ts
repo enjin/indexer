@@ -32,7 +32,7 @@ import { calls, events } from '~/type'
 import { QueueUtils } from '~/queue'
 import { QueuesEnum } from '~/queue/constants'
 import { Logger } from '~/util/logger'
-import { getEventCacheKey, isRelay } from '~/util/tools'
+import { getSnsEventHash, isRelay } from '~/util/tools'
 import { In } from 'typeorm'
 import { isSnsEvent, Sns, SnsEvent } from '~/util/sns'
 
@@ -97,7 +97,7 @@ async function bootstrap() {
                         if (a) accountTokenEvents.push(a)
                         if (s) {
                             ctx.log.info(`Processing SNS event ${s.id} - ${block.header.height} - ${eventIndex}`)
-                            const eventCacheKey = getEventCacheKey(block.header.height, eventIndex)
+                            const eventCacheKey = getSnsEventHash(s.name, s.body)
                             const cachedSnsEvent = snsEventsCache.get(eventCacheKey)
 
                             if (!cachedSnsEvent) {
@@ -107,7 +107,7 @@ async function bootstrap() {
                                 snsEventsCache.set(eventCacheKey, {
                                     eventId: s.id,
                                     blockHash: block.header.hash,
-                                    expiresAt: Date.now() + 120_000,
+                                    expiresAt: Date.now() + 30_000,
                                 })
                                 snsEvents.push(s)
                             } else if (cachedSnsEvent.blockHash !== block.header.hash) {
