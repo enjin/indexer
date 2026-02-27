@@ -50,10 +50,9 @@ export function safeJsonString(data: Record<string, unknown>): string {
 }
 
 export function getSnsEventHash(name: string, body: Record<string, unknown>): string {
-    const { extrinsic: _extrinsic, ...bodyWithoutExtrinsic } = body
-    const content = JSON.stringify(
-        { name, body: bodyWithoutExtrinsic },
-        (_key, value) => (typeof value === 'bigint' ? value.toString() : value)
+    const { extrinsic, ...bodyWithoutExtrinsic } = body
+    const content = JSON.stringify({ name, body: bodyWithoutExtrinsic }, (_key, value) =>
+        typeof value === 'bigint' ? value.toString() : value
     )
     return createHash('sha256').update(content).digest('hex')
 }
