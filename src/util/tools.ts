@@ -2,6 +2,7 @@ import * as ss58 from '@subsquid/ss58'
 import { decode } from '@subsquid/ss58'
 import { isHex, stringToHex } from '@polkadot/util'
 import { HexString } from '@polkadot/util/types'
+import { createHash } from 'crypto'
 import config from '~/util/config'
 
 export function isMainnet(): boolean {
@@ -48,6 +49,11 @@ export function safeJsonString(data: Record<string, unknown>): string {
     return JSON.stringify(data, (key, value) => (typeof value === 'bigint' ? value.toString() : value))
 }
 
-export function getEventCacheKey(height: number, eventIndex: number): string {
-    return `${config.chainName}.event:${height}:${eventIndex}`
+export function getSnsEventHash(name: string, body: Record<string, unknown>): string {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { extrinsic: _extrinsic, ...bodyWithoutExtrinsic } = body
+    const content = JSON.stringify({ name, body: bodyWithoutExtrinsic }, (_key, value) =>
+        typeof value === 'bigint' ? value.toString() : value
+    )
+    return createHash('sha256').update(content).digest('hex')
 }
