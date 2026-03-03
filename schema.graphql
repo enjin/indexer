@@ -830,6 +830,7 @@ type MetadataMeta {
   version: Float!
   language: String
   sensitiveContent: String
+  alternate: [String]
 }
 
 type MetadataMedia {

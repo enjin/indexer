@@ -5,6 +5,7 @@ export class MetadataMeta {
     private _version!: number
     private _language!: string | undefined | null
     private _sensitiveContent!: string | undefined | null
+    private _alternate!: (string | undefined | null)[] | undefined | null
 
     constructor(props?: Partial<Omit<MetadataMeta, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
@@ -12,6 +13,7 @@ export class MetadataMeta {
             this._version = marshal.float.fromJSON(json.version)
             this._language = json.language == null ? undefined : marshal.string.fromJSON(json.language)
             this._sensitiveContent = json.sensitiveContent == null ? undefined : marshal.string.fromJSON(json.sensitiveContent)
+            this._alternate = json.alternate == null ? undefined : marshal.fromList(json.alternate, val => val == null ? undefined : marshal.string.fromJSON(val))
         }
     }
 
@@ -40,11 +42,20 @@ export class MetadataMeta {
         this._sensitiveContent = value
     }
 
+    get alternate(): (string | undefined | null)[] | undefined | null {
+        return this._alternate
+    }
+
+    set alternate(value: (string | undefined | null)[] | undefined | null) {
+        this._alternate = value
+    }
+
     toJSON(): object {
         return {
             version: this.version,
             language: this.language,
             sensitiveContent: this.sensitiveContent,
+            alternate: this.alternate,
         }
     }
 }
