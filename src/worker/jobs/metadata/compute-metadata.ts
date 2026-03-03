@@ -88,6 +88,8 @@ export async function computeMetadata(job: Job) {
 
             let uriAttribute = null
 
+            uriAttribute = collectionUriAttribute
+
             if (collectionUriAttribute && collectionUriAttribute.value.includes('{id}')) {
                 uriAttribute = {
                     ...collectionUriAttribute,
