@@ -3,7 +3,7 @@ import https from 'https'
 import Queue from 'bullmq'
 import mime from 'mime-types'
 import { safeString } from './tools'
-import { Attribute, Metadata, MetadataMedia } from '~/model'
+import { Attribute, Metadata, MetadataMedia, MetadataMeta } from '~/model'
 import config from '~/util/config'
 import { validateUrlForSSRF } from './ssrf-protection'
 
@@ -173,6 +173,14 @@ export function metadataParser(
         keywords: string[] | undefined
         properties: unknown
         attributes: unknown
+        meta:
+            | {
+                  version: string
+                  language: string
+                  alternate: string[]
+              }
+            | null
+            | undefined
     } | null
 ): Metadata {
     const supportedProps = config.metadataSupportedProps
@@ -221,6 +229,14 @@ export function metadataParser(
         if (Array.isArray(externalMetadata.attributes)) {
             metadata.attributes = parseArrayAttributes(externalMetadata.attributes)
         }
+    }
+
+    if (externalMetadata?.meta && supportedProps.includes('meta')) {
+        metadata.meta = new MetadataMeta({
+            version: parseFloat(externalMetadata.meta.version),
+            language: externalMetadata.meta.language,
+            alternate: externalMetadata.meta.alternate,
+        })
     }
 
     if (attribute.key === 'name') {
