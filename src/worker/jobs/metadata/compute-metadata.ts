@@ -86,7 +86,7 @@ export async function computeMetadata(job: Job) {
                 await job.updateProgress(15)
             }
 
-            let uriAttribute = null
+            let uriAttribute = null 
 
             uriAttribute = collectionUriAttribute
 
