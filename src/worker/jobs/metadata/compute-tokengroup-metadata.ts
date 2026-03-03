@@ -2,6 +2,7 @@ import { Attribute, Metadata, TokenGroup } from '~/model'
 import { connectionManager } from '~/contexts'
 import { fetchMetadata, metadataParser } from '~/util/metadata'
 import { Job } from 'bullmq'
+import { IsNull } from 'typeorm'
 
 type MetadataType = {
     id: string
@@ -28,6 +29,7 @@ export async function computeTokenGroupMetadata(job: Job) {
                 },
                 relations: {
                     attributes: true,
+                    collection: true,
                 },
             })
 
@@ -41,7 +43,38 @@ export async function computeTokenGroupMetadata(job: Job) {
 
             attributes = resource.attributes ?? []
 
-            let uriAttribute = attributes.find((a) => a.key === 'uri') ?? null
+            // Inherit URI from collection if the group has no own uri attribute.
+            // When the collection URI contains {id}, replace it with <group_id>-group.
+            // A group's own on-chain uri attribute always takes precedence.
+            let collectionUriAttribute: Attribute | null = null
+            if (resource.collection) {
+                collectionUriAttribute = await em.findOne(Attribute, {
+                    where: {
+                        collection: { id: resource.collection.id },
+                        key: 'uri',
+                        token: IsNull(),
+                        tokenGroup: IsNull(),
+                    },
+                })
+            }
+
+            let uriAttribute: Attribute | null = null
+
+            if (collectionUriAttribute) {
+                const inheritedUri = collectionUriAttribute.value.includes('{id}')
+                    ? collectionUriAttribute.value.replace('{id}', `${resource.id}-group`)
+                    : collectionUriAttribute.value
+                uriAttribute = { ...collectionUriAttribute, value: inheritedUri }
+            }
+
+            // On-chain uri attribute on the group overrides the inherited collection URI
+            const ownUriAttribute = attributes.find((a) => a.key === 'uri') ?? null
+            if (ownUriAttribute) {
+                const resolvedValue = ownUriAttribute.value.includes('{id}')
+                    ? ownUriAttribute.value.replace('{id}', `${resource.id}-group`)
+                    : ownUriAttribute.value
+                uriAttribute = { ...ownUriAttribute, value: resolvedValue }
+            }
 
             let externalMetadata: any = {}
             let metadata = new Metadata()
@@ -90,7 +123,7 @@ export async function computeTokenGroupMetadata(job: Job) {
                 await job.updateProgress(80)
             }
 
-            // add other attributes
+            // On-chain non-uri attributes are applied last, taking precedence over inherited metadata
             attributes
                 .filter((a) => a.key !== 'uri')
                 .forEach(async (a) => {
