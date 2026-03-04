@@ -27,11 +27,7 @@ function toKindFormat(input: EncodeCallInput): Record<string, unknown> {
     }
 }
 
-export async function encodeCall(
-    input: EncodeCallInput,
-    network: Network,
-    specVersion: number
-): Promise<string> {
+export async function encodeCall(input: EncodeCallInput, network: Network, specVersion: number): Promise<string> {
     const runtime = await getRuntimeCached(network, specVersion)
     const callData = toKindFormat(input)
     const encoded = runtime.encodeCall(callData as unknown as DecodedCall)
