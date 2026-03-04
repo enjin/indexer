@@ -146,12 +146,12 @@ function validateEncodeRequest(body: unknown): { valid: true; data: EncodeReques
         valid: true,
         data: {
             call: {
-                pallet: call.pallet as string,
-                name: call.name as string,
+                pallet: call.pallet,
+                name: call.name,
                 args: call.args as Record<string, unknown> | undefined,
             },
-            network: req.network as string | undefined,
-            spec_version: req.spec_version as number | undefined,
+            network: req.network,
+            spec_version: req.spec_version,
         },
     }
 }
