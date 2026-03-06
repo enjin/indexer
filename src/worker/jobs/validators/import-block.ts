@@ -87,7 +87,15 @@ export async function importBlock(job: Job, blockNumber: number, toBlock?: numbe
                 blockHash: hash,
                 existentialDeposit: existentialDeposit.toBigInt(),
                 timestamp: new Date(timestamp),
-                validator: decodeAddress(header.author?.toString() ?? '') ?? null,
+                validator: (() => {
+                    const author = header.author?.toString()
+                    if (!author || author.length === 0) return null
+                    try {
+                        return decodeAddress(author)
+                    } catch {
+                        return null
+                    }
+                })(),
                 marketplace: new Marketplace({
                     protocolFee: 25_000000,
                     listingActiveDelay: Number(listingActiveDelay.toString()),

@@ -396,7 +396,12 @@ export function dispatchSyncChain(fromBlock?: number, toBlock?: number): void {
     })
 }
 
-export function dispatchImportBlock(blockNumber: number, toBlock?: number): void {
+export async function dispatchImportBlock(blockNumber: number, toBlock?: number): Promise<void> {
+    const jobId = `chain.import.${blockNumber}-${toBlock ?? blockNumber}`
+    const job = await ValidatorsQueue.getJob(jobId)
+    if (job && job.id) {
+        await ValidatorsQueue.remove(job.id)
+    }
     ValidatorsQueue.add(
         JobsEnum.IMPORT_BLOCK,
         {
@@ -405,7 +410,7 @@ export function dispatchImportBlock(blockNumber: number, toBlock?: number): void
         },
         {
             delay: 0,
-            jobId: `chain.import.${blockNumber}-${toBlock ?? blockNumber}`,
+            jobId,
         }
     ).catch(() => {
         Logger.error('Failed to dispatch import block', LOGGER_NAMESPACE)
