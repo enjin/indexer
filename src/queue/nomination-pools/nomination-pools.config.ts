@@ -13,7 +13,6 @@ const config: QueueConfigType = {
     queueName: QueuesEnum.NOMINATION_POOLS,
     defaultJobOptions: {
         attempts: 8,
-        maxStalledCount: 3,
         backoff: {
             type: 'exponential',
             delay: 2000,

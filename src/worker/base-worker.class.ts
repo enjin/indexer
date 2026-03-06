@@ -29,6 +29,7 @@ export class BaseWorker {
             connection,
             useWorkerThreads: options.useWorkerThreads ?? true,
             concurrency: options.concurrency ?? 5,
+            maxStalledCount: 3, // Allow jobs to recover from up to 3 Redis blips before failing permanently
             settings: {
                 lockDuration: 1800000, // 30 minutes to handle long-running compute-stats queries
                 stalledInterval: 60000, // Check for stalled jobs every 60 seconds

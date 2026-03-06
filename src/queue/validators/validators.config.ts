@@ -13,7 +13,6 @@ const config: QueueConfigType = {
     queueName: QueuesEnum.VALIDATORS,
     defaultJobOptions: {
         attempts: 8,
-        maxStalledCount: 3,
         backoff: {
             type: 'exponential',
             delay: 2000,
