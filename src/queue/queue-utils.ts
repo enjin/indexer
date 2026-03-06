@@ -396,6 +396,22 @@ export function dispatchSyncChain(fromBlock?: number, toBlock?: number): void {
     })
 }
 
+export function dispatchImportBlock(blockNumber: number, toBlock?: number): void {
+    ValidatorsQueue.add(
+        JobsEnum.IMPORT_BLOCK,
+        {
+            blockNumber,
+            toBlock,
+        },
+        {
+            delay: 0,
+            jobId: `chain.import.${blockNumber}-${toBlock ?? blockNumber}`,
+        }
+    ).catch(() => {
+        Logger.error('Failed to dispatch import block', LOGGER_NAMESPACE)
+    })
+}
+
 export function dispatchSyncAccounts(): void {
     AccountsQueue.add(
         JobsEnum.SYNC_ALL_ACCOUNTS,

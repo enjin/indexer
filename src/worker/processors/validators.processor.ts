@@ -1,7 +1,7 @@
 import { Job } from 'bullmq'
 import { ProcessorDef } from '~/worker/processors/processor.def'
 import { JobsEnum } from '~/queue/constants'
-import { computeValidators, syncValidators, syncChain } from '~/worker/jobs'
+import { computeValidators, syncValidators, syncChain, importBlock } from '~/worker/jobs'
 import { logDebug, logError } from '~/worker/utils'
 import { syncActiveValidators } from '../jobs/validators/sync-active-validators'
 
@@ -19,6 +19,9 @@ export class ValidatorsProcessor implements ProcessorDef {
                 break
             case JobsEnum.SYNC_ACTIVE_VALIDATORS:
                 await syncActiveValidators(job)
+                break
+            case JobsEnum.IMPORT_BLOCK:
+                await importBlock(job, job.data.blockNumber, job.data.toBlock)
                 break
             default:
                 throw new Error(`${job.name} is not a valid job for this processor`)
