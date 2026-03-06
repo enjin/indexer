@@ -184,7 +184,7 @@ export class BlockDetailsResolver {
         const blockHash = chainInfo?.blockHash ?? (rawExtrinsics[0]?.e_block_hash as string | undefined) ?? null
 
         if (!blockHash) {
-            QueueUtils.dispatchImportBlock(args.blockNumber)
+            await QueueUtils.dispatchImportBlock(args.blockNumber)
             return null
         }
 

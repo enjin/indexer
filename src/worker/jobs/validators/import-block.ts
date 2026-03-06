@@ -1,4 +1,5 @@
 import { Job } from 'bullmq'
+import { In } from 'typeorm'
 import { ChainInfo, Marketplace } from '~/model'
 import { connectionManager } from '~/contexts'
 import Rpc from '~/util/rpc'
@@ -50,7 +51,7 @@ export async function importBlock(job: Job, blockNumber: number, toBlock?: numbe
         const blockNumbers = Array.from({ length: batchCount }, (_, j) => batchStart + j)
 
         const existingBlocks = await em.getRepository(ChainInfo).find({
-            where: blockNumbers.map((n) => ({ blockNumber: n })),
+            where: { blockNumber: In(blockNumbers) },
             select: ['blockNumber'],
         })
         const existingSet = new Set(existingBlocks.map((b) => b.blockNumber))
