@@ -30,7 +30,7 @@ export class BaseWorker {
             useWorkerThreads: options.useWorkerThreads ?? true,
             concurrency: options.concurrency ?? 5,
             settings: {
-                lockDuration: 300000, // 5 minutes to handle long-running metadata fetches
+                lockDuration: 1800000, // 30 minutes to handle long-running compute-stats queries
                 stalledInterval: 60000, // Check for stalled jobs every 60 seconds
                 backoffStrategy: (attemptsMade: number) => {
                     // Custom retry delays: 3s, 15s, 60s, 150s, 300s, 600s
