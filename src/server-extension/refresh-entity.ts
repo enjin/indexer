@@ -122,7 +122,7 @@ export class RefreshEntityResolver {
             case EntityType.COMPUTE_METADATA:
                 for (const id of args.ids) {
                     const resourceType = id.includes('-') ? 'token' : 'collection'
-                    QueueUtils.dispatchComputeMetadata({ id: id, type: resourceType, allTokens: true, force: true })
+                    QueueUtils.dispatchComputeMetadata({ id: id, type: resourceType, allTokens: false, force: true })
                 }
                 break
         }
