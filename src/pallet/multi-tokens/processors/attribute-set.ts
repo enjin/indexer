@@ -141,7 +141,7 @@ export async function attributeSet(
         await QueueUtils.dispatchComputeMetadata({
             id: collection.id,
             type: 'collection',
-            allTokens: true,
+            allTokens: false,
             traits: true,
             delay: 10000,
         })
