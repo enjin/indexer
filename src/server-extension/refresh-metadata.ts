@@ -140,7 +140,7 @@ export class RefreshMetadataResolver {
                     id: resource.id,
                     type: item.type === RefreshMetadataType.TOKEN ? 'token' : 'collection',
                     force: true,
-                    allTokens: item.type === RefreshMetadataType.COLLECTION,
+                    allTokens: false,
                     traits: true,
                 })
 
