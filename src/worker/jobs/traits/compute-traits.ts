@@ -28,12 +28,13 @@ export async function computeTraits(job: Job, id: string) {
 
     await job.updateProgress(20)
 
-    await em.query(
-        `DELETE FROM trait_token USING trait WHERE trait.id = trait_token.trait_id AND trait.collection_id = $1`,
-        [id]
-    )
-
-    await em.query(`DELETE FROM trait WHERE collection_id = $1`, [id])
+    await em.transaction(async (txEm) => {
+        await txEm.query(
+            `DELETE FROM trait_token USING trait WHERE trait.id = trait_token.trait_id AND trait.collection_id = $1`,
+            [id]
+        )
+        await txEm.query(`DELETE FROM trait WHERE collection_id = $1`, [id])
+    })
 
     await job.updateProgress(30)
 

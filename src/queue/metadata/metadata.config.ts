@@ -13,6 +13,7 @@ const config: QueueConfigType = {
     queueName: QueuesEnum.METADATA,
     defaultJobOptions: {
         attempts: 6,
+        maxStalledCount: 3,
         backoff: {
             type: 'custom',
         },

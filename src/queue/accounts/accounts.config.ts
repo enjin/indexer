@@ -13,6 +13,7 @@ const config: QueueConfigType = {
     queueName: QueuesEnum.ACCOUNTS,
     defaultJobOptions: {
         attempts: 8,
+        maxStalledCount: 3,
         backoff: {
             type: 'exponential',
             delay: 2000,
