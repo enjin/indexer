@@ -35,6 +35,7 @@ import { Logger } from '~/util/logger'
 import { getSnsEventHash, isRelay } from '~/util/tools'
 import { In } from 'typeorm'
 import { isSnsEvent, Sns, SnsEvent } from '~/util/sns'
+import { queueMissingBlocks } from '~/migration/queue-missing-blocks'
 
 const logger = new Logger('sqd:processor', config.logLevel)
 
@@ -48,6 +49,11 @@ async function bootstrap() {
     await dataService.initialize()
 
     logger.info(`last block number on config: ${dataService.lastBlockNumber}`)
+
+    // Passively queue any blocks missing from ChainInfo so they get backfilled
+    void queueMissingBlocks().catch((err: unknown) => {
+        logger.warn(`queue-missing-blocks migration failed: ${err}`)
+    })
 
     const snsEvents: SnsEvent[] = []
     let snsEventsCache: Map<string, { eventId: string; blockHash: string; expiresAt: number }> = new Map()
