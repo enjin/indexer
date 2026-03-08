@@ -29,9 +29,16 @@ export class BaseWorker {
             connection,
             useWorkerThreads: options.useWorkerThreads ?? true,
             concurrency: options.concurrency ?? 5,
+            // Fail job after N starts (including after Redis restart / stall recovery) to break restart cycle
+            maxStartedAttempts: 5,
+            // After this many stall recoveries, move job to failed instead of re-queuing
+            maxStalledCount: 2,
+            lockDuration: 300000, // 5 minutes to handle long-running metadata fetches
+            lockRenewTime: 150000, // Renew lock halfway so long jobs are not marked stalled
+            stalledInterval: 60000, // Check for stalled jobs every 60 seconds
             settings: {
-                lockDuration: 300000, // 5 minutes to handle long-running metadata fetches
-                stalledInterval: 60000, // Check for stalled jobs every 60 seconds
+                lockDuration: 300000,
+                stalledInterval: 60000,
                 backoffStrategy: (attemptsMade: number) => {
                     // Custom retry delays: 3s, 15s, 60s, 150s, 300s, 600s
                     const delays = [3000, 15000, 60000, 150000, 300000, 600000]
