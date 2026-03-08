@@ -23,14 +23,16 @@ export async function computeAccountStats(job: Job) {
             .select('COUNT(*)', 'totalCollections')
             .from('collection', 'c')
             .where('c.owner_id = :accountId', { accountId })
-            .getRawOne<{ totalCollections: string }>(),
+            .getRawOne<{ totalCollections: string }>()
+            .then((r: { totalCollections: string } | undefined) => r ?? { totalCollections: '0' }),
         em
             .createQueryBuilder()
             .select('COUNT(*)', 'totalTokens')
             .from('token_account', 'ta')
             .where('ta.account_id = :accountId', { accountId })
             .andWhere("ta.collection_id != '1'")
-            .getRawOne<{ totalTokens: string }>(),
+            .getRawOne<{ totalTokens: string }>()
+            .then((r: { totalTokens: string } | undefined) => r ?? { totalTokens: '0' }),
         em
             .createQueryBuilder()
             .select('COALESCE(SUM(ls.amount * ls.price), 0)', 'volume')
@@ -40,7 +42,8 @@ export async function computeAccountStats(job: Job) {
                 { offerType: 'Offer' }
             )
             .andWhere('ls.buyer_id = :accountId', { accountId })
-            .getRawOne<{ volume: string }>(),
+            .getRawOne<{ volume: string }>()
+            .then((r: { volume: string } | undefined) => r ?? { volume: '0' }),
         em
             .createQueryBuilder()
             .select('COALESCE(SUM(ls.amount * ls.price), 0)', 'volume')
@@ -48,7 +51,8 @@ export async function computeAccountStats(job: Job) {
             .innerJoin('listing', 'l', 'ls.listing_id = l.id')
             .where('l.type = :offerType', { offerType: 'Offer' })
             .andWhere('l.seller_id = :accountId', { accountId })
-            .getRawOne<{ volume: string }>(),
+            .getRawOne<{ volume: string }>()
+            .then((r: { volume: string } | undefined) => r ?? { volume: '0' }),
         em
             .createQueryBuilder()
             .select(
@@ -60,13 +64,15 @@ export async function computeAccountStats(job: Job) {
             .where('ta.account_id = :accountId', { accountId })
             .andWhere("ta.collection_id != '1'")
             .andWhere("c.stats->>'floorPrice' IS NOT NULL")
-            .getRawOne<{ tokensValue: string }>(),
+            .getRawOne<{ tokensValue: string }>()
+            .then((r: { tokensValue: string } | undefined) => r ?? { tokensValue: '0' }),
         em
             .createQueryBuilder()
             .select('COALESCE(SUM(amount), 0)', 'totalInfused')
             .from('user_infusion', 'ui')
             .where('ui.account_id = :accountId', { accountId })
-            .getRawOne<{ totalInfused: string }>(),
+            .getRawOne<{ totalInfused: string }>()
+            .then((r: { totalInfused: string } | undefined) => r ?? { totalInfused: '0' }),
     ])
 
     const volume = Number(volumeBuy || 0) + Number(volumeOffer || 0)
