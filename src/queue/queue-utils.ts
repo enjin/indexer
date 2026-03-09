@@ -12,11 +12,17 @@ import {
 import { JobsEnum } from '~/queue/constants'
 import { xxhasher } from '~/util/hasher'
 import { match } from 'ts-pattern'
-import { type Queue } from 'bullmq'
+import { type Queue, type Job } from 'bullmq'
 import { QueueType } from '~/queue/types'
 import { Logger } from '~/util/logger'
 
 const LOGGER_NAMESPACE = 'sqd:queue'
+
+async function shouldReplaceJob(job: Job | undefined): Promise<boolean> {
+    if (!job?.id) return false
+    const notValid = (await job.isDelayed()) || (await job.isCompleted())
+    return notValid
+}
 
 export async function pauseQueue(type: QueueType): Promise<void> {
     const queue = getQueueByType(type)
@@ -77,8 +83,8 @@ export function dispatchFetchBalances(ids: string[]): void {
 }
 
 export async function dispatchFetchAccountBalance(id: string): Promise<void> {
-    const job = await BalancesQueue.getJob(`balances.${id}`)
-    if (job && job.id) {
+    const job = await BalancesQueue.getJob(`balances.fetch-balance.${id}`)
+    if (job?.id && (await shouldReplaceJob(job))) {
         await BalancesQueue.remove(job.id)
     }
     BalancesQueue.add(
@@ -118,7 +124,7 @@ export function dispatchFetchExtra(ids: string[]): void {
         .createId(ids)
         .then(async (hashedIds) => {
             const job = await CollectionsQueue.getJob(`collections.extra.${hashedIds}`)
-            if (job && job.id) {
+            if (job?.id && (await shouldReplaceJob(job))) {
                 await CollectionsQueue.remove(job.id)
             }
             CollectionsQueue.add(
@@ -154,7 +160,7 @@ export function dispatchComputeCollections(): void {
 
 export async function dispatchComputeStats(id: string): Promise<void> {
     const job = await CollectionsQueue.getJob(`collections.stats.${id}`)
-    if (job && job.id) {
+    if (job?.id && (await shouldReplaceJob(job))) {
         await CollectionsQueue.remove(job.id)
     }
     CollectionsQueue.add(
@@ -171,7 +177,7 @@ export async function dispatchComputeStats(id: string): Promise<void> {
 
 export async function dispatchComputeRarity({ id }: { id: string; delay?: number }): Promise<void> {
     const job = await TokensQueue.getJob(`tokens.rarity.${id}`)
-    if (job && job.id) {
+    if (job?.id && (await shouldReplaceJob(job))) {
         await TokensQueue.remove(job.id)
     }
     TokensQueue.add(
@@ -188,7 +194,7 @@ export async function dispatchComputeRarity({ id }: { id: string; delay?: number
 
 export async function dispatchComputeTraits(id: string): Promise<void> {
     const job = await TraitsQueue.getJob(`traits.${id}`)
-    if (job && job.id) {
+    if (job?.id && (await shouldReplaceJob(job))) {
         await TraitsQueue.remove(job.id)
     }
     TraitsQueue.add(
@@ -219,7 +225,7 @@ export async function dispatchComputeMetadata({
     delay?: number
 }) {
     const job = await MetadataQueue.getJob(`metadata.${id}`)
-    if (job && job.id) {
+    if (job?.id && (await shouldReplaceJob(job))) {
         await MetadataQueue.remove(job.id)
     }
     MetadataQueue.add(
@@ -236,7 +242,7 @@ export async function dispatchComputeMetadata({
 
 export async function dispatchComputeTokenGroupMetadata(id: string, delay?: number): Promise<void> {
     const job = await MetadataQueue.getJob(`metadata.tokenGroup.${id}`)
-    if (job && job.id) {
+    if (job?.id && (await shouldReplaceJob(job))) {
         await MetadataQueue.remove(job.id)
     }
     MetadataQueue.add(
@@ -305,7 +311,7 @@ export function dispatchSyncCollectionTransfer(id: string): void {
 
 export async function dispatchComputeValidators(): Promise<void> {
     const job = await ValidatorsQueue.getJob('validators.all')
-    if (job && job.id) {
+    if (job?.id && (await shouldReplaceJob(job))) {
         await ValidatorsQueue.remove(job.id)
     }
     ValidatorsQueue.add(
@@ -322,7 +328,7 @@ export async function dispatchComputeValidators(): Promise<void> {
 
 export async function dispatchSyncTokens(): Promise<void> {
     const job = await TokensQueue.getJob('tokens.supply.all')
-    if (job && job.id) {
+    if (job?.id && (await shouldReplaceJob(job))) {
         await TokensQueue.remove(job.id)
     }
     TokensQueue.add(
@@ -365,7 +371,7 @@ export function dispatchRefreshPool(id: string): void {
 
 export async function dispatchSyncValidators(): Promise<void> {
     const job = await ValidatorsQueue.getJob('validators.sync.all')
-    if (job && job.id) {
+    if (job?.id && (await shouldReplaceJob(job))) {
         await ValidatorsQueue.remove(job.id)
     }
     ValidatorsQueue.add(
@@ -515,7 +521,7 @@ export function dispatchComputePoolOffers(id: string): void {
 
 export async function dispatchComputeAccountStats(id: string): Promise<void> {
     const job = await AccountsQueue.getJob(`accounts.compute-stats.${id}`)
-    if (job && job.id) {
+    if (job?.id && (await shouldReplaceJob(job))) {
         await AccountsQueue.remove(job.id)
     }
     AccountsQueue.add(
