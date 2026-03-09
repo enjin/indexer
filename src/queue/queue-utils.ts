@@ -20,7 +20,7 @@ const LOGGER_NAMESPACE = 'sqd:queue'
 
 async function shouldReplaceJob(job: Job | undefined): Promise<boolean> {
     if (!job?.id) return false
-    const notValid = (await job.isDelayed()) || (await job.isCompleted())
+    const notValid = (await job.isDelayed()) || (await job.isWaiting())
     return notValid
 }
 
