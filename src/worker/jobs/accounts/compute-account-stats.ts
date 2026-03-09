@@ -37,10 +37,7 @@ export async function computeAccountStats(job: Job) {
             .createQueryBuilder()
             .select('COALESCE(SUM(ls.amount * ls.price), 0)', 'volume')
             .from('listing_sale', 'ls')
-            .where(
-                'ls.listing_id NOT IN (SELECT id FROM listing WHERE type = :offerType)',
-                { offerType: 'Offer' }
-            )
+            .where('ls.listing_id NOT IN (SELECT id FROM listing WHERE type = :offerType)', { offerType: 'Offer' })
             .andWhere('ls.buyer_id = :accountId', { accountId })
             .getRawOne<{ volume: string }>()
             .then((r: { volume: string } | undefined) => r ?? { volume: '0' }),
@@ -55,10 +52,7 @@ export async function computeAccountStats(job: Job) {
             .then((r: { volume: string } | undefined) => r ?? { volume: '0' }),
         em
             .createQueryBuilder()
-            .select(
-                "COALESCE(SUM((c.stats->>'floorPrice')::numeric * ta.total_balance::numeric), 0)",
-                'tokensValue'
-            )
+            .select("COALESCE(SUM((c.stats->>'floorPrice')::numeric * ta.total_balance::numeric), 0)", 'tokensValue')
             .from('token_account', 'ta')
             .innerJoin('collection', 'c', 'ta.collection_id = c.id')
             .where('ta.account_id = :accountId', { accountId })
