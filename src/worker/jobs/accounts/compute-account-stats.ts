@@ -9,48 +9,74 @@ export async function computeAccountStats(job: Job) {
 
     const accountId = job.data.id
 
-    const data = await em
-        .createQueryBuilder()
-        .select('account.stats', 'stats')
-        .addSelect('COALESCE(collection_count.count, 0)', 'totalCollections')
-        .addSelect('COALESCE(token_count.count, 0)', 'totalTokens')
-        .addSelect('COALESCE(volume_sum.volume, 0) + COALESCE(volume_sum_offer.volume, 0)', 'volume')
-        .addSelect('COALESCE(tokens_value_sum.tokensValue, 0)', 'tokensValue')
-        .addSelect('COALESCE(total_infused_sum.totalInfused, 0)', 'totalInfused')
-        .from(Account, 'account')
-        .leftJoin(`(SELECT COUNT(*) as count FROM collection WHERE owner_id = :accountId)`, 'collection_count', '1=1')
-        .leftJoin(
-            `(SELECT COUNT(*) as count FROM token_account WHERE account_id = :accountId AND collection_id NOT IN ('1'))`,
-            'token_count',
-            '1=1'
-        )
-        .leftJoin(
-            `(SELECT COALESCE(SUM(amount * price), 0) as volume FROM listing_sale WHERE listing_id NOT IN (SELECT id FROM listing WHERE type = 'Offer') AND buyer_id = :accountId)`,
-            'volume_sum',
-            '1=1'
-        )
-        .leftJoin(
-            `(SELECT COALESCE(SUM(ls.amount * ls.price), 0) as volume FROM listing_sale as ls INNER JOIN listing as l ON ls.listing_id = l.id WHERE l.type = 'Offer' AND l.seller_id = :accountId)`,
-            'volume_sum_offer',
-            '1=1'
-        )
-        .leftJoin(
-            `(SELECT COALESCE(SUM((collection.stats->>'floorPrice')::numeric * token_account.total_balance::numeric), 0) as tokensValue 
-              FROM token_account 
-              INNER JOIN collection ON token_account.collection_id = collection.id 
-              WHERE token_account.account_id = :accountId 
-              AND token_account.collection_id NOT IN ('1')
-              AND collection.stats->>'floorPrice' IS NOT NULL)`,
-            'tokens_value_sum',
-            '1=1'
-        )
-        .leftJoin(
-            `(SELECT COALESCE(SUM(amount), 0) as totalInfused FROM user_infusion WHERE account_id = :accountId)`,
-            'total_infused_sum',
-            '1=1'
-        )
-        .where('account.id = :accountId', { accountId })
-        .getRawOne()
+    // Run aggregations in parallel to avoid one heavy multi-join query stalling the job
+    const [
+        { totalCollections },
+        { totalTokens },
+        { volume: volumeBuy },
+        { volume: volumeOffer },
+        { tokensValue: tokensValueSum },
+        { totalInfused: totalInfusedSum },
+    ] = await Promise.all([
+        em
+            .createQueryBuilder()
+            .select('COUNT(*)', 'totalCollections')
+            .from('collection', 'c')
+            .where('c.owner_id = :accountId', { accountId })
+            .getRawOne<{ totalCollections: string }>()
+            .then((r: { totalCollections: string } | undefined) => r ?? { totalCollections: '0' }),
+        em
+            .createQueryBuilder()
+            .select('COUNT(*)', 'totalTokens')
+            .from('token_account', 'ta')
+            .where('ta.account_id = :accountId', { accountId })
+            .andWhere("ta.collection_id != '1'")
+            .getRawOne<{ totalTokens: string }>()
+            .then((r: { totalTokens: string } | undefined) => r ?? { totalTokens: '0' }),
+        em
+            .createQueryBuilder()
+            .select('COALESCE(SUM(ls.amount * ls.price), 0)', 'volume')
+            .from('listing_sale', 'ls')
+            .where('ls.listing_id NOT IN (SELECT id FROM listing WHERE type = :offerType)', { offerType: 'Offer' })
+            .andWhere('ls.buyer_id = :accountId', { accountId })
+            .getRawOne<{ volume: string }>()
+            .then((r: { volume: string } | undefined) => r ?? { volume: '0' }),
+        em
+            .createQueryBuilder()
+            .select('COALESCE(SUM(ls.amount * ls.price), 0)', 'volume')
+            .from('listing_sale', 'ls')
+            .innerJoin('listing', 'l', 'ls.listing_id = l.id')
+            .where('l.type = :offerType', { offerType: 'Offer' })
+            .andWhere('l.seller_id = :accountId', { accountId })
+            .getRawOne<{ volume: string }>()
+            .then((r: { volume: string } | undefined) => r ?? { volume: '0' }),
+        em
+            .createQueryBuilder()
+            .select("COALESCE(SUM((c.stats->>'floorPrice')::numeric * ta.total_balance::numeric), 0)", 'tokensValue')
+            .from('token_account', 'ta')
+            .innerJoin('collection', 'c', 'ta.collection_id = c.id')
+            .where('ta.account_id = :accountId', { accountId })
+            .andWhere("ta.collection_id != '1'")
+            .andWhere("c.stats->>'floorPrice' IS NOT NULL")
+            .getRawOne<{ tokensValue: string }>()
+            .then((r: { tokensValue: string } | undefined) => r ?? { tokensValue: '0' }),
+        em
+            .createQueryBuilder()
+            .select('COALESCE(SUM(amount), 0)', 'totalInfused')
+            .from('user_infusion', 'ui')
+            .where('ui.account_id = :accountId', { accountId })
+            .getRawOne<{ totalInfused: string }>()
+            .then((r: { totalInfused: string } | undefined) => r ?? { totalInfused: '0' }),
+    ])
+
+    const volume = Number(volumeBuy || 0) + Number(volumeOffer || 0)
+    const data = {
+        totalCollections: Number(totalCollections ?? 0),
+        totalTokens: Number(totalTokens ?? 0),
+        volume,
+        tokensValue: tokensValueSum ?? '0',
+        totalInfused: totalInfusedSum ?? '0',
+    }
 
     await job.updateProgress(60)
 
