@@ -23,7 +23,7 @@ export async function fetchMetadata(url: string, job: Queue.Job) {
         withCredentials: false,
         timeout: 15000,
         maxRedirects: url.startsWith('http://platform.production.enjinusercontent.com/') ? 3 : 2,
-        httpsAgent: new https.Agent({ keepAlive: true, rejectUnauthorized: false }),
+        httpsAgent: new https.Agent({ keepAlive: true }),
     })
 
     let finalUrl = url.replace('ipfs://', 'https://ipfs.io/ipfs/')

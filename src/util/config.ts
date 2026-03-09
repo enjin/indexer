@@ -98,7 +98,7 @@ const config: Config = {
     )
         .split(',')
         .map((prop) => prop.trim()),
-    allowLocalRequests: (process.env.METADATA_ALLOW_LOCAL_REQUESTS || 'true') === 'true',
+    allowLocalRequests: process.env.METADATA_ALLOW_LOCAL_REQUESTS === 'true',
 }
 
 export default config
