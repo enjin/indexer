@@ -4,6 +4,8 @@ import { isHex } from '@polkadot/util'
 import { decode, bigIntReplacer, resolveNetwork } from './core'
 import type { DecodeRequest } from './types'
 import { NETWORKS } from './types'
+import { encode } from '../encoder/core'
+import type { EncodeRequest } from '../encoder/types'
 
 const log = createLogger('sqd:decoder')
 
@@ -95,6 +97,82 @@ async function handleDecode(req: Request, res: Response): Promise<void> {
     }
 }
 
+function validateEncodeRequest(body: unknown): { valid: true; data: EncodeRequest } | { valid: false; error: string } {
+    if (!body || typeof body !== 'object') {
+        return { valid: false, error: 'Request body must be an object' }
+    }
+
+    const req = body as Record<string, unknown>
+
+    if (req.call === undefined) {
+        return { valid: false, error: 'Missing "call" field' }
+    }
+
+    if (!req.call || typeof req.call !== 'object' || Array.isArray(req.call)) {
+        return { valid: false, error: '"call" must be an object' }
+    }
+
+    const call = req.call as Record<string, unknown>
+
+    if (typeof call.pallet !== 'string' || !call.pallet) {
+        return { valid: false, error: '"call.pallet" must be a non-empty string' }
+    }
+
+    if (typeof call.name !== 'string' || !call.name) {
+        return { valid: false, error: '"call.name" must be a non-empty string' }
+    }
+
+    if (call.args !== undefined && (typeof call.args !== 'object' || Array.isArray(call.args))) {
+        return { valid: false, error: '"call.args" must be an object' }
+    }
+
+    if (req.network !== undefined) {
+        if (typeof req.network !== 'string') {
+            return { valid: false, error: 'Invalid "network" field (must be string)' }
+        }
+        if (!resolveNetwork(req.network)) {
+            return {
+                valid: false,
+                error: `Invalid network. Must be one of: ${NETWORKS.join(', ')}, canary`,
+            }
+        }
+    }
+
+    if (req.spec_version !== undefined && typeof req.spec_version !== 'number') {
+        return { valid: false, error: 'Invalid "spec_version" field (must be number)' }
+    }
+
+    return {
+        valid: true,
+        data: {
+            call: {
+                pallet: call.pallet,
+                name: call.name,
+                args: call.args as Record<string, unknown> | undefined,
+            },
+            network: req.network,
+            spec_version: req.spec_version,
+        },
+    }
+}
+
+async function handleEncode(req: Request, res: Response): Promise<void> {
+    try {
+        const validation = validateEncodeRequest(req.body)
+        if (!validation.valid) {
+            res.status(400).json({ error: validation.error })
+            return
+        }
+
+        const result = await encode(validation.data)
+        res.json(result)
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        log.error(`Encode error: ${errorMessage}`)
+        res.status(500).json({ error: errorMessage })
+    }
+}
+
 const server: Application = express()
 
 server.use(express.json({ limit: '1mb' }))
@@ -104,14 +182,20 @@ server.get('/decoder', (_req, res) => {
     res.status(405).send('Method Not Allowed')
 })
 
+server.get('/encoder', (_req, res) => {
+    res.set('Allow', 'POST')
+    res.status(405).send('Method Not Allowed')
+})
+
 server.get('/health', (_req, res) => {
     res.json({ status: 'healthy' })
 })
 
 server.post('/decoder', handleDecode)
+server.post('/encoder', handleEncode)
 
 const port = process.env.DECODER_PORT || 8090
 
 server.listen(port, () => {
-    log.info(`Decoder server started on port ${port}`)
+    log.info(`Decoder/Encoder server started on port ${port}`)
 })
