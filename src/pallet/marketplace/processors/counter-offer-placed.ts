@@ -2,7 +2,8 @@ import { AccountTokenEvent, CounterOffer, Event as EventModel, Listing, OfferSta
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
-import { getOrCreateAccount } from '~/util/entities'
+import { getOrCreateAccount, unwrapSigner } from '~/util/entities'
+import { calls } from '~/type'
 
 export async function counterOfferPlaced(
     ctx: CommonContext,
@@ -10,6 +11,8 @@ export async function counterOfferPlaced(
     item: EventItem
 ): Promise<[EventModel, AccountTokenEvent, SnsEvent | undefined] | undefined> {
     const event = mappings.marketplace.events.counterOfferPlaced(item)
+    const withFuelTank = item.extrinsic?.call?.name === calls.fuelTanks.dispatchAndTouch.name
+
     const listingId = event.listingId.substring(2)
 
     const listing = await ctx.store.findOne<Listing>(Listing, {
@@ -25,7 +28,12 @@ export async function counterOfferPlaced(
 
     const takeAssetId = listing.takeAssetId
     const accountId =
-        event.counterOffer.deposit != undefined ? event.counterOffer.deposit.depositor : event.counterOffer.accountId
+        withFuelTank && item.extrinsic
+            ? unwrapSigner(item.extrinsic)
+            : event.counterOffer.deposit != undefined
+              ? event.counterOffer.deposit.depositor
+              : event.counterOffer.accountId
+
     const buyerPrice = event.counterOffer.price != undefined ? event.counterOffer.price : event.counterOffer.buyerPrice
     const depositAmount = event.counterOffer.deposit != undefined ? event.counterOffer.deposit.amount : 1n
     const sellerPrice = event.counterOffer.sellerPrice != undefined ? event.counterOffer.sellerPrice : 1n
