@@ -106,6 +106,9 @@ export class AccountsTokensTokenGroup {
     @Field(() => ID)
     id!: string
 
+    @Field(() => Json, { nullable: true })
+    metadata!: typeof Json
+
     @Field(() => [AccountsTokensAttribute], { nullable: true })
     attributes?: AccountsTokensAttribute[]
 
@@ -486,6 +489,8 @@ export class AccountsTokensConnectionResolver {
                         return new AccountsTokensTokenGroupToken({
                             tokenGroup: new AccountsTokensTokenGroup({
                                 id: tokenGroup.id.toString(),
+                                metadata:
+                                    (tokenGroup.metadata as any)?.toJSON?.() ?? (tokenGroup.metadata as any) ?? null,
                                 attributes: (tokenGroup.attributes || []).map((attr: any) => ({
                                     key: attr.key,
                                     value: attr.value,
