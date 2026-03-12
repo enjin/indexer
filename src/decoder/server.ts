@@ -1,6 +1,7 @@
 import express, { Application, Request, Response } from 'express'
 import { createLogger } from '@subsquid/logger'
-import { isHex } from '@polkadot/util'
+import { hexToU8a, isHex, stringToU8a } from '@polkadot/util'
+import { blake2AsHex } from '@polkadot/util-crypto'
 import { decode, bigIntReplacer, resolveNetwork } from './core'
 import type { DecodeRequest } from './types'
 import { NETWORKS } from './types'
@@ -173,6 +174,40 @@ async function handleEncode(req: Request, res: Response): Promise<void> {
     }
 }
 
+function validateHashRequest(body: unknown): { valid: true; data: string } | { valid: false; error: string } {
+    if (!body || typeof body !== 'object') {
+        return { valid: false, error: 'Request body must be an object' }
+    }
+
+    const req = body as Record<string, unknown>
+    if (req.data === undefined) {
+        return { valid: false, error: 'Missing "data" field' }
+    }
+    if (typeof req.data !== 'string') {
+        return { valid: false, error: '"data" must be a string' }
+    }
+    return { valid: true, data: req.data }
+}
+
+function handleHash(req: Request, res: Response): void {
+    try {
+        const validation = validateHashRequest(req.body)
+        if (!validation.valid) {
+            res.status(400).json({ error: validation.error })
+            return
+        }
+
+        const { data } = validation
+        const isHexData = isHex(data)
+        const hash = blake2AsHex(isHexData ? hexToU8a(data) : stringToU8a(data), 256)
+        res.json({ hash, isHexData })
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        log.error(`Hash error: ${errorMessage}`)
+        res.status(500).json({ error: errorMessage })
+    }
+}
+
 const server: Application = express()
 
 server.use(express.json({ limit: '1mb' }))
@@ -187,12 +222,18 @@ server.get('/encoder', (_req, res) => {
     res.status(405).send('Method Not Allowed')
 })
 
+server.get('/hash', (_req, res) => {
+    res.set('Allow', 'POST')
+    res.status(405).send('Method Not Allowed')
+})
+
 server.get('/health', (_req, res) => {
     res.json({ status: 'healthy' })
 })
 
 server.post('/decoder', handleDecode)
 server.post('/encoder', handleEncode)
+server.post('/hash', handleHash)
 
 const port = process.env.DECODER_PORT || 8090
 
