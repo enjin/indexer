@@ -189,7 +189,7 @@ function validateHashRequest(body: unknown): { valid: true; data: string } | { v
     return { valid: true, data: req.data }
 }
 
-async function handleHash(req: Request, res: Response): Promise<void> {
+function handleHash(req: Request, res: Response): void {
     try {
         const validation = validateHashRequest(req.body)
         if (!validation.valid) {
