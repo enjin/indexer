@@ -9,6 +9,10 @@ export const insertRuleSet = withDispatchCheck((call: CallItem): InsertRuleSet =
     return match(call)
         .returnType<InsertRuleSet>()
         .when(
+            () => calls.fuelTanks.insertRuleSet.matrixEnjinV1031.is(call),
+            () => calls.fuelTanks.insertRuleSet.matrixEnjinV1031.decode(call)
+        )
+        .when(
             () => calls.fuelTanks.insertRuleSet.matrixEnjinV1022.is(call),
             () => calls.fuelTanks.insertRuleSet.matrixEnjinV1022.decode(call)
         )
@@ -35,6 +39,10 @@ export const insertRuleSet = withDispatchCheck((call: CallItem): InsertRuleSet =
         .when(
             () => calls.fuelTanks.insertRuleSet.matrixEnjinV603.is(call),
             () => calls.fuelTanks.insertRuleSet.matrixEnjinV603.decode(call)
+        )
+        .when(
+            () => calls.fuelTanks.insertRuleSet.matrixV1030.is(call),
+            () => calls.fuelTanks.insertRuleSet.matrixV1030.decode(call)
         )
         .when(
             () => calls.fuelTanks.insertRuleSet.matrixV1023.is(call),
@@ -97,6 +105,10 @@ export const insertRuleSet = withDispatchCheck((call: CallItem): InsertRuleSet =
             () => calls.fuelTanks.insertRuleSet.enjinV1032.decode(call)
         )
         .when(
+            () => calls.fuelTanks.insertRuleSet.enjinV1062.is(call),
+            () => calls.fuelTanks.insertRuleSet.enjinV1062.decode(call)
+        )
+        .when(
             () => calls.fuelTanks.insertRuleSet.enjinV1026.is(call),
             () => calls.fuelTanks.insertRuleSet.enjinV1026.decode(call)
         )
@@ -127,6 +139,10 @@ export const insertRuleSet = withDispatchCheck((call: CallItem): InsertRuleSet =
         .when(
             () => calls.fuelTanks.insertRuleSet.enjinV100.is(call),
             () => calls.fuelTanks.insertRuleSet.enjinV100.decode(call)
+        )
+        .when(
+            () => calls.fuelTanks.insertRuleSet.v1060.is(call),
+            () => calls.fuelTanks.insertRuleSet.v1060.decode(call)
         )
         .when(
             () => calls.fuelTanks.insertRuleSet.v1050.is(call),
