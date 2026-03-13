@@ -51,9 +51,11 @@ async function bootstrap() {
     logger.info(`last block number on config: ${dataService.lastBlockNumber}`)
 
     // Passively queue any blocks missing from ChainInfo so they get backfilled
-    void queueMissingBlocks().catch((err: unknown) => {
-        logger.warn(`queue-missing-blocks migration failed: ${err}`)
-    })
+    if (config.importMissingBlocks) {
+        void queueMissingBlocks().catch((err: unknown) => {
+            logger.warn(`queue-missing-blocks migration failed: ${err}`)
+        })
+    }
 
     const snsEvents: SnsEvent[] = []
     let snsEventsCache: Map<string, { eventId: string; blockHash: string; expiresAt: number }> = new Map()
