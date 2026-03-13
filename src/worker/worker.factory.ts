@@ -18,7 +18,7 @@ const processors: Map<QueuesEnum, { processor: ProcessorDef; options?: WorkerOpt
     [QueuesEnum.BALANCES, { processor: new BalancesProcessor() }],
     [QueuesEnum.COLLECTIONS, { processor: new CollectionsProcessor() }],
     [QueuesEnum.LISTINGS, { processor: new ListingsProcessor() }],
-    [QueuesEnum.METADATA, { processor: new MetadataProcessor(), options: { concurrency: 10 } }],
+    [QueuesEnum.METADATA, { processor: new MetadataProcessor() }],
     [QueuesEnum.TOKENS, { processor: new TokensProcessor() }],
     [QueuesEnum.TRAITS, { processor: new TraitsProcessor() }],
     [QueuesEnum.VALIDATORS, { processor: new ValidatorsProcessor() }],
