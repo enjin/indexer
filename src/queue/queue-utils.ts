@@ -402,6 +402,27 @@ export function dispatchSyncChain(fromBlock?: number, toBlock?: number): void {
     })
 }
 
+export async function dispatchImportBlock(blockNumber: number, toBlock?: number): Promise<void> {
+    const jobId = `chain.import.${blockNumber}-${toBlock ?? blockNumber}`
+    const job = await ValidatorsQueue.getJob(jobId)
+    if (job && job.id) {
+        await ValidatorsQueue.remove(job.id)
+    }
+    ValidatorsQueue.add(
+        JobsEnum.IMPORT_BLOCK,
+        {
+            blockNumber,
+            toBlock,
+        },
+        {
+            delay: 0,
+            jobId,
+        }
+    ).catch(() => {
+        Logger.error('Failed to dispatch import block', LOGGER_NAMESPACE)
+    })
+}
+
 export function dispatchSyncAccounts(): void {
     AccountsQueue.add(
         JobsEnum.SYNC_ALL_ACCOUNTS,

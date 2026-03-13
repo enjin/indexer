@@ -41,6 +41,7 @@ export interface Config {
     skipSync: boolean
     metadataSupportedProps: string[]
     allowLocalRequests: boolean
+    importMissingBlocks: boolean
 }
 
 const config: Config = {
@@ -99,6 +100,7 @@ const config: Config = {
         .split(',')
         .map((prop) => prop.trim()),
     allowLocalRequests: process.env.METADATA_ALLOW_LOCAL_REQUESTS === 'true',
+    importMissingBlocks: process.env.IMPORT_MISSING_BLOCKS === 'true',
 }
 
 export default config
