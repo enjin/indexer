@@ -136,12 +136,19 @@ export async function attributeSet(
     }
 
     if (token) {
-        await QueueUtils.dispatchComputeMetadata({ id: token.id, type: 'token', traits: true, delay: 10000 })
+        await QueueUtils.dispatchComputeMetadata({
+            id: token.id,
+            type: 'token',
+            force: true,
+            traits: true,
+            delay: 10000,
+        })
     } else {
         await QueueUtils.dispatchComputeMetadata({
             id: collection.id,
             type: 'collection',
             allTokens: false,
+            force: true,
             traits: true,
             delay: 10000,
         })

@@ -224,7 +224,7 @@ export async function dispatchComputeMetadata({
     traits?: boolean
     delay?: number
 }) {
-    const job = await MetadataQueue.getJob(`metadata.${id}`)
+    const job = await MetadataQueue.getJob(`metadata.${id}${force ? '.force' : ''}`)
     if (job?.id && (await shouldReplaceJob(job))) {
         await MetadataQueue.remove(job.id)
     }
@@ -233,7 +233,7 @@ export async function dispatchComputeMetadata({
         { id, type, force, allTokens, traits },
         {
             delay,
-            jobId: `metadata.${id}`,
+            jobId: `metadata.${id}${force ? '.force' : ''}`,
         }
     ).catch(() => {
         Logger.error('Failed to dispatch a job on metadata queue', LOGGER_NAMESPACE)
