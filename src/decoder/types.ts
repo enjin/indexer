@@ -50,3 +50,33 @@ export interface EventDecodeResponse {
 export interface ErrorResponse {
     error: string
 }
+
+export interface VerifyMessageItem {
+    message: string
+    signature: string
+    publicKeys: string[]
+}
+
+export interface VerifyMessageRequestBody {
+    items: VerifyMessageItem[]
+}
+
+export interface DecodeSignedExtrinsicItem {
+    signedExtrinsic: string
+}
+
+export interface DecodeSignedExtrinsicRequestBody {
+    items: DecodeSignedExtrinsicItem[]
+    network?: string
+    spec_version?: number
+}
+
+export interface DecodedSignedExtrinsicInput {
+    signedExtrinsic: string
+}
+
+export interface DecodedSignedExtrinsicResult {
+    signer: string | null
+    nonce: number | null
+    encodedData: string | null
+}
