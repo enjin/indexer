@@ -13,6 +13,7 @@ import { SnsEvent } from '~/util/sns'
 import { nominationPools } from '~/type/events'
 import { computeEraApy } from '~/pallet/nomination-pools/processors/era-rewards-processed'
 import { RewardPaid } from '~/pallet/nomination-pools/events/types'
+import { QueueUtils } from '~/queue'
 
 async function getMembersBalance(block: Block, poolId: number): Promise<Record<string, bigint>> {
     type StorageEntry = [k: [bigint, bigint, string], v: TokenAccount | undefined]
@@ -100,6 +101,8 @@ async function getReward(
             changeInRate: 0n,
         })
     }
+
+    await QueueUtils.dispatchSyncActiveValidators()
 
     return reward
 }
