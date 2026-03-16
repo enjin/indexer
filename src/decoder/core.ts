@@ -1,7 +1,14 @@
 import { blake2AsHex } from '@polkadot/util-crypto'
 import { Src } from '@subsquid/scale-codec'
 import { getRuntimeCached } from './metadata'
-import type { DecodeRequest, DecodeResponse, Network, DecodedEventRecord } from './types'
+import type {
+    DecodeRequest,
+    DecodeResponse,
+    Network,
+    DecodedEventRecord,
+    DecodedSignedExtrinsicInput,
+    DecodedSignedExtrinsicResult,
+} from './types'
 import { NETWORK_ALIASES } from './types'
 import { transformExtrinsic, transformEvent } from './compatibility'
 
@@ -117,16 +124,6 @@ export async function decodeEvents(
     }
 
     return results
-}
-
-export interface DecodedSignedExtrinsicInput {
-    signedExtrinsic: string
-}
-
-export interface DecodedSignedExtrinsicResult {
-    signer: string | null
-    nonce: number | null
-    encodedData: string | null
 }
 
 export async function decodeSignedExtrinsicsRaw(
