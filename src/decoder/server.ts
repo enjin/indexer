@@ -75,7 +75,7 @@ function handleHash(req: Request, res: Response): void {
     }
 }
 
-async function handleVerifyMessage(req: Request, res: Response): Promise<void> {
+function handleVerifyMessage(req: Request, res: Response): void {
     try {
         const validation = validateVerifyMessageRequest(req.body)
         if (!validation.valid) {

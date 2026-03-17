@@ -171,11 +171,7 @@ export function validateVerifyMessageRequest(
     }
 
     for (const [index, item] of req.inputs.entries()) {
-        if (!item || typeof item !== 'object') {
-            return { valid: false, error: `"inputs[${index}]" must be an object` }
-        }
-
-        const { message, signature, publicKey } = item as VerifyMessageItem
+        const { message, signature, publicKey } = item
 
         if (typeof message !== 'string' || !message) {
             return { valid: false, error: `"inputs[${index}].message" must be a non-empty string` }

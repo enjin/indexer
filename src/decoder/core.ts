@@ -147,7 +147,7 @@ export async function decodeSignedExtrinsicsRaw(
 
             if (decoded.signature) {
                 const address = decoded.signature.address as { __kind: string; value?: string }
-                if (address && typeof address.value === 'string') {
+                if (address.value) {
                     signer = normalizeHex(address.value)
                 }
 
