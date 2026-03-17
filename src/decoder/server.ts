@@ -83,14 +83,12 @@ async function handleVerifyMessage(req: Request, res: Response): Promise<void> {
             return
         }
 
-        const results = validation.data.map(({ message, signature, publicKeys }) => {
-            return publicKeys.map((publicKey) => {
-                const { isValid, isWrapped, crypto } = signatureVerify(message, signature, publicKey)
-                return { isValid, isWrapped, crypto }
-            })
+        const results = validation.data.map(({ message, signature, publicKey }) => {
+            const { isValid, isWrapped, crypto } = signatureVerify(message, signature, publicKey)
+            return { isValid, isWrapped, crypto }
         })
 
-        res.json({ results })
+        res.json(results)
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error)
         log.error(`Verify message error: ${errorMessage}`)

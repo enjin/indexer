@@ -171,7 +171,7 @@ export function validateVerifyMessageRequest(
             return { valid: false, error: `"items[${index}]" must be an object` }
         }
 
-        const { message, signature, publicKeys } = item as VerifyMessageItem
+        const { message, signature, publicKey } = item as VerifyMessageItem
 
         if (typeof message !== 'string' || !message) {
             return { valid: false, error: `"items[${index}].message" must be a non-empty string` }
@@ -181,17 +181,8 @@ export function validateVerifyMessageRequest(
             return { valid: false, error: `"items[${index}].signature" must be a non-empty string` }
         }
 
-        if (!Array.isArray(publicKeys) || publicKeys.length === 0) {
-            return { valid: false, error: `"items[${index}].publicKeys" must be a non-empty array` }
-        }
-
-        for (const [pkIndex, pk] of publicKeys.entries()) {
-            if (typeof pk !== 'string' || !pk) {
-                return {
-                    valid: false,
-                    error: `"items[${index}].publicKeys[${pkIndex}]" must be a non-empty string`,
-                }
-            }
+        if (typeof publicKey !== 'string' || !publicKey) {
+            return { valid: false, error: `"items[${index}].publicKey" must be a non-empty string` }
         }
     }
 

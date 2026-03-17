@@ -54,7 +54,7 @@ export interface ErrorResponse {
 export interface VerifyMessageItem {
     message: string
     signature: string
-    publicKeys: string[]
+    publicKey: string
 }
 
 export interface VerifyMessageRequestBody {
