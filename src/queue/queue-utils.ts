@@ -389,9 +389,8 @@ export async function dispatchSyncValidators(): Promise<void> {
 
 export async function dispatchSyncActiveValidators(): Promise<void> {
     const job = await ValidatorsQueue.getJob('validators.sync.active.all')
-    if (job?.id && (await shouldReplaceJob(job))) {
-        await ValidatorsQueue.remove(job.id)
-    }
+    if (job?.id && (await hasExistingJob(job))) return
+    if (job?.id) await ValidatorsQueue.remove(job.id)
     ValidatorsQueue.add(
         JobsEnum.SYNC_ACTIVE_VALIDATORS,
         {},
@@ -553,6 +552,18 @@ export function dispatchComputePoolOffers(id: string): void {
         }
     ).catch(() => {
         Logger.error('Failed to dispatch compute pool offers', LOGGER_NAMESPACE)
+    })
+}
+
+export function dispatchBackfillPoolMemberRewardsEraIndex(): void {
+    NominationPoolsQueue.add(
+        JobsEnum.BACKFILL_POOL_MEMBER_REWARDS_ERA_INDEX,
+        {},
+        {
+            jobId: 'nomination-pools.backfill-member-rewards-era-index',
+        }
+    ).catch(() => {
+        Logger.error('Failed to dispatch backfill pool member rewards era index', LOGGER_NAMESPACE)
     })
 }
 

@@ -3,6 +3,7 @@ import { ProcessorDef } from '~/worker/processors/processor.def'
 import { JobsEnum } from '~/queue/constants'
 import { logDebug, logError } from '~/worker/utils'
 import {
+    backfillPoolMemberRewardsEraIndex,
     computePoolMemberRewards,
     computePoolOffers,
     computePoolRewards,
@@ -43,6 +44,9 @@ export class NominationPoolsProcessor implements ProcessorDef {
                 break
             case JobsEnum.SYNC_STAKE_EXCHANGE_OFFERS_EVENT:
                 await syncStakeExchangeOffersEvents(job)
+                break
+            case JobsEnum.BACKFILL_POOL_MEMBER_REWARDS_ERA_INDEX:
+                await backfillPoolMemberRewardsEraIndex(job)
                 break
             default:
                 throw new Error(`${job.name} is not a valid job for this processor`)
