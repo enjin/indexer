@@ -208,7 +208,7 @@ export async function minted(
         },
     }
 
-    await QueueUtils.dispatchComputeMetadata({ id: token.id, type: 'token', traits: true })
+    await QueueUtils.dispatchComputeMetadata({ id: token.id, type: 'token', force: true, traits: true })
     await QueueUtils.dispatchComputeStats(data.collectionId.toString())
     await QueueUtils.dispatchComputeAccountStats(recipient.id)
 

@@ -16,11 +16,17 @@ export async function computeTokenCreationSupply(_job: Job, id: string): Promise
 
     await _job.updateProgress(50)
 
-    const tokenMintEvent = await ctx.store.findOneByOrFail<EventModel>(EventModel, {
+    const tokenMintEvent = await ctx.store.findOneBy<EventModel>(EventModel, {
         name: 'MultiTokensTokenCreated',
         collectionId: token.collection.id,
         tokenId: token.tokenId.toString(),
     })
+
+    if (!tokenMintEvent) {
+        await _job.log(`Token ${token.id} mint event not found`)
+        await _job.updateProgress(100)
+        return
+    }
 
     await _job.updateProgress(75)
 

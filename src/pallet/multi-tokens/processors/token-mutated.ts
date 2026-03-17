@@ -69,7 +69,7 @@ export async function tokenMutated(
     })
 
     if (!token) {
-        throwFatalError(`[TokenMutated] We have not found token ${data.collectionId}-${data.tokenId}.`)
+        throwFatalError(`[TokenMutated] We have not found token: ${data.collectionId}-${data.tokenId}.`)
         return mappings.multiTokens.events.tokenMutatedEventModel(item, data)
     }
 
