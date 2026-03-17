@@ -386,6 +386,23 @@ export async function dispatchSyncValidators(): Promise<void> {
     })
 }
 
+export async function dispatchSyncActiveValidators(): Promise<void> {
+    const job = await ValidatorsQueue.getJob('validators.sync.active.all')
+    if (job?.id && (await shouldReplaceJob(job))) {
+        await ValidatorsQueue.remove(job.id)
+    }
+    ValidatorsQueue.add(
+        JobsEnum.SYNC_ACTIVE_VALIDATORS,
+        {},
+        {
+            delay: 6000,
+            jobId: 'validators.sync.active.all',
+        }
+    ).catch(() => {
+        Logger.error('Failed to dispatch sync active validators', LOGGER_NAMESPACE)
+    })
+}
+
 export function dispatchSyncChain(fromBlock?: number, toBlock?: number): void {
     ValidatorsQueue.add(
         JobsEnum.SYNC_CHAIN,
