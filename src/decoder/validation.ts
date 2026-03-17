@@ -9,7 +9,9 @@ import { NETWORKS } from './types'
 import { resolveNetwork } from './core'
 import type { EncodeRequest } from '../encoder/types'
 
-export function validateDecodeRequest(body: unknown): { valid: true; data: DecodeRequest } | { valid: false; error: string } {
+export function validateDecodeRequest(
+    body: unknown
+): { valid: true; data: DecodeRequest } | { valid: false; error: string } {
     if (!body || typeof body !== 'object') {
         return { valid: false, error: 'Request body must be an object' }
     }
@@ -79,7 +81,9 @@ export function validateDecodeRequest(body: unknown): { valid: true; data: Decod
     }
 }
 
-export function validateEncodeRequest(body: unknown): { valid: true; data: EncodeRequest } | { valid: false; error: string } {
+export function validateEncodeRequest(
+    body: unknown
+): { valid: true; data: EncodeRequest } | { valid: false; error: string } {
     if (!body || typeof body !== 'object') {
         return { valid: false, error: 'Request body must be an object' }
     }
@@ -229,4 +233,3 @@ export function validateDecodeSignedExtrinsicsRequest(
 
     return { valid: true, data: req }
 }
-
