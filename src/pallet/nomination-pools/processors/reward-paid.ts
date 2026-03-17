@@ -150,6 +150,7 @@ async function calculateMemberRewards(
 
         const pmrData = {
             id: pmrId,
+            eraIndex,
             pool,
             member,
             reward,
@@ -236,7 +237,7 @@ export async function rewardPaid(ctx: CommonContext, block: Block, item: EventIt
 
     const stashValidator = await getOrCreateAccount(ctx, eventData.validatorStash)
 
-    const eraIndex = eventData.era + 1
+    const eraIndex = parseInt(eventData.era.toString()) + 1
 
     if (!nominationPools.rewardPaid.v1060.is(item)) {
         return rewardPaidEventModel(item, eventData, stashValidator.id)

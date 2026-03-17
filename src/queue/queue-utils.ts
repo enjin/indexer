@@ -556,6 +556,18 @@ export function dispatchComputePoolOffers(id: string): void {
     })
 }
 
+export function dispatchBackfillPoolMemberRewardsEraIndex(): void {
+    NominationPoolsQueue.add(
+        JobsEnum.BACKFILL_POOL_MEMBER_REWARDS_ERA_INDEX,
+        {},
+        {
+            jobId: 'nomination-pools.backfill-member-rewards-era-index',
+        }
+    ).catch(() => {
+        Logger.error('Failed to dispatch backfill pool member rewards era index', LOGGER_NAMESPACE)
+    })
+}
+
 export async function dispatchComputeAccountStats(id: string): Promise<void> {
     const jobId = `accounts.compute-stats.${id}`
     const job = await AccountsQueue.getJob(jobId)
