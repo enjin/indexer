@@ -162,31 +162,31 @@ export function validateVerifyMessageRequest(
 
     const req = body as Partial<VerifyMessageRequestBody>
 
-    if (!Array.isArray(req.items) || req.items.length === 0) {
-        return { valid: false, error: '"items" must be a non-empty array' }
+    if (!Array.isArray(req.inputs) || req.inputs.length === 0) {
+        return { valid: false, error: '"inputs" must be a non-empty array' }
     }
 
-    for (const [index, item] of req.items.entries()) {
+    for (const [index, item] of req.inputs.entries()) {
         if (!item || typeof item !== 'object') {
-            return { valid: false, error: `"items[${index}]" must be an object` }
+            return { valid: false, error: `"inputs[${index}]" must be an object` }
         }
 
         const { message, signature, publicKey } = item as VerifyMessageItem
 
         if (typeof message !== 'string' || !message) {
-            return { valid: false, error: `"items[${index}].message" must be a non-empty string` }
+            return { valid: false, error: `"inputs[${index}].message" must be a non-empty string` }
         }
 
         if (typeof signature !== 'string' || !signature) {
-            return { valid: false, error: `"items[${index}].signature" must be a non-empty string` }
+            return { valid: false, error: `"inputs[${index}].signature" must be a non-empty string` }
         }
 
         if (typeof publicKey !== 'string' || !publicKey) {
-            return { valid: false, error: `"items[${index}].publicKey" must be a non-empty string` }
+            return { valid: false, error: `"inputs[${index}].publicKey" must be a non-empty string` }
         }
     }
 
-    return { valid: true, data: req.items }
+    return { valid: true, data: req.inputs }
 }
 
 export function validateDecodeSignedExtrinsicsRequest(
@@ -198,21 +198,15 @@ export function validateDecodeSignedExtrinsicsRequest(
 
     const req = body as DecodeSignedExtrinsicRequestBody
 
-    if (!Array.isArray(req.items) || req.items.length === 0) {
-        return { valid: false, error: '"items" must be a non-empty array' }
+    if (!Array.isArray(req.inputs) || req.inputs.length === 0) {
+        return { valid: false, error: '"inputs" must be a non-empty array' }
     }
 
-    for (const [index, item] of req.items.entries()) {
-        if (!item || typeof item !== 'object') {
-            return { valid: false, error: `"items[${index}]" must be an object` }
-        }
-
-        const { signedExtrinsic } = item
-
-        if (typeof signedExtrinsic !== 'string' || !signedExtrinsic || !isHex(signedExtrinsic)) {
+    for (const [index, hex] of req.inputs.entries()) {
+        if (typeof hex !== 'string' || !hex || !isHex(hex)) {
             return {
                 valid: false,
-                error: `"items[${index}].signedExtrinsic" must be a non-empty hex string`,
+                error: `"inputs[${index}]" must be a non-empty hex string`,
             }
         }
     }

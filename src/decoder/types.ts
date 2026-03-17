@@ -58,15 +58,11 @@ export interface VerifyMessageItem {
 }
 
 export interface VerifyMessageRequestBody {
-    items: VerifyMessageItem[]
-}
-
-export interface DecodeSignedExtrinsicItem {
-    signedExtrinsic: string
+    inputs: VerifyMessageItem[]
 }
 
 export interface DecodeSignedExtrinsicRequestBody {
-    items: DecodeSignedExtrinsicItem[]
+    inputs: string[]
     network?: string
     spec_version?: number
 }

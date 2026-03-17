@@ -104,7 +104,7 @@ async function handleDecodeSignedExtrinsics(req: Request, res: Response): Promis
             return
         }
 
-        const { items, network: networkInput, spec_version } = validation.data
+        const { inputs, network: networkInput, spec_version } = validation.data
 
         const resolved = networkInput ? resolveNetwork(networkInput) : null
         if (networkInput && !resolved) {
@@ -115,6 +115,7 @@ async function handleDecodeSignedExtrinsics(req: Request, res: Response): Promis
         const network = resolved ?? DEFAULT_NETWORK
         const specVersion = spec_version ?? getLatestSpecVersion(network)
 
+        const items = inputs.map((signedExtrinsic) => ({ signedExtrinsic }))
         const results = await decodeSignedExtrinsicsRaw(items, network, specVersion)
 
         res.json(results)
@@ -141,7 +142,7 @@ server.get('/hash', (_req, res) => {
     res.set('Allow', 'POST')
     res.status(405).send('Method Not Allowed')
 })
-server.get('/verify/message', (_req, res) => {
+server.get('/verify/messages', (_req, res) => {
     res.set('Allow', 'POST')
     res.status(405).send('Method Not Allowed')
 })
@@ -156,7 +157,7 @@ server.get('/health', (_req, res) => {
 server.post('/decoder', handleDecode)
 server.post('/encoder', handleEncode)
 server.post('/hash', handleHash)
-server.post('/verify/message', handleVerifyMessage)
+server.post('/verify/messages', handleVerifyMessage)
 server.post('/decode/extrinsics', handleDecodeSignedExtrinsics)
 
 const port = process.env.DECODER_PORT || 8090
