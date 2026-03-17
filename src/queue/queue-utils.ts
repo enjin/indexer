@@ -225,7 +225,7 @@ export async function dispatchComputeMetadata({
     traits?: boolean
     delay?: number
 }) {
-    const jobId = force ? `metadata.${id}.force` : `metadata.${id}`
+    const jobId = force ? `metadata.force.${id}` : `metadata.${id}`
     const job = await MetadataQueue.getJob(jobId)
     if (job?.id && (await hasExistingJob(job))) return
     if (job?.id) await MetadataQueue.remove(job.id)
