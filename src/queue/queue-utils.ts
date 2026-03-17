@@ -18,10 +18,11 @@ import { Logger } from '~/util/logger'
 
 const LOGGER_NAMESPACE = 'sqd:queue'
 
-async function shouldReplaceJob(job: Job | undefined): Promise<boolean> {
+async function hasExistingJob(job: Job | undefined): Promise<boolean> {
     if (!job?.id) return false
-    const isWaiting = (await job.isDelayed()) || (await job.isWaiting())
-    return !isWaiting
+    const isWaitingOrDelayed = (await job.isDelayed()) || (await job.isWaiting())
+    const isActive = await job.isActive()
+    return isWaitingOrDelayed || isActive
 }
 
 export async function pauseQueue(type: QueueType): Promise<void> {
@@ -83,16 +84,16 @@ export function dispatchFetchBalances(ids: string[]): void {
 }
 
 export async function dispatchFetchAccountBalance(id: string): Promise<void> {
-    const job = await BalancesQueue.getJob(`balances.fetch-balance.${id}`)
-    if (job?.id && (await shouldReplaceJob(job))) {
-        await BalancesQueue.remove(job.id)
-    }
+    const jobId = `balances.fetch-balance.${id}`
+    const job = await BalancesQueue.getJob(jobId)
+    if (job?.id && (await hasExistingJob(job))) return
+    if (job?.id) await BalancesQueue.remove(job.id)
     BalancesQueue.add(
         JobsEnum.FETCH_BALANCE,
         { id },
         {
             delay: 6000,
-            jobId: `balances.fetch-balance.${id}`,
+            jobId,
         }
     ).catch(() => {
         Logger.error('Failed to dispatch a job on balances queue', LOGGER_NAMESPACE)
@@ -123,16 +124,16 @@ export function dispatchFetchExtra(ids: string[]): void {
     xxhasher
         .createId(ids)
         .then(async (hashedIds) => {
-            const job = await CollectionsQueue.getJob(`collections.extra.${hashedIds}`)
-            if (job?.id && (await shouldReplaceJob(job))) {
-                await CollectionsQueue.remove(job.id)
-            }
+            const jobId = `collections.extra.${hashedIds}`
+            const job = await CollectionsQueue.getJob(jobId)
+            if (job?.id && (await hasExistingJob(job))) return
+            if (job?.id) await CollectionsQueue.remove(job.id)
             CollectionsQueue.add(
                 JobsEnum.FETCH_EXTRA,
                 { ids },
                 {
                     delay: 6000,
-                    jobId: `collections.extra.${hashedIds}`,
+                    jobId,
                 }
             ).catch(() => {
                 Logger.error('Failed to dispatch a job on collections queue', LOGGER_NAMESPACE)
@@ -159,16 +160,16 @@ export function dispatchComputeCollections(): void {
 }
 
 export async function dispatchComputeStats(id: string): Promise<void> {
-    const job = await CollectionsQueue.getJob(`collections.stats.${id}`)
-    if (job?.id && (await shouldReplaceJob(job))) {
-        await CollectionsQueue.remove(job.id)
-    }
+    const jobId = `collections.stats.${id}`
+    const job = await CollectionsQueue.getJob(jobId)
+    if (job?.id && (await hasExistingJob(job))) return
+    if (job?.id) await CollectionsQueue.remove(job.id)
     CollectionsQueue.add(
         JobsEnum.COMPUTE_STATS,
         { id },
         {
             delay: 60000,
-            jobId: `collections.stats.${id}`,
+            jobId,
         }
     ).catch(() => {
         Logger.error('Failed to dispatch a job on collections queue', LOGGER_NAMESPACE)
@@ -176,16 +177,16 @@ export async function dispatchComputeStats(id: string): Promise<void> {
 }
 
 export async function dispatchComputeRarity({ id }: { id: string; delay?: number }): Promise<void> {
-    const job = await TokensQueue.getJob(`tokens.rarity.${id}`)
-    if (job?.id && (await shouldReplaceJob(job))) {
-        await TokensQueue.remove(job.id)
-    }
+    const jobId = `tokens.rarity.${id}`
+    const job = await TokensQueue.getJob(jobId)
+    if (job?.id && (await hasExistingJob(job))) return
+    if (job?.id) await TokensQueue.remove(job.id)
     TokensQueue.add(
         JobsEnum.COMPUTE_RARITY,
         { id },
         {
             delay: 120000,
-            jobId: `tokens.rarity.${id}`,
+            jobId,
         }
     ).catch(() => {
         Logger.error('Failed to dispatch a job on tokens queue', LOGGER_NAMESPACE)
@@ -193,16 +194,16 @@ export async function dispatchComputeRarity({ id }: { id: string; delay?: number
 }
 
 export async function dispatchComputeTraits(id: string): Promise<void> {
-    const job = await TraitsQueue.getJob(`traits.${id}`)
-    if (job?.id && (await shouldReplaceJob(job))) {
-        await TraitsQueue.remove(job.id)
-    }
+    const jobId = `traits.${id}`
+    const job = await TraitsQueue.getJob(jobId)
+    if (job?.id && (await hasExistingJob(job))) return
+    if (job?.id) await TraitsQueue.remove(job.id)
     TraitsQueue.add(
         JobsEnum.COMPUTE_TRAITS,
         { id },
         {
             delay: 120000,
-            jobId: `traits.${id}`,
+            jobId,
         }
     ).catch(() => {
         Logger.error('Failed to dispatch a job on traits queue', LOGGER_NAMESPACE)
@@ -224,16 +225,16 @@ export async function dispatchComputeMetadata({
     traits?: boolean
     delay?: number
 }) {
-    const job = await MetadataQueue.getJob(`metadata.${id}${force ? '.force' : ''}`)
-    if (job?.id && (await shouldReplaceJob(job))) {
-        await MetadataQueue.remove(job.id)
-    }
+    const jobId = `metadata.${id}${force ? '.force' : ''}`
+    const job = await MetadataQueue.getJob(jobId)
+    if (job?.id && (await hasExistingJob(job))) return
+    if (job?.id) await MetadataQueue.remove(job.id)
     MetadataQueue.add(
         JobsEnum.COMPUTE_METADATA,
         { id, type, force, allTokens, traits },
         {
             delay,
-            jobId: `metadata.${id}${force ? '.force' : ''}`,
+            jobId,
         }
     ).catch(() => {
         Logger.error('Failed to dispatch a job on metadata queue', LOGGER_NAMESPACE)
@@ -241,16 +242,16 @@ export async function dispatchComputeMetadata({
 }
 
 export async function dispatchComputeTokenGroupMetadata(id: string, delay?: number): Promise<void> {
-    const job = await MetadataQueue.getJob(`metadata.tokenGroup.${id}`)
-    if (job?.id && (await shouldReplaceJob(job))) {
-        await MetadataQueue.remove(job.id)
-    }
+    const jobId = `metadata.tokenGroup.${id}`
+    const job = await MetadataQueue.getJob(jobId)
+    if (job?.id && (await hasExistingJob(job))) return
+    if (job?.id) await MetadataQueue.remove(job.id)
     MetadataQueue.add(
         JobsEnum.COMPUTE_TOKEN_GROUP_METADATA,
         { id },
         {
             delay,
-            jobId: `metadata.tokenGroup.${id}`,
+            jobId,
         }
     ).catch(() => {
         Logger.error('Failed to dispatch a job on metadata queue', LOGGER_NAMESPACE)
@@ -310,16 +311,16 @@ export function dispatchSyncCollectionTransfer(id: string): void {
 }
 
 export async function dispatchComputeValidators(): Promise<void> {
-    const job = await ValidatorsQueue.getJob('validators.all')
-    if (job?.id && (await shouldReplaceJob(job))) {
-        await ValidatorsQueue.remove(job.id)
-    }
+    const jobId = 'validators.all'
+    const job = await ValidatorsQueue.getJob(jobId)
+    if (job?.id && (await hasExistingJob(job))) return
+    if (job?.id) await ValidatorsQueue.remove(job.id)
     ValidatorsQueue.add(
         JobsEnum.COMPUTE_VALIDATORS,
         {},
         {
             delay: 6000,
-            jobId: 'validators.all',
+            jobId,
         }
     ).catch(() => {
         Logger.error('Failed to dispatch compute validators', LOGGER_NAMESPACE)
@@ -327,16 +328,16 @@ export async function dispatchComputeValidators(): Promise<void> {
 }
 
 export async function dispatchSyncTokens(): Promise<void> {
-    const job = await TokensQueue.getJob('tokens.supply.all')
-    if (job?.id && (await shouldReplaceJob(job))) {
-        await TokensQueue.remove(job.id)
-    }
+    const jobId = 'tokens.supply.all'
+    const job = await TokensQueue.getJob(jobId)
+    if (job?.id && (await hasExistingJob(job))) return
+    if (job?.id) await TokensQueue.remove(job.id)
     TokensQueue.add(
         JobsEnum.SYNC_TOKENS,
         {},
         {
             delay: 6000,
-            jobId: 'tokens.supply.all',
+            jobId,
         }
     ).catch(() => {
         Logger.error('Failed to dispatch sync tokens', LOGGER_NAMESPACE)
@@ -370,16 +371,16 @@ export function dispatchRefreshPool(id: string): void {
 }
 
 export async function dispatchSyncValidators(): Promise<void> {
-    const job = await ValidatorsQueue.getJob('validators.sync.all')
-    if (job?.id && (await shouldReplaceJob(job))) {
-        await ValidatorsQueue.remove(job.id)
-    }
+    const jobId = 'validators.sync.all'
+    const job = await ValidatorsQueue.getJob(jobId)
+    if (job?.id && (await hasExistingJob(job))) return
+    if (job?.id) await ValidatorsQueue.remove(job.id)
     ValidatorsQueue.add(
         JobsEnum.SYNC_VALIDATORS,
         {},
         {
             delay: 6000,
-            jobId: 'validators.sync.all',
+            jobId,
         }
     ).catch(() => {
         Logger.error('Failed to dispatch sync validators', LOGGER_NAMESPACE)
@@ -405,9 +406,7 @@ export function dispatchSyncChain(fromBlock?: number, toBlock?: number): void {
 export async function dispatchImportBlock(blockNumber: number, toBlock?: number): Promise<void> {
     const jobId = `chain.import.${blockNumber}-${toBlock ?? blockNumber}`
     const job = await ValidatorsQueue.getJob(jobId)
-    if (job && job.id) {
-        await ValidatorsQueue.remove(job.id)
-    }
+    if (job?.id && (await hasExistingJob(job))) return
     ValidatorsQueue.add(
         JobsEnum.IMPORT_BLOCK,
         {
@@ -541,16 +540,16 @@ export function dispatchComputePoolOffers(id: string): void {
 }
 
 export async function dispatchComputeAccountStats(id: string): Promise<void> {
-    const job = await AccountsQueue.getJob(`accounts.compute-stats.${id}`)
-    if (job?.id && (await shouldReplaceJob(job))) {
-        await AccountsQueue.remove(job.id)
-    }
+    const jobId = `accounts.compute-stats.${id}`
+    const job = await AccountsQueue.getJob(jobId)
+    if (job?.id && (await hasExistingJob(job))) return
+    if (job?.id) await AccountsQueue.remove(job.id)
     AccountsQueue.add(
         JobsEnum.COMPUTE_ACCOUNT_STATS,
         { id },
         {
             delay: 24000,
-            jobId: `accounts.compute-stats.${id}`,
+            jobId,
         }
     ).catch(() => {
         Logger.error('Failed to dispatch compute account stats', LOGGER_NAMESPACE)
