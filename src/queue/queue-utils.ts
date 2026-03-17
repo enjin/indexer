@@ -389,9 +389,8 @@ export async function dispatchSyncValidators(): Promise<void> {
 
 export async function dispatchSyncActiveValidators(): Promise<void> {
     const job = await ValidatorsQueue.getJob('validators.sync.active.all')
-    if (job?.id && (await shouldReplaceJob(job))) {
-        await ValidatorsQueue.remove(job.id)
-    }
+    if (job?.id && (await hasExistingJob(job))) return
+    if (job?.id) await ValidatorsQueue.remove(job.id)
     ValidatorsQueue.add(
         JobsEnum.SYNC_ACTIVE_VALIDATORS,
         {},
