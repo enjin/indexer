@@ -15,6 +15,11 @@ export const NETWORK_ALIASES: Record<string, Network> = {
 }
 
 export interface DecodeRequest {
+    /**
+     * Raw SCALE-encoded call bytes (pallet index + call index + args).
+     * This is NOT an extrinsic. Use when you have unwrapped call data.
+     */
+    call?: string
     extrinsic?: string
     extrinsics?: string[]
     events?: string // Single hex string containing Vec<EventRecord>

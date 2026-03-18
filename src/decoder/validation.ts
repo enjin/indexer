@@ -18,12 +18,22 @@ export function validateDecodeRequest(
 
     const req = body as Record<string, unknown>
 
+    const hasCall = req.call !== undefined
     const hasExtrinsic = req.extrinsic !== undefined
     const hasExtrinsics = req.extrinsics !== undefined
     const hasEvents = req.events !== undefined
 
-    if (!hasExtrinsic && !hasExtrinsics && !hasEvents) {
-        return { valid: false, error: 'Missing "extrinsic", "extrinsics", or "events" field' }
+    if (!hasCall && !hasExtrinsic && !hasExtrinsics && !hasEvents) {
+        return { valid: false, error: 'Missing "call", "extrinsic", "extrinsics", or "events" field' }
+    }
+
+    if (hasCall) {
+        if (typeof req.call !== 'string') {
+            return { valid: false, error: '"call" must be a string' }
+        }
+        if (!isHex(req.call)) {
+            return { valid: false, error: 'Call must be a valid hex string (0x followed by hex characters)' }
+        }
     }
 
     if (hasExtrinsic) {
@@ -72,6 +82,7 @@ export function validateDecodeRequest(
     return {
         valid: true,
         data: {
+            call: req.call as string | undefined,
             extrinsic: req.extrinsic as string | undefined,
             extrinsics: req.extrinsics as string[] | undefined,
             events: req.events as string | undefined,

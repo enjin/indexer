@@ -236,7 +236,7 @@ function transformSignedExtensions(signedExtensions: unknown): {
  * Transforms call data to platform-decoder format: { PalletName: { call_name: params } }
  * Uses runtime metadata to determine field types for proper type-aware transformation.
  */
-function transformCall(call: unknown, runtime?: Runtime): Record<string, unknown> {
+export function transformCall(call: unknown, runtime?: Runtime): Record<string, unknown> {
     if (!hasKind(call)) return {}
     const { __kind: palletName, value } = call
 
