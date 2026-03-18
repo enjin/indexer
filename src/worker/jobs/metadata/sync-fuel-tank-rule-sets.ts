@@ -63,15 +63,15 @@ function jsonVariantToDescriptor(kind: string, raw: unknown): DispatchRuleDescri
             }
         }
         case 'WhitelistedCallers': {
-            const arr = (Array.isArray(v) ? v : (v.value as string[]) ?? []) as string[]
+            const arr = (Array.isArray(v) ? v : ((v.value as string[]) ?? [])) as string[]
             return { __kind: 'WhitelistedCallers', value: arr.map(String) }
         }
         case 'WhitelistedCollections': {
-            const arr = (Array.isArray(v) ? v : (v.value as unknown[]) ?? []) as string[]
+            const arr = (Array.isArray(v) ? v : ((v.value as unknown[]) ?? [])) as string[]
             return { __kind: 'WhitelistedCollections', value: arr.map((c) => big(String(c))) }
         }
         case 'WhitelistedPallets': {
-            const arr = (Array.isArray(v) ? v : (v.value as unknown[]) ?? []) as {
+            const arr = (Array.isArray(v) ? v : ((v.value as unknown[]) ?? [])) as {
                 type?: string
                 value?: { type?: string }
             }[]
@@ -96,11 +96,11 @@ function jsonVariantToDescriptor(kind: string, raw: unknown): DispatchRuleDescri
                 },
             }
         case 'PermittedCalls': {
-            const arr = (Array.isArray(v) ? v : (v.value as string[]) ?? []) as string[]
+            const arr = (Array.isArray(v) ? v : ((v.value as string[]) ?? [])) as string[]
             return { __kind: 'PermittedCalls', value: arr.map(String) }
         }
         case 'PermittedExtrinsics': {
-            const arr = (Array.isArray(v) ? v : (v.value as unknown[]) ?? []) as {
+            const arr = (Array.isArray(v) ? v : ((v.value as unknown[]) ?? [])) as {
                 type?: string
                 value?: { type?: string }
             }[]
@@ -278,7 +278,6 @@ function tankRuleSetEntries(chainTank: unknown): Array<{ index: number; descript
     return []
 }
 
-
 export async function syncFuelTankRuleSets(job: Job) {
     try {
         const em = await connectionManager()
@@ -365,8 +364,7 @@ export async function syncFuelTankRuleSets(job: Job) {
             const ruleSet = new FuelTankRuleSet({
                 id: ruleSetId,
                 index: setIndex,
-                isPermittedExtrinsicsEmpty:
-                    permittedExtrinsics === undefined || permittedExtrinsics.length === 0,
+                isPermittedExtrinsicsEmpty: permittedExtrinsics === undefined || permittedExtrinsics.length === 0,
                 isPermittedExtrinsicsNull: permittedExtrinsics === undefined,
                 tank: new FuelTank({ id: tankId }),
                 isFrozen: existing?.isFrozen ?? false,
