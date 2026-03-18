@@ -469,7 +469,7 @@ export function dispatchComputeTokenBestListing(id: string): void {
         JobsEnum.COMPUTE_TOKEN_BEST_LISTING,
         { id },
         {
-            delay: 6000,
+            delay: 20000,
             jobId: `tokens.best-listing.${id}`,
         }
     ).catch(() => {

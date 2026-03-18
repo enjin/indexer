@@ -18,7 +18,7 @@ import {
     TokenAccount,
 } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { getBestListing, getOrCreateAccount } from '~/util/entities'
+import { getOrCreateAccount } from '~/util/entities'
 import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
@@ -124,13 +124,8 @@ export async function listingCreated(
 
     const isOffer = listing.type === ListingType.Offer
     if (!isOffer) {
-        const bestListing = await getBestListing(ctx, makeAssetId.id)
-        makeAssetId.bestListing = null
-        if (bestListing) {
-            makeAssetId.bestListing = bestListing
-            makeAssetId.bestListingPrice = bestListing.price
-        }
         makeAssetId.recentListing = listing
+        QueueUtils.dispatchComputeTokenBestListing(makeAssetId.id)
         await ctx.store.save(makeAssetId)
     }
 
