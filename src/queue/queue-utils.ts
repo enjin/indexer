@@ -284,6 +284,19 @@ export function dispatchSyncAllMetadata(): void {
     })
 }
 
+export function dispatchSyncFuelTankRuleSets(): void {
+    MetadataQueue.add(
+        JobsEnum.SYNC_FUEL_TANK_RULE_SETS,
+        {},
+        {
+            delay: 6000,
+            jobId: 'metadata.fuelTankRuleSets.sync',
+        }
+    ).catch(() => {
+        Logger.error('Failed to dispatch sync fuel tank rule sets', LOGGER_NAMESPACE)
+    })
+}
+
 export function dispatchSyncOffers(): void {
     ListingsQueue.add(
         JobsEnum.FETCH_OFFERS,
