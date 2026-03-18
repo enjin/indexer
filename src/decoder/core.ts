@@ -10,7 +10,7 @@ import type {
     DecodedSignedExtrinsicResult,
 } from './types'
 import { NETWORK_ALIASES } from './types'
-import { transformExtrinsic, transformEvent } from './compatibility'
+import { transformCall, transformExtrinsic, transformEvent } from './compatibility'
 
 export function bigIntReplacer(_key: string, value: unknown): unknown {
     if (typeof value === 'bigint') {
@@ -126,6 +126,17 @@ export async function decodeEvents(
     return results
 }
 
+export async function decodeCall(call: string, network: Network, specVersion: number): Promise<unknown> {
+    const runtime = await getRuntimeCached(network, specVersion)
+
+    const hexString = call.startsWith('0x') ? call.slice(2) : call
+    const bytes = new Uint8Array(Buffer.from(hexString, 'hex'))
+    const src = new Src(bytes)
+
+    const decodedCall = runtime.scaleCodec.decode(runtime.description.call, src)
+    return { calls: transformCall(decodedCall, runtime) }
+}
+
 export async function decodeSignedExtrinsicsRaw(
     items: DecodedSignedExtrinsicInput[],
     network: Network,
@@ -177,7 +188,7 @@ export async function decodeSignedExtrinsicsRaw(
 }
 
 export async function decode(requestData: DecodeRequest): Promise<unknown> {
-    const { extrinsic, extrinsics, events, network: networkInput, spec_version } = requestData
+    const { call, extrinsic, extrinsics, events, network: networkInput, spec_version } = requestData
 
     const resolved = networkInput ? resolveNetwork(networkInput) : null
     if (networkInput && !resolved) {
@@ -185,6 +196,10 @@ export async function decode(requestData: DecodeRequest): Promise<unknown> {
     }
     const network = resolved || DEFAULT_NETWORK
     const specVersion = spec_version ?? getLatestSpecVersion(network)
+
+    if (call) {
+        return decodeCall(call, network, specVersion)
+    }
 
     if (extrinsic) {
         return decodeExtrinsic(extrinsic, network, specVersion)
@@ -198,5 +213,5 @@ export async function decode(requestData: DecodeRequest): Promise<unknown> {
         return decodeEvents(events, network, specVersion)
     }
 
-    throw new Error('Invalid request: no extrinsic, extrinsics, or events provided')
+    throw new Error('Invalid request: no call, extrinsic, extrinsics, or events provided')
 }
