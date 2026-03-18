@@ -8,7 +8,7 @@ import {
     TokenAccount,
 } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { getBestListing, getOrCreateAccount } from '~/util/entities'
+import { getOrCreateAccount } from '~/util/entities'
 import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
@@ -77,15 +77,6 @@ export async function auctionFinalized(
 
     await ctx.store.save(listing)
 
-    const bestListing = await getBestListing(ctx, makeAssetId.id)
-    makeAssetId.bestListing = null
-    if (bestListing) {
-        makeAssetId.bestListing = bestListing
-        makeAssetId.bestListingPrice = bestListing.price
-    }
-
-    await ctx.store.save(makeAssetId)
-
     const snsEvent: SnsEvent = {
         id: item.id,
         name: item.name,
@@ -116,6 +107,7 @@ export async function auctionFinalized(
     }
 
     await QueueUtils.dispatchComputeStats(makeAssetId.collection.id)
+    QueueUtils.dispatchComputeTokenBestListing(makeAssetId.id)
 
     return [
         ...mappings.marketplace.events.auctionFinalizedEventModel(

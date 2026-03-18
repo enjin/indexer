@@ -1,6 +1,6 @@
 import { AccountTokenEvent, Event as EventModel, Listing, ListingStatus, ListingStatusType, ListingType } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { getBestListing, getOrCreateAccount } from '~/util/entities'
+import { getOrCreateAccount } from '~/util/entities'
 import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
@@ -34,13 +34,7 @@ export async function listingRemovedUnderMinimum(
     const isOffer = listing.type === ListingType.Offer
 
     if (listing.type !== ListingType.Offer) {
-        const bestListing = await getBestListing(ctx, makeAssetId.id)
-        makeAssetId.bestListing = null
-        if (bestListing) {
-            makeAssetId.bestListing = bestListing
-            makeAssetId.bestListingPrice = bestListing.price
-        }
-        await ctx.store.save(makeAssetId)
+        QueueUtils.dispatchComputeTokenBestListing(makeAssetId.id)
     }
 
     const listingStatus = new ListingStatus({

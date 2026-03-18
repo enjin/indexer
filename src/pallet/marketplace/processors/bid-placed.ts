@@ -2,7 +2,7 @@ import { AccountTokenEvent, AuctionState, Bid, Event as EventModel, Listing, Lis
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
-import { getBestListing, getOrCreateAccount } from '~/util/entities'
+import { getOrCreateAccount } from '~/util/entities'
 import { QueueUtils } from '~/queue'
 
 export async function bidPlaced(
@@ -52,14 +52,6 @@ export async function bidPlaced(
 
     await Promise.all([ctx.store.save(bid), ctx.store.save(listing)])
 
-    const bestListing = await getBestListing(ctx, makeAssetId.id)
-    makeAssetId.bestListing = null
-    if (bestListing) {
-        makeAssetId.bestListing = bestListing
-        makeAssetId.bestListingPrice = bestListing.price
-    }
-    await ctx.store.save(makeAssetId)
-
     const snsEvent: SnsEvent = {
         id: item.id,
         name: item.name,
@@ -96,6 +88,7 @@ export async function bidPlaced(
     }
 
     await QueueUtils.dispatchComputeStats(makeAssetId.collection.id)
+    QueueUtils.dispatchComputeTokenBestListing(makeAssetId.id)
 
     return [
         ...mappings.marketplace.events.bidPlacedEventModel(
