@@ -77,6 +77,7 @@ export interface DecodedSignedExtrinsicInput {
 }
 
 export interface DecodedSignedExtrinsicResult {
+    hash: string
     signer: string | null
     nonce: number | null
     encodedData: string | null
