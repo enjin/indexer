@@ -1,7 +1,14 @@
 import { blake2AsHex } from '@polkadot/util-crypto'
 import { Src } from '@subsquid/scale-codec'
 import { getRuntimeCached } from './metadata'
-import type { DecodeRequest, DecodeResponse, Network, DecodedEventRecord } from './types'
+import type {
+    DecodeRequest,
+    DecodeResponse,
+    Network,
+    DecodedEventRecord,
+    DecodedSignedExtrinsicInput,
+    DecodedSignedExtrinsicResult,
+} from './types'
 import { NETWORK_ALIASES } from './types'
 import { transformExtrinsic, transformEvent } from './compatibility'
 
@@ -12,7 +19,7 @@ export function bigIntReplacer(_key: string, value: unknown): unknown {
     return value
 }
 
-const DEFAULT_NETWORK: Network = 'enjin-matrixchain'
+export const DEFAULT_NETWORK: Network = 'enjin-matrixchain'
 
 const LATEST_SPEC_VERSIONS: Record<Network, number> = {
     'enjin-relaychain': 1062,
@@ -21,7 +28,7 @@ const LATEST_SPEC_VERSIONS: Record<Network, number> = {
     'canary-matrixchain': 1031,
 }
 
-function getLatestSpecVersion(network: Network): number {
+export function getLatestSpecVersion(network: Network): number {
     return LATEST_SPEC_VERSIONS[network]
 }
 
@@ -117,6 +124,56 @@ export async function decodeEvents(
     }
 
     return results
+}
+
+export async function decodeSignedExtrinsicsRaw(
+    items: DecodedSignedExtrinsicInput[],
+    network: Network,
+    specVersion: number
+): Promise<DecodedSignedExtrinsicResult[]> {
+    const runtime = await getRuntimeCached(network, specVersion)
+
+    const normalizeHex = (value: string): string => {
+        const prefixed = value.startsWith('0x') ? value : `0x${value}`
+        return prefixed.toLowerCase()
+    }
+
+    return items.map((item) => {
+        try {
+            const decoded = runtime.decodeExtrinsic(item.signedExtrinsic)
+
+            let signer: string | null = null
+            let nonce: number | null = null
+
+            if (decoded.signature) {
+                const address = decoded.signature.address as { __kind: string; value?: string }
+                if (address.value) {
+                    signer = normalizeHex(address.value)
+                }
+
+                const signedExtensions = decoded.signature.signedExtensions as { checkNonce?: number } | undefined
+
+                if (signedExtensions && typeof signedExtensions.checkNonce === 'number') {
+                    nonce = signedExtensions.checkNonce
+                }
+            }
+
+            const encodedCall = runtime.encodeCall(decoded.call)
+            const encodedCallHex = normalizeHex('0x' + Buffer.from(encodedCall).toString('hex'))
+
+            return {
+                signer,
+                nonce,
+                encodedData: encodedCallHex,
+            }
+        } catch {
+            return {
+                signer: null,
+                nonce: null,
+                encodedData: null,
+            }
+        }
+    })
 }
 
 export async function decode(requestData: DecodeRequest): Promise<unknown> {
