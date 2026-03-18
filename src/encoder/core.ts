@@ -1,7 +1,6 @@
 import { getRuntimeCached } from '../decoder/metadata'
 import { resolveNetwork } from '../decoder/core'
 import type { Network } from '../decoder/types'
-import type { DecodedCall } from '@subsquid/substrate-runtime'
 import type { EncodeCallInput, EncodeRequest, EncodeResponse } from './types'
 
 const DEFAULT_NETWORK: Network = 'enjin-matrixchain'
@@ -32,8 +31,9 @@ export async function encodeCall(input: EncodeCallInput, network: Network, specV
     const callData = toKindFormat(input)
     // Use jsonCodec to decode the call from JSON-compatible types (number/string) into
     // native SCALE types (bigint for U128/U64, etc.) before binary encoding.
-    const decoded = (runtime as any).jsonCodec.decode((runtime as any).description.call, callData)
-    const encoded = (runtime as any).scaleCodec.encodeToBinary((runtime as any).description.call, decoded)
+    const callTi = runtime.description.call
+    const decoded = runtime.jsonCodec.decode(callTi, callData)
+    const encoded = runtime.scaleCodec.encodeToBinary(callTi, decoded)
     return '0x' + Buffer.from(encoded).toString('hex')
 }
 
