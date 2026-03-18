@@ -20,16 +20,16 @@ export async function syncTokens(job: Job) {
         }
 
         await job.log(`Dispatched sync for token ${id}`)
-        QueueUtils.dispatchComputeTokenInfusion(id)
-        QueueUtils.dispatchComputeTokenSupply(id)
+        // QueueUtils.dispatchComputeTokenInfusion(id)
+        // QueueUtils.dispatchComputeTokenSupply(id)
         QueueUtils.dispatchComputeTokenBestListing(id)
-        QueueUtils.dispatchComputeTokenCreationSupply(id)
+        // QueueUtils.dispatchComputeTokenCreationSupply(id)
         count++
 
         // Update progress every 100 tokens (10% -> 90%)
-        if (count % 100 === 0) {
-            job.updateProgress(Math.min(90, 10 + Math.floor(count / 10))).catch(() => {})
-        }
+        // if (count % 100 === 0) {
+        //     job.updateProgress(Math.min(90, 10 + Math.floor(count / 10))).catch(() => {})
+        // }
     })
 
     stream.on('end', async () => {
