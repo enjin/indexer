@@ -30,7 +30,10 @@ function toKindFormat(input: EncodeCallInput): Record<string, unknown> {
 export async function encodeCall(input: EncodeCallInput, network: Network, specVersion: number): Promise<string> {
     const runtime = await getRuntimeCached(network, specVersion)
     const callData = toKindFormat(input)
-    const encoded = runtime.encodeCall(callData as unknown as DecodedCall)
+    // Use jsonCodec to decode the call from JSON-compatible types (number/string) into
+    // native SCALE types (bigint for U128/U64, etc.) before binary encoding.
+    const decoded = (runtime as any).jsonCodec.decode((runtime as any).description.call, callData)
+    const encoded = (runtime as any).scaleCodec.encodeToBinary((runtime as any).description.call, decoded)
     return '0x' + Buffer.from(encoded).toString('hex')
 }
 
