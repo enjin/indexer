@@ -2,7 +2,7 @@ import { FuelTank, FuelTankRuleSet } from '~/model'
 import { connectionManager } from '~/contexts'
 import { Job } from 'bullmq'
 import Rpc from '~/util/rpc'
-import { IsNull, Or, Equal } from 'typeorm'
+import { IsNull, Equal } from 'typeorm'
 
 function requireSignatureFromRulesJson(rules: unknown[]): string | undefined {
     for (const rule of rules) {
@@ -52,7 +52,7 @@ export async function syncFuelTankRuleSets(job: Job) {
         await job.updateProgress(5)
 
         const needingFix = await em.find(FuelTankRuleSet, {
-            where: { requireSignature: Or(IsNull(), Equal('')) },
+            where: [{ requireSignature: IsNull() }, { requireSignature: Equal('') }],
             relations: { tank: { tankAccount: true } },
         })
 
