@@ -278,117 +278,148 @@ function tankRuleSetEntries(chainTank: unknown): Array<{ index: number; descript
     return []
 }
 
-export async function syncFuelTankRuleSets(job: Job) {
+export type SyncFuelTankRuleSetsJobData = {
+    /** When set, only this tank. When omitted, every `FuelTank` in the DB is synced. */
+    tankId?: string
+}
+
+export async function syncFuelTankRuleSets(job: Job<SyncFuelTankRuleSetsJobData>) {
     try {
         const em = await connectionManager()
         const { api } = await Rpc.getInstance()
-        const tankId = job.data?.tankId?.trim()
-        if (!tankId) {
-            throw new Error('tankId is required')
-        }
+        const tankIdFilter = job.data?.tankId?.trim() || undefined
 
         await job.updateProgress(5)
 
-        const fuelTank = await em.findOne(FuelTank, {
-            where: { id: tankId },
-            relations: { tankAccount: true },
-        })
-        if (!fuelTank) {
-            throw new Error(`Fuel tank not found: ${tankId}`)
-        }
-
-        const address = fuelTank.tankAccount.address
-        await job.log(`Syncing rule sets from chain for tank ${tankId}`)
-
-        const opt = await api.query.fuelTanks.tanks(address)
-        const codec = opt as unknown as {
-            isNone?: boolean
-            isEmpty?: boolean
-            unwrap: () => unknown
-        }
-        if (codec.isNone || codec.isEmpty) {
-            await job.log(`Tank ${tankId} not in chain storage`)
-            await job.updateProgress(100)
-            return
-        }
-
-        const entries = tankRuleSetEntries(codec.unwrap())
-        if (entries.length === 0) {
-            await job.log(`Tank ${tankId} has no rule sets on chain`)
-            await job.updateProgress(100)
-            return
-        }
-
-        let ruleSetsSynced = 0
-        const total = entries.length
-
-        for (let i = 0; i < entries.length; i++) {
-            const { index: setIndex, descriptors } = entries[i]
-            const ruleSetId = `${tankId}-${setIndex}`
-
-            if (descriptors.length === 0) {
-                await job.log(`Rule set ${ruleSetId}: no rules decoded, skipping`)
-                continue
-            }
-
-            let mapped: ReturnType<typeof rulesToMap>
-            try {
-                mapped = rulesToMap(ruleSetId, descriptors)
-            } catch (e) {
-                await job.log(
-                    `Rule set ${ruleSetId}: rulesToMap failed (${e instanceof Error ? e.message : String(e)}), skipping`
-                )
-                continue
-            }
-
-            const [pE, existing] = await Promise.all([
-                em.find(PermittedExtrinsics, { where: { ruleSet: { id: ruleSetId } } }),
-                em.findOne(FuelTankRuleSet, { where: { id: ruleSetId } }),
-            ])
-            await em.remove(pE)
-
-            const {
-                whitelistedCallers,
-                whitelistedCollections,
-                whitelistedPallets,
-                maxFuelBurnPerTransaction,
-                userFuelBudget,
-                tankFuelBudget,
-                requireToken,
-                permittedCalls,
-                permittedExtrinsics,
-                requireSignature,
-                minimumInfusion,
-            } = mapped
-
-            const ruleSet = new FuelTankRuleSet({
-                id: ruleSetId,
-                index: setIndex,
-                isPermittedExtrinsicsEmpty: permittedExtrinsics === undefined || permittedExtrinsics.length === 0,
-                isPermittedExtrinsicsNull: permittedExtrinsics === undefined,
-                tank: new FuelTank({ id: tankId }),
-                isFrozen: existing?.isFrozen ?? false,
-                whitelistedCallers,
-                whitelistedCollections,
-                whitelistedPallets,
-                maxFuelBurnPerTransaction,
-                userFuelBudget,
-                tankFuelBudget,
-                requireToken,
-                permittedCalls,
-                minimumInfusion,
-                requireSignature,
+        let tanks: FuelTank[]
+        if (tankIdFilter) {
+            const one = await em.findOne(FuelTank, {
+                where: { id: tankIdFilter },
+                relations: { tankAccount: true },
             })
-            await em.save(ruleSet)
-            if (permittedExtrinsics?.length) {
-                await em.save(permittedExtrinsics)
+            if (!one) {
+                throw new Error(`Fuel tank not found: ${tankIdFilter}`)
             }
-            ruleSetsSynced++
-
-            await job.updateProgress(Math.min(95, 5 + Math.floor(((i + 1) / total) * 90)))
+            tanks = [one]
+            await job.log(`Syncing rule sets from chain for tank ${tankIdFilter}`)
+        } else {
+            tanks = await em.find(FuelTank, { relations: { tankAccount: true } })
+            await job.log(`Syncing rule sets from chain for all ${tanks.length} fuel tank(s)`)
         }
 
-        await job.log(`Synced ${ruleSetsSynced} rule set(s) for tank ${tankId}`)
+        if (tanks.length === 0) {
+            await job.updateProgress(100)
+            return
+        }
+
+        const slice = 90 / tanks.length
+        let totalRuleSetsSynced = 0
+
+        for (let ti = 0; ti < tanks.length; ti++) {
+            const fuelTank = tanks[ti]
+            const tankId = fuelTank.id
+            const address = fuelTank.tankAccount.address
+            const progressBase = 5 + ti * slice
+
+            if (tanks.length > 1) {
+                await job.log(`Tank ${ti + 1}/${tanks.length}: ${tankId}`)
+            }
+
+            const opt = await api.query.fuelTanks.tanks(address)
+            const codec = opt as unknown as {
+                isNone?: boolean
+                isEmpty?: boolean
+                unwrap: () => unknown
+            }
+            if (codec.isNone || codec.isEmpty) {
+                await job.log(`Tank ${tankId} not in chain storage, skipping`)
+                await job.updateProgress(Math.min(95, progressBase + slice))
+                continue
+            }
+
+            const entries = tankRuleSetEntries(codec.unwrap())
+            if (entries.length === 0) {
+                await job.log(`Tank ${tankId} has no rule sets on chain, skipping`)
+                await job.updateProgress(Math.min(95, progressBase + slice))
+                continue
+            }
+
+            const inner = entries.length
+
+            for (let i = 0; i < entries.length; i++) {
+                const { index: setIndex, descriptors } = entries[i]
+                const ruleSetId = `${tankId}-${setIndex}`
+
+                if (descriptors.length === 0) {
+                    await job.log(`Rule set ${ruleSetId}: no rules decoded, skipping`)
+                    await job.updateProgress(Math.min(95, progressBase + ((i + 1) / inner) * slice))
+                    continue
+                }
+
+                let mapped: ReturnType<typeof rulesToMap>
+                try {
+                    mapped = rulesToMap(ruleSetId, descriptors)
+                } catch (e) {
+                    await job.log(
+                        `Rule set ${ruleSetId}: rulesToMap failed (${e instanceof Error ? e.message : String(e)}), skipping`
+                    )
+                    await job.updateProgress(Math.min(95, progressBase + ((i + 1) / inner) * slice))
+                    continue
+                }
+
+                const [pE, existing] = await Promise.all([
+                    em.find(PermittedExtrinsics, { where: { ruleSet: { id: ruleSetId } } }),
+                    em.findOne(FuelTankRuleSet, { where: { id: ruleSetId } }),
+                ])
+                await em.remove(pE)
+
+                const {
+                    whitelistedCallers,
+                    whitelistedCollections,
+                    whitelistedPallets,
+                    maxFuelBurnPerTransaction,
+                    userFuelBudget,
+                    tankFuelBudget,
+                    requireToken,
+                    permittedCalls,
+                    permittedExtrinsics,
+                    requireSignature,
+                    minimumInfusion,
+                } = mapped
+
+                const ruleSet = new FuelTankRuleSet({
+                    id: ruleSetId,
+                    index: setIndex,
+                    isPermittedExtrinsicsEmpty: permittedExtrinsics === undefined || permittedExtrinsics.length === 0,
+                    isPermittedExtrinsicsNull: permittedExtrinsics === undefined,
+                    tank: new FuelTank({ id: tankId }),
+                    isFrozen: existing?.isFrozen ?? false,
+                    whitelistedCallers,
+                    whitelistedCollections,
+                    whitelistedPallets,
+                    maxFuelBurnPerTransaction,
+                    userFuelBudget,
+                    tankFuelBudget,
+                    requireToken,
+                    permittedCalls,
+                    minimumInfusion,
+                    requireSignature,
+                })
+                await em.save(ruleSet)
+                if (permittedExtrinsics?.length) {
+                    await em.save(permittedExtrinsics)
+                }
+                totalRuleSetsSynced++
+
+                await job.updateProgress(Math.min(95, progressBase + ((i + 1) / inner) * slice))
+            }
+        }
+
+        await job.log(
+            tankIdFilter
+                ? `Done: ${totalRuleSetsSynced} rule set(s) for tank ${tankIdFilter}`
+                : `Done: ${totalRuleSetsSynced} rule set(s) across ${tanks.length} tank(s)`
+        )
         await job.updateProgress(100)
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error)
