@@ -5,9 +5,7 @@ import Rpc from '~/util/rpc'
 import { rulesToMap } from '~/pallet/fuel-tanks/utils'
 import type { DispatchRuleDescriptor } from '~/pallet/common/types'
 
-function num(
-    v: { toNumber?: () => number; toString?: () => string } | number | bigint | null | undefined
-): number {
+function num(v: { toNumber?: () => number; toString?: () => string } | number | bigint | null | undefined): number {
     if (v == null) return 0
     if (typeof v === 'number') return Number.isFinite(v) ? v : 0
     if (typeof v === 'bigint') {
