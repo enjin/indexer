@@ -5,18 +5,38 @@ import Rpc from '~/util/rpc'
 import { rulesToMap } from '~/pallet/fuel-tanks/utils'
 import type { DispatchRuleDescriptor } from '~/pallet/common/types'
 
-function num(v: { toNumber?: () => number; toString?: () => string } | number | bigint): number {
-    if (typeof v === 'number') return v
-    if (typeof v === 'bigint') return Number(v)
-    if (v && typeof (v as { toNumber?: () => number }).toNumber === 'function') {
-        return (v as { toNumber: () => number }).toNumber()
+function num(
+    v: { toNumber?: () => number; toString?: () => string } | number | bigint | null | undefined
+): number {
+    if (v == null) return 0
+    if (typeof v === 'number') return Number.isFinite(v) ? v : 0
+    if (typeof v === 'bigint') {
+        const n = Number(v)
+        return Number.isFinite(n) ? n : 0
     }
-    return Number((v as { toString: () => string }).toString())
+    if (typeof v === 'object' && typeof (v as { toNumber?: () => number }).toNumber === 'function') {
+        const n = (v as { toNumber: () => number }).toNumber()
+        return Number.isFinite(n) ? n : 0
+    }
+    const n = Number(String(v))
+    return Number.isFinite(n) ? n : 0
 }
 
-function big(v: { toString?: () => string } | bigint | number | string): bigint {
+/** Safe for RPC/JSON: missing or invalid values become 0n so sync does not throw. */
+function big(v: { toString?: () => string } | bigint | number | string | null | undefined): bigint {
     if (typeof v === 'bigint') return v
-    return BigInt(String(v))
+    if (v == null) return 0n
+    if (typeof v === 'number') {
+        if (!Number.isFinite(v)) return 0n
+        return BigInt(Math.trunc(v))
+    }
+    const s = String(v).trim()
+    if (s === '' || s === 'undefined' || s === 'null' || s === 'NaN') return 0n
+    try {
+        return BigInt(s)
+    } catch {
+        return 0n
+    }
 }
 
 function asPlainTank(chainTank: unknown): Record<string, unknown> {
@@ -43,22 +63,26 @@ function jsonVariantToDescriptor(kind: string, raw: unknown): DispatchRuleDescri
         case 'UserFuelBudget': {
             const ub = (v.userFuelBudget ?? v) as Record<string, unknown>
             const budget = (ub.budget ?? ub) as Record<string, unknown>
+            const amount = budget.amount ?? ub.amount ?? v.amount
+            const resetPeriod = budget.resetPeriod ?? ub.resetPeriod ?? v.resetPeriod
             return {
                 __kind: 'UserFuelBudget',
                 value: {
-                    amount: big(budget.amount as string),
-                    resetPeriod: num(budget.resetPeriod as number),
+                    amount: big(amount as string),
+                    resetPeriod: num(resetPeriod as number),
                 },
             }
         }
         case 'TankFuelBudget': {
             const tb = (v.tankFuelBudget ?? v) as Record<string, unknown>
             const budget = (tb.budget ?? tb) as Record<string, unknown>
+            const amount = budget.amount ?? tb.amount ?? v.amount
+            const resetPeriod = budget.resetPeriod ?? tb.resetPeriod ?? v.resetPeriod
             return {
                 __kind: 'TankFuelBudget',
                 value: {
-                    amount: big(budget.amount as string),
-                    resetPeriod: num(budget.resetPeriod as number),
+                    amount: big(amount as string),
+                    resetPeriod: num(resetPeriod as number),
                 },
             }
         }
@@ -67,8 +91,8 @@ function jsonVariantToDescriptor(kind: string, raw: unknown): DispatchRuleDescri
             return { __kind: 'WhitelistedCallers', value: arr.map(String) }
         }
         case 'WhitelistedCollections': {
-            const arr = (Array.isArray(v) ? v : ((v.value as unknown[]) ?? [])) as string[]
-            return { __kind: 'WhitelistedCollections', value: arr.map((c) => big(String(c))) }
+            const arr = (Array.isArray(v) ? v : ((v.value as unknown[]) ?? [])) as unknown[]
+            return { __kind: 'WhitelistedCollections', value: arr.filter((c) => c != null).map((c) => big(String(c))) }
         }
         case 'WhitelistedPallets': {
             const arr = (Array.isArray(v) ? v : ((v.value as unknown[]) ?? [])) as {
@@ -85,16 +109,23 @@ function jsonVariantToDescriptor(kind: string, raw: unknown): DispatchRuleDescri
                 })),
             }
         }
-        case 'MaxFuelBurnPerTransaction':
-            return { __kind: 'MaxFuelBurnPerTransaction', value: big((v.value ?? v) as string) }
-        case 'RequireToken':
+        case 'MaxFuelBurnPerTransaction': {
+            const inner = (v.value ?? v.maxFuelBurnPerTransaction ?? v) as string | undefined
+            return { __kind: 'MaxFuelBurnPerTransaction', value: big(inner) }
+        }
+        case 'RequireToken': {
+            const inner = (v.value ?? v.requireToken ?? v) as Record<string, unknown> | undefined
+            const tok = (inner ?? v) as Record<string, unknown>
+            const tokenId = tok.tokenId ?? tok.token_id
+            const collectionId = tok.collectionId ?? tok.collection_id
             return {
                 __kind: 'RequireToken',
                 value: {
-                    tokenId: big((v.tokenId ?? (v.value as Record<string, unknown>)?.tokenId) as string),
-                    collectionId: big((v.collectionId ?? (v.value as Record<string, unknown>)?.collectionId) as string),
+                    tokenId: big(tokenId as string),
+                    collectionId: big(collectionId as string),
                 },
             }
+        }
         case 'PermittedCalls': {
             const arr = (Array.isArray(v) ? v : ((v.value as string[]) ?? [])) as string[]
             return { __kind: 'PermittedCalls', value: arr.map(String) }
@@ -114,8 +145,10 @@ function jsonVariantToDescriptor(kind: string, raw: unknown): DispatchRuleDescri
                 })),
             }
         }
-        case 'MinimumInfusion':
-            return { __kind: 'MinimumInfusion', value: big((v.value ?? v) as string) }
+        case 'MinimumInfusion': {
+            const inner = (v.value ?? v.minimumInfusion ?? v) as string | undefined
+            return { __kind: 'MinimumInfusion', value: big(inner) }
+        }
         default:
             throw new Error(`Unknown dispatch rule variant in storage JSON: ${kind}`)
     }
