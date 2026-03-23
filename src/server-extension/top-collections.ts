@@ -203,8 +203,6 @@ export class TopCollectionResolver {
                     .addSelect(
                         `(SELECT COUNT(*)::int FROM collection_account a WHERE a.collection_id = l.collectionId ${timeFrame !== TopCollectionTimeframeInput.ALL ? `AND "createdAt" >= NOW() - INTERVAL '${timeFrameMap[timeFrame].c}'` : ''} ) AS users`
                     )
-                    .addSelect('metadata AS metadata')
-                    .addSelect('stats AS stats')
                     .addSelect('volume_last_duration AS volume')
                     .addSelect('NULLIF(MAX(volume_last_duration) OVER(), 0) AS "maxVolume"')
                     .addSelect('NULLIF(MAX(sales_last_duration) OVER(), 0) AS "maxSales"')
@@ -221,16 +219,9 @@ export class TopCollectionResolver {
                     .addSelect(
                         'MAX(CASE WHEN previous_avg_sale != 0 THEN ROUND((last_avg_sale - previous_avg_sale) * 100 / previous_avg_sale, 2) ELSE null END) OVER() AS max_avg_sale_change'
                     )
-                    .addSelect(
-                        `(SELECT json_agg(json_build_object('id', attr.id, 'key', attr.key, 'value', attr.value, 'deposit', attr.deposit)) 
-                                  FROM attribute attr 
-                                  WHERE attr.collection_id = l.collectionId AND attr.token_id IS NULL) AS attributes`
-                    )
                     .from((qb) => {
                         const inBuilder = qb
                             .select('collection.id AS collectionId')
-                            .addSelect('collection.metadata AS metadata')
-                            .addSelect('collection.stats AS stats')
                             .addSelect('collection.verified_at AS "verifiedAt"')
                             .addSelect('collection.created_at AS "createdAt"')
                             .addSelect('collection.category AS category')
@@ -299,10 +290,34 @@ export class TopCollectionResolver {
             .limit(limit)
             .offset(offset)
 
-        const collections = await builder.getRawMany()
+        const rankedCollections = await builder.getRawMany()
 
-        // Parse the attributes JSON if it's a string
-        return collections.map((collection) => {
+        if (rankedCollections.length === 0) {
+            return []
+        }
+
+        const ids = rankedCollections.map((c: { id: string }) => c.id)
+        const enrichmentData: { id: string; metadata: unknown; stats: unknown; attributes: unknown }[] =
+            await manager.query(
+                `SELECT c.id, c.metadata, c.stats,
+                    (SELECT json_agg(json_build_object('id', attr.id, 'key', attr.key, 'value', attr.value, 'deposit', attr.deposit))
+                     FROM attribute attr
+                     WHERE attr.collection_id = c.id AND attr.token_id IS NULL) AS attributes
+                 FROM collection c
+                 WHERE c.id = ANY($1)`,
+                [ids]
+            )
+
+        const enrichmentMap = new Map(enrichmentData.map((e) => [e.id, e]))
+
+        return rankedCollections.map((collection: Record<string, unknown>) => {
+            const enrichment = enrichmentMap.get(collection.id as string)
+            if (enrichment) {
+                collection.metadata = enrichment.metadata
+                collection.stats = enrichment.stats
+                collection.attributes = enrichment.attributes
+            }
+
             if (typeof collection.attributes === 'string') {
                 collection.attributes = JSON.parse(collection.attributes)
             }
