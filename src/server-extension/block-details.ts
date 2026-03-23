@@ -88,6 +88,9 @@ class BlockDetailsResult {
     @Field()
     blockHash!: string
 
+    @Field(() => Boolean)
+    finalized!: boolean
+
     @Field(() => String)
     createdAt!: string
 
@@ -213,6 +216,7 @@ export class BlockDetailsResolver {
             nonce: e.e_nonce,
             createdAt: new Date(e.e_created_at).toISOString(),
             signer: e.signer_id ? { id: e.signer_id, address: e.signer_address! } : null,
+            finalized: chainInfo?.finalized ?? false,
         }))
 
         const events: BlockEvent[] = rawEvents.map((e) => ({
@@ -227,6 +231,7 @@ export class BlockDetailsResolver {
         return {
             blockNumber: args.blockNumber,
             blockHash,
+            finalized: chainInfo?.finalized ?? false,
             createdAt: (chainInfo?.timestamp ?? new Date(rawExtrinsics[0]?.e_created_at)).toISOString(),
             validator,
             extrinsics,

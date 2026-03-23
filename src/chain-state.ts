@@ -19,6 +19,7 @@ export async function chainState(
             maxRoundingError,
             maxSaltLength,
             minimumBidIncreasePercentage,
+            finalizedHead,
         ] = await Promise.all([
             api.consts.system.version,
             api.consts.balances.existentialDeposit,
@@ -27,7 +28,18 @@ export async function chainState(
             api.consts.marketplace.maxRoundingError,
             api.consts.marketplace.maxSaltLength,
             api.consts.marketplace.minimumBidIncreasePercentage,
+            api.rpc.chain.getFinalizedHead(),
         ])
+
+        let finalized = !ctx.isHead
+        const blockToFinalize = await ctx.store.findOneBy(ChainInfo, {
+            blockHash: finalizedHead?.toString() ?? '',
+        })
+
+        if (blockToFinalize) {
+            blockToFinalize.finalized = true
+            await ctx.store.save(blockToFinalize)
+        }
 
         const state = new ChainInfo({
             id: block.hash,
@@ -47,6 +59,7 @@ export async function chainState(
                 maxSaltLength: Number(maxSaltLength.toString()),
                 minimumBidIncreasePercentage: Number(minimumBidIncreasePercentage.toString()),
             }),
+            finalized,
         })
 
         await ctx.store.save<ChainInfo>(state)
