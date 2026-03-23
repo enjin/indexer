@@ -31,14 +31,16 @@ export async function chainState(
             api.rpc.chain.getFinalizedHead(),
         ])
 
-        let finalized = !ctx.isHead
-        const blockToFinalize = await ctx.store.findOneBy(ChainInfo, {
-            blockHash: finalizedHead?.toString() ?? '',
-        })
+        const finalized = !ctx.isHead
+        if (finalizedHead) {
+            const blockToFinalize = await ctx.store.findOneBy(ChainInfo, {
+                blockHash: finalizedHead.toString(),
+            })
 
-        if (blockToFinalize) {
-            blockToFinalize.finalized = true
-            await ctx.store.save(blockToFinalize)
+            if (blockToFinalize) {
+                blockToFinalize.finalized = true
+                await ctx.store.save(blockToFinalize)
+            }
         }
 
         const state = new ChainInfo({
