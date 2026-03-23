@@ -1,3 +1,4 @@
+import { hexToU8a } from '@polkadot/util'
 import { blake2AsHex } from '@polkadot/util-crypto'
 import { Src } from '@subsquid/scale-codec'
 import { getRuntimeCached } from './metadata'
@@ -149,7 +150,13 @@ export async function decodeSignedExtrinsicsRaw(
         return prefixed.toLowerCase()
     }
 
+    const extrinsicHash = (signedExtrinsic: string): string => {
+        const hex = signedExtrinsic.startsWith('0x') ? signedExtrinsic : `0x${signedExtrinsic}`
+        return blake2AsHex(hexToU8a(hex), 256)
+    }
+
     return items.map((item) => {
+        const hash = extrinsicHash(item.signedExtrinsic)
         try {
             const decoded = runtime.decodeExtrinsic(item.signedExtrinsic)
 
@@ -173,12 +180,14 @@ export async function decodeSignedExtrinsicsRaw(
             const encodedCallHex = normalizeHex('0x' + Buffer.from(encodedCall).toString('hex'))
 
             return {
+                hash,
                 signer,
                 nonce,
                 encodedData: encodedCallHex,
             }
         } catch {
             return {
+                hash,
                 signer: null,
                 nonce: null,
                 encodedData: null,
