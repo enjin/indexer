@@ -34,7 +34,7 @@ export function getFilterFromType(tokenFilter: TokenFilter) {
             })
             break
         default:
-            throw new Error('Unknown token filter type')
+            throw new Error('Unknown token filter type ')
     }
 
     return entity
