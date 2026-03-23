@@ -284,6 +284,20 @@ export function dispatchSyncAllMetadata(): void {
     })
 }
 
+export function dispatchSyncFuelTankRuleSets(tankId?: string): void {
+    const jobId = `metadata.fuelTankRuleSets.sync.${tankId}`
+    MetadataQueue.add(
+        JobsEnum.SYNC_FUEL_TANK_RULE_SETS,
+        { tankId },
+        {
+            delay: 6000,
+            jobId,
+        }
+    ).catch(() => {
+        Logger.error('Failed to dispatch sync fuel tank rule sets', LOGGER_NAMESPACE)
+    })
+}
+
 export function dispatchSyncOffers(): void {
     ListingsQueue.add(
         JobsEnum.FETCH_OFFERS,

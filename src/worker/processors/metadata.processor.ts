@@ -5,6 +5,7 @@ import {
     computeMetadata,
     syncMetadata,
     syncFuelTanks,
+    syncFuelTankRuleSets,
     syncTokenGroupMetadata,
     computeTokenGroupMetadata,
 } from '~/worker/jobs'
@@ -21,6 +22,9 @@ export class MetadataProcessor implements ProcessorDef {
                 break
             case JobsEnum.SYNC_FUEL_TANKS:
                 await syncFuelTanks(job)
+                break
+            case JobsEnum.SYNC_FUEL_TANK_RULE_SETS:
+                await syncFuelTankRuleSets(job)
                 break
             case JobsEnum.COMPUTE_TOKEN_GROUP_METADATA:
                 await computeTokenGroupMetadata(job)

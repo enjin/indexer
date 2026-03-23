@@ -22,6 +22,7 @@ export enum EntityType {
     SYNC_VALIDATORS = 'sync_validators',
     SYNC_METADATA = 'sync_metadata',
     COMPUTE_ACCOUNT_STATS = 'compute_account_stats',
+    SYNC_FUEL_TANK_RULE_SETS = 'sync_fuel_tank_rule_sets',
 }
 
 registerEnumType(EntityType, {
@@ -123,6 +124,11 @@ export class RefreshEntityResolver {
                 for (const id of args.ids) {
                     const resourceType = id.includes('-') ? 'token' : 'collection'
                     QueueUtils.dispatchComputeMetadata({ id: id, type: resourceType, allTokens: false, force: true })
+                }
+                break
+            case EntityType.SYNC_FUEL_TANK_RULE_SETS:
+                for (const id of args.ids) {
+                    QueueUtils.dispatchSyncFuelTankRuleSets(id)
                 }
                 break
         }

@@ -108,6 +108,7 @@ export async function fuelTankCreated(
                 requireToken,
                 permittedCalls,
                 permittedExtrinsics,
+                requireSignature,
                 minimumInfusion,
             } = rulesToMap(`${fuelTank.id}-${index}`, rules)
 
@@ -127,6 +128,7 @@ export async function fuelTankCreated(
                 requireToken,
                 permittedCalls,
                 minimumInfusion,
+                requireSignature,
             })
 
             await ctx.store.save(ruleSetModel)
