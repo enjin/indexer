@@ -15,6 +15,7 @@ type ChainInfo @entity {
   timestamp: DateTime!
   validator: String @index
   marketplace: Marketplace
+  finalized: Boolean
 }
 
 type Marketplace {
