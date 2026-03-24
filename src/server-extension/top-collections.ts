@@ -16,7 +16,6 @@ import {
 import { BigInteger, Json } from '@subsquid/graphql-server'
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
-import { Collection, Listing, ListingSale, ListingStatus, Token } from '~/model'
 import { DateTimeColumn as DateTimeColumn_ } from '@subsquid/typeorm-store/lib/decorators/columns/DateTimeColumn'
 import { timeFrameMap } from './types'
 
@@ -186,117 +185,109 @@ export class TopCollectionResolver {
         const { timeFrame, orderBy, category, query, order, offset, limit } = args
         const manager = await this.tx()
 
-        const builder = manager
-            .createQueryBuilder()
-            .select('*')
-            .addSelect(
-                '(COALESCE(0.35 * (volume::numeric / "maxVolume"::numeric),0) + ' +
-                    'COALESCE(0.35 * (sales::numeric / "maxSales"::numeric), 0) +' +
-                    'COALESCE(0.20 * (avg_sale_change::numeric / NULLIF(MAX(avg_sale_change) OVER(), 0)::numeric),0) +' +
-                    'COALESCE(0.10 * (users::numeric / NULLIF(MAX(users) OVER(), 0)::numeric), 0)) AS "trendingScore"'
+        const params: unknown[] = []
+        let paramIdx = 1
+
+        let salesAggColumns: string
+        let salesAggWhere = ''
+
+        if (timeFrame === TopCollectionTimeframeInput.ALL) {
+            salesAggColumns = `
+                COALESCE(SUM(s.amount * s.price), 0) AS volume,
+                COUNT(s.id)::int AS sales,
+                0 AS prev_volume,
+                1 AS last_avg,
+                1 AS prev_avg`
+        } else {
+            const tf = timeFrameMap[timeFrame]
+            salesAggColumns = `
+                SUM(CASE WHEN s.created_at >= NOW() - INTERVAL '${tf.c}' THEN s.amount * s.price ELSE 0 END) AS volume,
+                COUNT(CASE WHEN s.created_at >= NOW() - INTERVAL '${tf.c}' THEN s.id ELSE NULL END)::int AS sales,
+                SUM(CASE WHEN s.created_at >= NOW() - INTERVAL '${tf.p}' AND s.created_at <= NOW() - INTERVAL '${tf.c}' THEN s.amount * s.price ELSE 0 END) AS prev_volume,
+                AVG(CASE WHEN s.created_at >= NOW() - INTERVAL '${tf.c}' THEN s.price ELSE 0 END) AS last_avg,
+                AVG(CASE WHEN s.created_at >= NOW() - INTERVAL '${tf.p}' AND s.created_at <= NOW() - INTERVAL '${tf.c}' THEN s.price ELSE 0 END) AS prev_avg`
+            if (orderBy !== TopCollectionOrderByInput.CREATED_AT) {
+                salesAggWhere = `WHERE s.created_at >= NOW() - INTERVAL '${tf.p}'`
+            }
+        }
+
+        const usersTimeWhere =
+            timeFrame !== TopCollectionTimeframeInput.ALL
+                ? `WHERE "createdAt" >= NOW() - INTERVAL '${timeFrameMap[timeFrame].c}'`
+                : ''
+
+        const collectionWheres: string[] = []
+        if (category.length > 0) {
+            collectionWheres.push(`c.category IN (${category.map(() => `$${paramIdx++}`).join(', ')})`)
+            params.push(...category)
+        }
+        if (query) {
+            collectionWheres.push(`c.metadata->>'name' ILIKE $${paramIdx++}`)
+            params.push(`%${query}%`)
+        }
+        const collectionWhere = collectionWheres.length > 0 ? 'WHERE ' + collectionWheres.join(' AND ') : ''
+
+        const limitParam = `$${paramIdx++}`
+        const offsetParam = `$${paramIdx++}`
+        params.push(limit, offset)
+
+        const sql = `
+            WITH sales_agg AS (
+                SELECT t.collection_id,
+                       ${salesAggColumns}
+                FROM listing_sale s
+                INNER JOIN listing l ON s.listing_id = l.id
+                INNER JOIN token t
+                    ON (l.make_asset_id_id = t.id AND l.make_asset_id_id != '0-0')
+                    OR (l.take_asset_id_id = t.id AND l.take_asset_id_id != '0-0')
+                ${salesAggWhere}
+                GROUP BY t.collection_id
+            ),
+            users_agg AS (
+                SELECT collection_id, COUNT(*)::int AS user_count
+                FROM collection_account
+                ${usersTimeWhere}
+                GROUP BY collection_id
+            ),
+            scored AS (
+                SELECT c.id,
+                       COALESCE(ua.user_count, 0) AS users,
+                       COALESCE(sa.volume, 0) AS volume,
+                       NULLIF(MAX(COALESCE(sa.volume, 0)) OVER(), 0) AS "maxVolume",
+                       NULLIF(MAX(COALESCE(sa.sales, 0)) OVER(), 0) AS "maxSales",
+                       COALESCE(sa.sales, 0) AS sales,
+                       c.verified_at::text AS "verifiedAt",
+                       c.created_at::text AS "createdAt",
+                       c.category,
+                       CASE WHEN COALESCE(sa.prev_volume, 0) != 0
+                            THEN ROUND((COALESCE(sa.volume, 0) - sa.prev_volume) * 100.0 / sa.prev_volume, 2)
+                            ELSE null END AS "volumeChange",
+                       CASE WHEN COALESCE(sa.prev_avg, 0) != 0
+                            THEN ROUND((COALESCE(sa.last_avg, 0) - sa.prev_avg) * 100.0 / sa.prev_avg, 2)
+                            ELSE null END AS avg_sale_change
+                FROM collection c
+                LEFT JOIN sales_agg sa ON sa.collection_id = c.id
+                LEFT JOIN users_agg ua ON ua.collection_id = c.id
+                ${collectionWhere}
             )
-            .addSelect(
-                `(0.80 * COALESCE(volume::numeric / "maxVolume"::numeric, 0) + 0.20 * COALESCE(sales::numeric / "maxSales"::numeric)) AS "topScore"`
-            )
-            .addFrom((mqb) => {
-                mqb.addSelect('collectionId AS id')
-                    .addSelect(
-                        `(SELECT COUNT(*)::int FROM collection_account a WHERE a.collection_id = l.collectionId ${timeFrame !== TopCollectionTimeframeInput.ALL ? `AND "createdAt" >= NOW() - INTERVAL '${timeFrameMap[timeFrame].c}'` : ''} ) AS users`
-                    )
-                    .addSelect('volume_last_duration AS volume')
-                    .addSelect('NULLIF(MAX(volume_last_duration) OVER(), 0) AS "maxVolume"')
-                    .addSelect('NULLIF(MAX(sales_last_duration) OVER(), 0) AS "maxSales"')
-                    .addSelect('sales_last_duration AS sales')
-                    .addSelect('"verifiedAt"::text AS "verifiedAt"')
-                    .addSelect('"createdAt"::text AS "createdAt"')
-                    .addSelect('category AS category')
-                    .addSelect(
-                        'CASE WHEN volume_previous_duration != 0 THEN ROUND((volume_last_duration - volume_previous_duration) * 100 / volume_previous_duration, 2) ELSE null END AS "volumeChange"'
-                    )
-                    .addSelect(
-                        'CASE WHEN previous_avg_sale != 0 THEN ROUND((last_avg_sale - previous_avg_sale) * 100 / previous_avg_sale, 2) ELSE null END AS avg_sale_change'
-                    )
-                    .addSelect(
-                        'MAX(CASE WHEN previous_avg_sale != 0 THEN ROUND((last_avg_sale - previous_avg_sale) * 100 / previous_avg_sale, 2) ELSE null END) OVER() AS max_avg_sale_change'
-                    )
-                    .from((qb) => {
-                        const inBuilder = qb
-                            .select('collection.id AS collectionId')
-                            .addSelect('collection.verified_at AS "verifiedAt"')
-                            .addSelect('collection.created_at AS "createdAt"')
-                            .addSelect('collection.category AS category')
-                        if (timeFrame === TopCollectionTimeframeInput.ALL) {
-                            inBuilder
-                                .addSelect(`COALESCE(SUM(sale.amount * sale.price), 0) AS volume_last_duration`)
-                                .addSelect(`COALESCE(COUNT(sale.id)::int, 0) AS sales_last_duration`)
-                                .addSelect(`0 AS volume_previous_duration`)
-                                .addSelect(`1 AS last_avg_sale`)
-                                .addSelect(`1 AS previous_avg_sale`)
-                                .addSelect(`0 as last_sale`)
-                        } else {
-                            inBuilder
-                                .addSelect(
-                                    `SUM(CASE WHEN sale.created_at >= NOW() - INTERVAL '${timeFrameMap[timeFrame].c}' THEN sale.amount * sale.price ELSE 0 END) AS volume_last_duration`
-                                )
-                                .addSelect(
-                                    `SUM(CASE WHEN sale.created_at >= NOW() - INTERVAL '${timeFrameMap[timeFrame].p}' AND sale.created_at <= NOW() - INTERVAL '${timeFrameMap[timeFrame].c}' THEN sale.amount * sale.price ELSE 0 END) AS volume_previous_duration`
-                                )
-                                .addSelect(
-                                    `COUNT(CASE WHEN sale.created_at >= NOW() - INTERVAL '${timeFrameMap[timeFrame].c}' THEN sale.id ELSE NULL END)::int AS sales_last_duration`
-                                )
-                                .addSelect(
-                                    `AVG(CASE WHEN sale.created_at >= NOW() - INTERVAL '${timeFrameMap[timeFrame].c}' THEN sale.price ELSE 0 END) AS last_avg_sale`
-                                )
-                                .addSelect(
-                                    `AVG(CASE WHEN sale.created_at >= NOW() - INTERVAL '${timeFrameMap[timeFrame].p}' AND sale.created_at <= NOW() - INTERVAL '${timeFrameMap[timeFrame].c}' THEN sale.price ELSE 0 END) AS previous_avg_sale`
-                                )
+            SELECT *,
+                (COALESCE(0.35 * (volume::numeric / "maxVolume"::numeric), 0) +
+                 COALESCE(0.35 * (sales::numeric / "maxSales"::numeric), 0) +
+                 COALESCE(0.20 * (avg_sale_change::numeric / NULLIF(MAX(avg_sale_change) OVER(), 0)::numeric), 0) +
+                 COALESCE(0.10 * (users::numeric / NULLIF(MAX(users) OVER(), 0)::numeric), 0)) AS "trendingScore",
+                (0.80 * COALESCE(volume::numeric / "maxVolume"::numeric, 0) +
+                 0.20 * COALESCE(sales::numeric / "maxSales"::numeric)) AS "topScore"
+            FROM scored
+            ORDER BY ${orderBy} ${order} NULLS LAST, id DESC
+            LIMIT ${limitParam} OFFSET ${offsetParam}`
 
-                            if (orderBy !== TopCollectionOrderByInput.CREATED_AT) {
-                                inBuilder.where(`sale.created_at >= NOW() - INTERVAL '${timeFrameMap[timeFrame].p}'`)
-                            }
-                        }
-
-                        if (category.length > 0) {
-                            inBuilder.andWhere('collection.category IN (:...category)', { category })
-                        }
-
-                        if (query) {
-                            inBuilder.andWhere(`collection.metadata->>'name' ILIKE :query`, { query: `%${query}%` })
-                        }
-
-                        inBuilder
-                            .from(Collection, 'collection')
-                            .leftJoin(Token, 'token', 'token.collection = collection.id')
-                            .leftJoin(
-                                Listing,
-                                'listing',
-                                "(listing.make_asset_id_id = token.id AND listing.make_asset_id_id != '0-0') OR (listing.take_asset_id_id = token.id AND listing.take_asset_id_id != '0-0')"
-                            )
-                            .leftJoin(ListingSale, 'sale', 'sale.listing = listing.id')
-                            .leftJoin(
-                                ListingStatus,
-                                'status',
-                                `listing.id = status.listing AND status.type = 'Finalized'`
-                            )
-                            .addGroupBy('collection.id')
-
-                        return inBuilder
-                    }, 'l')
-
-                return mqb
-            }, 'iq')
-            .orderBy(orderBy, order, 'NULLS LAST')
-            .addOrderBy('id', 'DESC')
-            .limit(limit)
-            .offset(offset)
-
-        const rankedCollections = await builder.getRawMany()
+        const rankedCollections: Record<string, unknown>[] = await manager.query(sql, params)
 
         if (rankedCollections.length === 0) {
             return []
         }
 
-        const ids = rankedCollections.map((c: { id: string }) => c.id)
+        const ids = rankedCollections.map((c) => c.id)
         const enrichmentData: { id: string; metadata: unknown; stats: unknown; attributes: unknown }[] =
             await manager.query(
                 `SELECT c.id, c.metadata, c.stats,
@@ -310,7 +301,7 @@ export class TopCollectionResolver {
 
         const enrichmentMap = new Map(enrichmentData.map((e) => [e.id, e]))
 
-        return rankedCollections.map((collection: Record<string, unknown>) => {
+        return rankedCollections.map((collection) => {
             const enrichment = enrichmentMap.get(collection.id as string)
             if (enrichment) {
                 collection.metadata = enrichment.metadata
