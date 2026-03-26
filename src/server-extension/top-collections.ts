@@ -213,7 +213,7 @@ export class TopCollectionResolver {
 
         const usersTimeWhere =
             timeFrame !== TopCollectionTimeframeInput.ALL
-                ? `WHERE "createdAt" >= NOW() - INTERVAL '${timeFrameMap[timeFrame].c}'`
+                ? `WHERE created_at >= NOW() - INTERVAL '${timeFrameMap[timeFrame].c}'`
                 : ''
 
         const collectionWheres: string[] = []
