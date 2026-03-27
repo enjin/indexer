@@ -65,5 +65,6 @@ export async function chainState(
         await ctx.store.save<ChainInfo>(state)
     } catch (error) {
         Sentry.captureException(error)
+        throw error
     }
 }
