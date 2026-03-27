@@ -113,8 +113,8 @@ export async function listingFilled(
 
     if (!isOffer) {
         QueueUtils.dispatchComputeTokenBestListing(makeAssetId.id)
-        makeAssetId.lastSale = sale
-        await ctx.store.save(makeAssetId)
+        // makeAssetId.lastSale = sale
+        // await ctx.store.save(makeAssetId)
     }
 
     const snsEvent: SnsEvent = {
