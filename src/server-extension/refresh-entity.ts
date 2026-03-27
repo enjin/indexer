@@ -89,7 +89,7 @@ export class RefreshEntityResolver {
             case EntityType.ACCOUNT:
                 ;(() => {
                     const publicKeys = args.ids.map((id) => {
-                        return decodeAddress(id)
+                        return isValidAddress(id) ? id : decodeAddress(id)
                     })
                     QueueUtils.dispatchFetchAccounts(publicKeys)
                 })()
