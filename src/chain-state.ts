@@ -33,7 +33,7 @@ export async function chainState(
 
         const finalized = !ctx.isHead
         const blockToFinalize = await ctx.store.findOneBy(ChainInfo, {
-            blockHash: finalizedHead.toString(),
+            id: finalizedHead.toString(),
         })
 
         if (blockToFinalize) {
