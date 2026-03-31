@@ -1,4 +1,4 @@
-import { AccountTokenEvent, AuctionState, Bid, Event as EventModel, Listing, ListingType } from '~/model'
+import { AccountTokenEvent, AuctionData, AuctionState, Bid, Event as EventModel, Listing, ListingType } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
@@ -49,6 +49,16 @@ export async function bidPlaced(
         listingType: ListingType.Auction,
         highBid: bid.id,
     })
+
+    const secondsPerBlock = 6
+    const blocksInTenMinutes = (10 * 60) / secondsPerBlock
+    if (listing.data instanceof AuctionData && listing.data.endHeight - block.height <= blocksInTenMinutes) {
+        listing.data.endHeight = block.height + blocksInTenMinutes
+        listing.data = new AuctionData({
+            listingType: ListingType.Auction,
+            endHeight: listing.data.endHeight,
+        })
+    }
 
     await Promise.all([ctx.store.save(bid), ctx.store.save(listing)])
 
