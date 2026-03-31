@@ -73,9 +73,7 @@ export async function burned(
         if (supplyBeforeBurn !== 0n) {
             const newUserInfusionsPromises = []
             for (const tokenInfusion of tokenInfusions) {
-                ctx.log.info(`Scaling user infusion ${tokenInfusion.id} from ${tokenInfusion.amount.toString()} to ${(tokenInfusion.amount * token.supply).toString()} / ${supplyBeforeBurn.toString()}`)
                 tokenInfusion.amount = (tokenInfusion.amount * token.supply) / supplyBeforeBurn
-                ctx.log.info(`Scaled user infusion ${tokenInfusion.id} to ${tokenInfusion.amount.toString()}`)
                 newUserInfusionsPromises.push(ctx.store.save(tokenInfusion))
             }
             await Promise.all(newUserInfusionsPromises)
