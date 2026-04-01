@@ -374,32 +374,32 @@ async function checkListingState(ctx: CommonContext, block: Block) {
         where: { type: In([ListingType.Auction, ListingType.Offer]), isActive: true },
     })
     for (const listing of listings) {
-        if (listing.data.isTypeOf === 'AuctionData') {
-            const auctionData = listing.data
-            if (
-                auctionData.endHeight < block.height &&
-                auctionData.endHeight > 0 &&
-                listing.state.isTypeOf === 'AuctionState' &&
-                (listing.state.isExpired === false || listing.state.isExpired === undefined)
-            ) {
-                const highBid = listing.state.highBid
-                listing.state = new AuctionState({ listingType: ListingType.Auction, highBid, isExpired: true })
-                const listingStatus = new ListingStatus({
-                    id: `${listing.id}-${block.height}`,
-                    type: ListingStatusType.Cancelled,
-                    listing,
-                    height: block.height,
-                    createdAt: new Date(block.timestamp ?? 0),
-                })
-                listing.isActive = false
-                await ctx.store.save(listingStatus)
-                await ctx.store.save(listing)
-            } else if (listing.state.isTypeOf === 'AuctionState' && listing.state.isExpired === undefined) {
-                const highBid = listing.state.highBid
-                listing.state = new AuctionState({ listingType: ListingType.Auction, highBid, isExpired: false })
-                await ctx.store.save(listing)
-            }
-        }
+        // if (listing.data.isTypeOf === 'AuctionData') {
+        //     const auctionData = listing.data
+        //     if (
+        //         auctionData.endHeight < block.height &&
+        //         auctionData.endHeight > 0 &&
+        //         listing.state.isTypeOf === 'AuctionState' &&
+        //         (listing.state.isExpired === false || listing.state.isExpired === undefined)
+        //     ) {
+        //         const highBid = listing.state.highBid
+        //         listing.state = new AuctionState({ listingType: ListingType.Auction, highBid, isExpired: true })
+        //         const listingStatus = new ListingStatus({
+        //             id: `${listing.id}-${block.height}`,
+        //             type: ListingStatusType.Cancelled,
+        //             listing,
+        //             height: block.height,
+        //             createdAt: new Date(block.timestamp ?? 0),
+        //         })
+        //         listing.isActive = false
+        //         await ctx.store.save(listingStatus)
+        //         await ctx.store.save(listing)
+        //     } else if (listing.state.isTypeOf === 'AuctionState' && listing.state.isExpired === undefined) {
+        //         const highBid = listing.state.highBid
+        //         listing.state = new AuctionState({ listingType: ListingType.Auction, highBid, isExpired: false })
+        //         await ctx.store.save(listing)
+        //     }
+        // }
 
         if (listing.data.isTypeOf === 'OfferData') {
             const offerData = listing.data
