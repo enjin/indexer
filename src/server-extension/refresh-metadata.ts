@@ -142,6 +142,7 @@ export class RefreshMetadataResolver {
                     force: true,
                     allTokens: false,
                     traits: item.type === RefreshMetadataType.COLLECTION,
+                    delay: 10000,
                 })
 
                 // Dispatch stats computation for collections (only once per collection)
