@@ -2,20 +2,7 @@ import { TypeormDatabase } from '@subsquid/typeorm-store'
 import _ from 'lodash'
 import * as Sentry from '@sentry/node'
 import config from '~/util/config'
-import {
-    AccountTokenEvent,
-    AuctionState,
-    Event,
-    Extrinsic,
-    Fee,
-    FuelTank,
-    FuelTankData,
-    Listing,
-    ListingStatus,
-    ListingStatusType,
-    ListingType,
-    OfferState,
-} from '~/model'
+import { AccountTokenEvent, Event, Extrinsic, Fee, FuelTank, FuelTankData, Listing } from '~/model'
 import { genesisData } from '~/genesis-data'
 import { chainState } from '~/chain-state'
 import * as p from '~/pallet'
@@ -33,7 +20,6 @@ import { QueueUtils } from '~/queue'
 import { QueuesEnum } from '~/queue/constants'
 import { Logger } from '~/util/logger'
 import { getSnsEventHash, isRelay } from '~/util/tools'
-import { In } from 'typeorm'
 import { isSnsEvent, Sns, SnsEvent } from '~/util/sns'
 import { queueMissingBlocks } from '~/migration/queue-missing-blocks'
 
