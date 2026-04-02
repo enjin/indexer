@@ -21,8 +21,7 @@ type Row = {
 function calcDelay(rows: Row[], maxBlocks: number): Row[] {
     const sorted = [...rows].sort((a, b) => a.blockNumber - b.blockNumber)
     const filtered = sorted.filter(
-        ({ blockNumber }, index) =>
-            index === 0 || blockNumber > (sorted[index - 1]?.blockNumber ?? 0)
+        ({ blockNumber }, index) => index === 0 || blockNumber > (sorted[index - 1]?.blockNumber ?? 0)
     )
 
     for (let i = 0; i < filtered.length - 1; i++) {
