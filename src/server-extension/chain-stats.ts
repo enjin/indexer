@@ -55,12 +55,12 @@ FROM intervals
 `
 
 @ObjectType()
-export class BlockAverageResult {
+export class ChainStatsResult {
     @Field()
     isLoaded!: boolean
 
     @Field(() => Int)
-    maxItems!: number
+    maxBlocks!: number
 
     @Field(() => Float)
     stdDev!: number
@@ -75,10 +75,10 @@ export class BlockAverageResult {
     timeMin!: number
 }
 
-function emptyResult(maxItems: number): BlockAverageResult {
+function emptyResult(maxBlocks: number): ChainStatsResult {
     return {
         isLoaded: false,
-        maxItems,
+        maxBlocks,
         stdDev: 0,
         timeAvg: 0,
         timeMax: 0,
@@ -93,33 +93,33 @@ function num(v: string | number | null | undefined): number {
 }
 
 @Resolver()
-export class BlockAverageResolver {
+export class ChainStatsResolver {
     constructor(private tx: () => Promise<EntityManager>) {}
 
-    @Query(() => BlockAverageResult)
-    async blockAverage(
-        @Arg('maxItems', () => Int, { nullable: true, defaultValue: DEFAULT_MAX_ITEMS }) maxItemsArg?: number
-    ): Promise<BlockAverageResult> {
-        const maxItems = Math.min(Math.max(maxItemsArg ?? DEFAULT_MAX_ITEMS, 1), MAX_ITEMS_CAP)
+    @Query(() => ChainStatsResult)
+    async chainStats(
+        @Arg('maxBlocks', () => Int, { nullable: true, defaultValue: DEFAULT_MAX_ITEMS }) maxBlocksArg?: number
+    ): Promise<ChainStatsResult> {
+        const maxBlocks = Math.min(Math.max(maxBlocksArg ?? DEFAULT_MAX_ITEMS, 1), MAX_ITEMS_CAP)
         const manager = await this.tx()
 
-        const statsRows = await manager.query<StatsRow[]>(STATS_SQL, [maxItems])
+        const statsRows = await manager.query<StatsRow[]>(STATS_SQL, [maxBlocks])
         const stats = statsRows[0]
         if (!stats) {
-            return emptyResult(maxItems)
+            return emptyResult(maxBlocks)
         }
 
         const rowCount = Number(stats.row_count)
         if (rowCount === 0) {
-            return emptyResult(maxItems)
+            return emptyResult(maxBlocks)
         }
 
         const delayCount = Number(stats.delay_count)
         const hasDelays = delayCount > 0
 
         return {
-            isLoaded: rowCount === maxItems,
-            maxItems,
+            isLoaded: rowCount === maxBlocks,
+            maxBlocks,
             stdDev: hasDelays ? num(stats.time_stddev) : 0,
             timeAvg: hasDelays ? num(stats.time_avg) : 0,
             timeMax: hasDelays ? num(stats.time_max) : 0,
