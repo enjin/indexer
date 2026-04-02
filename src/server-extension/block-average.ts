@@ -1,7 +1,6 @@
 import { Arg, Field, Float, Int, ObjectType, Query, Resolver } from 'type-graphql'
 import 'reflect-metadata'
 import { EntityManager } from 'typeorm'
-import { ChainInfo } from '~/model'
 
 const BLOCKS_PER_DAY = 10 * 60 * 24
 
@@ -10,25 +9,53 @@ const DEFAULT_MAX_ITEMS = BLOCKS_PER_DAY * DEFAULT_LOOKBACK_DAYS
 
 const MAX_ITEMS_CAP = BLOCKS_PER_DAY * 90
 
-const MS_PER_S = 1000
-
-@ObjectType()
-class BlockAverageDetail {
-    @Field(() => Int)
-    blockNumber!: number
-
-    @Field(() => Float)
-    delay!: number
-
-    @Field()
-    timestamp!: string
+type StatsRow = {
+    row_count: string | number
+    delay_count: string | number
+    time_avg: string | null
+    time_stddev: string | null
+    time_min: string | null
+    time_max: string | null
 }
+
+const STATS_SQL = `
+WITH recent AS (
+  SELECT block_number, "timestamp"
+  FROM chain_info
+  ORDER BY block_number DESC
+  LIMIT $1
+),
+ascending AS (
+  SELECT
+    block_number,
+    "timestamp",
+    LAG("timestamp") OVER (ORDER BY block_number) AS prev_ts,
+    LAG(block_number) OVER (ORDER BY block_number) AS prev_bn
+  FROM recent
+),
+intervals AS (
+  SELECT
+    block_number,
+    "timestamp",
+    CASE
+      WHEN prev_bn IS NOT NULL AND block_number = prev_bn + 1
+      THEN EXTRACT(EPOCH FROM ("timestamp" - prev_ts))
+      ELSE NULL
+    END AS delay_sec
+  FROM ascending
+)
+SELECT
+  (SELECT COUNT(*)::int FROM recent) AS row_count,
+  COUNT(*) FILTER (WHERE delay_sec IS NOT NULL)::int AS delay_count,
+  AVG(delay_sec) FILTER (WHERE delay_sec IS NOT NULL) AS time_avg,
+  COALESCE(STDDEV_POP(delay_sec) FILTER (WHERE delay_sec IS NOT NULL), 0) AS time_stddev,
+  MIN(delay_sec) FILTER (WHERE delay_sec IS NOT NULL) AS time_min,
+  MAX(delay_sec) FILTER (WHERE delay_sec IS NOT NULL) AS time_max
+FROM intervals
+`
 
 @ObjectType()
 export class BlockAverageResult {
-    @Field(() => [BlockAverageDetail])
-    details!: BlockAverageDetail[]
-
     @Field()
     isLoaded!: boolean
 
@@ -48,34 +75,8 @@ export class BlockAverageResult {
     timeMin!: number
 }
 
-type DetailRow = {
-    blockNumber: number
-    delayMs: number
-    timestampMs: number
-}
-
-function calcDelay(details: DetailRow[], maxItems: number): DetailRow[] {
-    const sorted = [...details].sort((a, b) => a.blockNumber - b.blockNumber)
-    const filtered = sorted.filter(
-        ({ blockNumber }, index) =>
-            index === 0 || blockNumber > (sorted[index - 1]?.blockNumber ?? 0)
-    )
-
-    for (let i = 0; i < filtered.length - 1; i++) {
-        const a = filtered[i]
-        const b = filtered[i + 1]
-        if (!a || !b) continue
-        if (b.blockNumber - a.blockNumber === 1 && b.delayMs === 0) {
-            b.delayMs = b.timestampMs - a.timestampMs
-        }
-    }
-
-    return filtered.slice(-maxItems)
-}
-
 function emptyResult(maxItems: number): BlockAverageResult {
     return {
-        details: [],
         isLoaded: false,
         maxItems,
         stdDev: 0,
@@ -85,37 +86,10 @@ function emptyResult(maxItems: number): BlockAverageResult {
     }
 }
 
-function toGraphqlDetails(rows: DetailRow[]): BlockAverageDetail[] {
-    return rows.map((d) => ({
-        blockNumber: d.blockNumber,
-        delay: d.delayMs / MS_PER_S,
-        timestamp: new Date(d.timestampMs).toISOString(),
-    }))
-}
-
-function summarize(rows: DetailRow[], maxItems: number): BlockAverageResult {
-    const delaysMs = rows.map(({ delayMs }) => delayMs).filter((d) => d > 0)
-
-    if (!delaysMs.length) {
-        return {
-            ...emptyResult(maxItems),
-            details: toGraphqlDetails(rows),
-            maxItems,
-        }
-    }
-
-    const avgMs = delaysMs.reduce((avg, d) => avg + d, 0) / delaysMs.length
-    const stdDevMs = Math.sqrt(delaysMs.reduce((dev, d) => dev + (avgMs - d) ** 2, 0) / delaysMs.length)
-
-    return {
-        details: toGraphqlDetails(rows),
-        isLoaded: rows.length === maxItems,
-        maxItems,
-        stdDev: stdDevMs / MS_PER_S,
-        timeAvg: avgMs / MS_PER_S,
-        timeMax: Math.max(...delaysMs) / MS_PER_S,
-        timeMin: Math.min(...delaysMs) / MS_PER_S,
-    }
+function num(v: string | number | null | undefined): number {
+    if (v == null) return 0
+    const n = typeof v === 'number' ? v : parseFloat(v)
+    return Number.isFinite(n) ? n : 0
 }
 
 @Resolver()
@@ -129,25 +103,27 @@ export class BlockAverageResolver {
         const maxItems = Math.min(Math.max(maxItemsArg ?? DEFAULT_MAX_ITEMS, 1), MAX_ITEMS_CAP)
         const manager = await this.tx()
 
-        const chainRows = await manager.find(ChainInfo, {
-            select: { id: true, blockNumber: true, timestamp: true },
-            order: { blockNumber: 'DESC' },
-            take: maxItems,
-        })
-
-        if (!chainRows.length) {
+        const statsRows = await manager.query<StatsRow[]>(STATS_SQL, [maxItems])
+        const stats = statsRows[0]
+        if (!stats) {
             return emptyResult(maxItems)
         }
 
-        const sorted = [...chainRows].sort((a, b) => a.blockNumber - b.blockNumber)
+        const rowCount = Number(stats.row_count)
+        if (rowCount === 0) {
+            return emptyResult(maxItems)
+        }
 
-        const initial: DetailRow[] = sorted.map((ci) => ({
-            blockNumber: ci.blockNumber,
-            delayMs: 0,
-            timestampMs: ci.timestamp.getTime(),
-        }))
+        const delayCount = Number(stats.delay_count)
+        const hasDelays = delayCount > 0
 
-        const withDelays = calcDelay(initial, maxItems)
-        return summarize(withDelays, maxItems)
+        return {
+            isLoaded: rowCount === maxItems,
+            maxItems,
+            stdDev: hasDelays ? num(stats.time_stddev) : 0,
+            timeAvg: hasDelays ? num(stats.time_avg) : 0,
+            timeMax: hasDelays ? num(stats.time_max) : 0,
+            timeMin: hasDelays ? num(stats.time_min) : 0,
+        }
     }
 }
