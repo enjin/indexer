@@ -1,9 +1,16 @@
-import { Field, Float, Int, ObjectType, Query, Resolver } from 'type-graphql'
+import { Arg, Field, Float, Int, ObjectType, Query, Resolver } from 'type-graphql'
 import 'reflect-metadata'
 import { EntityManager } from 'typeorm'
 import { ChainInfo } from '~/model'
 
-const DEFAULT_MAX_ITEMS = 50
+const BLOCKS_PER_DAY = 10 * 60 * 24
+
+const DEFAULT_LOOKBACK_DAYS = 30
+const DEFAULT_MAX_ITEMS = BLOCKS_PER_DAY * DEFAULT_LOOKBACK_DAYS
+
+const MAX_ITEMS_CAP = BLOCKS_PER_DAY * 90
+
+const MS_PER_S = 1000
 
 @ObjectType()
 class BlockAverageDetailBlock {
@@ -79,7 +86,7 @@ export class BlockAverageResult {
 
 type DetailRow = {
     block: { bytes: number; number: number }
-    delay: number
+    delayMs: number
     events: { count: number; system: number }
     extrinsics: { bytes: number; count: number }
     now: number
@@ -96,8 +103,8 @@ function calcDelay(details: DetailRow[], maxItems: number): DetailRow[] {
         const a = filtered[i]
         const b = filtered[i + 1]
         if (!a || !b) continue
-        if (b.block.number - a.block.number === 1 && b.delay === 0) {
-            b.delay = b.now - a.now
+        if (b.block.number - a.block.number === 1 && b.delayMs === 0) {
+            b.delayMs = b.now - a.now
         }
     }
 
@@ -119,7 +126,7 @@ function emptyResult(maxItems: number): BlockAverageResult {
 function toGraphqlDetails(rows: DetailRow[]): BlockAverageDetail[] {
     return rows.map((d) => ({
         block: d.block,
-        delay: d.delay,
+        delay: d.delayMs / MS_PER_S,
         events: d.events,
         extrinsics: d.extrinsics,
         now: d.now,
@@ -128,9 +135,9 @@ function toGraphqlDetails(rows: DetailRow[]): BlockAverageDetail[] {
 }
 
 function summarize(rows: DetailRow[], maxItems: number): BlockAverageResult {
-    const delays = rows.map(({ delay }) => delay).filter((delay) => delay > 0)
+    const delaysMs = rows.map(({ delayMs }) => delayMs).filter((d) => d > 0)
 
-    if (!delays.length) {
+    if (!delaysMs.length) {
         return {
             ...emptyResult(maxItems),
             details: toGraphqlDetails(rows),
@@ -138,17 +145,17 @@ function summarize(rows: DetailRow[], maxItems: number): BlockAverageResult {
         }
     }
 
-    const timeAvg = delays.reduce((avg, d) => avg + d, 0) / delays.length
-    const stdDev = Math.sqrt(delays.reduce((dev, d) => dev + (timeAvg - d) ** 2, 0) / delays.length)
+    const avgMs = delaysMs.reduce((avg, d) => avg + d, 0) / delaysMs.length
+    const stdDevMs = Math.sqrt(delaysMs.reduce((dev, d) => dev + (avgMs - d) ** 2, 0) / delaysMs.length)
 
     return {
         details: toGraphqlDetails(rows),
         isLoaded: rows.length === maxItems,
         maxItems,
-        stdDev,
-        timeAvg,
-        timeMax: Math.max(...delays),
-        timeMin: Math.min(...delays),
+        stdDev: stdDevMs / MS_PER_S,
+        timeAvg: avgMs / MS_PER_S,
+        timeMax: Math.max(...delaysMs) / MS_PER_S,
+        timeMin: Math.min(...delaysMs) / MS_PER_S,
     }
 }
 
@@ -157,8 +164,10 @@ export class BlockAverageResolver {
     constructor(private tx: () => Promise<EntityManager>) {}
 
     @Query(() => BlockAverageResult)
-    async blockAverage(): Promise<BlockAverageResult> {
-        const maxItems = DEFAULT_MAX_ITEMS
+    async blockAverage(
+        @Arg('maxItems', () => Int, { nullable: true, defaultValue: DEFAULT_MAX_ITEMS }) maxItemsArg?: number
+    ): Promise<BlockAverageResult> {
+        const maxItems = Math.min(Math.max(maxItemsArg ?? DEFAULT_MAX_ITEMS, 1), MAX_ITEMS_CAP)
         const manager = await this.tx()
 
         const chainRows = await manager
@@ -212,7 +221,7 @@ export class BlockAverageResolver {
             const n = ci.blockNumber
             return {
                 block: { bytes: 0, number: n },
-                delay: 0,
+                delayMs: 0,
                 events: {
                     count: evByBlock.get(n) ?? 0,
                     system: 0,
