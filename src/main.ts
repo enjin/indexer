@@ -2,20 +2,7 @@ import { TypeormDatabase } from '@subsquid/typeorm-store'
 import _ from 'lodash'
 import * as Sentry from '@sentry/node'
 import config from '~/util/config'
-import {
-    AccountTokenEvent,
-    AuctionState,
-    Event,
-    Extrinsic,
-    Fee,
-    FuelTank,
-    FuelTankData,
-    Listing,
-    ListingStatus,
-    ListingStatusType,
-    ListingType,
-    OfferState,
-} from '~/model'
+import { AccountTokenEvent, Event, Extrinsic, Fee, FuelTank, FuelTankData, Listing } from '~/model'
 import { genesisData } from '~/genesis-data'
 import { chainState } from '~/chain-state'
 import * as p from '~/pallet'
@@ -33,7 +20,6 @@ import { QueueUtils } from '~/queue'
 import { QueuesEnum } from '~/queue/constants'
 import { Logger } from '~/util/logger'
 import { getSnsEventHash, isRelay } from '~/util/tools'
-import { In } from 'typeorm'
 import { isSnsEvent, Sns, SnsEvent } from '~/util/sns'
 import { queueMissingBlocks } from '~/migration/queue-missing-blocks'
 
@@ -182,7 +168,6 @@ async function bootstrap() {
 
                 if (lastBlock.height > dataService.lastBlockNumber) {
                     await chainState(ctx, lastBlock)
-                    await checkListingState(ctx, lastBlock)
                 }
             } catch (error) {
                 await QueueUtils.resumeQueue(QueuesEnum.COLLECTIONS)
@@ -367,71 +352,6 @@ function getParticipants(args: Json, _events: EventItem[], signer: string): stri
     }
 
     return Array.from(accounts)
-}
-
-async function checkListingState(ctx: CommonContext, block: Block) {
-    const listings = await ctx.store.find(Listing, {
-        where: { type: In([ListingType.Auction, ListingType.Offer]), isActive: true },
-    })
-    for (const listing of listings) {
-        if (listing.data.isTypeOf === 'AuctionData') {
-            const auctionData = listing.data
-            if (
-                auctionData.endHeight < block.height &&
-                auctionData.endHeight > 0 &&
-                listing.state.isTypeOf === 'AuctionState' &&
-                (listing.state.isExpired === false || listing.state.isExpired === undefined)
-            ) {
-                const highBid = listing.state.highBid
-                listing.state = new AuctionState({ listingType: ListingType.Auction, highBid, isExpired: true })
-                const listingStatus = new ListingStatus({
-                    id: `${listing.id}-${block.height}`,
-                    type: ListingStatusType.Cancelled,
-                    listing,
-                    height: block.height,
-                    createdAt: new Date(block.timestamp ?? 0),
-                })
-                listing.isActive = false
-                await ctx.store.save(listingStatus)
-                await ctx.store.save(listing)
-            } else if (listing.state.isTypeOf === 'AuctionState' && listing.state.isExpired === undefined) {
-                const highBid = listing.state.highBid
-                listing.state = new AuctionState({ listingType: ListingType.Auction, highBid, isExpired: false })
-                await ctx.store.save(listing)
-            }
-        }
-
-        if (listing.data.isTypeOf === 'OfferData') {
-            const offerData = listing.data
-            if (
-                listing.state.isTypeOf === 'OfferState' &&
-                ((offerData.expiration && offerData.expiration < block.height) || listing.state.isExpired === true)
-            ) {
-                listing.state = new OfferState({
-                    listingType: ListingType.Offer,
-                    counterOfferCount: listing.state.counterOfferCount,
-                    isExpired: true,
-                })
-                const listingStatus = new ListingStatus({
-                    id: `${listing.id}-${block.height}`,
-                    type: ListingStatusType.Cancelled,
-                    listing,
-                    height: block.height,
-                    createdAt: new Date(block.timestamp ?? 0),
-                })
-                listing.isActive = false
-                await ctx.store.save(listingStatus)
-                await ctx.store.save(listing)
-            } else if (listing.state.isTypeOf === 'OfferState' && listing.state.isExpired === undefined) {
-                listing.state = new OfferState({
-                    listingType: ListingType.Offer,
-                    counterOfferCount: listing.state.counterOfferCount,
-                    isExpired: false,
-                })
-                await ctx.store.save(listing)
-            }
-        }
-    }
 }
 
 bootstrap().catch((error: unknown) => {
