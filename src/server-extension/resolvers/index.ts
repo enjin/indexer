@@ -19,6 +19,7 @@ import {
     RefreshCollectionsResolver,
     RefreshListingsResolver,
     CollectionInventoryResolver,
+    ChainStatsResolver,
 } from '~/server-extension'
 
 export {
@@ -42,4 +43,5 @@ export {
     RefreshCollectionsResolver,
     RefreshListingsResolver,
     CollectionInventoryResolver,
+    ChainStatsResolver,
 }
