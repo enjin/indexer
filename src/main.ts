@@ -61,7 +61,7 @@ async function bootstrap() {
                 }
 
                 ctx.log.debug(
-                    `Processing batch  of blocks from ${ctx.blocks[0].header.height} to ${ctx.blocks[ctx.blocks.length - 1].header.height}`
+                    `Processing batch of blocks from ${ctx.blocks[0].header.height} to ${ctx.blocks[ctx.blocks.length - 1].header.height}`
                 )
 
                 for (const block of ctx.blocks) {
