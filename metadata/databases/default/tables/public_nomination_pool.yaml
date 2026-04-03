@@ -20,6 +20,13 @@ array_relationships:
         table:
           name: pool_member
           schema: public
+  - name: stakeExchangeOffers
+    using:
+      foreign_key_constraint_on:
+        column: pool_id
+        table:
+          name: pools_offers
+          schema: public
   - name: validators
     using:
       foreign_key_constraint_on:

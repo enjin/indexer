@@ -41,6 +41,13 @@ array_relationships:
         table:
           name: token_account
           schema: public
+  - name: tokenGroups
+    using:
+      foreign_key_constraint_on:
+        column: collection_id
+        table:
+          name: token_group
+          schema: public
   - name: tokens
     using:
       foreign_key_constraint_on:

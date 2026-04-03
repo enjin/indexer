@@ -1,16 +1,13 @@
 table:
-  name: attribute
+  name: user_infusion
   schema: public
 object_relationships:
-  - name: collection
+  - name: account
     using:
-      foreign_key_constraint_on: collection_id
+      foreign_key_constraint_on: account_id
   - name: token
     using:
       foreign_key_constraint_on: token_id
-  - name: tokenGroup
-    using:
-      foreign_key_constraint_on: token_group_id
 select_permissions:
   - role: public
     permission:

@@ -73,6 +73,13 @@ array_relationships:
         table:
           name: account_token_event
           schema: public
+  - name: userInfusions
+    using:
+      foreign_key_constraint_on:
+        column: account_id
+        table:
+          name: user_infusion
+          schema: public
 select_permissions:
   - role: public
     permission:

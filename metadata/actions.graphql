@@ -1,10 +1,157 @@
-type Query {
-    refreshPool(id: String!): Boolean!
+enum EntityType {
+  COMPUTE_METADATA
+  COLLECTION_EXTRA
+  COLLECTION_STATS
+  TOKEN
+  TOKEN_TRAITS
+  ACCOUNT
+  ACCOUNT_BALANCES
+  LISTING
+  OFFER
+  POOL
+  SYNC_COLLECTIONS
+  SYNC_ACCOUNTS
+  SYNC_BALANCES
+  FETCH_ACCOUNT_BALANCE
+  SYNC_OFFERS
+  SYNC_VALIDATORS
+  SYNC_METADATA
+  COMPUTE_ACCOUNT_STATS
+  SYNC_FUEL_TANK_RULE_SETS
 }
 
-type MetadataToken {
-    id: String!
-    name: String!
-    symbol: String!
-    decimals: Int!
+enum OrderDirection {
+  ASC
+  DESC
+}
+
+enum TopCollectionTimeframeInput {
+  HOUR
+  HOUR_6
+  HOUR_24
+  WEEK
+  MONTH
+  YEAR
+  ALL
+}
+
+enum TopCollectionOrderByInput {
+  CREATED_AT
+  VOLUME
+  SALES
+  VOLUME_CHANGE
+  USERS
+  CATEGORY
+  TRENDING
+  TOP
+}
+
+enum ListingOrderByInput {
+  AMOUNT
+  PRICE
+}
+
+enum MyTokensOrderByInput {
+  COLLECTION_NAME
+  TOKEN_NAME
+  FLOOR_PRICE
+  DATE
+}
+
+enum AccountsTokensOrderByInput {
+  COLLECTION_NAME
+  TOKEN_NAME
+  DATE
+  BEST_LISTING_HIGHEST_PRICE
+}
+
+enum TokenListingFilterInput {
+  ALL
+  LISTED
+  NOT_LISTED
+}
+
+enum CollectionInventoryOrderByInput {
+  DATE
+  TOKEN_NAME
+  BEST_LISTING_HIGHEST_PRICE
+}
+
+enum StakingTimeframeInput {
+  DAY
+  WEEK
+  MONTH
+  YEAR
+  YTD
+  ALL
+}
+
+type SquidActionPayload {
+  data: json!
+}
+
+type Query {
+  verify_message(message: String!, signature: String!, publicKey: String!): SquidActionPayload!
+  fuel_tanks_accounts(fuelTank: String!, account: String!): SquidActionPayload!
+  claims_account_nonce(account: String!): SquidActionPayload!
+  claimable_collection_ids(addresses: [String!]!): SquidActionPayload!
+  validator_details(ids: [String!]!): SquidActionPayload!
+  top_collection(
+    timeFrame: TopCollectionTimeframeInput!
+    orderBy: TopCollectionOrderByInput!
+    order: OrderDirection!
+    offset: Int
+    limit: Int
+    category: json
+    query: String
+  ): SquidActionPayload!
+  token_sales_history(id: String!, fromDate: String): SquidActionPayload!
+  token_listings(
+    assetId: String!
+    hiddenListingId: String
+    orderBy: ListingOrderByInput
+    order: OrderDirection
+    limit: Int
+    offset: Int
+  ): SquidActionPayload!
+  search_tokens(query: String!, publicKey: String!): SquidActionPayload!
+  my_tokens(
+    accountId: String!
+    orderBy: MyTokensOrderByInput!
+    order: OrderDirection!
+    offset: Int
+    limit: Int
+    query: String
+  ): SquidActionPayload!
+  chain_stats(maxBlocks: Int): SquidActionPayload!
+  block_details(blockNumber: Int!): SquidActionPayload!
+  best_pools(accountId: String!, limit: Int): SquidActionPayload!
+  accounts_tokens_connection(args: json!): SquidActionPayload!
+  accounts_nft_summary(accountIds: [String!]!): SquidActionPayload!
+  account_staking_summary(
+    accountId: String
+    accountIds: [String!]
+    timeFrame: StakingTimeframeInput!
+  ): SquidActionPayload!
+  collection_inventory(
+    collectionId: String!
+    accountIds: [String!]!
+    first: Int
+    after: String
+    orderBy: CollectionInventoryOrderByInput
+    order: OrderDirection
+    listingFilter: TokenListingFilterInput
+    query: String
+  ): SquidActionPayload!
+}
+
+type Mutation {
+  refresh_accounts(ids: [String!]!): SquidActionPayload!
+  refresh_balances(ids: [String!]!): SquidActionPayload!
+  refresh_collections(ids: [String!]!): SquidActionPayload!
+  refresh_listings(ids: [String!]!): SquidActionPayload!
+  refresh_entity(type: EntityType!, ids: [String!]!): SquidActionPayload!
+  import_block(blockNumber: Int!, toBlock: Int): SquidActionPayload!
+  refresh_pool(id: String!): SquidActionPayload!
+  refresh_metadata(ids: json!): SquidActionPayload!
 }
