@@ -14,7 +14,7 @@ registerEnumType(RefreshMetadataResponseStatus, {
     name: 'RefreshMetadataResponseStatus',
 })
 
-enum RefreshMetadataType {
+export enum RefreshMetadataType {
     COLLECTION = 'collection',
     TOKEN = 'token',
     TOKEN_GROUP = 'token_group',
