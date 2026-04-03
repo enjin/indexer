@@ -13,11 +13,7 @@ object_relationships:
       foreign_key_constraint_on: last_sale_id
   - name: nominationPool
     using:
-      foreign_key_constraint_on:
-        column: degen_token_id
-        table:
-          name: nomination_pool
-          schema: public
+      foreign_key_constraint_on: nomination_pool_id
   - name: rarity
     using:
       foreign_key_constraint_on:
@@ -57,12 +53,26 @@ array_relationships:
         table:
           name: token_account
           schema: public
+  - name: tokenGroupTokens
+    using:
+      foreign_key_constraint_on:
+        column: token_id
+        table:
+          name: token_group_token
+          schema: public
   - name: traits
     using:
       foreign_key_constraint_on:
         column: token_id
         table:
           name: trait_token
+          schema: public
+  - name: userInfusions
+    using:
+      foreign_key_constraint_on:
+        column: token_id
+        table:
+          name: user_infusion
           schema: public
 select_permissions:
   - role: public

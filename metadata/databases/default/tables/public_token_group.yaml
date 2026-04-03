@@ -1,24 +1,24 @@
 table:
-  name: stake_exchange_offer
+  name: token_group
   schema: public
 object_relationships:
-  - name: account
+  - name: collection
     using:
-      foreign_key_constraint_on: account_id
-  - name: tokenFilter
-    using:
-      foreign_key_constraint_on:
-        column: offer_id
-        table:
-          name: stake_exchange_token_filter
-          schema: public
+      foreign_key_constraint_on: collection_id
 array_relationships:
-  - name: pools
+  - name: attributes
     using:
       foreign_key_constraint_on:
-        column: offer_id
+        column: token_group_id
         table:
-          name: pools_offers
+          name: attribute
+          schema: public
+  - name: tokenGroupTokens
+    using:
+      foreign_key_constraint_on:
+        column: token_group_id
+        table:
+          name: token_group_token
           schema: public
 select_permissions:
   - role: public
