@@ -1,79 +1,71 @@
+import 'reflect-metadata'
 import express from 'express'
-import { QueueUtils } from '../queue'
-import { Logger } from '../util/logger'
+import { dispatchHasuraAction } from '~/hasura-actions/dispatch'
+import { serializeSquidResult } from '~/hasura-actions/serialize'
+import { Logger } from '~/util/logger'
 
-const LOGGER_NAMESPACE = 'sqd:action-handler'
+const LOGGER_NAMESPACE = 'sqd:hasura-actions'
 
-// Define the expected request body structure for Hasura actions
-interface HasuraActionRequest {
-    input: {
-        id: string
-    }
+interface HasuraActionRequestBody {
+    action?: { name?: string }
+    input?: Record<string, unknown> | null
     session_variables?: Record<string, string>
+    request_query?: string
 }
 
-// Initialize Express app
 const app = express()
 const PORT = process.env.ACTION_HANDLER_PORT || 3001
 
-// Middleware
-app.use(express.json())
+app.use(express.json({ limit: '2mb' }))
 
-// Health check endpoint
-app.get('/health', (req, res) => {
+app.get('/health', (_req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() })
 })
 
-// Refresh Pool action handler
-app.post('/refreshPool', (req: any, res: any) => {
-    try {
-        const body = req.body as HasuraActionRequest
-        const { input } = body
+app.post('/hasura-actions', (req, res) => {
+    void (async () => {
+        try {
+            const raw = req.body
+            if (!raw || typeof raw !== 'object') {
+                res.status(400).json({ message: 'Invalid request body' })
+                return
+            }
+            const body = raw as HasuraActionRequestBody
+            const actionName = body.action?.name
+            if (!actionName) {
+                res.status(400).json({ message: 'Missing action name' })
+                return
+            }
 
-        if (!input || !input.id) {
-            Logger.error('Missing required parameter: id', LOGGER_NAMESPACE)
-            return res.status(400).json({
-                message: 'Missing required parameter: id',
+            Logger.info(`Hasura action: ${actionName}`, LOGGER_NAMESPACE)
+
+            const result = await dispatchHasuraAction({
+                action: { name: actionName },
+                input: body.input ?? {},
+            })
+
+            res.json({
+                data: serializeSquidResult(result),
+            })
+        } catch (error) {
+            const message = error instanceof Error ? error.message : String(error)
+            Logger.error(`Hasura action failed: ${message}`, LOGGER_NAMESPACE)
+            res.status(500).json({
+                message,
+                extensions: {
+                    code: 'SQUID_ACTION_ERROR',
+                },
             })
         }
-
-        const { id } = input
-
-        Logger.info(`Refreshing pool with id: ${id}`, LOGGER_NAMESPACE)
-
-        // Use the same logic as the GraphQL resolver
-        QueueUtils.dispatchRefreshPool(id)
-
-        // Return success response (Boolean as defined in the GraphQL schema)
-        res.json(true)
-    } catch (error) {
-        Logger.error(`Error refreshing pool: ${error}`, LOGGER_NAMESPACE)
-        res.status(500).json({
-            message: 'Internal server error while refreshing pool',
-        })
-    }
+    })()
 })
 
-// Error handling middleware
-app.use((error: any, req: any, res: any, next: any) => {
-    Logger.error(`Unhandled error: ${error.message}`, LOGGER_NAMESPACE)
-    res.status(500).json({
-        message: 'Internal server error',
-    })
+app.use((_req, res) => {
+    res.status(404).json({ message: 'Not found' })
 })
 
-// 404 handler
-app.use((req: any, res: any) => {
-    res.status(404).json({
-        message: 'Endpoint not found',
-    })
-})
-
-// Start server
-app.listen(PORT, () => {
-    Logger.info(`Action handler server running on port ${PORT}`, LOGGER_NAMESPACE)
-    Logger.info(`Health check available at: http://localhost:${PORT}/health`, LOGGER_NAMESPACE)
-    Logger.info(`RefreshPool handler available at: http://localhost:${PORT}/refreshPool`, LOGGER_NAMESPACE)
+app.listen(Number(PORT), '0.0.0.0', () => {
+    Logger.info(`Hasura action handler on 0.0.0.0:${PORT} (POST /hasura-actions)`, LOGGER_NAMESPACE)
 })
 
 export default app
