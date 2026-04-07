@@ -22,7 +22,7 @@ function listingIdToRpcKey(id: string): string {
 async function computeListingDistribution(listingData: any, asset_royalty: bigint): Promise<boolean> {
     const codec = listingData.toJSON()
     if (!codec.minReceived || !codec.price || !codec.amount) {
-        return Promise.resolve(false)
+        return Promise.resolve(true)
     }
     const minReceived = BigInt(codec.minReceived)
     const price = BigInt(codec.price)

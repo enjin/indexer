@@ -8,7 +8,7 @@ export async function syncListings(job: Job) {
 
     await job.updateProgress(10)
 
-    const stream = await em.getRepository(Listing).createQueryBuilder('listing').select('listing.id', 'id').stream()
+    const stream = await em.getRepository(Listing).createQueryBuilder('listing').select('listing.id', 'id').where('listing.isActive = true').stream()
 
     let count = 0
 
