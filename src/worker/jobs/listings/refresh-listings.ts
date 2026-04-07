@@ -21,13 +21,13 @@ function listingIdToRpcKey(id: string): string {
 
 async function computeListingDistribution(listingData: any, asset_royalty: bigint): Promise<boolean> {
     const codec = listingData.toJSON()
+    if (!codec.minReceived || !codec.price || !codec.amount) {
+        return Promise.resolve(false)
+    }
     const minReceived = BigInt(codec.minReceived)
     const price = BigInt(codec.price)
     const amount = BigInt(codec.amount)
     const bigRoyalty = asset_royalty * BigInt(10 ** 9)
-    if (!minReceived || !price || !amount) {
-        return Promise.resolve(false)
-    }
 
     const protocolFee = (BigInt(0.025 * 10 ** 18) * price) / BigInt(10 ** 18)
 
