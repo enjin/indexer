@@ -8,6 +8,7 @@ import {
     ListingType,
     OfferData,
     OfferState,
+    RoyaltyBeneficiary,
 } from '~/model'
 import { connectionManager } from '~/contexts'
 import { Job } from 'bullmq'
@@ -18,9 +19,15 @@ function listingIdToRpcKey(id: string): string {
     return id.startsWith('0x') ? id : `0x${id}`
 }
 
-function isListingAbsentOnChain(listingData: unknown): boolean {
-    const codec = listingData as { isNone?: boolean; isEmpty?: boolean }
-    return Boolean(codec?.isNone || codec?.isEmpty)
+function computeListingDistribution(listingData: unknown, asset_royalty: bigint): boolean {
+    const codec = listingData as { minReceived: bigint; price: bigint; amount: bigint }
+    if (!codec.minReceived || !codec.price || !codec.amount) {
+        return false
+    }
+
+    const protocolFee = BigInt(0.025 * 10 ** 18)
+
+    return codec.price * codec.amount - protocolFee - asset_royalty < codec.minReceived ? true : false
 }
 
 export async function refreshListings(job: Job, ids: string[]) {
@@ -44,6 +51,9 @@ export async function refreshListings(job: Job, ids: string[]) {
             bids: {
                 bidder: true,
             },
+            makeAssetId: {
+                collection: true,
+            },
         },
         order: {
             bids: {
@@ -65,8 +75,22 @@ export async function refreshListings(job: Job, ids: string[]) {
 
     for (const listing of listings) {
         const listingData = await api.query.marketplace.listings(listingIdToRpcKey(listing.id))
+        const collectionRoyaltyTotal =
+            listing.makeAssetId.collection.marketPolicy?.beneficiaries
+                ?.map((beneficiary) => beneficiary.percentage)
+                .reduce((acc, curr) => acc + curr, 0) ?? 0
+        const tokenRoyaltyTotal =
+            listing.makeAssetId.behavior?.isTypeOf === 'TokenBehaviorHasRoyalty'
+                ? (listing.makeAssetId.behavior?.beneficiaries
+                      ?.map((beneficiary: RoyaltyBeneficiary | null | undefined) => beneficiary?.percentage)
+                      ?.reduce((acc: number, curr: number | undefined) => acc + (curr ?? 0), 0) ?? 0)
+                : 0
+        await job.log(`Collection royalty total: ${collectionRoyaltyTotal}`)
+        await job.log(`Token royalty total: ${tokenRoyaltyTotal}`)
+        await job.log(`Total royalty: ${collectionRoyaltyTotal + tokenRoyaltyTotal}`)
 
-        if (isListingAbsentOnChain(listingData)) {
+        if (computeListingDistribution(listingData, BigInt(collectionRoyaltyTotal + tokenRoyaltyTotal))) {
+            await job.log(`Listing ${listing.id} is not distributed correctly`)
             if (listing.isActive) {
                 const listingStatus = new ListingStatus({
                     id: `${listing.id}-refresh-${Date.now()}-${processed}`,
