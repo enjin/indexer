@@ -19,15 +19,17 @@ function listingIdToRpcKey(id: string): string {
     return id.startsWith('0x') ? id : `0x${id}`
 }
 
-function computeListingDistribution(listingData: unknown, asset_royalty: bigint): boolean {
+async function computeListingDistribution(listingData: unknown, asset_royalty: bigint, job: Job): Promise<boolean> {
     const codec = listingData as { minReceived: bigint; price: bigint; amount: bigint }
     if (!codec.minReceived || !codec.price || !codec.amount) {
-        return false
+        return Promise.resolve(false)
     }
+
+    await job.log(`Listing data: ${codec.minReceived}, ${codec.price}, ${codec.amount}`)
 
     const protocolFee = BigInt(0.025 * 10 ** 18)
 
-    return codec.price * codec.amount - protocolFee - asset_royalty < codec.minReceived ? true : false
+    return Promise.resolve(codec.price * codec.amount - protocolFee - asset_royalty < codec.minReceived ? true : false)
 }
 
 export async function refreshListings(job: Job, ids: string[]) {
@@ -89,7 +91,7 @@ export async function refreshListings(job: Job, ids: string[]) {
         await job.log(`Token royalty total: ${tokenRoyaltyTotal}`)
         await job.log(`Total royalty: ${collectionRoyaltyTotal + tokenRoyaltyTotal}`)
 
-        if (computeListingDistribution(listingData, BigInt(collectionRoyaltyTotal + tokenRoyaltyTotal))) {
+        if (await computeListingDistribution(listingData, BigInt(collectionRoyaltyTotal + tokenRoyaltyTotal), job)) {
             await job.log(`Listing ${listing.id} is not distributed correctly`)
             if (listing.isActive) {
                 const listingStatus = new ListingStatus({
