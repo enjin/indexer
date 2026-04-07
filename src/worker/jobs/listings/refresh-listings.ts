@@ -1,12 +1,45 @@
-import { AuctionData, AuctionState, Listing, ListingType, OfferData, OfferState } from '~/model'
+import {
+    AuctionData,
+    AuctionState,
+    ChainInfo,
+    Listing,
+    ListingStatus,
+    ListingStatusType,
+    ListingType,
+    OfferData,
+    OfferState,
+    RoyaltyBeneficiary,
+} from '~/model'
 import { connectionManager } from '~/contexts'
 import { Job } from 'bullmq'
 import Rpc from '~/util/rpc'
 import { In } from 'typeorm'
 
+function listingIdToRpcKey(id: string): string {
+    return id.startsWith('0x') ? id : `0x${id}`
+}
+
+async function computeListingDistribution(listingData: any, assetRoyalty: bigint, job: Job): Promise<boolean> {
+    const codec = listingData.toJSON()
+    if (!codec.minReceived || !codec.price || !codec.amount) {
+        await job.log('Listing data is not valid')
+        return Promise.resolve(true)
+    }
+    const minReceived = BigInt(codec.minReceived)
+    const price = BigInt(codec.price)
+    const amount = BigInt(codec.amount)
+    const bigRoyalty = (assetRoyalty * BigInt(10 ** 9) * price) / BigInt(10 ** 18)
+
+    const protocolFee = (BigInt(0.025 * 10 ** 18) * price) / BigInt(10 ** 18)
+
+    return Promise.resolve(price * amount - protocolFee - bigRoyalty < minReceived ? true : false)
+}
+
 export async function refreshListings(job: Job, ids: string[]) {
     const em = await connectionManager()
-    const { api } = await Rpc.getInstance()
+    const rpc = await Rpc.getInstance()
+    await rpc.ensureConnected()
+    const { api } = rpc
 
     await job.updateProgress(10)
 
@@ -15,6 +48,9 @@ export async function refreshListings(job: Job, ids: string[]) {
         relations: {
             bids: {
                 bidder: true,
+            },
+            makeAssetId: {
+                collection: true,
             },
         },
         order: {
@@ -27,11 +63,40 @@ export async function refreshListings(job: Job, ids: string[]) {
     await job.updateProgress(30)
 
     const totalListings = listings.length
+    if (totalListings === 0) {
+        await job.log('No listings found for given ids')
+        await job.updateProgress(100)
+        return
+    }
+
     let processed = 0
 
     for (const listing of listings) {
+        const listingData = await api.query.marketplace.listings(listingIdToRpcKey(listing.id))
+        const collectionRoyaltyTotal =
+            listing.makeAssetId.collection.marketPolicy?.beneficiaries
+                ?.map((beneficiary) => beneficiary.percentage)
+                .reduce((acc, curr) => acc + curr, 0) ?? 0
+        const tokenRoyaltyTotal =
+            listing.makeAssetId.behavior?.isTypeOf === 'TokenBehaviorHasRoyalty'
+                ? (listing.makeAssetId.behavior?.beneficiaries
+                      ?.map((beneficiary: RoyaltyBeneficiary | null | undefined) => beneficiary?.percentage)
+                      ?.reduce((acc: number, curr: number | undefined) => acc + (curr ?? 0), 0) ?? 0)
+                : 0
+
+        if (await computeListingDistribution(listingData, BigInt(collectionRoyaltyTotal + tokenRoyaltyTotal), job)) {
+            await job.log(`Listing ${listing.id} has royalty increased`)
+            if (listing.isActive) {
+                listing.hasRoyaltyIncreased = true
+                await em.save(listing)
+            }
+            processed++
+            const progress = Math.min(90, 30 + Math.floor((processed / totalListings) * 60))
+            await job.updateProgress(progress)
+            continue
+        }
+
         let hasChanged = false
-        const listingData = await api.query.marketplace.listings(`0x${listing.id}`)
         if (listing.type === ListingType.Offer) {
             if (listing?.data.isTypeOf === 'OfferData') {
                 const listingJson: any = listingData.toJSON()
@@ -70,7 +135,6 @@ export async function refreshListings(job: Job, ids: string[]) {
         }
 
         processed++
-        // Update progress (30% -> 90%)
         const progress = Math.min(90, 30 + Math.floor((processed / totalListings) * 60))
         await job.updateProgress(progress)
     }
