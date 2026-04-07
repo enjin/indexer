@@ -28,7 +28,7 @@ async function computeListingDistribution(listingData: any, assetRoyalty: bigint
     const minReceived = BigInt(codec.minReceived)
     const price = BigInt(codec.price)
     const amount = BigInt(codec.amount)
-    const bigRoyalty = assetRoyalty * BigInt(10 ** 9)
+    const bigRoyalty = (assetRoyalty * BigInt(10 ** 9) * price) / BigInt(10 ** 18)
 
     await job.log(`Price: ${price}`)
     await job.log(`Amount: ${amount}`)
