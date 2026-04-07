@@ -19,7 +19,7 @@ function listingIdToRpcKey(id: string): string {
     return id.startsWith('0x') ? id : `0x${id}`
 }
 
-async function computeListingDistribution(listingData: any, asset_royalty: bigint): Promise<boolean> {
+async function computeListingDistribution(listingData: any, assetRoyalty: bigint): Promise<boolean> {
     const codec = listingData.toJSON()
     if (!codec.minReceived || !codec.price || !codec.amount) {
         return Promise.resolve(true)
@@ -27,7 +27,7 @@ async function computeListingDistribution(listingData: any, asset_royalty: bigin
     const minReceived = BigInt(codec.minReceived)
     const price = BigInt(codec.price)
     const amount = BigInt(codec.amount)
-    const bigRoyalty = asset_royalty * BigInt(10 ** 9)
+    const bigRoyalty = assetRoyalty * BigInt(10 ** 9)
 
     const protocolFee = (BigInt(0.025 * 10 ** 18) * price) / BigInt(10 ** 18)
 
