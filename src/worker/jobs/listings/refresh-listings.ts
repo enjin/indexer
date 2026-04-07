@@ -91,20 +91,11 @@ export async function refreshListings(job: Job, ids: string[]) {
                 : 0
 
         if (await computeListingDistribution(listingData, BigInt(collectionRoyaltyTotal + tokenRoyaltyTotal))) {
-            await job.log(`Listing ${listing.id} is not distributed correctly`)
+            await job.log(`Listing ${listing.id} has royalty increased`)
             if (listing.isActive) {
-                const listingStatus = new ListingStatus({
-                    id: `${listing.id}-refresh-${Date.now()}-${processed}`,
-                    type: ListingStatusType.Cancelled,
-                    listing,
-                    height,
-                    createdAt: now,
-                })
-                listing.isActive = false
-                listing.updatedAt = now
-                await em.save(listingStatus)
+                listing.hasRoyaltyIncreased = true
                 await em.save(listing)
-                await job.log(`Deactivated listing ${listing.id} (absent from marketplace.listings)`)
+                await job.log(`Increased royalty for listing ${listing.id}`)
             }
             processed++
             const progress = Math.min(90, 30 + Math.floor((processed / totalListings) * 60))
