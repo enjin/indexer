@@ -19,17 +19,20 @@ function listingIdToRpcKey(id: string): string {
     return id.startsWith('0x') ? id : `0x${id}`
 }
 
-async function computeListingDistribution(listingData: unknown, asset_royalty: bigint, job: Job): Promise<boolean> {
-    const codec = listingData as { minReceived: bigint; price: bigint; amount: bigint }
-    if (!codec.minReceived || !codec.price || !codec.amount) {
+async function computeListingDistribution(listingData: any, asset_royalty: bigint, job: Job): Promise<boolean> {
+    const codec = listingData.toJSON()
+    const minReceived = BigInt(codec.minReceived)
+    const price = BigInt(codec.price)
+    const amount = BigInt(codec.amount)
+    if (!minReceived || !price || !amount) {
         return Promise.resolve(false)
     }
 
-    await job.log(`Listing data: ${codec.minReceived}, ${codec.price}, ${codec.amount}`)
+    await job.log(`Listing data: ${minReceived}, ${price}, ${amount}`)
 
     const protocolFee = BigInt(0.025 * 10 ** 18)
 
-    return Promise.resolve(codec.price * codec.amount - protocolFee - asset_royalty < codec.minReceived ? true : false)
+    return Promise.resolve(price * amount - protocolFee - asset_royalty < minReceived ? true : false)
 }
 
 export async function refreshListings(job: Job, ids: string[]) {
