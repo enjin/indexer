@@ -19,9 +19,10 @@ function listingIdToRpcKey(id: string): string {
     return id.startsWith('0x') ? id : `0x${id}`
 }
 
-async function computeListingDistribution(listingData: any, assetRoyalty: bigint): Promise<boolean> {
+async function computeListingDistribution(listingData: any, assetRoyalty: bigint, job: Job): Promise<boolean> {
     const codec = listingData.toJSON()
     if (!codec.minReceived || !codec.price || !codec.amount) {
+        await job.log('Listing data is not valid')
         return Promise.resolve(true)
     }
     const minReceived = BigInt(codec.minReceived)
@@ -29,7 +30,17 @@ async function computeListingDistribution(listingData: any, assetRoyalty: bigint
     const amount = BigInt(codec.amount)
     const bigRoyalty = assetRoyalty * BigInt(10 ** 9)
 
+    await job.log(`Price: ${price}`)
+    await job.log(`Amount: ${amount}`)
+    await job.log(`Big royalty: ${bigRoyalty}`)
+
     const protocolFee = (BigInt(0.025 * 10 ** 18) * price) / BigInt(10 ** 18)
+
+    await job.log(`Protocol fee: ${protocolFee}`)
+
+    await job.log(`Total: ${price * amount - protocolFee - bigRoyalty}`)
+    await job.log(`Min received: ${minReceived}`)
+    await job.log(`Total < min received: ${price * amount - protocolFee - bigRoyalty < minReceived}`)
 
     return Promise.resolve(price * amount - protocolFee - bigRoyalty < minReceived ? true : false)
 }
@@ -39,13 +50,6 @@ export async function refreshListings(job: Job, ids: string[]) {
     const rpc = await Rpc.getInstance()
     await rpc.ensureConnected()
     const { api } = rpc
-
-    const chainInfo = await em.find(ChainInfo, {
-        order: { blockNumber: 'DESC' },
-        take: 1,
-    })
-    const height = chainInfo[0]?.blockNumber ?? 0
-    const now = new Date()
 
     await job.updateProgress(10)
 
@@ -90,7 +94,11 @@ export async function refreshListings(job: Job, ids: string[]) {
                       ?.reduce((acc: number, curr: number | undefined) => acc + (curr ?? 0), 0) ?? 0)
                 : 0
 
-        if (await computeListingDistribution(listingData, BigInt(collectionRoyaltyTotal + tokenRoyaltyTotal))) {
+        await job.log(`Collection royalty total: ${collectionRoyaltyTotal}`)
+        await job.log(`Token royalty total: ${tokenRoyaltyTotal}`)
+        await job.log(`Total royalty: ${collectionRoyaltyTotal + tokenRoyaltyTotal}`)
+
+        if (await computeListingDistribution(listingData, BigInt(collectionRoyaltyTotal + tokenRoyaltyTotal), job)) {
             await job.log(`Listing ${listing.id} has royalty increased`)
             if (listing.isActive) {
                 listing.hasRoyaltyIncreased = true
