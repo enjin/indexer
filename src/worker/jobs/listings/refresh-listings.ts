@@ -19,7 +19,7 @@ function listingIdToRpcKey(id: string): string {
     return id.startsWith('0x') ? id : `0x${id}`
 }
 
-async function computeListingDistribution(listingData: any, asset_royalty: bigint, job: Job): Promise<boolean> {
+async function computeListingDistribution(listingData: any, asset_royalty: bigint): Promise<boolean> {
     const codec = listingData.toJSON()
     const minReceived = BigInt(codec.minReceived)
     const price = BigInt(codec.price)
@@ -29,10 +29,7 @@ async function computeListingDistribution(listingData: any, asset_royalty: bigin
         return Promise.resolve(false)
     }
 
-    await job.log(`Listing data: ${minReceived}, ${price}, ${amount} `)
-    await job.log(`Royalty: ${bigRoyalty}`)
-
-    const protocolFee = BigInt(0.025 * 10 ** 18)
+    const protocolFee = (BigInt(0.025 * 10 ** 18) * price) / BigInt(10 ** 18)
 
     return Promise.resolve(price * amount - protocolFee - bigRoyalty < minReceived ? true : false)
 }
@@ -92,11 +89,8 @@ export async function refreshListings(job: Job, ids: string[]) {
                       ?.map((beneficiary: RoyaltyBeneficiary | null | undefined) => beneficiary?.percentage)
                       ?.reduce((acc: number, curr: number | undefined) => acc + (curr ?? 0), 0) ?? 0)
                 : 0
-        await job.log(`Collection royalty total: ${collectionRoyaltyTotal}`)
-        await job.log(`Token royalty total: ${tokenRoyaltyTotal}`)
-        await job.log(`Total royalty: ${collectionRoyaltyTotal + tokenRoyaltyTotal}`)
 
-        if (await computeListingDistribution(listingData, BigInt(collectionRoyaltyTotal + tokenRoyaltyTotal), job)) {
+        if (await computeListingDistribution(listingData, BigInt(collectionRoyaltyTotal + tokenRoyaltyTotal))) {
             await job.log(`Listing ${listing.id} is not distributed correctly`)
             if (listing.isActive) {
                 const listingStatus = new ListingStatus({
