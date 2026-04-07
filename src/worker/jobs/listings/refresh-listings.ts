@@ -24,15 +24,17 @@ async function computeListingDistribution(listingData: any, asset_royalty: bigin
     const minReceived = BigInt(codec.minReceived)
     const price = BigInt(codec.price)
     const amount = BigInt(codec.amount)
+    const bigRoyalty = asset_royalty * BigInt(10 ** 9)
     if (!minReceived || !price || !amount) {
         return Promise.resolve(false)
     }
 
-    await job.log(`Listing data: ${minReceived}, ${price}, ${amount}`)
+    await job.log(`Listing data: ${minReceived}, ${price}, ${amount} `)
+    await job.log(`Royalty: ${bigRoyalty}`)
 
     const protocolFee = BigInt(0.025 * 10 ** 18)
 
-    return Promise.resolve(price * amount - protocolFee - asset_royalty < minReceived ? true : false)
+    return Promise.resolve(price * amount - protocolFee - bigRoyalty < minReceived ? true : false)
 }
 
 export async function refreshListings(job: Job, ids: string[]) {
