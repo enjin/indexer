@@ -159,11 +159,13 @@ async function tokenFromCall(
 
         if ('metadata' in tokenParams) {
             token.nativeMetadata =
-                tokenParams.metadata !== undefined ? new NativeTokenMetadata({
-                    decimalCount: tokenParams.metadata.decimalCount,
-                    symbol: hexToString(tokenParams.metadata.symbol),
-                    name: hexToString(tokenParams.metadata.name),
-                }) : null
+                tokenParams.metadata !== undefined
+                    ? new NativeTokenMetadata({
+                          decimalCount: tokenParams.metadata.decimalCount,
+                          symbol: hexToString(tokenParams.metadata.symbol),
+                          name: hexToString(tokenParams.metadata.name),
+                      })
+                    : null
         }
 
         if ('behavior' in tokenParams) {

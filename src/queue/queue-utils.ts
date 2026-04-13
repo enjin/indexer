@@ -611,7 +611,6 @@ export function dispatchSyncUserInfusions(): void {
     })
 }
 
-
 export function dispatchComputeTokenNativeMetadata(id: string): void {
     TokensQueue.add(
         JobsEnum.COMPUTE_TOKEN_NATIVE_METADATA,
