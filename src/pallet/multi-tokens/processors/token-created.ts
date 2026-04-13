@@ -161,8 +161,8 @@ async function tokenFromCall(
             token.nativeMetadata =
                 tokenParams.metadata !== undefined ? new NativeTokenMetadata({
                     decimalCount: tokenParams.metadata.decimalCount,
-                    symbol: hexToString(tokenParams.metadata.symbol ?? ''),
-                    name: hexToString(tokenParams.metadata.name ?? ''),
+                    symbol: hexToString(tokenParams.metadata.symbol),
+                    name: hexToString(tokenParams.metadata.name),
                 }) : null
         }
 
