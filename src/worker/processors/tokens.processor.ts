@@ -9,6 +9,7 @@ import {
     computeTokenInfusion,
     syncTokenGroupPositions,
     computeTokenCreationSupply,
+    computeTokenNativeMetadata,
 } from '~/worker/jobs'
 import { logDebug, logError } from '~/worker/utils'
 
@@ -35,6 +36,9 @@ export class TokensProcessor implements ProcessorDef {
                 break
             case JobsEnum.COMPUTE_TOKEN_CREATION_SUPPLY:
                 await computeTokenCreationSupply(job, job.data.id)
+                break
+            case JobsEnum.COMPUTE_TOKEN_NATIVE_METADATA:
+                await computeTokenNativeMetadata(job, job.data.id)
                 break
             default:
                 throw new Error(`${job.name} is not a valid job for this processor`)

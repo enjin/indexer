@@ -102,6 +102,7 @@ export async function tokenMutated(
     await ctx.store.save(token)
 
     await QueueUtils.dispatchComputeStats(data.collectionId.toString())
+    await QueueUtils.dispatchComputeTokenNativeMetadata(token.id)
 
     return mappings.multiTokens.events.tokenMutatedEventModel(item, data)
 }
