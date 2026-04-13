@@ -293,6 +293,7 @@ export async function rewardPaid(ctx: CommonContext, block: Block, item: EventIt
             extrinsic: item.extrinsic.id,
             name: pool.name,
             tokenId: `2-${pool.tokenId}`,
+            noRewards: reward.reinvested === 0n,
         },
     }
 
