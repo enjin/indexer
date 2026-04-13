@@ -20,6 +20,7 @@ import { getCapType, getFreezeState, isTokenFrozen } from '~/synchronize/common'
 import { EventHandlerResult } from '~/processor.handler'
 import { isDispatchCall, unwrapFuelTankCall } from '~/pallet/fuel-tanks/utils'
 import { Call } from '~/pallet/common/types'
+import { hexToString } from '@polkadot/util'
 
 type TokenMarketBehavior = TokenMarketBehavior500 | TokenMarketBehavior1020
 
@@ -158,7 +159,13 @@ async function tokenFromCall(
 
         if ('metadata' in tokenParams) {
             token.nativeMetadata =
-                tokenParams.metadata !== undefined ? new NativeTokenMetadata(tokenParams.metadata) : null
+                tokenParams.metadata !== undefined
+                    ? new NativeTokenMetadata({
+                          decimalCount: tokenParams.metadata.decimalCount,
+                          symbol: hexToString(tokenParams.metadata.symbol),
+                          name: hexToString(tokenParams.metadata.name),
+                      })
+                    : null
         }
 
         if ('behavior' in tokenParams) {

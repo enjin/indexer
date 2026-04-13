@@ -610,3 +610,16 @@ export function dispatchSyncUserInfusions(): void {
         Logger.error('Failed to dispatch sync user infusions', LOGGER_NAMESPACE)
     })
 }
+
+export function dispatchComputeTokenNativeMetadata(id: string): void {
+    TokensQueue.add(
+        JobsEnum.COMPUTE_TOKEN_NATIVE_METADATA,
+        { id },
+        {
+            delay: 6000,
+            jobId: `tokens.native-metadata.${id}`,
+        }
+    ).catch(() => {
+        Logger.error('Failed to dispatch compute token native metadata', LOGGER_NAMESPACE)
+    })
+}
