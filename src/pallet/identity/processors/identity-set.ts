@@ -5,10 +5,11 @@ import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
 import * as mappings from '~/pallet/index'
 import { Data } from '~/pallet/common/types'
+import { safeString } from '~/util/tools'
 
 const dataToValue = (raw: Data) => {
     if (raw.__kind !== 'None') {
-        return hexToString(raw.value)
+        return safeString(hexToString(raw.value))
     }
 
     return null
