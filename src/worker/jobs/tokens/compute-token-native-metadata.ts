@@ -25,6 +25,12 @@ export async function computeTokenNativeMetadata(_job: Job, id: string): Promise
         return
     }
 
+    if (!rpcTokenJson.metadata) {
+        await _job.log(`Token ${token.id} has no native metadata, skipping`)
+        await _job.updateProgress(100)
+        return
+    }
+
     token.nativeMetadata = new NativeTokenMetadata({
         decimalCount: rpcTokenJson.metadata.decimalCount,
         symbol: hexToString(rpcTokenJson.metadata.symbol),
