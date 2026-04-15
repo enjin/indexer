@@ -17,6 +17,7 @@ import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
+import * as v1070 from '../v1070'
 
 export const join = {
     name: 'NominationPools.join',
@@ -1194,6 +1195,16 @@ export const payoutRewardsUnsigned = {
             signature: enjinV1062.MultiSignature,
         })
     ),
+    /**
+     * Unsigned transaction to pay rewards to a validator and distribute to pools
+     */
+    v1070: new CallType(
+        'NominationPools.payout_rewards_unsigned',
+        sts.struct({
+            payload: v1070.PayoutRewardsPayload,
+            signature: v1070.MultiSignature,
+        })
+    ),
 }
 
 export const payoutValidatorBonus = {
@@ -1336,6 +1347,21 @@ export const mutatePool = {
         sts.struct({
             poolId: sts.number(),
             mutation: v101.PoolMutation,
+        })
+    ),
+}
+
+export const fullyUnbondDeletedPool = {
+    name: 'NominationPools.fully_unbond_deleted_pool',
+    /**
+     * This can be used to unbond any remaining bonded balance in a pool that was destroyed and
+     * removed. If everything is working correctly, this shouldn't need to be used. It can
+     * only be called if the pool does not exist.
+     */
+    v1070: new CallType(
+        'NominationPools.fully_unbond_deleted_pool',
+        sts.struct({
+            poolId: sts.number(),
         })
     ),
 }

@@ -3,24 +3,32 @@ import { EventItem } from '~/contexts'
 import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, MultiTokensThawed } from '~/model'
-import { Freeze } from '~/pallet/multi-tokens/events/types'
+import { Thaw } from '~/pallet/multi-tokens/events/types'
 
-export function thawed(event: EventItem): Freeze {
+export function thawed(event: EventItem): Thaw {
     return match(event)
-        .returnType<Freeze>()
+        .returnType<Thaw>()
         .when(
             () => multiTokens.thawed.matrixEnjinV603.is(event),
             () => multiTokens.thawed.matrixEnjinV603.decode(event)
+        )
+        .when(
+            () => multiTokens.thawed.v1070.is(event),
+            () => multiTokens.thawed.v1070.decode(event)
         )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })
 }
 
-export function thawedEventModel(item: EventItem, data: Freeze): EventModel {
+export function thawedEventModel(item: EventItem, data: Thaw): EventModel {
     let tokenId: null | string = null
-    if (data.freezeType.__kind !== 'Collection' && data.freezeType.__kind !== 'CollectionAccount') {
-        tokenId = `${data.collectionId}-${data.freezeType.tokenId}`
+    if (data.freezeType?.__kind !== 'Collection' && data.freezeType?.__kind !== 'CollectionAccount') {
+        tokenId = `${data.collectionId}-${data.freezeType?.tokenId}`
+    }
+
+    if (data.thawType?.__kind !== 'Collection' && data.thawType?.__kind !== 'CollectionAccount') {
+        tokenId = `${data.collectionId}-${data.thawType?.tokenId}`
     }
 
     return new EventModel({

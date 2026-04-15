@@ -1,5 +1,6 @@
 import { sts, Block, Bytes, Option, Result, ConstantType, RuntimeCtx } from '../support'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
+import * as v1070 from '../v1070'
 
 export const minimumBidIncreasePercentage = {
     /**
@@ -105,4 +106,12 @@ export const removeExpiredListingsInterval = {
      *  Number of blocks the offchain worker waits in between removing expired listings
      */
     matrixEnjinV1031: new ConstantType('Marketplace.RemoveExpiredListingsInterval', sts.number()),
+}
+
+export const insufficientFundsDestination = {
+    /**
+     *  The account that receives the royalty if the royalty destination doesn't have enough
+     *  funds to receive it
+     */
+    v1070: new ConstantType('Marketplace.InsufficientFundsDestination', v1070.AccountId32),
 }

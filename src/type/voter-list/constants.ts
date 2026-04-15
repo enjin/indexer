@@ -51,3 +51,13 @@ export const bagThresholds = {
         sts.array(() => sts.bigint())
     ),
 }
+
+export const maxAutoRebagPerBlock = {
+    /**
+     *  Maximum number of accounts that may be re-bagged automatically in `on_idle`.
+     *
+     *  A value of `0` (obtained by configuring `type MaxAutoRebagPerBlock = ();`) disables
+     *  the feature.
+     */
+    v1070: new ConstantType('VoterList.MaxAutoRebagPerBlock', sts.number()),
+}

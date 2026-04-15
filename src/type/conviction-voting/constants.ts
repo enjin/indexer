@@ -19,3 +19,10 @@ export const voteLockingPeriod = {
      */
     enjinV100: new ConstantType('ConvictionVoting.VoteLockingPeriod', sts.number()),
 }
+
+export const stakedEnjCollectionId = {
+    /**
+     *  The Collection ID for sENJ
+     */
+    v1070: new ConstantType('ConvictionVoting.StakedEnjCollectionId', sts.bigint()),
+}

@@ -1,5 +1,6 @@
 import { sts, Block, Bytes, Option, Result, CallType, RuntimeCtx } from '../support'
 import * as enjinV100 from '../enjinV100'
+import * as v1070 from '../v1070'
 
 export const create = {
     name: 'Crowdloan.create',
@@ -20,6 +21,24 @@ export const create = {
             verifier: sts.option(() => enjinV100.MultiSigner),
         })
     ),
+    /**
+     * Create a new crowdloaning campaign for a parachain slot with the given lease period
+     * range.
+     *
+     * This applies a lock to your parachain configuration, ensuring that it cannot be changed
+     * by the parachain manager.
+     */
+    v1070: new CallType(
+        'Crowdloan.create',
+        sts.struct({
+            index: sts.number(),
+            cap: sts.bigint(),
+            firstPeriod: sts.number(),
+            lastPeriod: sts.number(),
+            end: sts.number(),
+            verifier: sts.option(() => v1070.MultiSigner),
+        })
+    ),
 }
 
 export const contribute = {
@@ -34,6 +53,18 @@ export const contribute = {
             index: sts.number(),
             value: sts.bigint(),
             signature: sts.option(() => enjinV100.MultiSignature),
+        })
+    ),
+    /**
+     * Contribute to a crowd sale. This will transfer some balance over to fund a parachain
+     * slot. It will be withdrawable when the crowdloan has ended and the funds are unused.
+     */
+    v1070: new CallType(
+        'Crowdloan.contribute',
+        sts.struct({
+            index: sts.number(),
+            value: sts.bigint(),
+            signature: sts.option(() => v1070.MultiSignature),
         })
     ),
 }
@@ -116,6 +147,22 @@ export const edit = {
             verifier: sts.option(() => enjinV100.MultiSigner),
         })
     ),
+    /**
+     * Edit the configuration for an in-progress crowdloan.
+     *
+     * Can only be called by Root origin.
+     */
+    v1070: new CallType(
+        'Crowdloan.edit',
+        sts.struct({
+            index: sts.number(),
+            cap: sts.bigint(),
+            firstPeriod: sts.number(),
+            lastPeriod: sts.number(),
+            end: sts.number(),
+            verifier: sts.option(() => v1070.MultiSigner),
+        })
+    ),
 }
 
 export const addMemo = {
@@ -160,6 +207,18 @@ export const contributeAll = {
         sts.struct({
             index: sts.number(),
             signature: sts.option(() => enjinV100.MultiSignature),
+        })
+    ),
+    /**
+     * Contribute your entire balance to a crowd sale. This will transfer the entire balance of
+     * a user over to fund a parachain slot. It will be withdrawable when the crowdloan has
+     * ended and the funds are unused.
+     */
+    v1070: new CallType(
+        'Crowdloan.contribute_all',
+        sts.struct({
+            index: sts.number(),
+            signature: sts.option(() => v1070.MultiSignature),
         })
     ),
 }

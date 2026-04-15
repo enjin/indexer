@@ -32,6 +32,7 @@ import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
+import * as v1070 from '../v1070'
 
 export const createCollection = {
     name: 'MultiTokens.create_collection',
@@ -2036,6 +2037,15 @@ export const freeze = {
             info: matrixEnjinV603.Freeze,
         })
     ),
+    /**
+     * Freeze collection, token or account
+     */
+    v1070: new CallType(
+        'MultiTokens.freeze',
+        sts.struct({
+            info: v1070.Freeze,
+        })
+    ),
 }
 
 export const thaw = {
@@ -2047,6 +2057,15 @@ export const thaw = {
         'MultiTokens.thaw',
         sts.struct({
             info: matrixEnjinV603.Freeze,
+        })
+    ),
+    /**
+     * Thaw collection, token or account
+     */
+    v1070: new CallType(
+        'MultiTokens.thaw',
+        sts.struct({
+            info: v1070.Thaw,
         })
     ),
 }
@@ -4613,6 +4632,18 @@ export const forceSetTokenAccount = {
             value: sts.option(() => v1060.TokenAccount),
         })
     ),
+    /**
+     * Set the TokenAccounts storage to the given `value`, origin must be root
+     */
+    v1070: new CallType(
+        'MultiTokens.force_set_token_account',
+        sts.struct({
+            collectionId: sts.bigint(),
+            tokenId: sts.bigint(),
+            accountId: v1070.MultiAddress,
+            value: sts.option(() => v1070.TokenAccount),
+        })
+    ),
 }
 
 export const forceCreateCollection = {
@@ -5289,6 +5320,15 @@ export const forceFreeze = {
         'MultiTokens.force_freeze',
         sts.struct({
             info: matrixEnjinV603.Freeze,
+        })
+    ),
+    /**
+     * Same as [`freeze`](Self::freeze), but it is callable by [`Config::ForceOrigin`]
+     */
+    v1070: new CallType(
+        'MultiTokens.force_freeze',
+        sts.struct({
+            info: v1070.Freeze,
         })
     ),
 }

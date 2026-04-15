@@ -25,6 +25,7 @@ import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
+import * as v1070 from '../v1070'
 
 export const tokenAccounts = {
     /**
@@ -189,6 +190,15 @@ export const tokenAccounts = {
         [sts.bigint(), sts.bigint(), v1060.AccountId32],
         v1060.TokenAccount
     ) as TokenAccountsV1060,
+    /**
+     *  Accounts per token (real storage)
+     */
+    v1070: new StorageType(
+        'MultiTokens.TokenAccounts',
+        'Optional',
+        [sts.bigint(), sts.bigint(), v1070.AccountId32],
+        v1070.TokenAccount
+    ) as TokenAccountsV1070,
 }
 
 /**
@@ -1673,6 +1683,77 @@ export interface TokenAccountsV1060 {
         key2: bigint,
         key3: v1060.AccountId32
     ): AsyncIterable<[k: [bigint, bigint, v1060.AccountId32], v: v1060.TokenAccount | undefined][]>
+}
+
+/**
+ *  Accounts per token (real storage)
+ */
+export interface TokenAccountsV1070 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key1: bigint, key2: bigint, key3: v1070.AccountId32): Promise<v1070.TokenAccount | undefined>
+    getMany(block: Block, keys: [bigint, bigint, v1070.AccountId32][]): Promise<(v1070.TokenAccount | undefined)[]>
+    getKeys(block: Block): Promise<[bigint, bigint, v1070.AccountId32][]>
+    getKeys(block: Block, key1: bigint): Promise<[bigint, bigint, v1070.AccountId32][]>
+    getKeys(block: Block, key1: bigint, key2: bigint): Promise<[bigint, bigint, v1070.AccountId32][]>
+    getKeys(
+        block: Block,
+        key1: bigint,
+        key2: bigint,
+        key3: v1070.AccountId32
+    ): Promise<[bigint, bigint, v1070.AccountId32][]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[bigint, bigint, v1070.AccountId32][]>
+    getKeysPaged(pageSize: number, block: Block, key1: bigint): AsyncIterable<[bigint, bigint, v1070.AccountId32][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint,
+        key2: bigint
+    ): AsyncIterable<[bigint, bigint, v1070.AccountId32][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint,
+        key2: bigint,
+        key3: v1070.AccountId32
+    ): AsyncIterable<[bigint, bigint, v1070.AccountId32][]>
+    getPairs(block: Block): Promise<[k: [bigint, bigint, v1070.AccountId32], v: v1070.TokenAccount | undefined][]>
+    getPairs(
+        block: Block,
+        key1: bigint
+    ): Promise<[k: [bigint, bigint, v1070.AccountId32], v: v1070.TokenAccount | undefined][]>
+    getPairs(
+        block: Block,
+        key1: bigint,
+        key2: bigint
+    ): Promise<[k: [bigint, bigint, v1070.AccountId32], v: v1070.TokenAccount | undefined][]>
+    getPairs(
+        block: Block,
+        key1: bigint,
+        key2: bigint,
+        key3: v1070.AccountId32
+    ): Promise<[k: [bigint, bigint, v1070.AccountId32], v: v1070.TokenAccount | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: [bigint, bigint, v1070.AccountId32], v: v1070.TokenAccount | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint
+    ): AsyncIterable<[k: [bigint, bigint, v1070.AccountId32], v: v1070.TokenAccount | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint,
+        key2: bigint
+    ): AsyncIterable<[k: [bigint, bigint, v1070.AccountId32], v: v1070.TokenAccount | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint,
+        key2: bigint,
+        key3: v1070.AccountId32
+    ): AsyncIterable<[k: [bigint, bigint, v1070.AccountId32], v: v1070.TokenAccount | undefined][]>
 }
 
 export const collections = {

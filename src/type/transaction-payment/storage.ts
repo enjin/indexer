@@ -30,3 +30,22 @@ export interface StorageVersionMatrixEnjinV603 {
     getDefault(block: Block): matrixEnjinV603.Releases
     get(block: Block): Promise<matrixEnjinV603.Releases | undefined>
 }
+
+export const txPaymentCredit = {
+    /**
+     *  The `OnChargeTransaction` stores the withdrawn tx fee here.
+     *
+     *  Use `withdraw_txfee` and `remaining_txfee` to access from outside the crate.
+     */
+    v1070: new StorageType('TransactionPayment.TxPaymentCredit', 'Optional', [], sts.unit()) as TxPaymentCreditV1070,
+}
+
+/**
+ *  The `OnChargeTransaction` stores the withdrawn tx fee here.
+ *
+ *  Use `withdraw_txfee` and `remaining_txfee` to access from outside the crate.
+ */
+export interface TxPaymentCreditV1070 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block): Promise<null | undefined>
+}

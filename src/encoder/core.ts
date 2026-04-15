@@ -1,16 +1,7 @@
 import { getRuntimeCached } from '../decoder/metadata'
-import { resolveNetwork } from '../decoder/core'
+import { DEFAULT_NETWORK, LATEST_SPEC_VERSIONS, resolveNetwork } from '../decoder/core'
 import type { Network } from '../decoder/types'
 import type { EncodeCallInput, EncodeRequest, EncodeResponse } from './types'
-
-const DEFAULT_NETWORK: Network = 'enjin-matrixchain'
-
-const LATEST_SPEC_VERSIONS: Record<Network, number> = {
-    'enjin-relaychain': 1062,
-    'enjin-matrixchain': 1031,
-    'canary-relaychain': 1062,
-    'canary-matrixchain': 1031,
-}
 
 function getLatestSpecVersion(network: Network): number {
     return LATEST_SPEC_VERSIONS[network]

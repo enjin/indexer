@@ -66,6 +66,10 @@ export function listingCreated(event: EventItem): ListingCreated {
             () => marketplace.listingCreated.enjinV110.decode(event)
         )
         .when(
+            () => marketplace.listingCreated.v1070.is(event),
+            () => marketplace.listingCreated.v1070.decode(event)
+        )
+        .when(
             () => marketplace.listingCreated.v1060.is(event),
             () => marketplace.listingCreated.v1060.decode(event)
         )

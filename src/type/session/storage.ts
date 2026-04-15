@@ -7,6 +7,7 @@ import * as matrixV1030 from '../matrixV1030'
 import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
+import * as v1070 from '../v1070'
 
 export const validators = {
     /**
@@ -154,6 +155,16 @@ export const queuedKeys = {
         [],
         sts.array(() => sts.tuple(() => [v1060.AccountId32, v1060.SessionKeys]))
     ) as QueuedKeysV1060,
+    /**
+     *  The queued keys for the next session. When the next session begins, these keys
+     *  will be used to determine the validator's session keys.
+     */
+    v1070: new StorageType(
+        'Session.QueuedKeys',
+        'Default',
+        [],
+        sts.array(() => sts.tuple(() => [v1070.AccountId32, v1070.SessionKeys]))
+    ) as QueuedKeysV1070,
 }
 
 /**
@@ -234,6 +245,16 @@ export interface QueuedKeysV1060 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): [v1060.AccountId32, v1060.SessionKeys][]
     get(block: Block): Promise<[v1060.AccountId32, v1060.SessionKeys][] | undefined>
+}
+
+/**
+ *  The queued keys for the next session. When the next session begins, these keys
+ *  will be used to determine the validator's session keys.
+ */
+export interface QueuedKeysV1070 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): [v1070.AccountId32, v1070.SessionKeys][]
+    get(block: Block): Promise<[v1070.AccountId32, v1070.SessionKeys][] | undefined>
 }
 
 export const disabledValidators = {
@@ -510,6 +531,10 @@ export const nextKeys = {
      *  The next session keys for a validator.
      */
     v1060: new StorageType('Session.NextKeys', 'Optional', [v1060.AccountId32], v1060.SessionKeys) as NextKeysV1060,
+    /**
+     *  The next session keys for a validator.
+     */
+    v1070: new StorageType('Session.NextKeys', 'Optional', [v1070.AccountId32], v1070.SessionKeys) as NextKeysV1070,
 }
 
 /**
@@ -730,6 +755,30 @@ export interface NextKeysV1060 {
     ): AsyncIterable<[k: v1060.AccountId32, v: v1060.SessionKeys | undefined][]>
 }
 
+/**
+ *  The next session keys for a validator.
+ */
+export interface NextKeysV1070 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: v1070.AccountId32): Promise<v1070.SessionKeys | undefined>
+    getMany(block: Block, keys: v1070.AccountId32[]): Promise<(v1070.SessionKeys | undefined)[]>
+    getKeys(block: Block): Promise<v1070.AccountId32[]>
+    getKeys(block: Block, key: v1070.AccountId32): Promise<v1070.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v1070.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block, key: v1070.AccountId32): AsyncIterable<v1070.AccountId32[]>
+    getPairs(block: Block): Promise<[k: v1070.AccountId32, v: v1070.SessionKeys | undefined][]>
+    getPairs(block: Block, key: v1070.AccountId32): Promise<[k: v1070.AccountId32, v: v1070.SessionKeys | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: v1070.AccountId32, v: v1070.SessionKeys | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: v1070.AccountId32
+    ): AsyncIterable<[k: v1070.AccountId32, v: v1070.SessionKeys | undefined][]>
+}
+
 export const keyOwner = {
     /**
      *  The owner of a key. The key is the `KeyTypeId` + the encoded key.
@@ -776,4 +825,43 @@ export interface KeyOwnerMatrixEnjinV603 {
         block: Block,
         key: [matrixEnjinV603.KeyTypeId, Bytes]
     ): AsyncIterable<[k: [matrixEnjinV603.KeyTypeId, Bytes], v: matrixEnjinV603.AccountId32 | undefined][]>
+}
+
+export const externallySetKeys = {
+    /**
+     *  Accounts whose keys were set via `SessionInterface` (external path) without
+     *  incrementing the consumer reference or placing a key deposit. `do_purge_keys`
+     *  only decrements consumers for accounts that were registered through the local
+     *  session pallet.
+     */
+    v1070: new StorageType(
+        'Session.ExternallySetKeys',
+        'Optional',
+        [v1070.AccountId32],
+        sts.unit()
+    ) as ExternallySetKeysV1070,
+}
+
+/**
+ *  Accounts whose keys were set via `SessionInterface` (external path) without
+ *  incrementing the consumer reference or placing a key deposit. `do_purge_keys`
+ *  only decrements consumers for accounts that were registered through the local
+ *  session pallet.
+ */
+export interface ExternallySetKeysV1070 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: v1070.AccountId32): Promise<null | undefined>
+    getMany(block: Block, keys: v1070.AccountId32[]): Promise<(null | undefined)[]>
+    getKeys(block: Block): Promise<v1070.AccountId32[]>
+    getKeys(block: Block, key: v1070.AccountId32): Promise<v1070.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v1070.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block, key: v1070.AccountId32): AsyncIterable<v1070.AccountId32[]>
+    getPairs(block: Block): Promise<[k: v1070.AccountId32, v: null | undefined][]>
+    getPairs(block: Block, key: v1070.AccountId32): Promise<[k: v1070.AccountId32, v: null | undefined][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: v1070.AccountId32, v: null | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: v1070.AccountId32
+    ): AsyncIterable<[k: v1070.AccountId32, v: null | undefined][]>
 }

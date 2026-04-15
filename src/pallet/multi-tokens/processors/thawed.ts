@@ -6,7 +6,7 @@ import * as mappings from '~/pallet/index'
 import { match } from 'ts-pattern'
 import { QueueUtils } from '~/queue'
 import { EventHandlerResult } from '~/processor.handler'
-import { Freeze } from '~/type/v100'
+import { Thaw } from '~/pallet/multi-tokens/events/types'
 
 export async function thawed(
     ctx: CommonContext,
@@ -14,29 +14,46 @@ export async function thawed(
     item: EventItem,
     skipSave: boolean
 ): Promise<EventHandlerResult> {
-    const event: Freeze = mappings.multiTokens.events.thawed(item)
+    const event: Thaw = mappings.multiTokens.events.thawed(item)
 
     if (skipSave) return [mappings.multiTokens.events.thawedEventModel(item, event), undefined]
 
     let snsEvent: SnsEvent | undefined = undefined
 
-    if (event.freezeType.__kind === 'TokenAccount') {
+    const thawKind = event.freezeType?.__kind ?? event.thawType?.__kind
+
+    if (thawKind === 'TokenAccount') {
+        const tokenId =
+            event.thawType?.__kind === 'TokenAccount'
+                ? event.thawType.tokenId
+                : event.freezeType?.__kind === 'TokenAccount'
+                  ? event.freezeType.tokenId
+                  : null
+        const accountId =
+            event.thawType?.__kind === 'TokenAccount'
+                ? event.thawType.accountId
+                : event.freezeType?.__kind === 'TokenAccount'
+                  ? event.freezeType.accountId
+                  : null
         const tokenAccount: TokenAccount | undefined = await ctx.store.findOne<TokenAccount>(TokenAccount, {
-            where: { id: `${event.freezeType.accountId}-${event.collectionId}-${event.freezeType.tokenId}` },
+            where: { id: `${accountId}-${event.collectionId}-${tokenId}` },
         })
 
         if (!tokenAccount) {
-            throwFatalError(
-                `[Thawed] We have not found token account ${event.freezeType.accountId}-${event.collectionId}-${event.freezeType.tokenId}.`
-            )
+            throwFatalError(`[Thawed] We have not found token account ${accountId}-${event.collectionId}-${tokenId}.`)
             return [mappings.multiTokens.events.thawedEventModel(item, event), undefined]
         }
 
         tokenAccount.isFrozen = false
         tokenAccount.updatedAt = new Date(block.timestamp ?? 0)
         await ctx.store.save(tokenAccount)
-    } else if (event.freezeType.__kind === 'CollectionAccount') {
-        const address = event.freezeType.value
+    } else if (thawKind === 'CollectionAccount') {
+        const address =
+            event.thawType?.__kind === 'CollectionAccount'
+                ? event.thawType.value
+                : event.freezeType?.__kind === 'CollectionAccount'
+                  ? event.freezeType.value
+                  : null
         const collectionAccount: CollectionAccount | undefined = await ctx.store.findOne<CollectionAccount>(
             CollectionAccount,
             {
@@ -52,15 +69,19 @@ export async function thawed(
         collectionAccount.isFrozen = false
         collectionAccount.updatedAt = new Date(block.timestamp ?? 0)
         await ctx.store.save(collectionAccount)
-    } else if (event.freezeType.__kind === 'Token') {
+    } else if (thawKind === 'Token') {
+        const tokenId =
+            event.thawType?.__kind === 'Token'
+                ? event.thawType.tokenId
+                : event.freezeType?.__kind === 'Token'
+                  ? event.freezeType.tokenId
+                  : null
         const token: Token | undefined = await ctx.store.findOne<Token>(Token, {
-            where: { id: `${event.collectionId}-${event.freezeType.tokenId}` },
+            where: { id: `${event.collectionId}-${tokenId}` },
         })
 
         if (!token) {
-            throwFatalError(
-                `[Thawed] We have not found collection account ${event.collectionId}-${event.freezeType.tokenId}.`
-            )
+            throwFatalError(`[Thawed] We have not found collection account ${event.collectionId}-${tokenId}.`)
             return [mappings.multiTokens.events.thawedEventModel(item, event), undefined]
         }
 
