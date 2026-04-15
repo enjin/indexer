@@ -482,6 +482,10 @@ export interface HoldReason_Staking {
     __kind: 'Staking'
 }
 
+export interface HoldReason_Session {
+    __kind: 'Session'
+}
+
 export type RuntimeHoldReason =
     | HoldReason_FuelTanks
     | HoldReason_Marketplace
@@ -496,6 +500,7 @@ export type RuntimeHoldReason =
     | HoldReason_TechnicalCommittee // Added on matrixV1030
     | HoldReason_PolkadotXcm // Added on matrixV1030
     | HoldReason_XcmPallet // Added on v1060
+    | HoldReason_Session // Added on v1070
 
 type Root = {
     __kind: 'Root'
