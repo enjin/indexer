@@ -4,6 +4,7 @@ import * as v104 from '../v104'
 import * as matrixV500 from '../matrixV500'
 import * as matrixV602 from '../matrixV602'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
+import * as v1070 from '../v1070'
 
 export const endowed = {
     name: 'Balances.Endowed',
@@ -355,4 +356,115 @@ export const totalIssuanceForced = {
             new: sts.bigint(),
         })
     ),
+}
+
+export const mintedCredit = {
+    name: 'Balances.MintedCredit',
+    /**
+     * Some credit was balanced and added to the TotalIssuance.
+     */
+    v1070: new EventType(
+        'Balances.MintedCredit',
+        sts.struct({
+            amount: sts.bigint(),
+        })
+    ),
+}
+
+export const burnedDebt = {
+    name: 'Balances.BurnedDebt',
+    /**
+     * Some debt has been dropped from the Total Issuance.
+     */
+    v1070: new EventType(
+        'Balances.BurnedDebt',
+        sts.struct({
+            amount: sts.bigint(),
+        })
+    ),
+}
+
+export const held = {
+    name: 'Balances.Held',
+    /**
+     * Some balance was placed on hold.
+     */
+    v1070: new EventType(
+        'Balances.Held',
+        sts.struct({
+            reason: v1070.RuntimeHoldReason,
+            who: v1070.AccountId32,
+            amount: sts.bigint(),
+        })
+    ),
+}
+
+export const burnedHeld = {
+    name: 'Balances.BurnedHeld',
+    /**
+     * Held balance was burned from an account.
+     */
+    v1070: new EventType(
+        'Balances.BurnedHeld',
+        sts.struct({
+            reason: v1070.RuntimeHoldReason,
+            who: v1070.AccountId32,
+            amount: sts.bigint(),
+        })
+    ),
+}
+
+export const transferOnHold = {
+    name: 'Balances.TransferOnHold',
+    /**
+     * A transfer of `amount` on hold from `source` to `dest` was initiated.
+     */
+    v1070: new EventType(
+        'Balances.TransferOnHold',
+        sts.struct({
+            reason: v1070.RuntimeHoldReason,
+            source: v1070.AccountId32,
+            dest: v1070.AccountId32,
+            amount: sts.bigint(),
+        })
+    ),
+}
+
+export const transferAndHold = {
+    name: 'Balances.TransferAndHold',
+    /**
+     * The `transferred` balance is placed on hold at the `dest` account.
+     */
+    v1070: new EventType(
+        'Balances.TransferAndHold',
+        sts.struct({
+            reason: v1070.RuntimeHoldReason,
+            source: v1070.AccountId32,
+            dest: v1070.AccountId32,
+            transferred: sts.bigint(),
+        })
+    ),
+}
+
+export const released = {
+    name: 'Balances.Released',
+    /**
+     * Some balance was released from hold.
+     */
+    v1070: new EventType(
+        'Balances.Released',
+        sts.struct({
+            reason: v1070.RuntimeHoldReason,
+            who: v1070.AccountId32,
+            amount: sts.bigint(),
+        })
+    ),
+}
+
+export const unexpected = {
+    name: 'Balances.Unexpected',
+    /**
+     * An unexpected/defensive event was triggered.
+     */
+    v1070: new EventType('Balances.Unexpected', v1070.UnexpectedKind),
 }

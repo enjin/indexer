@@ -1,11 +1,16 @@
 import { sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx } from '../support'
 import * as enjinV100 from '../enjinV100'
+import * as v1070 from '../v1070'
 
 export const funds = {
     /**
      *  Info on all of the funds.
      */
     enjinV100: new StorageType('Crowdloan.Funds', 'Optional', [enjinV100.Id], enjinV100.FundInfo) as FundsEnjinV100,
+    /**
+     *  Info on all of the funds.
+     */
+    v1070: new StorageType('Crowdloan.Funds', 'Optional', [v1070.Id], v1070.FundInfo) as FundsV1070,
 }
 
 /**
@@ -27,6 +32,27 @@ export interface FundsEnjinV100 {
         block: Block,
         key: enjinV100.Id
     ): AsyncIterable<[k: enjinV100.Id, v: enjinV100.FundInfo | undefined][]>
+}
+
+/**
+ *  Info on all of the funds.
+ */
+export interface FundsV1070 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: v1070.Id): Promise<v1070.FundInfo | undefined>
+    getMany(block: Block, keys: v1070.Id[]): Promise<(v1070.FundInfo | undefined)[]>
+    getKeys(block: Block): Promise<v1070.Id[]>
+    getKeys(block: Block, key: v1070.Id): Promise<v1070.Id[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v1070.Id[]>
+    getKeysPaged(pageSize: number, block: Block, key: v1070.Id): AsyncIterable<v1070.Id[]>
+    getPairs(block: Block): Promise<[k: v1070.Id, v: v1070.FundInfo | undefined][]>
+    getPairs(block: Block, key: v1070.Id): Promise<[k: v1070.Id, v: v1070.FundInfo | undefined][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: v1070.Id, v: v1070.FundInfo | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: v1070.Id
+    ): AsyncIterable<[k: v1070.Id, v: v1070.FundInfo | undefined][]>
 }
 
 export const newRaise = {

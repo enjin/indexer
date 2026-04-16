@@ -18,6 +18,7 @@ import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
+import * as v1070 from '../v1070'
 
 export const info = {
     /**
@@ -204,6 +205,10 @@ export const listings = {
      *  Listings by ID (real storage)
      */
     v1060: new StorageType('Marketplace.Listings', 'Optional', [v1060.H256], v1060.Listing) as ListingsV1060,
+    /**
+     *  Listings by ID (real storage)
+     */
+    v1070: new StorageType('Marketplace.Listings', 'Optional', [v1070.H256], v1070.Listing) as ListingsV1070,
 }
 
 /**
@@ -633,6 +638,27 @@ export interface ListingsV1060 {
         block: Block,
         key: v1060.H256
     ): AsyncIterable<[k: v1060.H256, v: v1060.Listing | undefined][]>
+}
+
+/**
+ *  Listings by ID (real storage)
+ */
+export interface ListingsV1070 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: v1070.H256): Promise<v1070.Listing | undefined>
+    getMany(block: Block, keys: v1070.H256[]): Promise<(v1070.Listing | undefined)[]>
+    getKeys(block: Block): Promise<v1070.H256[]>
+    getKeys(block: Block, key: v1070.H256): Promise<v1070.H256[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v1070.H256[]>
+    getKeysPaged(pageSize: number, block: Block, key: v1070.H256): AsyncIterable<v1070.H256[]>
+    getPairs(block: Block): Promise<[k: v1070.H256, v: v1070.Listing | undefined][]>
+    getPairs(block: Block, key: v1070.H256): Promise<[k: v1070.H256, v: v1070.Listing | undefined][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: v1070.H256, v: v1070.Listing | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: v1070.H256
+    ): AsyncIterable<[k: v1070.H256, v: v1070.Listing | undefined][]>
 }
 
 export const counterOffers = {

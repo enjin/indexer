@@ -18,6 +18,7 @@ import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
+import * as v1070 from '../v1070'
 
 export const totalIssuance = {
     /**
@@ -711,6 +712,15 @@ export const holds = {
         [v1060.AccountId32],
         sts.array(() => v1060.IdAmount)
     ) as HoldsV1060,
+    /**
+     *  Holds on account balances.
+     */
+    v1070: new StorageType(
+        'Balances.Holds',
+        'Default',
+        [v1070.AccountId32],
+        sts.array(() => v1070.IdAmount)
+    ) as HoldsV1070,
 }
 
 /**
@@ -1191,6 +1201,31 @@ export interface HoldsV1060 {
         block: Block,
         key: v1060.AccountId32
     ): AsyncIterable<[k: v1060.AccountId32, v: v1060.IdAmount[] | undefined][]>
+}
+
+/**
+ *  Holds on account balances.
+ */
+export interface HoldsV1070 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): v1070.IdAmount[]
+    get(block: Block, key: v1070.AccountId32): Promise<v1070.IdAmount[] | undefined>
+    getMany(block: Block, keys: v1070.AccountId32[]): Promise<(v1070.IdAmount[] | undefined)[]>
+    getKeys(block: Block): Promise<v1070.AccountId32[]>
+    getKeys(block: Block, key: v1070.AccountId32): Promise<v1070.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v1070.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block, key: v1070.AccountId32): AsyncIterable<v1070.AccountId32[]>
+    getPairs(block: Block): Promise<[k: v1070.AccountId32, v: v1070.IdAmount[] | undefined][]>
+    getPairs(block: Block, key: v1070.AccountId32): Promise<[k: v1070.AccountId32, v: v1070.IdAmount[] | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: v1070.AccountId32, v: v1070.IdAmount[] | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: v1070.AccountId32
+    ): AsyncIterable<[k: v1070.AccountId32, v: v1070.IdAmount[] | undefined][]>
 }
 
 export const freezes = {

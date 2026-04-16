@@ -8,6 +8,7 @@ import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 import * as enjinV1032 from '../enjinV1032'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
+import * as v1070 from '../v1070'
 
 export const addRegistrar = {
     name: 'Identity.add_registrar',
@@ -642,6 +643,30 @@ export const setUsernameFor = {
             who: v1060.MultiAddress,
             username: sts.bytes(),
             signature: sts.option(() => v1060.MultiSignature),
+            useAllocation: sts.boolean(),
+        })
+    ),
+    /**
+     * Set the username for `who`. Must be called by a username authority.
+     *
+     * If `use_allocation` is set, the authority must have a username allocation available to
+     * spend. Otherwise, the authority will need to put up a deposit for registering the
+     * username.
+     *
+     * Users can either pre-sign their usernames or
+     * accept them later.
+     *
+     * Usernames must:
+     *   - Only contain lowercase ASCII characters or digits.
+     *   - When combined with the suffix of the issuing authority be _less than_ the
+     *     `MaxUsernameLength`.
+     */
+    v1070: new CallType(
+        'Identity.set_username_for',
+        sts.struct({
+            who: v1070.MultiAddress,
+            username: sts.bytes(),
+            signature: sts.option(() => v1070.MultiSignature),
             useAllocation: sts.boolean(),
         })
     ),

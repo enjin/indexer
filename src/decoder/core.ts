@@ -22,10 +22,10 @@ export function bigIntReplacer(_key: string, value: unknown): unknown {
 
 export const DEFAULT_NETWORK: Network = 'enjin-matrixchain'
 
-const LATEST_SPEC_VERSIONS: Record<Network, number> = {
+export const LATEST_SPEC_VERSIONS: Record<Network, number> = {
     'enjin-relaychain': 1062,
     'enjin-matrixchain': 1031,
-    'canary-relaychain': 1062,
+    'canary-relaychain': 1070,
     'canary-matrixchain': 1031,
 }
 

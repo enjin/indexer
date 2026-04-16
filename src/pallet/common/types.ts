@@ -482,6 +482,10 @@ export interface HoldReason_Staking {
     __kind: 'Staking'
 }
 
+export interface HoldReason_Session {
+    __kind: 'Session'
+}
+
 export type RuntimeHoldReason =
     | HoldReason_FuelTanks
     | HoldReason_Marketplace
@@ -496,6 +500,7 @@ export type RuntimeHoldReason =
     | HoldReason_TechnicalCommittee // Added on matrixV1030
     | HoldReason_PolkadotXcm // Added on matrixV1030
     | HoldReason_XcmPallet // Added on v1060
+    | HoldReason_Session // Added on v1070
 
 type Root = {
     __kind: 'Root'
@@ -553,6 +558,28 @@ export type FreezeType =
     | FreezeType_CollectionAccount
     | FreezeType_Token
     | FreezeType_TokenAccount
+
+export type ThawType = ThawType_Collection | ThawType_CollectionAccount | ThawType_Token | ThawType_TokenAccount
+
+export interface ThawType_Collection {
+    __kind: 'Collection'
+}
+
+export interface ThawType_CollectionAccount {
+    __kind: 'CollectionAccount'
+    value: AccountId32
+}
+
+export interface ThawType_Token {
+    __kind: 'Token'
+    tokenId: bigint
+}
+
+export interface ThawType_TokenAccount {
+    __kind: 'TokenAccount'
+    tokenId: bigint
+    accountId: AccountId32
+}
 
 export type DefaultRoyaltyInfo = {
     beneficiary: AccountId32

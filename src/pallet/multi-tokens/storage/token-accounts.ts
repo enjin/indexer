@@ -117,6 +117,10 @@ export async function tokenAccounts(
             () => getTokenAccounts(multiTokens.tokenAccounts.enjinV100)
         )
         .when(
+            () => multiTokens.tokenAccounts.v1070.is(block),
+            () => getTokenAccounts(multiTokens.tokenAccounts.v1070)
+        )
+        .when(
             () => multiTokens.tokenAccounts.v1060.is(block),
             () => getTokenAccounts(multiTokens.tokenAccounts.v1060)
         )
