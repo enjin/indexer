@@ -68,6 +68,7 @@ export async function listingRemovedUnderMinimum(
                 state: listing.state.toJSON(),
             },
             token: isOffer ? takeAssetId.id : makeAssetId.id,
+            decimalCount: isOffer ? takeAssetId.nativeMetadata?.decimalCount : makeAssetId.nativeMetadata?.decimalCount,
             extrinsic: item.extrinsic?.id,
         },
     }

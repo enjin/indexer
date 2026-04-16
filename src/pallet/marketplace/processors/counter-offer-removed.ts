@@ -60,6 +60,7 @@ export async function counterOfferRemoved(
             account: { id: creator.id },
             extrinsic: item.extrinsic?.id,
             token: takeAssetId.id,
+            decimalCount: takeAssetId.nativeMetadata?.decimalCount,
         },
     }
 

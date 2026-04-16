@@ -148,6 +148,7 @@ export async function listingCreated(
                 takeAssetId: takeAssetId.id,
             },
             token: isOffer ? takeAssetId.id : makeAssetId.id,
+            decimalCount: makeAssetId.nativeMetadata?.decimalCount,
             extrinsic: item.extrinsic?.id,
         },
     }

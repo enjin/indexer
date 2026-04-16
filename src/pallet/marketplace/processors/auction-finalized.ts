@@ -102,6 +102,7 @@ export async function auctionFinalized(
             protocolFee: data.protocolFee,
             royalty: data.royalty,
             token: listing.makeAssetId.id,
+            decimalCount: makeAssetId.nativeMetadata?.decimalCount,
             extrinsic: item.extrinsic?.id,
         },
     }

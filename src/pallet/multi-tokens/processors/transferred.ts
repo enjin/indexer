@@ -76,6 +76,7 @@ export async function transferred(
             to: data.to,
             amount: data.amount,
             extrinsic: item.extrinsic?.id,
+            decimalCount: token?.nativeMetadata?.decimalCount,
         },
     }
 
