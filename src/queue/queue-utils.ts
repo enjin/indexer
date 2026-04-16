@@ -623,3 +623,15 @@ export function dispatchComputeTokenNativeMetadata(id: string): void {
         Logger.error('Failed to dispatch compute token native metadata', LOGGER_NAMESPACE)
     })
 }
+
+export function dispatchMigrateTokenGroupIds(collectionId: string): void {
+    TokensQueue.add(
+        JobsEnum.MIGRATE_TOKEN_GROUP_IDS,
+        { collectionId },
+        {
+            jobId: `tokens.migrate-token-group-ids.${collectionId}`,
+        }
+    ).catch(() => {
+        Logger.error('Failed to dispatch migrate token group IDs', LOGGER_NAMESPACE)
+    })
+}

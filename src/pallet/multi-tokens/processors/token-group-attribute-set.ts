@@ -18,7 +18,7 @@ export async function tokenGroupAttributeSet(
 
     const key = safeString(hexToString(data.key))
     const value = safeString(hexToString(data.value))
-    const attributeId = `${data.tokenGroupId.toString()}-${data.key}`
+    const attributeId = `${data.tokenGroupId.toString()}-${data.key}-tg`
 
     const [attribute, tokenGroup] = await Promise.all([
         ctx.store.findOne<Attribute>(Attribute, {
