@@ -4,6 +4,7 @@ import { SnsEvent } from '~/util/sns'
 import { hexToString } from '@polkadot/util'
 import * as mappings from '~/pallet/index'
 import { EventHandlerResult } from '~/processor.handler'
+import { safeString } from '~/util/tools'
 
 export async function poolMutated(ctx: CommonContext, block: Block, item: EventItem): Promise<EventHandlerResult> {
     if (!item.extrinsic) return undefined
@@ -65,7 +66,7 @@ export async function poolMutated(ctx: CommonContext, block: Block, item: EventI
     }
 
     if ('name' in data.mutation && data.mutation.name !== '0x') {
-        pool.name = hexToString(data.mutation.name as string)
+        pool.name = safeString(hexToString(data.mutation.name as string))
         mutation.name = pool.name
     }
 

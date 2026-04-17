@@ -5,6 +5,7 @@ import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, NominationPoolsPoolMutated } from '~/model'
 import { PoolMutated } from '~/pallet/nomination-pools/events/types'
 import { hexToString } from '@polkadot/util'
+import { safeString } from '~/util/tools'
 
 export function poolMutated(event: EventItem): PoolMutated {
     return match(event)
@@ -63,7 +64,7 @@ export function poolMutatedEventModel(item: EventItem, data: PoolMutated, owner:
     }
 
     if ('name' in data.mutation) {
-        mutation.name = data.mutation.name ? hexToString(data.mutation.name) : ''
+        mutation.name = data.mutation.name ? safeString(hexToString(data.mutation.name)) : ''
     }
 
     return new EventModel({

@@ -1,6 +1,7 @@
 import { hexToString } from '@polkadot/util'
 import { randomBytes } from 'crypto'
 import { CallNotDefinedError } from '~/util/errors'
+import { safeString } from '~/util/tools'
 import {
     Event as EventModel,
     Extrinsic,
@@ -54,7 +55,7 @@ export async function fuelTankCreated(
     const fuelTank = new FuelTank({
         id: tankAccount.id,
         tankAccount,
-        name: hexToString(event.name),
+        name: safeString(hexToString(event.name)),
         owner,
         isFrozen: false,
         accountCount: 0,
@@ -146,7 +147,7 @@ export async function fuelTankCreated(
         data: new FuelTankCreated({
             tank: fuelTank.id,
             owner: owner.id,
-            name: hexToString(event.name),
+            name: safeString(hexToString(event.name)),
         }),
     })
 }

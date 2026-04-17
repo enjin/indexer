@@ -6,6 +6,7 @@ import * as mappings from '~/pallet/index'
 import { UnsupportedStorageError } from '~/util/errors'
 import { QueueUtils } from '~/queue'
 import { EventHandlerResult } from '~/processor.handler'
+import { safeString } from '~/util/tools'
 
 function getCurrentEra(ctx: CommonContext, block: Block) {
     if (storage.staking.currentEra.enjinV100.is(block)) {
@@ -46,7 +47,7 @@ export async function created(ctx: CommonContext, block: Block, item: EventItem)
         id: eventData.poolId.toString(),
         points: 0n, // update at bonded event
         state: PoolState.Open,
-        name: 'name' in callData ? hexToString(callData.name as string) : '',
+        name: 'name' in callData ? safeString(hexToString(callData.name as string)) : '',
         commission: new Commission(),
         deposit: callData.deposit,
         tokenId: callData.tokenId,

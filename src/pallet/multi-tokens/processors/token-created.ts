@@ -21,6 +21,7 @@ import { EventHandlerResult } from '~/processor.handler'
 import { isDispatchCall, unwrapFuelTankCall } from '~/pallet/fuel-tanks/utils'
 import { Call } from '~/pallet/common/types'
 import { hexToString } from '@polkadot/util'
+import { safeString } from '~/util/tools'
 
 type TokenMarketBehavior = TokenMarketBehavior500 | TokenMarketBehavior1020
 
@@ -162,8 +163,8 @@ async function tokenFromCall(
                 tokenParams.metadata !== undefined
                     ? new NativeTokenMetadata({
                           decimalCount: tokenParams.metadata.decimalCount,
-                          symbol: hexToString(tokenParams.metadata.symbol),
-                          name: hexToString(tokenParams.metadata.name),
+                          symbol: safeString(hexToString(tokenParams.metadata.symbol)),
+                          name: safeString(hexToString(tokenParams.metadata.name)),
                       })
                     : null
         }

@@ -3,6 +3,7 @@ import { connectionManager } from '~/contexts'
 import { Job } from 'bullmq'
 import Rpc from '~/util/rpc'
 import { hexToString } from '@polkadot/util'
+import { safeString } from '~/util/tools'
 
 export async function refreshPool(job: Job, poolId: string) {
     const em = await connectionManager()
@@ -35,7 +36,7 @@ export async function refreshPool(job: Job, poolId: string) {
         if (name == '0x') {
             pool.name = ''
         } else {
-            pool.name = hexToString(name)
+            pool.name = safeString(hexToString(name))
         }
     }
 

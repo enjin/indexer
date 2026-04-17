@@ -3,6 +3,7 @@ import { Event as EventModel, Identity, Registration } from '~/model'
 import { Block, CallItem, CommonContext } from '~/contexts'
 import { getOrCreateAccount, unwrapSigner } from '~/util/entities'
 import * as mappings from '~/pallet/index'
+import { safeString } from '~/util/tools'
 
 export async function setSubs(ctx: CommonContext, block: Block, item: CallItem): Promise<EventModel | undefined> {
     if (!item.extrinsic?.signature) {
@@ -39,14 +40,14 @@ export async function setSubs(ctx: CommonContext, block: Block, item: CallItem):
 
             if (existing) {
                 existing.super = new Identity({ id: signer.id })
-                existing.name = sub[1].__kind !== 'None' ? hexToString(sub[1].value) : null
+                existing.name = sub[1].__kind !== 'None' ? safeString(hexToString(sub[1].value)) : null
                 return existing
             }
 
             return new Identity({
                 id: account.id,
                 account,
-                name: sub[1].__kind !== 'None' ? hexToString(sub[1].value) : null,
+                name: sub[1].__kind !== 'None' ? safeString(hexToString(sub[1].value)) : null,
                 super: new Identity({ id: signer.id }),
                 isSub: true,
                 info: new Registration({ id: signer.id }),
