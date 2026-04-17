@@ -28,11 +28,11 @@ export async function unreserved(
         )
     } else {
         const reserveId = match(data.reserveId)
-        .with(P.string, (v) => safeString(hexToString(v)))
-        .with({ __kind: P.string }, (v) => v.__kind)
-        .otherwise(() => {
-            throw new Error('Unknown reserve id')
-        })
+            .with(P.string, (v) => safeString(hexToString(v)))
+            .with({ __kind: P.string }, (v) => v.__kind)
+            .otherwise(() => {
+                throw new Error('Unknown reserve id')
+            })
 
         tokenAccount.balance += data.amount
         tokenAccount.reservedBalance -= data.amount
