@@ -23,6 +23,7 @@ export enum EntityType {
     SYNC_METADATA = 'sync_metadata',
     COMPUTE_ACCOUNT_STATS = 'compute_account_stats',
     SYNC_FUEL_TANK_RULE_SETS = 'sync_fuel_tank_rule_sets',
+    MIGRATE_TOKEN_GROUP_IDS = 'migrate_token_group_ids',
 }
 
 registerEnumType(EntityType, {
@@ -135,6 +136,11 @@ export class RefreshEntityResolver {
             case EntityType.SYNC_FUEL_TANK_RULE_SETS:
                 for (const id of args.ids) {
                     QueueUtils.dispatchSyncFuelTankRuleSets(id)
+                }
+                break
+            case EntityType.MIGRATE_TOKEN_GROUP_IDS:
+                for (const id of args.ids) {
+                    QueueUtils.dispatchMigrateTokenGroupIds(id)
                 }
                 break
         }
