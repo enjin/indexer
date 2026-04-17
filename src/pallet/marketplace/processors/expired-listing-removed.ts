@@ -84,7 +84,10 @@ export async function expiredListingRemoved(
                 state: listing.state.toJSON(),
             },
             token: listing.type === ListingType.Offer ? takeAssetId.id : makeAssetId.id,
-            decimalCount: listing.type === ListingType.Offer ? takeAssetId.nativeMetadata?.decimalCount : makeAssetId.nativeMetadata?.decimalCount,
+            decimalCount:
+                listing.type === ListingType.Offer
+                    ? takeAssetId.nativeMetadata?.decimalCount
+                    : makeAssetId.nativeMetadata?.decimalCount,
             extrinsic: item.extrinsic?.id,
         },
     }
