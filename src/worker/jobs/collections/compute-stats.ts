@@ -53,7 +53,10 @@ export async function computeStats(_job: Job, collectionId: string) {
         em
             .getRepository(Token)
             .createQueryBuilder('token')
-            .select('SUM(token.infusion * token.supply)', 'total_infused')
+            .select(
+                `SUM(CASE WHEN COALESCE((token.native_metadata->>'decimalCount')::int, 0) > 0 THEN token.infusion * token.supply * POWER(10, (token.native_metadata->>'decimalCount')::int)::bigint ELSE token.infusion * token.supply END)`,
+                'total_infused'
+            )
             .where('token.collection = :collectionId', { collectionId })
             .getRawOne(),
     ]
