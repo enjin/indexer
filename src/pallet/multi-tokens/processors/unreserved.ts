@@ -5,6 +5,7 @@ import { throwFatalError } from '~/util/errors'
 import * as mappings from '~/pallet/index'
 import { match, P } from 'ts-pattern'
 import { EventHandlerResult } from '~/processor.handler'
+import { safeString } from '~/util/tools'
 
 export async function unreserved(
     ctx: CommonContext,
@@ -27,11 +28,11 @@ export async function unreserved(
         )
     } else {
         const reserveId = match(data.reserveId)
-            .with(P.string, (v) => hexToString(v))
-            .with({ __kind: P.string }, (v) => v.__kind)
-            .otherwise(() => {
-                throw new Error('Unknown reserve id')
-            })
+        .with(P.string, (v) => safeString(hexToString(v)))
+        .with({ __kind: P.string }, (v) => v.__kind)
+        .otherwise(() => {
+            throw new Error('Unknown reserve id')
+        })
 
         tokenAccount.balance += data.amount
         tokenAccount.reservedBalance -= data.amount

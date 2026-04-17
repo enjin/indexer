@@ -4,6 +4,7 @@ import { Event as EventModel, Identity, Registration } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
 import * as mappings from '~/pallet/index'
+import { safeString } from '~/util/tools'
 
 export async function subIdentityAdded(
     ctx: CommonContext,
@@ -22,7 +23,7 @@ export async function subIdentityAdded(
 
     if (existing) {
         existing.super = new Identity({ id: main })
-        existing.name = call.data.__kind !== 'None' ? hexToString(call.data.value) : null
+        existing.name = call.data.__kind !== 'None' ? safeString(hexToString(call.data.value)) : null
         await ctx.store.save(existing)
 
         return undefined
@@ -31,7 +32,7 @@ export async function subIdentityAdded(
     const identity = new Identity({
         id: sub.id,
         account: sub,
-        name: call.data.__kind !== 'None' ? hexToString(call.data.value) : null,
+        name: call.data.__kind !== 'None' ? safeString(hexToString(call.data.value)) : null,
         super: new Identity({ id: main }),
         isSub: true,
         info: new Registration({ id: main }),

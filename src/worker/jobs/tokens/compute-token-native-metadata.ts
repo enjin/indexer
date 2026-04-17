@@ -3,6 +3,7 @@ import { NativeTokenMetadata, Token } from '~/model'
 import { Job } from 'bullmq'
 import Rpc from '~/util/rpc'
 import { hexToString } from '@polkadot/util'
+import { safeString } from '~/util/tools'
 
 export async function computeTokenNativeMetadata(_job: Job, id: string): Promise<void> {
     const ctx = await dataHandlerContext()
@@ -33,8 +34,8 @@ export async function computeTokenNativeMetadata(_job: Job, id: string): Promise
 
     token.nativeMetadata = new NativeTokenMetadata({
         decimalCount: rpcTokenJson.metadata.decimalCount,
-        symbol: hexToString(rpcTokenJson.metadata.symbol),
-        name: hexToString(rpcTokenJson.metadata.name),
+        symbol: safeString(hexToString(rpcTokenJson.metadata.symbol)),
+        name: safeString(hexToString(rpcTokenJson.metadata.name)),
     })
 
     await ctx.store.save(token)
