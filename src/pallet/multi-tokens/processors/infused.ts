@@ -99,7 +99,7 @@ export async function infused(
             amount: data.amount ?? data.totalAmount,
             accountId: data.accountId,
             extrinsic: item.extrinsic?.id,
-            decimalCount: token?.nativeMetadata?.decimalCount,
+            decimalCount: token.nativeMetadata?.decimalCount ?? 0,
         },
     }
 
