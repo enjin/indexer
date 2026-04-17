@@ -536,6 +536,7 @@ type MintPolicy {
   maxTokenCount: BigInt
   maxTokenSupply: BigInt
   forceSingleMint: Boolean!
+  forceCollapsingSupply: Boolean
 }
 
 type TransferPolicy {

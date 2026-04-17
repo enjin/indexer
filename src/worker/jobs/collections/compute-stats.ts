@@ -1,5 +1,5 @@
 import { connectionManager } from '~/contexts'
-import { Collection, CollectionStats, Listing, ListingSale, ListingStatus, Token } from '~/model'
+import { Collection, CollectionStats, Listing, ListingSale, ListingStatus, MintPolicy, Token } from '~/model'
 import { Job } from 'bullmq'
 
 const floorQuery = `SELECT MIN("listing"."highest_price") AS floor_price FROM "listing" AS "listing" INNER JOIN "token" "token" ON ("token"."id" = "listing"."make_asset_id_id" AND "listing"."make_asset_id_id" != '0-0') INNER JOIN "collection" "collection" ON "collection"."id" = "token"."collection_id" WHERE "collection"."id" = $1 AND "listing"."is_active" = TRUE AND "listing"."type" = 'FixedPrice' AND "token"."is_frozen" = FALSE AND "token"."listing_forbidden" = FALSE;`
@@ -76,9 +76,20 @@ export async function computeStats(_job: Job, collectionId: string) {
         totalInfused: BigInt(total_infused ?? 0n),
     })
 
+    const collection = await em.findOneOrFail(Collection, {
+        where: { id: collectionId },
+    })
+
+    const mintPolicy = new MintPolicy({
+        maxTokenCount: collection.mintPolicy?.maxTokenCount ?? 0n,
+        maxTokenSupply: collection.mintPolicy?.maxTokenSupply ?? 0n,
+        forceSingleMint: collection.mintPolicy?.forceSingleMint ?? false,
+        forceCollapsingSupply: collection.mintPolicy?.forceSingleMint,
+    })
+
     await _job.updateProgress(90)
 
-    await em.update(Collection, { id: collectionId }, { stats })
+    await em.update(Collection, { id: collectionId }, { stats, mintPolicy })
 
     await _job.updateProgress(100)
 }
