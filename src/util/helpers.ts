@@ -11,7 +11,11 @@ export function isNonFungible(token: Token): boolean {
         return true
     }
 
-    if (token.collection.mintPolicy?.forceSingleMint === true && token.supply === 1n) {
+    if (
+        (token.collection.mintPolicy?.forceSingleMint === true ||
+            token.collection.mintPolicy?.forceCollapsingSupply === true) &&
+        token.supply === 1n
+    ) {
         // If the collection has a rule of forceSingleMint and there is only one unit of the token means it is a NFT
         return true
     }

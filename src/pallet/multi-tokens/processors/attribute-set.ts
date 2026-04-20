@@ -47,6 +47,7 @@ export async function attributeSet(
             owner: await getOrCreateAccount(ctx, new Uint8Array(32).fill(0)),
             mintPolicy: new MintPolicy({
                 forceSingleMint: false,
+                forceCollapsingSupply: false,
             }),
             stats: new CollectionStats({
                 lastSale: null,

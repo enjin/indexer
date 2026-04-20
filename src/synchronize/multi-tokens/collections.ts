@@ -64,6 +64,7 @@ export async function collections(ctx: CommonContext, block: Block) {
                     maxTokenCount: data.policy.mint.maxTokenCount,
                     maxTokenSupply: data.policy.mint.maxTokenSupply,
                     forceSingleMint: data.policy.mint.forceSingleMint ?? data.policy.mint.forceCollapsingSupply,
+                    forceCollapsingSupply: data.policy.mint.forceSingleMint ?? data.policy.mint.forceCollapsingSupply,
                 }),
                 marketPolicy: market,
                 transferPolicy: new TransferPolicy({
