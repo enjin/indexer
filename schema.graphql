@@ -770,6 +770,7 @@ type Token @entity {
   # Extras
   name: String @index
   nonFungible: Boolean!
+  hidden: Boolean! @index
   metadata: Metadata
   updatedAt: DateTime
   createdAt: DateTime! @index

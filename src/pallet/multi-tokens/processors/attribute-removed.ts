@@ -37,6 +37,9 @@ export async function attributeRemoved(
             }
 
             token.attributeCount -= 1
+            if (attribute.key === 'hidden') {
+                token.hidden = false
+            }
             await ctx.store.save(token)
 
             await QueueUtils.dispatchComputeMetadata({ id: token.id, type: 'token', traits: true })
@@ -51,6 +54,9 @@ export async function attributeRemoved(
             }
 
             collection.attributeCount -= 1
+            if (attribute.key === 'hidden') {
+                collection.hidden = false
+            }
             await ctx.store.save(collection)
             await QueueUtils.dispatchComputeMetadata({ id: collection.id, type: 'collection', traits: true })
         }

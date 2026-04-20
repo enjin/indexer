@@ -99,10 +99,16 @@ export async function attributeSet(
             if (!token.metadata) {
                 token.metadata = new Metadata()
             }
+            if (attribute.key === 'hidden') {
+                token.hidden = value === 'true'
+            }
             await ctx.store.save(token)
         } else {
             if (!collection.metadata) {
                 collection.metadata = new Metadata()
+            }
+            if (attribute.key === 'hidden') {
+                collection.hidden = value === 'true'
             }
             await ctx.store.save(collection)
         }
@@ -125,6 +131,9 @@ export async function attributeSet(
             if (!token.metadata) {
                 token.metadata = new Metadata()
             }
+            if (attribute.key === 'hidden') {
+                token.hidden = value === 'true'
+            }
             token.attributeCount += 1
             await ctx.store.save(token)
         } else {
@@ -132,6 +141,9 @@ export async function attributeSet(
                 collection.metadata = new Metadata()
             }
             collection.attributeCount += 1
+            if (attribute.key === 'hidden') {
+                collection.hidden = value === 'true'
+            }
             await ctx.store.save(collection)
         }
     }
