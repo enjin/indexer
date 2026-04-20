@@ -128,6 +128,10 @@ export class Token {
     @BooleanColumn_({nullable: false})
     nonFungible!: boolean
 
+    @Index_()
+    @BooleanColumn_({nullable: false})
+    hidden!: boolean
+
     @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new Metadata(undefined, obj)}, nullable: true})
     metadata!: Metadata | undefined | null
 
