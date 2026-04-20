@@ -83,6 +83,7 @@ export async function counterOfferPlaced(
             account: { id: account.id },
             extrinsic: item.extrinsic?.id,
             token: takeAssetId.id,
+            decimalCount: takeAssetId.nativeMetadata?.decimalCount,
         },
     }
 

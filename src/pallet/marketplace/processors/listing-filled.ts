@@ -142,6 +142,7 @@ export async function listingFilled(
             amountRemaining: event.amountRemaining,
             protocolFee: event.protocolFee,
             royalty: event.royalty,
+            decimalCount: makeAssetId.nativeMetadata?.decimalCount,
             extrinsic: item.extrinsic?.id,
         },
     }

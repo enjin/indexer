@@ -204,6 +204,7 @@ export async function minted(
             issuer: issuer.id,
             recipient: recipient.id,
             amount: data.amount,
+            decimalCount: token.nativeMetadata?.decimalCount,
             extrinsic: item.extrinsic?.id,
         },
     }

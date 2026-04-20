@@ -84,6 +84,7 @@ export async function listingCancelled(
                 state: listing.state.toJSON(),
             },
             token: listing.type === ListingType.Offer ? takeAssetId.id : makeAssetId.id,
+            decimalCount: makeAssetId.nativeMetadata?.decimalCount,
             extrinsic: item.extrinsic?.id,
         },
     }

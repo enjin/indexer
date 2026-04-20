@@ -76,6 +76,7 @@ export async function counterOfferAnswered(
             account: { id: creator.id },
             extrinsic: item.extrinsic.id,
             token: takeAssetId.id,
+            decimalCount: takeAssetId.nativeMetadata?.decimalCount,
         },
     }
 

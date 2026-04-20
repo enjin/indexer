@@ -93,6 +93,7 @@ export async function bidPlaced(
                 },
             },
             token: makeAssetId.id,
+            decimalCount: makeAssetId.nativeMetadata?.decimalCount,
             extrinsic: item.extrinsic?.id,
         },
     }
