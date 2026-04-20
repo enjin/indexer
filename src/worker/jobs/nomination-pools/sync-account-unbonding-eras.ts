@@ -28,11 +28,17 @@ function unbondingErasFromChain(raw: unknown): UnbondingEras[] | null {
             const eraCodec = t[0] as { toNumber?: () => number } | number
             const balCodec = t[1] as { toString?: () => string } | string | number | bigint
             const era =
-                typeof eraCodec === 'object' && eraCodec != null && 'toNumber' in eraCodec && typeof eraCodec.toNumber === 'function'
+                typeof eraCodec === 'object' &&
+                eraCodec != null &&
+                'toNumber' in eraCodec &&
+                typeof eraCodec.toNumber === 'function'
                     ? eraCodec.toNumber()
                     : Number(eraCodec)
             const balance =
-                typeof balCodec === 'object' && balCodec != null && 'toString' in balCodec && typeof balCodec.toString === 'function'
+                typeof balCodec === 'object' &&
+                balCodec != null &&
+                'toString' in balCodec &&
+                typeof balCodec.toString === 'function'
                     ? BigInt(balCodec.toString())
                     : BigInt(String(balCodec))
             out.push(new UnbondingEras({ era, balance }))
@@ -48,9 +54,7 @@ function unbondingErasFromChain(raw: unknown): UnbondingEras[] | null {
     if (json == null || !Array.isArray(json.unbondingEras) || json.unbondingEras.length === 0) {
         return null
     }
-    return json.unbondingEras.map(
-        ([era, bal]) => new UnbondingEras({ era: Number(era), balance: BigInt(String(bal)) })
-    )
+    return json.unbondingEras.map(([era, bal]) => new UnbondingEras({ era: Number(era), balance: BigInt(String(bal)) }))
 }
 
 export async function syncAccountUnbondingEras(job: Job, id: string): Promise<void> {
