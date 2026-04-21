@@ -1,6 +1,7 @@
 import { BaseWorker, WorkerOptions } from '~/worker/base-worker.class'
 import { QueuesEnum } from '~/queue/constants'
 import { ProcessorDef } from '~/worker/processors/processor.def'
+import { QueueUtils } from '~/queue'
 import {
     AccountsProcessor,
     BalancesProcessor,
@@ -35,7 +36,12 @@ export function createWorker(queueType: QueuesEnum, options: WorkerOptions = {})
     return new BaseWorker(queueType, processor, options)
 }
 
-export function initializeWorkers(): void {
+export async function initializeWorkers(): Promise<void> {
+    // Any job sitting in the `active` state here was being processed by the
+    // previous (now-dead) worker process. Move it back to `wait` so it gets
+    // picked up immediately instead of waiting for the stalled-checker cycle.
+    await QueueUtils.requeueAllActiveJobs()
+
     processors.forEach((processor, queueType) => {
         createWorker(queueType, processor.options)
     })

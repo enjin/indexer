@@ -51,6 +51,8 @@ createBullBoard({
 
 server.use('/', serverAdapter.getRouter())
 server.listen(9090, () => {
-    initializeWorkers()
+    initializeWorkers().catch((err) => {
+        console.error('Failed to initialize workers', err)
+    })
     console.log(`Server running at port 9090`)
 })
