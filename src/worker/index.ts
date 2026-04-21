@@ -49,8 +49,22 @@ createBullBoard({
     },
 })
 
+// Lightweight health endpoint that never touches Redis, so load balancers
+// never see 504s while startup / Bull Board is slow.
+server.get('/healthz', (_req, res) => {
+    res.status(200).send('ok')
+})
+
 server.use('/', serverAdapter.getRouter())
 server.listen(9090, () => {
-    initializeWorkers()
     console.log(`Server running at port 9090`)
+    // Construct Workers in the next tick so the HTTP server is immediately
+    // responsive on /healthz even if Redis is slow / reconnecting.
+    setImmediate(() => {
+        try {
+            initializeWorkers()
+        } catch (err) {
+            console.error('Failed to initialize workers', err)
+        }
+    })
 })

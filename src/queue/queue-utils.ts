@@ -35,6 +35,90 @@ export async function resumeQueue(type: QueueType): Promise<void> {
     await queue.resume()
 }
 
+/**
+ * Snapshot every job in the `active` list, delete them (which also removes
+ * their lock keys left over from a previous worker process), and re-add them
+ * to the queue with the same `jobId`, name, data, and options.
+ *
+ * This is meant to be called once at worker startup so that jobs left hanging
+ * in the `active` state from a crashed/restarted worker are picked up again
+ * immediately instead of having to wait for `stalledInterval` and then
+ * potentially failing with "UnrecoverableError: job stalled more than
+ * allowable limit" once `maxStalledCount` is exceeded.
+ */
+export async function requeueActiveJobs(queue: Queue): Promise<number> {
+    const activeJobs = await queue.getJobs(['active'])
+    if (activeJobs.length === 0) return 0
+
+    type Snapshot = {
+        name: string
+        data: unknown
+        opts: Record<string, unknown>
+    }
+
+    const snapshots: Snapshot[] = activeJobs
+        .filter((j) => j.id)
+        .map((j) => {
+            // Drop BullMQ-managed fields so Queue.add can re-assign them.
+            const { timestamp, delay, ...restOpts } = j.opts as Record<string, unknown>
+            void timestamp
+            void delay
+            const jobId = (restOpts.jobId as string | undefined) ?? j.id ?? j.name
+            return {
+                name: j.name,
+                data: j.data,
+                opts: { ...restOpts, jobId },
+            }
+        })
+
+    // Remove every active job (this deletes the job hash + :lock key too).
+    await queue.clean(0, 10_000, 'active')
+
+    for (const snap of snapshots) {
+        try {
+            await queue.add(snap.name, snap.data, snap.opts)
+        } catch (err) {
+            Logger.error(
+                `Failed to re-add active job ${snap.opts.jobId as string} on ${queue.name}: ${String(err)}`,
+                LOGGER_NAMESPACE
+            )
+        }
+    }
+
+    return snapshots.length
+}
+
+/**
+ * Re-queue active jobs across every queue managed by this indexer. Call this
+ * once, from the worker process entry point, before constructing any workers.
+ */
+export async function requeueAllActiveJobs(): Promise<void> {
+    const queues: Queue[] = [
+        AccountsQueue,
+        BalancesQueue,
+        CollectionsQueue,
+        ListingsQueue,
+        MetadataQueue,
+        TokensQueue,
+        TraitsQueue,
+        ValidatorsQueue,
+        NominationPoolsQueue,
+    ]
+
+    await Promise.all(
+        queues.map(async (q) => {
+            try {
+                const count = await requeueActiveJobs(q)
+                if (count > 0) {
+                    Logger.info(`Requeued ${count} active job(s) on ${q.name}`, LOGGER_NAMESPACE)
+                }
+            } catch (err) {
+                Logger.error(`Failed to requeue active jobs on ${q.name}: ${String(err)}`, LOGGER_NAMESPACE)
+            }
+        })
+    )
+}
+
 function getQueueByType(queue: QueueType): Queue {
     return match(queue)
         .returnType<Queue>()

@@ -29,20 +29,24 @@ export class BaseWorker {
             connection,
             useWorkerThreads: options.useWorkerThreads ?? true,
             concurrency: options.concurrency ?? 5,
-            // Fail job after N starts (including after Redis restart / stall recovery) to break restart cycle
-            maxStartedAttempts: 5,
-            // After this many stall recoveries, move job to failed instead of re-queuing
-            maxStalledCount: 2,
-            lockDuration: 300000, // 5 minutes to handle long-running metadata fetches
-            lockRenewTime: 150000, // Renew lock halfway so long jobs are not marked stalled
-            stalledInterval: 60000, // Check for stalled jobs every 60 seconds
+            // How long a worker may hold a job's lock before it's considered stalled.
+            // Set to 5 minutes so long-running metadata/chain jobs are not prematurely stalled.
+            lockDuration: 300000,
+            // Renew the lock roughly every 60s (well before lockDuration expires) so
+            // transient Redis hiccups don't cause the lock to lapse.
+            lockRenewTime: 60000,
+            // Check for stalled jobs every 30s.
+            stalledInterval: 30000,
+            // A stalled job is re-queued automatically. Only after this many
+            // consecutive stalls does BullMQ give up and fail with
+            // "UnrecoverableError: job stalled more than allowable limit".
+            // We set this high so a Redis restart or a burst of network flakiness
+            // cannot permanently kill a job.
+            maxStalledCount: 100,
             settings: {
-                lockDuration: 300000,
-                stalledInterval: 60000,
                 backoffStrategy: (attemptsMade: number) => {
                     // Custom retry delays: 3s, 15s, 60s, 150s, 300s, 600s
                     const delays = [3000, 15000, 60000, 150000, 300000, 600000]
-                    // Return the delay for the current attempt, or the last delay if we exceed the array
                     return delays[Math.min(attemptsMade - 1, delays.length - 1)]
                 },
             },

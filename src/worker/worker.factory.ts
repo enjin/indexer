@@ -36,6 +36,16 @@ export function createWorker(queueType: QueuesEnum, options: WorkerOptions = {})
 }
 
 export function initializeWorkers(): void {
+    // Stale active jobs from a previous (crashed) worker are handled by
+    // BullMQ's built-in stalled-checker (see `maxStalledCount` / `stalledInterval`
+    // in BaseWorker). We intentionally do NOT clean the `active` set here
+    // because doing so can delete jobs (and their lock keys) that another
+    // replica or a still-running sandboxed child is actively processing,
+    // which surfaces as "could not renew lock for job X" /
+    // "Missing lock for job X. moveToFinished" errors.
+    //
+    // `QueueUtils.requeueAllActiveJobs()` is still exported for manual /
+    // administrative use (e.g. after a known single-replica crash).
     processors.forEach((processor, queueType) => {
         createWorker(queueType, processor.options)
     })
