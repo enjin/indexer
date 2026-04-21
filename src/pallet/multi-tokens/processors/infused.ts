@@ -98,6 +98,7 @@ export async function infused(
             token: `${data.collectionId}-${data.tokenId}`,
             amount: data.amount ?? data.totalAmount,
             accountId: data.accountId,
+            account: account.id,
             extrinsic: item.extrinsic?.id,
             decimalCount: token.nativeMetadata?.decimalCount ?? 0,
         },
