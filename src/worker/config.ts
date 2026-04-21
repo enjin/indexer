@@ -23,7 +23,6 @@ export const connection: ConnectionOptions = {
         const elapsed = firstRetryAt ? Date.now() - firstRetryAt : 0
 
         if (elapsed >= MAX_REDIS_DOWNTIME_MS) {
-             
             console.error(
                 `[redis] unreachable for ${Math.round(elapsed / 1000)}s (${times} attempts). Exiting so the process can be restarted.`
             )
