@@ -8,6 +8,7 @@ import {
     computePoolOffers,
     computePoolRewards,
     refreshPool,
+    syncAccountUnbondingEras,
     syncPoolMembers,
     syncPools,
     syncOrphanedEarlyBirdRewards,
@@ -47,6 +48,9 @@ export class NominationPoolsProcessor implements ProcessorDef {
                 break
             case JobsEnum.BACKFILL_POOL_MEMBER_REWARDS_ERA_INDEX:
                 await backfillPoolMemberRewardsEraIndex(job)
+                break
+            case JobsEnum.SYNC_ACCOUNT_UNBONDING_ERAS:
+                await syncAccountUnbondingEras(job, job.data.id)
                 break
             default:
                 throw new Error(`${job.name} is not a valid job for this processor`)
