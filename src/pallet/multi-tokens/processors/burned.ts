@@ -91,6 +91,7 @@ export async function burned(
             token: `${data.collectionId}-${data.tokenId}`,
             account: data.accountId,
             amount: data.amount,
+            enjAmountReleasedPerItem: token.infusion.toString(),
             decimalCount: token.nativeMetadata?.decimalCount,
             extrinsic: item.extrinsic?.id,
         },
