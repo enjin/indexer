@@ -1,7 +1,6 @@
 import { BaseWorker, WorkerOptions } from '~/worker/base-worker.class'
 import { QueuesEnum } from '~/queue/constants'
 import { ProcessorDef } from '~/worker/processors/processor.def'
-import { QueueUtils } from '~/queue'
 import {
     AccountsProcessor,
     BalancesProcessor,
@@ -36,12 +35,17 @@ export function createWorker(queueType: QueuesEnum, options: WorkerOptions = {})
     return new BaseWorker(queueType, processor, options)
 }
 
-export async function initializeWorkers(): Promise<void> {
-    // Any job sitting in the `active` state here was being processed by the
-    // previous (now-dead) worker process. Move it back to `wait` so it gets
-    // picked up immediately instead of waiting for the stalled-checker cycle.
-    await QueueUtils.requeueAllActiveJobs()
-
+export function initializeWorkers(): void {
+    // Stale active jobs from a previous (crashed) worker are handled by
+    // BullMQ's built-in stalled-checker (see `maxStalledCount` / `stalledInterval`
+    // in BaseWorker). We intentionally do NOT clean the `active` set here
+    // because doing so can delete jobs (and their lock keys) that another
+    // replica or a still-running sandboxed child is actively processing,
+    // which surfaces as "could not renew lock for job X" /
+    // "Missing lock for job X. moveToFinished" errors.
+    //
+    // `QueueUtils.requeueAllActiveJobs()` is still exported for manual /
+    // administrative use (e.g. after a known single-replica crash).
     processors.forEach((processor, queueType) => {
         createWorker(queueType, processor.options)
     })
