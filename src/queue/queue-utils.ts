@@ -60,11 +60,14 @@ export async function requeueActiveJobs(queue: Queue): Promise<number> {
         .filter((j) => j.id)
         .map((j) => {
             // Drop BullMQ-managed fields so Queue.add can re-assign them.
-            const { timestamp: _ts, delay: _delay, ...restOpts } = j.opts as Record<string, unknown>
+            const { timestamp, delay, ...restOpts } = j.opts as Record<string, unknown>
+            void timestamp
+            void delay
+            const jobId = (restOpts.jobId as string | undefined) ?? j.id ?? j.name
             return {
                 name: j.name,
                 data: j.data,
-                opts: { ...restOpts, jobId: (j.opts.jobId as string | undefined) ?? j.id! },
+                opts: { ...restOpts, jobId },
             }
         })
 
