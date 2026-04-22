@@ -61,7 +61,7 @@ export async function listingCancelled(
         })
     }
 
-    if (listing.whitelistedAccounts.length > 0) {
+    if (listing.whitelistedAccounts?.length > 0) {
         listing.whitelistedAccounts = [];
     }
 
