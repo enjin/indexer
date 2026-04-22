@@ -6,6 +6,7 @@ import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
 import { EventHandlerResult } from '~/processor.handler'
+import Big from 'big.js'
 
 export async function transferred(
     ctx: CommonContext,
@@ -74,7 +75,9 @@ export async function transferred(
             operator: data.operator,
             from: data.from,
             to: data.to,
-            amount: data.amount,
+            amount: Big(data.amount.toString())
+                .div(10 ** (token?.nativeMetadata?.decimalCount ?? 0))
+                .toNumber(),
             extrinsic: item.extrinsic?.id,
             decimalCount: token?.nativeMetadata?.decimalCount,
         },

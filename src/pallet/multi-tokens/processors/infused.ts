@@ -5,6 +5,7 @@ import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
 import { EventHandlerResult } from '~/processor.handler'
 import { QueueUtils } from '~/queue'
+import Big from 'big.js'
 
 export async function infused(
     ctx: CommonContext,
@@ -96,7 +97,7 @@ export async function infused(
             collectionId: data.collectionId,
             tokenId: data.tokenId,
             token: `${data.collectionId}-${data.tokenId}`,
-            amount: data.amount ?? data.totalAmount,
+            amount: Big((data.amount ?? data.totalAmount ?? 0n).toString()).div(10 ** (token.nativeMetadata?.decimalCount ?? 0)).toNumber(),
             accountId: data.accountId,
             account: account.id,
             extrinsic: item.extrinsic?.id,

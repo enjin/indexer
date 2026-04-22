@@ -13,6 +13,7 @@ import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
 import { dispatchComputeAccountStats } from '~/queue/queue-utils'
+import Big from 'big.js'
 
 export async function auctionFinalized(
     ctx: CommonContext,
@@ -86,9 +87,9 @@ export async function auctionFinalized(
                     id: listing.seller.id,
                 },
                 id: listing.id,
-                highestPrice: listing.highestPrice.toString(),
-                amount: listing.amount.toString(),
-                price: listing.price.toString(),
+                highestPrice: Big(listing.highestPrice.toString()).mul(10 ** (makeAssetId.nativeMetadata?.decimalCount ?? 0)).toNumber(),
+                amount: Big(listing.amount.toString()).div(10 ** (makeAssetId.nativeMetadata?.decimalCount ?? 0)).toNumber(),
+                price: Big(listing.price.toString()).mul(10 ** (makeAssetId.nativeMetadata?.decimalCount ?? 0)).toNumber(),
                 data: listing.data.toJSON(),
             },
             winningBid: data.winningBid
@@ -96,7 +97,7 @@ export async function auctionFinalized(
                       bidder: {
                           id: data.winningBid.bidder,
                       },
-                      price: data.winningBid.price.toString(),
+                      price: Big(data.winningBid.price.toString()).mul(10 ** (makeAssetId.nativeMetadata?.decimalCount ?? 0)).toNumber(),
                   }
                 : null,
             protocolFee: data.protocolFee,

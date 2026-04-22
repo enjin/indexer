@@ -4,6 +4,7 @@ import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { getOrCreateAccount } from '~/util/entities'
 import { QueueUtils } from '~/queue'
+import Big from 'big.js'
 
 export async function bidPlaced(
     ctx: CommonContext,
@@ -71,15 +72,15 @@ export async function bidPlaced(
                     id: listing.seller.id,
                 },
                 id: listing.id,
-                highestPrice: listing.highestPrice.toString(),
-                amount: listing.amount.toString(),
-                price: listing.price.toString(),
+                highestPrice: listing.highestPrice * 10n ** BigInt(makeAssetId.nativeMetadata?.decimalCount ?? 0),
+                amount: listing.amount / 10n ** BigInt(makeAssetId.nativeMetadata?.decimalCount ?? 0),
+                price: listing.price * 10n ** BigInt(makeAssetId.nativeMetadata?.decimalCount ?? 0),
                 data: listing.data.toJSON(),
             },
             lastBid: previousBid
                 ? {
                       id: previousBid.id,
-                      price: previousBid.price.toString(),
+                      price: Big(previousBid.price.toString()).mul(10 ** (makeAssetId.nativeMetadata?.decimalCount ?? 0)).toNumber(),
                       bidder: {
                           id: previousBid.bidder.id,
                       },
@@ -87,7 +88,7 @@ export async function bidPlaced(
                 : null,
             bid: {
                 id: bid.id,
-                price: bid.price.toString(),
+                price: Big(bid.price.toString()).mul(10 ** (makeAssetId.nativeMetadata?.decimalCount ?? 0)).toNumber(),
                 bidder: {
                     id: bid.bidder.id,
                 },

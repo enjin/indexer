@@ -3,6 +3,7 @@ import { Block, CommonContext, EventItem } from '~/contexts'
 import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { getOrCreateAccount, unwrapSigner } from '~/util/entities'
+import Big from 'big.js'
 
 export async function counterOfferAnswered(
     ctx: CommonContext,
@@ -58,9 +59,9 @@ export async function counterOfferAnswered(
         body: {
             listing: {
                 id: listing.id,
-                price: listing.price.toString(),
-                amount: listing.amount.toString(),
-                highestPrice: listing.highestPrice.toString(),
+                price: Big(listing.price.toString()).mul(10 ** (takeAssetId.nativeMetadata?.decimalCount ?? 0)).toNumber(),
+                amount: Big(listing.amount.toString()).div(10 ** (takeAssetId.nativeMetadata?.decimalCount ?? 0)).toNumber(),
+                highestPrice: Big(listing.highestPrice.toString()).mul(10 ** (takeAssetId.nativeMetadata?.decimalCount ?? 0)).toNumber(),
                 seller: {
                     id: creator.id,
                 },
@@ -70,8 +71,12 @@ export async function counterOfferAnswered(
                 takeAssetId: takeAssetId.id,
             },
             lastAction: counterOffer.lastAction,
-            buyerPrice: counterOffer.buyerPrice?.toString(),
-            sellerPrice: counterOffer.sellerPrice?.toString(),
+            buyerPrice: counterOffer.buyerPrice
+                ? Big(counterOffer.buyerPrice.toString()).mul(10 ** (takeAssetId.nativeMetadata?.decimalCount ?? 0)).toNumber()
+                : undefined,
+            sellerPrice: counterOffer.sellerPrice
+                ? Big(counterOffer.sellerPrice.toString()).mul(10 ** (takeAssetId.nativeMetadata?.decimalCount ?? 0)).toNumber()
+                : undefined,
             response: event.response != undefined ? event.response.__kind : null,
             account: { id: creator.id },
             extrinsic: item.extrinsic.id,

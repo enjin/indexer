@@ -4,6 +4,7 @@ import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { getOrCreateAccount, unwrapSigner } from '~/util/entities'
 import { calls } from '~/type'
+import Big from 'big.js'
 
 export async function counterOfferPlaced(
     ctx: CommonContext,
@@ -66,9 +67,9 @@ export async function counterOfferPlaced(
         body: {
             listing: {
                 id: listing.id,
-                price: listing.price.toString(),
-                amount: listing.amount.toString(),
-                highestPrice: listing.highestPrice.toString(),
+                price: Big(listing.price.toString()).mul(10 ** (takeAssetId.nativeMetadata?.decimalCount ?? 0)).toNumber(),
+                amount: Big(listing.amount.toString()).div(10 ** (takeAssetId.nativeMetadata?.decimalCount ?? 0)).toNumber(),
+                highestPrice: Big(listing.highestPrice.toString()).mul(10 ** (takeAssetId.nativeMetadata?.decimalCount ?? 0)).toNumber(),
                 seller: {
                     id: listing.seller.id,
                 },
@@ -77,9 +78,13 @@ export async function counterOfferPlaced(
                 type: listing.type.toString(),
                 takeAssetId: takeAssetId.id,
             },
-            buyerPrice: buyerPrice?.toString(),
-            amount: depositAmount.toString(),
-            sellerPrice: sellerPrice.toString(),
+            buyerPrice: buyerPrice
+                ? Big(buyerPrice.toString()).mul(10 ** (takeAssetId.nativeMetadata?.decimalCount ?? 0)).toNumber()
+                : undefined,
+            amount: Big(depositAmount.toString()).div(10 ** (takeAssetId.nativeMetadata?.decimalCount ?? 0)).toNumber(),
+            sellerPrice: sellerPrice
+                ? Big(sellerPrice.toString()).mul(10 ** (takeAssetId.nativeMetadata?.decimalCount ?? 0)).toNumber()
+                : undefined,
             account: { id: account.id },
             extrinsic: item.extrinsic?.id,
             token: takeAssetId.id,
