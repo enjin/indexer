@@ -18,6 +18,7 @@ import { QueueUtils } from '~/queue'
 import { calls } from '~/type'
 import { getOrCreatePoolMemberRewards } from '~/util/earlyBird'
 import { EventHandlerResult } from '~/processor.handler'
+import Big from 'big.js'
 
 export async function getActiveEra(ctx: CommonContext) {
     const eras = await ctx.store.find(Era, {
@@ -203,7 +204,9 @@ export async function minted(
             token: token.id,
             issuer: issuer.id,
             recipient: recipient.id,
-            amount: data.amount,
+            amount: Big(data.amount.toString())
+                .div(10 ** (token.nativeMetadata?.decimalCount ?? 0))
+                .toNumber(),
             decimalCount: token.nativeMetadata?.decimalCount,
             extrinsic: item.extrinsic?.id,
         },

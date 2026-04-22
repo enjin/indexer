@@ -6,6 +6,7 @@ import * as mappings from '~/pallet/index'
 import { getOrCreateAccount } from '~/util/entities'
 import { QueueUtils } from '~/queue'
 import { EventHandlerResult } from '~/processor.handler'
+import Big from 'big.js'
 
 export async function burned(
     ctx: CommonContext,
@@ -90,7 +91,9 @@ export async function burned(
             tokenId: data.tokenId,
             token: `${data.collectionId}-${data.tokenId}`,
             account: data.accountId,
-            amount: data.amount,
+            amount: Big(data.amount.toString())
+                .div(10 ** (token.nativeMetadata?.decimalCount ?? 0))
+                .toNumber(),
             decimalCount: token.nativeMetadata?.decimalCount,
             extrinsic: item.extrinsic?.id,
         },

@@ -13,6 +13,7 @@ import { getOrCreateAccount } from '~/util/entities'
 import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
+import Big from 'big.js'
 
 export async function listingCancelled(
     ctx: CommonContext,
@@ -73,9 +74,15 @@ export async function listingCancelled(
         body: {
             listing: {
                 id: listing.id,
-                price: listing.price.toString(),
-                amount: listing.amount.toString(),
-                highestPrice: listing.highestPrice.toString(),
+                price: Big(listing.price.toString())
+                    .mul(10 ** (makeAssetId.nativeMetadata?.decimalCount ?? 0))
+                    .toNumber(),
+                amount: Big(listing.amount.toString())
+                    .div(10 ** (makeAssetId.nativeMetadata?.decimalCount ?? 0))
+                    .toNumber(),
+                highestPrice: Big(listing.highestPrice.toString())
+                    .mul(10 ** (makeAssetId.nativeMetadata?.decimalCount ?? 0))
+                    .toNumber(),
                 seller: {
                     id: seller.id,
                 },

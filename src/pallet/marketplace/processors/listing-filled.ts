@@ -18,6 +18,7 @@ import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
 import { ListingFilled } from '~/pallet/marketplace/events'
 import { dispatchComputeAccountStats } from '~/queue/queue-utils'
+import Big from 'big.js'
 
 export async function listingFilled(
     ctx: CommonContext,
@@ -123,9 +124,15 @@ export async function listingFilled(
         body: {
             listing: {
                 id: listing.id,
-                price: listing.price.toString(),
-                amount: listing.amount.toString(),
-                highestPrice: listing.highestPrice.toString(),
+                price: Big(listing.price.toString())
+                    .mul(10 ** (makeAssetId.nativeMetadata?.decimalCount ?? 0))
+                    .toNumber(),
+                amount: Big(listing.amount.toString())
+                    .div(10 ** (makeAssetId.nativeMetadata?.decimalCount ?? 0))
+                    .toNumber(),
+                highestPrice: Big(listing.highestPrice.toString())
+                    .mul(10 ** (makeAssetId.nativeMetadata?.decimalCount ?? 0))
+                    .toNumber(),
                 seller: {
                     id: seller.id,
                 },
