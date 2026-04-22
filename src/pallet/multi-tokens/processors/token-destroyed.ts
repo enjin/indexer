@@ -180,7 +180,7 @@ export async function tokenDestroyed(
     })
 
     // clear pool members if exists
-    if (token.id.toString().startsWith('1')) {
+    if (token.id.startsWith('1')) {
         const tokenMembers = await ctx.store.find(PoolMember, {
             relations: {
                 tokenAccount: true,

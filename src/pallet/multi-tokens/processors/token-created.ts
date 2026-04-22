@@ -29,7 +29,7 @@ async function getBehavior(
     ctx: CommonContext,
     behavior: TokenMarketBehavior
 ): Promise<TokenBehaviorIsCurrency | TokenBehaviorHasRoyalty> {
-    if (behavior.__kind === TokenBehaviorType.IsCurrency) {
+    if ((behavior.__kind as TokenBehaviorType) === TokenBehaviorType.IsCurrency) {
         return new TokenBehaviorIsCurrency({
             type: TokenBehaviorType.IsCurrency,
         })

@@ -82,7 +82,7 @@ export async function created(ctx: CommonContext, block: Block, item: EventItem)
     token.nominationPool = pool
     await ctx.store.save(token)
 
-    QueueUtils.dispatchComputePoolOffers(pool.id.toString())
+    QueueUtils.dispatchComputePoolOffers(pool.id)
 
     const owner: string = token.tokenAccounts[0].account.id
 

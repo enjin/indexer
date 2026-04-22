@@ -25,11 +25,11 @@ export async function tokens(ctx: CommonContext, block: Block) {
 
             const collectionId = key[0].toString()
             const tokenId = key[1].toString()
-            const collection = await ctx.store.findOneOrFail(Collection, { where: { id: collectionId.toString() } })
+            const collection = await ctx.store.findOneOrFail(Collection, { where: { id: collectionId } })
 
             let behavior: TokenBehaviorIsCurrency | TokenBehaviorHasRoyalty | null = null
             if ('marketBehavior' in data && data.marketBehavior) {
-                if (data.marketBehavior.__kind === TokenBehaviorType.IsCurrency) {
+                if ((data.marketBehavior.__kind as TokenBehaviorType) === TokenBehaviorType.IsCurrency) {
                     behavior = new TokenBehaviorIsCurrency({
                         type: TokenBehaviorType.IsCurrency,
                     })

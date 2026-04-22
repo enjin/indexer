@@ -1,6 +1,5 @@
 import { DataSource, DataSourceOptions } from 'typeorm'
 import { createOrmConfig } from '@subsquid/typeorm-config'
-import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions'
 
 let dataSource: DataSource | null = null
 
