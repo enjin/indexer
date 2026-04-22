@@ -61,10 +61,6 @@ export async function listingCancelled(
         })
     }
 
-    if (listing.whitelistedAccounts?.length > 0) {
-        listing.whitelistedAccounts = [];
-    }
-
     await ctx.store.save(listingStatus)
     await ctx.store.save(listing)
 
