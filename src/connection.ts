@@ -6,11 +6,11 @@ let dataSource: DataSource | null = null
 
 export const getDataSource = async (): Promise<DataSource> => {
     if (!dataSource) {
-        const cfg: DataSourceOptions = createOrmConfig() as PostgresConnectionOptions
+        const cfg: DataSourceOptions = createOrmConfig()
         dataSource = new DataSource({
             ...cfg,
             poolSize: 200,
-        } as PostgresConnectionOptions)
+        })
     }
 
     if (!dataSource.isInitialized) {

@@ -47,7 +47,7 @@ export async function created(ctx: CommonContext, block: Block, item: EventItem)
         id: eventData.poolId.toString(),
         points: 0n, // update at bonded event
         state: PoolState.Open,
-        name: 'name' in callData ? safeString(hexToString(callData.name as string)) : '',
+        name: 'name' in callData ? safeString(hexToString(callData.name)) : '',
         commission: new Commission(),
         deposit: callData.deposit,
         tokenId: callData.tokenId,
