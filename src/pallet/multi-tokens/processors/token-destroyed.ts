@@ -210,16 +210,13 @@ export async function tokenDestroyed(
         await QueueUtils.dispatchComputeAccountStats(tokenAccount.account.id)
     }
 
-    if (listingsMake.length > 0) {
-        for (const listing of listingsMake) {
-            if (listing.whitelistedAccounts.length > 0) {
-                listing.whitelistedAccounts = [];
-            }
-            await ctx.store.save(listing)
-        }
-    }
+    const whitelistedAccounts = [
+        ...listingsMake.flatMap((l) => l.whitelistedAccounts),
+        ...listingTake.flatMap((l) => l.whitelistedAccounts),
+    ]
 
     await ctx.store.remove(bids)
+    await ctx.store.remove(whitelistedAccounts)
 
     await Promise.all([
         ctx.store.save(events),
