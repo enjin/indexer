@@ -204,7 +204,9 @@ export async function minted(
             token: token.id,
             issuer: issuer.id,
             recipient: recipient.id,
-            amount: Big(data.amount.toString()).div(10 ** (token.nativeMetadata?.decimalCount ?? 0)).toNumber(),
+            amount: Big(data.amount.toString())
+                .div(10 ** (token.nativeMetadata?.decimalCount ?? 0))
+                .toNumber(),
             decimalCount: token.nativeMetadata?.decimalCount,
             extrinsic: item.extrinsic?.id,
         },

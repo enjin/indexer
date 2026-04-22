@@ -59,9 +59,15 @@ export async function counterOfferAnswered(
         body: {
             listing: {
                 id: listing.id,
-                price: Big(listing.price.toString()).mul(10 ** (takeAssetId.nativeMetadata?.decimalCount ?? 0)).toNumber(),
-                amount: Big(listing.amount.toString()).div(10 ** (takeAssetId.nativeMetadata?.decimalCount ?? 0)).toNumber(),
-                highestPrice: Big(listing.highestPrice.toString()).mul(10 ** (takeAssetId.nativeMetadata?.decimalCount ?? 0)).toNumber(),
+                price: Big(listing.price.toString())
+                    .mul(10 ** (takeAssetId.nativeMetadata?.decimalCount ?? 0))
+                    .toNumber(),
+                amount: Big(listing.amount.toString())
+                    .div(10 ** (takeAssetId.nativeMetadata?.decimalCount ?? 0))
+                    .toNumber(),
+                highestPrice: Big(listing.highestPrice.toString())
+                    .mul(10 ** (takeAssetId.nativeMetadata?.decimalCount ?? 0))
+                    .toNumber(),
                 seller: {
                     id: creator.id,
                 },
@@ -72,10 +78,14 @@ export async function counterOfferAnswered(
             },
             lastAction: counterOffer.lastAction,
             buyerPrice: counterOffer.buyerPrice
-                ? Big(counterOffer.buyerPrice.toString()).mul(10 ** (takeAssetId.nativeMetadata?.decimalCount ?? 0)).toNumber()
+                ? Big(counterOffer.buyerPrice.toString())
+                      .mul(10 ** (takeAssetId.nativeMetadata?.decimalCount ?? 0))
+                      .toNumber()
                 : undefined,
             sellerPrice: counterOffer.sellerPrice
-                ? Big(counterOffer.sellerPrice.toString()).mul(10 ** (takeAssetId.nativeMetadata?.decimalCount ?? 0)).toNumber()
+                ? Big(counterOffer.sellerPrice.toString())
+                      .mul(10 ** (takeAssetId.nativeMetadata?.decimalCount ?? 0))
+                      .toNumber()
                 : undefined,
             response: event.response != undefined ? event.response.__kind : null,
             account: { id: creator.id },

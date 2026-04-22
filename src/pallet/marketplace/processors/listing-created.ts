@@ -136,9 +136,15 @@ export async function listingCreated(
         body: {
             listing: {
                 id: listing.id,
-                price: Big(listing.price.toString()).mul(10 ** (makeAssetId.nativeMetadata?.decimalCount ?? 0)).toNumber(),
-                amount: Big(listing.amount.toString()).div(10 ** (makeAssetId.nativeMetadata?.decimalCount ?? 0)).toNumber(),
-                highestPrice: Big(listing.highestPrice.toString()).mul(10 ** (makeAssetId.nativeMetadata?.decimalCount ?? 0)).toNumber(),
+                price: Big(listing.price.toString())
+                    .mul(10 ** (makeAssetId.nativeMetadata?.decimalCount ?? 0))
+                    .toNumber(),
+                amount: Big(listing.amount.toString())
+                    .div(10 ** (makeAssetId.nativeMetadata?.decimalCount ?? 0))
+                    .toNumber(),
+                highestPrice: Big(listing.highestPrice.toString())
+                    .mul(10 ** (makeAssetId.nativeMetadata?.decimalCount ?? 0))
+                    .toNumber(),
                 seller: {
                     id: listingCreator.id,
                 },

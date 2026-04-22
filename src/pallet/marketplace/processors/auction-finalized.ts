@@ -87,9 +87,15 @@ export async function auctionFinalized(
                     id: listing.seller.id,
                 },
                 id: listing.id,
-                highestPrice: Big(listing.highestPrice.toString()).mul(10 ** (makeAssetId.nativeMetadata?.decimalCount ?? 0)).toNumber(),
-                amount: Big(listing.amount.toString()).div(10 ** (makeAssetId.nativeMetadata?.decimalCount ?? 0)).toNumber(),
-                price: Big(listing.price.toString()).mul(10 ** (makeAssetId.nativeMetadata?.decimalCount ?? 0)).toNumber(),
+                highestPrice: Big(listing.highestPrice.toString())
+                    .mul(10 ** (makeAssetId.nativeMetadata?.decimalCount ?? 0))
+                    .toNumber(),
+                amount: Big(listing.amount.toString())
+                    .div(10 ** (makeAssetId.nativeMetadata?.decimalCount ?? 0))
+                    .toNumber(),
+                price: Big(listing.price.toString())
+                    .mul(10 ** (makeAssetId.nativeMetadata?.decimalCount ?? 0))
+                    .toNumber(),
                 data: listing.data.toJSON(),
             },
             winningBid: data.winningBid
@@ -97,7 +103,9 @@ export async function auctionFinalized(
                       bidder: {
                           id: data.winningBid.bidder,
                       },
-                      price: Big(data.winningBid.price.toString()).mul(10 ** (makeAssetId.nativeMetadata?.decimalCount ?? 0)).toNumber(),
+                      price: Big(data.winningBid.price.toString())
+                          .mul(10 ** (makeAssetId.nativeMetadata?.decimalCount ?? 0))
+                          .toNumber(),
                   }
                 : null,
             protocolFee: data.protocolFee,

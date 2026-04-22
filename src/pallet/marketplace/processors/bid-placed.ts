@@ -80,7 +80,9 @@ export async function bidPlaced(
             lastBid: previousBid
                 ? {
                       id: previousBid.id,
-                      price: Big(previousBid.price.toString()).mul(10 ** (makeAssetId.nativeMetadata?.decimalCount ?? 0)).toNumber(),
+                      price: Big(previousBid.price.toString())
+                          .mul(10 ** (makeAssetId.nativeMetadata?.decimalCount ?? 0))
+                          .toNumber(),
                       bidder: {
                           id: previousBid.bidder.id,
                       },
@@ -88,7 +90,9 @@ export async function bidPlaced(
                 : null,
             bid: {
                 id: bid.id,
-                price: Big(bid.price.toString()).mul(10 ** (makeAssetId.nativeMetadata?.decimalCount ?? 0)).toNumber(),
+                price: Big(bid.price.toString())
+                    .mul(10 ** (makeAssetId.nativeMetadata?.decimalCount ?? 0))
+                    .toNumber(),
                 bidder: {
                     id: bid.bidder.id,
                 },

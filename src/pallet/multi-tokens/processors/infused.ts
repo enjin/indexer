@@ -97,7 +97,9 @@ export async function infused(
             collectionId: data.collectionId,
             tokenId: data.tokenId,
             token: `${data.collectionId}-${data.tokenId}`,
-            amount: Big((data.amount ?? data.totalAmount ?? 0n).toString()).div(10 ** (token.nativeMetadata?.decimalCount ?? 0)).toNumber(),
+            amount: Big((data.amount ?? data.totalAmount ?? 0n).toString())
+                .div(10 ** (token.nativeMetadata?.decimalCount ?? 0))
+                .toNumber(),
             accountId: data.accountId,
             account: account.id,
             extrinsic: item.extrinsic?.id,

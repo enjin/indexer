@@ -67,9 +67,15 @@ export async function counterOfferPlaced(
         body: {
             listing: {
                 id: listing.id,
-                price: Big(listing.price.toString()).mul(10 ** (takeAssetId.nativeMetadata?.decimalCount ?? 0)).toNumber(),
-                amount: Big(listing.amount.toString()).div(10 ** (takeAssetId.nativeMetadata?.decimalCount ?? 0)).toNumber(),
-                highestPrice: Big(listing.highestPrice.toString()).mul(10 ** (takeAssetId.nativeMetadata?.decimalCount ?? 0)).toNumber(),
+                price: Big(listing.price.toString())
+                    .mul(10 ** (takeAssetId.nativeMetadata?.decimalCount ?? 0))
+                    .toNumber(),
+                amount: Big(listing.amount.toString())
+                    .div(10 ** (takeAssetId.nativeMetadata?.decimalCount ?? 0))
+                    .toNumber(),
+                highestPrice: Big(listing.highestPrice.toString())
+                    .mul(10 ** (takeAssetId.nativeMetadata?.decimalCount ?? 0))
+                    .toNumber(),
                 seller: {
                     id: listing.seller.id,
                 },
@@ -79,11 +85,17 @@ export async function counterOfferPlaced(
                 takeAssetId: takeAssetId.id,
             },
             buyerPrice: buyerPrice
-                ? Big(buyerPrice.toString()).mul(10 ** (takeAssetId.nativeMetadata?.decimalCount ?? 0)).toNumber()
+                ? Big(buyerPrice.toString())
+                      .mul(10 ** (takeAssetId.nativeMetadata?.decimalCount ?? 0))
+                      .toNumber()
                 : undefined,
-            amount: Big(depositAmount.toString()).div(10 ** (takeAssetId.nativeMetadata?.decimalCount ?? 0)).toNumber(),
+            amount: Big(depositAmount.toString())
+                .div(10 ** (takeAssetId.nativeMetadata?.decimalCount ?? 0))
+                .toNumber(),
             sellerPrice: sellerPrice
-                ? Big(sellerPrice.toString()).mul(10 ** (takeAssetId.nativeMetadata?.decimalCount ?? 0)).toNumber()
+                ? Big(sellerPrice.toString())
+                      .mul(10 ** (takeAssetId.nativeMetadata?.decimalCount ?? 0))
+                      .toNumber()
                 : undefined,
             account: { id: account.id },
             extrinsic: item.extrinsic?.id,
