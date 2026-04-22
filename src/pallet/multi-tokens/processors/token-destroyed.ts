@@ -120,12 +120,18 @@ export async function tokenDestroyed(
                     id: token.id,
                 },
             },
+            relations: {
+                whitelistedAccounts: true,
+            },
         }),
         ctx.store.find(Listing, {
             where: {
                 takeAssetId: {
                     id: token.id,
                 },
+            },
+            relations: {
+                whitelistedAccounts: true,
             },
         }),
         ctx.store.find(RoyaltyCurrency, {
@@ -202,6 +208,15 @@ export async function tokenDestroyed(
 
     for (const tokenAccount of tokenAccounts) {
         await QueueUtils.dispatchComputeAccountStats(tokenAccount.account.id)
+    }
+
+    if (listingsMake.length > 0) {
+        for (const listing of listingsMake) {
+            if (listing.whitelistedAccounts.length > 0) {
+                listing.whitelistedAccounts = [];
+            }
+            await ctx.store.save(listing)
+        }
     }
 
     await ctx.store.remove(bids)
