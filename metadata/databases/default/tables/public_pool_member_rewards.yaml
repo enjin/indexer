@@ -1,0 +1,19 @@
+table:
+  name: pool_member_rewards
+  schema: public
+object_relationships:
+  - name: member
+    using:
+      foreign_key_constraint_on: member_id
+  - name: pool
+    using:
+      foreign_key_constraint_on: pool_id
+  - name: reward
+    using:
+      foreign_key_constraint_on: reward_id
+select_permissions:
+  - role: public
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true

@@ -1,0 +1,24 @@
+table:
+  name: era_reward
+  schema: public
+object_relationships:
+  - name: era
+    using:
+      foreign_key_constraint_on: era_id
+  - name: pool
+    using:
+      foreign_key_constraint_on: pool_id
+array_relationships:
+  - name: memberRewards
+    using:
+      foreign_key_constraint_on:
+        column: reward_id
+        table:
+          name: pool_member_rewards
+          schema: public
+select_permissions:
+  - role: public
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
