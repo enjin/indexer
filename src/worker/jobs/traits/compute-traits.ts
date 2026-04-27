@@ -16,15 +16,29 @@ export async function computeTraits(job: Job, id: string) {
     const tokenTraitMap = new Map<string, string[]>()
     const displayValueMap = new Map<string, string>()
     const displayTypeMap = new Map<string, string>()
-    const tokens = await em
-        .getRepository(Token)
-        .createQueryBuilder('token')
-        .select('token.id')
-        .addSelect('token.metadata')
-        .addSelect('token.supply')
-        .where('token.collection = :id', { id })
-        .andWhere('token.supply > 0')
-        .getMany()
+    const BATCH_SIZE = 500
+    const tokens: Token[] = []
+    let offset = 0
+
+    while (true) {
+        const batch = await em
+            .getRepository(Token)
+            .createQueryBuilder('token')
+            .select('token.id')
+            .addSelect('token.metadata')
+            .addSelect('token.supply')
+            .where('token.collection = :id', { id })
+            .andWhere('token.supply > 0')
+            .orderBy('token.id')
+            .take(BATCH_SIZE)
+            .skip(offset)
+            .getMany()
+
+        tokens.push(...batch)
+
+        if (batch.length < BATCH_SIZE) break
+        offset += BATCH_SIZE
+    }
 
     await job.updateProgress(20)
 
