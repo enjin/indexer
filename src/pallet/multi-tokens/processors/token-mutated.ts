@@ -22,12 +22,12 @@ async function getBehavior(
     ctx: CommonContext,
     behavior: TokenMarketBehavior
 ): Promise<TokenBehaviorIsCurrency | TokenBehaviorHasRoyalty> {
-    if (behavior.__kind === TokenBehaviorType.IsCurrency) {
+    if (behavior.__kind === 'IsCurrency') {
         return new TokenBehaviorIsCurrency({
             type: TokenBehaviorType.IsCurrency,
         })
     }
-    const beneficiaries =
+    const beneficiaries: { beneficiary: string; percentage: number }[] =
         'beneficiaries' in behavior.value
             ? behavior.value.beneficiaries
             : [

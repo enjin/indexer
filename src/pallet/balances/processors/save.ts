@@ -161,7 +161,7 @@ export async function saveAccounts(ctx: CommonContext, block: BlockHeader) {
                         nonce: accountInfo.nonce,
                         verified: false,
                         balance: new Balance({
-                            transferable: BigInt(accountData.free - accountData.frozen),
+                            transferable: accountData.free - accountData.frozen,
                             free: accountData.free,
                             reserved: accountData.reserved,
                             frozen: accountData.frozen,
@@ -178,7 +178,7 @@ export async function saveAccounts(ctx: CommonContext, block: BlockHeader) {
                         nonce: accountInfo.nonce,
                         verified: false,
                         balance: new Balance({
-                            transferable: BigInt(accountData.free - accountData.miscFrozen),
+                            transferable: accountData.free - accountData.miscFrozen,
                             free: accountData.free,
                             reserved: accountData.reserved,
                             frozen: accountData.miscFrozen,

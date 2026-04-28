@@ -22,7 +22,7 @@ export function unwrapSigner(extrinsic: ExtrinsicItem): string {
     }
 
     const address = signature.address as AddressWithKind
-    return typeof address === 'object' && '__kind' in address ? address.value : (address as string)
+    return typeof address === 'object' && '__kind' in address ? address.value : address
 }
 
 export function unwrapAccount(
