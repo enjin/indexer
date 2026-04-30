@@ -73,7 +73,7 @@ export async function computeValidators(job: Job) {
             const peerCommission =
                 otherValidators.length > 0
                     ? // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-                      otherValidators.reduce((sum, v) => sum + v.commission, 0) / otherValidators.length
+                      Math.round(otherValidators.reduce((sum, v) => sum + v.commission, 0) / otherValidators.length)
                     : 0
 
             const peerAverageNominations =
