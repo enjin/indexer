@@ -28,7 +28,8 @@ const logger = new Logger('sqd:processor', config.logLevel)
 async function bootstrap() {
     Sentry.init({
         dsn: config.sentryDsn,
-        tracesSampleRate: 1.0,
+        ignoreErrors: ['API/INIT: RPC methods not decorated:', 'REGISTRY: Unknown signed extensions'],
+        tracesSampleRate: 0.0,
     })
 
     const dataService = DataService.getInstance()
