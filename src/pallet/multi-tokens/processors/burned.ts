@@ -1,4 +1,3 @@
-import { throwFatalError } from '~/util/errors'
 import { Token, TokenAccount, UserInfusion } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { SnsEvent } from '~/util/sns'
@@ -45,8 +44,6 @@ export async function burned(
         tokenAccount.totalBalance -= data.amount
         tokenAccount.updatedAt = new Date(block.timestamp ?? 0)
         await ctx.store.save(tokenAccount)
-    } else {
-        throwFatalError(`[Burned] We have not found token account ${account.id}-${data.collectionId}-${data.tokenId}.`)
     }
 
     const supplyBeforeBurn = token.supply
