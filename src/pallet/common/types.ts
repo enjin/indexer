@@ -1034,6 +1034,7 @@ export type CommissionPayment = {
 }
 
 export enum CustomStakingEvent {
+    Bond = 'NominationPools.Bond',
     DepositUnbond = 'NominationPools.DepositUnbond',
     Unbond = 'NominationPools.Unbond',
     AllMembersUnbond = 'NominationPools.AllMembersUnbond',
