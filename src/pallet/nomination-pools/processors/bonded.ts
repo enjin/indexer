@@ -5,7 +5,7 @@ import { getOrCreateAccount } from '~/util/entities'
 import { updatePool } from '~/pallet/nomination-pools/processors/pool'
 import * as mappings from '~/pallet/index'
 import { EventHandlerResult } from '~/processor.handler'
-import { CustomStakingEvent } from "~/pallet/common/types"
+import { CustomStakingEvent } from '~/pallet/common/types'
 
 export function getActiveEra(ctx: CommonContext) {
     return ctx.store.find(Era, {
