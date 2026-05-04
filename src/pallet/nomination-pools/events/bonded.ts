@@ -4,6 +4,7 @@ import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, NominationPoolsBonded } from '~/model'
 import { Bonded } from '~/pallet/nomination-pools/events/types'
+import { CustomStakingEvent } from "~/pallet/common/types";
 
 export function bonded(event: EventItem): Bonded {
     return match(event)
@@ -32,7 +33,7 @@ export function bonded(event: EventItem): Bonded {
 export function bondedEventModel(item: EventItem, data: Bonded, tokenId: bigint): EventModel {
     return new EventModel({
         id: item.id,
-        name: NominationPoolsBonded.name,
+        name: CustomStakingEvent.Bond,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new NominationPoolsBonded({
             pool: data.poolId.toString(),
