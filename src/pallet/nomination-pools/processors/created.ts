@@ -47,7 +47,7 @@ export async function created(ctx: CommonContext, block: Block, item: EventItem)
         id: eventData.poolId.toString(),
         points: 0n, // update at bonded event
         state: PoolState.Open,
-        name: 'name' in callData ? safeString(hexToString(callData.name)) : '',
+        name: 'name' in callData ? safeString(hexToString(callData.name as string)) : '',
         commission: new Commission(),
         deposit: callData.deposit,
         tokenId: callData.tokenId,
@@ -82,7 +82,7 @@ export async function created(ctx: CommonContext, block: Block, item: EventItem)
     token.nominationPool = pool
     await ctx.store.save(token)
 
-    QueueUtils.dispatchComputePoolOffers(pool.id)
+    QueueUtils.dispatchComputePoolOffers(pool.id.toString())
 
     const owner: string = token.tokenAccounts[0].account.id
 

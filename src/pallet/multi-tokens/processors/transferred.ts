@@ -84,8 +84,8 @@ export async function transferred(
     }
 
     await QueueUtils.dispatchComputeStats(data.collectionId.toString())
-    await QueueUtils.dispatchComputeAccountStats(data.from)
-    await QueueUtils.dispatchComputeAccountStats(data.to)
+    await QueueUtils.dispatchComputeAccountStats(data.from.toString())
+    await QueueUtils.dispatchComputeAccountStats(data.to.toString())
 
     return [
         ...mappings.multiTokens.events.transferredEventModel(
