@@ -1,0 +1,16 @@
+table:
+  name: trait_token
+  schema: public
+object_relationships:
+  - name: token
+    using:
+      foreign_key_constraint_on: token_id
+  - name: trait
+    using:
+      foreign_key_constraint_on: trait_id
+select_permissions:
+  - role: public
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true

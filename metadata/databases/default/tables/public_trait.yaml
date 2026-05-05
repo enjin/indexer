@@ -1,0 +1,21 @@
+table:
+  name: trait
+  schema: public
+object_relationships:
+  - name: collection
+    using:
+      foreign_key_constraint_on: collection_id
+array_relationships:
+  - name: tokens
+    using:
+      foreign_key_constraint_on:
+        column: trait_id
+        table:
+          name: trait_token
+          schema: public
+select_permissions:
+  - role: public
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
