@@ -148,7 +148,7 @@ export class RefreshMetadataResolver {
                     delay: 10000,
                 })
 
-                // Dispatch stats computation for collections (only once per collection)
+                // Dispatch stats computation for collection (only once per collection)
                 if (
                     item.type === RefreshMetadataType.COLLECTION &&
                     collectionId &&
