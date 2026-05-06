@@ -51,7 +51,10 @@ export class RefreshMetadataResolver {
 
     @Query(() => RefreshMetadataResponse, { nullable: false })
     async refreshMetadata(
-        @Arg('ids', () => [RefreshMetadataInput]) ids: RefreshMetadataInput[]
+        @Arg('ids', () => [RefreshMetadataInput]) ids: RefreshMetadataInput[],
+        @Arg('force', () => Boolean, { nullable: true }) force?: boolean,
+        @Arg('allTokens', () => Boolean, { nullable: true }) allTokens?: boolean,
+        @Arg('traits', () => Boolean, { nullable: true }) traits?: boolean,
     ): Promise<RefreshMetadataResponse> {
         const manager = await this.tx()
 
@@ -139,9 +142,9 @@ export class RefreshMetadataResolver {
                 await QueueUtils.dispatchComputeMetadata({
                     id: resource.id,
                     type: item.type === RefreshMetadataType.TOKEN ? 'token' : 'collection',
-                    force: true,
-                    allTokens: false,
-                    traits: true,
+                    force: force ?? false,
+                    allTokens: allTokens ?? false,
+                    traits: traits ?? false,
                     delay: 10000,
                 })
 
