@@ -142,7 +142,7 @@ export class RefreshMetadataResolver {
                 await QueueUtils.dispatchComputeMetadata({
                     id: resource.id,
                     type: item.type === RefreshMetadataType.TOKEN ? 'token' : 'collection',
-                    force: force ?? false,
+                    force: force ?? true,
                     allTokens: allTokens ?? false,
                     traits: traits ?? false,
                     delay: 10000,
