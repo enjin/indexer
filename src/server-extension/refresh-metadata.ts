@@ -54,7 +54,7 @@ export class RefreshMetadataResolver {
         @Arg('ids', () => [RefreshMetadataInput]) ids: RefreshMetadataInput[],
         @Arg('force', () => Boolean, { nullable: true }) force?: boolean,
         @Arg('allTokens', () => Boolean, { nullable: true }) allTokens?: boolean,
-        @Arg('traits', () => Boolean, { nullable: true }) traits?: boolean,
+        @Arg('traits', () => Boolean, { nullable: true }) traits?: boolean
     ): Promise<RefreshMetadataResponse> {
         const manager = await this.tx()
 
