@@ -138,7 +138,7 @@ export class RefreshMetadataResolver {
                     continue
                 }
 
-                // Dispatch metadata computation for tokens and collections
+                // Dispatch metadata computations for tokens and collections
                 await QueueUtils.dispatchComputeMetadata({
                     id: resource.id,
                     type: item.type === RefreshMetadataType.TOKEN ? 'token' : 'collection',
