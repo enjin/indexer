@@ -11,14 +11,25 @@ export async function chainState(
 ) {
     try {
         const { api } = await Rpc.getInstance()
-        const { transactionVersion } = api.consts.system.version
-        const existentialDeposit = api.consts.balances.existentialDeposit
-        const listingActiveDelay = api.consts.marketplace.listingActiveDelay
-        const listingDeposit = api.consts.marketplace.listingDeposit
-        const maxRoundingError = api.consts.marketplace.maxRoundingError
-        const maxSaltLength = api.consts.marketplace.maxSaltLength
-        const minimumBidIncreasePercentage = api.consts.marketplace.minimumBidIncreasePercentage
-        const finalizedHead = await api.rpc.chain.getFinalizedHead()
+        const [
+            { transactionVersion },
+            existentialDeposit,
+            listingActiveDelay,
+            listingDeposit,
+            maxRoundingError,
+            maxSaltLength,
+            minimumBidIncreasePercentage,
+            finalizedHead,
+        ] = await Promise.all([
+            api.consts.system.version,
+            api.consts.balances.existentialDeposit,
+            api.consts.marketplace.listingActiveDelay,
+            api.consts.marketplace.listingDeposit,
+            api.consts.marketplace.maxRoundingError,
+            api.consts.marketplace.maxSaltLength,
+            api.consts.marketplace.minimumBidIncreasePercentage,
+            api.rpc.chain.getFinalizedHead(),
+        ])
 
         const finalized = !ctx.isHead
         const blockToFinalize = await ctx.store.findOneBy(ChainInfo, {
@@ -34,7 +45,7 @@ export async function chainState(
             id: block.hash,
             genesisHash: processorConfig.genesisHash,
             transactionVersion: transactionVersion.toNumber(),
-            specVersion: block.specVersion,
+            specVersion: Number(block.specVersion),
             blockNumber: block.height,
             blockHash: block.hash,
             existentialDeposit: existentialDeposit.toBigInt(),

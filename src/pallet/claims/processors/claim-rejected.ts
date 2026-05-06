@@ -9,7 +9,7 @@ export async function claimRejected(
 ): Promise<EventModel | undefined> {
     const event = mappings.claims.events.claimRejected(item)
     const claimRequest = await ctx.store.findOneByOrFail<ClaimRequest>(ClaimRequest, {
-        hash: event.transactionHash,
+        hash: event.transactionHash.toString(),
     })
 
     const claimDetails = new ClaimDetails({

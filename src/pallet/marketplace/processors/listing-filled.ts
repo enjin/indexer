@@ -53,7 +53,7 @@ export async function listingFilled(
         id: `${listingId}-${item.id}`,
         amount: event.amountFilled,
         buyer,
-        price: 'price' in event ? event.price : listing.highestPrice,
+        price: 'price' in event ? (event.price as bigint) : listing.highestPrice,
         listing,
         createdAt: new Date(block.timestamp ?? 0),
     })
@@ -145,7 +145,7 @@ export async function listingFilled(
                 id: buyer.id,
             },
             amountFilled: event.amountFilled,
-            price: 'price' in event ? event.price : listing.highestPrice,
+            price: 'price' in event ? (event.price as bigint) : listing.highestPrice,
             amountRemaining: event.amountRemaining,
             protocolFee: event.protocolFee,
             royalty: event.royalty,

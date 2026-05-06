@@ -66,7 +66,7 @@ export async function poolMutated(ctx: CommonContext, block: Block, item: EventI
     }
 
     if ('name' in data.mutation && data.mutation.name !== '0x') {
-        pool.name = safeString(hexToString(data.mutation.name))
+        pool.name = safeString(hexToString(data.mutation.name as string))
         mutation.name = pool.name
     }
 
