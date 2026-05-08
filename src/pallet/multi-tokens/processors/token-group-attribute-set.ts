@@ -24,13 +24,19 @@ export async function tokenGroupAttributeSet(
         ctx.store.findOne<Attribute>(Attribute, {
             where: { id: attributeId },
         }),
-        ctx.store.findOneOrFail<TokenGroup>(TokenGroup, {
+        ctx.store.findOne<TokenGroup>(TokenGroup, {
             where: { id: data.tokenGroupId.toString() },
             relations: {
                 collection: true,
             },
         }),
     ])
+
+    if (!tokenGroup) {
+        throwFatalError(`[TokenGroupAttributeSet] Token group ${data.tokenGroupId.toString()} not found`)
+
+        return mappings.multiTokens.events.tokenGroupAttributeSetEventModel(item, data)
+    }
 
     if (attribute) {
         attribute.value = value
