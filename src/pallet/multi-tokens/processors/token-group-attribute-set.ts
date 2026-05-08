@@ -5,6 +5,7 @@ import * as mappings from '~/pallet/index'
 import { safeString } from '~/util/tools'
 import { EventHandlerResult } from '~/processor.handler'
 import { QueueUtils } from '~/queue'
+import { throwFatalError } from '~/util/errors'
 
 export async function tokenGroupAttributeSet(
     ctx: CommonContext,
