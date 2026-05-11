@@ -7,9 +7,7 @@ const DEFAULT_BATCH_SIZE = 5000
 const DEFAULT_BLOCK_SPAN = 50_000
 
 export type BackfillExtrinsicBlockData = {
-    /** Rows per UPDATE batch inside a range job */
     batchSize?: number
-    /** When dispatching: width of each [fromBlock, toBlock] child job (blocks) */
     blockSpan?: number
     fromBlock?: number
     toBlock?: number
@@ -63,12 +61,7 @@ async function dispatchRangeJobs(job: Job<BackfillExtrinsicBlockData>): Promise<
     const min = rawMin == null ? null : Number(rawMin)
     const max = rawMax == null ? null : Number(rawMax)
 
-    if (
-        min == null ||
-        max == null ||
-        !Number.isFinite(min) ||
-        !Number.isFinite(max) ||
-        min > max) {
+    if (min == null || max == null || !Number.isFinite(min) || !Number.isFinite(max) || min > max) {
         await job.log('Fan-out: no extrinsics with block_id IS NULL — nothing to do')
         await job.updateProgress(100)
         return
@@ -77,9 +70,13 @@ async function dispatchRangeJobs(job: Job<BackfillExtrinsicBlockData>): Promise<
     let dispatched = 0
     for (let start = min; start <= max; start += blockSpan) {
         const end = Math.min(max, start + blockSpan - 1)
-        await ValidatorsQueue.add(JobsEnum.BACKFILL_EXTRINSIC_BLOCK_RELATION, { fromBlock: start, toBlock: end, batchSize }, {
-            jobId: `validators.backfill-extrinsic-block.${start}-${end}`,
-        })
+        await ValidatorsQueue.add(
+            JobsEnum.BACKFILL_EXTRINSIC_BLOCK_RELATION,
+            { fromBlock: start, toBlock: end, batchSize },
+            {
+                jobId: `validators.backfill-extrinsic-block.${start}-${end}`,
+            }
+        )
         dispatched += 1
     }
 
@@ -90,7 +87,11 @@ async function dispatchRangeJobs(job: Job<BackfillExtrinsicBlockData>): Promise<
     await job.updateProgress(100)
 }
 
-async function runRangeBackfill(job: Job<BackfillExtrinsicBlockData>, fromBlock: number, toBlock: number): Promise<void> {
+async function runRangeBackfill(
+    job: Job<BackfillExtrinsicBlockData>,
+    fromBlock: number,
+    toBlock: number
+): Promise<void> {
     if (fromBlock > toBlock) {
         throw new Error(`backfillExtrinsicBlockRelation: fromBlock (${fromBlock}) must be <= toBlock (${toBlock})`)
     }
@@ -153,7 +154,9 @@ async function runRangeBackfill(job: Job<BackfillExtrinsicBlockData>, fromBlock:
     )
     const stillUnlinked = orphaned[0]?.count ?? '?'
 
-    await job.log(`Done [${fromBlock}, ${toBlock}]. Linked ${totalUpdated}. Unlinked no ChainInfo (in range): ${stillUnlinked}`)
+    await job.log(
+        `Done [${fromBlock}, ${toBlock}]. Linked ${totalUpdated}. Unlinked no ChainInfo (in range): ${stillUnlinked}`
+    )
     await job.updateProgress(100)
 }
 
