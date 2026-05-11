@@ -2,7 +2,7 @@ import { TypeormDatabase } from '@subsquid/typeorm-store'
 import _ from 'lodash'
 import * as Sentry from '@sentry/node'
 import config from '~/util/config'
-import { AccountTokenEvent, ChainInfo, Event, Extrinsic, Fee, FuelTank, FuelTankData, Listing } from '~/model'
+import { AccountTokenEvent, Event, Extrinsic, Fee, FuelTank, FuelTankData, Listing } from '~/model'
 import { genesisData } from '~/genesis-data'
 import { chainState } from '~/chain-state'
 import * as p from '~/pallet'
@@ -307,7 +307,6 @@ async function processExtrinsics(
             who: signer.id,
         }),
         fuelTank,
-        block: new ChainInfo({ id: block.hash }),
         createdAt: new Date(block.timestamp ?? 0),
         participants: getParticipants(call.args, extrinsic.events, signer.id),
     })
