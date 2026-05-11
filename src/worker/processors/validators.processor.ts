@@ -1,7 +1,13 @@
 import { Job } from 'bullmq'
 import { ProcessorDef } from '~/worker/processors/processor.def'
 import { JobsEnum } from '~/queue/constants'
-import { computeValidators, syncValidators, syncChain, importBlock, backfillExtrinsicBlockRelation } from '~/worker/jobs'
+import {
+    computeValidators,
+    syncValidators,
+    syncChain,
+    importBlock,
+    backfillExtrinsicBlockRelation,
+} from '~/worker/jobs'
 import { logDebug, logError } from '~/worker/utils'
 import { syncActiveValidators } from '../jobs/validators/sync-active-validators'
 
