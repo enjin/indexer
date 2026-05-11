@@ -29,11 +29,11 @@ export class Extrinsic {
     @BooleanColumn_({nullable: false})
     success!: boolean
 
-    @StringColumn_({nullable: false})
-    pallet!: string
+    @StringColumn_({nullable: true})
+    pallet!: string | undefined | null
 
-    @StringColumn_({nullable: false})
-    method!: string
+    @StringColumn_({nullable: true})
+    method!: string | undefined | null
 
     @JSONColumn_({nullable: true})
     args!: unknown | undefined | null
@@ -64,8 +64,8 @@ export class Extrinsic {
     @ManyToOne_(() => ChainInfo, {nullable: true})
     block!: ChainInfo | undefined | null
 
-    @StringColumn_({array: true, nullable: false})
-    participants!: (string)[]
+    @StringColumn_({array: true, nullable: true})
+    participants!: (string | undefined | null)[] | undefined | null
 
     @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new FuelTankData(undefined, obj)}, nullable: true})
     fuelTank!: FuelTankData | undefined | null

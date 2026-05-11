@@ -270,14 +270,12 @@ async function processExtrinsics(
     const { id, fee, hash, success, tip, call, error } = extrinsic
 
     let fuelTank = null
-    if (!call) {
-        return [undefined, undefined]
-    }
-    if ([calls.parachainSystem.setValidationData.name, calls.timestamp.set.name].includes(call.name)) {
+
+    if (call && [calls.parachainSystem.setValidationData.name, calls.timestamp.set.name].includes(call.name)) {
         return [undefined, undefined]
     }
 
-    if (call.name === calls.fuelTanks.dispatch.name || call.name === calls.fuelTanks.dispatchAndTouch.name) {
+    if (call && (call.name === calls.fuelTanks.dispatch.name || call.name === calls.fuelTanks.dispatchAndTouch.name)) {
         const tankData = p.fuelTanks.utils.anyDispatch(call)
         const tank = await ctx.store.findOneByOrFail<FuelTank>(FuelTank, {
             id: unwrapAccount(tankData.tankId),
@@ -308,7 +306,7 @@ async function processExtrinsics(
     }
 
     const signer = await getOrCreateAccount(ctx, unwrapSigner(extrinsic))
-    const callName = call.name.split('.')
+    const callName = call ? call.name.split('.') : []
     const txFee = (fee ?? 0n) + (fuelTank?.feePaid ?? 0n)
 
     const extrinsicM = new Extrinsic({
@@ -317,9 +315,9 @@ async function processExtrinsics(
         blockNumber: block.height,
         blockHash: block.hash,
         success,
-        pallet: callName[0],
-        method: callName[1],
-        args: call.args,
+        pallet: call ? callName[0] : undefined,
+        method: call ? callName[1] : undefined,
+        args: call?.args,
         signer,
         nonce: signer.nonce,
         tip,
@@ -330,25 +328,27 @@ async function processExtrinsics(
         }),
         fuelTank,
         createdAt: new Date(block.timestamp ?? 0),
-        participants: getParticipants(call.args, extrinsic.events, signer.id),
+        participants: call ? getParticipants(call.args, extrinsic.events, signer.id) : [],
     })
 
     // Hotfix for adding listing seller to participant
-    if (
-        call.name === calls.marketplace.fillListing.name ||
-        call.name === calls.marketplace.finalizeAuction.name ||
-        (fuelTank &&
-            calls.marketplace.fillListing.name === `${call.args.call?.__kind}.${call.args.call?.value?.__kind}`) ||
-        (fuelTank &&
-            calls.marketplace.finalizeAuction.name === `${call.args.call?.__kind}.${call.args.call?.value?.__kind}`)
-    ) {
-        const listingId = call.args.call?.value?.listingId ?? call.args.listingId
-        const listing = await ctx.store.findOne<Listing>(Listing, {
-            where: { id: hexStripPrefix(listingId) },
-            relations: { seller: true },
-        })
-        if (listing?.seller && !extrinsicM.participants.includes(listing.seller.id)) {
-            extrinsicM.participants.push(listing.seller.id)
+    if (call) {
+        if (
+            call.name === calls.marketplace.fillListing.name ||
+            call.name === calls.marketplace.finalizeAuction.name ||
+            (fuelTank &&
+                calls.marketplace.fillListing.name === `${call.args.call?.__kind}.${call.args.call?.value?.__kind}`) ||
+            (fuelTank &&
+                calls.marketplace.finalizeAuction.name === `${call.args.call?.__kind}.${call.args.call?.value?.__kind}`)
+        ) {
+            const listingId = call.args.call?.value?.listingId ?? call.args.listingId
+            const listing = await ctx.store.findOne<Listing>(Listing, {
+                where: { id: hexStripPrefix(listingId) },
+                relations: { seller: true },
+            })
+            if (listing?.seller && extrinsicM.participants && !extrinsicM.participants.includes(listing.seller.id)) {
+                extrinsicM.participants.push(listing.seller.id)
+            }
         }
     }
 
