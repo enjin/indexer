@@ -1,8 +1,9 @@
 import { TypeormDatabase } from '@subsquid/typeorm-store'
 import _ from 'lodash'
 import * as Sentry from '@sentry/node'
+import { IsNull } from 'typeorm'
 import config from '~/util/config'
-import { AccountTokenEvent, Event, Extrinsic, Fee, FuelTank, FuelTankData, Listing } from '~/model'
+import { AccountTokenEvent, ChainInfo, Event, Extrinsic, Fee, FuelTank, FuelTankData, Listing } from '~/model'
 import { genesisData } from '~/genesis-data'
 import { chainState } from '~/chain-state'
 import * as p from '~/pallet'
@@ -165,10 +166,12 @@ async function bootstrap() {
                 // save chain state for the last 28 days
                 if (lastBlock.height < dataService.lastBlockNumber - 28 * 10 * 60 * 24 && isRelay()) {
                     await chainState(ctx, lastBlock)
+                    await linkExtrinsicsToChainBlock(ctx, lastBlock)
                 }
 
                 if (lastBlock.height > dataService.lastBlockNumber) {
                     await chainState(ctx, lastBlock)
+                    await linkExtrinsicsToChainBlock(ctx, lastBlock)
                 }
             } catch (error) {
                 await QueueUtils.resumeQueue(QueuesEnum.COLLECTIONS)
@@ -181,6 +184,25 @@ async function bootstrap() {
             }
         }
     )
+}
+
+async function linkExtrinsicsToChainBlock(ctx: CommonContext, block: Block): Promise<void> {
+    const rows = await ctx.store.find(Extrinsic, {
+        where: {
+            blockNumber: block.height,
+            blockHash: block.hash,
+            block: IsNull(),
+        },
+    })
+    if (rows.length === 0) return
+
+    const chainBlock = new ChainInfo({ id: block.hash })
+    for (const tx of rows) {
+        tx.block = chainBlock
+    }
+    for (const chunk of _.chunk(rows, 1000)) {
+        await ctx.store.save(chunk)
+    }
 }
 
 async function isValidEvent(ctx: CommonContext, id: string): Promise<boolean> {
