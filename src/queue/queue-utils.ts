@@ -538,13 +538,11 @@ export async function dispatchImportBlock(blockNumber: number, toBlock?: number)
 
 export function dispatchBackfillExtrinsicBlockRelation(options?: {
     batchSize?: number
-    /** Only used when fromBlock/toBlock omitted — width of each child job (blocks); default in job */
     blockSpan?: number
     fromBlock?: number
     toBlock?: number
 }): void {
-    const hasRange =
-        typeof options?.fromBlock === 'number' && typeof options?.toBlock === 'number'
+    const hasRange = typeof options?.fromBlock === 'number' && typeof options.toBlock === 'number'
     const jobId = hasRange
         ? `validators.backfill-extrinsic-block.${options.fromBlock}-${options.toBlock}`
         : `validators.backfill-extrinsic.dispatch.${Date.now()}`
