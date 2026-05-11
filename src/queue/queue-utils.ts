@@ -538,12 +538,17 @@ export async function dispatchImportBlock(blockNumber: number, toBlock?: number)
 
 export function dispatchBackfillExtrinsicBlockRelation(options?: {
     batchSize?: number
+    /** Only used when fromBlock/toBlock omitted — width of each child job (blocks); default in job */
+    blockSpan?: number
     fromBlock?: number
     toBlock?: number
 }): void {
-    ValidatorsQueue.add(JobsEnum.BACKFILL_EXTRINSIC_BLOCK_RELATION, options ?? {}, {
-        jobId: `validators.backfill-extrinsic-block.${options?.fromBlock ?? 'any'}-${options?.toBlock ?? 'any'}`,
-    }).catch(() => {
+    const hasRange =
+        typeof options?.fromBlock === 'number' && typeof options?.toBlock === 'number'
+    const jobId = hasRange
+        ? `validators.backfill-extrinsic-block.${options.fromBlock}-${options.toBlock}`
+        : `validators.backfill-extrinsic.dispatch.${Date.now()}`
+    ValidatorsQueue.add(JobsEnum.BACKFILL_EXTRINSIC_BLOCK_RELATION, options ?? {}, { jobId }).catch(() => {
         Logger.error('Failed to dispatch backfill extrinsic block relation', LOGGER_NAMESPACE)
     })
 }
