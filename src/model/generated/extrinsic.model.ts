@@ -3,6 +3,7 @@ import * as marshal from "./marshal"
 import {Account} from "./account.model"
 import {Fee} from "./_fee"
 import {Event} from "./event.model"
+import {ChainInfo} from "./chainInfo.model"
 import {FuelTankData} from "./_fuelTankData"
 
 @Entity_()
@@ -58,6 +59,10 @@ export class Extrinsic {
 
     @OneToMany_(() => Event, e => e.extrinsic)
     events!: Event[]
+
+    @Index_()
+    @ManyToOne_(() => ChainInfo, {nullable: true})
+    block!: ChainInfo | undefined | null
 
     @StringColumn_({array: true, nullable: false})
     participants!: (string)[]

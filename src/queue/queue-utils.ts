@@ -536,6 +536,18 @@ export async function dispatchImportBlock(blockNumber: number, toBlock?: number)
     })
 }
 
+export function dispatchBackfillExtrinsicBlockRelation(options?: {
+    batchSize?: number
+    fromBlock?: number
+    toBlock?: number
+}): void {
+    ValidatorsQueue.add(JobsEnum.BACKFILL_EXTRINSIC_BLOCK_RELATION, options ?? {}, {
+        jobId: `validators.backfill-extrinsic-block.${options?.fromBlock ?? 'any'}-${options?.toBlock ?? 'any'}`,
+    }).catch(() => {
+        Logger.error('Failed to dispatch backfill extrinsic block relation', LOGGER_NAMESPACE)
+    })
+}
+
 export function dispatchSyncAccounts(): void {
     AccountsQueue.add(
         JobsEnum.SYNC_ALL_ACCOUNTS,
