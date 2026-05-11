@@ -1,0 +1,88 @@
+table:
+  name: account
+  schema: public
+object_relationships:
+  - name: identity
+    using:
+      foreign_key_constraint_on:
+        column: account_id
+        table:
+          name: identity
+          schema: public
+  - name: registrar
+    using:
+      foreign_key_constraint_on:
+        column: account_id
+        table:
+          name: identity_registrar
+          schema: public
+  - name: tokenFilter
+    using:
+      foreign_key_constraint_on:
+        column: account_id
+        table:
+          name: stake_exchange_token_filter
+          schema: public
+array_relationships:
+  - name: collectionAccounts
+    using:
+      foreign_key_constraint_on:
+        column: account_id
+        table:
+          name: collection_account
+          schema: public
+  - name: collectionsOwned
+    using:
+      foreign_key_constraint_on:
+        column: owner_id
+        table:
+          name: collection
+          schema: public
+  - name: earlyBirdShares
+    using:
+      foreign_key_constraint_on:
+        column: account_id
+        table:
+          name: early_bird_shares
+          schema: public
+  - name: extrinsics
+    using:
+      foreign_key_constraint_on:
+        column: signer_id
+        table:
+          name: extrinsic
+          schema: public
+  - name: joinedPools
+    using:
+      foreign_key_constraint_on:
+        column: account_id
+        table:
+          name: pool_member
+          schema: public
+  - name: tokenAccounts
+    using:
+      foreign_key_constraint_on:
+        column: account_id
+        table:
+          name: token_account
+          schema: public
+  - name: tokenEvents
+    using:
+      foreign_key_constraint_on:
+        column: from_id
+        table:
+          name: account_token_event
+          schema: public
+  - name: userInfusions
+    using:
+      foreign_key_constraint_on:
+        column: account_id
+        table:
+          name: user_infusion
+          schema: public
+select_permissions:
+  - role: public
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true

@@ -1,0 +1,27 @@
+table:
+  name: identity
+  schema: public
+object_relationships:
+  - name: account
+    using:
+      foreign_key_constraint_on: account_id
+  - name: info
+    using:
+      foreign_key_constraint_on: info_id
+  - name: super
+    using:
+      foreign_key_constraint_on: super_id
+array_relationships:
+  - name: sub
+    using:
+      foreign_key_constraint_on:
+        column: super_id
+        table:
+          name: identity
+          schema: public
+select_permissions:
+  - role: public
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true

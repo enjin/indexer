@@ -6,14 +6,14 @@ import { Validate } from 'class-validator'
 import { Collection, FreezeState, Listing, Token, TokenAccount } from '~/model'
 import { IsPublicKey } from './helpers'
 
-enum MyTokensOrderByInput {
+export enum MyTokensOrderByInput {
     COLLECTION_NAME = "collection.metadata->>'name'",
     TOKEN_NAME = "token.metadata->>'name'",
     FLOOR_PRICE = 'listing.highestPrice',
     DATE = 'token.createdAt',
 }
 
-enum MyTokensOrderInput {
+export enum MyTokensOrderInput {
     ASC = 'ASC',
     DESC = 'DESC',
 }

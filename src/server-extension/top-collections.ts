@@ -19,7 +19,7 @@ import type { EntityManager } from 'typeorm'
 import { DateTimeColumn as DateTimeColumn_ } from '@subsquid/typeorm-store/lib/decorators/columns/DateTimeColumn'
 import { timeFrameMap } from './types'
 
-enum TopCollectionOrderByInput {
+export enum TopCollectionOrderByInput {
     CREATED_AT = '"createdAt"',
     VOLUME = 'volume',
     SALES = 'sales',
@@ -30,12 +30,12 @@ enum TopCollectionOrderByInput {
     TOP = '"topScore"',
 }
 
-enum TopCollectionOrderInput {
+export enum TopCollectionOrderInput {
     ASC = 'ASC',
     DESC = 'DESC',
 }
 
-enum TopCollectionTimeframeInput {
+export enum TopCollectionTimeframeInput {
     HOUR = 'HOUR',
     HOUR_6 = 'HOUR_6',
     HOUR_24 = 'HOUR_24',

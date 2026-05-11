@@ -1,0 +1,13 @@
+table:
+  name: fuel_tank_account_rules
+  schema: public
+object_relationships:
+  - name: tank
+    using:
+      foreign_key_constraint_on: tank_id
+select_permissions:
+  - role: public
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true

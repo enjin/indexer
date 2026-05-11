@@ -1,0 +1,30 @@
+table:
+  name: pool_member
+  schema: public
+object_relationships:
+  - name: account
+    using:
+      foreign_key_constraint_on: account_id
+  - name: joinedEra
+    using:
+      foreign_key_constraint_on: joined_era_id
+  - name: pool
+    using:
+      foreign_key_constraint_on: pool_id
+  - name: tokenAccount
+    using:
+      foreign_key_constraint_on: token_account_id
+array_relationships:
+  - name: rewards
+    using:
+      foreign_key_constraint_on:
+        column: member_id
+        table:
+          name: pool_member_rewards
+          schema: public
+select_permissions:
+  - role: public
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true

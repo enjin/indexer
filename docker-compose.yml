@@ -73,10 +73,33 @@ services:
       HASURA_GRAPHQL_ENABLE_CONSOLE: true
       HASURA_GRAPHQL_DEV_MODE: true
       HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup,http-log,webhook-log,websocket-log,query-log
+      HASURA_ACTION_HANDLER_URL: http://indexer_handler:3001
     ports:
       - "8085:8080"
     depends_on:
-      - indexer_db
+      indexer_db:
+        condition: service_healthy
+      indexer_handler:
+        condition: service_started
+
+  indexer_handler:
+    container_name: indexer_handler
+    restart: unless-stopped
+    image: ghcr.io/enjin/indexer:${VERSION:-latest}
+    env_file:
+      - .env
+    environment:
+      CONTAINER_ROLE: handler
+      DB_HOST: indexer_db
+      DB_PORT: "5432"
+      ACTION_HANDLER_PORT: "3001"
+    build:
+      context: .
+    ports:
+      - "3001:3001"
+    depends_on:
+      indexer_db:
+        condition: service_healthy
 
   indexer_graphql:
     container_name: indexer_graphql
