@@ -16,6 +16,9 @@ type ChainInfo @entity {
   validator: String @index
   marketplace: Marketplace
   finalized: Boolean
+
+  # Relationships
+  extrinsics: [Extrinsic] @derivedFrom(field: "block")
 }
 
 type Marketplace {
@@ -60,6 +63,7 @@ type Extrinsic @entity {
 
   # Relationship
   events: [Event] @derivedFrom(field: "extrinsic")
+  block: ChainInfo
 
   # Extras
   participants: [String!]!
