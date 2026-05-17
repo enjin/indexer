@@ -100,5 +100,5 @@ export const processorConfig = new SubstrateBatchProcessor()
     })
 
 if (config.dataSource.archive) {
-    processorConfig.setGateway(config.dataSource.archive)
+    processorConfig.setGateway({ url: config.dataSource.archive, apiKey: config.dataSource.archiveApiKey })
 }
