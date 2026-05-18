@@ -23,6 +23,7 @@ export async function whitelistedAccountsRemoved(
     })
     await ctx.store.remove(whitelistedAccounts)
 
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (listing.whitelistedAccounts) {
         listing.whitelistedAccounts = listing.whitelistedAccounts.filter(
             (account) => !accountIds.includes(account.account.id)
