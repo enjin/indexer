@@ -577,13 +577,17 @@ export function dispatchRefreshListings(ids: string[]): void {
     })
 }
 
-export function dispatchComputeTokenBestListing(id: string): void {
+export async function dispatchComputeTokenBestListing(id: string): Promise<void> {
+    const jobId = `tokens.best-listing.${id}`
+    const job = await TokensQueue.getJob(jobId)
+    if (job?.id && (await hasExistingJob(job))) return
+    if (job?.id) await TokensQueue.remove(job.id)
     TokensQueue.add(
         JobsEnum.COMPUTE_TOKEN_BEST_LISTING,
         { id },
         {
             delay: 60000,
-            jobId: `tokens.best-listing.${id}`,
+            jobId,
         }
     ).catch(() => {
         Logger.error('Failed to dispatch compute token best listing', LOGGER_NAMESPACE)

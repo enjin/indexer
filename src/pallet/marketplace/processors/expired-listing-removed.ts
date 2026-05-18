@@ -28,7 +28,6 @@ export async function expiredListingRemoved(
             seller: true,
             makeAssetId: {
                 collection: true,
-                bestListing: true,
             },
             takeAssetId: {
                 collection: true,
@@ -63,9 +62,9 @@ export async function expiredListingRemoved(
     await ctx.store.save(listingStatus)
     await ctx.store.save(listing)
 
-    if (listing.type !== ListingType.Offer) {
-        QueueUtils.dispatchComputeTokenBestListing(makeAssetId.id)
-    }
+    const isOffer: boolean = listing.type === ListingType.Offer
+
+    QueueUtils.dispatchComputeTokenBestListing(!isOffer ? makeAssetId.id : takeAssetId.id)
 
     const snsEvent: SnsEvent = {
         id: item.id,
@@ -91,8 +90,6 @@ export async function expiredListingRemoved(
             extrinsic: item.extrinsic?.id,
         },
     }
-
-    const isOffer: boolean = listing.type === ListingType.Offer
 
     await QueueUtils.dispatchComputeStats(isOffer ? takeAssetId.collection.id : makeAssetId.collection.id)
 

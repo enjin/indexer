@@ -20,7 +20,6 @@ export async function bidPlaced(
             seller: true,
             makeAssetId: {
                 collection: true,
-                bestListing: true,
             },
         },
     })

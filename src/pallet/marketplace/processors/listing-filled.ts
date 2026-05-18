@@ -33,7 +33,6 @@ export async function listingFilled(
         relations: {
             seller: true,
             makeAssetId: {
-                bestListing: true,
                 collection: true,
             },
             takeAssetId: {
@@ -113,10 +112,11 @@ export async function listingFilled(
     await ctx.store.save(listing)
 
     if (!isOffer) {
-        QueueUtils.dispatchComputeTokenBestListing(makeAssetId.id)
         makeAssetId.lastSale = sale
         await ctx.store.save(makeAssetId)
     }
+
+    QueueUtils.dispatchComputeTokenBestListing(!isOffer ? makeAssetId.id : takeAssetId.id)
 
     const snsEvent: SnsEvent = {
         id: item.id,
