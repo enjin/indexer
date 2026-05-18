@@ -37,7 +37,6 @@ export async function listingCreated(
         where: { id: `${data.listing.makeAssetId.collectionId}-${data.listing.makeAssetId.tokenId}` },
         relations: {
             collection: true,
-            bestListing: true,
         },
     })
     const takeAssetId = await ctx.store.findOne<Token>(Token, {
@@ -126,9 +125,9 @@ export async function listingCreated(
     const isOffer = listing.type === ListingType.Offer
     if (!isOffer) {
         makeAssetId.recentListing = listing
-        QueueUtils.dispatchComputeTokenBestListing(makeAssetId.id)
         await ctx.store.save(makeAssetId)
     }
+    await QueueUtils.dispatchComputeTokenBestListing(!isOffer ? makeAssetId.id : takeAssetId.id)
 
     const snsEvent: SnsEvent = {
         id: item.id,

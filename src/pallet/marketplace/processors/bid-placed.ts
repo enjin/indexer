@@ -20,7 +20,6 @@ export async function bidPlaced(
             seller: true,
             makeAssetId: {
                 collection: true,
-                bestListing: true,
             },
         },
     })
@@ -104,7 +103,7 @@ export async function bidPlaced(
     }
 
     await QueueUtils.dispatchComputeStats(makeAssetId.collection.id)
-    QueueUtils.dispatchComputeTokenBestListing(makeAssetId.id)
+    await QueueUtils.dispatchComputeTokenBestListing(makeAssetId.id)
 
     return [
         ...mappings.marketplace.events.bidPlacedEventModel(

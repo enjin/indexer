@@ -29,7 +29,6 @@ export async function listingCancelled(
             seller: true,
             makeAssetId: {
                 collection: true,
-                bestListing: true,
             },
             takeAssetId: {
                 collection: true,
@@ -64,9 +63,9 @@ export async function listingCancelled(
     await ctx.store.save(listingStatus)
     await ctx.store.save(listing)
 
-    if (listing.type !== ListingType.Offer) {
-        QueueUtils.dispatchComputeTokenBestListing(makeAssetId.id)
-    }
+    await QueueUtils.dispatchComputeTokenBestListing(
+        listing.type !== ListingType.Offer ? makeAssetId.id : takeAssetId.id
+    )
 
     const snsEvent: SnsEvent = {
         id: item.id,

@@ -77,7 +77,7 @@ export async function getOrCreateAccount(
 
 export async function getBestListing(ctx: CommonContext, tokenId: string): Promise<Listing | undefined> {
     return ctx.store.findOne<Listing>(Listing, {
-        where: { makeAssetId: { id: tokenId }, isActive: true },
+        where: { makeAssetId: { id: tokenId }, isActive: true, hasRoyaltyIncreased: false },
         order: { highestPrice: 'ASC' },
     })
 }
