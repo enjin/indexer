@@ -31,6 +31,7 @@ export async function collectionTransferred(
     const oldOwner = collection.owner
     collection.owner = await getOrCreateAccount(ctx, data.newOwner)
     collection.isTransferPending = false
+    collection.pendingTransfer = null
     await ctx.store.save(collection)
 
     const newOwner = collection.owner

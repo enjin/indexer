@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, BigIntColumn as BigIntColumn_, OneToMany as OneToMany_, BooleanColumn as BooleanColumn_} from "@subsquid/typeorm-store"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, Relation as Relation_, BigIntColumn as BigIntColumn_, OneToMany as OneToMany_, BooleanColumn as BooleanColumn_} from "@subsquid/typeorm-store"
 import * as marshal from "./marshal"
 import {NominationPool} from "./nominationPool.model"
 import {Account} from "./account.model"
@@ -18,21 +18,21 @@ export class PoolMember {
 
     @Index_()
     @ManyToOne_(() => NominationPool, {nullable: true})
-    pool!: NominationPool
+    pool!: Relation_<NominationPool>
 
     @Index_()
     @ManyToOne_(() => Account, {nullable: true})
-    account!: Account
+    account!: Relation_<Account>
 
     @BigIntColumn_({nullable: false})
     bonded!: bigint
 
     @Index_()
     @ManyToOne_(() => TokenAccount, {nullable: true})
-    tokenAccount!: TokenAccount | undefined | null
+    tokenAccount!: Relation_<TokenAccount> | undefined | null
 
     @OneToMany_(() => PoolMemberRewards, e => e.member)
-    rewards!: PoolMemberRewards[]
+    rewards!: Relation_<PoolMemberRewards[]>
 
     @BigIntColumn_({nullable: true})
     accumulatedRewards!: bigint | undefined | null
@@ -48,5 +48,5 @@ export class PoolMember {
 
     @Index_()
     @ManyToOne_(() => Era, {nullable: true})
-    joinedEra!: Era | undefined | null
+    joinedEra!: Relation_<Era> | undefined | null
 }

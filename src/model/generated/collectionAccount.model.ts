@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, Index as Index_, BooleanColumn as BooleanColumn_, IntColumn as IntColumn_, ManyToOne as ManyToOne_, DateTimeColumn as DateTimeColumn_} from "@subsquid/typeorm-store"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, Index as Index_, BooleanColumn as BooleanColumn_, IntColumn as IntColumn_, ManyToOne as ManyToOne_, Relation as Relation_, DateTimeColumn as DateTimeColumn_} from "@subsquid/typeorm-store"
 import * as marshal from "./marshal"
 import {CollectionApproval} from "./_collectionApproval"
 import {Account} from "./account.model"
@@ -24,11 +24,11 @@ export class CollectionAccount {
     accountCount!: number
 
     @ManyToOne_(() => Account, {nullable: true})
-    account!: Account
+    account!: Relation_<Account>
 
     @Index_()
     @ManyToOne_(() => Collection, {nullable: true})
-    collection!: Collection
+    collection!: Relation_<Collection>
 
     @Index_()
     @DateTimeColumn_({nullable: false})

@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, StringColumn as StringColumn_, BooleanColumn as BooleanColumn_, DateTimeColumn as DateTimeColumn_} from "@subsquid/typeorm-store"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, Relation as Relation_, StringColumn as StringColumn_, BooleanColumn as BooleanColumn_, DateTimeColumn as DateTimeColumn_} from "@subsquid/typeorm-store"
 import {Account} from "./account.model"
 
 @Entity_()
@@ -12,7 +12,7 @@ export class MultiTokensClaims {
 
     @Index_()
     @ManyToOne_(() => Account, {nullable: true})
-    account!: Account
+    account!: Relation_<Account>
 
     @StringColumn_({nullable: false})
     ethAccount!: string

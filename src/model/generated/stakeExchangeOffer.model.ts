@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, BigIntColumn as BigIntColumn_, ManyToOne as ManyToOne_, Index as Index_, OneToOne as OneToOne_, OneToMany as OneToMany_, DateTimeColumn as DateTimeColumn_, IntColumn as IntColumn_} from "@subsquid/typeorm-store"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, BigIntColumn as BigIntColumn_, ManyToOne as ManyToOne_, Index as Index_, Relation as Relation_, OneToOne as OneToOne_, OneToMany as OneToMany_, DateTimeColumn as DateTimeColumn_, IntColumn as IntColumn_} from "@subsquid/typeorm-store"
 import {StakeExchangeOfferState} from "./_stakeExchangeOfferState"
 import {Account} from "./account.model"
 import {StakeExchangeTokenFilter} from "./stakeExchangeTokenFilter.model"
@@ -21,7 +21,7 @@ export class StakeExchangeOffer {
 
     @Index_()
     @ManyToOne_(() => Account, {nullable: true})
-    account!: Account
+    account!: Relation_<Account>
 
     @BigIntColumn_({nullable: true})
     amount!: bigint | undefined | null
@@ -36,10 +36,10 @@ export class StakeExchangeOffer {
     minAverageRewardRate!: bigint
 
     @OneToOne_(() => StakeExchangeTokenFilter, e => e.offer)
-    tokenFilter!: StakeExchangeTokenFilter | undefined | null
+    tokenFilter!: Relation_<StakeExchangeTokenFilter> | undefined | null
 
     @OneToMany_(() => PoolsOffers, e => e.offer)
-    pools!: PoolsOffers[]
+    pools!: Relation_<PoolsOffers[]>
 
     @DateTimeColumn_({nullable: false})
     createdAt!: Date

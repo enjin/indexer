@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, BigIntColumn as BigIntColumn_, Index as Index_, ManyToOne as ManyToOne_, OneToMany as OneToMany_, StringColumn as StringColumn_, IntColumn as IntColumn_, BooleanColumn as BooleanColumn_, DateTimeColumn as DateTimeColumn_} from "@subsquid/typeorm-store"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, BigIntColumn as BigIntColumn_, Index as Index_, ManyToOne as ManyToOne_, Relation as Relation_, OneToMany as OneToMany_, StringColumn as StringColumn_, IntColumn as IntColumn_, BooleanColumn as BooleanColumn_, DateTimeColumn as DateTimeColumn_} from "@subsquid/typeorm-store"
 import * as marshal from "./marshal"
 import {Account} from "./account.model"
 import {MintPolicy} from "./_mintPolicy"
@@ -32,7 +32,7 @@ export class Collection {
 
     @Index_()
     @ManyToOne_(() => Account, {nullable: true})
-    owner!: Account
+    owner!: Relation_<Account>
 
     @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new MintPolicy(undefined, obj)}, nullable: true})
     mintPolicy!: MintPolicy | undefined | null
@@ -41,7 +41,7 @@ export class Collection {
     marketPolicy!: MarketPolicy | undefined | null
 
     @OneToMany_(() => RoyaltyCurrency, e => e.collection)
-    explicitRoyaltyCurrencies!: RoyaltyCurrency[]
+    explicitRoyaltyCurrencies!: Relation_<RoyaltyCurrency[]>
 
     @StringColumn_({nullable: true})
     burnPolicy!: string | undefined | null
@@ -61,26 +61,30 @@ export class Collection {
     @BooleanColumn_({nullable: true})
     isTransferPending!: boolean | undefined | null
 
+    @Index_()
+    @ManyToOne_(() => Account, {nullable: true})
+    pendingTransfer!: Relation_<Account> | undefined | null
+
     @OneToMany_(() => Token, e => e.collection)
-    tokens!: Token[]
+    tokens!: Relation_<Token[]>
 
     @OneToMany_(() => CollectionAccount, e => e.collection)
-    collectionAccounts!: CollectionAccount[]
+    collectionAccounts!: Relation_<CollectionAccount[]>
 
     @OneToMany_(() => TokenAccount, e => e.collection)
-    tokenAccounts!: TokenAccount[]
+    tokenAccounts!: Relation_<TokenAccount[]>
 
     @OneToMany_(() => Attribute, e => e.collection)
-    attributes!: Attribute[]
+    attributes!: Relation_<Attribute[]>
 
     @OneToMany_(() => Trait, e => e.collection)
-    traits!: Trait[]
+    traits!: Relation_<Trait[]>
 
     @OneToMany_(() => TokenRarity, e => e.collection)
-    rarity!: TokenRarity[]
+    rarity!: Relation_<TokenRarity[]>
 
     @OneToMany_(() => TokenGroup, e => e.collection)
-    tokenGroups!: TokenGroup[]
+    tokenGroups!: Relation_<TokenGroup[]>
 
     @Index_()
     @StringColumn_({nullable: true})

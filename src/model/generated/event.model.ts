@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, StringColumn as StringColumn_} from "@subsquid/typeorm-store"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, Relation as Relation_, StringColumn as StringColumn_} from "@subsquid/typeorm-store"
 import * as marshal from "./marshal"
 import {Extrinsic} from "./extrinsic.model"
 import {EventData, fromJsonEventData} from "./_eventData"
@@ -14,7 +14,7 @@ export class Event {
 
     @Index_()
     @ManyToOne_(() => Extrinsic, {nullable: true})
-    extrinsic!: Extrinsic | undefined | null
+    extrinsic!: Relation_<Extrinsic> | undefined | null
 
     @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : fromJsonEventData(obj)}, nullable: true})
     data!: EventData | undefined | null

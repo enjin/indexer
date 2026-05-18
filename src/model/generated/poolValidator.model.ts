@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_} from "@subsquid/typeorm-store"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, Relation as Relation_} from "@subsquid/typeorm-store"
 import {NominationPool} from "./nominationPool.model"
 import {Validator} from "./validator.model"
 
@@ -13,9 +13,9 @@ export class PoolValidator {
 
     @Index_()
     @ManyToOne_(() => NominationPool, {nullable: true})
-    pool!: NominationPool
+    pool!: Relation_<NominationPool>
 
     @Index_()
     @ManyToOne_(() => Validator, {nullable: true})
-    validator!: Validator
+    validator!: Relation_<Validator>
 }

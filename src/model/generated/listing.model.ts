@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, BigIntColumn as BigIntColumn_, IntColumn as IntColumn_, StringColumn as StringColumn_, BooleanColumn as BooleanColumn_, OneToMany as OneToMany_, DateTimeColumn as DateTimeColumn_} from "@subsquid/typeorm-store"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, Relation as Relation_, BigIntColumn as BigIntColumn_, IntColumn as IntColumn_, StringColumn as StringColumn_, BooleanColumn as BooleanColumn_, OneToMany as OneToMany_, DateTimeColumn as DateTimeColumn_} from "@subsquid/typeorm-store"
 import * as marshal from "./marshal"
 import {Account} from "./account.model"
 import {Token} from "./token.model"
@@ -23,15 +23,15 @@ export class Listing {
 
     @Index_()
     @ManyToOne_(() => Account, {nullable: true})
-    seller!: Account
+    seller!: Relation_<Account>
 
     @Index_()
     @ManyToOne_(() => Token, {nullable: true})
-    makeAssetId!: Token
+    makeAssetId!: Relation_<Token>
 
     @Index_()
     @ManyToOne_(() => Token, {nullable: true})
-    takeAssetId!: Token
+    takeAssetId!: Relation_<Token>
 
     @BigIntColumn_({nullable: false})
     amount!: bigint
@@ -70,19 +70,19 @@ export class Listing {
     usesWhitelist!: boolean
 
     @OneToMany_(() => Bid, e => e.listing)
-    bids!: Bid[]
+    bids!: Relation_<Bid[]>
 
     @OneToMany_(() => ListingStatus, e => e.listing)
-    status!: ListingStatus[]
+    status!: Relation_<ListingStatus[]>
 
     @OneToMany_(() => ListingSale, e => e.listing)
-    sales!: ListingSale[]
+    sales!: Relation_<ListingSale[]>
 
     @OneToMany_(() => CounterOffer, e => e.listing)
-    counterOffers!: CounterOffer[]
+    counterOffers!: Relation_<CounterOffer[]>
 
     @OneToMany_(() => WhitelistedAccount, e => e.listing)
-    whitelistedAccounts!: WhitelistedAccount[]
+    whitelistedAccounts!: Relation_<WhitelistedAccount[]>
 
     @Index_()
     @BigIntColumn_({nullable: false})

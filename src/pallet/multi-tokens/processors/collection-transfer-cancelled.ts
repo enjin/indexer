@@ -24,7 +24,7 @@ export async function collectionTransferCancelled(
     }
 
     collection.isTransferPending = false
-
+    collection.pendingTransfer = null
     await ctx.store.save(collection)
 
     const snsEvent: SnsEvent = {

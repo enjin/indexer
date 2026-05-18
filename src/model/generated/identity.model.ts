@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, OneToOne as OneToOne_, Index as Index_, JoinColumn as JoinColumn_, BooleanColumn as BooleanColumn_, StringColumn as StringColumn_, ManyToOne as ManyToOne_, OneToMany as OneToMany_, DateTimeColumn as DateTimeColumn_} from "@subsquid/typeorm-store"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, OneToOne as OneToOne_, Index as Index_, JoinColumn as JoinColumn_, Relation as Relation_, BooleanColumn as BooleanColumn_, StringColumn as StringColumn_, ManyToOne as ManyToOne_, OneToMany as OneToMany_, DateTimeColumn as DateTimeColumn_} from "@subsquid/typeorm-store"
 import {Account} from "./account.model"
 import {Registration} from "./registration.model"
 
@@ -14,7 +14,7 @@ export class Identity {
     @Index_({unique: true})
     @OneToOne_(() => Account, {nullable: true})
     @JoinColumn_()
-    account!: Account
+    account!: Relation_<Account>
 
     @BooleanColumn_({nullable: false})
     isSub!: boolean
@@ -24,14 +24,14 @@ export class Identity {
 
     @Index_()
     @ManyToOne_(() => Registration, {nullable: true})
-    info!: Registration
+    info!: Relation_<Registration>
 
     @Index_()
     @ManyToOne_(() => Identity, {nullable: true})
-    super!: Identity | undefined | null
+    super!: Relation_<Identity> | undefined | null
 
     @OneToMany_(() => Identity, e => e.super)
-    sub!: Identity[]
+    sub!: Relation_<Identity[]>
 
     @DateTimeColumn_({nullable: false})
     createdAt!: Date

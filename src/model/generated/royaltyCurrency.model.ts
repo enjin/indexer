@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_} from "@subsquid/typeorm-store"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, Relation as Relation_} from "@subsquid/typeorm-store"
 import {Collection} from "./collection.model"
 import {Token} from "./token.model"
 
@@ -13,9 +13,9 @@ export class RoyaltyCurrency {
 
     @Index_()
     @ManyToOne_(() => Collection, {nullable: true})
-    collection!: Collection
+    collection!: Relation_<Collection>
 
     @Index_()
     @ManyToOne_(() => Token, {nullable: true})
-    token!: Token
+    token!: Relation_<Token>
 }

@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, StringColumn as StringColumn_, Index as Index_, IntColumn as IntColumn_, BooleanColumn as BooleanColumn_, JSONColumn as JSONColumn_, ManyToOne as ManyToOne_, BigIntColumn as BigIntColumn_, DateTimeColumn as DateTimeColumn_, OneToMany as OneToMany_} from "@subsquid/typeorm-store"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, StringColumn as StringColumn_, Index as Index_, IntColumn as IntColumn_, BooleanColumn as BooleanColumn_, JSONColumn as JSONColumn_, ManyToOne as ManyToOne_, Relation as Relation_, BigIntColumn as BigIntColumn_, DateTimeColumn as DateTimeColumn_, OneToMany as OneToMany_} from "@subsquid/typeorm-store"
 import * as marshal from "./marshal"
 import {Account} from "./account.model"
 import {Fee} from "./_fee"
@@ -40,7 +40,7 @@ export class Extrinsic {
 
     @Index_()
     @ManyToOne_(() => Account, {nullable: true})
-    signer!: Account
+    signer!: Relation_<Account>
 
     @IntColumn_({nullable: false})
     nonce!: number
@@ -58,11 +58,11 @@ export class Extrinsic {
     createdAt!: Date
 
     @OneToMany_(() => Event, e => e.extrinsic)
-    events!: Event[]
+    events!: Relation_<Event[]>
 
     @Index_()
     @ManyToOne_(() => ChainInfo, {nullable: true})
-    block!: ChainInfo | undefined | null
+    block!: Relation_<ChainInfo> | undefined | null
 
     @StringColumn_({array: true, nullable: true})
     participants!: (string | undefined | null)[] | undefined | null

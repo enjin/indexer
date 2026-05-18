@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, Index as Index_, ManyToOne as ManyToOne_, IntColumn as IntColumn_} from "@subsquid/typeorm-store"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, Index as Index_, ManyToOne as ManyToOne_, Relation as Relation_, IntColumn as IntColumn_} from "@subsquid/typeorm-store"
 import {Token} from "./token.model"
 import {TokenGroup} from "./tokenGroup.model"
 
@@ -13,11 +13,11 @@ export class TokenGroupToken {
     id!: string
 
     @ManyToOne_(() => Token, {nullable: true})
-    token!: Token
+    token!: Relation_<Token>
 
     @Index_()
     @ManyToOne_(() => TokenGroup, {nullable: true})
-    tokenGroup!: TokenGroup
+    tokenGroup!: Relation_<TokenGroup>
 
     @IntColumn_({nullable: true})
     position!: number | undefined | null

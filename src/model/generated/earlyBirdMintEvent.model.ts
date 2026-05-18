@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, BigIntColumn as BigIntColumn_, StringColumn as StringColumn_} from "@subsquid/typeorm-store"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, Relation as Relation_, BigIntColumn as BigIntColumn_, StringColumn as StringColumn_} from "@subsquid/typeorm-store"
 import {NominationPool} from "./nominationPool.model"
 import {PoolMember} from "./poolMember.model"
 import {Era} from "./era.model"
@@ -14,15 +14,15 @@ export class EarlyBirdMintEvent {
 
     @Index_()
     @ManyToOne_(() => NominationPool, {nullable: true})
-    pool!: NominationPool
+    pool!: Relation_<NominationPool>
 
     @Index_()
     @ManyToOne_(() => PoolMember, {nullable: true})
-    poolMember!: PoolMember
+    poolMember!: Relation_<PoolMember>
 
     @Index_()
     @ManyToOne_(() => Era, {nullable: true})
-    era!: Era
+    era!: Relation_<Era>
 
     @BigIntColumn_({nullable: false})
     amount!: bigint
