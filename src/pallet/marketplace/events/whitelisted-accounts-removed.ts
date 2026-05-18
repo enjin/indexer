@@ -9,8 +9,8 @@ export function whitelistedAccountsRemoved(event: EventItem): WhitelistedAccount
     return match(event)
         .returnType<WhitelistedAccountsRemoved>()
         .when(
-            () => marketplace.whitelistedAccountsAdded.matrixEnjinV1022.is(event),
-            () => marketplace.whitelistedAccountsAdded.matrixEnjinV1022.decode(event)
+            () => marketplace.whitelistedAccountsRemoved.matrixEnjinV1022.is(event),
+            () => marketplace.whitelistedAccountsRemoved.matrixEnjinV1022.decode(event)
         )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
@@ -24,7 +24,7 @@ export function whitelistedAccountsRemovedEventModel(item: EventItem, data: Whit
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new MarketplaceWhitelistedAccountsRemoved({
             listing: data.listingId,
-            accounts: data.accounts.map((account) => account.accountId),
+            accounts: data.accountIds,
         }),
     })
 }

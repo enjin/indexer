@@ -17,7 +17,7 @@ export async function whitelistedAccountsRemoved(
     })
     if (!listing) return [mappings.marketplace.events.whitelistedAccountsRemovedEventModel(item, event), undefined]
 
-    const accountIds = event.accounts.map((account) => account.accountId)
+    const accountIds = event.accountIds
     const whitelistedAccounts = await ctx.store.find<WhitelistedAccount>(WhitelistedAccount, {
         where: { listing: { id: listingId }, account: { id: In(accountIds) } },
     })
@@ -33,7 +33,7 @@ export async function whitelistedAccountsRemoved(
         name: item.name,
         body: {
             listing: listing.id,
-            accounts: event.accounts.map((account) => account.accountId),
+            accounts: event.accountIds,
         },
     }
 
