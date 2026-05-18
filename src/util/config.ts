@@ -1,5 +1,6 @@
 interface DataSource {
     archive: string | null
+    archiveApiKey: string | undefined
     chain: string
     fromBlock: number
 }
@@ -51,6 +52,7 @@ const config: Config = {
     genesisHash: process.env.GENESIS_HASH || '0x3af4ff48ec76d2efc8476730f423ac07e25ad48f5f4c9dc39c778b164d808615',
     dataSource: {
         archive: process.env.ARCHIVE_ENDPOINT || null,
+        archiveApiKey: process.env.ARCHIVE_API_KEY || undefined,
         chain: process.env.CHAIN_ENDPOINT || 'wss://archive.matrix.blockchain.enjin.io',
         fromBlock: process.env.FROM_BLOCK ? parseInt(process.env.FROM_BLOCK, 10) : 0,
     },
