@@ -63,7 +63,7 @@ export async function listingCancelled(
     await ctx.store.save(listingStatus)
     await ctx.store.save(listing)
 
-    QueueUtils.dispatchComputeTokenBestListing(listing.type !== ListingType.Offer ? makeAssetId.id : takeAssetId.id)
+    await QueueUtils.dispatchComputeTokenBestListing(listing.type !== ListingType.Offer ? makeAssetId.id : takeAssetId.id)
 
     const snsEvent: SnsEvent = {
         id: item.id,

@@ -117,7 +117,7 @@ export async function auctionFinalized(
     }
 
     await QueueUtils.dispatchComputeStats(makeAssetId.collection.id)
-    QueueUtils.dispatchComputeTokenBestListing(makeAssetId.id)
+    await QueueUtils.dispatchComputeTokenBestListing(makeAssetId.id)
 
     return [
         ...mappings.marketplace.events.auctionFinalizedEventModel(

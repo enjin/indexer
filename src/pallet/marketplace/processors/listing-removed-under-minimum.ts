@@ -32,7 +32,7 @@ export async function listingRemovedUnderMinimum(
     const seller = await getOrCreateAccount(ctx, listing.seller.id)
     const isOffer = listing.type === ListingType.Offer
 
-    QueueUtils.dispatchComputeTokenBestListing(!isOffer ? makeAssetId.id : takeAssetId.id)
+    await QueueUtils.dispatchComputeTokenBestListing(!isOffer ? makeAssetId.id : takeAssetId.id)
 
     const listingStatus = new ListingStatus({
         id: `${listingId}-${block.height}`,

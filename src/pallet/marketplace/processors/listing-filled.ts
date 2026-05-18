@@ -116,7 +116,7 @@ export async function listingFilled(
         await ctx.store.save(makeAssetId)
     }
 
-    QueueUtils.dispatchComputeTokenBestListing(!isOffer ? makeAssetId.id : takeAssetId.id)
+    await QueueUtils.dispatchComputeTokenBestListing(!isOffer ? makeAssetId.id : takeAssetId.id)
 
     const snsEvent: SnsEvent = {
         id: item.id,

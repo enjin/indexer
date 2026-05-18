@@ -127,7 +127,7 @@ export async function listingCreated(
         makeAssetId.recentListing = listing
         await ctx.store.save(makeAssetId)
     }
-    QueueUtils.dispatchComputeTokenBestListing(!isOffer ? makeAssetId.id : takeAssetId.id)
+    await QueueUtils.dispatchComputeTokenBestListing(!isOffer ? makeAssetId.id : takeAssetId.id)
 
     const snsEvent: SnsEvent = {
         id: item.id,

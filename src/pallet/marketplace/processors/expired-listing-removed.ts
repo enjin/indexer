@@ -64,7 +64,7 @@ export async function expiredListingRemoved(
 
     const isOffer: boolean = listing.type === ListingType.Offer
 
-    QueueUtils.dispatchComputeTokenBestListing(!isOffer ? makeAssetId.id : takeAssetId.id)
+    await QueueUtils.dispatchComputeTokenBestListing(!isOffer ? makeAssetId.id : takeAssetId.id)
 
     const snsEvent: SnsEvent = {
         id: item.id,
