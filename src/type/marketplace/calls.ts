@@ -19,6 +19,7 @@ import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
+import * as enjinV1070 from '../enjinV1070'
 import * as v1070 from '../v1070'
 
 export const createListing = {
@@ -1873,6 +1874,28 @@ export const removeExpiredListingUnsigned = {
      * Remove an expired listing via unsigned transaction.
      * This is called by offchain workers and validates the payload signature.
      */
+    enjinV1070: new CallType(
+        'Marketplace.remove_expired_listing_unsigned',
+        sts.struct({
+            payload: enjinV1070.RemoveExpiredListingPayload,
+            signature: enjinV1070.MultiSignature,
+        })
+    ),
+    /**
+     * Remove an expired listing via unsigned transaction.
+     * This is called by offchain workers and validates the payload signature.
+     */
+    v1060: new CallType(
+        'Marketplace.remove_expired_listing_unsigned',
+        sts.struct({
+            payload: v1060.RemoveExpiredListingPayload,
+            signature: v1060.MultiSignature,
+        })
+    ),
+    /**
+     * Remove an expired listing via unsigned transaction.
+     * This is called by offchain workers and validates the payload signature.
+     */
     v1070: new CallType(
         'Marketplace.remove_expired_listing_unsigned',
         sts.struct({
@@ -1893,6 +1916,28 @@ export const finalizeAuctionUnsigned = {
         sts.struct({
             payload: matrixEnjinV1031.FinalizeAuctionPayload,
             signature: matrixEnjinV1031.MultiSignature,
+        })
+    ),
+    /**
+     * Finalize an auction via unsigned transaction.
+     * This is called by offchain workers and validates the payload signature.
+     */
+    enjinV1070: new CallType(
+        'Marketplace.finalize_auction_unsigned',
+        sts.struct({
+            payload: enjinV1070.FinalizeAuctionPayload,
+            signature: enjinV1070.MultiSignature,
+        })
+    ),
+    /**
+     * Finalize an auction via unsigned transaction.
+     * This is called by offchain workers and validates the payload signature.
+     */
+    v1060: new CallType(
+        'Marketplace.finalize_auction_unsigned',
+        sts.struct({
+            payload: v1060.FinalizeAuctionPayload,
+            signature: v1060.MultiSignature,
         })
     ),
     /**

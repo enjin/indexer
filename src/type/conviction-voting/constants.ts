@@ -24,5 +24,5 @@ export const stakedEnjCollectionId = {
     /**
      *  The Collection ID for sENJ
      */
-    v1070: new ConstantType('ConvictionVoting.StakedEnjCollectionId', sts.bigint()),
+    enjinV1070: new ConstantType('ConvictionVoting.StakedEnjCollectionId', sts.bigint()),
 }

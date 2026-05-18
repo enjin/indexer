@@ -13,6 +13,10 @@ export function thawed(event: EventItem): Thaw {
             () => multiTokens.thawed.matrixEnjinV603.decode(event)
         )
         .when(
+            () => multiTokens.thawed.enjinV1070.is(event),
+            () => multiTokens.thawed.enjinV1070.decode(event)
+        )
+        .when(
             () => multiTokens.thawed.v1070.is(event),
             () => multiTokens.thawed.v1070.decode(event)
         )

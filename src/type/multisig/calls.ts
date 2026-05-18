@@ -46,6 +46,7 @@ import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
+import * as enjinV1070 from '../enjinV1070'
 import * as v1070 from '../v1070'
 
 export const asMultiThreshold1 = {
@@ -719,6 +720,27 @@ export const asMultiThreshold1 = {
         sts.struct({
             otherSignatories: sts.array(() => enjinV1062.AccountId32),
             call: enjinV1062.Call,
+        })
+    ),
+    /**
+     * Immediately dispatch a multi-signature call using a single approval from the caller.
+     *
+     * The dispatch origin for this call must be _Signed_.
+     *
+     * - `other_signatories`: The accounts (other than the sender) who are part of the
+     * multi-signature, but do not participate in the approval process.
+     * - `call`: The call to be executed.
+     *
+     * Result is equivalent to the dispatched result.
+     *
+     * ## Complexity
+     * O(Z + C) where Z is the length of the call and C its execution weight.
+     */
+    enjinV1070: new CallType(
+        'Multisig.as_multi_threshold_1',
+        sts.struct({
+            otherSignatories: sts.array(() => enjinV1070.AccountId32),
+            call: enjinV1070.Call,
         })
     ),
     /**
@@ -2568,6 +2590,57 @@ export const asMulti = {
             maybeTimepoint: sts.option(() => enjinV1062.Timepoint),
             call: enjinV1062.Call,
             maxWeight: enjinV1062.Weight,
+        })
+    ),
+    /**
+     * Register approval for a dispatch to be made from a deterministic composite account if
+     * approved by a total of `threshold - 1` of `other_signatories`.
+     *
+     * If there are enough, then dispatch the call.
+     *
+     * Payment: `DepositBase` will be reserved if this is the first approval, plus
+     * `threshold` times `DepositFactor`. It is returned once this dispatch happens or
+     * is cancelled.
+     *
+     * The dispatch origin for this call must be _Signed_.
+     *
+     * - `threshold`: The total number of approvals for this dispatch before it is executed.
+     * - `other_signatories`: The accounts (other than the sender) who can approve this
+     * dispatch. May not be empty.
+     * - `maybe_timepoint`: If this is the first approval, then this must be `None`. If it is
+     * not the first approval, then it must be `Some`, with the timepoint (block number and
+     * transaction index) of the first approval transaction.
+     * - `call`: The call to be executed.
+     *
+     * NOTE: Unless this is the final approval, you will generally want to use
+     * `approve_as_multi` instead, since it only requires a hash of the call.
+     *
+     * Result is equivalent to the dispatched result if `threshold` is exactly `1`. Otherwise
+     * on success, result is `Ok` and the result from the interior call, if it was executed,
+     * may be found in the deposited `MultisigExecuted` event.
+     *
+     * ## Complexity
+     * - `O(S + Z + Call)`.
+     * - Up to one balance-reserve or unreserve operation.
+     * - One passthrough operation, one insert, both `O(S)` where `S` is the number of
+     *   signatories. `S` is capped by `MaxSignatories`, with weight being proportional.
+     * - One call encode & hash, both of complexity `O(Z)` where `Z` is tx-len.
+     * - One encode & hash, both of complexity `O(S)`.
+     * - Up to one binary search and insert (`O(logS + S)`).
+     * - I/O: 1 read `O(S)`, up to 1 mutate `O(S)`. Up to one remove.
+     * - One event.
+     * - The weight of the `call`.
+     * - Storage: inserts one item, value size bounded by `MaxSignatories`, with a deposit
+     *   taken for its lifetime of `DepositBase + threshold * DepositFactor`.
+     */
+    enjinV1070: new CallType(
+        'Multisig.as_multi',
+        sts.struct({
+            threshold: sts.number(),
+            otherSignatories: sts.array(() => enjinV1070.AccountId32),
+            maybeTimepoint: sts.option(() => enjinV1070.Timepoint),
+            call: enjinV1070.Call,
+            maxWeight: enjinV1070.Weight,
         })
     ),
     /**

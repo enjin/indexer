@@ -26,6 +26,7 @@ import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
+import * as enjinV1070 from '../enjinV1070'
 import * as v1070 from '../v1070'
 
 export const collectionCreated = {
@@ -618,6 +619,14 @@ export const frozen = {
     /**
      * Collection, token or account was frozen
      */
+    enjinV1070: new EventType('MultiTokens.Frozen', enjinV1070.Freeze),
+    /**
+     * Collection, token or account was frozen
+     */
+    v100: new EventType('MultiTokens.Frozen', v100.Freeze),
+    /**
+     * Collection, token or account was frozen
+     */
     v1070: new EventType('MultiTokens.Frozen', v1070.Freeze),
 }
 
@@ -627,6 +636,14 @@ export const thawed = {
      * Collection, token or account was unfrozen
      */
     matrixEnjinV603: new EventType('MultiTokens.Thawed', matrixEnjinV603.Freeze),
+    /**
+     * Collection, token or account was unfrozen
+     */
+    enjinV1070: new EventType('MultiTokens.Thawed', enjinV1070.Thaw),
+    /**
+     * Collection, token or account was unfrozen
+     */
+    v100: new EventType('MultiTokens.Thawed', v100.Freeze),
     /**
      * Collection, token or account was unfrozen
      */
@@ -1126,6 +1143,34 @@ export const reserved = {
     /**
      * Token units were reserved
      */
+    enjinV1070: new EventType(
+        'MultiTokens.Reserved',
+        sts.struct({
+            /**
+             * The collection in which token was reserved
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token that was reserved
+             */
+            tokenId: sts.bigint(),
+            /**
+             * The account that reserved the tokens
+             */
+            accountId: enjinV1070.AccountId32,
+            /**
+             * The amount that was reserved
+             */
+            amount: sts.bigint(),
+            /**
+             * The identifier of the reserves
+             */
+            reserveId: enjinV1070.RuntimeHoldReason,
+        })
+    ),
+    /**
+     * Token units were reserved
+     */
     v100: new EventType(
         'MultiTokens.Reserved',
         sts.struct({
@@ -1517,6 +1562,34 @@ export const unreserved = {
              * The identifier of the unreserved tokens
              */
             reserveId: enjinV1062.RuntimeHoldReason,
+        })
+    ),
+    /**
+     * Token units were unreserved
+     */
+    enjinV1070: new EventType(
+        'MultiTokens.Unreserved',
+        sts.struct({
+            /**
+             * The collection id in which token was unreserved
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token id that was unreserved
+             */
+            tokenId: sts.bigint(),
+            /**
+             * The account that unreserved the tokens
+             */
+            accountId: enjinV1070.AccountId32,
+            /**
+             * The amount that was unreserved
+             */
+            amount: sts.bigint(),
+            /**
+             * The identifier of the unreserved tokens
+             */
+            reserveId: enjinV1070.RuntimeHoldReason,
         })
     ),
     /**
@@ -1953,6 +2026,38 @@ export const movedReserves = {
              * The identifier of the moved reserves
              */
             reserveId: enjinV1062.RuntimeHoldReason,
+        })
+    ),
+    /**
+     * Reserved token units were moved
+     */
+    enjinV1070: new EventType(
+        'MultiTokens.MovedReserves',
+        sts.struct({
+            /**
+             * The collection id in which token was moved
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token id that was moved
+             */
+            tokenId: sts.bigint(),
+            /**
+             * The account that reserves were moved from
+             */
+            source: enjinV1070.AccountId32,
+            /**
+             * The account that received the moved reserves
+             */
+            destination: enjinV1070.AccountId32,
+            /**
+             * The amount that was moved
+             */
+            amount: sts.bigint(),
+            /**
+             * The identifier of the moved reserves
+             */
+            reserveId: enjinV1070.RuntimeHoldReason,
         })
     ),
     /**
@@ -2405,6 +2510,38 @@ export const reserveRepatriated = {
              * The identifier of the moved reserves
              */
             reserveId: enjinV1062.RuntimeHoldReason,
+        })
+    ),
+    /**
+     * Reserved token units were transferred
+     */
+    enjinV1070: new EventType(
+        'MultiTokens.ReserveRepatriated',
+        sts.struct({
+            /**
+             * The collection id in which token was moved
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token id that was moved
+             */
+            tokenId: sts.bigint(),
+            /**
+             * The account that reserves were moved from
+             */
+            source: enjinV1070.AccountId32,
+            /**
+             * The account that received the moved reserves
+             */
+            destination: enjinV1070.AccountId32,
+            /**
+             * The amount that was moved
+             */
+            amount: sts.bigint(),
+            /**
+             * The identifier of the moved reserves
+             */
+            reserveId: enjinV1070.RuntimeHoldReason,
         })
     ),
     /**
@@ -3599,6 +3736,30 @@ export const tokenAccountUpdated = {
     /**
      * TokenAccount storage was set to `value`
      */
+    enjinV1070: new EventType(
+        'MultiTokens.TokenAccountUpdated',
+        sts.struct({
+            /**
+             * The collection id for which the value is set
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token id of the updated account
+             */
+            tokenId: sts.bigint(),
+            /**
+             * The account id that owned the token account
+             */
+            accountId: enjinV1070.AccountId32,
+            /**
+             * new value of TokenAccount storage
+             */
+            value: sts.option(() => enjinV1070.TokenAccount),
+        })
+    ),
+    /**
+     * TokenAccount storage was set to `value`
+     */
     v100: new EventType(
         'MultiTokens.TokenAccountUpdated',
         sts.struct({
@@ -4658,7 +4819,7 @@ export const locked = {
     /**
      * Token units were locked
      */
-    v1070: new EventType(
+    enjinV1070: new EventType(
         'MultiTokens.Locked',
         sts.struct({
             /**
@@ -4672,7 +4833,7 @@ export const locked = {
             /**
              * The account that was locked
              */
-            accountId: v1070.AccountId32,
+            accountId: enjinV1070.AccountId32,
             /**
              * The amount that was locked
              */
@@ -4686,7 +4847,7 @@ export const unlocked = {
     /**
      * Token units were unlocked
      */
-    v1070: new EventType(
+    enjinV1070: new EventType(
         'MultiTokens.Unlocked',
         sts.struct({
             /**
@@ -4700,7 +4861,7 @@ export const unlocked = {
             /**
              * The account that was unlocked
              */
-            accountId: v1070.AccountId32,
+            accountId: enjinV1070.AccountId32,
             /**
              * The amount that was unlocked
              */

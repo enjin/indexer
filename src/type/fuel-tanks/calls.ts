@@ -50,6 +50,7 @@ import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
+import * as enjinV1070 from '../enjinV1070'
 import * as v1070 from '../v1070'
 
 export const createFuelTank = {
@@ -550,6 +551,23 @@ export const createFuelTank = {
         'FuelTanks.create_fuel_tank',
         sts.struct({
             descriptor: enjinV1062.FuelTankDescriptor,
+        })
+    ),
+    /**
+     * Creates a fuel tank, given a `descriptor`.
+     *
+     * Generates a discrete `AccountId` for the fuel tank based on passed in parameters, it
+     * takes a storage deposit and emits `FuelTankCreated` event in the success case.
+     *
+     * # Errors
+     *
+     * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
+     * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
+     */
+    enjinV1070: new CallType(
+        'FuelTanks.create_fuel_tank',
+        sts.struct({
+            descriptor: enjinV1070.FuelTankDescriptor,
         })
     ),
     /**
@@ -1994,6 +2012,25 @@ export const dispatch = {
      *   use the ruleset for remaining_fee when `pays_remaining_fee` is true
      * - [`Error::FuelTankOutOfFunds`] if the fuel tank account cannot pay fees
      */
+    enjinV1070: new CallType(
+        'FuelTanks.dispatch',
+        sts.struct({
+            tankId: enjinV1070.MultiAddress,
+            ruleSetId: sts.number(),
+            call: enjinV1070.Call,
+            settings: sts.option(() => enjinV1070.DispatchSettings),
+        })
+    ),
+    /**
+     * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
+     *
+     * # Errors
+     * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
+     * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
+     * - [`Error::CallerDoesNotHaveRuleSetTokenBalance`] if caller does not own the tokens to
+     *   use the ruleset for remaining_fee when `pays_remaining_fee` is true
+     * - [`Error::FuelTankOutOfFunds`] if the fuel tank account cannot pay fees
+     */
     v102: new CallType(
         'FuelTanks.dispatch',
         sts.struct({
@@ -2905,6 +2942,25 @@ export const dispatchAndTouch = {
             ruleSetId: sts.number(),
             call: enjinV1062.Call,
             settings: sts.option(() => enjinV1062.DispatchSettings),
+        })
+    ),
+    /**
+     * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
+     * exist, is required, and is allowed by the fuel tank's `user_account_management`
+     * settings.
+     *
+     * # Errors
+     *
+     * Returns the same errors as [dispatch](Self::dispatch) and
+     * [add_account](Self::add_account)
+     */
+    enjinV1070: new CallType(
+        'FuelTanks.dispatch_and_touch',
+        sts.struct({
+            tankId: enjinV1070.MultiAddress,
+            ruleSetId: sts.number(),
+            call: enjinV1070.Call,
+            settings: sts.option(() => enjinV1070.DispatchSettings),
         })
     ),
     /**
@@ -4074,6 +4130,31 @@ export const insertRuleSet = {
      * ### Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::NoPermission`] if caller is not the fuel tank owner
+     * - [`Error::CannotRemoveRuleThatIsStoringAccountData`] if removing a rule that is storing
+     *   account data
+     * - [`Error::MaxRuleSetsExceeded`] if max number of rule sets was exceeded
+     * - [`Error::DuplicateRuleKinds`] if adding a rule set with multiple rules of the same
+     *   kind
+     */
+    enjinV1070: new CallType(
+        'FuelTanks.insert_rule_set',
+        sts.struct({
+            tankId: enjinV1070.MultiAddress,
+            ruleSetId: sts.number(),
+            ruleSet: enjinV1070.RuleSetDescriptor,
+        })
+    ),
+    /**
+     * Insert a new rule set for `tank_id` and `rule_set_id`. It can be a new rule set
+     * or it can replace an existing one. If it is replacing a rule set, a rule that is storing
+     * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
+     * the data first. If a rule is being replaced, it will be mutated with the new parameters,
+     * and it will maintain any persistent data it already has.
+     *
+     * This is only callable by the fuel tank's owner.
+     * ### Errors
+     * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
+     * - [`Error::NoPermission`] if caller is not the fuel tank owner
      * - [`Error::RequiresFrozenTankOrRuleset`] if tank or rule set is not frozen
      * - [`Error::CannotRemoveRuleThatIsStoringAccountData`] if removing a rule that is storing
      *   account data
@@ -5008,6 +5089,20 @@ export const forceCreateFuelTank = {
      *
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      */
+    enjinV1070: new CallType(
+        'FuelTanks.force_create_fuel_tank',
+        sts.struct({
+            owner: enjinV1070.MultiAddress,
+            descriptor: enjinV1070.FuelTankDescriptor,
+        })
+    ),
+    /**
+     * Force creates a fuel tank
+     *
+     * # Errors
+     *
+     * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
+     */
     v105: new CallType(
         'FuelTanks.force_create_fuel_tank',
         sts.struct({
@@ -5299,6 +5394,28 @@ export const forceInsertRuleSet = {
     /**
      * Force inserting a ruleset using the force origin
      */
+    enjinV1070: new CallType(
+        'FuelTanks.force_insert_rule_set',
+        sts.struct({
+            tankId: enjinV1070.MultiAddress,
+            ruleSetId: sts.number(),
+            ruleSet: enjinV1070.RuleSetDescriptor,
+        })
+    ),
+    /**
+     * Force inserting a ruleset using the force origin
+     */
+    v1060: new CallType(
+        'FuelTanks.force_insert_rule_set',
+        sts.struct({
+            tankId: v1060.MultiAddress,
+            ruleSetId: sts.number(),
+            ruleSet: v1060.RuleSetDescriptor,
+        })
+    ),
+    /**
+     * Force inserting a ruleset using the force origin
+     */
     v1070: new CallType(
         'FuelTanks.force_insert_rule_set',
         sts.struct({
@@ -5320,6 +5437,28 @@ export const removeExpiredAccountUnsigned = {
         sts.struct({
             payload: matrixEnjinV1031.RemoveExpiredAccountPayload,
             signature: matrixEnjinV1031.MultiSignature,
+        })
+    ),
+    /**
+     * Remove an expired account via unsigned transaction.
+     * This is called by offchain workers and validates the payload signature.
+     */
+    enjinV1070: new CallType(
+        'FuelTanks.remove_expired_account_unsigned',
+        sts.struct({
+            payload: enjinV1070.RemoveExpiredAccountPayload,
+            signature: enjinV1070.MultiSignature,
+        })
+    ),
+    /**
+     * Remove an expired account via unsigned transaction.
+     * This is called by offchain workers and validates the payload signature.
+     */
+    v1060: new CallType(
+        'FuelTanks.remove_expired_account_unsigned',
+        sts.struct({
+            payload: v1060.RemoveExpiredAccountPayload,
+            signature: v1060.MultiSignature,
         })
     ),
     /**

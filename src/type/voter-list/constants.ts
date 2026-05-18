@@ -59,5 +59,5 @@ export const maxAutoRebagPerBlock = {
      *  A value of `0` (obtained by configuring `type MaxAutoRebagPerBlock = ();`) disables
      *  the feature.
      */
-    v1070: new ConstantType('VoterList.MaxAutoRebagPerBlock', sts.number()),
+    enjinV1070: new ConstantType('VoterList.MaxAutoRebagPerBlock', sts.number()),
 }

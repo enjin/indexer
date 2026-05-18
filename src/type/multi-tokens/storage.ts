@@ -25,6 +25,7 @@ import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
+import * as enjinV1070 from '../enjinV1070'
 import * as v1070 from '../v1070'
 
 export const tokenAccounts = {
@@ -145,6 +146,15 @@ export const tokenAccounts = {
         [sts.bigint(), sts.bigint(), enjinV1062.AccountId32],
         enjinV1062.TokenAccount
     ) as TokenAccountsEnjinV1062,
+    /**
+     *  Accounts per token (real storage)
+     */
+    enjinV1070: new StorageType(
+        'MultiTokens.TokenAccounts',
+        'Optional',
+        [sts.bigint(), sts.bigint(), enjinV1070.AccountId32],
+        enjinV1070.TokenAccount
+    ) as TokenAccountsEnjinV1070,
     /**
      *  Accounts per token
      */
@@ -1324,6 +1334,91 @@ export interface TokenAccountsEnjinV1062 {
         key2: bigint,
         key3: enjinV1062.AccountId32
     ): AsyncIterable<[k: [bigint, bigint, enjinV1062.AccountId32], v: enjinV1062.TokenAccount | undefined][]>
+}
+
+/**
+ *  Accounts per token (real storage)
+ */
+export interface TokenAccountsEnjinV1070 {
+    is(block: RuntimeCtx): boolean
+    get(
+        block: Block,
+        key1: bigint,
+        key2: bigint,
+        key3: enjinV1070.AccountId32
+    ): Promise<enjinV1070.TokenAccount | undefined>
+    getMany(
+        block: Block,
+        keys: [bigint, bigint, enjinV1070.AccountId32][]
+    ): Promise<(enjinV1070.TokenAccount | undefined)[]>
+    getKeys(block: Block): Promise<[bigint, bigint, enjinV1070.AccountId32][]>
+    getKeys(block: Block, key1: bigint): Promise<[bigint, bigint, enjinV1070.AccountId32][]>
+    getKeys(block: Block, key1: bigint, key2: bigint): Promise<[bigint, bigint, enjinV1070.AccountId32][]>
+    getKeys(
+        block: Block,
+        key1: bigint,
+        key2: bigint,
+        key3: enjinV1070.AccountId32
+    ): Promise<[bigint, bigint, enjinV1070.AccountId32][]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[bigint, bigint, enjinV1070.AccountId32][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint
+    ): AsyncIterable<[bigint, bigint, enjinV1070.AccountId32][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint,
+        key2: bigint
+    ): AsyncIterable<[bigint, bigint, enjinV1070.AccountId32][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint,
+        key2: bigint,
+        key3: enjinV1070.AccountId32
+    ): AsyncIterable<[bigint, bigint, enjinV1070.AccountId32][]>
+    getPairs(
+        block: Block
+    ): Promise<[k: [bigint, bigint, enjinV1070.AccountId32], v: enjinV1070.TokenAccount | undefined][]>
+    getPairs(
+        block: Block,
+        key1: bigint
+    ): Promise<[k: [bigint, bigint, enjinV1070.AccountId32], v: enjinV1070.TokenAccount | undefined][]>
+    getPairs(
+        block: Block,
+        key1: bigint,
+        key2: bigint
+    ): Promise<[k: [bigint, bigint, enjinV1070.AccountId32], v: enjinV1070.TokenAccount | undefined][]>
+    getPairs(
+        block: Block,
+        key1: bigint,
+        key2: bigint,
+        key3: enjinV1070.AccountId32
+    ): Promise<[k: [bigint, bigint, enjinV1070.AccountId32], v: enjinV1070.TokenAccount | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: [bigint, bigint, enjinV1070.AccountId32], v: enjinV1070.TokenAccount | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint
+    ): AsyncIterable<[k: [bigint, bigint, enjinV1070.AccountId32], v: enjinV1070.TokenAccount | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint,
+        key2: bigint
+    ): AsyncIterable<[k: [bigint, bigint, enjinV1070.AccountId32], v: enjinV1070.TokenAccount | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint,
+        key2: bigint,
+        key3: enjinV1070.AccountId32
+    ): AsyncIterable<[k: [bigint, bigint, enjinV1070.AccountId32], v: enjinV1070.TokenAccount | undefined][]>
 }
 
 /**

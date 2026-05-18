@@ -7,7 +7,12 @@ export const staleBlockThreshold = {
      *
      *  This value can be updated at runtime via the `set_stale_threshold` extrinsic.
      */
-    v1070: new StorageType('Recovery.StaleBlockThreshold', 'Default', [], sts.number()) as StaleBlockThresholdV1070,
+    enjinV1070: new StorageType(
+        'Recovery.StaleBlockThreshold',
+        'Default',
+        [],
+        sts.number()
+    ) as StaleBlockThresholdEnjinV1070,
 }
 
 /**
@@ -16,7 +21,7 @@ export const staleBlockThreshold = {
  *
  *  This value can be updated at runtime via the `set_stale_threshold` extrinsic.
  */
-export interface StaleBlockThresholdV1070 {
+export interface StaleBlockThresholdEnjinV1070 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): number
     get(block: Block): Promise<number | undefined>

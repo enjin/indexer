@@ -7,6 +7,7 @@ import * as matrixV1030 from '../matrixV1030'
 import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
+import * as enjinV1070 from '../enjinV1070'
 import * as v1070 from '../v1070'
 
 export const validators = {
@@ -139,6 +140,16 @@ export const queuedKeys = {
      *  The queued keys for the next session. When the next session begins, these keys
      *  will be used to determine the validator's session keys.
      */
+    enjinV1070: new StorageType(
+        'Session.QueuedKeys',
+        'Default',
+        [],
+        sts.array(() => sts.tuple(() => [enjinV1070.AccountId32, enjinV1070.SessionKeys]))
+    ) as QueuedKeysEnjinV1070,
+    /**
+     *  The queued keys for the next session. When the next session begins, these keys
+     *  will be used to determine the validator's session keys.
+     */
     v100: new StorageType(
         'Session.QueuedKeys',
         'Default',
@@ -225,6 +236,16 @@ export interface QueuedKeysEnjinV1062 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): [enjinV1062.AccountId32, enjinV1062.SessionKeys][]
     get(block: Block): Promise<[enjinV1062.AccountId32, enjinV1062.SessionKeys][] | undefined>
+}
+
+/**
+ *  The queued keys for the next session. When the next session begins, these keys
+ *  will be used to determine the validator's session keys.
+ */
+export interface QueuedKeysEnjinV1070 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): [enjinV1070.AccountId32, enjinV1070.SessionKeys][]
+    get(block: Block): Promise<[enjinV1070.AccountId32, enjinV1070.SessionKeys][] | undefined>
 }
 
 /**
@@ -526,6 +547,15 @@ export const nextKeys = {
     /**
      *  The next session keys for a validator.
      */
+    enjinV1070: new StorageType(
+        'Session.NextKeys',
+        'Optional',
+        [enjinV1070.AccountId32],
+        enjinV1070.SessionKeys
+    ) as NextKeysEnjinV1070,
+    /**
+     *  The next session keys for a validator.
+     */
     v100: new StorageType('Session.NextKeys', 'Optional', [v100.AccountId32], v100.SessionKeys) as NextKeysV100,
     /**
      *  The next session keys for a validator.
@@ -710,6 +740,33 @@ export interface NextKeysEnjinV1062 {
 /**
  *  The next session keys for a validator.
  */
+export interface NextKeysEnjinV1070 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: enjinV1070.AccountId32): Promise<enjinV1070.SessionKeys | undefined>
+    getMany(block: Block, keys: enjinV1070.AccountId32[]): Promise<(enjinV1070.SessionKeys | undefined)[]>
+    getKeys(block: Block): Promise<enjinV1070.AccountId32[]>
+    getKeys(block: Block, key: enjinV1070.AccountId32): Promise<enjinV1070.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<enjinV1070.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block, key: enjinV1070.AccountId32): AsyncIterable<enjinV1070.AccountId32[]>
+    getPairs(block: Block): Promise<[k: enjinV1070.AccountId32, v: enjinV1070.SessionKeys | undefined][]>
+    getPairs(
+        block: Block,
+        key: enjinV1070.AccountId32
+    ): Promise<[k: enjinV1070.AccountId32, v: enjinV1070.SessionKeys | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: enjinV1070.AccountId32, v: enjinV1070.SessionKeys | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: enjinV1070.AccountId32
+    ): AsyncIterable<[k: enjinV1070.AccountId32, v: enjinV1070.SessionKeys | undefined][]>
+}
+
+/**
+ *  The next session keys for a validator.
+ */
 export interface NextKeysV100 {
     is(block: RuntimeCtx): boolean
     get(block: Block, key: v100.AccountId32): Promise<v100.SessionKeys | undefined>
@@ -834,12 +891,12 @@ export const externallySetKeys = {
      *  only decrements consumers for accounts that were registered through the local
      *  session pallet.
      */
-    v1070: new StorageType(
+    enjinV1070: new StorageType(
         'Session.ExternallySetKeys',
         'Optional',
-        [v1070.AccountId32],
+        [enjinV1070.AccountId32],
         sts.unit()
-    ) as ExternallySetKeysV1070,
+    ) as ExternallySetKeysEnjinV1070,
 }
 
 /**
@@ -848,20 +905,20 @@ export const externallySetKeys = {
  *  only decrements consumers for accounts that were registered through the local
  *  session pallet.
  */
-export interface ExternallySetKeysV1070 {
+export interface ExternallySetKeysEnjinV1070 {
     is(block: RuntimeCtx): boolean
-    get(block: Block, key: v1070.AccountId32): Promise<null | undefined>
-    getMany(block: Block, keys: v1070.AccountId32[]): Promise<(null | undefined)[]>
-    getKeys(block: Block): Promise<v1070.AccountId32[]>
-    getKeys(block: Block, key: v1070.AccountId32): Promise<v1070.AccountId32[]>
-    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v1070.AccountId32[]>
-    getKeysPaged(pageSize: number, block: Block, key: v1070.AccountId32): AsyncIterable<v1070.AccountId32[]>
-    getPairs(block: Block): Promise<[k: v1070.AccountId32, v: null | undefined][]>
-    getPairs(block: Block, key: v1070.AccountId32): Promise<[k: v1070.AccountId32, v: null | undefined][]>
-    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: v1070.AccountId32, v: null | undefined][]>
+    get(block: Block, key: enjinV1070.AccountId32): Promise<null | undefined>
+    getMany(block: Block, keys: enjinV1070.AccountId32[]): Promise<(null | undefined)[]>
+    getKeys(block: Block): Promise<enjinV1070.AccountId32[]>
+    getKeys(block: Block, key: enjinV1070.AccountId32): Promise<enjinV1070.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<enjinV1070.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block, key: enjinV1070.AccountId32): AsyncIterable<enjinV1070.AccountId32[]>
+    getPairs(block: Block): Promise<[k: enjinV1070.AccountId32, v: null | undefined][]>
+    getPairs(block: Block, key: enjinV1070.AccountId32): Promise<[k: enjinV1070.AccountId32, v: null | undefined][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: enjinV1070.AccountId32, v: null | undefined][]>
     getPairsPaged(
         pageSize: number,
         block: Block,
-        key: v1070.AccountId32
-    ): AsyncIterable<[k: v1070.AccountId32, v: null | undefined][]>
+        key: enjinV1070.AccountId32
+    ): AsyncIterable<[k: enjinV1070.AccountId32, v: null | undefined][]>
 }
