@@ -16393,6 +16393,49 @@ export interface InherentData {
     parentHeader: Header
 }
 
+export const PayoutRewardsPayload: sts.Type<PayoutRewardsPayload> = sts.struct(() => {
+    return {
+        validatorStash: AccountId32,
+        era: sts.number(),
+        blockNumber: sts.number(),
+        public: MultiSigner,
+        signerAccount: AccountId32,
+    }
+})
+
+export const MultiSigner: sts.Type<MultiSigner> = sts.closedEnum(() => {
+    return {
+        Ecdsa: sts.bytes(),
+        Ed25519: sts.bytes(),
+        Sr25519: sts.bytes(),
+    }
+})
+
+export type MultiSigner = MultiSigner_Ecdsa | MultiSigner_Ed25519 | MultiSigner_Sr25519
+
+export interface MultiSigner_Ecdsa {
+    __kind: 'Ecdsa'
+    value: Bytes
+}
+
+export interface MultiSigner_Ed25519 {
+    __kind: 'Ed25519'
+    value: Bytes
+}
+
+export interface MultiSigner_Sr25519 {
+    __kind: 'Sr25519'
+    value: Bytes
+}
+
+export interface PayoutRewardsPayload {
+    validatorStash: AccountId32
+    era: number
+    blockNumber: number
+    public: MultiSigner
+    signerAccount: AccountId32
+}
+
 export const Type_333: sts.Type<Type_333> = sts.closedEnum(() => {
     return {
         Noop: sts.unit(),
@@ -16455,29 +16498,38 @@ export const ProxyType: sts.Type<ProxyType> = sts.closedEnum(() => {
     }
 })
 
-export const MultiSignature: sts.Type<MultiSignature> = sts.closedEnum(() => {
+export const FinalizeAuctionPayload: sts.Type<FinalizeAuctionPayload> = sts.struct(() => {
     return {
-        Ecdsa: sts.bytes(),
-        Ed25519: sts.bytes(),
-        Sr25519: sts.bytes(),
+        listingId: H256,
+        royaltyBeneficiaryCount: sts.number(),
+        blockNumber: sts.number(),
+        caller: AccountId32,
+        public: MultiSigner,
     }
 })
 
-export type MultiSignature = MultiSignature_Ecdsa | MultiSignature_Ed25519 | MultiSignature_Sr25519
-
-export interface MultiSignature_Ecdsa {
-    __kind: 'Ecdsa'
-    value: Bytes
+export interface FinalizeAuctionPayload {
+    listingId: H256
+    royaltyBeneficiaryCount: number
+    blockNumber: number
+    caller: AccountId32
+    public: MultiSigner
 }
 
-export interface MultiSignature_Ed25519 {
-    __kind: 'Ed25519'
-    value: Bytes
-}
+export const RemoveExpiredListingPayload: sts.Type<RemoveExpiredListingPayload> = sts.struct(() => {
+    return {
+        listingId: H256,
+        blockNumber: sts.number(),
+        caller: AccountId32,
+        public: MultiSigner,
+    }
+})
 
-export interface MultiSignature_Sr25519 {
-    __kind: 'Sr25519'
-    value: Bytes
+export interface RemoveExpiredListingPayload {
+    listingId: H256
+    blockNumber: number
+    caller: AccountId32
+    public: MultiSigner
 }
 
 export const ListingDescriptor: sts.Type<ListingDescriptor> = sts.struct(() => {
@@ -16522,6 +16574,49 @@ export interface ListingDescriptor {
     salt: Bytes
     usesWhitelist: boolean
     data: ListingData
+}
+
+export const MultiSignature: sts.Type<MultiSignature> = sts.closedEnum(() => {
+    return {
+        Ecdsa: sts.bytes(),
+        Ed25519: sts.bytes(),
+        Sr25519: sts.bytes(),
+    }
+})
+
+export type MultiSignature = MultiSignature_Ecdsa | MultiSignature_Ed25519 | MultiSignature_Sr25519
+
+export interface MultiSignature_Ecdsa {
+    __kind: 'Ecdsa'
+    value: Bytes
+}
+
+export interface MultiSignature_Ed25519 {
+    __kind: 'Ed25519'
+    value: Bytes
+}
+
+export interface MultiSignature_Sr25519 {
+    __kind: 'Sr25519'
+    value: Bytes
+}
+
+export const RemoveExpiredAccountPayload: sts.Type<RemoveExpiredAccountPayload> = sts.struct(() => {
+    return {
+        tankId: AccountId32,
+        userId: AccountId32,
+        blockNumber: sts.number(),
+        caller: AccountId32,
+        public: MultiSigner,
+    }
+})
+
+export interface RemoveExpiredAccountPayload {
+    tankId: AccountId32
+    userId: AccountId32
+    blockNumber: number
+    caller: AccountId32
+    public: MultiSigner
 }
 
 export const RuleSetDescriptor: sts.Type<RuleSetDescriptor> = sts.struct(() => {
@@ -20632,31 +20727,6 @@ export interface StakingInfo {
     treasuryPayoutCut: Perbill
 }
 
-export interface PayoutRewardsPayload {
-    validatorStash: AccountId32
-    era: number
-    blockNumber: number
-    public: MultiSigner
-    signerAccount: AccountId32
-}
-
-export type MultiSigner = MultiSigner_Ecdsa | MultiSigner_Ed25519 | MultiSigner_Sr25519
-
-export interface MultiSigner_Ecdsa {
-    __kind: 'Ecdsa'
-    value: Bytes
-}
-
-export interface MultiSigner_Ed25519 {
-    __kind: 'Ed25519'
-    value: Bytes
-}
-
-export interface MultiSigner_Sr25519 {
-    __kind: 'Sr25519'
-    value: Bytes
-}
-
 export type BondValue = BondValue_Amount | BondValue_Fill
 
 export interface BondValue_Amount {
@@ -22312,21 +22382,6 @@ export interface MarketplaceCall_set_protocol_fee {
     protocolFee: Perbill
 }
 
-export interface RemoveExpiredListingPayload {
-    listingId: H256
-    blockNumber: number
-    caller: AccountId32
-    public: MultiSigner
-}
-
-export interface FinalizeAuctionPayload {
-    listingId: H256
-    royaltyBeneficiaryCount: number
-    blockNumber: number
-    caller: AccountId32
-    public: MultiSigner
-}
-
 /**
  * Contains a variant per dispatchable extrinsic that this pallet has.
  */
@@ -23341,14 +23396,6 @@ export interface FuelTanksCall_remove_rule_set {
     __kind: 'remove_rule_set'
     tankId: MultiAddress
     ruleSetId: number
-}
-
-export interface RemoveExpiredAccountPayload {
-    tankId: AccountId32
-    userId: AccountId32
-    blockNumber: number
-    caller: AccountId32
-    public: MultiSigner
 }
 
 export interface DispatchSettings {
@@ -26601,24 +26648,6 @@ export const StakingInfo: sts.Type<StakingInfo> = sts.struct(() => {
     }
 })
 
-export const PayoutRewardsPayload: sts.Type<PayoutRewardsPayload> = sts.struct(() => {
-    return {
-        validatorStash: AccountId32,
-        era: sts.number(),
-        blockNumber: sts.number(),
-        public: MultiSigner,
-        signerAccount: AccountId32,
-    }
-})
-
-export const MultiSigner: sts.Type<MultiSigner> = sts.closedEnum(() => {
-    return {
-        Ecdsa: sts.bytes(),
-        Ed25519: sts.bytes(),
-        Sr25519: sts.bytes(),
-    }
-})
-
 export const BondValue: sts.Type<BondValue> = sts.closedEnum(() => {
     return {
         Amount: sts.bigint(),
@@ -27072,25 +27101,6 @@ export const MarketplaceCall: sts.Type<MarketplaceCall> = sts.closedEnum(() => {
     }
 })
 
-export const RemoveExpiredListingPayload: sts.Type<RemoveExpiredListingPayload> = sts.struct(() => {
-    return {
-        listingId: H256,
-        blockNumber: sts.number(),
-        caller: AccountId32,
-        public: MultiSigner,
-    }
-})
-
-export const FinalizeAuctionPayload: sts.Type<FinalizeAuctionPayload> = sts.struct(() => {
-    return {
-        listingId: H256,
-        royaltyBeneficiaryCount: sts.number(),
-        blockNumber: sts.number(),
-        caller: AccountId32,
-        public: MultiSigner,
-    }
-})
-
 /**
  * Contains a variant per dispatchable extrinsic that this pallet has.
  */
@@ -27403,16 +27413,6 @@ export const FuelTanksCall: sts.Type<FuelTanksCall> = sts.closedEnum(() => {
             tankId: MultiAddress,
             ruleSetId: sts.number(),
         }),
-    }
-})
-
-export const RemoveExpiredAccountPayload: sts.Type<RemoveExpiredAccountPayload> = sts.struct(() => {
-    return {
-        tankId: AccountId32,
-        userId: AccountId32,
-        blockNumber: sts.number(),
-        caller: AccountId32,
-        public: MultiSigner,
     }
 })
 

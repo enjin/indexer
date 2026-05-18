@@ -18,6 +18,7 @@ import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
+import * as enjinV1070 from '../enjinV1070'
 import * as v1070 from '../v1070'
 
 export const totalIssuance = {
@@ -679,6 +680,15 @@ export const holds = {
     /**
      *  Holds on account balances.
      */
+    enjinV1070: new StorageType(
+        'Balances.Holds',
+        'Default',
+        [enjinV1070.AccountId32],
+        sts.array(() => enjinV1070.IdAmount)
+    ) as HoldsEnjinV1070,
+    /**
+     *  Holds on account balances.
+     */
     v104: new StorageType(
         'Balances.Holds',
         'Default',
@@ -1101,6 +1111,34 @@ export interface HoldsEnjinV1062 {
         block: Block,
         key: enjinV1062.AccountId32
     ): AsyncIterable<[k: enjinV1062.AccountId32, v: enjinV1062.IdAmount[] | undefined][]>
+}
+
+/**
+ *  Holds on account balances.
+ */
+export interface HoldsEnjinV1070 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): enjinV1070.IdAmount[]
+    get(block: Block, key: enjinV1070.AccountId32): Promise<enjinV1070.IdAmount[] | undefined>
+    getMany(block: Block, keys: enjinV1070.AccountId32[]): Promise<(enjinV1070.IdAmount[] | undefined)[]>
+    getKeys(block: Block): Promise<enjinV1070.AccountId32[]>
+    getKeys(block: Block, key: enjinV1070.AccountId32): Promise<enjinV1070.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<enjinV1070.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block, key: enjinV1070.AccountId32): AsyncIterable<enjinV1070.AccountId32[]>
+    getPairs(block: Block): Promise<[k: enjinV1070.AccountId32, v: enjinV1070.IdAmount[] | undefined][]>
+    getPairs(
+        block: Block,
+        key: enjinV1070.AccountId32
+    ): Promise<[k: enjinV1070.AccountId32, v: enjinV1070.IdAmount[] | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: enjinV1070.AccountId32, v: enjinV1070.IdAmount[] | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: enjinV1070.AccountId32
+    ): AsyncIterable<[k: enjinV1070.AccountId32, v: enjinV1070.IdAmount[] | undefined][]>
 }
 
 /**

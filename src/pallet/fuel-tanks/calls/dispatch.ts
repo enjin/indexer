@@ -140,6 +140,10 @@ export function dispatch(call: CallItem): Dispatch {
             () => calls.fuelTanks.dispatch.enjinV100.decode(call)
         )
         .when(
+            () => calls.fuelTanks.dispatch.enjinV1070.is(call),
+            () => calls.fuelTanks.dispatch.enjinV1070.decode(call)
+        )
+        .when(
             () => calls.fuelTanks.dispatch.v1060.is(call),
             () => calls.fuelTanks.dispatch.v1060.decode(call)
         )

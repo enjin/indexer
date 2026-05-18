@@ -1,6 +1,6 @@
 import { sts, Block, Bytes, Option, Result, ConstantType, RuntimeCtx } from '../support'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
-import * as v1070 from '../v1070'
+import * as enjinV1070 from '../enjinV1070'
 
 export const minimumBidIncreasePercentage = {
     /**
@@ -113,5 +113,5 @@ export const insufficientFundsDestination = {
      *  The account that receives the royalty if the royalty destination doesn't have enough
      *  funds to receive it
      */
-    v1070: new ConstantType('Marketplace.InsufficientFundsDestination', v1070.AccountId32),
+    enjinV1070: new ConstantType('Marketplace.InsufficientFundsDestination', enjinV1070.AccountId32),
 }

@@ -37,7 +37,12 @@ export const txPaymentCredit = {
      *
      *  Use `withdraw_txfee` and `remaining_txfee` to access from outside the crate.
      */
-    v1070: new StorageType('TransactionPayment.TxPaymentCredit', 'Optional', [], sts.unit()) as TxPaymentCreditV1070,
+    enjinV1070: new StorageType(
+        'TransactionPayment.TxPaymentCredit',
+        'Optional',
+        [],
+        sts.unit()
+    ) as TxPaymentCreditEnjinV1070,
 }
 
 /**
@@ -45,7 +50,7 @@ export const txPaymentCredit = {
  *
  *  Use `withdraw_txfee` and `remaining_txfee` to access from outside the crate.
  */
-export interface TxPaymentCreditV1070 {
+export interface TxPaymentCreditEnjinV1070 {
     is(block: RuntimeCtx): boolean
     get(block: Block): Promise<null | undefined>
 }

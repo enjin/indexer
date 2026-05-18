@@ -4,5 +4,5 @@ export const keyDeposit = {
     /**
      *  The amount to be held when setting keys.
      */
-    v1070: new ConstantType('Session.KeyDeposit', sts.bigint()),
+    enjinV1070: new ConstantType('Session.KeyDeposit', sts.bigint()),
 }

@@ -8934,28 +8934,6 @@ export const MigrationStage: sts.Type<MigrationStage> = sts.closedEnum(() => {
     }
 })
 
-export const Freeze: sts.Type<Freeze> = sts.struct(() => {
-    return {
-        collectionId: sts.bigint(),
-        freezeType: FreezeType,
-    }
-})
-
-export const FreezeType: sts.Type<FreezeType> = sts.closedEnum(() => {
-    return {
-        Collection: sts.unit(),
-        CollectionAccount: AccountId32,
-        Token: sts.enumStruct({
-            tokenId: sts.bigint(),
-            freezeState: sts.option(() => FreezeState),
-        }),
-        TokenAccount: sts.enumStruct({
-            tokenId: sts.bigint(),
-            accountId: AccountId32,
-        }),
-    }
-})
-
 export const Collection: sts.Type<Collection> = sts.struct(() => {
     return {
         owner: AccountId32,
@@ -16588,6 +16566,28 @@ export const FuelTankDescriptor: sts.Type<FuelTankDescriptor> = sts.struct(() =>
         ruleSets: sts.array(() => sts.tuple(() => [sts.number(), sts.array(() => DispatchRuleDescriptor)])),
         providesDeposit: sts.boolean(),
         accountRules: sts.array(() => AccountRuleDescriptor),
+    }
+})
+
+export const Freeze: sts.Type<Freeze> = sts.struct(() => {
+    return {
+        collectionId: sts.bigint(),
+        freezeType: FreezeType,
+    }
+})
+
+export const FreezeType: sts.Type<FreezeType> = sts.closedEnum(() => {
+    return {
+        Collection: sts.unit(),
+        CollectionAccount: AccountId32,
+        Token: sts.enumStruct({
+            tokenId: sts.bigint(),
+            freezeState: sts.option(() => FreezeState),
+        }),
+        TokenAccount: sts.enumStruct({
+            tokenId: sts.bigint(),
+            accountId: AccountId32,
+        }),
     }
 })
 

@@ -1,5 +1,5 @@
 import { sts, Block, Bytes, Option, Result, CallType, RuntimeCtx } from '../support'
-import * as v1070 from '../v1070'
+import * as enjinV1070 from '../enjinV1070'
 
 export const setCurrentHead = {
     name: 'Recovery.set_current_head',
@@ -23,10 +23,10 @@ export const setCurrentHead = {
      * ## Events
      * - `CurrentHeadForced`: Emitted when head data is successfully updated
      */
-    v1070: new CallType(
+    enjinV1070: new CallType(
         'Recovery.set_current_head',
         sts.struct({
-            paraId: v1070.Id,
+            paraId: enjinV1070.Id,
             newHead: sts.bytes(),
         })
     ),
@@ -54,10 +54,10 @@ export const setCurrentCode = {
      * ## Events
      * - `CurrentCodeForced`: Emitted when validation code is successfully updated
      */
-    v1070: new CallType(
+    enjinV1070: new CallType(
         'Recovery.set_current_code',
         sts.struct({
-            paraId: v1070.Id,
+            paraId: enjinV1070.Id,
             newCode: sts.bytes(),
         })
     ),
@@ -79,7 +79,7 @@ export const setStaleThreshold = {
      * ## Events
      * - `StaleBlockThresholdUpdated`: Emitted when threshold is updated
      */
-    v1070: new CallType(
+    enjinV1070: new CallType(
         'Recovery.set_stale_threshold',
         sts.struct({
             threshold: sts.number(),
@@ -112,11 +112,11 @@ export const setFutureCodeHash = {
      * ## Events
      * - `FutureCodeHashSet`: Emitted when future code hash is successfully set
      */
-    v1070: new CallType(
+    enjinV1070: new CallType(
         'Recovery.set_future_code_hash',
         sts.struct({
-            paraId: v1070.Id,
-            codeHash: sts.option(() => v1070.ValidationCodeHash),
+            paraId: enjinV1070.Id,
+            codeHash: sts.option(() => enjinV1070.ValidationCodeHash),
         })
     ),
 }
@@ -146,10 +146,10 @@ export const setFutureCodeUpgrade = {
      * ## Events
      * - `FutureCodeUpgradeSet`: Emitted when upgrade block is successfully set
      */
-    v1070: new CallType(
+    enjinV1070: new CallType(
         'Recovery.set_future_code_upgrade',
         sts.struct({
-            paraId: v1070.Id,
+            paraId: enjinV1070.Id,
             upgradeBlock: sts.option(() => sts.number()),
         })
     ),
@@ -182,11 +182,11 @@ export const setUpgradeGoAheadSignal = {
      * ## Events
      * - `UpgradeGoAheadSignalSet`: Emitted when signal is successfully set
      */
-    v1070: new CallType(
+    enjinV1070: new CallType(
         'Recovery.set_upgrade_go_ahead_signal',
         sts.struct({
-            paraId: v1070.Id,
-            value: sts.option(() => v1070.UpgradeGoAhead),
+            paraId: enjinV1070.Id,
+            value: sts.option(() => enjinV1070.UpgradeGoAhead),
         })
     ),
 }
@@ -196,7 +196,7 @@ export const setCode = {
     /**
      * Calls `set_code`. Requires `ForceOrigin`.
      */
-    v1070: new CallType(
+    enjinV1070: new CallType(
         'Recovery.set_code',
         sts.struct({
             code: sts.bytes(),
@@ -209,10 +209,10 @@ export const forceChill = {
     /**
      * Forces a validator to chill. Requires `ForceOrigin`.
      */
-    v1070: new CallType(
+    enjinV1070: new CallType(
         'Recovery.force_chill',
         sts.struct({
-            target: v1070.AccountId32,
+            target: enjinV1070.AccountId32,
         })
     ),
 }
@@ -222,5 +222,5 @@ export const forceNewEra = {
     /**
      * Force sets the era. Requires `ForceOrigin`.
      */
-    v1070: new CallType('Recovery.force_new_era', sts.unit()),
+    enjinV1070: new CallType('Recovery.force_new_era', sts.unit()),
 }

@@ -105,6 +105,10 @@ export const insertRuleSet = withDispatchCheck((call: CallItem): InsertRuleSet =
             () => calls.fuelTanks.insertRuleSet.enjinV1032.decode(call)
         )
         .when(
+            () => calls.fuelTanks.insertRuleSet.enjinV1070.is(call),
+            () => calls.fuelTanks.insertRuleSet.enjinV1070.decode(call)
+        )
+        .when(
             () => calls.fuelTanks.insertRuleSet.enjinV1062.is(call),
             () => calls.fuelTanks.insertRuleSet.enjinV1062.decode(call)
         )

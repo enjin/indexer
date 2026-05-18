@@ -13,6 +13,10 @@ export function frozen(event: EventItem): Freeze {
             () => multiTokens.frozen.matrixEnjinV603.decode(event)
         )
         .when(
+            () => multiTokens.frozen.enjinV1070.is(event),
+            () => multiTokens.frozen.enjinV1070.decode(event)
+        )
+        .when(
             () => multiTokens.frozen.v1070.is(event),
             () => multiTokens.frozen.v1070.decode(event)
         )

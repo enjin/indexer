@@ -471,6 +471,133 @@ export const Tally: sts.Type<Tally> = sts.struct(() => {
     }
 })
 
+export type Voting = Voting_Casting | Voting_Delegating
+
+export interface Voting_Casting {
+    __kind: 'Casting'
+    value: Casting
+}
+
+export interface Voting_Delegating {
+    __kind: 'Delegating'
+    value: Delegating
+}
+
+export interface Delegating {
+    balance: bigint
+    target: AccountId32
+    conviction: Conviction
+    delegations: Delegations
+    prior: PriorLock
+}
+
+export type PriorLock = [number, bigint]
+
+export interface Delegations {
+    votes: bigint
+    capital: bigint
+}
+
+export type Conviction =
+    | Conviction_Locked1x
+    | Conviction_Locked2x
+    | Conviction_Locked3x
+    | Conviction_Locked4x
+    | Conviction_Locked5x
+    | Conviction_Locked6x
+    | Conviction_None
+
+export interface Conviction_Locked1x {
+    __kind: 'Locked1x'
+}
+
+export interface Conviction_Locked2x {
+    __kind: 'Locked2x'
+}
+
+export interface Conviction_Locked3x {
+    __kind: 'Locked3x'
+}
+
+export interface Conviction_Locked4x {
+    __kind: 'Locked4x'
+}
+
+export interface Conviction_Locked5x {
+    __kind: 'Locked5x'
+}
+
+export interface Conviction_Locked6x {
+    __kind: 'Locked6x'
+}
+
+export interface Conviction_None {
+    __kind: 'None'
+}
+
+export interface Casting {
+    votes: [number, AccountVote][]
+    delegations: Delegations
+    prior: PriorLock
+}
+
+export type AccountVote = AccountVote_Split | AccountVote_SplitAbstain | AccountVote_Standard
+
+export interface AccountVote_Split {
+    __kind: 'Split'
+    aye: bigint
+    nay: bigint
+}
+
+export interface AccountVote_SplitAbstain {
+    __kind: 'SplitAbstain'
+    aye: bigint
+    nay: bigint
+    abstain: bigint
+}
+
+export interface AccountVote_Standard {
+    __kind: 'Standard'
+    vote: Vote
+    balance: bigint
+}
+
+export type Vote = number
+
+export const Voting: sts.Type<Voting> = sts.closedEnum(() => {
+    return {
+        Casting: Casting,
+        Delegating: Delegating,
+    }
+})
+
+export const Delegating: sts.Type<Delegating> = sts.struct(() => {
+    return {
+        balance: sts.bigint(),
+        target: AccountId32,
+        conviction: Conviction,
+        delegations: Delegations,
+        prior: PriorLock,
+    }
+})
+
+export const PriorLock = sts.tuple(() => [sts.number(), sts.bigint()])
+
+export const Delegations: sts.Type<Delegations> = sts.struct(() => {
+    return {
+        votes: sts.bigint(),
+        capital: sts.bigint(),
+    }
+})
+
+export const Casting: sts.Type<Casting> = sts.struct(() => {
+    return {
+        votes: sts.array(() => sts.tuple(() => [sts.number(), AccountVote])),
+        delegations: Delegations,
+        prior: PriorLock,
+    }
+})
+
 export interface BeefyAuthoritySet {
     id: bigint
     len: number
@@ -1558,6 +1685,75 @@ export const V2NetworkId: sts.Type<V2NetworkId> = sts.closedEnum(() => {
         Kusama: sts.unit(),
         Named: WeakBoundedVec,
         Polkadot: sts.unit(),
+    }
+})
+
+export interface FundInfo {
+    depositor: AccountId32
+    verifier?: MultiSigner | undefined
+    deposit: bigint
+    raised: bigint
+    end: number
+    cap: bigint
+    lastContribution: LastContribution
+    firstPeriod: number
+    lastPeriod: number
+    fundIndex: number
+}
+
+export type LastContribution = LastContribution_Ending | LastContribution_Never | LastContribution_PreEnding
+
+export interface LastContribution_Ending {
+    __kind: 'Ending'
+    value: number
+}
+
+export interface LastContribution_Never {
+    __kind: 'Never'
+}
+
+export interface LastContribution_PreEnding {
+    __kind: 'PreEnding'
+    value: number
+}
+
+export type MultiSigner = MultiSigner_Ecdsa | MultiSigner_Ed25519 | MultiSigner_Sr25519
+
+export interface MultiSigner_Ecdsa {
+    __kind: 'Ecdsa'
+    value: Bytes
+}
+
+export interface MultiSigner_Ed25519 {
+    __kind: 'Ed25519'
+    value: Bytes
+}
+
+export interface MultiSigner_Sr25519 {
+    __kind: 'Sr25519'
+    value: Bytes
+}
+
+export const FundInfo: sts.Type<FundInfo> = sts.struct(() => {
+    return {
+        depositor: AccountId32,
+        verifier: sts.option(() => MultiSigner),
+        deposit: sts.bigint(),
+        raised: sts.bigint(),
+        end: sts.number(),
+        cap: sts.bigint(),
+        lastContribution: LastContribution,
+        firstPeriod: sts.number(),
+        lastPeriod: sts.number(),
+        fundIndex: sts.number(),
+    }
+})
+
+export const LastContribution: sts.Type<LastContribution> = sts.closedEnum(() => {
+    return {
+        Ending: sts.number(),
+        Never: sts.unit(),
+        PreEnding: sts.number(),
     }
 })
 
@@ -8020,36 +8216,6 @@ export const MigrationStage: sts.Type<MigrationStage> = sts.closedEnum(() => {
     }
 })
 
-export const Freeze: sts.Type<Freeze> = sts.struct(() => {
-    return {
-        collectionId: sts.bigint(),
-        freezeType: FreezeType,
-    }
-})
-
-export const FreezeType: sts.Type<FreezeType> = sts.closedEnum(() => {
-    return {
-        Collection: sts.unit(),
-        CollectionAccount: AccountId32,
-        Token: sts.enumStruct({
-            tokenId: sts.bigint(),
-            freezeState: sts.option(() => FreezeState),
-        }),
-        TokenAccount: sts.enumStruct({
-            tokenId: sts.bigint(),
-            accountId: AccountId32,
-        }),
-    }
-})
-
-export const FreezeState: sts.Type<FreezeState> = sts.closedEnum(() => {
-    return {
-        Never: sts.unit(),
-        Permanent: sts.unit(),
-        Temporary: sts.unit(),
-    }
-})
-
 export const CollectionAccount: sts.Type<CollectionAccount> = sts.struct(() => {
     return {
         isFrozen: sts.boolean(),
@@ -8521,6 +8687,38 @@ export const Bounded: sts.Type<Bounded> = sts.closedEnum(() => {
         }),
     }
 })
+
+export const Conviction: sts.Type<Conviction> = sts.closedEnum(() => {
+    return {
+        Locked1x: sts.unit(),
+        Locked2x: sts.unit(),
+        Locked3x: sts.unit(),
+        Locked4x: sts.unit(),
+        Locked5x: sts.unit(),
+        Locked6x: sts.unit(),
+        None: sts.unit(),
+    }
+})
+
+export const AccountVote: sts.Type<AccountVote> = sts.closedEnum(() => {
+    return {
+        Split: sts.enumStruct({
+            aye: sts.bigint(),
+            nay: sts.bigint(),
+        }),
+        SplitAbstain: sts.enumStruct({
+            aye: sts.bigint(),
+            nay: sts.bigint(),
+            abstain: sts.bigint(),
+        }),
+        Standard: sts.enumStruct({
+            vote: Vote,
+            balance: sts.bigint(),
+        }),
+    }
+})
+
+export const Vote = sts.number()
 
 export const V3WeightLimit: sts.Type<V3WeightLimit> = sts.closedEnum(() => {
     return {
@@ -9866,6 +10064,43 @@ export interface VersionedXcm_V3 {
     value: V3Instruction[]
 }
 
+export const MultiSignature: sts.Type<MultiSignature> = sts.closedEnum(() => {
+    return {
+        Ecdsa: sts.bytes(),
+        Ed25519: sts.bytes(),
+        Sr25519: Signature,
+    }
+})
+
+export const Signature = sts.bytes()
+
+export type MultiSignature = MultiSignature_Ecdsa | MultiSignature_Ed25519 | MultiSignature_Sr25519
+
+export interface MultiSignature_Ecdsa {
+    __kind: 'Ecdsa'
+    value: Bytes
+}
+
+export interface MultiSignature_Ed25519 {
+    __kind: 'Ed25519'
+    value: Bytes
+}
+
+export interface MultiSignature_Sr25519 {
+    __kind: 'Sr25519'
+    value: Signature
+}
+
+export type Signature = Bytes
+
+export const MultiSigner: sts.Type<MultiSigner> = sts.closedEnum(() => {
+    return {
+        Ecdsa: sts.bytes(),
+        Ed25519: sts.bytes(),
+        Sr25519: sts.bytes(),
+    }
+})
+
 export const MembershipProof: sts.Type<MembershipProof> = sts.struct(() => {
     return {
         session: sts.number(),
@@ -10522,6 +10757,14 @@ export const AttributeKeyValuePair: sts.Type<AttributeKeyValuePair> = sts.struct
     return {
         key: sts.bytes(),
         value: sts.bytes(),
+    }
+})
+
+export const FreezeState: sts.Type<FreezeState> = sts.closedEnum(() => {
+    return {
+        Never: sts.unit(),
+        Permanent: sts.unit(),
+        Temporary: sts.unit(),
     }
 })
 
@@ -15443,60 +15686,6 @@ export const CrowdloanCall: sts.Type<CrowdloanCall> = sts.closedEnum(() => {
     }
 })
 
-export const MultiSigner: sts.Type<MultiSigner> = sts.closedEnum(() => {
-    return {
-        Ecdsa: sts.bytes(),
-        Ed25519: sts.bytes(),
-        Sr25519: sts.bytes(),
-    }
-})
-
-export type MultiSigner = MultiSigner_Ecdsa | MultiSigner_Ed25519 | MultiSigner_Sr25519
-
-export interface MultiSigner_Ecdsa {
-    __kind: 'Ecdsa'
-    value: Bytes
-}
-
-export interface MultiSigner_Ed25519 {
-    __kind: 'Ed25519'
-    value: Bytes
-}
-
-export interface MultiSigner_Sr25519 {
-    __kind: 'Sr25519'
-    value: Bytes
-}
-
-export const MultiSignature: sts.Type<MultiSignature> = sts.closedEnum(() => {
-    return {
-        Ecdsa: sts.bytes(),
-        Ed25519: sts.bytes(),
-        Sr25519: Signature,
-    }
-})
-
-export const Signature = sts.bytes()
-
-export type MultiSignature = MultiSignature_Ecdsa | MultiSignature_Ed25519 | MultiSignature_Sr25519
-
-export interface MultiSignature_Ecdsa {
-    __kind: 'Ecdsa'
-    value: Bytes
-}
-
-export interface MultiSignature_Ed25519 {
-    __kind: 'Ed25519'
-    value: Bytes
-}
-
-export interface MultiSignature_Sr25519 {
-    __kind: 'Sr25519'
-    value: Signature
-}
-
-export type Signature = Bytes
-
 /**
  * Contains one variant per dispatchable that can be called by an extrinsic.
  */
@@ -15662,98 +15851,6 @@ export const ConvictionVotingCall: sts.Type<ConvictionVotingCall> = sts.closedEn
         }),
     }
 })
-
-export const AccountVote: sts.Type<AccountVote> = sts.closedEnum(() => {
-    return {
-        Split: sts.enumStruct({
-            aye: sts.bigint(),
-            nay: sts.bigint(),
-        }),
-        SplitAbstain: sts.enumStruct({
-            aye: sts.bigint(),
-            nay: sts.bigint(),
-            abstain: sts.bigint(),
-        }),
-        Standard: sts.enumStruct({
-            vote: Vote,
-            balance: sts.bigint(),
-        }),
-    }
-})
-
-export const Vote = sts.number()
-
-export type AccountVote = AccountVote_Split | AccountVote_SplitAbstain | AccountVote_Standard
-
-export interface AccountVote_Split {
-    __kind: 'Split'
-    aye: bigint
-    nay: bigint
-}
-
-export interface AccountVote_SplitAbstain {
-    __kind: 'SplitAbstain'
-    aye: bigint
-    nay: bigint
-    abstain: bigint
-}
-
-export interface AccountVote_Standard {
-    __kind: 'Standard'
-    vote: Vote
-    balance: bigint
-}
-
-export type Vote = number
-
-export const Conviction: sts.Type<Conviction> = sts.closedEnum(() => {
-    return {
-        Locked1x: sts.unit(),
-        Locked2x: sts.unit(),
-        Locked3x: sts.unit(),
-        Locked4x: sts.unit(),
-        Locked5x: sts.unit(),
-        Locked6x: sts.unit(),
-        None: sts.unit(),
-    }
-})
-
-export type Conviction =
-    | Conviction_Locked1x
-    | Conviction_Locked2x
-    | Conviction_Locked3x
-    | Conviction_Locked4x
-    | Conviction_Locked5x
-    | Conviction_Locked6x
-    | Conviction_None
-
-export interface Conviction_Locked1x {
-    __kind: 'Locked1x'
-}
-
-export interface Conviction_Locked2x {
-    __kind: 'Locked2x'
-}
-
-export interface Conviction_Locked3x {
-    __kind: 'Locked3x'
-}
-
-export interface Conviction_Locked4x {
-    __kind: 'Locked4x'
-}
-
-export interface Conviction_Locked5x {
-    __kind: 'Locked5x'
-}
-
-export interface Conviction_Locked6x {
-    __kind: 'Locked6x'
-}
-
-export interface Conviction_None {
-    __kind: 'None'
-}
 
 /**
  * Contains one variant per dispatchable that can be called by an extrinsic.
@@ -17586,6 +17683,28 @@ export const DefaultMintPolicy: sts.Type<DefaultMintPolicy> = sts.struct(() => {
         maxTokenCount: sts.option(() => sts.bigint()),
         maxTokenSupply: sts.option(() => sts.bigint()),
         forceSingleMint: sts.boolean(),
+    }
+})
+
+export const Freeze: sts.Type<Freeze> = sts.struct(() => {
+    return {
+        collectionId: sts.bigint(),
+        freezeType: FreezeType,
+    }
+})
+
+export const FreezeType: sts.Type<FreezeType> = sts.closedEnum(() => {
+    return {
+        Collection: sts.unit(),
+        CollectionAccount: AccountId32,
+        Token: sts.enumStruct({
+            tokenId: sts.bigint(),
+            freezeState: sts.option(() => FreezeState),
+        }),
+        TokenAccount: sts.enumStruct({
+            tokenId: sts.bigint(),
+            accountId: AccountId32,
+        }),
     }
 })
 

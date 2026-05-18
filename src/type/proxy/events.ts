@@ -9,6 +9,7 @@ import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
+import * as enjinV1070 from '../enjinV1070'
 import * as v1070 from '../v1070'
 
 export const proxyExecuted = {
@@ -189,6 +190,21 @@ export const pureCreated = {
             who: enjinV1050.AccountId32,
             proxyType: enjinV1050.ProxyType,
             disambiguationIndex: sts.number(),
+        })
+    ),
+    /**
+     * A pure account has been created by new proxy with given
+     * disambiguation index and proxy type.
+     */
+    enjinV1070: new EventType(
+        'Proxy.PureCreated',
+        sts.struct({
+            pure: enjinV1070.AccountId32,
+            who: enjinV1070.AccountId32,
+            proxyType: enjinV1070.ProxyType,
+            disambiguationIndex: sts.number(),
+            at: sts.number(),
+            extrinsicIndex: sts.number(),
         })
     ),
     /**

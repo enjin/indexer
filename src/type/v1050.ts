@@ -8968,26 +8968,6 @@ export const VoteManagerEvent: sts.Type<VoteManagerEvent> = sts.closedEnum(() =>
     }
 })
 
-export const AccountVote: sts.Type<AccountVote> = sts.closedEnum(() => {
-    return {
-        Split: sts.enumStruct({
-            aye: sts.bigint(),
-            nay: sts.bigint(),
-        }),
-        SplitAbstain: sts.enumStruct({
-            aye: sts.bigint(),
-            nay: sts.bigint(),
-            abstain: sts.bigint(),
-        }),
-        Standard: sts.enumStruct({
-            vote: Vote,
-            balance: sts.bigint(),
-        }),
-    }
-})
-
-export const Vote = sts.number()
-
 /**
  * The `Event` enum of this pallet
  */
@@ -25871,6 +25851,26 @@ export const SlotLeasePeriodStart: sts.Type<SlotLeasePeriodStart> = sts.closedEn
         Next: sts.unit(),
     }
 })
+
+export const AccountVote: sts.Type<AccountVote> = sts.closedEnum(() => {
+    return {
+        Split: sts.enumStruct({
+            aye: sts.bigint(),
+            nay: sts.bigint(),
+        }),
+        SplitAbstain: sts.enumStruct({
+            aye: sts.bigint(),
+            nay: sts.bigint(),
+            abstain: sts.bigint(),
+        }),
+        Standard: sts.enumStruct({
+            vote: Vote,
+            balance: sts.bigint(),
+        }),
+    }
+})
+
+export const Vote = sts.number()
 
 export const ProxyType: sts.Type<ProxyType> = sts.closedEnum(() => {
     return {

@@ -955,6 +955,8 @@ export const LastContribution: sts.Type<LastContribution> = sts.closedEnum(() =>
     }
 })
 
+export const Id = sts.number()
+
 export type H256 = Bytes
 
 export interface Listing {
@@ -11293,6 +11295,15 @@ export const RecoveryEvent: sts.Type<RecoveryEvent> = sts.closedEnum(() => {
     }
 })
 
+export const UpgradeGoAhead: sts.Type<UpgradeGoAhead> = sts.closedEnum(() => {
+    return {
+        Abort: sts.unit(),
+        GoAhead: sts.unit(),
+    }
+})
+
+export const ValidationCodeHash = sts.bytes()
+
 /**
  * The `Event` enum of this pallet
  */
@@ -13077,6 +13088,13 @@ export const BalancesEvent: sts.Type<BalancesEvent> = sts.closedEnum(() => {
             who: AccountId32,
             amount: sts.bigint(),
         }),
+    }
+})
+
+export const UnexpectedKind: sts.Type<UnexpectedKind> = sts.closedEnum(() => {
+    return {
+        BalanceUpdated: sts.unit(),
+        FailedToMutateAccount: sts.unit(),
     }
 })
 
@@ -28734,17 +28752,6 @@ export const SlotLeasePeriodStart: sts.Type<SlotLeasePeriodStart> = sts.closedEn
     }
 })
 
-export const UpgradeGoAhead: sts.Type<UpgradeGoAhead> = sts.closedEnum(() => {
-    return {
-        Abort: sts.unit(),
-        GoAhead: sts.unit(),
-    }
-})
-
-export const ValidationCodeHash = sts.bytes()
-
-export const Id = sts.number()
-
 export const AccountVote: sts.Type<AccountVote> = sts.closedEnum(() => {
     return {
         Split: sts.enumStruct({
@@ -28868,58 +28875,6 @@ export const TokenAccountReserve: sts.Type<TokenAccountReserve> = sts.struct(() 
     }
 })
 
-export const Thaw: sts.Type<Thaw> = sts.struct(() => {
-    return {
-        collectionId: sts.bigint(),
-        thawType: ThawType,
-    }
-})
-
-export const ThawType: sts.Type<ThawType> = sts.closedEnum(() => {
-    return {
-        Collection: sts.unit(),
-        CollectionAccount: AccountId32,
-        Token: sts.enumStruct({
-            tokenId: sts.bigint(),
-        }),
-        TokenAccount: sts.enumStruct({
-            tokenId: sts.bigint(),
-            accountId: AccountId32,
-        }),
-    }
-})
-
-export const Freeze: sts.Type<Freeze> = sts.struct(() => {
-    return {
-        collectionId: sts.bigint(),
-        freezeType: FreezeType,
-    }
-})
-
-export const FreezeType: sts.Type<FreezeType> = sts.closedEnum(() => {
-    return {
-        Collection: sts.unit(),
-        CollectionAccount: AccountId32,
-        Token: sts.enumStruct({
-            tokenId: sts.bigint(),
-            freezeState: FreezeState,
-        }),
-        TokenAccount: sts.enumStruct({
-            tokenId: sts.bigint(),
-            accountId: AccountId32,
-        }),
-    }
-})
-
-export const UnexpectedKind: sts.Type<UnexpectedKind> = sts.closedEnum(() => {
-    return {
-        BalanceUpdated: sts.unit(),
-        FailedToMutateAccount: sts.unit(),
-    }
-})
-
-export const AccountId32 = sts.bytes()
-
 export const RuntimeHoldReason: sts.Type<RuntimeHoldReason> = sts.closedEnum(() => {
     return {
         FuelTanks: Type_44,
@@ -28985,5 +28940,50 @@ export const Type_42: sts.Type<Type_42> = sts.closedEnum(() => {
 export const Type_44: sts.Type<Type_44> = sts.closedEnum(() => {
     return {
         FuelTanks: sts.unit(),
+    }
+})
+
+export const AccountId32 = sts.bytes()
+
+export const Thaw: sts.Type<Thaw> = sts.struct(() => {
+    return {
+        collectionId: sts.bigint(),
+        thawType: ThawType,
+    }
+})
+
+export const ThawType: sts.Type<ThawType> = sts.closedEnum(() => {
+    return {
+        Collection: sts.unit(),
+        CollectionAccount: AccountId32,
+        Token: sts.enumStruct({
+            tokenId: sts.bigint(),
+        }),
+        TokenAccount: sts.enumStruct({
+            tokenId: sts.bigint(),
+            accountId: AccountId32,
+        }),
+    }
+})
+
+export const Freeze: sts.Type<Freeze> = sts.struct(() => {
+    return {
+        collectionId: sts.bigint(),
+        freezeType: FreezeType,
+    }
+})
+
+export const FreezeType: sts.Type<FreezeType> = sts.closedEnum(() => {
+    return {
+        Collection: sts.unit(),
+        CollectionAccount: AccountId32,
+        Token: sts.enumStruct({
+            tokenId: sts.bigint(),
+            freezeState: FreezeState,
+        }),
+        TokenAccount: sts.enumStruct({
+            tokenId: sts.bigint(),
+            accountId: AccountId32,
+        }),
     }
 })

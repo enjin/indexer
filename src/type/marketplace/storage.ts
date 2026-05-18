@@ -18,6 +18,7 @@ import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
+import * as enjinV1070 from '../enjinV1070'
 import * as v1070 from '../v1070'
 
 export const info = {
@@ -185,6 +186,15 @@ export const listings = {
         [enjinV1062.H256],
         enjinV1062.Listing
     ) as ListingsEnjinV1062,
+    /**
+     *  Listings by ID (real storage)
+     */
+    enjinV1070: new StorageType(
+        'Marketplace.Listings',
+        'Optional',
+        [enjinV1070.H256],
+        enjinV1070.Listing
+    ) as ListingsEnjinV1070,
     /**
      *  Listings by ID
      */
@@ -533,6 +543,30 @@ export interface ListingsEnjinV1062 {
         block: Block,
         key: enjinV1062.H256
     ): AsyncIterable<[k: enjinV1062.H256, v: enjinV1062.Listing | undefined][]>
+}
+
+/**
+ *  Listings by ID (real storage)
+ */
+export interface ListingsEnjinV1070 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: enjinV1070.H256): Promise<enjinV1070.Listing | undefined>
+    getMany(block: Block, keys: enjinV1070.H256[]): Promise<(enjinV1070.Listing | undefined)[]>
+    getKeys(block: Block): Promise<enjinV1070.H256[]>
+    getKeys(block: Block, key: enjinV1070.H256): Promise<enjinV1070.H256[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<enjinV1070.H256[]>
+    getKeysPaged(pageSize: number, block: Block, key: enjinV1070.H256): AsyncIterable<enjinV1070.H256[]>
+    getPairs(block: Block): Promise<[k: enjinV1070.H256, v: enjinV1070.Listing | undefined][]>
+    getPairs(block: Block, key: enjinV1070.H256): Promise<[k: enjinV1070.H256, v: enjinV1070.Listing | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: enjinV1070.H256, v: enjinV1070.Listing | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: enjinV1070.H256
+    ): AsyncIterable<[k: enjinV1070.H256, v: enjinV1070.Listing | undefined][]>
 }
 
 /**
