@@ -23,9 +23,13 @@ export async function whitelistedAccountsRemoved(
     })
     await ctx.store.remove(whitelistedAccounts)
 
-    listing.whitelistedAccounts = listing.whitelistedAccounts.filter(
-        (account) => !accountIds.includes(account.account.id)
-    )
+    if (listing.whitelistedAccounts) {
+        listing.whitelistedAccounts = listing.whitelistedAccounts.filter(
+            (account) => !accountIds.includes(account.account.id)
+        )
+    } else {
+        listing.whitelistedAccounts = []
+    }
     await ctx.store.save(listing)
 
     const snsEvent: SnsEvent = {
