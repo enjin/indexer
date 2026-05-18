@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, OneToMany as OneToMany_, DateTimeColumn as DateTimeColumn_} from "@subsquid/typeorm-store"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, Relation as Relation_, OneToMany as OneToMany_, DateTimeColumn as DateTimeColumn_} from "@subsquid/typeorm-store"
 import * as marshal from "./marshal"
 import {Collection} from "./collection.model"
 import {Attribute} from "./attribute.model"
@@ -16,16 +16,16 @@ export class TokenGroup {
 
     @Index_()
     @ManyToOne_(() => Collection, {nullable: true})
-    collection!: Collection
+    collection!: Relation_<Collection>
 
     @OneToMany_(() => Attribute, e => e.tokenGroup)
-    attributes!: Attribute[]
+    attributes!: Relation_<Attribute[]>
 
     @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new Metadata(undefined, obj)}, nullable: true})
     metadata!: Metadata | undefined | null
 
     @OneToMany_(() => TokenGroupToken, e => e.tokenGroup)
-    tokenGroupTokens!: TokenGroupToken[]
+    tokenGroupTokens!: Relation_<TokenGroupToken[]>
 
     @DateTimeColumn_({nullable: true})
     createdAt!: Date | undefined | null

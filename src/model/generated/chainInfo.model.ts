@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, IntColumn as IntColumn_, StringColumn as StringColumn_, Index as Index_, BigIntColumn as BigIntColumn_, DateTimeColumn as DateTimeColumn_, BooleanColumn as BooleanColumn_, OneToMany as OneToMany_} from "@subsquid/typeorm-store"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, IntColumn as IntColumn_, StringColumn as StringColumn_, Index as Index_, BigIntColumn as BigIntColumn_, DateTimeColumn as DateTimeColumn_, BooleanColumn as BooleanColumn_, OneToMany as OneToMany_, Relation as Relation_} from "@subsquid/typeorm-store"
 import * as marshal from "./marshal"
 import {Marketplace} from "./_marketplace"
 import {Extrinsic} from "./extrinsic.model"
@@ -45,5 +45,5 @@ export class ChainInfo {
     finalized!: boolean | undefined | null
 
     @OneToMany_(() => Extrinsic, e => e.block)
-    extrinsics!: Extrinsic[]
+    extrinsics!: Relation_<Extrinsic[]>
 }

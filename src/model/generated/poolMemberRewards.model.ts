@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, IntColumn as IntColumn_, ManyToOne as ManyToOne_, Index as Index_, BigIntColumn as BigIntColumn_} from "@subsquid/typeorm-store"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, IntColumn as IntColumn_, ManyToOne as ManyToOne_, Index as Index_, Relation as Relation_, BigIntColumn as BigIntColumn_} from "@subsquid/typeorm-store"
 import {NominationPool} from "./nominationPool.model"
 import {PoolMember} from "./poolMember.model"
 import {EraReward} from "./eraReward.model"
@@ -17,15 +17,15 @@ export class PoolMemberRewards {
 
     @Index_()
     @ManyToOne_(() => NominationPool, {nullable: true})
-    pool!: NominationPool
+    pool!: Relation_<NominationPool>
 
     @Index_()
     @ManyToOne_(() => PoolMember, {nullable: true})
-    member!: PoolMember
+    member!: Relation_<PoolMember>
 
     @Index_()
     @ManyToOne_(() => EraReward, {nullable: true})
-    reward!: EraReward
+    reward!: Relation_<EraReward>
 
     @BigIntColumn_({nullable: false})
     points!: bigint

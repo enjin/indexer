@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, StringColumn as StringColumn_, BigIntColumn as BigIntColumn_, OneToMany as OneToMany_} from "@subsquid/typeorm-store"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, Relation as Relation_, StringColumn as StringColumn_, BigIntColumn as BigIntColumn_, OneToMany as OneToMany_} from "@subsquid/typeorm-store"
 import {Collection} from "./collection.model"
 import {TraitToken} from "./traitToken.model"
 
@@ -13,7 +13,7 @@ export class Trait {
 
     @Index_()
     @ManyToOne_(() => Collection, {nullable: true})
-    collection!: Collection
+    collection!: Relation_<Collection>
 
     @StringColumn_({nullable: false})
     traitType!: string
@@ -31,5 +31,5 @@ export class Trait {
     count!: bigint
 
     @OneToMany_(() => TraitToken, e => e.trait)
-    tokens!: TraitToken[]
+    tokens!: Relation_<TraitToken[]>
 }

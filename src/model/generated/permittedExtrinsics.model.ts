@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, StringColumn as StringColumn_} from "@subsquid/typeorm-store"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, Relation as Relation_, StringColumn as StringColumn_} from "@subsquid/typeorm-store"
 import {FuelTankRuleSet} from "./fuelTankRuleSet.model"
 
 @Entity_()
@@ -12,7 +12,7 @@ export class PermittedExtrinsics {
 
     @Index_()
     @ManyToOne_(() => FuelTankRuleSet, {nullable: true})
-    ruleSet!: FuelTankRuleSet
+    ruleSet!: Relation_<FuelTankRuleSet>
 
     @StringColumn_({nullable: true})
     palletName!: string | undefined | null

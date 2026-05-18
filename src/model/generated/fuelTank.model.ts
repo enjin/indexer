@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, StringColumn as StringColumn_, BooleanColumn as BooleanColumn_, IntColumn as IntColumn_, OneToMany as OneToMany_} from "@subsquid/typeorm-store"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, Relation as Relation_, StringColumn as StringColumn_, BooleanColumn as BooleanColumn_, IntColumn as IntColumn_, OneToMany as OneToMany_} from "@subsquid/typeorm-store"
 import * as marshal from "./marshal"
 import {Account} from "./account.model"
 import {CoveragePolicy} from "./_coveragePolicy"
@@ -18,14 +18,14 @@ export class FuelTank {
 
     @Index_()
     @ManyToOne_(() => Account, {nullable: true})
-    tankAccount!: Account
+    tankAccount!: Relation_<Account>
 
     @StringColumn_({nullable: false})
     name!: string
 
     @Index_()
     @ManyToOne_(() => Account, {nullable: true})
-    owner!: Account
+    owner!: Relation_<Account>
 
     @BooleanColumn_({nullable: false})
     providesDeposit!: boolean
@@ -40,14 +40,14 @@ export class FuelTank {
     coveragePolicy!: CoveragePolicy | undefined | null
 
     @OneToMany_(() => FuelTankUserAccounts, e => e.tank)
-    userAccounts!: FuelTankUserAccounts[]
+    userAccounts!: Relation_<FuelTankUserAccounts[]>
 
     @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new FuelTankUserAccountManagement(undefined, obj)}, nullable: true})
     userAccountManagement!: FuelTankUserAccountManagement | undefined | null
 
     @OneToMany_(() => FuelTankAccountRules, e => e.tank)
-    accountRules!: FuelTankAccountRules[]
+    accountRules!: Relation_<FuelTankAccountRules[]>
 
     @OneToMany_(() => FuelTankRuleSet, e => e.tank)
-    ruleSets!: FuelTankRuleSet[]
+    ruleSets!: Relation_<FuelTankRuleSet[]>
 }

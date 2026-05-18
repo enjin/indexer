@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, StringColumn as StringColumn_, Index as Index_, IntColumn as IntColumn_, OneToMany as OneToMany_, OneToOne as OneToOne_, DateTimeColumn as DateTimeColumn_, BooleanColumn as BooleanColumn_} from "@subsquid/typeorm-store"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, StringColumn as StringColumn_, Index as Index_, IntColumn as IntColumn_, OneToMany as OneToMany_, Relation as Relation_, OneToOne as OneToOne_, DateTimeColumn as DateTimeColumn_, BooleanColumn as BooleanColumn_} from "@subsquid/typeorm-store"
 import * as marshal from "./marshal"
 import {Balance} from "./_balance"
 import {Extrinsic} from "./extrinsic.model"
@@ -34,37 +34,37 @@ export class Account {
     balance!: Balance
 
     @OneToMany_(() => Extrinsic, e => e.signer)
-    extrinsics!: Extrinsic[]
+    extrinsics!: Relation_<Extrinsic[]>
 
     @OneToMany_(() => Collection, e => e.owner)
-    collectionsOwned!: Collection[]
+    collectionsOwned!: Relation_<Collection[]>
 
     @OneToMany_(() => CollectionAccount, e => e.account)
-    collectionAccounts!: CollectionAccount[]
+    collectionAccounts!: Relation_<CollectionAccount[]>
 
     @OneToMany_(() => TokenAccount, e => e.account)
-    tokenAccounts!: TokenAccount[]
+    tokenAccounts!: Relation_<TokenAccount[]>
 
     @OneToMany_(() => AccountTokenEvent, e => e.from)
-    tokenEvents!: AccountTokenEvent[]
+    tokenEvents!: Relation_<AccountTokenEvent[]>
 
     @OneToMany_(() => PoolMember, e => e.account)
-    joinedPools!: PoolMember[]
+    joinedPools!: Relation_<PoolMember[]>
 
     @OneToMany_(() => EarlyBirdShares, e => e.account)
-    earlyBirdShares!: EarlyBirdShares[]
+    earlyBirdShares!: Relation_<EarlyBirdShares[]>
 
     @OneToOne_(() => StakeExchangeTokenFilter, e => e.account)
-    tokenFilter!: StakeExchangeTokenFilter | undefined | null
+    tokenFilter!: Relation_<StakeExchangeTokenFilter> | undefined | null
 
     @OneToOne_(() => Identity, e => e.account)
-    identity!: Identity | undefined | null
+    identity!: Relation_<Identity> | undefined | null
 
     @OneToOne_(() => IdentityRegistrar, e => e.account)
-    registrar!: IdentityRegistrar | undefined | null
+    registrar!: Relation_<IdentityRegistrar> | undefined | null
 
     @OneToMany_(() => UserInfusion, e => e.account)
-    userInfusions!: UserInfusion[]
+    userInfusions!: Relation_<UserInfusion[]>
 
     @IntColumn_({nullable: true})
     lastUpdateBlock!: number | undefined | null

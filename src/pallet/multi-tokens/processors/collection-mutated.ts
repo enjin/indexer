@@ -57,6 +57,7 @@ export async function collectionMutated(
 
     if (data.mutation.owner) {
         collection.isTransferPending = true
+        collection.pendingTransfer = await getOrCreateAccount(ctx, data.mutation.owner)
     }
 
     if (data.mutation.royalty.__kind === 'SomeMutation') {

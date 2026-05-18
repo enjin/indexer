@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, IntColumn as IntColumn_, BooleanColumn as BooleanColumn_, BigIntColumn as BigIntColumn_, OneToMany as OneToMany_} from "@subsquid/typeorm-store"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, Relation as Relation_, IntColumn as IntColumn_, BooleanColumn as BooleanColumn_, BigIntColumn as BigIntColumn_, OneToMany as OneToMany_} from "@subsquid/typeorm-store"
 import {Account} from "./account.model"
 import {ScoreGrade} from "./_scoreGrade"
 import {PoolValidator} from "./poolValidator.model"
@@ -14,7 +14,7 @@ export class Validator {
 
     @Index_()
     @ManyToOne_(() => Account, {nullable: true})
-    account!: Account
+    account!: Relation_<Account>
 
     @IntColumn_({nullable: true})
     commission!: number | undefined | null
@@ -53,5 +53,5 @@ export class Validator {
     accumulatedRewards!: bigint | undefined | null
 
     @OneToMany_(() => PoolValidator, e => e.validator)
-    pools!: PoolValidator[]
+    pools!: Relation_<PoolValidator[]>
 }

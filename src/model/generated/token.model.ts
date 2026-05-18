@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, BigIntColumn as BigIntColumn_, Index as Index_, BooleanColumn as BooleanColumn_, IntColumn as IntColumn_, ManyToOne as ManyToOne_, OneToMany as OneToMany_, OneToOne as OneToOne_, StringColumn as StringColumn_, DateTimeColumn as DateTimeColumn_} from "@subsquid/typeorm-store"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, BigIntColumn as BigIntColumn_, Index as Index_, BooleanColumn as BooleanColumn_, IntColumn as IntColumn_, ManyToOne as ManyToOne_, Relation as Relation_, OneToMany as OneToMany_, OneToOne as OneToOne_, StringColumn as StringColumn_, DateTimeColumn as DateTimeColumn_} from "@subsquid/typeorm-store"
 import * as marshal from "./marshal"
 import {FreezeState} from "./_freezeState"
 import {TokenCap, fromJsonTokenCap} from "./_tokenCap"
@@ -79,47 +79,47 @@ export class Token {
 
     @Index_()
     @ManyToOne_(() => Collection, {nullable: true})
-    collection!: Collection
+    collection!: Relation_<Collection>
 
     @OneToMany_(() => TokenAccount, e => e.token)
-    tokenAccounts!: TokenAccount[]
+    tokenAccounts!: Relation_<TokenAccount[]>
 
     @OneToMany_(() => Attribute, e => e.token)
-    attributes!: Attribute[]
+    attributes!: Relation_<Attribute[]>
 
     @OneToMany_(() => Listing, e => e.makeAssetId)
-    listings!: Listing[]
+    listings!: Relation_<Listing[]>
 
     @OneToMany_(() => Listing, e => e.takeAssetId)
-    offers!: Listing[]
+    offers!: Relation_<Listing[]>
 
     @OneToMany_(() => TraitToken, e => e.token)
-    traits!: TraitToken[]
+    traits!: Relation_<TraitToken[]>
 
     @OneToOne_(() => TokenRarity, e => e.token)
-    rarity!: TokenRarity | undefined | null
+    rarity!: Relation_<TokenRarity> | undefined | null
 
     @Index_()
     @ManyToOne_(() => NominationPool, {nullable: true})
-    nominationPool!: NominationPool | undefined | null
+    nominationPool!: Relation_<NominationPool> | undefined | null
 
     @OneToMany_(() => TokenGroupToken, e => e.token)
-    tokenGroupTokens!: TokenGroupToken[]
+    tokenGroupTokens!: Relation_<TokenGroupToken[]>
 
     @OneToMany_(() => UserInfusion, e => e.token)
-    userInfusions!: UserInfusion[]
+    userInfusions!: Relation_<UserInfusion[]>
 
     @Index_()
     @ManyToOne_(() => Listing, {nullable: true})
-    bestListing!: Listing | undefined | null
+    bestListing!: Relation_<Listing> | undefined | null
 
     @Index_()
     @ManyToOne_(() => Listing, {nullable: true})
-    recentListing!: Listing | undefined | null
+    recentListing!: Relation_<Listing> | undefined | null
 
     @Index_()
     @ManyToOne_(() => ListingSale, {nullable: true})
-    lastSale!: ListingSale | undefined | null
+    lastSale!: Relation_<ListingSale> | undefined | null
 
     @Index_()
     @StringColumn_({nullable: true})

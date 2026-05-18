@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, BigIntColumn as BigIntColumn_} from "@subsquid/typeorm-store"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, Relation as Relation_, BigIntColumn as BigIntColumn_} from "@subsquid/typeorm-store"
 import {NominationPool} from "./nominationPool.model"
 import {Account} from "./account.model"
 
@@ -13,11 +13,11 @@ export class EarlyBirdShares {
 
     @Index_()
     @ManyToOne_(() => NominationPool, {nullable: true})
-    pool!: NominationPool
+    pool!: Relation_<NominationPool>
 
     @Index_()
     @ManyToOne_(() => Account, {nullable: true})
-    account!: Account
+    account!: Relation_<Account>
 
     @BigIntColumn_({nullable: false})
     shares!: bigint

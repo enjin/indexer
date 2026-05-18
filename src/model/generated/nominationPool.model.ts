@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, StringColumn as StringColumn_, BigIntColumn as BigIntColumn_, FloatColumn as FloatColumn_, OneToMany as OneToMany_, ManyToOne as ManyToOne_, Index as Index_, IntColumn as IntColumn_, DateTimeColumn as DateTimeColumn_} from "@subsquid/typeorm-store"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, StringColumn as StringColumn_, BigIntColumn as BigIntColumn_, FloatColumn as FloatColumn_, OneToMany as OneToMany_, Relation as Relation_, ManyToOne as ManyToOne_, Index as Index_, IntColumn as IntColumn_, DateTimeColumn as DateTimeColumn_} from "@subsquid/typeorm-store"
 import * as marshal from "./marshal"
 import {PoolState} from "./_poolState"
 import {Commission} from "./_commission"
@@ -74,23 +74,23 @@ export class NominationPool {
     accumulatedCommission!: bigint | undefined | null
 
     @OneToMany_(() => PoolMember, e => e.pool)
-    members!: PoolMember[]
+    members!: Relation_<PoolMember[]>
 
     @OneToMany_(() => EraReward, e => e.pool)
-    eraRewards!: EraReward[]
+    eraRewards!: Relation_<EraReward[]>
 
     @Column_("jsonb", {transformer: {to: obj => obj.map((val: any) => val == null ? undefined : val.toJSON()), from: obj => obj == null ? undefined : marshal.fromList(obj, val => val == null ? undefined : new PoolSlash(undefined, val))}, nullable: false})
     slashes!: (PoolSlash | undefined | null)[]
 
     @OneToMany_(() => PoolValidator, e => e.pool)
-    validators!: PoolValidator[]
+    validators!: Relation_<PoolValidator[]>
 
     @Index_()
     @ManyToOne_(() => Token, {nullable: true})
-    degenToken!: Token
+    degenToken!: Relation_<Token>
 
     @OneToMany_(() => PoolsOffers, e => e.pool)
-    stakeExchangeOffers!: PoolsOffers[]
+    stakeExchangeOffers!: Relation_<PoolsOffers[]>
 
     @Column_("varchar", {length: 1, nullable: true})
     score!: ScoreGrade | undefined | null

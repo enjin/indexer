@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_} from "@subsquid/typeorm-store"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, Relation as Relation_} from "@subsquid/typeorm-store"
 import {Trait} from "./trait.model"
 import {Token} from "./token.model"
 
@@ -13,9 +13,9 @@ export class TraitToken {
 
     @Index_()
     @ManyToOne_(() => Trait, {nullable: true})
-    trait!: Trait
+    trait!: Relation_<Trait>
 
     @Index_()
     @ManyToOne_(() => Token, {nullable: true})
-    token!: Token
+    token!: Relation_<Token>
 }

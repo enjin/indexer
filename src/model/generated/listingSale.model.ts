@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, BigIntColumn as BigIntColumn_, ManyToOne as ManyToOne_, Index as Index_, DateTimeColumn as DateTimeColumn_} from "@subsquid/typeorm-store"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, BigIntColumn as BigIntColumn_, ManyToOne as ManyToOne_, Index as Index_, Relation as Relation_, DateTimeColumn as DateTimeColumn_} from "@subsquid/typeorm-store"
 import {Account} from "./account.model"
 import {Listing} from "./listing.model"
 
@@ -19,11 +19,11 @@ export class ListingSale {
 
     @Index_()
     @ManyToOne_(() => Account, {nullable: true})
-    buyer!: Account
+    buyer!: Relation_<Account>
 
     @Index_()
     @ManyToOne_(() => Listing, {nullable: true})
-    listing!: Listing
+    listing!: Relation_<Listing>
 
     @DateTimeColumn_({nullable: false})
     createdAt!: Date

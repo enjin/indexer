@@ -618,6 +618,7 @@ type Collection @entity {
   attributeCount: Int!
   totalDeposit: BigInt!
   isTransferPending: Boolean
+  pendingTransfer: Account
 
   # Relations
   tokens: [Token] @derivedFrom(field: "collection")

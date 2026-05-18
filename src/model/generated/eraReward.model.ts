@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, BigIntColumn as BigIntColumn_, FloatColumn as FloatColumn_, OneToMany as OneToMany_} from "@subsquid/typeorm-store"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, Relation as Relation_, BigIntColumn as BigIntColumn_, FloatColumn as FloatColumn_, OneToMany as OneToMany_} from "@subsquid/typeorm-store"
 import * as marshal from "./marshal"
 import {NominationPool} from "./nominationPool.model"
 import {Era} from "./era.model"
@@ -16,11 +16,11 @@ export class EraReward {
 
     @Index_()
     @ManyToOne_(() => NominationPool, {nullable: true})
-    pool!: NominationPool
+    pool!: Relation_<NominationPool>
 
     @Index_()
     @ManyToOne_(() => Era, {nullable: true})
-    era!: Era
+    era!: Relation_<Era>
 
     @BigIntColumn_({nullable: false})
     rate!: bigint
@@ -47,5 +47,5 @@ export class EraReward {
     averageApy!: number
 
     @OneToMany_(() => PoolMemberRewards, e => e.reward)
-    memberRewards!: PoolMemberRewards[]
+    memberRewards!: Relation_<PoolMemberRewards[]>
 }

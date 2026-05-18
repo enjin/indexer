@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, IntColumn as IntColumn_, ManyToOne as ManyToOne_, Index as Index_, BooleanColumn as BooleanColumn_, StringColumn as StringColumn_, BigIntColumn as BigIntColumn_, OneToMany as OneToMany_} from "@subsquid/typeorm-store"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, IntColumn as IntColumn_, ManyToOne as ManyToOne_, Index as Index_, Relation as Relation_, BooleanColumn as BooleanColumn_, StringColumn as StringColumn_, BigIntColumn as BigIntColumn_, OneToMany as OneToMany_} from "@subsquid/typeorm-store"
 import * as marshal from "./marshal"
 import {FuelTank} from "./fuelTank.model"
 import {MaxFuelBurnPerTransaction} from "./_maxFuelBurnPerTransaction"
@@ -21,7 +21,7 @@ export class FuelTankRuleSet {
 
     @Index_()
     @ManyToOne_(() => FuelTank, {nullable: true})
-    tank!: FuelTank
+    tank!: Relation_<FuelTank>
 
     @BooleanColumn_({nullable: false})
     isFrozen!: boolean
@@ -63,5 +63,5 @@ export class FuelTankRuleSet {
     minimumInfusion!: bigint | undefined | null
 
     @OneToMany_(() => PermittedExtrinsics, e => e.ruleSet)
-    permittedExtrinsics!: PermittedExtrinsics[]
+    permittedExtrinsics!: Relation_<PermittedExtrinsics[]>
 }
