@@ -147,6 +147,7 @@ async function calculateMemberRewards(
         const newAccumulated = (member.accumulatedRewards || 0n) + eraRewards - previousReward
 
         member.accumulatedRewards = newAccumulated
+        member.bonded = (points / 10n ** 18n) * pool.rate
 
         const pmrData = {
             id: pmrId,
