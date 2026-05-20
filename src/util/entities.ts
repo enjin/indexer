@@ -4,6 +4,7 @@ import { isU8a, u8aToHex } from '@polkadot/util'
 import { AccountNotParsableError } from '~/util/errors'
 import { RootOrSigned, MultiAddress } from '~/pallet/common/types'
 import { encodeAddress } from '~/util/tools'
+import { IsNull } from 'typeorm'
 
 interface AddressWithKind {
     __kind: 'Id' | 'AccountId'
@@ -77,7 +78,7 @@ export async function getOrCreateAccount(
 
 export async function getBestListing(ctx: CommonContext, tokenId: string): Promise<Listing | undefined> {
     return ctx.store.findOne<Listing>(Listing, {
-        where: { makeAssetId: { id: tokenId }, isActive: true, hasRoyaltyIncreased: false },
+        where: { makeAssetId: { id: tokenId }, isActive: true, hasRoyaltyIncreased: IsNull() },
         order: { highestPrice: 'ASC' },
     })
 }

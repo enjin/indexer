@@ -361,7 +361,8 @@ export class AccountsTokensConnectionResolver {
 
         const tokenData = rawRows.map((row) => ({
             id: String(row.token_id),
-            orderValue: row.order_value?.toString() || '',
+            orderValue:
+                row.order_value instanceof Date ? row.order_value.toISOString() : row.order_value?.toString() || '',
         }))
 
         // Check if we have more pages
