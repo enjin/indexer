@@ -96,7 +96,7 @@ export async function bonded(ctx: CommonContext, block: Block, item: EventItem):
         pool.totalMembers += 1
     } else {
         const member = await ctx.store.findOneByOrFail<PoolMember>(PoolMember, { id: `${pool.id}-${account.id}` })
-        member.bonded += eventData.bonded
+        member.bonded = tAExist ? (tAExist.balance * pool.rate) / 10n ** 18n : eventData.bonded
         member.tokenAccount = new TokenAccount({ id: `${account.id}-1-${pool.id}` })
         if (pool.totalMembers === 0) {
             member.isStash = true

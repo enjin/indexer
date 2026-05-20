@@ -9,6 +9,7 @@ import {
     computePoolRewards,
     refreshPool,
     syncAccountUnbondingEras,
+    syncMembersBonded,
     syncPoolMembers,
     syncPools,
     syncOrphanedEarlyBirdRewards,
@@ -33,6 +34,9 @@ export class NominationPoolsProcessor implements ProcessorDef {
                 break
             case JobsEnum.SYNC_POOL_MEMBERS:
                 await syncPoolMembers(job)
+                break
+            case JobsEnum.SYNC_MEMBERS_BONDED:
+                await syncMembersBonded(job)
                 break
             case JobsEnum.REFRESH_POOL:
                 await refreshPool(job, job.data.id)
