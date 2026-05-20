@@ -2,9 +2,9 @@ import { Block, CommonContext } from '~/contexts'
 import {
     Collection,
     CollectionFlags,
-    CollectionSocials,
     CollectionStats,
     Era,
+    EntitySocials,
     Metadata,
     MintPolicy,
     Token,
@@ -73,7 +73,7 @@ async function createEnjinCollection(ctx: CommonContext, block: Block) {
             hiddenForLegalReasons: false,
         }),
         verifiedAt: null,
-        socials: new CollectionSocials({
+        socials: new EntitySocials({
             discord: null,
             twitter: null,
             instagram: null,
@@ -149,7 +149,7 @@ async function generateRelayData(ctx: CommonContext, block: Block) {
                 hiddenForLegalReasons: false,
             }),
             verifiedAt: null,
-            socials: new CollectionSocials({
+            socials: new EntitySocials({
                 discord: null,
                 twitter: null,
                 instagram: null,
@@ -201,7 +201,7 @@ async function generateRelayData(ctx: CommonContext, block: Block) {
                 hiddenForLegalReasons: false,
             }),
             verifiedAt: null,
-            socials: new CollectionSocials({
+            socials: new EntitySocials({
                 discord: null,
                 twitter: null,
                 instagram: null,

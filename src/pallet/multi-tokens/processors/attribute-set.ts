@@ -4,8 +4,8 @@ import {
     Attribute,
     Collection,
     CollectionFlags,
-    CollectionSocials,
     CollectionStats,
+    EntitySocials,
     Metadata,
     MintPolicy,
     Token,
@@ -64,7 +64,7 @@ export async function attributeSet(
                 hiddenForLegalReasons: false,
             }),
             verifiedAt: null,
-            socials: new CollectionSocials({
+            socials: new EntitySocials({
                 discord: null,
                 twitter: null,
                 instagram: null,

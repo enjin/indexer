@@ -1,6 +1,6 @@
 import { dataHandlerContext } from '~/contexts'
 import { fetchCollectionsExtra } from '~/util/marketplace'
-import { Collection, CollectionFlags, CollectionSocials } from '~/model'
+import { Collection, CollectionFlags, EntitySocials } from '~/model'
 import { Job } from 'bullmq'
 import { isNotNullOrEmpty } from '~/worker/utils'
 
@@ -25,7 +25,7 @@ export async function computeExtras(_job: Job, ids: string[]): Promise<void> {
             })
 
             collection.verifiedAt = _c.verifiedAt ? new Date(_c.verifiedAt) : null
-            collection.socials = new CollectionSocials({
+            collection.socials = new EntitySocials({
                 discord: _c.discord,
                 twitter: _c.twitter,
                 instagram: _c.instagram,

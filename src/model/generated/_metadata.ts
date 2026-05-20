@@ -3,6 +3,7 @@ import * as marshal from "./marshal"
 import {MetadataMedia} from "./_metadataMedia"
 import {MetadataMeta} from "./_metadataMeta"
 import {MetadataOriginType} from "./_metadataOriginType"
+import {EntitySocials} from "./_entitySocials"
 
 export class Metadata {
     private _name!: string | undefined | null
@@ -17,6 +18,7 @@ export class Metadata {
     private _originType!: MetadataOriginType | undefined | null
     private _lastUpdated!: Date | undefined | null
     private _attributes!: unknown | undefined | null
+    private _socials!: EntitySocials | undefined | null
 
     constructor(props?: Partial<Omit<Metadata, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
@@ -33,6 +35,7 @@ export class Metadata {
             this._originType = json.originType == null ? undefined : marshal.enumFromJson(json.originType, MetadataOriginType)
             this._lastUpdated = json.lastUpdated == null ? undefined : marshal.datetime.fromJSON(json.lastUpdated)
             this._attributes = json.attributes
+            this._socials = json.socials == null ? undefined : new EntitySocials(undefined, json.socials)
         }
     }
 
@@ -132,6 +135,14 @@ export class Metadata {
         this._attributes = value
     }
 
+    get socials(): EntitySocials | undefined | null {
+        return this._socials
+    }
+
+    set socials(value: EntitySocials | undefined | null) {
+        this._socials = value
+    }
+
     toJSON(): object {
         return {
             name: this.name,
@@ -146,6 +157,7 @@ export class Metadata {
             originType: this.originType,
             lastUpdated: this.lastUpdated == null ? undefined : marshal.datetime.toJSON(this.lastUpdated),
             attributes: this.attributes,
+            socials: this.socials == null ? undefined : this.socials.toJSON(),
         }
     }
 }

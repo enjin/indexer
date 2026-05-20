@@ -4,11 +4,11 @@ import {
     TransferPolicy,
     Token,
     RoyaltyCurrency,
-    CollectionSocials,
     CollectionFlags,
     CollectionStats,
     MarketPolicy,
     RoyaltyBeneficiary,
+    EntitySocials,
 } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
@@ -116,7 +116,7 @@ export async function collectionCreated(
             hiddenForLegalReasons: false,
         }),
         verifiedAt: null,
-        socials: new CollectionSocials({
+        socials: new EntitySocials({
             discord: null,
             twitter: null,
             instagram: null,

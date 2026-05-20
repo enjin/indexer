@@ -3,7 +3,7 @@ import https from 'https'
 import Queue from 'bullmq'
 import mime from 'mime-types'
 import { safeString } from './tools'
-import { Attribute, Metadata, MetadataMedia, MetadataMeta } from '~/model'
+import { Attribute, EntitySocials, Metadata, MetadataMedia, MetadataMeta } from '~/model'
 import config from '~/util/config'
 import { validateUrlForSSRF } from './ssrf-protection'
 
@@ -237,6 +237,18 @@ export function metadataParser(
             language: externalMetadata.meta.language,
             alternate: externalMetadata.meta.alternate,
         })
+    }
+
+    // socials
+    if (['instagram', 'discord', 'medium', 'tiktok', 'facebook', 'youtube', 'x', 'twitter'].includes(attribute.key)) {
+        const existing = metadata.socials || new EntitySocials({})
+        if (attribute.key === 'x') {
+            metadata.socials = new EntitySocials({ ...existing, x: attribute.value, twitter: null })
+        } else if (attribute.key === 'twitter' && !existing.x) {
+            metadata.socials = new EntitySocials({ ...existing, twitter: attribute.value })
+        } else if (attribute.key !== 'twitter') {
+            metadata.socials = new EntitySocials({ ...existing, [attribute.key]: attribute.value })
+        }
     }
 
     if (attribute.key === 'name') {
