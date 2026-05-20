@@ -181,7 +181,8 @@ export function metadataParser(
               }
             | null
             | undefined
-    } | null
+    } | null,
+    socials: EntitySocials | null | undefined
 ): Metadata {
     const supportedProps = config.metadataSupportedProps
 
@@ -241,7 +242,10 @@ export function metadataParser(
 
     // socials
     if (['instagram', 'discord', 'medium', 'tiktok', 'facebook', 'youtube', 'x', 'twitter'].includes(attribute.key)) {
-        const existing = metadata.socials || new EntitySocials({})
+        const existing = {
+            ...(metadata.socials || new EntitySocials({})),
+            ...(socials || new EntitySocials({})),
+        } as EntitySocials
         if (attribute.key === 'x') {
             metadata.socials = new EntitySocials({ ...existing, x: attribute.value, twitter: null })
         } else if (attribute.key === 'twitter' && !existing.x) {
