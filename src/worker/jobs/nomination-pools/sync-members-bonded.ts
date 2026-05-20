@@ -22,11 +22,15 @@ export async function syncMembersBonded(job: Job): Promise<void> {
     const toSave: PoolMember[] = []
 
     for (const member of members) {
-        if (!member.tokenAccount || !member.pool || member.pool.rate === 0n) {
+        if (!member.pool || member.pool.rate === 0n) {
             continue
         }
 
-        member.bonded = (member.tokenAccount.balance / 10n ** 18n) * member.pool.rate
+        if (!member.tokenAccount) {
+            member.bonded = 0n
+        } else {
+            member.bonded = (member.tokenAccount.balance * member.pool.rate) / 10n ** 18n
+        }
         toSave.push(member)
     }
 
