@@ -147,7 +147,7 @@ export async function computeMetadata(job: Job) {
                     await job.updateProgress(60)
                 }
 
-                metadata = metadataParser(metadata, uriAttribute, externalMetadata)
+                metadata = metadataParser(metadata, uriAttribute, externalMetadata, null)
                 await job.updateProgress(70)
             }
 
@@ -155,7 +155,7 @@ export async function computeMetadata(job: Job) {
             attributes
                 .filter((a) => a.key !== 'uri')
                 .forEach(async (a) => {
-                    metadata = metadataParser(metadata, a, null)
+                    metadata = metadataParser(metadata, a, null, null)
                 })
 
             await job.updateProgress(80)
