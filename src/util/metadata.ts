@@ -165,7 +165,7 @@ export function metadataParser(
     externalMetadata: {
         name: string | null | undefined
         description: string | null | undefined
-        external_url: string | null | undefined
+        externalUrl: string | null | undefined
         image: string | null | undefined
         fallback_image: string | null | undefined
         banner_image: string | null | undefined
@@ -192,8 +192,8 @@ export function metadataParser(
     if (externalMetadata?.description && supportedProps.includes('description')) {
         metadata.description = safeString(externalMetadata.description)
     }
-    if (externalMetadata?.external_url && supportedProps.includes('external_url')) {
-        metadata.externalUrl = safeString(externalMetadata.external_url)
+    if (externalMetadata?.externalUrl && supportedProps.includes('external_url')) {
+        metadata.externalUrl = safeString(externalMetadata.externalUrl)
     }
     if (externalMetadata?.keywords && Array.isArray(externalMetadata.keywords) && supportedProps.includes('keywords')) {
         metadata.keywords = externalMetadata.keywords
