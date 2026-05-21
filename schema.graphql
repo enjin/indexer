@@ -595,12 +595,11 @@ type CollectionFlags {
 }
 
 type EntitySocials {
-  twitter: String
   discord: String
   youtube: String
   x: String
+  facebook: String
   instagram: String
-  website: String
   medium: String
   tiktok: String
 }
@@ -636,7 +635,7 @@ type Collection @entity {
   metadata: Metadata
   createdAt: DateTime!
   flags: CollectionFlags!
-  socials: EntitySocials!
+  socials: EntitySocials
   category: String
   verifiedAt: DateTime
   hidden: Boolean! @index

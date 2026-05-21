@@ -1,15 +1,6 @@
 import { hexToString } from '@polkadot/util'
 import { throwFatalError } from '~/util/errors'
-import {
-    Attribute,
-    Collection,
-    CollectionFlags,
-    CollectionStats,
-    EntitySocials,
-    Metadata,
-    MintPolicy,
-    Token,
-} from '~/model'
+import { Attribute, Collection, CollectionFlags, CollectionStats, Metadata, MintPolicy, Token } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
 import * as mappings from '~/pallet/index'
@@ -64,14 +55,6 @@ export async function attributeSet(
                 hiddenForLegalReasons: false,
             }),
             verifiedAt: null,
-            socials: new EntitySocials({
-                discord: null,
-                twitter: null,
-                instagram: null,
-                medium: null,
-                tiktok: null,
-                website: null,
-            }),
             hidden: false,
             attributeCount: 0,
             totalDeposit: 0n,

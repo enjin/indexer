@@ -242,16 +242,17 @@ export function metadataParser(
 
     // socials
     if (['instagram', 'discord', 'medium', 'tiktok', 'facebook', 'youtube', 'x', 'twitter'].includes(attribute.key)) {
-        const existing = {
-            ...(metadata.socials || new EntitySocials({})),
-            ...(socials || new EntitySocials({})),
-        } as EntitySocials
-        if (attribute.key === 'x') {
-            metadata.socials = new EntitySocials({ ...existing, x: attribute.value, twitter: null })
-        } else if (attribute.key === 'twitter' && !existing.x) {
-            metadata.socials = new EntitySocials({ ...existing, twitter: attribute.value })
+        let existing = (metadata.socials ?? new EntitySocials({})).toJSON() as Record<string, string | null | undefined>
+        if (socials) {
+            existing = {
+                ...existing,
+                ...socials.toJSON(),
+            }
+        }
+        if (attribute.key === 'x' || (attribute.key === 'twitter' && !existing.x)) {
+            metadata.socials = new EntitySocials(undefined, { ...existing, x: attribute.value })
         } else if (attribute.key !== 'twitter') {
-            metadata.socials = new EntitySocials({ ...existing, [attribute.key]: attribute.value })
+            metadata.socials = new EntitySocials(undefined, { ...existing, [attribute.key]: attribute.value })
         }
     }
 

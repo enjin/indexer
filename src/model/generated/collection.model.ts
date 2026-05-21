@@ -99,8 +99,8 @@ export class Collection {
     @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => obj == null ? undefined : new CollectionFlags(undefined, obj)}, nullable: false})
     flags!: CollectionFlags
 
-    @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => obj == null ? undefined : new EntitySocials(undefined, obj)}, nullable: false})
-    socials!: EntitySocials
+    @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new EntitySocials(undefined, obj)}, nullable: true})
+    socials!: EntitySocials | undefined | null
 
     @StringColumn_({nullable: true})
     category!: string | undefined | null

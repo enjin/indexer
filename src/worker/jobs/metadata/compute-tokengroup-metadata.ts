@@ -119,7 +119,7 @@ export async function computeTokenGroupMetadata(job: Job) {
                     await job.updateProgress(70)
                 }
 
-                metadata = metadataParser(metadata, uriAttribute, externalMetadata)
+                metadata = metadataParser(metadata, uriAttribute, externalMetadata, null)
                 await job.updateProgress(80)
             }
 
@@ -127,7 +127,7 @@ export async function computeTokenGroupMetadata(job: Job) {
             attributes
                 .filter((a) => a.key !== 'uri')
                 .forEach(async (a) => {
-                    metadata = metadataParser(metadata, a, null)
+                    metadata = metadataParser(metadata, a, null, null)
                 })
 
             await job.updateProgress(90)

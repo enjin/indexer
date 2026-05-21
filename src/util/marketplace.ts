@@ -45,6 +45,7 @@ type CollectionExtra = {
     featured: boolean
     verifiedAt: string | null
     twitter: string | null
+    x: string | null
     discord: string | null
     instagram: string | null
     website: string | null
