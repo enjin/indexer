@@ -8,7 +8,6 @@ import {
     CollectionStats,
     MarketPolicy,
     RoyaltyBeneficiary,
-    EntitySocials,
 } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
