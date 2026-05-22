@@ -147,7 +147,7 @@ export async function computeMetadata(job: Job) {
                     await job.updateProgress(60)
                 }
 
-                metadata = metadataParser(metadata, uriAttribute, externalMetadata, null)
+                metadata = metadataParser(metadata, uriAttribute, externalMetadata)
                 await job.updateProgress(70)
             }
 
@@ -155,7 +155,7 @@ export async function computeMetadata(job: Job) {
             attributes
                 .filter((a) => a.key !== 'uri')
                 .forEach(async (a) => {
-                    metadata = metadataParser(metadata, a, null, null)
+                    metadata = metadataParser(metadata, a, null)
                 })
 
             await job.updateProgress(80)
@@ -170,7 +170,6 @@ export async function computeMetadata(job: Job) {
 
             if (jobData.type === 'collection' && jobData.allTokens) {
                 const batch = tokensInBatch(em, jobData.id)
-                let batchCount = 0
 
                 for await (const tokens of batch) {
                     tokens.forEach((token) => {

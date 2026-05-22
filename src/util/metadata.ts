@@ -159,6 +159,89 @@ function parseArrayAttributes(
     return obj
 }
 
+const SOCIAL_KEYS = ['instagram', 'discord', 'medium', 'tiktok', 'facebook', 'youtube', 'x', 'twitter'] as const
+
+function getAttributeEntryValue(entry: unknown): string | undefined {
+    if (entry === null || entry === undefined) {
+        return
+    }
+    if (typeof entry === 'string') {
+        return entry
+    }
+    if (typeof entry === 'object' && 'value' in entry) {
+        const value = (entry as { value: unknown }).value
+        if (value !== undefined && value !== '' && typeof value !== 'object') {
+            return String(value)
+        }
+    }
+    return
+}
+
+function applySocialValue(
+    socials: Record<string, string | null | undefined>,
+    key: string,
+    value: string
+): Record<string, string | null | undefined> {
+    if (key === 'x') {
+        return { ...socials, x: value }
+    }
+    if (key === 'twitter' && !socials.x) {
+        return { ...socials, x: value }
+    }
+    if (key !== 'twitter') {
+        return { ...socials, [key]: value }
+    }
+    return socials
+}
+
+function parseSocialsFromAttributes(
+    attributes: Record<string, unknown> | undefined,
+    existing?: EntitySocials | null
+): EntitySocials | undefined {
+    if (!attributes) {
+        return existing ?? undefined
+    }
+
+    let socials = (existing ?? new EntitySocials({})).toJSON() as Record<string, string | null | undefined>
+
+    for (const key of SOCIAL_KEYS) {
+        if (!(key in attributes)) {
+            continue
+        }
+        const value = getAttributeEntryValue(attributes[key])
+        if (value) {
+            socials = applySocialValue(socials, key, value)
+        }
+    }
+
+    if (!Object.values(socials).some((v) => v != null && v !== '')) {
+        return existing ?? undefined
+    }
+
+    return new EntitySocials(undefined, socials)
+}
+
+function stripSocialKeysFromAttributes(attributes: Record<string, unknown>): Record<string, unknown> | undefined {
+    const stripped = { ...attributes }
+    for (const key of SOCIAL_KEYS) {
+        delete stripped[key]
+    }
+    return Object.keys(stripped).length > 0 ? stripped : undefined
+}
+
+function mergeSocialsFromAttributes(
+    metadata: Metadata,
+    attributes: unknown
+): { socials: EntitySocials | undefined; attributes: Record<string, unknown> | undefined } {
+    if (!attributes || typeof attributes !== 'object' || Array.isArray(attributes)) {
+        return { socials: metadata.socials ?? undefined, attributes: undefined }
+    }
+    const attrs = attributes as Record<string, unknown>
+    const socials = parseSocialsFromAttributes(attrs, metadata.socials)
+
+    return { socials, attributes: stripSocialKeysFromAttributes(attrs) }
+}
+
 export function metadataParser(
     metadata: Metadata,
     attribute: Attribute,
@@ -181,8 +264,7 @@ export function metadataParser(
               }
             | null
             | undefined
-    } | null,
-    socials: EntitySocials | null | undefined
+    } | null
 ): Metadata {
     const supportedProps = config.metadataSupportedProps
 
@@ -240,20 +322,13 @@ export function metadataParser(
         })
     }
 
-    // socials
-    if (['instagram', 'discord', 'medium', 'tiktok', 'facebook', 'youtube', 'x', 'twitter'].includes(attribute.key)) {
-        let existing = (metadata.socials ?? new EntitySocials({})).toJSON() as Record<string, string | null | undefined>
-        if (socials) {
-            existing = {
-                ...existing,
-                ...socials.toJSON(),
-            }
-        }
-        if (attribute.key === 'x' || (attribute.key === 'twitter' && !existing.x)) {
-            metadata.socials = new EntitySocials(undefined, { ...existing, x: attribute.value })
-        } else if (attribute.key !== 'twitter') {
-            metadata.socials = new EntitySocials(undefined, { ...existing, [attribute.key]: attribute.value })
-        }
+    if ((SOCIAL_KEYS as readonly string[]).includes(attribute.key)) {
+        const existing = (metadata.socials ?? new EntitySocials({})).toJSON() as Record<
+            string,
+            string | null | undefined
+        >
+        const socials = applySocialValue(existing, attribute.key, attribute.value)
+        metadata.socials = new EntitySocials(undefined, socials)
     }
 
     if (attribute.key === 'name') {
@@ -279,6 +354,10 @@ export function metadataParser(
             /* empty */
         }
     }
+
+    const { socials, attributes } = mergeSocialsFromAttributes(metadata, metadata.attributes)
+    metadata.socials = socials
+    metadata.attributes = attributes
 
     return metadata
 }
