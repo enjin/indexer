@@ -1,15 +1,5 @@
 import { Block, CommonContext } from '~/contexts'
-import {
-    Collection,
-    CollectionFlags,
-    CollectionSocials,
-    CollectionStats,
-    Era,
-    Metadata,
-    MintPolicy,
-    Token,
-    TransferPolicy,
-} from '~/model'
+import { Collection, CollectionFlags, CollectionStats, Era, Metadata, MintPolicy, Token, TransferPolicy } from '~/model'
 import { getOrCreateAccount } from '~/util/entities'
 import { isMainnet, isRelay } from '~/util/tools'
 import { match } from 'ts-pattern'
@@ -73,14 +63,6 @@ async function createEnjinCollection(ctx: CommonContext, block: Block) {
             hiddenForLegalReasons: false,
         }),
         verifiedAt: null,
-        socials: new CollectionSocials({
-            discord: null,
-            twitter: null,
-            instagram: null,
-            medium: null,
-            tiktok: null,
-            website: null,
-        }),
         hidden: false,
         burnPolicy: null,
         attributePolicy: null,
@@ -149,14 +131,6 @@ async function generateRelayData(ctx: CommonContext, block: Block) {
                 hiddenForLegalReasons: false,
             }),
             verifiedAt: null,
-            socials: new CollectionSocials({
-                discord: null,
-                twitter: null,
-                instagram: null,
-                medium: null,
-                tiktok: null,
-                website: null,
-            }),
             hidden: false,
             burnPolicy: null,
             attributePolicy: null,
@@ -201,14 +175,6 @@ async function generateRelayData(ctx: CommonContext, block: Block) {
                 hiddenForLegalReasons: false,
             }),
             verifiedAt: null,
-            socials: new CollectionSocials({
-                discord: null,
-                twitter: null,
-                instagram: null,
-                medium: null,
-                tiktok: null,
-                website: null,
-            }),
             hidden: false,
             burnPolicy: null,
             attributePolicy: null,

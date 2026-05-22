@@ -3,7 +3,6 @@ import { multiTokens } from '~/pallet'
 import {
     Collection,
     CollectionFlags,
-    CollectionSocials,
     CollectionStats,
     MarketPolicy,
     MintPolicy,
@@ -84,14 +83,6 @@ export async function collections(ctx: CommonContext, block: Block) {
                     featured: false,
                     hiddenForLegalReasons: false,
                     // verified: false,
-                }),
-                socials: new CollectionSocials({
-                    discord: null,
-                    twitter: null,
-                    instagram: null,
-                    medium: null,
-                    tiktok: null,
-                    website: null,
                 }),
                 hidden: false,
                 burnPolicy: null,

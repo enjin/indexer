@@ -14,7 +14,7 @@ import {TokenRarity} from "./tokenRarity.model"
 import {TokenGroup} from "./tokenGroup.model"
 import {Metadata} from "./_metadata"
 import {CollectionFlags} from "./_collectionFlags"
-import {CollectionSocials} from "./_collectionSocials"
+import {EntitySocials} from "./_entitySocials"
 import {CollectionStats} from "./_collectionStats"
 
 @Entity_()
@@ -99,8 +99,8 @@ export class Collection {
     @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => obj == null ? undefined : new CollectionFlags(undefined, obj)}, nullable: false})
     flags!: CollectionFlags
 
-    @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => obj == null ? undefined : new CollectionSocials(undefined, obj)}, nullable: false})
-    socials!: CollectionSocials
+    @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new EntitySocials(undefined, obj)}, nullable: true})
+    socials!: EntitySocials | undefined | null
 
     @StringColumn_({nullable: true})
     category!: string | undefined | null

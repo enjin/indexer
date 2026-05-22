@@ -170,7 +170,6 @@ export async function computeMetadata(job: Job) {
 
             if (jobData.type === 'collection' && jobData.allTokens) {
                 const batch = tokensInBatch(em, jobData.id)
-                let batchCount = 0
 
                 for await (const tokens of batch) {
                     tokens.forEach((token) => {

@@ -3,7 +3,7 @@ import https from 'https'
 import Queue from 'bullmq'
 import mime from 'mime-types'
 import { safeString } from './tools'
-import { Attribute, Metadata, MetadataMedia, MetadataMeta } from '~/model'
+import { Attribute, EntitySocials, Metadata, MetadataMedia, MetadataMeta } from '~/model'
 import config from '~/util/config'
 import { validateUrlForSSRF } from './ssrf-protection'
 
@@ -159,13 +159,100 @@ function parseArrayAttributes(
     return obj
 }
 
+const SOCIAL_KEYS = ['instagram', 'discord', 'medium', 'tiktok', 'facebook', 'youtube', 'x', 'twitter'] as const
+
+function getAttributeEntryValue(entry: unknown): string | undefined {
+    if (entry === null || entry === undefined) {
+        return
+    }
+    if (typeof entry === 'string') {
+        return entry
+    }
+    if (typeof entry === 'object' && 'value' in entry) {
+        const value = (entry as { value: unknown }).value
+        if (typeof value === 'string' && value !== '') {
+            return value
+        }
+        if (typeof value === 'number' || typeof value === 'boolean') {
+            return String(value)
+        }
+        if (typeof value === 'bigint') {
+            return value.toString()
+        }
+    }
+    return
+}
+
+function applySocialValue(
+    socials: Record<string, string | null | undefined>,
+    key: string,
+    value: string
+): Record<string, string | null | undefined> {
+    if (key === 'x') {
+        return { ...socials, x: value }
+    }
+    if (key === 'twitter' && !socials.x) {
+        return { ...socials, x: value }
+    }
+    if (key !== 'twitter') {
+        return { ...socials, [key]: value }
+    }
+    return socials
+}
+
+function parseSocialsFromAttributes(
+    attributes: Record<string, unknown> | undefined,
+    existing?: EntitySocials | null
+): EntitySocials | undefined {
+    if (!attributes) {
+        return existing ?? undefined
+    }
+
+    let socials = (existing ?? new EntitySocials({})).toJSON() as Record<string, string | null | undefined>
+
+    for (const key of SOCIAL_KEYS) {
+        if (!(key in attributes)) {
+            continue
+        }
+        const value = getAttributeEntryValue(attributes[key])
+        if (value) {
+            socials = applySocialValue(socials, key, value)
+        }
+    }
+
+    if (!Object.values(socials).some((v) => v != null && v !== '')) {
+        return existing ?? undefined
+    }
+
+    return new EntitySocials(undefined, socials)
+}
+
+function stripSocialKeysFromAttributes(attributes: Record<string, unknown>): Record<string, unknown> | undefined {
+    const socialKeySet = new Set<string>(SOCIAL_KEYS)
+    const stripped = Object.fromEntries(Object.entries(attributes).filter(([key]) => !socialKeySet.has(key)))
+    return Object.keys(stripped).length > 0 ? stripped : undefined
+}
+
+function mergeSocialsFromAttributes(
+    metadata: Metadata,
+    attributes: unknown
+): { socials: EntitySocials | undefined; attributes: Record<string, unknown> | undefined } {
+    if (!attributes || typeof attributes !== 'object' || Array.isArray(attributes)) {
+        return { socials: metadata.socials ?? undefined, attributes: undefined }
+    }
+    const attrs = attributes as Record<string, unknown>
+    const socials = parseSocialsFromAttributes(attrs, metadata.socials)
+
+    return { socials, attributes: stripSocialKeysFromAttributes(attrs) }
+}
+
 export function metadataParser(
     metadata: Metadata,
     attribute: Attribute,
     externalMetadata: {
         name: string | null | undefined
         description: string | null | undefined
-        external_url: string | null | undefined
+        externalUrl: string | null | undefined
         image: string | null | undefined
         fallback_image: string | null | undefined
         banner_image: string | null | undefined
@@ -191,8 +278,8 @@ export function metadataParser(
     if (externalMetadata?.description && supportedProps.includes('description')) {
         metadata.description = safeString(externalMetadata.description)
     }
-    if (externalMetadata?.external_url && supportedProps.includes('external_url')) {
-        metadata.externalUrl = safeString(externalMetadata.external_url)
+    if (externalMetadata?.externalUrl && supportedProps.includes('external_url')) {
+        metadata.externalUrl = safeString(externalMetadata.externalUrl)
     }
     if (externalMetadata?.keywords && Array.isArray(externalMetadata.keywords) && supportedProps.includes('keywords')) {
         metadata.keywords = externalMetadata.keywords
@@ -239,6 +326,15 @@ export function metadataParser(
         })
     }
 
+    if ((SOCIAL_KEYS as readonly string[]).includes(attribute.key)) {
+        const existing = (metadata.socials ?? new EntitySocials({})).toJSON() as Record<
+            string,
+            string | null | undefined
+        >
+        const socials = applySocialValue(existing, attribute.key, attribute.value)
+        metadata.socials = new EntitySocials(undefined, socials)
+    }
+
     if (attribute.key === 'name') {
         metadata.name = attribute.value
     } else if (attribute.key === 'description') {
@@ -262,6 +358,10 @@ export function metadataParser(
             /* empty */
         }
     }
+
+    const { socials, attributes } = mergeSocialsFromAttributes(metadata, metadata.attributes)
+    metadata.socials = socials
+    metadata.attributes = attributes ?? []
 
     return metadata
 }
