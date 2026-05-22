@@ -598,6 +598,7 @@ type EntitySocials {
   discord: String
   youtube: String
   x: String
+  twitter: String
   facebook: String
   instagram: String
   medium: String
