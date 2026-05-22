@@ -603,6 +603,7 @@ type EntitySocials {
   instagram: String
   medium: String
   tiktok: String
+  website: String
 }
 
 type Collection @entity {
