@@ -361,7 +361,7 @@ export function metadataParser(
 
     const { socials, attributes } = mergeSocialsFromAttributes(metadata, metadata.attributes)
     metadata.socials = socials
-    metadata.attributes = attributes
+    metadata.attributes = attributes ?? []
 
     return metadata
 }
