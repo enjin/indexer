@@ -170,8 +170,14 @@ function getAttributeEntryValue(entry: unknown): string | undefined {
     }
     if (typeof entry === 'object' && 'value' in entry) {
         const value = (entry as { value: unknown }).value
-        if (value !== undefined && value !== '' && typeof value !== 'object') {
+        if (typeof value === 'string' && value !== '') {
+            return value
+        }
+        if (typeof value === 'number' || typeof value === 'boolean') {
             return String(value)
+        }
+        if (typeof value === 'bigint') {
+            return value.toString()
         }
     }
     return
@@ -222,10 +228,8 @@ function parseSocialsFromAttributes(
 }
 
 function stripSocialKeysFromAttributes(attributes: Record<string, unknown>): Record<string, unknown> | undefined {
-    const stripped = { ...attributes }
-    for (const key of SOCIAL_KEYS) {
-        delete stripped[key]
-    }
+    const socialKeySet = new Set<string>(SOCIAL_KEYS)
+    const stripped = Object.fromEntries(Object.entries(attributes).filter(([key]) => !socialKeySet.has(key)))
     return Object.keys(stripped).length > 0 ? stripped : undefined
 }
 
