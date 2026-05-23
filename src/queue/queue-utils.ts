@@ -672,6 +672,18 @@ export function dispatchComputePoolOffers(id: string): void {
     })
 }
 
+export function dispatchSyncMembersBonded(): void {
+    NominationPoolsQueue.add(
+        JobsEnum.SYNC_MEMBERS_BONDED,
+        {},
+        {
+            jobId: 'nomination-pools.sync-members-bonded',
+        }
+    ).catch(() => {
+        Logger.error('Failed to dispatch sync members bonded', LOGGER_NAMESPACE)
+    })
+}
+
 export function dispatchBackfillPoolMemberRewardsEraIndex(): void {
     NominationPoolsQueue.add(
         JobsEnum.BACKFILL_POOL_MEMBER_REWARDS_ERA_INDEX,

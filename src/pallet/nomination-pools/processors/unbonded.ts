@@ -26,8 +26,8 @@ export async function unbonded(ctx: CommonContext, block: Block, item: EventItem
     })
     if (!poolMember) return undefined
 
-    poolMember.bonded -= data.balance
-    if (poolMember.tokenAccount?.totalBalance === 0n) {
+    poolMember.bonded -= (data.balance * pool.rate) / 10n ** 18n
+    if (poolMember.tokenAccount?.totalBalance === 0n || !poolMember.tokenAccount) {
         poolMember.bonded = 0n
     }
 
