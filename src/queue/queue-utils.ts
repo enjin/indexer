@@ -517,6 +517,19 @@ export function dispatchSyncChain(fromBlock?: number, toBlock?: number): void {
     })
 }
 
+export function dispatchSyncChainInfosFromMatrix(blockNumberLt?: number): void {
+    ValidatorsQueue.add(
+        JobsEnum.SYNC_CHAIN_INFOS_FROM_MATRIX,
+        { blockNumberLt },
+        {
+            delay: 6000,
+            jobId: `chain-infos.matrix.sync.${blockNumberLt ?? 'default'}`,
+        }
+    ).catch(() => {
+        Logger.error('Failed to dispatch sync chain infos from matrix', LOGGER_NAMESPACE)
+    })
+}
+
 export async function dispatchImportBlock(blockNumber: number, toBlock?: number): Promise<void> {
     const jobId = `chain.import.${blockNumber}-${toBlock ?? blockNumber}`
     const job = await ValidatorsQueue.getJob(jobId)

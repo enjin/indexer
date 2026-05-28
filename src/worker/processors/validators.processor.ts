@@ -7,6 +7,7 @@ import {
     syncChain,
     importBlock,
     backfillExtrinsicBlockRelation,
+    syncChainInfosFromMatrix,
 } from '~/worker/jobs'
 import { logDebug, logError } from '~/worker/utils'
 import { syncActiveValidators } from '../jobs/validators/sync-active-validators'
@@ -25,6 +26,9 @@ export class ValidatorsProcessor implements ProcessorDef {
                 break
             case JobsEnum.SYNC_ACTIVE_VALIDATORS:
                 await syncActiveValidators(job)
+                break
+            case JobsEnum.SYNC_CHAIN_INFOS_FROM_MATRIX:
+                await syncChainInfosFromMatrix(job)
                 break
             case JobsEnum.IMPORT_BLOCK:
                 await importBlock(job, job.data.blockNumber, job.data.toBlock)
