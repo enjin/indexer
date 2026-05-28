@@ -77,8 +77,7 @@ export async function syncChainInfosFromMatrix(job: Job): Promise<void> {
         throw new Error('Missing CF access credentials: CF_ACCESS_CLIENT_ID/CF_ACCESS_CLIENT_SECRET')
     }
 
-    const blockNumberLt =
-        typeof job.data?.blockNumberLt === 'number' ? job.data.blockNumberLt : DEFAULT_BLOCK_NUMBER_LT
+    const blockNumberLt = typeof job.data?.blockNumberLt === 'number' ? job.data.blockNumberLt : DEFAULT_BLOCK_NUMBER_LT
 
     await job.log(`Fetching chain infos from ${MATRIX_INDEXER_URL}`)
 
