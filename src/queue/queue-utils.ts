@@ -204,30 +204,6 @@ export function dispatchFetchAccounts(ids: string[]): void {
         })
 }
 
-export function dispatchFetchExtra(ids: string[]): void {
-    xxhasher
-        .createId(ids)
-        .then(async (hashedIds) => {
-            const jobId = `collections.extra.${hashedIds}`
-            const job = await CollectionsQueue.getJob(jobId)
-            if (job?.id && (await hasExistingJob(job))) return
-            if (job?.id) await CollectionsQueue.remove(job.id)
-            CollectionsQueue.add(
-                JobsEnum.FETCH_EXTRA,
-                { ids },
-                {
-                    delay: 6000,
-                    jobId,
-                }
-            ).catch(() => {
-                Logger.error('Failed to dispatch a job on collections queue', LOGGER_NAMESPACE)
-            })
-        })
-        .catch(() => {
-            Logger.error('Failed to hash ids', LOGGER_NAMESPACE)
-        })
-}
-
 export function dispatchComputeCollections(): void {
     // This job syncs every single collection in our database
     // There is no point in running it more than once a block
