@@ -81,7 +81,9 @@ export async function computeMetadata(job: Job) {
                 })
 
                 if (resource && resource.tokenGroupTokens && resource.tokenGroupTokens.length > 0) {
-                    const tokenGroupUriAttribute = resource.tokenGroupTokens[0].tokenGroup.attributes.find((a) => a.key === 'uri')
+                    const tokenGroupUriAttribute = resource.tokenGroupTokens[0].tokenGroup.attributes.find(
+                        (a) => a.key === 'uri'
+                    )
                     if (tokenGroupUriAttribute) {
                         inheritedUriAttribute = tokenGroupUriAttribute
                     }
