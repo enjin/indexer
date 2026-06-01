@@ -7,12 +7,13 @@ import { QueueUtils } from '~/queue'
 
 const MATRIX_INDEXER_URL =
     process.env.MATRIX_INDEXER_GRAPHQL_URL || 'https://blockchain-matrix-indexer.stg.enjops.com/graphql'
-const DEFAULT_BLOCK_NUMBER_LT = 5_147_899
+const DEFAULT_BLOCK_NUMBER_GTE = 0
+const MAX_BLOCK_NUMBER = 5_147_899
 const CHAIN_INFOS_BATCH_LIMIT = 1000
 
 const CHAIN_INFOS_QUERY = `
-query ChainInfos($blockNumberLt: Int!, $limit: Int!) {
-  chainInfos(where: {blockNumber_lt: $blockNumberLt}, limit: $limit) {
+query ChainInfos($blockNumberGte: Int!, $blockNumberLte: Int!, $limit: Int!) {
+  chainInfos(where: {blockNumber_gte: $blockNumberGte, blockNumber_lte: $blockNumberLte}, orderBy: blockNumber_ASC, limit: $limit) {
     id
     specVersion
     transactionVersion
@@ -77,16 +78,17 @@ export async function syncChainInfosFromMatrix(job: Job): Promise<void> {
         throw new Error('Missing CF access credentials: CF_ACCESS_CLIENT_ID/CF_ACCESS_CLIENT_SECRET')
     }
 
-    const blockNumberLt = typeof job.data?.blockNumberLt === 'number' ? job.data.blockNumberLt : DEFAULT_BLOCK_NUMBER_LT
+    const blockNumberGte = typeof job.data?.blockNumberGte === 'number' ? job.data.blockNumberGte : DEFAULT_BLOCK_NUMBER_GTE
 
-    await job.log(`Fetching chain infos from ${MATRIX_INDEXER_URL}`)
+    await job.log(`Fetching chain infos from ${MATRIX_INDEXER_URL} (blockNumber >= ${blockNumberGte})`)
 
     const response = await axios.post<GraphqlResponse>(
         MATRIX_INDEXER_URL,
         {
             query: CHAIN_INFOS_QUERY,
             variables: {
-                blockNumberLt,
+                blockNumberGte,
+                blockNumberLte: MAX_BLOCK_NUMBER,
                 limit: CHAIN_INFOS_BATCH_LIMIT,
             },
         },
@@ -107,7 +109,7 @@ export async function syncChainInfosFromMatrix(job: Job): Promise<void> {
 
     const chainInfos = response.data.data?.chainInfos ?? []
     if (chainInfos.length === 0) {
-        await job.log(`No chain infos returned for blockNumber_lt=${blockNumberLt}`)
+        await job.log(`No chain infos returned for blockNumber_gte=${blockNumberGte}`)
         return
     }
 
@@ -153,10 +155,10 @@ export async function syncChainInfosFromMatrix(job: Job): Promise<void> {
     await em.save(entities)
     await job.log(`Inserted ${entities.length} chain infos into database`)
 
-    const nextBlockNumberLt = Math.min(...chainInfos.map((item) => item.blockNumber))
-    const shouldContinue = chainInfos.length === CHAIN_INFOS_BATCH_LIMIT && nextBlockNumberLt > 0
+    const nextBlockNumberGte = Math.max(...chainInfos.map((item) => item.blockNumber)) + 1
+    const shouldContinue = chainInfos.length === CHAIN_INFOS_BATCH_LIMIT && nextBlockNumberGte <= MAX_BLOCK_NUMBER
     if (shouldContinue) {
-        QueueUtils.dispatchSyncChainInfosFromMatrix(nextBlockNumberLt)
-        await job.log(`Dispatched next chain infos batch with blockNumber_lt=${nextBlockNumberLt}`)
+        QueueUtils.dispatchSyncChainInfosFromMatrix(nextBlockNumberGte)
+        await job.log(`Dispatched next chain infos batch with blockNumber_gte=${nextBlockNumberGte}`)
     }
 }

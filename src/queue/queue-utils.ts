@@ -517,13 +517,13 @@ export function dispatchSyncChain(fromBlock?: number, toBlock?: number): void {
     })
 }
 
-export function dispatchSyncChainInfosFromMatrix(blockNumberLt?: number): void {
+export function dispatchSyncChainInfosFromMatrix(blockNumberGte?: number): void {
     ValidatorsQueue.add(
         JobsEnum.SYNC_CHAIN_INFOS_FROM_MATRIX,
-        { blockNumberLt },
+        { blockNumberGte },
         {
             delay: 6000,
-            jobId: `chain-infos.matrix.sync.${blockNumberLt ?? 'default'}`,
+            jobId: `chain-infos.matrix.sync.${blockNumberGte ?? 'default'}`,
         }
     ).catch(() => {
         Logger.error('Failed to dispatch sync chain infos from matrix', LOGGER_NAMESPACE)
