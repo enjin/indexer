@@ -3,6 +3,7 @@ import { Block, CommonContext, EventItem } from '~/contexts'
 import { Token, TokenGroup, TokenGroupToken } from '~/model'
 import * as mappings from '~/pallet/index'
 import { EventHandlerResult } from '~/processor.handler'
+import { QueueUtils } from '~/queue'
 
 export async function tokenGroupUpdated(
     ctx: CommonContext,
@@ -45,6 +46,8 @@ export async function tokenGroupUpdated(
     })
 
     await ctx.store.save(tokenGroupTokens)
+
+    await QueueUtils.dispatchComputeMetadata({ id: token.id.toString(), type: 'token', force: false })
 
     return mappings.multiTokens.events.tokenGroupUpdatedEventModel(item, data)
 }

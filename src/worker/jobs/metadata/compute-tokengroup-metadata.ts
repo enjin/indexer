@@ -1,8 +1,9 @@
-import { Attribute, Metadata, TokenGroup } from '~/model'
+import { Attribute, Metadata, Token, TokenGroup } from '~/model'
 import { connectionManager } from '~/contexts'
 import { fetchMetadata, metadataParser } from '~/util/metadata'
 import { Job } from 'bullmq'
 import { IsNull } from 'typeorm'
+import { QueueUtils } from '~/queue'
 
 type MetadataType = {
     id: string
@@ -135,6 +136,26 @@ export async function computeTokenGroupMetadata(job: Job) {
             resource.metadata = metadata
 
             await em.save(resource)
+
+            // Dispatch metadata computation for tokens in the group
+            const groupedTokens = await em.find(Token, {
+                where: {
+                    tokenGroupTokens: { tokenGroup: { id: resource.id } },
+                },
+                relations: {
+                    attributes: true,
+                    tokenGroupTokens: {
+                        tokenGroup: {
+                            attributes: true,
+                        },
+                    },
+                },
+            })
+
+            const inheritedTokens = groupedTokens.filter((t) => !t.attributes.some((a) => a.key === 'uri'))
+            inheritedTokens.forEach((t) => {
+                QueueUtils.dispatchComputeMetadata({ id: t.id, type: 'token', force: jobData.force })
+            })
 
             await job.log(`TokenGroup ${resource.id} metadata computed successfully`)
             await job.updateProgress(100)

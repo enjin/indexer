@@ -43,7 +43,7 @@ export async function computeMetadata(job: Job) {
 
             let resource: Collection | Token | null
             let attributes: Attribute[] = []
-            let collectionUriAttribute: Attribute | null = null
+            let inheritedUriAttribute: Attribute | null = null
 
             await job.updateProgress(5)
 
@@ -64,16 +64,30 @@ export async function computeMetadata(job: Job) {
                     relations: {
                         attributes: true,
                         collection: true,
+                        tokenGroupTokens: {
+                            tokenGroup: {
+                                attributes: true,
+                            },
+                        },
                     },
                 })
 
-                collectionUriAttribute = await em.findOne(Attribute, {
+                inheritedUriAttribute = await em.findOne(Attribute, {
                     where: {
                         collection: { id: jobData.id.split('-')[0] },
                         key: 'uri',
                         token: IsNull(),
                     },
                 })
+
+                if (resource && resource.tokenGroupTokens && resource.tokenGroupTokens.length > 0) {
+                    const tokenGroupUriAttribute = resource.tokenGroupTokens[0].tokenGroup.attributes.find(
+                        (a) => a.key === 'uri'
+                    )
+                    if (tokenGroupUriAttribute) {
+                        inheritedUriAttribute = tokenGroupUriAttribute
+                    }
+                }
 
                 attributes = resource?.attributes ?? []
             }
@@ -86,12 +100,12 @@ export async function computeMetadata(job: Job) {
                 await job.updateProgress(15)
             }
 
-            let uriAttribute = collectionUriAttribute ?? undefined
+            let uriAttribute = inheritedUriAttribute ?? undefined
 
-            if (collectionUriAttribute && collectionUriAttribute.value.includes('{id}')) {
+            if (inheritedUriAttribute && inheritedUriAttribute.value.includes('{id}')) {
                 uriAttribute = {
-                    ...collectionUriAttribute,
-                    value: collectionUriAttribute.value.replace('{id}', resource.id),
+                    ...inheritedUriAttribute,
+                    value: inheritedUriAttribute.value.replace('{id}', resource.id),
                 }
             }
 
