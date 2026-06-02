@@ -92,7 +92,7 @@ async function bootstrap() {
                         if (e) eventsCollection.push(e)
                         if (a) accountTokenEvents.push(a)
                         if (s) {
-                            ctx.log.info(`Processing SNS event ${s.id} - ${block.header.height} - ${eventIndex}`)
+                            ctx.log.info(`Processing SNS event  ${s.id} - ${block.header.height} - ${eventIndex}`)
                             const eventCacheKey = getSnsEventHash(s.name, s.body)
                             const cachedSnsEvent = snsEventsCache.get(eventCacheKey)
 
