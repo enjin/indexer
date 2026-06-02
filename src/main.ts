@@ -36,7 +36,7 @@ async function bootstrap() {
     const dataService = DataService.getInstance()
     await dataService.initialize()
 
-    logger.info(`last block number on  config: ${dataService.lastBlockNumber}`)
+    logger.info(`last block number on config: ${dataService.lastBlockNumber}`)
 
     // Passively queue any blocks missing from ChainInfo so they get backfilled s
     if (config.importMissingBlocks) {
@@ -92,7 +92,7 @@ async function bootstrap() {
                         if (e) eventsCollection.push(e)
                         if (a) accountTokenEvents.push(a)
                         if (s) {
-                            ctx.log.info(`Processing SNS event  ${s.id} - ${block.header.height} - ${eventIndex}`)
+                            ctx.log.info(`Processing SNS event ${s.id} - ${block.header.height} - ${eventIndex}`)
                             const eventCacheKey = getSnsEventHash(s.name, s.body)
                             const cachedSnsEvent = snsEventsCache.get(eventCacheKey)
 
