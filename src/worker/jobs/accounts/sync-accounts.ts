@@ -5,13 +5,13 @@ import { decode } from '@subsquid/ss58'
 import { Account } from '~/model'
 import { Job } from 'bullmq'
 import { isNotNullOrEmpty } from '~/worker/utils'
-import { decodeAddress, isValidAddress } from '~/util/tools'
+import { encodeAddress } from '~/util/tools'
 
 export async function syncAccounts(_job: Job, ids: string[] | null): Promise<void> {
     const ctx = await dataHandlerContext()
 
     await _job.updateProgress(10)
-    const accountIds = ids?.map((id) => (isValidAddress(id) ? id : decodeAddress(id))) ?? []
+    const accountIds = ids?.map((id) => (id.startsWith('0x') ? id : encodeAddress(id))) ?? []
 
     const data = await fetchAccountsDetail(accountIds)
 
