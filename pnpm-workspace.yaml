@@ -1,6 +1,16 @@
 packages:
   - .
 
+allowBuilds:
+  '@apollo/protobufjs': true
+  '@sentry/cli': true
+  '@swc/core': true
+  bufferutil: true
+  es5-ext: true
+  msgpackr-extract: true
+  type-graphql: true
+  utf-8-validate: true
+
 onlyBuiltDependencies:
   - '@apollo/protobufjs'
   - '@sentry/cli'

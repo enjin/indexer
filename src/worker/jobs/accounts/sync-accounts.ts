@@ -5,13 +5,15 @@ import { decode } from '@subsquid/ss58'
 import { Account } from '~/model'
 import { Job } from 'bullmq'
 import { isNotNullOrEmpty } from '~/worker/utils'
-import { encodeAddress } from '~/util/tools'
+import { decodeAddress } from '~/util/tools'
+import { isHex } from '@polkadot/util'
 
 export async function syncAccounts(_job: Job, ids: string[] | null): Promise<void> {
     const ctx = await dataHandlerContext()
 
     await _job.updateProgress(10)
-    const accountIds = ids?.map((id) => (id.startsWith('0x') ? id : encodeAddress(id))) ?? []
+
+    const accountIds = ids?.map((id) => (isHex(id) ? id : decodeAddress(id))) ?? []
 
     const data = await fetchAccountsDetail(accountIds)
 
