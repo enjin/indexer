@@ -2,6 +2,7 @@ import { Attribute } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import * as mappings from '~/pallet/index'
 import { EventHandlerResult } from '~/processor.handler'
+import { QueueUtils } from '~/queue'
 
 export async function tokenGroupAttributeRemoved(
     ctx: CommonContext,
@@ -19,6 +20,8 @@ export async function tokenGroupAttributeRemoved(
     })
 
     await ctx.store.remove(attribute)
+
+    await QueueUtils.dispatchComputeTokenGroupMetadata(data.tokenGroupId.toString(), 10000)
 
     return mappings.multiTokens.events.tokenGroupAttributeRemovedEventModel(item, data)
 }
