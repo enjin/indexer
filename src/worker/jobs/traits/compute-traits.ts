@@ -13,7 +13,7 @@ export async function computeTraits(job: Job, id: string) {
     await job.updateProgress(5)
 
     const traitTypeMap = new Map<string, TraitValueMap>()
-    const tokenTraitMap = new Map<string, string[]>()
+    const tokenTraitMap = new Map<string, Set<string>>()
     const displayValueMap = new Map<string, string>()
     const displayTypeMap = new Map<string, string>()
     const BATCH_SIZE = 500
@@ -88,7 +88,9 @@ export async function computeTraits(job: Job, id: string) {
                 tType.set(value, token.supply)
             }
 
-            tokenTraitMap.set(token.id, [...(tokenTraitMap.get(token.id) || []), hash(`${id}-${traitType}-${value}`)])
+            const traits = tokenTraitMap.get(token.id) ?? new Set<string>()
+            traits.add(hash(`${id}-${traitType}-${value}`))
+            tokenTraitMap.set(token.id, traits)
         })
     })
 
@@ -130,7 +132,7 @@ export async function computeTraits(job: Job, id: string) {
     const validTokenIds = new Set(tokens.map((t) => t.id))
 
     tokenTraitMap.forEach((traits, tokenId) => {
-        if (!traits.length) return
+        if (!traits.size) return
         // Only create trait_token records for tokens that were processed (have supply > 0)
         if (!validTokenIds.has(tokenId)) return
 
@@ -148,7 +150,7 @@ export async function computeTraits(job: Job, id: string) {
     await job.updateProgress(85)
 
     if (traitTokensToSave.length) {
-        await job.log(`Saving ${traitsToSave.length} token traits`)
+        await job.log(`Saving ${traitTokensToSave.length} token traits`)
         await em.save(TraitToken, traitTokensToSave, { chunk: 1000 })
     }
 
