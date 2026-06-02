@@ -1,7 +1,7 @@
 import { Query, Resolver, Arg, ArgsType, Field, Args } from 'type-graphql'
 import 'reflect-metadata'
 import { QueueUtils } from '~/queue'
-import { decodeAddress } from '~/util/tools'
+import { decodeAddress, encodeAddress, isValidAddress } from '~/util/tools'
 
 @ArgsType()
 export class RefreshAccountsArgs {
@@ -18,7 +18,7 @@ export class RefreshAccountsResolver {
         }
 
         const publicKeys = args.ids.map((id) => {
-            return decodeAddress(id)
+            return isValidAddress(id) ? id : encodeAddress(id)
         })
 
         QueueUtils.dispatchFetchAccounts(publicKeys)
