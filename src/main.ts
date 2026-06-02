@@ -36,7 +36,7 @@ async function bootstrap() {
     const dataService = DataService.getInstance()
     await dataService.initialize()
 
-    logger.info(`last block number on config: ${dataService.lastBlockNumber}`)
+    logger.info(`last block number on  config: ${dataService.lastBlockNumber}`)
 
     // Passively queue any blocks missing from ChainInfo so they get backfilled s
     if (config.importMissingBlocks) {
