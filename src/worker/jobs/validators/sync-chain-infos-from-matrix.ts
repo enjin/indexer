@@ -122,39 +122,36 @@ export async function syncChainInfosFromMatrix(job: Job): Promise<void> {
     const existingIds = new Set(existing.map((item) => item.id))
     const incoming = chainInfos.filter((item) => !existingIds.has(item.id))
 
-    if (incoming.length === 0) {
-        await job.log(`All ${chainInfos.length} chain infos already exist in database`)
-        return
+    if (incoming.length > 0) {
+        const entities = incoming.map(
+            (item) =>
+                new ChainInfo({
+                    id: item.id,
+                    specVersion: item.specVersion,
+                    transactionVersion: item.transactionVersion,
+                    genesisHash: item.genesisHash,
+                    blockHash: item.blockHash,
+                    blockNumber: item.blockNumber,
+                    existentialDeposit: toBigInt(item.existentialDeposit),
+                    timestamp: new Date(item.timestamp),
+                    validator: item.validator,
+                    marketplace: item.marketplace
+                        ? new Marketplace({
+                              protocolFee: Number(item.marketplace.protocolFee),
+                              listingActiveDelay: Number(item.marketplace.listingActiveDelay),
+                              listingDeposit: toBigInt(item.marketplace.listingDeposit),
+                              maxRoundingError: toBigInt(item.marketplace.maxRoundingError),
+                              maxSaltLength: Number(item.marketplace.maxSaltLength),
+                              minimumBidIncreasePercentage: Number(item.marketplace.minimumBidIncreasePercentage),
+                          })
+                        : null,
+                    finalized: item.finalized,
+                })
+        )
+
+        await em.save(entities)
+        await job.log(`Inserted ${entities.length} chain infos into database`)
     }
-
-    const entities = incoming.map(
-        (item) =>
-            new ChainInfo({
-                id: item.id,
-                specVersion: item.specVersion,
-                transactionVersion: item.transactionVersion,
-                genesisHash: item.genesisHash,
-                blockHash: item.blockHash,
-                blockNumber: item.blockNumber,
-                existentialDeposit: toBigInt(item.existentialDeposit),
-                timestamp: new Date(item.timestamp),
-                validator: item.validator,
-                marketplace: item.marketplace
-                    ? new Marketplace({
-                          protocolFee: Number(item.marketplace.protocolFee),
-                          listingActiveDelay: Number(item.marketplace.listingActiveDelay),
-                          listingDeposit: toBigInt(item.marketplace.listingDeposit),
-                          maxRoundingError: toBigInt(item.marketplace.maxRoundingError),
-                          maxSaltLength: Number(item.marketplace.maxSaltLength),
-                          minimumBidIncreasePercentage: Number(item.marketplace.minimumBidIncreasePercentage),
-                      })
-                    : null,
-                finalized: item.finalized,
-            })
-    )
-
-    await em.save(entities)
-    await job.log(`Inserted ${entities.length} chain infos into database`)
 
     const nextBlockNumberGte = Math.max(...chainInfos.map((item) => item.blockNumber)) + 1
     const shouldContinue = chainInfos.length === CHAIN_INFOS_BATCH_LIMIT && nextBlockNumberGte <= MAX_BLOCK_NUMBER
