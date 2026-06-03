@@ -29,7 +29,7 @@ export async function tokens(ctx: CommonContext, block: Block) {
 
             let behavior: TokenBehaviorIsCurrency | TokenBehaviorHasRoyalty | null = null
             if ('marketBehavior' in data && data.marketBehavior) {
-                if ((data.marketBehavior.__kind as TokenBehaviorType) === TokenBehaviorType.IsCurrency) {
+                if (data.marketBehavior.__kind === 'IsCurrency') {
                     behavior = new TokenBehaviorIsCurrency({
                         type: TokenBehaviorType.IsCurrency,
                     })

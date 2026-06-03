@@ -5,11 +5,11 @@ let dataSource: DataSource | null = null
 
 export const getDataSource = async (): Promise<DataSource> => {
     if (!dataSource) {
-        const cfg: DataSourceOptions = createOrmConfig()
+        const cfg = createOrmConfig()
         dataSource = new DataSource({
             ...cfg,
             poolSize: 200,
-        })
+        } as DataSourceOptions)
     }
 
     if (!dataSource.isInitialized) {
