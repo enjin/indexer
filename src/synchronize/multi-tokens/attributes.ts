@@ -46,7 +46,7 @@ export async function attributes(ctx: CommonContext, block: Block) {
             })
         })
 
-        await Promise.all(attributePromise).then((attributes) => ctx.store.insert(attributes))
+        await ctx.store.insert(attributePromise)
     }
 
     ctx.log.info(`Successfully imported ${await ctx.store.count(Attribute)} attributes`)

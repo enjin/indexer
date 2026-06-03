@@ -169,7 +169,7 @@ function getAttributeEntryValue(entry: unknown): string | undefined {
         return entry
     }
     if (typeof entry === 'object' && 'value' in entry) {
-        const value = (entry as { value: unknown }).value
+        const value = entry.value
         if (typeof value === 'string' && value !== '') {
             return value
         }

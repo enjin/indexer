@@ -23,7 +23,7 @@ export async function earlyBirdBonusPaid(
             lastPaymentId: bonus.lastPaymentId,
             shareCaptureBlock: bonus.shareCaptureBlock,
             amount: bonus.amount,
-            totalPaid: 'totalPaid' in bonus ? (bonus.totalPaid as bigint) : 0n,
+            totalPaid: 'totalPaid' in bonus ? bonus.totalPaid : 0n,
         })
     }
 

@@ -33,7 +33,7 @@ export function stateChangedEventModel(item: EventItem, data: StateChanged): Eve
         data: new NominationPoolsStateChanged({
             pool: data.poolId.toString(),
             poolId: data.poolId.toString(),
-            state: data.newState.__kind.toString(),
+            state: data.newState.__kind,
         }),
     })
 }

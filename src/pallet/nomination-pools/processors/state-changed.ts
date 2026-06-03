@@ -27,7 +27,7 @@ export async function stateChanged(ctx: CommonContext, block: Block, item: Event
     pool.state = PoolState[data.newState.__kind]
     await ctx.store.save(pool)
 
-    if (data.newState.__kind === PoolState.Destroying) {
+    if ((data.newState.__kind as PoolState) === PoolState.Destroying) {
         const snsEvent: SnsEvent = {
             id: item.id,
             name: CustomStakingEvent.Destroy,

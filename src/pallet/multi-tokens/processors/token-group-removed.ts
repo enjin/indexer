@@ -48,7 +48,7 @@ export async function tokenGroupRemoved(
     await ctx.store.save(tokenGroup)
     await ctx.store.remove(tokenGroupToken)
 
-    await QueueUtils.dispatchComputeMetadata({ id: token.id.toString(), type: 'token', force: false })
+    await QueueUtils.dispatchComputeMetadata({ id: token.id, type: 'token', force: false })
 
     return mappings.multiTokens.events.tokenGroupRemovedEventModel(item, data)
 }

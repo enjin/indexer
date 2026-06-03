@@ -32,7 +32,7 @@ export async function tokenGroupAdded(ctx: CommonContext, block: Block, item: Ev
 
     await ctx.store.save(tokenGroupToken)
 
-    await QueueUtils.dispatchComputeMetadata({ id: token.id.toString(), type: 'token', force: false })
+    await QueueUtils.dispatchComputeMetadata({ id: token.id, type: 'token', force: false })
 
     return mappings.multiTokens.events.tokenGroupAddedEventModel(item, data)
 }
