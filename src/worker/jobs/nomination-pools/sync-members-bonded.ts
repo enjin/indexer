@@ -12,9 +12,6 @@ export async function syncMembersBonded(job: Job): Promise<void> {
             tokenAccount: true,
             pool: true,
         },
-        where: {
-            isActive: true,
-        },
     })
 
     await job.updateProgress(30)
@@ -26,9 +23,9 @@ export async function syncMembersBonded(job: Job): Promise<void> {
             continue
         }
 
-        if (!member.tokenAccount) {
+        if (!member.tokenAccount || member.isActive === false) {
             member.bonded = 0n
-        } else {
+        } else if (member.tokenAccount && member.isActive === true) {
             member.bonded = (member.tokenAccount.balance * member.pool.rate) / 10n ** 18n
         }
         toSave.push(member)
