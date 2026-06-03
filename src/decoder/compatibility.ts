@@ -271,7 +271,7 @@ export function transformCall(call: unknown, runtime?: Runtime): Record<string, 
         return { [palletName]: { [callName]: transformedParams } }
     }
 
-    return { [palletName]: (value ?? {}) as Record<string, unknown> }
+    return { [palletName]: value ?? {} }
 }
 
 /**

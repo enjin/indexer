@@ -169,7 +169,7 @@ function getAttributeEntryValue(entry: unknown): string | undefined {
         return entry
     }
     if (typeof entry === 'object' && 'value' in entry) {
-        const value = (entry as { value: unknown }).value
+        const value = entry.value
         if (typeof value === 'string' && value !== '') {
             return value
         }
@@ -331,8 +331,18 @@ export function metadataParser(
             string,
             string | null | undefined
         >
-        const socials = applySocialValue(existing, attribute.key, attribute.value)
-        metadata.socials = new EntitySocials(undefined, socials)
+        let resolvedValue: string | undefined
+        try {
+            const parsed: unknown = JSON.parse(attribute.value)
+            resolvedValue = getAttributeEntryValue(parsed)
+        } catch {
+            // not JSON, use as-is
+        }
+        resolvedValue = resolvedValue ?? attribute.value
+        if (resolvedValue) {
+            const socials = applySocialValue(existing, attribute.key, resolvedValue)
+            metadata.socials = new EntitySocials(undefined, socials)
+        }
     }
 
     if (attribute.key === 'name') {

@@ -47,7 +47,7 @@ export async function tokenGroupUpdated(
 
     await ctx.store.save(tokenGroupTokens)
 
-    await QueueUtils.dispatchComputeMetadata({ id: token.id.toString(), type: 'token', force: false })
+    await QueueUtils.dispatchComputeMetadata({ id: token.id, type: 'token', force: false })
 
     return mappings.multiTokens.events.tokenGroupUpdatedEventModel(item, data)
 }
