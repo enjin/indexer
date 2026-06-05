@@ -216,7 +216,7 @@ export class TopCollectionResolver {
                 ? `WHERE created_at >= NOW() - INTERVAL '${timeFrameMap[timeFrame].c}'`
                 : ''
 
-        const collectionWheres: string[] = []
+        const collectionWheres: string[] = [`c.id NOT IN ('0', '1')`]
         if (category.length > 0) {
             collectionWheres.push(`c.category IN (${category.map(() => `$${paramIdx++}`).join(', ')})`)
             params.push(...category)
