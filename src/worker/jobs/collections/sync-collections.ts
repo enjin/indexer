@@ -18,7 +18,6 @@ export async function syncCollections(job: Job) {
     let processed = 0
 
     for (const collection of collections) {
-        QueueUtils.dispatchFetchExtra([collection.id])
         QueueUtils.dispatchComputeStats(collection.id)
         QueueUtils.dispatchComputeTraits(collection.id)
 

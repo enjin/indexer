@@ -69,9 +69,6 @@ export class RefreshEntityResolver {
                 break
 
             // Partial updates
-            case EntityType.COLLECTION_EXTRA:
-                QueueUtils.dispatchFetchExtra(args.ids)
-                break
             case EntityType.COLLECTION_STATS:
                 for (const id of args.ids) {
                     QueueUtils.dispatchComputeStats(id)
