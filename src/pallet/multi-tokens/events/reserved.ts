@@ -43,6 +43,14 @@ export function reserved(event: EventItem): Reserved {
             () => multiTokens.reserved.v1060.is(event),
             () => multiTokens.reserved.v1060.decode(event)
         )
+        .when(
+            () => multiTokens.reserved.v1070.is(event),
+            () => multiTokens.reserved.v1070.decode(event)
+        )
+        .when(
+            () => multiTokens.reserved.enjinV1070.is(event),
+            () => multiTokens.reserved.enjinV1070.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })
