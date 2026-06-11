@@ -15,9 +15,13 @@ export async function tokenGroupAttributeRemoved(
     if (skipSave) return mappings.multiTokens.events.tokenGroupAttributeRemovedEventModel(item, data)
 
     const attributeId = `${data.tokenGroupId.toString()}-${data.key}-tg`
-    const attribute = await ctx.store.findOneOrFail<Attribute>(Attribute, {
+    const attribute = await ctx.store.findOne<Attribute>(Attribute, {
         where: { id: attributeId },
     })
+
+    if (!attribute) {
+        return mappings.multiTokens.events.tokenGroupAttributeRemovedEventModel(item, data)
+    }
 
     await ctx.store.remove(attribute)
 
