@@ -1,7 +1,7 @@
 import { Job } from 'bullmq'
 import { ProcessorDef } from '~/worker/processors/processor.def'
 import { JobsEnum } from '~/queue/constants'
-import { computeTraits, fixTraits } from '~/worker/jobs'
+import { computeTraits, fixAttributes, fixTraits } from '~/worker/jobs'
 import { logDebug, logError } from '~/worker/utils'
 
 export class TraitsProcessor implements ProcessorDef {
@@ -12,6 +12,9 @@ export class TraitsProcessor implements ProcessorDef {
                 break
             case JobsEnum.FIX_TRAITS:
                 await fixTraits(job, job.data.id)
+                break
+            case JobsEnum.FIX_ATTRIBUTES:
+                await fixAttributes(job, job.data.id)
                 break
             default:
                 throw new Error(`${job.name} is not a valid job for this processor`)
