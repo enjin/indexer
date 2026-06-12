@@ -47,7 +47,7 @@ export async function burned(
     }
 
     // saving history for SNS event
-    const infusionBeforeBurn = token.infusion ?? 0n
+    const infusionBeforeBurn = token.infusion
     const totalBurntInfusion = infusionBeforeBurn * data.amount
 
     const supplyBeforeBurn = token.supply
