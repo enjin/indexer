@@ -97,7 +97,7 @@ export async function burned(
                 .toNumber(),
             decimalCount: token.nativeMetadata?.decimalCount,
             extrinsic: item.extrinsic?.id,
-            infusion: totalBurntInfusion,
+            infusion: infusionBeforeBurn,
             totalBurntInfusion: totalBurntInfusion,
         },
     }
