@@ -52,7 +52,7 @@ function callIndexToCall(api: ApiPromise, palletIndex: number, functionIndex: nu
     }
 }
 
-function permittedExtrinsicEntryToCall(api: ApiPromise, call: unknown): Call {
+function permittedExtrinsicEntryToCall(api: ApiPromise, job: Job<SyncFuelTankRuleSetsJobData>, call: unknown): Call {
     const c = call as Record<string, unknown> & {
         type?: string
         value?: { type?: string }
@@ -63,10 +63,10 @@ function permittedExtrinsicEntryToCall(api: ApiPromise, call: unknown): Call {
         toJSON?: () => unknown
     }
 
-    console.log('c', c)
+    void job.log(`permittedExtrinsicEntryToCall: ${JSON.stringify(c)}`)
 
     if (typeof c.toJSON === 'function') {
-        return permittedExtrinsicEntryToCall(api, c.toJSON())
+        return permittedExtrinsicEntryToCall(api, job, c.toJSON())
     }
 
     if (c.palletIndex != null && c.functionIndex != null) {
@@ -104,7 +104,12 @@ function asPlainTank(chainTank: unknown): Record<string, unknown> {
  * `{ "RequireSignature": { "requireSignature": "0x..." }, "UserFuelBudget": { "userFuelBudget": { "budget": {...} } } }`
  * (often only one key per rule set).
  */
-function jsonVariantToDescriptor(api: ApiPromise, kind: string, raw: unknown): DispatchRuleDescriptor {
+function jsonVariantToDescriptor(
+    api: ApiPromise,
+    job: Job<SyncFuelTankRuleSetsJobData>,
+    kind: string,
+    raw: unknown
+): DispatchRuleDescriptor {
     const v = (raw && typeof raw === 'object' ? raw : {}) as Record<string, unknown>
 
     switch (kind) {
@@ -186,7 +191,7 @@ function jsonVariantToDescriptor(api: ApiPromise, kind: string, raw: unknown): D
             const arr = (Array.isArray(v) ? v : ((v.value as unknown[]) ?? [])) as unknown[]
             return {
                 __kind: 'PermittedExtrinsics',
-                value: arr.map((call) => permittedExtrinsicEntryToCall(api, call)),
+                value: arr.map((call) => permittedExtrinsicEntryToCall(api, job, call)),
             }
         }
         case 'MinimumInfusion': {
@@ -198,20 +203,24 @@ function jsonVariantToDescriptor(api: ApiPromise, kind: string, raw: unknown): D
     }
 }
 
-function rulesFieldToDescriptors(api: ApiPromise, rules: unknown): DispatchRuleDescriptor[] {
+function rulesFieldToDescriptors(
+    api: ApiPromise,
+    job: Job<SyncFuelTankRuleSetsJobData>,
+    rules: unknown
+): DispatchRuleDescriptor[] {
     if (rules == null) return []
     if (Array.isArray(rules)) {
         if (rules.length === 0) return []
         const first = rules[0] as { type?: string }
         if (typeof first?.type === 'string' && !first.type.match(/^[A-Z]/)) {
-            return rules.map((r) => ruleCodecToDescriptor(api, r as { type: string; value: unknown }))
+            return rules.map((r) => ruleCodecToDescriptor(api, job, r as { type: string; value: unknown }))
         }
         return rules.flatMap((r) => {
             if (r && typeof r === 'object' && !Array.isArray(r)) {
                 const o = r as Record<string, unknown>
                 const keys = Object.keys(o)
                 if (keys.length === 1 && /^[A-Z]/.test(keys[0])) {
-                    return [jsonVariantToDescriptor(api, keys[0], o[keys[0]])]
+                    return [jsonVariantToDescriptor(api, job, keys[0], o[keys[0]])]
                 }
             }
             return []
@@ -219,13 +228,17 @@ function rulesFieldToDescriptors(api: ApiPromise, rules: unknown): DispatchRuleD
     }
     if (typeof rules === 'object') {
         return Object.entries(rules as Record<string, unknown>).map(([k, val]) =>
-            jsonVariantToDescriptor(api, k, val)
+            jsonVariantToDescriptor(api, job, k, val)
         )
     }
     return []
 }
 
-function ruleCodecToDescriptor(api: ApiPromise, rule: { type: string; value: unknown }): DispatchRuleDescriptor {
+function ruleCodecToDescriptor(
+    api: ApiPromise,
+    job: Job<SyncFuelTankRuleSetsJobData>,
+    rule: { type: string; value: unknown }
+): DispatchRuleDescriptor {
     const t = rule.type
     const v = rule.value as Record<string, unknown> & { type?: string; toHex?: () => string; toString?: () => string }
 
@@ -299,7 +312,9 @@ function ruleCodecToDescriptor(api: ApiPromise, rule: { type: string; value: unk
         case 'permittedExtrinsics':
             return {
                 __kind: 'PermittedExtrinsics',
-                value: [...(v as unknown as Iterable<unknown>)].map((call) => permittedExtrinsicEntryToCall(api, call)),
+                value: [...(v as unknown as Iterable<unknown>)].map((call) =>
+                    permittedExtrinsicEntryToCall(api, job, call)
+                ),
             }
         case 'minimumInfusion':
             return { __kind: 'MinimumInfusion', value: big(v as { toString: () => string }) }
@@ -310,6 +325,7 @@ function ruleCodecToDescriptor(api: ApiPromise, rule: { type: string; value: unk
 
 function tankRuleSetEntries(
     api: ApiPromise,
+    job: Job<SyncFuelTankRuleSetsJobData>,
     chainTank: unknown
 ): Array<{ index: number; descriptors: DispatchRuleDescriptor[] }> {
     const tank = asPlainTank(chainTank)
@@ -323,7 +339,7 @@ function tankRuleSetEntries(
                 const d = desc as { rules?: unknown }
                 return {
                     index: Number(k),
-                    descriptors: rulesFieldToDescriptors(api, d.rules ?? desc),
+                    descriptors: rulesFieldToDescriptors(api, job, d.rules ?? desc),
                 }
             })
             .sort((a, b) => a.index - b.index)
@@ -340,12 +356,12 @@ function tankRuleSetEntries(
             if (Array.isArray(rules) && rules.length > 0) {
                 const first = rules[0] as { type?: string }
                 if (typeof first?.type === 'string' && first.type[0] === first.type[0].toLowerCase()) {
-                    descriptors = rules.map((r) => ruleCodecToDescriptor(api, r as { type: string; value: unknown }))
+                    descriptors = rules.map((r) => ruleCodecToDescriptor(api, job, r as { type: string; value: unknown }))
                 } else {
-                    descriptors = rulesFieldToDescriptors(api, rules)
+                    descriptors = rulesFieldToDescriptors(api, job, rules)
                 }
             } else {
-                descriptors = rulesFieldToDescriptors(api, rules)
+                descriptors = rulesFieldToDescriptors(api, job, rules)
             }
             out.push({ index, descriptors })
         }
@@ -414,7 +430,7 @@ export async function syncFuelTankRuleSets(job: Job<SyncFuelTankRuleSetsJobData>
                 continue
             }
 
-            const entries = tankRuleSetEntries(api, codec.unwrap())
+            const entries = tankRuleSetEntries(api, job, codec.unwrap())
             if (entries.length === 0) {
                 await job.log(`Tank ${tankId} has no rule sets on chain, skipping`)
                 await job.updateProgress(Math.min(95, progressBase + slice))
