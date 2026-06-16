@@ -46,6 +46,10 @@ export async function burned(
         await ctx.store.save(tokenAccount)
     }
 
+    // saving history for SNS event
+    const infusionBeforeBurn = token.infusion
+    const totalBurntInfusion = infusionBeforeBurn * data.amount
+
     const supplyBeforeBurn = token.supply
     token.supply -= data.amount
     if (token.supply < 1n) {
@@ -93,6 +97,8 @@ export async function burned(
                 .toNumber(),
             decimalCount: token.nativeMetadata?.decimalCount,
             extrinsic: item.extrinsic?.id,
+            infusion: infusionBeforeBurn,
+            totalBurntInfusion: totalBurntInfusion,
         },
     }
 
