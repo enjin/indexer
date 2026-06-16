@@ -63,6 +63,8 @@ function permittedExtrinsicEntryToCall(api: ApiPromise, call: unknown): Call {
         toJSON?: () => unknown
     }
 
+    console.log('c', c)
+
     if (typeof c.toJSON === 'function') {
         return permittedExtrinsicEntryToCall(api, c.toJSON())
     }
