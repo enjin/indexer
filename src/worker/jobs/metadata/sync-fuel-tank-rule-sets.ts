@@ -38,17 +38,6 @@ function big(v: { toString?: () => string } | bigint | number | string | null | 
     }
 }
 
-function debugValue(v: unknown, maxLen = 3000): string {
-    try {
-        if (v != null && typeof (v as { toJSON?: () => unknown }).toJSON === 'function') {
-            return JSON.stringify((v as { toJSON: () => unknown }).toJSON()).slice(0, maxLen)
-        }
-        return JSON.stringify(v, (_, val) => (typeof val === 'bigint' ? val.toString() : val)).slice(0, maxLen)
-    } catch (e) {
-        return `[unstringifiable: ${e instanceof Error ? e.message : String(e)}]`
-    }
-}
-
 function capitalizeKind(s: string): string {
     return s.charAt(0).toUpperCase() + s.slice(1)
 }
@@ -63,7 +52,7 @@ function callIndexToCall(api: ApiPromise, palletIndex: number, functionIndex: nu
     }
 }
 
-function permittedExtrinsicEntryToCall(api: ApiPromise, job: Job<SyncFuelTankRuleSetsJobData>, call: unknown): Call {
+function permittedExtrinsicEntryToCall(api: ApiPromise, call: unknown): Call {
     const c = call as Record<string, unknown> & {
         type?: string
         value?: { type?: string }
@@ -74,10 +63,8 @@ function permittedExtrinsicEntryToCall(api: ApiPromise, job: Job<SyncFuelTankRul
         toJSON?: () => unknown
     }
 
-    void job.log(`permittedExtrinsicEntryToCall: ${JSON.stringify(c)}`)
-
     if (typeof c.toJSON === 'function') {
-        return permittedExtrinsicEntryToCall(api, job, c.toJSON())
+        return permittedExtrinsicEntryToCall(api, c.toJSON())
     }
 
     if (c.palletIndex != null && c.functionIndex != null) {
@@ -115,13 +102,7 @@ function asPlainTank(chainTank: unknown): Record<string, unknown> {
  * `{ "RequireSignature": { "requireSignature": "0x..." }, "UserFuelBudget": { "userFuelBudget": { "budget": {...} } } }`
  * (often only one key per rule set).
  */
-function jsonVariantToDescriptor(
-    api: ApiPromise,
-    job: Job<SyncFuelTankRuleSetsJobData>,
-    kind: string,
-    raw: unknown
-): DispatchRuleDescriptor {
-    void job.log(`jsonVariantToDescriptor kind=${kind} raw=${debugValue(raw)}`)
+function jsonVariantToDescriptor(api: ApiPromise, kind: string, raw: unknown): DispatchRuleDescriptor {
     const v = (raw && typeof raw === 'object' ? raw : {}) as Record<string, unknown>
 
     switch (kind) {
@@ -196,14 +177,18 @@ function jsonVariantToDescriptor(
             }
         }
         case 'PermittedCalls': {
-            const arr = (Array.isArray(v) ? v : ((v.value as string[]) ?? [])) as string[]
+            const arr = (Array.isArray(v)
+                ? v
+                : ((v.permittedCalls ?? v.value) as string[] | undefined) ?? []) as string[]
             return { __kind: 'PermittedCalls', value: arr.map(String) }
         }
         case 'PermittedExtrinsics': {
-            const arr = (Array.isArray(v) ? v : ((v.value as unknown[]) ?? [])) as unknown[]
+            const arr = (Array.isArray(v)
+                ? v
+                : ((v.permittedExtrinsics ?? v.value) as unknown[] | undefined) ?? []) as unknown[]
             return {
                 __kind: 'PermittedExtrinsics',
-                value: arr.map((call) => permittedExtrinsicEntryToCall(api, job, call)),
+                value: arr.map((call) => permittedExtrinsicEntryToCall(api, call)),
             }
         }
         case 'MinimumInfusion': {
@@ -215,63 +200,36 @@ function jsonVariantToDescriptor(
     }
 }
 
-function rulesFieldToDescriptors(
-    api: ApiPromise,
-    job: Job<SyncFuelTankRuleSetsJobData>,
-    rules: unknown
-): DispatchRuleDescriptor[] {
-    void job.log(
-        `rulesFieldToDescriptors input type=${rules == null ? 'null' : Array.isArray(rules) ? 'array' : typeof rules} value=${debugValue(rules)}`
-    )
-    if (rules == null) {
-        void job.log('rulesFieldToDescriptors: rules is null/undefined, returning []')
-        return []
-    }
+function rulesFieldToDescriptors(api: ApiPromise, rules: unknown): DispatchRuleDescriptor[] {
+    if (rules == null) return []
     if (Array.isArray(rules)) {
-        if (rules.length === 0) {
-            void job.log('rulesFieldToDescriptors: rules array is empty, returning []')
-            return []
-        }
+        if (rules.length === 0) return []
         const first = rules[0] as { type?: string }
-        void job.log(`rulesFieldToDescriptors: array first.type=${first?.type ?? 'undefined'}`)
         if (typeof first?.type === 'string' && !first.type.match(/^[A-Z]/)) {
-            void job.log('rulesFieldToDescriptors: using ruleCodecToDescriptor path (lowercase type)')
-            return rules.map((r) => ruleCodecToDescriptor(api, job, r as { type: string; value: unknown }))
+            return rules.map((r) => ruleCodecToDescriptor(api, r as { type: string; value: unknown }))
         }
-        void job.log('rulesFieldToDescriptors: using jsonVariant flatMap path')
-        return rules.flatMap((r, i) => {
+        return rules.flatMap((r) => {
             if (r && typeof r === 'object' && !Array.isArray(r)) {
                 const o = r as Record<string, unknown>
                 const keys = Object.keys(o)
-                void job.log(`rulesFieldToDescriptors: array[${i}] keys=${keys.join(',')}`)
                 if (keys.length === 1 && /^[A-Z]/.test(keys[0])) {
-                    return [jsonVariantToDescriptor(api, job, keys[0], o[keys[0]])]
+                    return [jsonVariantToDescriptor(api, keys[0], o[keys[0]])]
                 }
-                void job.log(`rulesFieldToDescriptors: array[${i}] skipped (keys do not match single uppercase variant)`)
-            } else {
-                void job.log(`rulesFieldToDescriptors: array[${i}] skipped (not a plain object)`)
             }
             return []
         })
     }
     if (typeof rules === 'object') {
-        const entries = Object.entries(rules as Record<string, unknown>)
-        void job.log(`rulesFieldToDescriptors: object keys=${entries.map(([k]) => k).join(',')}`)
-        return entries.map(([k, val]) => jsonVariantToDescriptor(api, job, k, val))
+        return Object.entries(rules as Record<string, unknown>).map(([k, val]) =>
+            jsonVariantToDescriptor(api, k, val)
+        )
     }
-    void job.log(`rulesFieldToDescriptors: unhandled type, returning []`)
     return []
 }
 
-function ruleCodecToDescriptor(
-    api: ApiPromise,
-    job: Job<SyncFuelTankRuleSetsJobData>,
-    rule: { type: string; value: unknown }
-): DispatchRuleDescriptor {
+function ruleCodecToDescriptor(api: ApiPromise, rule: { type: string; value: unknown }): DispatchRuleDescriptor {
     const t = rule.type
     const v = rule.value as Record<string, unknown> & { type?: string; toHex?: () => string; toString?: () => string }
-
-    void job.log(`ruleCodecToDescriptor type=${t} value=${debugValue(v)}`)
 
     switch (t) {
         case 'whitelistedCallers':
@@ -343,9 +301,7 @@ function ruleCodecToDescriptor(
         case 'permittedExtrinsics':
             return {
                 __kind: 'PermittedExtrinsics',
-                value: [...(v as unknown as Iterable<unknown>)].map((call) =>
-                    permittedExtrinsicEntryToCall(api, job, call)
-                ),
+                value: [...(v as unknown as Iterable<unknown>)].map((call) => permittedExtrinsicEntryToCall(api, call)),
             }
         case 'minimumInfusion':
             return { __kind: 'MinimumInfusion', value: big(v as { toString: () => string }) }
@@ -356,73 +312,48 @@ function ruleCodecToDescriptor(
 
 function tankRuleSetEntries(
     api: ApiPromise,
-    job: Job<SyncFuelTankRuleSetsJobData>,
     chainTank: unknown
 ): Array<{ index: number; descriptors: DispatchRuleDescriptor[] }> {
     const tank = asPlainTank(chainTank)
     const rs = tank.ruleSets
-    void job.log(`tankRuleSetEntries: ruleSets type=${rs == null ? 'null' : Array.isArray(rs) ? 'array' : typeof rs}`)
-    if (rs == null) {
-        void job.log('tankRuleSetEntries: ruleSets is null, returning []')
-        return []
-    }
+    if (rs == null) return []
 
     if (!Array.isArray(rs) && typeof rs === 'object') {
-        void job.log(`tankRuleSetEntries: object ruleSets keys=${Object.keys(rs as Record<string, unknown>).join(',')}`)
         return Object.entries(rs as Record<string, unknown>)
             .filter(([k]) => /^\d+$/.test(k))
             .map(([k, desc]) => {
                 const d = desc as { rules?: unknown }
-                const rulesInput = d.rules ?? desc
-                void job.log(
-                    `tankRuleSetEntries: ruleSet index=${k} hasRulesField=${d.rules != null} rulesInput=${debugValue(rulesInput)}`
-                )
-                const descriptors = rulesFieldToDescriptors(api, job, rulesInput)
-                void job.log(`tankRuleSetEntries: ruleSet index=${k} decoded ${descriptors.length} descriptor(s)`)
                 return {
                     index: Number(k),
-                    descriptors,
+                    descriptors: rulesFieldToDescriptors(api, d.rules ?? desc),
                 }
             })
             .sort((a, b) => a.index - b.index)
     }
 
     if (Array.isArray(rs)) {
-        void job.log(`tankRuleSetEntries: array ruleSets length=${rs.length}`)
         const out: Array<{ index: number; descriptors: DispatchRuleDescriptor[] }> = []
         for (const tuple of rs) {
-            if (!Array.isArray(tuple) || tuple.length < 2) {
-                void job.log(`tankRuleSetEntries: skipping invalid tuple=${debugValue(tuple)}`)
-                continue
-            }
+            if (!Array.isArray(tuple) || tuple.length < 2) continue
             const index = Number(tuple[0])
             const second = tuple[1] as { rules?: unknown }
             const rules = second.rules !== undefined && second.rules !== null ? second.rules : second
-            void job.log(
-                `tankRuleSetEntries: ruleSet index=${index} second=${debugValue(second)} rules=${debugValue(rules)}`
-            )
             let descriptors: DispatchRuleDescriptor[]
             if (Array.isArray(rules) && rules.length > 0) {
                 const first = rules[0] as { type?: string }
-                void job.log(`tankRuleSetEntries: rules array first.type=${first?.type ?? 'undefined'}`)
                 if (typeof first?.type === 'string' && first.type[0] === first.type[0].toLowerCase()) {
-                    void job.log('tankRuleSetEntries: using ruleCodecToDescriptor path')
-                    descriptors = rules.map((r) => ruleCodecToDescriptor(api, job, r as { type: string; value: unknown }))
+                    descriptors = rules.map((r) => ruleCodecToDescriptor(api, r as { type: string; value: unknown }))
                 } else {
-                    void job.log('tankRuleSetEntries: using rulesFieldToDescriptors path')
-                    descriptors = rulesFieldToDescriptors(api, job, rules)
+                    descriptors = rulesFieldToDescriptors(api, rules)
                 }
             } else {
-                void job.log('tankRuleSetEntries: rules not a non-empty array, using rulesFieldToDescriptors path')
-                descriptors = rulesFieldToDescriptors(api, job, rules)
+                descriptors = rulesFieldToDescriptors(api, rules)
             }
-            void job.log(`tankRuleSetEntries: ruleSet index=${index} decoded ${descriptors.length} descriptor(s)`)
             out.push({ index, descriptors })
         }
         return out
     }
 
-    void job.log('tankRuleSetEntries: ruleSets format not recognized, returning []')
     return []
 }
 
@@ -485,11 +416,7 @@ export async function syncFuelTankRuleSets(job: Job<SyncFuelTankRuleSetsJobData>
                 continue
             }
 
-            const unwrapped = codec.unwrap()
-            await job.log(`Tank ${tankId} unwrapped tank=${debugValue(unwrapped)}`)
-
-            const entries = tankRuleSetEntries(api, job, unwrapped)
-            await job.log(`Tank ${tankId} parsed ${entries.length} rule set entr(ies)`)
+            const entries = tankRuleSetEntries(api, codec.unwrap())
             if (entries.length === 0) {
                 await job.log(`Tank ${tankId} has no rule sets on chain, skipping`)
                 await job.updateProgress(Math.min(95, progressBase + slice))

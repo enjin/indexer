@@ -39,3 +39,14 @@ export function logDebug(msg: string, job?: Job): void {
 
     Logger.debug(msg, LOGGER_NAMESPACE)
 }
+
+export function debugValue(v: unknown, maxLen = 3000): string {
+    try {
+        if (v != null && typeof (v as { toJSON?: () => unknown }).toJSON === 'function') {
+            return JSON.stringify((v as { toJSON: () => unknown }).toJSON()).slice(0, maxLen)
+        }
+        return JSON.stringify(v, (_, val) => (typeof val === 'bigint' ? val.toString() : val)).slice(0, maxLen)
+    } catch (e) {
+        return `[unstringifiable: ${e instanceof Error ? e.message : String(e)}]`
+    }
+}
