@@ -43,9 +43,7 @@ function capitalizeKind(s: string): string {
 }
 
 function callIndexToCall(api: ApiPromise, palletIndex: number, functionIndex: number): Call {
-    const { method, section } = api.registry.findMetaCall(
-        new Uint8Array([Number(palletIndex), Number(functionIndex)])
-    )
+    const { method, section } = api.registry.findMetaCall(new Uint8Array([Number(palletIndex), Number(functionIndex)]))
     return {
         __kind: capitalizeKind(section),
         value: { __kind: capitalizeKind(method) },
@@ -177,15 +175,15 @@ function jsonVariantToDescriptor(api: ApiPromise, kind: string, raw: unknown): D
             }
         }
         case 'PermittedCalls': {
-            const arr = (Array.isArray(v)
-                ? v
-                : ((v.permittedCalls ?? v.value) as string[] | undefined) ?? []) as string[]
+            const arr = (
+                Array.isArray(v) ? v : (((v.permittedCalls ?? v.value) as string[] | undefined) ?? [])
+            ) as string[]
             return { __kind: 'PermittedCalls', value: arr.map(String) }
         }
         case 'PermittedExtrinsics': {
-            const arr = (Array.isArray(v)
-                ? v
-                : ((v.permittedExtrinsics ?? v.value) as unknown[] | undefined) ?? []) as unknown[]
+            const arr = (
+                Array.isArray(v) ? v : (((v.permittedExtrinsics ?? v.value) as unknown[] | undefined) ?? [])
+            ) as unknown[]
             return {
                 __kind: 'PermittedExtrinsics',
                 value: arr.map((call) => permittedExtrinsicEntryToCall(api, call)),
@@ -220,9 +218,7 @@ function rulesFieldToDescriptors(api: ApiPromise, rules: unknown): DispatchRuleD
         })
     }
     if (typeof rules === 'object') {
-        return Object.entries(rules as Record<string, unknown>).map(([k, val]) =>
-            jsonVariantToDescriptor(api, k, val)
-        )
+        return Object.entries(rules as Record<string, unknown>).map(([k, val]) => jsonVariantToDescriptor(api, k, val))
     }
     return []
 }
