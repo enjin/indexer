@@ -39,6 +39,9 @@ export class FuelTank {
     @Column_("varchar", {length: 14, nullable: true})
     coveragePolicy!: CoveragePolicy | undefined | null
 
+    @IntColumn_({nullable: true})
+    accountExpiration!: number | undefined | null
+
     @OneToMany_(() => FuelTankUserAccounts, e => e.tank)
     userAccounts!: Relation_<FuelTankUserAccounts[]>
 
