@@ -1,7 +1,7 @@
 import { Args, ArgsType, Field, ObjectType, Query, Resolver, registerEnumType } from 'type-graphql'
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
-import { Brackets, MoreThan } from 'typeorm'
+import { Brackets, In, MoreThan } from 'typeorm'
 import { Validate } from 'class-validator'
 import { hexToU8a } from '@polkadot/util'
 import Rpc from '~/util/rpc'
@@ -122,18 +122,75 @@ function matchesRequireToken(
     return satisfiesRequireToken(requirement, heldTokenIds, heldCollectionIds)
 }
 
+function addRequireTokenLookupKeys(requirement: RequireToken, tokenIds: Set<string>, collectionIds: Set<string>): void {
+    const collectionKey = requirement.collectionId.toString()
+
+    if (requirement.tokenId != null) {
+        tokenIds.add(`${collectionKey}-${requirement.tokenId.toString()}`)
+        return
+    }
+
+    collectionIds.add(collectionKey)
+}
+
+function collectRequireTokenLookupKeys(tanks: FuelTank[]): { tokenIds: string[]; collectionIds: string[] } {
+    const tokenIds = new Set<string>()
+    const collectionIds = new Set<string>()
+
+    for (const tank of tanks) {
+        for (const ruleSet of tank.ruleSets ?? []) {
+            if (ruleSet.requireToken) {
+                addRequireTokenLookupKeys(ruleSet.requireToken, tokenIds, collectionIds)
+            }
+        }
+
+        for (const accountRule of tank.accountRules ?? []) {
+            if (accountRule.rule.isTypeOf === 'RequireToken') {
+                addRequireTokenLookupKeys(accountRule.rule as RequireToken, tokenIds, collectionIds)
+            }
+        }
+    }
+
+    return {
+        tokenIds: [...tokenIds],
+        collectionIds: [...collectionIds],
+    }
+}
+
 async function loadAccountHoldings(
     manager: EntityManager,
-    account: string
+    account: string,
+    lookupKeys: { tokenIds: string[]; collectionIds: string[] }
 ): Promise<{ heldTokenIds: Set<string>; heldCollectionIds: Set<string> }> {
     const heldTokenIds = new Set<string>()
     const heldCollectionIds = new Set<string>()
 
-    const tokenAccounts = await manager.find(TokenAccount, {
-        where: {
+    const { tokenIds, collectionIds } = lookupKeys
+
+    if (!tokenIds.length && !collectionIds.length) {
+        return { heldTokenIds, heldCollectionIds }
+    }
+
+    const where = []
+
+    if (tokenIds.length) {
+        where.push({
             account: { id: account },
             balance: MoreThan(0n),
-        },
+            token: { id: In(tokenIds) },
+        })
+    }
+
+    if (collectionIds.length) {
+        where.push({
+            account: { id: account },
+            balance: MoreThan(0n),
+            collection: { id: In(collectionIds) },
+        })
+    }
+
+    const tokenAccounts = await manager.find(TokenAccount, {
+        where,
         relations: { token: true, collection: true },
     })
 
@@ -383,7 +440,8 @@ export class CompatibleFuelTanksResolver {
             .orderBy('tank.name', 'ASC')
             .getMany()
 
-        const { heldTokenIds, heldCollectionIds } = await loadAccountHoldings(manager, account)
+        const requireTokenLookupKeys = collectRequireTokenLookupKeys(tanks)
+        const { heldTokenIds, heldCollectionIds } = await loadAccountHoldings(manager, account, requireTokenLookupKeys)
 
         const candidates: Array<{
             tank: FuelTank
