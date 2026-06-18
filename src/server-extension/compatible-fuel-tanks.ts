@@ -15,6 +15,7 @@ import {
     WhitelistedCallers,
 } from '~/model'
 import { IsPublicKey } from './helpers'
+import { ApiPromise } from '@polkadot/api'
 
 registerEnumType(CoveragePolicy, {
     name: 'CoveragePolicy',
@@ -230,6 +231,7 @@ type CachedFuelTankAccount = {
 }
 
 async function loadTankAccounts(
+    api: ApiPromise,
     account: string,
     tankIds: string[]
 ): Promise<Map<string, CachedFuelTankAccount | null>> {
@@ -238,9 +240,6 @@ async function loadTankAccounts(
     if (!tankIds.length) {
         return cache
     }
-
-    const { api } = await Rpc.getInstance()
-    api.registerTypes(customTypes)
 
     await Promise.all(
         tankIds.map(async (tankId) => {
@@ -359,6 +358,9 @@ export class CompatibleFuelTanksResolver {
     ): Promise<CompatibleFuelTank[]> {
         const manager = await this.tx()
 
+        const { api } = await Rpc.getInstance()
+        api.registerTypes(customTypes)
+
         const tanks = await manager
             .createQueryBuilder(FuelTank, 'tank')
             .leftJoinAndSelect('tank.ruleSets', 'ruleSet')
@@ -414,7 +416,7 @@ export class CompatibleFuelTanksResolver {
             ),
         ]
 
-        const tankAccountsCache = await loadTankAccounts(account, tankIdsToFetch)
+        const tankAccountsCache = await loadTankAccounts(api, account, tankIdsToFetch)
 
         const resultsByTank = new Map<string, CompatibleFuelTank>()
 
