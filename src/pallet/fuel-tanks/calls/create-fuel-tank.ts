@@ -105,6 +105,10 @@ export const createFuelTank = withDispatchCheck((call: CallItem): CreateFuelTank
             () => calls.fuelTanks.createFuelTank.matrixV500.decode(call)
         )
         .when(
+            () => calls.fuelTanks.createFuelTank.enjinV1070.is(call),
+            () => calls.fuelTanks.createFuelTank.enjinV1070.decode(call)
+        )
+        .when(
             () => calls.fuelTanks.createFuelTank.enjinV1032.is(call),
             () => calls.fuelTanks.createFuelTank.enjinV1032.decode(call)
         )
@@ -139,6 +143,10 @@ export const createFuelTank = withDispatchCheck((call: CallItem): CreateFuelTank
         .when(
             () => calls.fuelTanks.createFuelTank.enjinV100.is(call),
             () => calls.fuelTanks.createFuelTank.enjinV100.decode(call)
+        )
+        .when(
+            () => calls.fuelTanks.createFuelTank.v1070.is(call),
+            () => calls.fuelTanks.createFuelTank.v1070.decode(call)
         )
         .when(
             () => calls.fuelTanks.createFuelTank.v1050.is(call),

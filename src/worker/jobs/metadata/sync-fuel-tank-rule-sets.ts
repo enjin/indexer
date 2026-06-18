@@ -1,9 +1,10 @@
+import type { ApiPromise } from '@polkadot/api'
 import { FuelTank, FuelTankRuleSet, PermittedExtrinsics } from '~/model'
 import { connectionManager } from '~/contexts'
 import { Job } from 'bullmq'
 import Rpc from '~/util/rpc'
 import { rulesToMap } from '~/pallet/fuel-tanks/utils'
-import type { DispatchRuleDescriptor } from '~/pallet/common/types'
+import type { Call, DispatchRuleDescriptor } from '~/pallet/common/types'
 
 function num(v: { toNumber?: () => number; toString?: () => string } | number | bigint | null | undefined): number {
     if (v == null) return 0
@@ -37,6 +38,55 @@ function big(v: { toString?: () => string } | bigint | number | string | null | 
     }
 }
 
+function capitalizeKind(s: string): string {
+    return s.charAt(0).toUpperCase() + s.slice(1)
+}
+
+function callIndexToCall(api: ApiPromise, palletIndex: number, functionIndex: number): Call {
+    const { method, section } = api.registry.findMetaCall(new Uint8Array([Number(palletIndex), Number(functionIndex)]))
+    return {
+        __kind: capitalizeKind(section),
+        value: { __kind: capitalizeKind(method) },
+    }
+}
+
+function permittedExtrinsicEntryToCall(api: ApiPromise, call: unknown): Call {
+    const c = call as Record<string, unknown> & {
+        type?: string
+        value?: { type?: string }
+        palletIndex?: unknown
+        functionIndex?: unknown
+        palletName?: unknown
+        extrinsicName?: unknown
+        toJSON?: () => unknown
+    }
+
+    if (typeof c.toJSON === 'function') {
+        return permittedExtrinsicEntryToCall(api, c.toJSON())
+    }
+
+    if (c.palletIndex != null && c.functionIndex != null) {
+        return callIndexToCall(api, num(c.palletIndex as never), num(c.functionIndex as never))
+    }
+
+    if (c.palletName != null && c.extrinsicName != null) {
+        return {
+            __kind: capitalizeKind(String(c.palletName)),
+            value: { __kind: capitalizeKind(String(c.extrinsicName)) },
+        }
+    }
+
+    if (c.type != null && (c.value as { type?: string } | undefined)?.type != null) {
+        const inner = c.value as { type: string }
+        return {
+            __kind: capitalizeKind(c.type),
+            value: { __kind: capitalizeKind(inner.type) },
+        }
+    }
+
+    throw new Error(`Unable to decode permitted extrinsic entry: ${JSON.stringify(c)}`)
+}
+
 function asPlainTank(chainTank: unknown): Record<string, unknown> {
     if (chainTank && typeof (chainTank as { toJSON?: () => unknown }).toJSON === 'function') {
         const j = (chainTank as { toJSON: () => unknown }).toJSON()
@@ -50,7 +100,7 @@ function asPlainTank(chainTank: unknown): Record<string, unknown> {
  * `{ "RequireSignature": { "requireSignature": "0x..." }, "UserFuelBudget": { "userFuelBudget": { "budget": {...} } } }`
  * (often only one key per rule set).
  */
-function jsonVariantToDescriptor(kind: string, raw: unknown): DispatchRuleDescriptor {
+function jsonVariantToDescriptor(api: ApiPromise, kind: string, raw: unknown): DispatchRuleDescriptor {
     const v = (raw && typeof raw === 'object' ? raw : {}) as Record<string, unknown>
 
     switch (kind) {
@@ -125,22 +175,18 @@ function jsonVariantToDescriptor(kind: string, raw: unknown): DispatchRuleDescri
             }
         }
         case 'PermittedCalls': {
-            const arr = (Array.isArray(v) ? v : ((v.value as string[]) ?? [])) as string[]
+            const arr = (
+                Array.isArray(v) ? v : (((v.permittedCalls ?? v.value) as string[] | undefined) ?? [])
+            ) as string[]
             return { __kind: 'PermittedCalls', value: arr.map(String) }
         }
         case 'PermittedExtrinsics': {
-            const arr = (Array.isArray(v) ? v : ((v.value as unknown[]) ?? [])) as {
-                type?: string
-                value?: { type?: string }
-            }[]
+            const arr = (
+                Array.isArray(v) ? v : (((v.permittedExtrinsics ?? v.value) as unknown[] | undefined) ?? [])
+            ) as unknown[]
             return {
                 __kind: 'PermittedExtrinsics',
-                value: arr.map((call) => ({
-                    __kind: (call.type ?? 'X').charAt(0).toUpperCase() + (call.type ?? 'x').slice(1),
-                    value: {
-                        __kind: (call.value?.type ?? 'X').charAt(0).toUpperCase() + (call.value?.type ?? 'x').slice(1),
-                    },
-                })),
+                value: arr.map((call) => permittedExtrinsicEntryToCall(api, call)),
             }
         }
         case 'MinimumInfusion': {
@@ -152,32 +198,32 @@ function jsonVariantToDescriptor(kind: string, raw: unknown): DispatchRuleDescri
     }
 }
 
-function rulesFieldToDescriptors(rules: unknown): DispatchRuleDescriptor[] {
+function rulesFieldToDescriptors(api: ApiPromise, rules: unknown): DispatchRuleDescriptor[] {
     if (rules == null) return []
     if (Array.isArray(rules)) {
         if (rules.length === 0) return []
         const first = rules[0] as { type?: string }
         if (typeof first?.type === 'string' && !first.type.match(/^[A-Z]/)) {
-            return rules.map((r) => ruleCodecToDescriptor(r as { type: string; value: unknown }))
+            return rules.map((r) => ruleCodecToDescriptor(api, r as { type: string; value: unknown }))
         }
         return rules.flatMap((r) => {
             if (r && typeof r === 'object' && !Array.isArray(r)) {
                 const o = r as Record<string, unknown>
                 const keys = Object.keys(o)
                 if (keys.length === 1 && /^[A-Z]/.test(keys[0])) {
-                    return [jsonVariantToDescriptor(keys[0], o[keys[0]])]
+                    return [jsonVariantToDescriptor(api, keys[0], o[keys[0]])]
                 }
             }
             return []
         })
     }
     if (typeof rules === 'object') {
-        return Object.entries(rules as Record<string, unknown>).map(([k, val]) => jsonVariantToDescriptor(k, val))
+        return Object.entries(rules as Record<string, unknown>).map(([k, val]) => jsonVariantToDescriptor(api, k, val))
     }
     return []
 }
 
-function ruleCodecToDescriptor(rule: { type: string; value: unknown }): DispatchRuleDescriptor {
+function ruleCodecToDescriptor(api: ApiPromise, rule: { type: string; value: unknown }): DispatchRuleDescriptor {
     const t = rule.type
     const v = rule.value as Record<string, unknown> & { type?: string; toHex?: () => string; toString?: () => string }
 
@@ -251,12 +297,7 @@ function ruleCodecToDescriptor(rule: { type: string; value: unknown }): Dispatch
         case 'permittedExtrinsics':
             return {
                 __kind: 'PermittedExtrinsics',
-                value: [...(v as unknown as Iterable<{ type: string; value: { type: string } }>)].map((call) => ({
-                    __kind: call.type.charAt(0).toUpperCase() + call.type.slice(1),
-                    value: {
-                        __kind: call.value.type.charAt(0).toUpperCase() + call.value.type.slice(1),
-                    },
-                })),
+                value: [...(v as unknown as Iterable<unknown>)].map((call) => permittedExtrinsicEntryToCall(api, call)),
             }
         case 'minimumInfusion':
             return { __kind: 'MinimumInfusion', value: big(v as { toString: () => string }) }
@@ -265,7 +306,10 @@ function ruleCodecToDescriptor(rule: { type: string; value: unknown }): Dispatch
     }
 }
 
-function tankRuleSetEntries(chainTank: unknown): Array<{ index: number; descriptors: DispatchRuleDescriptor[] }> {
+function tankRuleSetEntries(
+    api: ApiPromise,
+    chainTank: unknown
+): Array<{ index: number; descriptors: DispatchRuleDescriptor[] }> {
     const tank = asPlainTank(chainTank)
     const rs = tank.ruleSets
     if (rs == null) return []
@@ -277,7 +321,7 @@ function tankRuleSetEntries(chainTank: unknown): Array<{ index: number; descript
                 const d = desc as { rules?: unknown }
                 return {
                     index: Number(k),
-                    descriptors: rulesFieldToDescriptors(d.rules ?? desc),
+                    descriptors: rulesFieldToDescriptors(api, d.rules ?? desc),
                 }
             })
             .sort((a, b) => a.index - b.index)
@@ -294,12 +338,12 @@ function tankRuleSetEntries(chainTank: unknown): Array<{ index: number; descript
             if (Array.isArray(rules) && rules.length > 0) {
                 const first = rules[0] as { type?: string }
                 if (typeof first?.type === 'string' && first.type[0] === first.type[0].toLowerCase()) {
-                    descriptors = rules.map((r) => ruleCodecToDescriptor(r as { type: string; value: unknown }))
+                    descriptors = rules.map((r) => ruleCodecToDescriptor(api, r as { type: string; value: unknown }))
                 } else {
-                    descriptors = rulesFieldToDescriptors(rules)
+                    descriptors = rulesFieldToDescriptors(api, rules)
                 }
             } else {
-                descriptors = rulesFieldToDescriptors(rules)
+                descriptors = rulesFieldToDescriptors(api, rules)
             }
             out.push({ index, descriptors })
         }
@@ -368,7 +412,7 @@ export async function syncFuelTankRuleSets(job: Job<SyncFuelTankRuleSetsJobData>
                 continue
             }
 
-            const entries = tankRuleSetEntries(codec.unwrap())
+            const entries = tankRuleSetEntries(api, codec.unwrap())
             if (entries.length === 0) {
                 await job.log(`Tank ${tankId} has no rule sets on chain, skipping`)
                 await job.updateProgress(Math.min(95, progressBase + slice))
