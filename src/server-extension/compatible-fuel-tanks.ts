@@ -1,4 +1,4 @@
-import { Args, ArgsType, Field, ObjectType, Query, Resolver } from 'type-graphql'
+import { Args, ArgsType, Field, ObjectType, Query, Resolver, registerEnumType } from 'type-graphql'
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
 import { Brackets, MoreThan } from 'typeorm'
@@ -15,6 +15,10 @@ import {
     WhitelistedCallers,
 } from '~/model'
 import { IsPublicKey } from './helpers'
+
+registerEnumType(CoveragePolicy, {
+    name: 'CoveragePolicy',
+})
 
 const customTypes = {
     UserFuelBudget: {
@@ -221,33 +225,65 @@ function isRuleSetCompatible(
     return true
 }
 
-async function getRemainingBudget(
-    fuelTank: string,
-    account: string,
-    ruleSetIndex: number,
-    maxBudget: bigint | null | undefined
-): Promise<bigint | null> {
-    if (maxBudget == null || maxBudget === 0n) {
-        return null
+type FuelTankAccountRegistry = {
+    createType(type: string, value: Uint8Array): { toJSON(): unknown }
+}
+
+type CachedFuelTankAccount = {
+    ruleDataSets?: Record<number, { UserFuelBudget?: string }>
+    registry: FuelTankAccountRegistry
+}
+
+async function loadTankAccounts(account: string, tankIds: string[]): Promise<Map<string, CachedFuelTankAccount | null>> {
+    const cache = new Map<string, CachedFuelTankAccount | null>()
+
+    if (!tankIds.length) {
+        return cache
     }
 
     const { api } = await Rpc.getInstance()
     api.registerTypes(customTypes)
 
-    const res = await api.query.fuelTanks.accounts(fuelTank, account)
-    const resJson: any = res.toJSON()
+    await Promise.all(
+        tankIds.map(async (tankId) => {
+            const res = await api.query.fuelTanks.accounts(tankId, account)
+            const resJson = res.toJSON() as { ruleDataSets?: Record<number, { UserFuelBudget?: string }> } | null
 
-    if (!resJson?.ruleDataSets) {
+            cache.set(
+                tankId,
+                resJson
+                    ? {
+                          ruleDataSets: resJson.ruleDataSets,
+                          registry: res.registry,
+                      }
+                    : null
+            )
+        })
+    )
+
+    return cache
+}
+
+function getRemainingBudget(
+    tankAccount: CachedFuelTankAccount | null | undefined,
+    ruleSetIndex: number,
+    maxBudget: bigint | null | undefined
+): bigint | null {
+    if (maxBudget == null || maxBudget === 0n) {
+        return null
+    }
+
+    if (!tankAccount?.ruleDataSets) {
         return maxBudget
     }
 
-    const ruleData = resJson.ruleDataSets[ruleSetIndex] ?? resJson.ruleDataSets[0]
+    const ruleData = tankAccount.ruleDataSets[ruleSetIndex] ?? tankAccount.ruleDataSets[0]
 
     if (!ruleData?.UserFuelBudget) {
         return maxBudget
     }
 
-    const decoded = res.registry
+    const decoded = tankAccount.registry
         .createType('UserFuelBudget', hexToU8a(ruleData.UserFuelBudget))
         .toJSON() as { amount?: { amount?: string | number } }
 
@@ -292,7 +328,7 @@ export class CompatibleFuelTank {
     @Field(() => Boolean)
     providesDeposit!: boolean
 
-    @Field(() => String, { nullable: true })
+    @Field(() => CoveragePolicy, { nullable: true })
     coveragePolicy?: CoveragePolicy | null
 
     @Field(() => CompatibleFuelTankRuleSet)
@@ -382,10 +418,20 @@ export class CompatibleFuelTanksResolver {
             }
         }
 
-        const results: CompatibleFuelTank[] = []
+        const tankIdsToFetch = [
+            ...new Set(
+                candidates
+                    .filter((candidate) => candidate.maxBudget != null && candidate.maxBudget !== 0n)
+                    .map((candidate) => candidate.tank.id)
+            ),
+        ]
+
+        const tankAccountsCache = await loadTankAccounts(account, tankIdsToFetch)
+
+        const resultsByTank = new Map<string, CompatibleFuelTank>()
 
         for (const { tank, ruleSet, maxBudget } of candidates) {
-            const remainingBudget = await getRemainingBudget(tank.id, account, ruleSet.index, maxBudget)
+            const remainingBudget = getRemainingBudget(tankAccountsCache.get(tank.id), ruleSet.index, maxBudget)
 
             if (maxBudget != null && (remainingBudget == null || remainingBudget <= 0n)) {
                 continue
@@ -394,24 +440,30 @@ export class CompatibleFuelTanksResolver {
             const consumedBudget =
                 maxBudget != null && remainingBudget != null ? maxBudget - remainingBudget : null
 
-            results.push(
-                new CompatibleFuelTank({
-                    id: tank.id,
-                    name: tank.name,
-                    providesDeposit: tank.providesDeposit,
-                    coveragePolicy: tank.coveragePolicy,
-                    ruleSet: new CompatibleFuelTankRuleSet({
-                        id: ruleSet.id,
-                        index: ruleSet.index,
-                    }),
-                    remainingBudget: remainingBudget ?? undefined,
-                    maxBudget: maxBudget ?? undefined,
-                    consumedBudget: consumedBudget ?? undefined,
-                    tankBalance: tank.tankAccount?.balance?.free,
-                })
-            )
+            const entry = new CompatibleFuelTank({
+                id: tank.id,
+                name: tank.name,
+                providesDeposit: tank.providesDeposit,
+                coveragePolicy: tank.coveragePolicy,
+                ruleSet: new CompatibleFuelTankRuleSet({
+                    id: ruleSet.id,
+                    index: ruleSet.index,
+                }),
+                remainingBudget: remainingBudget ?? undefined,
+                maxBudget: maxBudget ?? undefined,
+                consumedBudget: consumedBudget ?? undefined,
+                tankBalance: tank.tankAccount?.balance?.free,
+            })
+
+            const existing = resultsByTank.get(tank.id)
+            const entryRemaining = remainingBudget ?? 0n
+            const existingRemaining = existing?.remainingBudget ?? 0n
+
+            if (!existing || entryRemaining > existingRemaining) {
+                resultsByTank.set(tank.id, entry)
+            }
         }
 
-        return results
+        return [...resultsByTank.values()].sort((a, b) => a.name.localeCompare(b.name))
     }
 }
