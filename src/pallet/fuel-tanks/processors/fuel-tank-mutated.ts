@@ -58,8 +58,7 @@ export async function fuelTankMutated(
     const accountExpirationMutation =
         'accountExpiration' in eventData.mutation ? eventData.mutation.accountExpiration : undefined
     if (accountExpirationMutation?.__kind === 'SomeMutation') {
-        tank.accountExpiration =
-            accountExpirationMutation.value !== undefined ? accountExpirationMutation.value : null
+        tank.accountExpiration = accountExpirationMutation.value !== undefined ? accountExpirationMutation.value : null
     }
 
     if (eventData.mutation.accountRules !== undefined) {
