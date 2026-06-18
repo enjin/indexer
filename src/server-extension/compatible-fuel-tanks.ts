@@ -241,22 +241,25 @@ async function loadTankAccounts(
         return cache
     }
 
-    await Promise.all(
-        tankIds.map(async (tankId) => {
-            const res = await api.query.fuelTanks.accounts(tankId, account)
-            const resJson = res.toJSON() as { ruleDataSets?: Record<number, { UserFuelBudget?: string }> } | null
+    const keys = tankIds.map((tankId) => [tankId, account])
+    const results = await api.query.fuelTanks.accounts.multi(keys)
+    const registry = api.registry as FuelTankAccountRegistry
 
-            cache.set(
-                tankId,
-                resJson
-                    ? {
-                          ruleDataSets: resJson.ruleDataSets,
-                          registry: res.registry,
-                      }
-                    : null
-            )
-        })
-    )
+    tankIds.forEach((tankId, index) => {
+        const resJson = results[index]?.toJSON() as {
+            ruleDataSets?: Record<number, { UserFuelBudget?: string }>
+        } | null
+
+        cache.set(
+            tankId,
+            resJson
+                ? {
+                      ruleDataSets: resJson.ruleDataSets,
+                      registry,
+                  }
+                : null
+        )
+    })
 
     return cache
 }
