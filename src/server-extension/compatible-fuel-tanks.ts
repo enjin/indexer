@@ -31,11 +31,7 @@ function normalizeKey(value: string): string {
     return value.replace(/_/g, '').toLowerCase()
 }
 
-function matchesWhitelistedPallets(
-    pallets: string[] | null | undefined,
-    pallet: string,
-    method: string
-): boolean {
+function matchesWhitelistedPallets(pallets: string[] | null | undefined, pallet: string, method: string): boolean {
     if (!pallets?.length) {
         return true
     }
@@ -153,7 +149,6 @@ async function loadAccountHoldings(
     return { heldTokenIds, heldCollectionIds }
 }
 
-
 function matchesAccountRules(
     accountRules: FuelTankAccountRules[] | undefined,
     account: string,
@@ -234,7 +229,10 @@ type CachedFuelTankAccount = {
     registry: FuelTankAccountRegistry
 }
 
-async function loadTankAccounts(account: string, tankIds: string[]): Promise<Map<string, CachedFuelTankAccount | null>> {
+async function loadTankAccounts(
+    account: string,
+    tankIds: string[]
+): Promise<Map<string, CachedFuelTankAccount | null>> {
     const cache = new Map<string, CachedFuelTankAccount | null>()
 
     if (!tankIds.length) {
@@ -283,9 +281,9 @@ function getRemainingBudget(
         return maxBudget
     }
 
-    const decoded = tankAccount.registry
-        .createType('UserFuelBudget', hexToU8a(ruleData.UserFuelBudget))
-        .toJSON() as { amount?: { amount?: string | number } }
+    const decoded = tankAccount.registry.createType('UserFuelBudget', hexToU8a(ruleData.UserFuelBudget)).toJSON() as {
+        amount?: { amount?: string | number }
+    }
 
     const consumption = BigInt(decoded?.amount?.amount?.toString() ?? '0')
     return maxBudget >= consumption ? maxBudget - consumption : 0n
@@ -392,17 +390,7 @@ export class CompatibleFuelTanksResolver {
             const isAccountMember = (tank.userAccounts ?? []).some((entry) => entry.account?.id === account)
 
             for (const ruleSet of tank.ruleSets ?? []) {
-                if (
-                    !isRuleSetCompatible(
-                        ruleSet,
-                        tank,
-                        account,
-                        pallet,
-                        method,
-                        heldTokenIds,
-                        heldCollectionIds
-                    )
-                ) {
+                if (!isRuleSetCompatible(ruleSet, tank, account, pallet, method, heldTokenIds, heldCollectionIds)) {
                     continue
                 }
 
@@ -437,8 +425,7 @@ export class CompatibleFuelTanksResolver {
                 continue
             }
 
-            const consumedBudget =
-                maxBudget != null && remainingBudget != null ? maxBudget - remainingBudget : null
+            const consumedBudget = maxBudget != null && remainingBudget != null ? maxBudget - remainingBudget : null
 
             const entry = new CompatibleFuelTank({
                 id: tank.id,
