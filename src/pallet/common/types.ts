@@ -923,11 +923,27 @@ export interface ShouldMutate_UserAccountManagement_SomeMutation {
     value?: UserAccountManagement
 }
 
+export type ShouldMutate_AccountExpiration =
+    | ShouldMutate_AccountExpiration_NoMutation
+    | ShouldMutate_AccountExpiration_SomeMutation
+
+export interface ShouldMutate_AccountExpiration_NoMutation {
+    __kind: 'NoMutation'
+}
+
+export interface ShouldMutate_AccountExpiration_SomeMutation {
+    __kind: 'SomeMutation'
+    value?: number
+}
+
 export type DefaultTankMutation = {
     userAccountManagement: ShouldMutate_UserAccountManagement
     providesDeposit?: boolean // Removed on v1030
     coveragePolicy?: CoveragePolicy // Added on v1030
     accountRules?: AccountRuleDescriptor[]
+    owner?: AccountId32 // Added on v1062
+    accountExpiration?: ShouldMutate_AccountExpiration // Added on v1062
+    name?: Bytes // Added on v1062
 }
 
 export type ExpirableSignature = {

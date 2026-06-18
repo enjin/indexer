@@ -1199,6 +1199,7 @@ type FuelTank @entity {
   isFrozen: Boolean!
   accountCount: Int!
   coveragePolicy: CoveragePolicy
+  accountExpiration: Int
 
   userAccounts: [FuelTankUserAccounts] @derivedFrom(field: "tank")
   userAccountManagement: FuelTankUserAccountManagement

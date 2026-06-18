@@ -1,3 +1,4 @@
+import { hexToString } from '@polkadot/util'
 import { randomBytes } from 'crypto'
 import {
     CoveragePolicy,
@@ -9,6 +10,8 @@ import {
     WhitelistedCallers,
 } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
+import { getOrCreateAccount } from '~/util/entities'
+import { safeString } from '~/util/tools'
 import * as mappings from '~/pallet/index'
 
 export async function fuelTankMutated(
@@ -42,6 +45,20 @@ export async function fuelTankMutated(
 
     if ('coveragePolicy' in eventData.mutation && eventData.mutation.coveragePolicy !== undefined) {
         tank.coveragePolicy = CoveragePolicy[eventData.mutation.coveragePolicy.__kind]
+    }
+
+    if ('owner' in eventData.mutation && eventData.mutation.owner !== undefined) {
+        tank.owner = await getOrCreateAccount(ctx, eventData.mutation.owner)
+    }
+
+    if ('name' in eventData.mutation && eventData.mutation.name !== undefined && eventData.mutation.name !== '0x') {
+        tank.name = safeString(hexToString(eventData.mutation.name))
+    }
+
+    const accountExpirationMutation =
+        'accountExpiration' in eventData.mutation ? eventData.mutation.accountExpiration : undefined
+    if (accountExpirationMutation?.__kind === 'SomeMutation') {
+        tank.accountExpiration = accountExpirationMutation.value !== undefined ? accountExpirationMutation.value : null
     }
 
     if (eventData.mutation.accountRules !== undefined) {
