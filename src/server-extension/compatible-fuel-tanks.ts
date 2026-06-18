@@ -333,7 +333,6 @@ export class CompatibleFuelTanksResolver {
             .leftJoinAndSelect('userAccount.account', 'userAccountAccount')
             .leftJoinAndSelect('tank.accountRules', 'accountRule')
             .leftJoinAndSelect('tank.tankAccount', 'tankAccount')
-            .leftJoinAndSelect('tankAccount.balance', 'balance')
             .where('tank.isFrozen = :frozen', { frozen: false })
             .andWhere(
                 new Brackets((qb) => {
