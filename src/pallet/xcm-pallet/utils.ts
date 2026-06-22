@@ -20,6 +20,7 @@ export function anyTeleportAssets(
                     mappings.xcmPallet.calls.limitedTeleportAssets(call)
                 )
                 .with(calls.xcmPallet.teleportAssets.name, () => mappings.xcmPallet.calls.teleportAssets(call))
+                .with(calls.xcmPallet.transferAssets.name, () => mappings.xcmPallet.calls.transferAssets(call))
                 .otherwise(() => {
                     throw new UnsupportedCallError(call)
                 })
