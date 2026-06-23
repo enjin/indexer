@@ -271,19 +271,14 @@ export async function dispatchComputeTraits(id: string): Promise<void> {
 }
 
 export function dispatchLogTraitTokenHotChanges({
-    id,
-    blockHeight,
-    index,
+    tokenId,
+    delete: shouldDelete = false,
 }: {
-    id: string
-    blockHeight?: number
-    index?: number
+    tokenId: string
+    delete?: boolean
 }): void {
-    const jobId =
-        blockHeight !== undefined && index !== undefined
-            ? `traits.hotChanges.${id}.${blockHeight}.${index}`
-            : `traits.hotChanges.${id}`
-    TraitsQueue.add(JobsEnum.LOG_TRAIT_TOKEN_HOT_CHANGES, { id, blockHeight, index }, { jobId }).catch(() => {
+    const jobId = shouldDelete ? `traits.hotChanges.${tokenId}.delete` : `traits.hotChanges.${tokenId}`
+    TraitsQueue.add(JobsEnum.LOG_TRAIT_TOKEN_HOT_CHANGES, { tokenId, delete: shouldDelete }, { jobId }).catch(() => {
         Logger.error('Failed to dispatch a job on traits queue', LOGGER_NAMESPACE)
     })
 }
