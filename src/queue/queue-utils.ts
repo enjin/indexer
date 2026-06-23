@@ -270,7 +270,7 @@ export async function dispatchComputeTraits(id: string): Promise<void> {
     })
 }
 
-export async function dispatchLogTraitTokenHotChanges({
+export function dispatchLogTraitTokenHotChanges({
     id,
     blockHeight,
     index,
@@ -278,16 +278,12 @@ export async function dispatchLogTraitTokenHotChanges({
     id: string
     blockHeight?: number
     index?: number
-}): Promise<void> {
+}): void {
     const jobId =
         blockHeight !== undefined && index !== undefined
             ? `traits.hotChanges.${id}.${blockHeight}.${index}`
             : `traits.hotChanges.${id}`
-    TraitsQueue.add(
-        JobsEnum.LOG_TRAIT_TOKEN_HOT_CHANGES,
-        { id, blockHeight, index },
-        { jobId }
-    ).catch(() => {
+    TraitsQueue.add(JobsEnum.LOG_TRAIT_TOKEN_HOT_CHANGES, { id, blockHeight, index }, { jobId }).catch(() => {
         Logger.error('Failed to dispatch a job on traits queue', LOGGER_NAMESPACE)
     })
 }
