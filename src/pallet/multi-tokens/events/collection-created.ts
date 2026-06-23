@@ -22,6 +22,7 @@ export function collectionCreatedEventModel(item: EventItem, data: CollectionCre
         id: item.id,
         name: MultiTokensCollectionCreated.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
+        collectionId: data.collectionId.toString(),
         data: new MultiTokensCollectionCreated({
             collectionId: data.collectionId,
             owner: data.owner,
