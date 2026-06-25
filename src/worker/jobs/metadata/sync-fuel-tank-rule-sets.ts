@@ -309,7 +309,7 @@ function ruleCodecToDescriptor(api: ApiPromise, rule: { type: string; value: unk
 function tankRuleSetEntries(
     api: ApiPromise,
     chainTank: unknown
-): Array<{ index: number; descriptors: DispatchRuleDescriptor[] }> {
+): Array<{ index: number; descriptors: DispatchRuleDescriptor[]; requireAccount: boolean }> {
     const tank = asPlainTank(chainTank)
     const rs = tank.ruleSets
     if (rs == null) return []
@@ -318,21 +318,22 @@ function tankRuleSetEntries(
         return Object.entries(rs as Record<string, unknown>)
             .filter(([k]) => /^\d+$/.test(k))
             .map(([k, desc]) => {
-                const d = desc as { rules?: unknown }
+                const d = desc as { rules?: unknown; requireAccount?: boolean }
                 return {
                     index: Number(k),
                     descriptors: rulesFieldToDescriptors(api, d.rules ?? desc),
+                    requireAccount: d.requireAccount ?? false,
                 }
             })
             .sort((a, b) => a.index - b.index)
     }
 
     if (Array.isArray(rs)) {
-        const out: Array<{ index: number; descriptors: DispatchRuleDescriptor[] }> = []
+        const out: Array<{ index: number; descriptors: DispatchRuleDescriptor[]; requireAccount: boolean }> = []
         for (const tuple of rs) {
             if (!Array.isArray(tuple) || tuple.length < 2) continue
             const index = Number(tuple[0])
-            const second = tuple[1] as { rules?: unknown }
+            const second = tuple[1] as { rules?: unknown; requireAccount?: boolean }
             const rules = second.rules !== undefined && second.rules !== null ? second.rules : second
             let descriptors: DispatchRuleDescriptor[]
             if (Array.isArray(rules) && rules.length > 0) {
@@ -345,7 +346,7 @@ function tankRuleSetEntries(
             } else {
                 descriptors = rulesFieldToDescriptors(api, rules)
             }
-            out.push({ index, descriptors })
+            out.push({ index, descriptors, requireAccount: second.requireAccount ?? false })
         }
         return out
     }
@@ -422,7 +423,7 @@ export async function syncFuelTankRuleSets(job: Job<SyncFuelTankRuleSetsJobData>
             const inner = entries.length
 
             for (let i = 0; i < entries.length; i++) {
-                const { index: setIndex, descriptors } = entries[i]
+                const { index: setIndex, descriptors, requireAccount } = entries[i]
                 const ruleSetId = `${tankId}-${setIndex}`
 
                 if (descriptors.length === 0) {
@@ -479,6 +480,7 @@ export async function syncFuelTankRuleSets(job: Job<SyncFuelTankRuleSetsJobData>
                     permittedCalls,
                     minimumInfusion,
                     requireSignature,
+                    requireAccount,
                 })
                 await em.save(ruleSet)
                 if (permittedExtrinsics?.length) {
