@@ -29,6 +29,7 @@ export async function ruleSetInserted(
     await Promise.all([ctx.store.remove(pE), ctx.store.remove(rS)])
 
     const rules = call.ruleSet !== undefined ? call.ruleSet.rules : call.rules
+    const requireAccount = call.ruleSet !== undefined ? call.ruleSet.requireAccount : false
 
     const {
         whitelistedCallers,
@@ -61,6 +62,7 @@ export async function ruleSetInserted(
         permittedCalls,
         minimumInfusion,
         requireSignature,
+        requireAccount,
     })
     await ctx.store.save(ruleSet)
 

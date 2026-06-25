@@ -35,6 +35,9 @@ export class FuelTankRuleSet {
     @StringColumn_({nullable: true})
     requireSignature!: string | undefined | null
 
+    @BooleanColumn_({nullable: true})
+    requireAccount!: boolean | undefined | null
+
     @StringColumn_({array: true, nullable: true})
     whitelistedCallers!: (string)[] | undefined | null
 
