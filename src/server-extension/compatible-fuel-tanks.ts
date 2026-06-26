@@ -31,57 +31,6 @@ function normalizeKey(value: string): string {
     return value.replace(/_/g, '').toLowerCase()
 }
 
-function matchesWhitelistedPallets(pallets: string[] | null | undefined, pallet: string, method: string): boolean {
-    if (!pallets?.length) {
-        return true
-    }
-
-    const targetPallet = normalizeKey(pallet)
-    const targetMethod = normalizeKey(method)
-
-    return pallets.some((entry) => {
-        if (entry.includes(':')) {
-            const [p, m] = entry.split(':')
-            return normalizeKey(p) === targetPallet && normalizeKey(m) === targetMethod
-        }
-
-        return normalizeKey(entry) === targetPallet
-    })
-}
-
-function matchesPermittedExtrinsics(ruleSet: FuelTankRuleSet, pallet: string, method: string): boolean {
-    if (ruleSet.isPermittedExtrinsicsEmpty || ruleSet.isPermittedExtrinsicsNull) {
-        return true
-    }
-
-    const targetPallet = normalizeKey(pallet)
-    const targetMethod = normalizeKey(method)
-
-    return (ruleSet.permittedExtrinsics ?? []).some(
-        (extrinsic) =>
-            normalizeKey(extrinsic.palletName ?? '') === targetPallet &&
-            normalizeKey(extrinsic.extrinsicName ?? '') === targetMethod
-    )
-}
-
-function matchesPermittedCalls(calls: string[] | null | undefined, method: string): boolean {
-    if (!calls?.length) {
-        return true
-    }
-
-    const target = normalizeKey(method)
-
-    return calls.some((call) => normalizeKey(call) === target)
-}
-
-function matchesWhitelistedCallers(callers: string[] | null | undefined, account: string): boolean {
-    if (!callers?.length) {
-        return true
-    }
-
-    return callers.includes(account)
-}
-
 function matchesWhitelistedCollections(
     collections: (string | undefined | null)[] | null | undefined,
     heldCollectionIds: Set<string>
@@ -216,38 +165,10 @@ async function loadAccountHoldings(
 }
 
 /**
- * Phase 1 – cheap checks that require no DB or RPC calls.
- * Filters by pallet/method rules, caller whitelists, and account membership.
- * WhitelistedCollections and RequireToken are deferred to phase 2.
- */
-function isRuleSetCompatibleCheap(
-    ruleSet: FuelTankRuleSet,
-    tank: FuelTank,
-    account: string,
-    pallet: string,
-    method: string,
-    isAccountMember: boolean
-): boolean {
-    if (ruleSet.isFrozen) return false
-    if (ruleSet.requireSignature) return false
-    if (ruleSet.requireAccount && !isAccountMember) return false
-    if (!matchesWhitelistedPallets(ruleSet.whitelistedPallets, pallet, method)) return false
-    if (!matchesPermittedExtrinsics(ruleSet, pallet, method)) return false
-    if (!matchesPermittedCalls(ruleSet.permittedCalls, method)) return false
-    if (!matchesWhitelistedCallers(ruleSet.whitelistedCallers, account)) return false
-
-    for (const rule of tank.accountRules ?? []) {
-        if (rule.rule.isTypeOf === 'WhitelistedCallers') {
-            if (!(rule.rule as WhitelistedCallers).value.includes(account)) return false
-        }
-    }
-
-    return true
-}
-
-/**
  * Phase 2 – token-based checks that require the account holdings to be resolved first.
- * Only called on rule sets that already passed the cheap phase.
+ * Phase 1 (frozen, requireSignature, requireAccount, pallet/method, callers, calls)
+ * is handled entirely by SQL in the JOIN condition — see the query builder below.
+ * Only tank-level WhitelistedCallers account rules and token checks remain in TypeScript.
  */
 function isRuleSetCompatibleWithTokens(
     ruleSet: FuelTankRuleSet,
@@ -410,17 +331,57 @@ export class CompatibleFuelTanksResolver {
         const { api } = await Rpc.getInstance()
         api.registerTypes(customTypes)
 
-        // Only load rule sets that are not already disqualified at the DB level.
-        // The JOIN condition pre-filters frozen and requireSignature rule sets so
-        // we never hydrate entities that will be thrown away immediately.
+        const normalizedPallet = normalizeKey(pallet)
+        const normalizedMethod = normalizeKey(method)
+
+        // All rule-set-level filters (frozen, requireSignature, requireAccount,
+        // whitelistedPallets, whitelistedCallers, permittedCalls, permittedExtrinsics)
+        // are pushed into the JOIN ON condition so PostgreSQL eliminates non-matching
+        // rule sets before they are hydrated into TypeScript objects.
+        // Only tank-level account rules and token-based checks remain in TypeScript.
+        const ruleSetJoinCondition = `
+            ruleSet.isFrozen = false
+            AND ruleSet.requireSignature IS NULL
+            AND (ruleSet.requireAccount = false OR ruleSet.requireAccount IS NULL
+                 OR EXISTS (
+                     SELECT 1 FROM fuel_tank_user_accounts ua
+                     WHERE ua.tank_id = tank.id AND ua.account_id = :account
+                 ))
+            AND (ruleSet.whitelistedCallers IS NULL
+                 OR cardinality(ruleSet.whitelistedCallers) = 0
+                 OR :account = ANY(ruleSet.whitelistedCallers))
+            AND (ruleSet.whitelistedPallets IS NULL
+                 OR cardinality(ruleSet.whitelistedPallets) = 0
+                 OR EXISTS (
+                     SELECT 1 FROM unnest(ruleSet.whitelistedPallets) AS p
+                     WHERE (p NOT LIKE '%:%' AND LOWER(REPLACE(p, '_', '')) = :normalizedPallet)
+                        OR (p LIKE '%:%'
+                            AND LOWER(REPLACE(SPLIT_PART(p, ':', 1), '_', '')) = :normalizedPallet
+                            AND LOWER(REPLACE(SPLIT_PART(p, ':', 2), '_', '')) = :normalizedMethod)
+                 ))
+            AND (ruleSet.permittedCalls IS NULL
+                 OR cardinality(ruleSet.permittedCalls) = 0
+                 OR EXISTS (
+                     SELECT 1 FROM unnest(ruleSet.permittedCalls) AS c
+                     WHERE LOWER(REPLACE(c, '_', '')) = :normalizedMethod
+                 ))
+            AND (ruleSet.isPermittedExtrinsicsEmpty = true
+                 OR ruleSet.isPermittedExtrinsicsNull = true
+                 OR EXISTS (
+                     SELECT 1 FROM permitted_extrinsics pe
+                     WHERE pe.rule_set_id = ruleSet.id
+                       AND LOWER(REPLACE(pe.pallet_name, '_', '')) = :normalizedPallet
+                       AND LOWER(REPLACE(pe.extrinsic_name, '_', '')) = :normalizedMethod
+                 ))
+        `
+
         const tanks = await manager
             .createQueryBuilder(FuelTank, 'tank')
-            .leftJoinAndSelect(
-                'tank.ruleSets',
-                'ruleSet',
-                'ruleSet.isFrozen = false AND ruleSet.requireSignature IS NULL'
-            )
-            .leftJoinAndSelect('ruleSet.permittedExtrinsics', 'permittedExtrinsic')
+            .leftJoinAndSelect('tank.ruleSets', 'ruleSet', ruleSetJoinCondition, {
+                account,
+                normalizedPallet,
+                normalizedMethod,
+            })
             .leftJoinAndSelect('tank.userAccounts', 'userAccount')
             .leftJoinAndSelect('userAccount.account', 'userAccountAccount')
             .leftJoinAndSelect('tank.accountRules', 'accountRule')
@@ -436,27 +397,51 @@ export class CompatibleFuelTanksResolver {
             .orderBy('tank.name', 'ASC')
             .getMany()
 
-        // ── Phase 1: cheap in-memory checks (no DB or RPC) ───────────────────────
-        // Filter by pallet/method rules, caller whitelists, and account membership.
-        // Token-based checks (requireToken, whitelistedCollections) are deferred.
+        // ── Phase 1: account-level rules (one check per tank, not per rule set) ──
+        // All rule-set-level checks have already been applied by SQL above.
+        // The only TypeScript-side filter left is tank.accountRules WhitelistedCallers,
+        // which cannot be expressed per-rule-set in the JOIN condition.
         const preCandidates: PreCandidate[] = []
 
         for (const tank of tanks) {
             const isAccountMember = (tank.userAccounts ?? []).some((entry) => entry.account?.id === account)
 
+            const accountRulesPass = (tank.accountRules ?? []).every(
+                (rule) =>
+                    rule.rule.isTypeOf !== 'WhitelistedCallers' ||
+                    (rule.rule as WhitelistedCallers).value.includes(account)
+            )
+
+            if (!accountRulesPass) continue
+
             for (const ruleSet of tank.ruleSets ?? []) {
-                if (!isRuleSetCompatibleCheap(ruleSet, tank, account, pallet, method, isAccountMember)) continue
                 if (!isAccountMember && !ruleSet.userFuelBudget) continue
                 preCandidates.push({ tank, ruleSet })
             }
         }
 
-        // ── Phase 2: token-based checks (one DB query, only if needed) ───────────
-        // Collect lookup keys exclusively from surviving pre-candidates so we never
-        // query token accounts for rule sets that were already eliminated above.
+        // ── Phase 2 + 3: token check (DB) and budget check (RPC) in parallel ─────
+        // After phase 1 we know which tanks need RPC budget data, so we fire both
+        // queries simultaneously and wait for both before proceeding.
         const lookupKeys = collectCandidateLookupKeys(preCandidates)
-        const { heldTokenIds, heldCollectionIds } = await loadAccountHoldings(manager, account, lookupKeys)
 
+        const tankIdsWithBudget = [
+            ...new Set(
+                preCandidates
+                    .filter(({ ruleSet }) => {
+                        const amount = ruleSet.userFuelBudget?.amount
+                        return amount != null && amount !== 0n
+                    })
+                    .map(({ tank }) => tank.id)
+            ),
+        ]
+
+        const [{ heldTokenIds, heldCollectionIds }, tankAccountsCache] = await Promise.all([
+            loadAccountHoldings(manager, account, lookupKeys),
+            loadTankAccounts(api, account, tankIdsWithBudget),
+        ])
+
+        // ── Phase 2 filter: token-based rule checks ───────────────────────────────
         const candidates: Array<{ tank: FuelTank; ruleSet: FuelTankRuleSet; maxBudget: bigint | null }> = []
 
         for (const { tank, ruleSet } of preCandidates) {
@@ -464,16 +449,7 @@ export class CompatibleFuelTanksResolver {
             candidates.push({ tank, ruleSet, maxBudget: ruleSet.userFuelBudget?.amount ?? null })
         }
 
-        // ── Phase 3: budget check (RPC, only for candidates that have a budget) ──
-        const tankIdsToFetch = [
-            ...new Set(
-                candidates
-                    .filter((c) => c.maxBudget != null && c.maxBudget !== 0n)
-                    .map((c) => c.tank.id)
-            ),
-        ]
-
-        const tankAccountsCache = await loadTankAccounts(api, account, tankIdsToFetch)
+        // ── Phase 3 filter: remaining budget check (uses pre-fetched RPC data) ───
 
         const resultsByTank = new Map<string, CompatibleFuelTank>()
 
