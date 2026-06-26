@@ -8,7 +8,6 @@ import Rpc from '~/util/rpc'
 import {
     CoveragePolicy,
     FuelTank,
-    FuelTankAccountRules,
     FuelTankRuleSet,
     RequireToken,
     TokenAccount,
@@ -133,28 +132,37 @@ function addRequireTokenLookupKeys(requirement: RequireToken, tokenIds: Set<stri
     collectionIds.add(collectionKey)
 }
 
-function collectRequireTokenLookupKeys(tanks: FuelTank[]): { tokenIds: string[]; collectionIds: string[] } {
+type PreCandidate = { tank: FuelTank; ruleSet: FuelTankRuleSet }
+
+/**
+ * Collect token/collection lookup keys from candidates that already passed cheap checks.
+ * Includes whitelistedCollections so those holdings are also resolved correctly.
+ */
+function collectCandidateLookupKeys(candidates: PreCandidate[]): { tokenIds: string[]; collectionIds: string[] } {
     const tokenIds = new Set<string>()
     const collectionIds = new Set<string>()
+    const seenTanks = new Set<string>()
 
-    for (const tank of tanks) {
-        for (const ruleSet of tank.ruleSets ?? []) {
-            if (ruleSet.requireToken) {
-                addRequireTokenLookupKeys(ruleSet.requireToken, tokenIds, collectionIds)
-            }
+    for (const { tank, ruleSet } of candidates) {
+        if (ruleSet.requireToken) {
+            addRequireTokenLookupKeys(ruleSet.requireToken, tokenIds, collectionIds)
         }
 
-        for (const accountRule of tank.accountRules ?? []) {
-            if (accountRule.rule.isTypeOf === 'RequireToken') {
-                addRequireTokenLookupKeys(accountRule.rule as RequireToken, tokenIds, collectionIds)
+        for (const collectionId of ruleSet.whitelistedCollections ?? []) {
+            if (collectionId != null) collectionIds.add(collectionId)
+        }
+
+        if (!seenTanks.has(tank.id)) {
+            seenTanks.add(tank.id)
+            for (const accountRule of tank.accountRules ?? []) {
+                if (accountRule.rule.isTypeOf === 'RequireToken') {
+                    addRequireTokenLookupKeys(accountRule.rule as RequireToken, tokenIds, collectionIds)
+                }
             }
         }
     }
 
-    return {
-        tokenIds: [...tokenIds],
-        collectionIds: [...collectionIds],
-    }
+    return { tokenIds: [...tokenIds], collectionIds: [...collectionIds] }
 }
 
 async function loadAccountHoldings(
@@ -207,77 +215,53 @@ async function loadAccountHoldings(
     return { heldTokenIds, heldCollectionIds }
 }
 
-function matchesAccountRules(
-    accountRules: FuelTankAccountRules[] | undefined,
+/**
+ * Phase 1 – cheap checks that require no DB or RPC calls.
+ * Filters by pallet/method rules, caller whitelists, and account membership.
+ * WhitelistedCollections and RequireToken are deferred to phase 2.
+ */
+function isRuleSetCompatibleCheap(
+    ruleSet: FuelTankRuleSet,
+    tank: FuelTank,
     account: string,
-    heldTokenIds: Set<string>,
-    heldCollectionIds: Set<string>
+    pallet: string,
+    method: string,
+    isAccountMember: boolean
 ): boolean {
-    for (const rule of accountRules ?? []) {
-        if (rule.rule.isTypeOf === 'WhitelistedCallers') {
-            if (!(rule.rule as WhitelistedCallers).value.includes(account)) {
-                return false
-            }
-        }
+    if (ruleSet.isFrozen) return false
+    if (ruleSet.requireSignature) return false
+    if (ruleSet.requireAccount && !isAccountMember) return false
+    if (!matchesWhitelistedPallets(ruleSet.whitelistedPallets, pallet, method)) return false
+    if (!matchesPermittedExtrinsics(ruleSet, pallet, method)) return false
+    if (!matchesPermittedCalls(ruleSet.permittedCalls, method)) return false
+    if (!matchesWhitelistedCallers(ruleSet.whitelistedCallers, account)) return false
 
-        if (rule.rule.isTypeOf === 'RequireToken') {
-            if (!matchesRequireToken(rule.rule as RequireToken, heldTokenIds, heldCollectionIds)) {
-                return false
-            }
+    for (const rule of tank.accountRules ?? []) {
+        if (rule.rule.isTypeOf === 'WhitelistedCallers') {
+            if (!(rule.rule as WhitelistedCallers).value.includes(account)) return false
         }
     }
 
     return true
 }
 
-function isRuleSetCompatible(
+/**
+ * Phase 2 – token-based checks that require the account holdings to be resolved first.
+ * Only called on rule sets that already passed the cheap phase.
+ */
+function isRuleSetCompatibleWithTokens(
     ruleSet: FuelTankRuleSet,
     tank: FuelTank,
-    account: string,
-    pallet: string,
-    method: string,
     heldTokenIds: Set<string>,
-    heldCollectionIds: Set<string>,
-    isAccountMember: boolean
+    heldCollectionIds: Set<string>
 ): boolean {
-    if (ruleSet.isFrozen) {
-        return false
-    }
+    if (!matchesWhitelistedCollections(ruleSet.whitelistedCollections, heldCollectionIds)) return false
+    if (!matchesRequireToken(ruleSet.requireToken, heldTokenIds, heldCollectionIds)) return false
 
-    if (ruleSet.requireSignature) {
-        return false
-    }
-
-    if (ruleSet.requireAccount && !isAccountMember) {
-        return false
-    }
-
-    if (!matchesWhitelistedPallets(ruleSet.whitelistedPallets, pallet, method)) {
-        return false
-    }
-
-    if (!matchesWhitelistedCollections(ruleSet.whitelistedCollections, heldCollectionIds)) {
-        return false
-    }
-
-    if (!matchesPermittedExtrinsics(ruleSet, pallet, method)) {
-        return false
-    }
-
-    if (!matchesPermittedCalls(ruleSet.permittedCalls, method)) {
-        return false
-    }
-
-    if (!matchesWhitelistedCallers(ruleSet.whitelistedCallers, account)) {
-        return false
-    }
-
-    if (!matchesRequireToken(ruleSet.requireToken, heldTokenIds, heldCollectionIds)) {
-        return false
-    }
-
-    if (!matchesAccountRules(tank.accountRules, account, heldTokenIds, heldCollectionIds)) {
-        return false
+    for (const rule of tank.accountRules ?? []) {
+        if (rule.rule.isTypeOf === 'RequireToken') {
+            if (!matchesRequireToken(rule.rule as RequireToken, heldTokenIds, heldCollectionIds)) return false
+        }
     }
 
     return true
@@ -426,9 +410,16 @@ export class CompatibleFuelTanksResolver {
         const { api } = await Rpc.getInstance()
         api.registerTypes(customTypes)
 
+        // Only load rule sets that are not already disqualified at the DB level.
+        // The JOIN condition pre-filters frozen and requireSignature rule sets so
+        // we never hydrate entities that will be thrown away immediately.
         const tanks = await manager
             .createQueryBuilder(FuelTank, 'tank')
-            .leftJoinAndSelect('tank.ruleSets', 'ruleSet')
+            .leftJoinAndSelect(
+                'tank.ruleSets',
+                'ruleSet',
+                'ruleSet.isFrozen = false AND ruleSet.requireSignature IS NULL'
+            )
             .leftJoinAndSelect('ruleSet.permittedExtrinsics', 'permittedExtrinsic')
             .leftJoinAndSelect('tank.userAccounts', 'userAccount')
             .leftJoinAndSelect('userAccount.account', 'userAccountAccount')
@@ -445,40 +436,40 @@ export class CompatibleFuelTanksResolver {
             .orderBy('tank.name', 'ASC')
             .getMany()
 
-        const requireTokenLookupKeys = collectRequireTokenLookupKeys(tanks)
-        const { heldTokenIds, heldCollectionIds } = await loadAccountHoldings(manager, account, requireTokenLookupKeys)
-
-        const candidates: Array<{
-            tank: FuelTank
-            ruleSet: FuelTankRuleSet
-            maxBudget: bigint | null
-        }> = []
+        // ── Phase 1: cheap in-memory checks (no DB or RPC) ───────────────────────
+        // Filter by pallet/method rules, caller whitelists, and account membership.
+        // Token-based checks (requireToken, whitelistedCollections) are deferred.
+        const preCandidates: PreCandidate[] = []
 
         for (const tank of tanks) {
             const isAccountMember = (tank.userAccounts ?? []).some((entry) => entry.account?.id === account)
 
             for (const ruleSet of tank.ruleSets ?? []) {
-                if (!isRuleSetCompatible(ruleSet, tank, account, pallet, method, heldTokenIds, heldCollectionIds, isAccountMember)) {
-                    continue
-                }
-
-                if (!isAccountMember && !ruleSet.userFuelBudget) {
-                    continue
-                }
-
-                candidates.push({
-                    tank,
-                    ruleSet,
-                    maxBudget: ruleSet.userFuelBudget?.amount ?? null,
-                })
+                if (!isRuleSetCompatibleCheap(ruleSet, tank, account, pallet, method, isAccountMember)) continue
+                if (!isAccountMember && !ruleSet.userFuelBudget) continue
+                preCandidates.push({ tank, ruleSet })
             }
         }
 
+        // ── Phase 2: token-based checks (one DB query, only if needed) ───────────
+        // Collect lookup keys exclusively from surviving pre-candidates so we never
+        // query token accounts for rule sets that were already eliminated above.
+        const lookupKeys = collectCandidateLookupKeys(preCandidates)
+        const { heldTokenIds, heldCollectionIds } = await loadAccountHoldings(manager, account, lookupKeys)
+
+        const candidates: Array<{ tank: FuelTank; ruleSet: FuelTankRuleSet; maxBudget: bigint | null }> = []
+
+        for (const { tank, ruleSet } of preCandidates) {
+            if (!isRuleSetCompatibleWithTokens(ruleSet, tank, heldTokenIds, heldCollectionIds)) continue
+            candidates.push({ tank, ruleSet, maxBudget: ruleSet.userFuelBudget?.amount ?? null })
+        }
+
+        // ── Phase 3: budget check (RPC, only for candidates that have a budget) ──
         const tankIdsToFetch = [
             ...new Set(
                 candidates
-                    .filter((candidate) => candidate.maxBudget != null && candidate.maxBudget !== 0n)
-                    .map((candidate) => candidate.tank.id)
+                    .filter((c) => c.maxBudget != null && c.maxBudget !== 0n)
+                    .map((c) => c.tank.id)
             ),
         ]
 
