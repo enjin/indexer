@@ -237,13 +237,18 @@ function isRuleSetCompatible(
     pallet: string,
     method: string,
     heldTokenIds: Set<string>,
-    heldCollectionIds: Set<string>
+    heldCollectionIds: Set<string>,
+    isAccountMember: boolean
 ): boolean {
     if (ruleSet.isFrozen) {
         return false
     }
 
     if (ruleSet.requireSignature) {
+        return false
+    }
+
+    if (ruleSet.requireAccount && !isAccountMember) {
         return false
     }
 
@@ -453,7 +458,7 @@ export class CompatibleFuelTanksResolver {
             const isAccountMember = (tank.userAccounts ?? []).some((entry) => entry.account?.id === account)
 
             for (const ruleSet of tank.ruleSets ?? []) {
-                if (!isRuleSetCompatible(ruleSet, tank, account, pallet, method, heldTokenIds, heldCollectionIds)) {
+                if (!isRuleSetCompatible(ruleSet, tank, account, pallet, method, heldTokenIds, heldCollectionIds, isAccountMember)) {
                     continue
                 }
 
