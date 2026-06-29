@@ -104,31 +104,31 @@ type TeleportBalanceWithdrawn {
 }
 
 type MarketplaceAuctionFinalized {
-  listing: Listing!
+  listing: Listing
   winningBid: Bid
   protocolFee: BigInt
   royalty: BigInt
 }
 
 type MarketplaceBidPlaced {
-  listing: Listing!
+  listing: Listing
   bid: Bid!
 }
 
 type MarketplaceListingCancelled {
-  listing: Listing!
+  listing: Listing
 }
 
 type MarketplaceListingRemovedUnderMinimum {
-  listing: Listing!
+  listing: Listing
 }
 
 type MarketplaceListingCreated {
-  listing: Listing!
+  listing: Listing
 }
 
 type MarketplaceListingFilled {
-  listing: Listing!
+  listing: Listing
   buyer: Account!
   amountFilled: BigInt!
   amountRemaining: BigInt!
@@ -138,7 +138,7 @@ type MarketplaceListingFilled {
 }
 
 type MarketplaceCounterOfferPlaced {
-  listing: Listing!
+  listing: Listing
   accountId: Account!
   buyerPrice: BigInt
   sellerPrice: BigInt!
@@ -167,22 +167,22 @@ type CounterOfferResponseReject {
 union CounterOfferResponse = CounterOfferResponseAccept | CounterOfferResponseCounter | CounterOfferResponseReject
 
 type MarketplaceCounterOfferAnswered {
-  listing: Listing!
+  listing: Listing
   creator: Account!
   response: CounterOfferResponse!
 }
 
 type MarketplaceCounterOfferRemoved {
-  listing: Listing!
+  listing: Listing
   creator: Account!
 }
 
 type MarketplaceOfferCreated {
-  listing: Listing!
+  listing: Listing
 }
 
 type MarketplaceOfferSettled {
-  listing: Listing!
+  listing: Listing
   buyer: Account!
   amount: BigInt!
   price: BigInt!
@@ -191,16 +191,16 @@ type MarketplaceOfferSettled {
 }
 
 type MarketplaceOfferCancelled {
-  listing: Listing!
+  listing: Listing
 }
 
 type MarketplaceWhitelistedAccountsAdded {
-  listing: Listing!
+  listing: Listing
   accounts: [String]!
 }
 
 type MarketplaceWhitelistedAccountsRemoved {
-  listing: Listing!
+  listing: Listing
   accounts: [String]!
 }
 

@@ -5,7 +5,7 @@ import {Bid} from "./bid.model"
 
 export class MarketplaceAuctionFinalized {
     public readonly isTypeOf = 'MarketplaceAuctionFinalized'
-    private _listing!: string
+    private _listing!: string | undefined | null
     private _winningBid!: string | undefined | null
     private _protocolFee!: bigint | undefined | null
     private _royalty!: bigint | undefined | null
@@ -13,19 +13,18 @@ export class MarketplaceAuctionFinalized {
     constructor(props?: Partial<Omit<MarketplaceAuctionFinalized, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
         if (json != null) {
-            this._listing = marshal.string.fromJSON(json.listing)
+            this._listing = json.listing == null ? undefined : marshal.string.fromJSON(json.listing)
             this._winningBid = json.winningBid == null ? undefined : marshal.string.fromJSON(json.winningBid)
             this._protocolFee = json.protocolFee == null ? undefined : marshal.bigint.fromJSON(json.protocolFee)
             this._royalty = json.royalty == null ? undefined : marshal.bigint.fromJSON(json.royalty)
         }
     }
 
-    get listing(): string {
-        assert(this._listing != null, 'uninitialized access')
+    get listing(): string | undefined | null {
         return this._listing
     }
 
-    set listing(value: string) {
+    set listing(value: string | undefined | null) {
         this._listing = value
     }
 

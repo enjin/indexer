@@ -21,9 +21,9 @@ export async function syncOfferEvents(job: Job): Promise<void> {
     for (const accountTokenEvent of accountTokenEvents) {
         const { event } = accountTokenEvent
 
-        if (event?.data instanceof MarketplaceOfferSettled) {
+        if (event?.data instanceof MarketplaceOfferSettled && event.data.listing != null) {
             const listing = await em.findOneOrFail(Listing, {
-                where: { id: event?.data.listing },
+                where: { id: event.data.listing },
                 relations: {
                     seller: true,
                 },
