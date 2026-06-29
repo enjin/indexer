@@ -362,7 +362,7 @@ export class CompatibleFuelTanksResolver {
                  OR ruleSet.isPermittedExtrinsicsNull = true
                  OR EXISTS (
                      SELECT 1 FROM permitted_extrinsics pe
-                     WHERE pe.rule_set_id = ruleSet.id
+                     WHERE pe.rule_set_id = "ruleSet"."id"
                        AND LOWER(REPLACE(pe.pallet_name, '_', '')) = :normalizedPallet
                        AND LOWER(REPLACE(pe.extrinsic_name, '_', '')) = :normalizedMethod
                  ))
