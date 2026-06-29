@@ -5,14 +5,7 @@ import { Brackets, In, MoreThan } from 'typeorm'
 import { Validate } from 'class-validator'
 import { hexToU8a } from '@polkadot/util'
 import Rpc from '~/util/rpc'
-import {
-    CoveragePolicy,
-    FuelTank,
-    FuelTankRuleSet,
-    RequireToken,
-    TokenAccount,
-    WhitelistedCallers,
-} from '~/model'
+import { CoveragePolicy, FuelTank, FuelTankRuleSet, RequireToken, TokenAccount, WhitelistedCallers } from '~/model'
 import { IsPublicKey } from './helpers'
 import { ApiPromise } from '@polkadot/api'
 
