@@ -40,6 +40,7 @@ export async function syncOffers(job: Job): Promise<void> {
             (event.data instanceof MarketplaceOfferCreated || event.data instanceof MarketplaceOfferCancelled)
         ) {
             const listingId = event.data.listing
+            if (listingId == null) continue
 
             const listing = await em.findOne(Listing, {
                 select: ['id', 'takeAssetId'],

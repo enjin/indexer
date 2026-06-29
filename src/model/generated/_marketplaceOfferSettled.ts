@@ -5,7 +5,7 @@ import {Account} from "./account.model"
 
 export class MarketplaceOfferSettled {
     public readonly isTypeOf = 'MarketplaceOfferSettled'
-    private _listing!: string
+    private _listing!: string | undefined | null
     private _buyer!: string
     private _amount!: bigint
     private _price!: bigint
@@ -15,7 +15,7 @@ export class MarketplaceOfferSettled {
     constructor(props?: Partial<Omit<MarketplaceOfferSettled, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
         if (json != null) {
-            this._listing = marshal.string.fromJSON(json.listing)
+            this._listing = json.listing == null ? undefined : marshal.string.fromJSON(json.listing)
             this._buyer = marshal.string.fromJSON(json.buyer)
             this._amount = marshal.bigint.fromJSON(json.amount)
             this._price = marshal.bigint.fromJSON(json.price)
@@ -24,12 +24,11 @@ export class MarketplaceOfferSettled {
         }
     }
 
-    get listing(): string {
-        assert(this._listing != null, 'uninitialized access')
+    get listing(): string | undefined | null {
         return this._listing
     }
 
-    set listing(value: string) {
+    set listing(value: string | undefined | null) {
         this._listing = value
     }
 

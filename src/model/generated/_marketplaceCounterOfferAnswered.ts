@@ -6,25 +6,24 @@ import {CounterOfferResponse, fromJsonCounterOfferResponse} from "./_counterOffe
 
 export class MarketplaceCounterOfferAnswered {
     public readonly isTypeOf = 'MarketplaceCounterOfferAnswered'
-    private _listing!: string
+    private _listing!: string | undefined | null
     private _creator!: string
     private _response!: CounterOfferResponse
 
     constructor(props?: Partial<Omit<MarketplaceCounterOfferAnswered, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
         if (json != null) {
-            this._listing = marshal.string.fromJSON(json.listing)
+            this._listing = json.listing == null ? undefined : marshal.string.fromJSON(json.listing)
             this._creator = marshal.string.fromJSON(json.creator)
             this._response = fromJsonCounterOfferResponse(json.response)
         }
     }
 
-    get listing(): string {
-        assert(this._listing != null, 'uninitialized access')
+    get listing(): string | undefined | null {
         return this._listing
     }
 
-    set listing(value: string) {
+    set listing(value: string | undefined | null) {
         this._listing = value
     }
 

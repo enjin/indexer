@@ -5,23 +5,22 @@ import {Bid} from "./bid.model"
 
 export class MarketplaceBidPlaced {
     public readonly isTypeOf = 'MarketplaceBidPlaced'
-    private _listing!: string
+    private _listing!: string | undefined | null
     private _bid!: string
 
     constructor(props?: Partial<Omit<MarketplaceBidPlaced, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
         if (json != null) {
-            this._listing = marshal.string.fromJSON(json.listing)
+            this._listing = json.listing == null ? undefined : marshal.string.fromJSON(json.listing)
             this._bid = marshal.string.fromJSON(json.bid)
         }
     }
 
-    get listing(): string {
-        assert(this._listing != null, 'uninitialized access')
+    get listing(): string | undefined | null {
         return this._listing
     }
 
-    set listing(value: string) {
+    set listing(value: string | undefined | null) {
         this._listing = value
     }
 
