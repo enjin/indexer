@@ -14,16 +14,16 @@ registerEnumType(CoveragePolicy, {
 })
 
 export enum Pallet {
-    Balances = 'Balances',
-    FuelTanks = 'FuelTanks',
-    Identity = 'Identity',
-    Marketplace = 'Marketplace',
-    MultiTokens = 'MultiTokens',
-    Multisig = 'Multisig',
-    NominationPools = 'NominationPools',
-    StakeExchange = 'StakeExchange',
-    Staking = 'Staking',
-    Utility = 'Utility',
+    Balances = 'BALANCES',
+    FuelTanks = 'FUEL_TANKS',
+    Identity = 'IDENTITY',
+    Marketplace = 'MARKETPLACE',
+    MultiTokens = 'MULTI_TOKENS',
+    Multisig = 'MULTISIG',
+    NominationPools = 'NOMINATION_POOLS',
+    StakeExchange = 'STAKE_EXCHANGE',
+    Staking = 'STAKING',
+    Utility = 'UTILITY',
 }
 
 registerEnumType(Pallet, {
