@@ -1,0 +1,70 @@
+table:
+  name: collection
+  schema: public
+object_relationships:
+  - name: owner
+    using:
+      foreign_key_constraint_on: owner_id
+array_relationships:
+  - name: attributes
+    using:
+      foreign_key_constraint_on:
+        column: collection_id
+        table:
+          name: attribute
+          schema: public
+  - name: collectionAccounts
+    using:
+      foreign_key_constraint_on:
+        column: collection_id
+        table:
+          name: collection_account
+          schema: public
+  - name: explicitRoyaltyCurrencies
+    using:
+      foreign_key_constraint_on:
+        column: collection_id
+        table:
+          name: royalty_currency
+          schema: public
+  - name: rarity
+    using:
+      foreign_key_constraint_on:
+        column: collection_id
+        table:
+          name: token_rarity
+          schema: public
+  - name: tokenAccounts
+    using:
+      foreign_key_constraint_on:
+        column: collection_id
+        table:
+          name: token_account
+          schema: public
+  - name: tokenGroups
+    using:
+      foreign_key_constraint_on:
+        column: collection_id
+        table:
+          name: token_group
+          schema: public
+  - name: tokens
+    using:
+      foreign_key_constraint_on:
+        column: collection_id
+        table:
+          name: token
+          schema: public
+  - name: traits
+    using:
+      foreign_key_constraint_on:
+        column: collection_id
+        table:
+          name: trait
+          schema: public
+select_permissions:
+  - role: public
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true

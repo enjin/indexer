@@ -1,0 +1,82 @@
+table:
+  name: token
+  schema: public
+object_relationships:
+  - name: bestListing
+    using:
+      foreign_key_constraint_on: best_listing_id
+  - name: collection
+    using:
+      foreign_key_constraint_on: collection_id
+  - name: lastSale
+    using:
+      foreign_key_constraint_on: last_sale_id
+  - name: nominationPool
+    using:
+      foreign_key_constraint_on: nomination_pool_id
+  - name: rarity
+    using:
+      foreign_key_constraint_on:
+        column: token_id
+        table:
+          name: token_rarity
+          schema: public
+  - name: recentListing
+    using:
+      foreign_key_constraint_on: recent_listing_id
+array_relationships:
+  - name: attributes
+    using:
+      foreign_key_constraint_on:
+        column: token_id
+        table:
+          name: attribute
+          schema: public
+  - name: listings
+    using:
+      foreign_key_constraint_on:
+        column: make_asset_id_id
+        table:
+          name: listing
+          schema: public
+  - name: offers
+    using:
+      foreign_key_constraint_on:
+        column: take_asset_id_id
+        table:
+          name: listing
+          schema: public
+  - name: tokenAccounts
+    using:
+      foreign_key_constraint_on:
+        column: token_id
+        table:
+          name: token_account
+          schema: public
+  - name: tokenGroupTokens
+    using:
+      foreign_key_constraint_on:
+        column: token_id
+        table:
+          name: token_group_token
+          schema: public
+  - name: traits
+    using:
+      foreign_key_constraint_on:
+        column: token_id
+        table:
+          name: trait_token
+          schema: public
+  - name: userInfusions
+    using:
+      foreign_key_constraint_on:
+        column: token_id
+        table:
+          name: user_infusion
+          schema: public
+select_permissions:
+  - role: public
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true

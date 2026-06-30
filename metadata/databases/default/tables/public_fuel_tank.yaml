@@ -1,0 +1,38 @@
+table:
+  name: fuel_tank
+  schema: public
+object_relationships:
+  - name: owner
+    using:
+      foreign_key_constraint_on: owner_id
+  - name: tankAccount
+    using:
+      foreign_key_constraint_on: tank_account_id
+array_relationships:
+  - name: accountRules
+    using:
+      foreign_key_constraint_on:
+        column: tank_id
+        table:
+          name: fuel_tank_account_rules
+          schema: public
+  - name: ruleSets
+    using:
+      foreign_key_constraint_on:
+        column: tank_id
+        table:
+          name: fuel_tank_rule_set
+          schema: public
+  - name: userAccounts
+    using:
+      foreign_key_constraint_on:
+        column: tank_id
+        table:
+          name: fuel_tank_user_accounts
+          schema: public
+select_permissions:
+  - role: public
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true

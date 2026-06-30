@@ -1,0 +1,16 @@
+table:
+  name: bid
+  schema: public
+object_relationships:
+  - name: bidder
+    using:
+      foreign_key_constraint_on: bidder_id
+  - name: listing
+    using:
+      foreign_key_constraint_on: listing_id
+select_permissions:
+  - role: public
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true

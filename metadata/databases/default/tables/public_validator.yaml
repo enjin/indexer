@@ -1,0 +1,21 @@
+table:
+  name: validator
+  schema: public
+object_relationships:
+  - name: account
+    using:
+      foreign_key_constraint_on: account_id
+array_relationships:
+  - name: pools
+    using:
+      foreign_key_constraint_on:
+        column: validator_id
+        table:
+          name: pool_validator
+          schema: public
+select_permissions:
+  - role: public
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true

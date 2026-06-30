@@ -1,0 +1,481 @@
+# Handler path is relative to handler_webhook_baseurl in config.yaml (e.g. http://localhost:3001).
+actions:
+  - name: verify_message
+    definition:
+      kind: synchronous
+      handler: /hasura-actions
+      forward_client_headers: true
+      headers: []
+      timeout: 60
+      type: query
+      arguments:
+        - name: message
+          type: String!
+        - name: signature
+          type: String!
+        - name: publicKey
+          type: String!
+      output_type: SquidActionPayload!
+    comment: Server-extension parity — verify substrate signature
+
+  - name: fuel_tanks_accounts
+    definition:
+      kind: synchronous
+      handler: /hasura-actions
+      forward_client_headers: true
+      headers: []
+      timeout: 60
+      type: query
+      arguments:
+        - name: fuelTank
+          type: String!
+        - name: account
+          type: String!
+      output_type: SquidActionPayload!
+
+  - name: claims_account_nonce
+    definition:
+      kind: synchronous
+      handler: /hasura-actions
+      forward_client_headers: true
+      headers: []
+      timeout: 60
+      type: query
+      arguments:
+        - name: account
+          type: String!
+      output_type: SquidActionPayload!
+
+  - name: claimable_collection_ids
+    definition:
+      kind: synchronous
+      handler: /hasura-actions
+      forward_client_headers: true
+      headers: []
+      timeout: 60
+      type: query
+      arguments:
+        - name: addresses
+          type: '[String!]!'
+      output_type: SquidActionPayload!
+
+  - name: refresh_accounts
+    definition:
+      kind: synchronous
+      handler: /hasura-actions
+      forward_client_headers: true
+      headers: []
+      timeout: 60
+      type: mutation
+      arguments:
+        - name: ids
+          type: '[String!]!'
+      output_type: SquidActionPayload!
+
+  - name: refresh_balances
+    definition:
+      kind: synchronous
+      handler: /hasura-actions
+      forward_client_headers: true
+      headers: []
+      timeout: 60
+      type: mutation
+      arguments:
+        - name: ids
+          type: '[String!]!'
+      output_type: SquidActionPayload!
+
+  - name: refresh_collections
+    definition:
+      kind: synchronous
+      handler: /hasura-actions
+      forward_client_headers: true
+      headers: []
+      timeout: 60
+      type: mutation
+      arguments:
+        - name: ids
+          type: '[String!]!'
+      output_type: SquidActionPayload!
+
+  - name: refresh_listings
+    definition:
+      kind: synchronous
+      handler: /hasura-actions
+      forward_client_headers: true
+      headers: []
+      timeout: 60
+      type: mutation
+      arguments:
+        - name: ids
+          type: '[String!]!'
+      output_type: SquidActionPayload!
+
+  - name: refresh_entity
+    definition:
+      kind: synchronous
+      handler: /hasura-actions
+      forward_client_headers: true
+      headers: []
+      timeout: 60
+      type: mutation
+      arguments:
+        - name: type
+          type: EntityType!
+        - name: ids
+          type: '[String!]!'
+      output_type: SquidActionPayload!
+
+  - name: import_block
+    definition:
+      kind: synchronous
+      handler: /hasura-actions
+      forward_client_headers: true
+      headers: []
+      timeout: 60
+      type: mutation
+      arguments:
+        - name: blockNumber
+          type: Int!
+        - name: toBlock
+          type: Int
+      output_type: SquidActionPayload!
+
+  - name: refresh_pool
+    definition:
+      kind: synchronous
+      handler: /hasura-actions
+      forward_client_headers: true
+      headers: []
+      timeout: 60
+      type: mutation
+      arguments:
+        - name: id
+          type: String!
+      output_type: SquidActionPayload!
+
+  - name: validator_details
+    definition:
+      kind: synchronous
+      handler: /hasura-actions
+      forward_client_headers: true
+      headers: []
+      timeout: 60
+      type: query
+      arguments:
+        - name: ids
+          type: '[String!]!'
+      output_type: SquidActionPayload!
+
+  - name: top_collection
+    definition:
+      kind: synchronous
+      handler: /hasura-actions
+      forward_client_headers: true
+      headers: []
+      timeout: 120
+      type: query
+      arguments:
+        - name: timeFrame
+          type: TopCollectionTimeframeInput!
+        - name: orderBy
+          type: TopCollectionOrderByInput!
+        - name: order
+          type: OrderDirection!
+        - name: offset
+          type: Int
+        - name: limit
+          type: Int
+        - name: category
+          type: json
+        - name: query
+          type: String
+      output_type: SquidActionPayload!
+
+  - name: token_sales_history
+    definition:
+      kind: synchronous
+      handler: /hasura-actions
+      forward_client_headers: true
+      headers: []
+      timeout: 60
+      type: query
+      arguments:
+        - name: id
+          type: String!
+        - name: fromDate
+          type: String
+      output_type: SquidActionPayload!
+
+  - name: token_listings
+    definition:
+      kind: synchronous
+      handler: /hasura-actions
+      forward_client_headers: true
+      headers: []
+      timeout: 60
+      type: query
+      arguments:
+        - name: assetId
+          type: String!
+        - name: hiddenListingId
+          type: String
+        - name: orderBy
+          type: ListingOrderByInput
+        - name: order
+          type: OrderDirection
+        - name: limit
+          type: Int
+        - name: offset
+          type: Int
+      output_type: SquidActionPayload!
+
+  - name: search_tokens
+    definition:
+      kind: synchronous
+      handler: /hasura-actions
+      forward_client_headers: true
+      headers: []
+      timeout: 60
+      type: query
+      arguments:
+        - name: query
+          type: String!
+        - name: publicKey
+          type: String!
+      output_type: SquidActionPayload!
+
+  - name: refresh_metadata
+    definition:
+      kind: synchronous
+      handler: /hasura-actions
+      forward_client_headers: true
+      headers: []
+      timeout: 120
+      type: mutation
+      arguments:
+        - name: ids
+          type: json!
+      output_type: SquidActionPayload!
+
+  - name: my_tokens
+    definition:
+      kind: synchronous
+      handler: /hasura-actions
+      forward_client_headers: true
+      headers: []
+      timeout: 60
+      type: query
+      arguments:
+        - name: accountId
+          type: String!
+        - name: orderBy
+          type: MyTokensOrderByInput!
+        - name: order
+          type: OrderDirection!
+        - name: offset
+          type: Int
+        - name: limit
+          type: Int
+        - name: query
+          type: String
+      output_type: SquidActionPayload!
+
+  - name: chain_stats
+    definition:
+      kind: synchronous
+      handler: /hasura-actions
+      forward_client_headers: true
+      headers: []
+      timeout: 60
+      type: query
+      arguments:
+        - name: maxBlocks
+          type: Int
+      output_type: SquidActionPayload!
+
+  - name: block_details
+    definition:
+      kind: synchronous
+      handler: /hasura-actions
+      forward_client_headers: true
+      headers: []
+      timeout: 60
+      type: query
+      arguments:
+        - name: blockNumber
+          type: Int!
+      output_type: SquidActionPayload!
+
+  - name: best_pools
+    definition:
+      kind: synchronous
+      handler: /hasura-actions
+      forward_client_headers: true
+      headers: []
+      timeout: 60
+      type: query
+      arguments:
+        - name: accountId
+          type: String!
+        - name: limit
+          type: Int
+      output_type: SquidActionPayload!
+
+  - name: accounts_tokens_connection
+    definition:
+      kind: synchronous
+      handler: /hasura-actions
+      forward_client_headers: true
+      headers: []
+      timeout: 120
+      type: query
+      arguments:
+        - name: args
+          type: json!
+      output_type: SquidActionPayload!
+
+  - name: accounts_nft_summary
+    definition:
+      kind: synchronous
+      handler: /hasura-actions
+      forward_client_headers: true
+      headers: []
+      timeout: 60
+      type: query
+      arguments:
+        - name: accountIds
+          type: '[String!]!'
+      output_type: SquidActionPayload!
+
+  - name: account_staking_summary
+    definition:
+      kind: synchronous
+      handler: /hasura-actions
+      forward_client_headers: true
+      headers: []
+      timeout: 120
+      type: query
+      arguments:
+        - name: accountId
+          type: String
+        - name: accountIds
+          type: '[String!]'
+        - name: timeFrame
+          type: StakingTimeframeInput!
+      output_type: SquidActionPayload!
+
+  - name: collection_inventory
+    definition:
+      kind: synchronous
+      handler: /hasura-actions
+      forward_client_headers: true
+      headers: []
+      timeout: 120
+      type: query
+      arguments:
+        - name: collectionId
+          type: String!
+        - name: accountIds
+          type: '[String!]!'
+        - name: first
+          type: Int
+        - name: after
+          type: String
+        - name: orderBy
+          type: CollectionInventoryOrderByInput
+        - name: order
+          type: OrderDirection
+        - name: listingFilter
+          type: TokenListingFilterInput
+        - name: query
+          type: String
+      output_type: SquidActionPayload!
+
+custom_types:
+  enums:
+    - name: EntityType
+      values:
+        - value: COMPUTE_METADATA
+        - value: COLLECTION_EXTRA
+        - value: COLLECTION_STATS
+        - value: TOKEN
+        - value: TOKEN_TRAITS
+        - value: ACCOUNT
+        - value: ACCOUNT_BALANCES
+        - value: LISTING
+        - value: OFFER
+        - value: POOL
+        - value: SYNC_COLLECTIONS
+        - value: SYNC_ACCOUNTS
+        - value: SYNC_BALANCES
+        - value: FETCH_ACCOUNT_BALANCE
+        - value: SYNC_OFFERS
+        - value: SYNC_VALIDATORS
+        - value: SYNC_METADATA
+        - value: COMPUTE_ACCOUNT_STATS
+        - value: SYNC_FUEL_TANK_RULE_SETS
+    - name: OrderDirection
+      values:
+        - value: ASC
+        - value: DESC
+    - name: TopCollectionTimeframeInput
+      values:
+        - value: HOUR
+        - value: HOUR_6
+        - value: HOUR_24
+        - value: WEEK
+        - value: MONTH
+        - value: YEAR
+        - value: ALL
+    - name: TopCollectionOrderByInput
+      values:
+        - value: CREATED_AT
+        - value: VOLUME
+        - value: SALES
+        - value: VOLUME_CHANGE
+        - value: USERS
+        - value: CATEGORY
+        - value: TRENDING
+        - value: TOP
+    - name: ListingOrderByInput
+      values:
+        - value: AMOUNT
+        - value: PRICE
+    - name: MyTokensOrderByInput
+      values:
+        - value: COLLECTION_NAME
+        - value: TOKEN_NAME
+        - value: FLOOR_PRICE
+        - value: DATE
+    - name: AccountsTokensOrderByInput
+      values:
+        - value: COLLECTION_NAME
+        - value: TOKEN_NAME
+        - value: DATE
+        - value: BEST_LISTING_HIGHEST_PRICE
+    - name: TokenListingFilterInput
+      values:
+        - value: ALL
+        - value: LISTED
+        - value: NOT_LISTED
+    - name: CollectionInventoryOrderByInput
+      values:
+        - value: DATE
+        - value: TOKEN_NAME
+        - value: BEST_LISTING_HIGHEST_PRICE
+    - name: StakingTimeframeInput
+      values:
+        - value: DAY
+        - value: WEEK
+        - value: MONTH
+        - value: YEAR
+        - value: YTD
+        - value: ALL
+  input_objects: []
+  objects:
+    - name: SquidActionPayload
+      fields:
+        - name: data
+          type: json!
+  scalars: []
