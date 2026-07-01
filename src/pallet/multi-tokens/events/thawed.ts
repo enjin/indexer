@@ -28,11 +28,11 @@ export function thawed(event: EventItem): Thaw {
 export function thawedEventModel(item: EventItem, data: Thaw): EventModel {
     let tokenId: null | string = null
     if (data.freezeType && data.freezeType.__kind !== 'Collection' && data.freezeType.__kind !== 'CollectionAccount') {
-        tokenId = `${data.collectionId}-${data.freezeType?.tokenId}`
+        tokenId = `${data.collectionId}-${data.freezeType.tokenId}`
     }
 
     if (data.thawType && data.thawType.__kind !== 'Collection' && data.thawType.__kind !== 'CollectionAccount') {
-        tokenId = `${data.collectionId}-${data.thawType?.tokenId}`
+        tokenId = `${data.collectionId}-${data.thawType.tokenId}`
     }
 
     return new EventModel({
