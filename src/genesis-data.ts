@@ -88,6 +88,7 @@ async function createEnjinToken(ctx: CommonContext, block: Block) {
         unitPrice: 1n,
         infusion: 0n,
         mintDeposit: 1n,
+        hidden: false,
         attributeCount: 0,
         collection: new Collection({ id: '0' }),
         nonFungible: false,

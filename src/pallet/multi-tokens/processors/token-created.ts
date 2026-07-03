@@ -100,6 +100,7 @@ async function tokenFromCall(
 
     const token = new Token({
         id: `${event.collectionId}-${tokenId}`,
+        hidden: false,
         tokenId: tokenId,
         supply: existingSupply, // Updated on `Minted`
         cap: null, // params.cap,
