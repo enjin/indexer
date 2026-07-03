@@ -68,6 +68,7 @@ export async function tokens(ctx: CommonContext, block: Block) {
                 freezeState: data.freezeState != undefined ? FreezeState[data.freezeState.__kind] : null,
                 minimumBalance: minBalance,
                 unitPrice,
+                hidden: false,
                 mintDeposit: data.mintDeposit ?? 1n,
                 attributeCount: data.attributeCount,
                 collection,

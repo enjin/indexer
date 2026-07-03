@@ -5,20 +5,201 @@ import { Brackets, In, MoreThan } from 'typeorm'
 import { Validate } from 'class-validator'
 import { hexToU8a } from '@polkadot/util'
 import Rpc from '~/util/rpc'
-import {
-    CoveragePolicy,
-    FuelTank,
-    FuelTankAccountRules,
-    FuelTankRuleSet,
-    RequireToken,
-    TokenAccount,
-    WhitelistedCallers,
-} from '~/model'
+import { CoveragePolicy, FuelTank, FuelTankRuleSet, RequireToken, TokenAccount, WhitelistedCallers } from '~/model'
 import { IsPublicKey } from './helpers'
 import { ApiPromise } from '@polkadot/api'
 
 registerEnumType(CoveragePolicy, {
     name: 'CoveragePolicy',
+})
+
+export enum Pallet {
+    balances = 'balances',
+    fuel_tanks = 'fuel_tanks',
+    marketplace = 'marketplace',
+    multi_tokens = 'multi_tokens',
+    nomination_pools = 'nomination_pools',
+    stake_exchange = 'stake_exchange',
+    staking = 'staking',
+    utility = 'utility',
+}
+
+registerEnumType(Pallet, {
+    name: 'Pallet',
+    description: 'Substrate pallet name',
+})
+
+export enum MethodName {
+    // Balances
+    burn = 'burn',
+    force_adjust_total_issuance = 'force_adjust_total_issuance',
+    force_set_balance = 'force_set_balance',
+    force_transfer = 'force_transfer',
+    force_unreserve = 'force_unreserve',
+    transfer_all = 'transfer_all',
+    transfer_allow_death = 'transfer_allow_death',
+    transfer_keep_alive = 'transfer_keep_alive',
+    upgrade_accounts = 'upgrade_accounts',
+    // FuelTanks
+    add_account = 'add_account',
+    batch_add_account = 'batch_add_account',
+    batch_remove_account = 'batch_remove_account',
+    create_fuel_tank = 'create_fuel_tank',
+    destroy_fuel_tank = 'destroy_fuel_tank',
+    dispatch = 'dispatch',
+    dispatch_and_touch = 'dispatch_and_touch',
+    force_batch_add_account = 'force_batch_add_account',
+    force_create_fuel_tank = 'force_create_fuel_tank',
+    force_insert_rule_set = 'force_insert_rule_set',
+    force_set_consumption = 'force_set_consumption',
+    insert_rule_set = 'insert_rule_set',
+    mutate_freeze_state = 'mutate_freeze_state',
+    mutate_fuel_tank = 'mutate_fuel_tank',
+    remove_account = 'remove_account',
+    remove_account_rule_data = 'remove_account_rule_data',
+    remove_expired_account = 'remove_expired_account',
+    remove_expired_account_unsigned = 'remove_expired_account_unsigned',
+    remove_rule_set = 'remove_rule_set',
+    // MultiTokens
+    accept_collection_transfer = 'accept_collection_transfer',
+    add_token_to_group = 'add_token_to_group',
+    approve_collection = 'approve_collection',
+    approve_token = 'approve_token',
+    batch_infuse = 'batch_infuse',
+    batch_mint = 'batch_mint',
+    batch_set_attribute = 'batch_set_attribute',
+    batch_transfer = 'batch_transfer',
+    cancel_collection_transfer = 'cancel_collection_transfer',
+    claim_collections = 'claim_collections',
+    claim_tokens = 'claim_tokens',
+    create_collection = 'create_collection',
+    create_token_group = 'create_token_group',
+    destroy_collection = 'destroy_collection',
+    destroy_token_group = 'destroy_token_group',
+    finish_claim_tokens = 'finish_claim_tokens',
+    force_approve_collection = 'force_approve_collection',
+    force_burn = 'force_burn',
+    force_create_collection = 'force_create_collection',
+    force_create_ethereum_collection = 'force_create_ethereum_collection',
+    force_freeze = 'force_freeze',
+    force_mint = 'force_mint',
+    force_mutate_collection = 'force_mutate_collection',
+    force_set_attribute = 'force_set_attribute',
+    force_set_collection = 'force_set_collection',
+    force_set_collection_account = 'force_set_collection_account',
+    force_set_ethereum_account = 'force_set_ethereum_account',
+    force_set_ethereum_collection_id = 'force_set_ethereum_collection_id',
+    force_set_ethereum_unmintable_token_ids = 'force_set_ethereum_unmintable_token_ids',
+    force_set_next_collection_id = 'force_set_next_collection_id',
+    force_set_token = 'force_set_token',
+    force_set_token_account = 'force_set_token_account',
+    force_set_unmintable_token_ids = 'force_set_unmintable_token_ids',
+    freeze = 'freeze',
+    infuse = 'infuse',
+    mint = 'mint',
+    mutate_collection = 'mutate_collection',
+    mutate_token = 'mutate_token',
+    remove_all_attributes = 'remove_all_attributes',
+    remove_attribute = 'remove_attribute',
+    remove_token_from_group = 'remove_token_from_group',
+    remove_token_group_attribute = 'remove_token_group_attribute',
+    set_attribute = 'set_attribute',
+    set_token_group_attribute = 'set_token_group_attribute',
+    set_token_groups = 'set_token_groups',
+    thaw = 'thaw',
+    transfer = 'transfer',
+    unapprove_collection = 'unapprove_collection',
+    unapprove_token = 'unapprove_token',
+    update_account_deposit = 'update_account_deposit',
+    // Marketplace
+    add_whitelisted_accounts = 'add_whitelisted_accounts',
+    answer_counter_offer = 'answer_counter_offer',
+    cancel_listing = 'cancel_listing',
+    convert_listings = 'convert_listings',
+    create_listing = 'create_listing',
+    fill_listing = 'fill_listing',
+    finalize_auction = 'finalize_auction',
+    finalize_auction_unsigned = 'finalize_auction_unsigned',
+    force_cancel_listing = 'force_cancel_listing',
+    force_create_listing = 'force_create_listing',
+    force_place_bid = 'force_place_bid',
+    place_bid = 'place_bid',
+    place_counter_offer = 'place_counter_offer',
+    remove_expired_listing = 'remove_expired_listing',
+    remove_expired_listing_unsigned = 'remove_expired_listing_unsigned',
+    remove_whitelisted_accounts = 'remove_whitelisted_accounts',
+    set_protocol_fee = 'set_protocol_fee',
+    upgrade_listings = 'upgrade_listings',
+    // NominationPools
+    bond = 'bond',
+    chill = 'chill',
+    create = 'create',
+    destroy = 'destroy',
+    fully_unbond_deleted_pool = 'fully_unbond_deleted_pool',
+    mutate = 'mutate',
+    nominate = 'nominate',
+    payout_rewards = 'payout_rewards',
+    payout_rewards_unsigned = 'payout_rewards_unsigned',
+    payout_validator_bonus = 'payout_validator_bonus',
+    pool_withdraw_unbonded = 'pool_withdraw_unbonded',
+    remove_empty_unbonding_members = 'remove_empty_unbonding_members',
+    set_configs = 'set_configs',
+    set_staking_info = 'set_staking_info',
+    set_validator_bonus_config = 'set_validator_bonus_config',
+    unbond = 'unbond',
+    unbond_deposit = 'unbond_deposit',
+    withdraw_deposit = 'withdraw_deposit',
+    withdraw_free_balance = 'withdraw_free_balance',
+    withdraw_unbonded = 'withdraw_unbonded',
+    // StakeExchange
+    add_liquidity = 'add_liquidity',
+    buy = 'buy',
+    cancel_offer = 'cancel_offer',
+    configure_liquidity_account = 'configure_liquidity_account',
+    create_offer = 'create_offer',
+    withdraw_liquidity = 'withdraw_liquidity',
+    // Staking
+    bond_extra = 'bond_extra',
+    cancel_deferred_slash = 'cancel_deferred_slash',
+    chill_other = 'chill_other',
+    deprecate_controller_batch = 'deprecate_controller_batch',
+    force_apply_min_commission = 'force_apply_min_commission',
+    force_new_era = 'force_new_era',
+    force_new_era_always = 'force_new_era_always',
+    force_no_eras = 'force_no_eras',
+    force_unstake = 'force_unstake',
+    increase_validator_count = 'increase_validator_count',
+    kick = 'kick',
+    manual_slash = 'manual_slash',
+    migrate_currency = 'migrate_currency',
+    payout_stakers = 'payout_stakers',
+    payout_stakers_by_page = 'payout_stakers_by_page',
+    reap_stash = 'reap_stash',
+    rebond = 'rebond',
+    restore_ledger = 'restore_ledger',
+    scale_validator_count = 'scale_validator_count',
+    set_controller = 'set_controller',
+    set_invulnerables = 'set_invulnerables',
+    set_min_commission = 'set_min_commission',
+    set_payee = 'set_payee',
+    set_staking_configs = 'set_staking_configs',
+    set_validator_count = 'set_validator_count',
+    update_payee = 'update_payee',
+    validate = 'validate',
+    // Utility
+    as_derivative = 'as_derivative',
+    batch = 'batch',
+    batch_all = 'batch_all',
+    dispatch_as = 'dispatch_as',
+    dispatch_as_fallible = 'dispatch_as_fallible',
+    force_batch = 'force_batch',
+    if_else = 'if_else',
+    with_weight = 'with_weight',
+}
+
+registerEnumType(MethodName, {
+    name: 'MethodName',
+    description: 'Method name within a pallet',
 })
 
 const customTypes = {
@@ -30,57 +211,6 @@ const customTypes = {
 
 function normalizeKey(value: string): string {
     return value.replace(/_/g, '').toLowerCase()
-}
-
-function matchesWhitelistedPallets(pallets: string[] | null | undefined, pallet: string, method: string): boolean {
-    if (!pallets?.length) {
-        return true
-    }
-
-    const targetPallet = normalizeKey(pallet)
-    const targetMethod = normalizeKey(method)
-
-    return pallets.some((entry) => {
-        if (entry.includes(':')) {
-            const [p, m] = entry.split(':')
-            return normalizeKey(p) === targetPallet && normalizeKey(m) === targetMethod
-        }
-
-        return normalizeKey(entry) === targetPallet
-    })
-}
-
-function matchesPermittedExtrinsics(ruleSet: FuelTankRuleSet, pallet: string, method: string): boolean {
-    if (ruleSet.isPermittedExtrinsicsEmpty || ruleSet.isPermittedExtrinsicsNull) {
-        return true
-    }
-
-    const targetPallet = normalizeKey(pallet)
-    const targetMethod = normalizeKey(method)
-
-    return (ruleSet.permittedExtrinsics ?? []).some(
-        (extrinsic) =>
-            normalizeKey(extrinsic.palletName ?? '') === targetPallet &&
-            normalizeKey(extrinsic.extrinsicName ?? '') === targetMethod
-    )
-}
-
-function matchesPermittedCalls(calls: string[] | null | undefined, method: string): boolean {
-    if (!calls?.length) {
-        return true
-    }
-
-    const target = normalizeKey(method)
-
-    return calls.some((call) => normalizeKey(call) === target)
-}
-
-function matchesWhitelistedCallers(callers: string[] | null | undefined, account: string): boolean {
-    if (!callers?.length) {
-        return true
-    }
-
-    return callers.includes(account)
 }
 
 function matchesWhitelistedCollections(
@@ -133,28 +263,37 @@ function addRequireTokenLookupKeys(requirement: RequireToken, tokenIds: Set<stri
     collectionIds.add(collectionKey)
 }
 
-function collectRequireTokenLookupKeys(tanks: FuelTank[]): { tokenIds: string[]; collectionIds: string[] } {
+type PreCandidate = { tank: FuelTank; ruleSet: FuelTankRuleSet }
+
+/**
+ * Collect token/collection lookup keys from candidates that already passed cheap checks.
+ * Includes whitelistedCollections so those holdings are also resolved correctly.
+ */
+function collectCandidateLookupKeys(candidates: PreCandidate[]): { tokenIds: string[]; collectionIds: string[] } {
     const tokenIds = new Set<string>()
     const collectionIds = new Set<string>()
+    const seenTanks = new Set<string>()
 
-    for (const tank of tanks) {
-        for (const ruleSet of tank.ruleSets ?? []) {
-            if (ruleSet.requireToken) {
-                addRequireTokenLookupKeys(ruleSet.requireToken, tokenIds, collectionIds)
-            }
+    for (const { tank, ruleSet } of candidates) {
+        if (ruleSet.requireToken) {
+            addRequireTokenLookupKeys(ruleSet.requireToken, tokenIds, collectionIds)
         }
 
-        for (const accountRule of tank.accountRules ?? []) {
-            if (accountRule.rule.isTypeOf === 'RequireToken') {
-                addRequireTokenLookupKeys(accountRule.rule as RequireToken, tokenIds, collectionIds)
+        for (const collectionId of ruleSet.whitelistedCollections ?? []) {
+            if (collectionId != null) collectionIds.add(collectionId)
+        }
+
+        if (!seenTanks.has(tank.id)) {
+            seenTanks.add(tank.id)
+            for (const accountRule of tank.accountRules ?? []) {
+                if (accountRule.rule.isTypeOf === 'RequireToken') {
+                    addRequireTokenLookupKeys(accountRule.rule as RequireToken, tokenIds, collectionIds)
+                }
             }
         }
     }
 
-    return {
-        tokenIds: [...tokenIds],
-        collectionIds: [...collectionIds],
-    }
+    return { tokenIds: [...tokenIds], collectionIds: [...collectionIds] }
 }
 
 async function loadAccountHoldings(
@@ -207,72 +346,25 @@ async function loadAccountHoldings(
     return { heldTokenIds, heldCollectionIds }
 }
 
-function matchesAccountRules(
-    accountRules: FuelTankAccountRules[] | undefined,
-    account: string,
-    heldTokenIds: Set<string>,
-    heldCollectionIds: Set<string>
-): boolean {
-    for (const rule of accountRules ?? []) {
-        if (rule.rule.isTypeOf === 'WhitelistedCallers') {
-            if (!(rule.rule as WhitelistedCallers).value.includes(account)) {
-                return false
-            }
-        }
-
-        if (rule.rule.isTypeOf === 'RequireToken') {
-            if (!matchesRequireToken(rule.rule as RequireToken, heldTokenIds, heldCollectionIds)) {
-                return false
-            }
-        }
-    }
-
-    return true
-}
-
-function isRuleSetCompatible(
+/**
+ * Phase 2 – token-based checks that require the account holdings to be resolved first.
+ * Phase 1 (frozen, requireSignature, requireAccount, pallet/method, callers, calls)
+ * is handled entirely by SQL in the JOIN condition — see the query builder below.
+ * Only tank-level WhitelistedCallers account rules and token checks remain in TypeScript.
+ */
+function isRuleSetCompatibleWithTokens(
     ruleSet: FuelTankRuleSet,
     tank: FuelTank,
-    account: string,
-    pallet: string,
-    method: string,
     heldTokenIds: Set<string>,
     heldCollectionIds: Set<string>
 ): boolean {
-    if (ruleSet.isFrozen) {
-        return false
-    }
+    if (!matchesWhitelistedCollections(ruleSet.whitelistedCollections, heldCollectionIds)) return false
+    if (!matchesRequireToken(ruleSet.requireToken, heldTokenIds, heldCollectionIds)) return false
 
-    if (ruleSet.requireSignature) {
-        return false
-    }
-
-    if (!matchesWhitelistedPallets(ruleSet.whitelistedPallets, pallet, method)) {
-        return false
-    }
-
-    if (!matchesWhitelistedCollections(ruleSet.whitelistedCollections, heldCollectionIds)) {
-        return false
-    }
-
-    if (!matchesPermittedExtrinsics(ruleSet, pallet, method)) {
-        return false
-    }
-
-    if (!matchesPermittedCalls(ruleSet.permittedCalls, method)) {
-        return false
-    }
-
-    if (!matchesWhitelistedCallers(ruleSet.whitelistedCallers, account)) {
-        return false
-    }
-
-    if (!matchesRequireToken(ruleSet.requireToken, heldTokenIds, heldCollectionIds)) {
-        return false
-    }
-
-    if (!matchesAccountRules(tank.accountRules, account, heldTokenIds, heldCollectionIds)) {
-        return false
+    for (const rule of tank.accountRules ?? []) {
+        if (rule.rule.isTypeOf === 'RequireToken') {
+            if (!matchesRequireToken(rule.rule as RequireToken, heldTokenIds, heldCollectionIds)) return false
+        }
     }
 
     return true
@@ -354,11 +446,11 @@ class CompatibleFuelTanksArgs {
     @Validate(IsPublicKey)
     account!: string
 
-    @Field(() => String, { description: 'Pallet name, e.g. MULTI_TOKENS' })
-    pallet!: string
+    @Field(() => Pallet, { description: 'Pallet name' })
+    pallet!: Pallet
 
-    @Field(() => String, { description: 'Dispatch method / extrinsic name, e.g. CREATE_TOKEN' })
-    method!: string
+    @Field(() => MethodName, { description: 'Dispatch method name' })
+    method!: MethodName
 }
 
 @ObjectType()
@@ -421,10 +513,57 @@ export class CompatibleFuelTanksResolver {
         const { api } = await Rpc.getInstance()
         api.registerTypes(customTypes)
 
+        const normalizedPallet = normalizeKey(pallet)
+        const normalizedMethod = normalizeKey(method)
+
+        // All rule-set-level filters (frozen, requireSignature, requireAccount,
+        // whitelistedPallets, whitelistedCallers, permittedCalls, permittedExtrinsics)
+        // are pushed into the JOIN ON condition so PostgreSQL eliminates non-matching
+        // rule sets before they are hydrated into TypeScript objects.
+        // Only tank-level account rules and token-based checks remain in TypeScript.
+        const ruleSetJoinCondition = `
+            ruleSet.isFrozen = false
+            AND ruleSet.requireSignature IS NULL
+            AND (ruleSet.requireAccount = false OR ruleSet.requireAccount IS NULL
+                 OR EXISTS (
+                     SELECT 1 FROM fuel_tank_user_accounts ua
+                     WHERE ua.tank_id = tank.id AND ua.account_id = :account
+                 ))
+            AND (ruleSet.whitelistedCallers IS NULL
+                 OR cardinality(ruleSet.whitelistedCallers) = 0
+                 OR :account = ANY(ruleSet.whitelistedCallers))
+            AND (ruleSet.whitelistedPallets IS NULL
+                 OR cardinality(ruleSet.whitelistedPallets) = 0
+                 OR EXISTS (
+                     SELECT 1 FROM unnest(ruleSet.whitelistedPallets) AS p
+                     WHERE (p NOT LIKE '%:%' AND LOWER(REPLACE(p, '_', '')) = :normalizedPallet)
+                        OR (p LIKE '%:%'
+                            AND LOWER(REPLACE(SPLIT_PART(p, ':', 1), '_', '')) = :normalizedPallet
+                            AND LOWER(REPLACE(SPLIT_PART(p, ':', 2), '_', '')) = :normalizedMethod)
+                 ))
+            AND (ruleSet.permittedCalls IS NULL
+                 OR cardinality(ruleSet.permittedCalls) = 0
+                 OR EXISTS (
+                     SELECT 1 FROM unnest(ruleSet.permittedCalls) AS c
+                     WHERE LOWER(REPLACE(c, '_', '')) = :normalizedMethod
+                 ))
+            AND (ruleSet.isPermittedExtrinsicsEmpty = true
+                 OR ruleSet.isPermittedExtrinsicsNull = true
+                 OR EXISTS (
+                     SELECT 1 FROM permitted_extrinsics pe
+                     WHERE pe.rule_set_id = "ruleSet"."id"
+                       AND LOWER(REPLACE(pe.pallet_name, '_', '')) = :normalizedPallet
+                       AND LOWER(REPLACE(pe.extrinsic_name, '_', '')) = :normalizedMethod
+                 ))
+        `
+
         const tanks = await manager
             .createQueryBuilder(FuelTank, 'tank')
-            .leftJoinAndSelect('tank.ruleSets', 'ruleSet')
-            .leftJoinAndSelect('ruleSet.permittedExtrinsics', 'permittedExtrinsic')
+            .leftJoinAndSelect('tank.ruleSets', 'ruleSet', ruleSetJoinCondition, {
+                account,
+                normalizedPallet,
+                normalizedMethod,
+            })
             .leftJoinAndSelect('tank.userAccounts', 'userAccount')
             .leftJoinAndSelect('userAccount.account', 'userAccountAccount')
             .leftJoinAndSelect('tank.accountRules', 'accountRule')
@@ -440,44 +579,59 @@ export class CompatibleFuelTanksResolver {
             .orderBy('tank.name', 'ASC')
             .getMany()
 
-        const requireTokenLookupKeys = collectRequireTokenLookupKeys(tanks)
-        const { heldTokenIds, heldCollectionIds } = await loadAccountHoldings(manager, account, requireTokenLookupKeys)
-
-        const candidates: Array<{
-            tank: FuelTank
-            ruleSet: FuelTankRuleSet
-            maxBudget: bigint | null
-        }> = []
+        // ── Phase 1: account-level rules (one check per tank, not per rule set) ──
+        // All rule-set-level checks have already been applied by SQL above.
+        // The only TypeScript-side filter left is tank.accountRules WhitelistedCallers,
+        // which cannot be expressed per-rule-set in the JOIN condition.
+        const preCandidates: PreCandidate[] = []
 
         for (const tank of tanks) {
             const isAccountMember = (tank.userAccounts ?? []).some((entry) => entry.account?.id === account)
 
+            const accountRulesPass = (tank.accountRules ?? []).every(
+                (rule) =>
+                    rule.rule.isTypeOf !== 'WhitelistedCallers' ||
+                    (rule.rule as WhitelistedCallers).value.includes(account)
+            )
+
+            if (!accountRulesPass) continue
+
             for (const ruleSet of tank.ruleSets ?? []) {
-                if (!isRuleSetCompatible(ruleSet, tank, account, pallet, method, heldTokenIds, heldCollectionIds)) {
-                    continue
-                }
-
-                if (!isAccountMember && !ruleSet.userFuelBudget) {
-                    continue
-                }
-
-                candidates.push({
-                    tank,
-                    ruleSet,
-                    maxBudget: ruleSet.userFuelBudget?.amount ?? null,
-                })
+                if (!isAccountMember && !ruleSet.userFuelBudget) continue
+                preCandidates.push({ tank, ruleSet })
             }
         }
 
-        const tankIdsToFetch = [
+        // ── Phase 2 + 3: token check (DB) and budget check (RPC) in parallel ─────
+        // After phase 1 we know which tanks need RPC budget data, so we fire both
+        // queries simultaneously and wait for both before proceeding.
+        const lookupKeys = collectCandidateLookupKeys(preCandidates)
+
+        const tankIdsWithBudget = [
             ...new Set(
-                candidates
-                    .filter((candidate) => candidate.maxBudget != null && candidate.maxBudget !== 0n)
-                    .map((candidate) => candidate.tank.id)
+                preCandidates
+                    .filter(({ ruleSet }) => {
+                        const amount = ruleSet.userFuelBudget?.amount
+                        return amount != null && amount !== 0n
+                    })
+                    .map(({ tank }) => tank.id)
             ),
         ]
 
-        const tankAccountsCache = await loadTankAccounts(api, account, tankIdsToFetch)
+        const [{ heldTokenIds, heldCollectionIds }, tankAccountsCache] = await Promise.all([
+            loadAccountHoldings(manager, account, lookupKeys),
+            loadTankAccounts(api, account, tankIdsWithBudget),
+        ])
+
+        // ── Phase 2 filter: token-based rule checks ───────────────────────────────
+        const candidates: Array<{ tank: FuelTank; ruleSet: FuelTankRuleSet; maxBudget: bigint | null }> = []
+
+        for (const { tank, ruleSet } of preCandidates) {
+            if (!isRuleSetCompatibleWithTokens(ruleSet, tank, heldTokenIds, heldCollectionIds)) continue
+            candidates.push({ tank, ruleSet, maxBudget: ruleSet.userFuelBudget?.amount ?? null })
+        }
+
+        // ── Phase 3 filter: remaining budget check (uses pre-fetched RPC data) ───
 
         const resultsByTank = new Map<string, CompatibleFuelTank>()
 
