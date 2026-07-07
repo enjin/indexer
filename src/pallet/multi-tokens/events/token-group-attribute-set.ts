@@ -19,10 +19,7 @@ export function tokenGroupAttributeSet(event: EventItem): TokenGroupAttributeSet
         })
 }
 
-export function tokenGroupAttributeSetEventModel(
-    item: EventItem,
-    data: TokenGroupAttributeSet
-): EventModel | undefined {
+export function tokenGroupAttributeSetEventModel(item: EventItem, data: TokenGroupAttributeSet): EventModel {
     return new EventModel({
         id: item.id,
         name: MultiTokensTokenGroupAttributeSet.name,

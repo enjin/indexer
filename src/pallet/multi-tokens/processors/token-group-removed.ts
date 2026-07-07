@@ -25,7 +25,7 @@ export async function tokenGroupRemoved(
                 tokenGroupTokens: true,
             },
         }),
-        ctx.store.findOneOrFail(Token, {
+        ctx.store.findOne(Token, {
             where: {
                 id: `${data.collectionId.toString()}-${data.tokenId.toString()}`,
             },
@@ -35,7 +35,7 @@ export async function tokenGroupRemoved(
         }),
     ])
 
-    if (!tokenGroupToken || !tokenGroup) {
+    if (!tokenGroupToken || !tokenGroup || !token) {
         return mappings.multiTokens.events.tokenGroupRemovedEventModel(item, data)
     }
 

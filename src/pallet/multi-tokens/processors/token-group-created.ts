@@ -10,11 +10,15 @@ export async function tokenGroupCreated(
 ): Promise<EventHandlerResult> {
     const data = mappings.multiTokens.events.tokenGroupCreated(item)
 
-    const collection = await ctx.store.findOneOrFail(Collection, {
+    const collection = await ctx.store.findOne(Collection, {
         where: {
             id: data.collectionId.toString(),
         },
     })
+
+    if (!collection) {
+        return [mappings.multiTokens.events.tokenGroupCreatedEventModel(item, data), undefined]
+    }
 
     const tokenGroup = new TokenGroup({
         id: data.tokenGroupId.toString(),

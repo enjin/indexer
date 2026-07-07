@@ -1,6 +1,7 @@
-import { Account, Event as EventModel, Listing, WhitelistedAccount } from '~/model'
+import { Event as EventModel, Listing, WhitelistedAccount } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { SnsEvent } from '~/util/sns'
+import { getOrCreateAccount } from '~/util/entities'
 import * as mappings from '~/pallet/index'
 
 export async function whitelistedAccountsAdded(
@@ -16,18 +17,20 @@ export async function whitelistedAccountsAdded(
     })
     if (!listing) return [mappings.marketplace.events.whitelistedAccountsAddedEventModel(item, event), undefined]
 
-    const newWhitelistedAccounts = event.accounts.map(
-        (account) =>
-            new WhitelistedAccount({
-                id: `${listingId}-${account.accountId}`,
+    const newWhitelistedAccounts = await Promise.all(
+        event.accounts.map(async (account) => {
+            const accountEntity = await getOrCreateAccount(ctx, account.accountId)
+            return new WhitelistedAccount({
+                id: `${listingId}-${accountEntity.id}`,
                 listing,
-                account: new Account({ id: account.accountId }),
+                account: accountEntity,
                 allowance: Number(account.allowance ?? 0n),
                 amountUsed: 0,
                 deposit: 0n,
                 createdAt: new Date(block.timestamp ?? 0),
                 updatedAt: new Date(block.timestamp ?? 0),
             })
+        })
     )
     await ctx.store.save(newWhitelistedAccounts)
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition

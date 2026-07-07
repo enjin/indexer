@@ -20,7 +20,7 @@ export async function tokenGroupUpdated(
                 id: In(tokenGroupIds),
             },
         }),
-        ctx.store.findOneOrFail(Token, {
+        ctx.store.findOne(Token, {
             where: {
                 id: `${data.collectionId.toString()}-${data.tokenId.toString()}`,
             },
@@ -29,6 +29,10 @@ export async function tokenGroupUpdated(
             },
         }),
     ])
+
+    if (!token) {
+        return [mappings.multiTokens.events.tokenGroupUpdatedEventModel(item, data), undefined]
+    }
 
     const promises = []
     for (const tokenGroupToken of token.tokenGroupTokens) {

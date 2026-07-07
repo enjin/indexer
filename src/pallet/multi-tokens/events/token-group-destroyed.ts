@@ -17,7 +17,7 @@ export function tokenGroupDestroyed(event: EventItem): TokenGroupDestroyed {
         })
 }
 
-export function tokenGroupDestroyedEventModel(item: EventItem, data: TokenGroupDestroyed): EventModel | undefined {
+export function tokenGroupDestroyedEventModel(item: EventItem, data: TokenGroupDestroyed): EventModel {
     return new EventModel({
         id: item.id,
         name: MultiTokensTokenGroupDestroyed.name,

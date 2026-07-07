@@ -17,7 +17,7 @@ export function tokenGroupCreated(event: EventItem): TokenGroupCreated {
         })
 }
 
-export function tokenGroupCreatedEventModel(item: EventItem, data: TokenGroupCreated): EventModel | undefined {
+export function tokenGroupCreatedEventModel(item: EventItem, data: TokenGroupCreated): EventModel {
     return new EventModel({
         id: item.id,
         name: MultiTokensTokenGroupCreated.name,
