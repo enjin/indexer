@@ -57,7 +57,7 @@ export function tokenMutated(event: EventItem): TokenMutated {
         })
 }
 
-export function tokenMutatedEventModel(item: EventItem, data: TokenMutated): EventModel | undefined {
+export function tokenMutatedEventModel(item: EventItem, data: TokenMutated): EventModel {
     return new EventModel({
         id: item.id,
         name: MultiTokensTokenMutated.name,

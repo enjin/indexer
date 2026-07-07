@@ -17,7 +17,7 @@ export function nominated(event: EventItem): Nominated {
         })
 }
 
-export function nominatedEventModel(item: EventItem, data: Nominated): EventModel | undefined {
+export function nominatedEventModel(item: EventItem, data: Nominated): EventModel {
     return new EventModel({
         id: item.id,
         name: NominationPoolsNominated.name,

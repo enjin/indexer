@@ -30,7 +30,7 @@ export function createdEventModel(
     data: Created,
     tokenId: bigint,
     owner: string | undefined
-): EventModel | undefined {
+): EventModel {
     return new EventModel({
         id: item.id,
         name: NominationPoolsCreated.name,

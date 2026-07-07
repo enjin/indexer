@@ -17,7 +17,7 @@ export function attributeRemoved(event: EventItem): AttributeRemoved {
         })
 }
 
-export function attributeRemovedEventModel(item: EventItem, data: AttributeRemoved): EventModel | undefined {
+export function attributeRemovedEventModel(item: EventItem, data: AttributeRemoved): EventModel {
     return new EventModel({
         id: item.id,
         name: MultiTokensAttributeRemoved.name,

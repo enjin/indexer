@@ -17,7 +17,7 @@ export function tokenGroupUpdated(event: EventItem): TokenGroupUpdated {
         })
 }
 
-export function tokenGroupUpdatedEventModel(item: EventItem, data: TokenGroupUpdated): EventModel | undefined {
+export function tokenGroupUpdatedEventModel(item: EventItem, data: TokenGroupUpdated): EventModel {
     return new EventModel({
         id: item.id,
         name: MultiTokensTokenGroupsUpdated.name,

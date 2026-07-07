@@ -8,12 +8,12 @@ export async function tokenGroupAdded(ctx: CommonContext, block: Block, item: Ev
     const data = mappings.multiTokens.events.tokenGroupAdded(item)
 
     const [tokenGroup, token] = await Promise.all([
-        ctx.store.findOneOrFail(TokenGroup, {
+        ctx.store.findOne(TokenGroup, {
             where: {
                 id: data.tokenGroupId.toString(),
             },
         }),
-        ctx.store.findOneOrFail(Token, {
+        ctx.store.findOne(Token, {
             where: {
                 id: `${data.collectionId.toString()}-${data.tokenId.toString()}`,
             },
@@ -22,6 +22,10 @@ export async function tokenGroupAdded(ctx: CommonContext, block: Block, item: Ev
             },
         }),
     ])
+
+    if (!token || !tokenGroup) {
+        return [mappings.multiTokens.events.tokenGroupAddedEventModel(item, data), undefined]
+    }
 
     const tokenGroupToken = new TokenGroupToken({
         id: `${data.tokenId.toString()}-${data.tokenGroupId.toString()}`,

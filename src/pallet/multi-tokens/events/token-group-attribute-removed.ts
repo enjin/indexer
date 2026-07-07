@@ -18,10 +18,7 @@ export function tokenGroupAttributeRemoved(event: EventItem): TokenGroupAttribut
         })
 }
 
-export function tokenGroupAttributeRemovedEventModel(
-    item: EventItem,
-    data: TokenGroupAttributeRemoved
-): EventModel | undefined {
+export function tokenGroupAttributeRemovedEventModel(item: EventItem, data: TokenGroupAttributeRemoved): EventModel {
     return new EventModel({
         id: item.id,
         name: MultiTokensTokenGroupAttributeRemoved.name,

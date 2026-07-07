@@ -187,14 +187,11 @@ export enum MethodName {
     update_payee = 'update_payee',
     validate = 'validate',
     // Utility
-    as_derivative = 'as_derivative',
     batch = 'batch',
     batch_all = 'batch_all',
     dispatch_as = 'dispatch_as',
     dispatch_as_fallible = 'dispatch_as_fallible',
     force_batch = 'force_batch',
-    if_else = 'if_else',
-    with_weight = 'with_weight',
 }
 
 registerEnumType(MethodName, {
@@ -564,16 +561,16 @@ export class CompatibleFuelTanksResolver {
                 normalizedPallet,
                 normalizedMethod,
             })
-            .leftJoinAndSelect('tank.userAccounts', 'userAccount')
-            .leftJoinAndSelect('userAccount.account', 'userAccountAccount')
+            // Join only the requesting account's membership row (at most one per tank)
+            // instead of hydrating every user account of every tank.
+            .leftJoinAndSelect('tank.userAccounts', 'userAccount', 'userAccount.account = :account', { account })
             .leftJoinAndSelect('tank.accountRules', 'accountRule')
             .leftJoinAndSelect('tank.tankAccount', 'tankAccount')
             .where('tank.isFrozen = :frozen', { frozen: false })
+            .andWhere('ruleSet.id IS NOT NULL')
             .andWhere(
                 new Brackets((qb) => {
-                    qb.where('userAccountAccount.id = :account', { account }).orWhere(
-                        'ruleSet.userFuelBudget IS NOT NULL'
-                    )
+                    qb.where('userAccount.id IS NOT NULL').orWhere('ruleSet.userFuelBudget IS NOT NULL')
                 })
             )
             .orderBy('tank.name', 'ASC')
@@ -586,7 +583,8 @@ export class CompatibleFuelTanksResolver {
         const preCandidates: PreCandidate[] = []
 
         for (const tank of tanks) {
-            const isAccountMember = (tank.userAccounts ?? []).some((entry) => entry.account?.id === account)
+            // userAccounts was joined filtered to the requesting account, so any row means membership
+            const isAccountMember = (tank.userAccounts ?? []).length > 0
 
             const accountRulesPass = (tank.accountRules ?? []).every(
                 (rule) =>

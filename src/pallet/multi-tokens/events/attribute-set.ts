@@ -19,7 +19,7 @@ export function attributeSet(event: EventItem): AttributeSet {
         })
 }
 
-export function attributeSetEventModel(item: EventItem, data: AttributeSet): EventModel | undefined {
+export function attributeSetEventModel(item: EventItem, data: AttributeSet): EventModel {
     return new EventModel({
         id: item.id,
         name: MultiTokensAttributeSet.name,
