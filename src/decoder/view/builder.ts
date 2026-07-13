@@ -1,4 +1,13 @@
-import type { CoinField, DividerField, ResourceField, ResourceFieldType, TextField, TransactionView, ViewField } from './types'
+import type {
+    CallField,
+    CoinField,
+    DividerField,
+    ResourceField,
+    ResourceFieldType,
+    TextField,
+    TransactionView,
+    ViewField,
+} from './types'
 
 export class TransactionViewBuilder {
     private fields: ViewField[] = []
@@ -36,6 +45,16 @@ export class TransactionViewBuilder {
 
     withResource(type: ResourceFieldType, value: string): this {
         const field: ResourceField = { type, value }
+        this.fields.push(field)
+        return this
+    }
+
+    withCall(view: TransactionView): this {
+        const field: CallField = {
+            type: 'call',
+            title: view.title,
+            fields: view.fields.filter((f) => !(f.type === 'text' && f.title === 'Network')),
+        }
         this.fields.push(field)
         return this
     }
