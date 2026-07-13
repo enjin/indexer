@@ -11,9 +11,6 @@ export function getNetworkLabel(network: Network): string {
     return NETWORK_LABELS[network]
 }
 
-export function getNativeCoinId(network: Network): string {
-    if (network.startsWith('enjin-') || network.startsWith('canary-')) {
-        return 'enjin'
-    }
+export function getNativeCoinId(): string {
     return 'enjin'
 }

@@ -1,15 +1,12 @@
 import { TransactionViewBuilder } from '../builder'
 import { getBatchedCalls, getCallId, getDispatchCall } from '../call'
 import type { CallParts, ViewBuilderFn } from '../types'
+import { getBuilderForCall } from '../factory'
 
 const FILL_LISTING = 'Marketplace::fill_listing'
 const BUY_OFFER = 'StakeExchange::buy'
 
 export const buildBatchView: ViewBuilderFn = ({ call, network, coinId }) => {
-    // Lazy require avoids circular import: factory → utility → factory
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { getBuilderForCall } = require('../factory') as typeof import('../factory')
-
     const batched = getBatchedCalls(call).map(getDispatchCall)
     const title = resolveBatchTitle(batched)
 

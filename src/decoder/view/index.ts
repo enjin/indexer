@@ -11,7 +11,7 @@ import type { TransactionView } from './types'
  */
 export function buildTransactionView(calls: unknown, network: Network): TransactionView {
     const networkLabel = getNetworkLabel(network)
-    const coinId = getNativeCoinId(network)
+    const coinId = getNativeCoinId()
 
     const mainCall = parseCallData(calls)
     if (!mainCall) {
