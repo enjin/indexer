@@ -84,8 +84,14 @@ function handleVerifyMessage(req: Request, res: Response): void {
         }
 
         const results = validation.data.map(({ message, signature, publicKey }) => {
-            const { isValid, isWrapped, crypto } = signatureVerify(message, signature, publicKey)
-            return { isValid, isWrapped, crypto }
+            try {
+                const { isValid, isWrapped, crypto } = signatureVerify(message, signature, publicKey)
+                return { isValid, isWrapped, crypto }
+            } catch {
+                // signatureVerify throws for malformed inputs (e.g. wrong signature length);
+                // treat those as invalid rather than failing the request.
+                return { isValid: false, isWrapped: false, crypto: 'none' }
+            }
         })
 
         res.json(results)

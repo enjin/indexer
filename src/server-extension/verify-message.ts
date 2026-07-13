@@ -26,12 +26,22 @@ export class VerifyMessageResolver {
         @Arg('signature', { description: 'The signed message in hexadecimal' }) signature: string,
         @Arg('publicKey', { description: 'The public key of the signer' }) publicKey: string
     ): VerifyMessageResult {
-        const { isValid, isWrapped, crypto } = signatureVerify(message, signature, publicKey)
+        try {
+            const { isValid, isWrapped, crypto } = signatureVerify(message, signature, publicKey)
 
-        return new VerifyMessageResult({
-            isValid,
-            isWrapped,
-            crypto,
-        })
+            return new VerifyMessageResult({
+                isValid,
+                isWrapped,
+                crypto,
+            })
+        } catch {
+            // signatureVerify throws for malformed inputs (e.g. wrong signature length);
+            // treat those as invalid rather than failing the GraphQL query.
+            return new VerifyMessageResult({
+                isValid: false,
+                isWrapped: false,
+                crypto: 'none',
+            })
+        }
     }
 }
