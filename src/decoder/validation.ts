@@ -79,6 +79,10 @@ export function validateDecodeRequest(
         return { valid: false, error: 'Invalid "spec_version" field (must be number)' }
     }
 
+    if (req.readable !== undefined && typeof req.readable !== 'boolean') {
+        return { valid: false, error: 'Invalid "readable" field (must be boolean)' }
+    }
+
     return {
         valid: true,
         data: {
@@ -88,6 +92,7 @@ export function validateDecodeRequest(
             events: req.events as string | undefined,
             network: req.network,
             spec_version: req.spec_version,
+            readable: req.readable,
         },
     }
 }

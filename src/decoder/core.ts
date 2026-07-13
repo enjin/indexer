@@ -12,6 +12,7 @@ import type {
 } from './types'
 import { NETWORK_ALIASES } from './types'
 import { transformCall, transformExtrinsic, transformEvent } from './compatibility'
+import { buildTransactionView } from './view'
 
 export function bigIntReplacer(_key: string, value: unknown): unknown {
     if (typeof value === 'bigint') {
@@ -196,8 +197,21 @@ export async function decodeSignedExtrinsicsRaw(
     })
 }
 
+function withReadableView(result: unknown, network: Network): unknown {
+    if (result && typeof result === 'object' && !Array.isArray(result)) {
+        const record = result as Record<string, unknown>
+        return {
+            ...record,
+            view: buildTransactionView(record.calls, network),
+        }
+    }
+    return {
+        view: buildTransactionView(undefined, network),
+    }
+}
+
 export async function decode(requestData: DecodeRequest): Promise<unknown> {
-    const { call, extrinsic, extrinsics, events, network: networkInput, spec_version } = requestData
+    const { call, extrinsic, extrinsics, events, network: networkInput, spec_version, readable } = requestData
 
     const resolved = networkInput ? resolveNetwork(networkInput) : null
     if (networkInput && !resolved) {
@@ -207,18 +221,23 @@ export async function decode(requestData: DecodeRequest): Promise<unknown> {
     const specVersion = spec_version ?? getLatestSpecVersion(network)
 
     if (call) {
-        return decodeCall(call, network, specVersion)
+        const result = await decodeCall(call, network, specVersion)
+        return readable ? withReadableView(result, network) : result
     }
 
     if (extrinsic) {
-        return decodeExtrinsic(extrinsic, network, specVersion)
+        const result = await decodeExtrinsic(extrinsic, network, specVersion)
+        return readable ? withReadableView(result, network) : result
     }
 
     if (extrinsics && extrinsics.length > 0) {
-        return decodeExtrinsics(extrinsics, network, specVersion)
+        const results = await decodeExtrinsics(extrinsics, network, specVersion)
+        if (!readable) return results
+        return results.map((item) => withReadableView(item, network))
     }
 
     if (events) {
+        // readable is intentionally ignored for events (R4)
         return decodeEvents(events, network, specVersion)
     }
 

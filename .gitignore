@@ -14,3 +14,4 @@ src/cli
 apollo.graphql
 .DS_Store
 .cursor/
+docs/
