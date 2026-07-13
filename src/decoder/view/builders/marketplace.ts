@@ -23,9 +23,7 @@ export const buildCreateListingView: ViewBuilderFn = ({ call, network, coinId })
     const takeCollection = displayValue(getArg(call.params, 'descriptor.take_asset_id.collection_id'))
     const takeToken = displayValue(getArg(call.params, 'descriptor.take_asset_id.token_id'))
 
-    const listedAsset = offer
-        ? assetId(takeCollection, takeToken)
-        : assetId(makeCollection, makeToken)
+    const listedAsset = offer ? assetId(takeCollection, takeToken) : assetId(makeCollection, makeToken)
 
     const builder = TransactionViewBuilder.create(title)
         .when(listedAsset !== '-', (b) => b.withResource('asset', listedAsset))

@@ -44,8 +44,4 @@ export interface CallParts {
     params: Record<string, unknown>
 }
 
-export type ViewBuilderFn = (ctx: {
-    call: CallParts
-    network: string
-    coinId: string
-}) => TransactionView
+export type ViewBuilderFn = (ctx: { call: CallParts; network: string; coinId: string }) => TransactionView

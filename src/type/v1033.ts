@@ -1047,10 +1047,7 @@ export interface DoubleEncoded {
 }
 
 export type V2OriginKind =
-    | V2OriginKind_Native
-    | V2OriginKind_SovereignAccount
-    | V2OriginKind_Superuser
-    | V2OriginKind_Xcm
+    V2OriginKind_Native | V2OriginKind_SovereignAccount | V2OriginKind_Superuser | V2OriginKind_Xcm
 
 export interface V2OriginKind_Native {
     __kind: 'Native'
@@ -2191,9 +2188,7 @@ export interface V4Location {
  * The `Event` enum of this pallet
  */
 export type WhitelistEvent =
-    | WhitelistEvent_CallWhitelisted
-    | WhitelistEvent_WhitelistedCallDispatched
-    | WhitelistEvent_WhitelistedCallRemoved
+    WhitelistEvent_CallWhitelisted | WhitelistEvent_WhitelistedCallDispatched | WhitelistEvent_WhitelistedCallRemoved
 
 export interface WhitelistEvent_CallWhitelisted {
     __kind: 'CallWhitelisted'
@@ -2456,8 +2451,7 @@ export type Vote = number
  * The `Event` enum of this pallet
  */
 export type ValidatorManagerEvent =
-    | ValidatorManagerEvent_ValidatorsDeregistered
-    | ValidatorManagerEvent_ValidatorsRegistered
+    ValidatorManagerEvent_ValidatorsDeregistered | ValidatorManagerEvent_ValidatorsRegistered
 
 /**
  * Validators were removed from the set.
@@ -3461,10 +3455,7 @@ export interface ExitReason_Timeout {
  * The `Event` enum of this pallet
  */
 export type RegistrarEvent =
-    | RegistrarEvent_Deregistered
-    | RegistrarEvent_Registered
-    | RegistrarEvent_Reserved
-    | RegistrarEvent_Swapped
+    RegistrarEvent_Deregistered | RegistrarEvent_Registered | RegistrarEvent_Reserved | RegistrarEvent_Swapped
 
 export interface RegistrarEvent_Deregistered {
     __kind: 'Deregistered'
@@ -3889,9 +3880,7 @@ export interface PreimageEvent_Requested {
  * The `Event` enum of this pallet
  */
 export type ParasDisputesEvent =
-    | ParasDisputesEvent_DisputeConcluded
-    | ParasDisputesEvent_DisputeInitiated
-    | ParasDisputesEvent_Revert
+    ParasDisputesEvent_DisputeConcluded | ParasDisputesEvent_DisputeInitiated | ParasDisputesEvent_Revert
 
 /**
  * A dispute has concluded for or against a candidate.
@@ -5532,10 +5521,7 @@ export interface Freeze {
 }
 
 export type FreezeType =
-    | FreezeType_Collection
-    | FreezeType_CollectionAccount
-    | FreezeType_Token
-    | FreezeType_TokenAccount
+    FreezeType_Collection | FreezeType_CollectionAccount | FreezeType_Token | FreezeType_TokenAccount
 
 export interface FreezeType_Collection {
     __kind: 'Collection'
@@ -6167,9 +6153,7 @@ export interface CounterOffer {
 }
 
 export type CounterOfferResponse =
-    | CounterOfferResponse_Accept
-    | CounterOfferResponse_Counter
-    | CounterOfferResponse_Reject
+    CounterOfferResponse_Accept | CounterOfferResponse_Counter | CounterOfferResponse_Reject
 
 export interface CounterOfferResponse_Accept {
     __kind: 'Accept'

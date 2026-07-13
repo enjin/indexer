@@ -2094,10 +2094,7 @@ export interface DoubleEncoded {
 }
 
 export type V2OriginKind =
-    | V2OriginKind_Native
-    | V2OriginKind_SovereignAccount
-    | V2OriginKind_Superuser
-    | V2OriginKind_Xcm
+    V2OriginKind_Native | V2OriginKind_SovereignAccount | V2OriginKind_Superuser | V2OriginKind_Xcm
 
 export interface V2OriginKind_Native {
     __kind: 'Native'
@@ -4213,10 +4210,7 @@ export interface Freeze {
 }
 
 export type FreezeType =
-    | FreezeType_Collection
-    | FreezeType_CollectionAccount
-    | FreezeType_Token
-    | FreezeType_TokenAccount
+    FreezeType_Collection | FreezeType_CollectionAccount | FreezeType_Token | FreezeType_TokenAccount
 
 export interface FreezeType_Collection {
     __kind: 'Collection'
@@ -4548,9 +4542,7 @@ export interface ProcessMessageError_Yield {
 }
 
 export type AggregateMessageOrigin =
-    | AggregateMessageOrigin_Here
-    | AggregateMessageOrigin_Parent
-    | AggregateMessageOrigin_Sibling
+    AggregateMessageOrigin_Here | AggregateMessageOrigin_Parent | AggregateMessageOrigin_Sibling
 
 export interface AggregateMessageOrigin_Here {
     __kind: 'Here'
@@ -4597,9 +4589,7 @@ export interface MinimumWeightFeePair {
  * The `Event` enum of this pallet
  */
 export type MatrixUtilityEvent =
-    | MatrixUtilityEvent_BatchDispatched
-    | MatrixUtilityEvent_BatchFailed
-    | MatrixUtilityEvent_BatchPartiallyDispatched
+    MatrixUtilityEvent_BatchDispatched | MatrixUtilityEvent_BatchFailed | MatrixUtilityEvent_BatchPartiallyDispatched
 
 /**
  * Batch of calls dispatched without errors.
@@ -4926,9 +4916,7 @@ export interface CounterOffer {
 }
 
 export type CounterOfferResponse =
-    | CounterOfferResponse_Accept
-    | CounterOfferResponse_Counter
-    | CounterOfferResponse_Reject
+    CounterOfferResponse_Accept | CounterOfferResponse_Counter | CounterOfferResponse_Reject
 
 export interface CounterOfferResponse_Accept {
     __kind: 'Accept'
@@ -5839,9 +5827,7 @@ export interface AccountVote_Standard {
 export type Vote = number
 
 export type VoteThreshold =
-    | VoteThreshold_SimpleMajority
-    | VoteThreshold_SuperMajorityAgainst
-    | VoteThreshold_SuperMajorityApprove
+    VoteThreshold_SimpleMajority | VoteThreshold_SuperMajorityAgainst | VoteThreshold_SuperMajorityApprove
 
 export interface VoteThreshold_SimpleMajority {
     __kind: 'SimpleMajority'
@@ -5875,9 +5861,7 @@ export interface MetadataOwner_Referendum {
  * The `Event` enum of this pallet
  */
 export type CumulusXcmEvent =
-    | CumulusXcmEvent_ExecutedDownward
-    | CumulusXcmEvent_InvalidFormat
-    | CumulusXcmEvent_UnsupportedVersion
+    CumulusXcmEvent_ExecutedDownward | CumulusXcmEvent_InvalidFormat | CumulusXcmEvent_UnsupportedVersion
 
 /**
  * Downward message executed with the given outcome.

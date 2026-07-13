@@ -1654,10 +1654,7 @@ export interface DoubleEncoded {
 }
 
 export type V2OriginKind =
-    | V2OriginKind_Native
-    | V2OriginKind_SovereignAccount
-    | V2OriginKind_Superuser
-    | V2OriginKind_Xcm
+    V2OriginKind_Native | V2OriginKind_SovereignAccount | V2OriginKind_Superuser | V2OriginKind_Xcm
 
 export interface V2OriginKind_Native {
     __kind: 'Native'
@@ -1710,10 +1707,7 @@ export interface V3MultiAssetFilter_Wild {
 }
 
 export type V3WildMultiAsset =
-    | V3WildMultiAsset_All
-    | V3WildMultiAsset_AllCounted
-    | V3WildMultiAsset_AllOf
-    | V3WildMultiAsset_AllOfCounted
+    V3WildMultiAsset_All | V3WildMultiAsset_AllCounted | V3WildMultiAsset_AllOf | V3WildMultiAsset_AllOfCounted
 
 export interface V3WildMultiAsset_All {
     __kind: 'All'
@@ -2427,9 +2421,7 @@ export interface V2AssetId_Concrete {
 			
  */
 export type WhitelistEvent =
-    | WhitelistEvent_CallWhitelisted
-    | WhitelistEvent_WhitelistedCallDispatched
-    | WhitelistEvent_WhitelistedCallRemoved
+    WhitelistEvent_CallWhitelisted | WhitelistEvent_WhitelistedCallDispatched | WhitelistEvent_WhitelistedCallRemoved
 
 export interface WhitelistEvent_CallWhitelisted {
     __kind: 'CallWhitelisted'
@@ -2638,8 +2630,7 @@ export interface VoterListEvent_ScoreUpdated {
 			
  */
 export type ValidatorManagerEvent =
-    | ValidatorManagerEvent_ValidatorsDeregistered
-    | ValidatorManagerEvent_ValidatorsRegistered
+    ValidatorManagerEvent_ValidatorsDeregistered | ValidatorManagerEvent_ValidatorsRegistered
 
 /**
  * Validators were removed from the set.
@@ -3943,9 +3934,7 @@ export type ValidationCodeHash = Bytes
 			
  */
 export type ParaInclusionEvent =
-    | ParaInclusionEvent_CandidateBacked
-    | ParaInclusionEvent_CandidateIncluded
-    | ParaInclusionEvent_CandidateTimedOut
+    ParaInclusionEvent_CandidateBacked | ParaInclusionEvent_CandidateIncluded | ParaInclusionEvent_CandidateTimedOut
 
 /**
  * A candidate was backed. `[candidate, head_data]`
@@ -5035,10 +5024,7 @@ export interface RootOrSigned_Signed {
 }
 
 export type MigrationStage =
-    | MigrationStage_Completed
-    | MigrationStage_Failed
-    | MigrationStage_InProgress
-    | MigrationStage_NotStarted
+    MigrationStage_Completed | MigrationStage_Failed | MigrationStage_InProgress | MigrationStage_NotStarted
 
 export interface MigrationStage_Completed {
     __kind: 'Completed'
@@ -5062,10 +5048,7 @@ export interface Freeze {
 }
 
 export type FreezeType =
-    | FreezeType_Collection
-    | FreezeType_CollectionAccount
-    | FreezeType_Token
-    | FreezeType_TokenAccount
+    FreezeType_Collection | FreezeType_CollectionAccount | FreezeType_Token | FreezeType_TokenAccount
 
 export interface FreezeType_Collection {
     __kind: 'Collection'
@@ -10506,11 +10489,7 @@ export interface VoterListCall_rebag {
 }
 
 export type MultiAddress =
-    | MultiAddress_Address20
-    | MultiAddress_Address32
-    | MultiAddress_Id
-    | MultiAddress_Index
-    | MultiAddress_Raw
+    MultiAddress_Address20 | MultiAddress_Address32 | MultiAddress_Id | MultiAddress_Index | MultiAddress_Raw
 
 export interface MultiAddress_Address20 {
     __kind: 'Address20'
@@ -13904,9 +13883,7 @@ export interface HrmpCall_hrmp_init_open_channel {
  * Contains one variant per dispatchable that can be called by an extrinsic.
  */
 export type GrandpaCall =
-    | GrandpaCall_note_stalled
-    | GrandpaCall_report_equivocation
-    | GrandpaCall_report_equivocation_unsigned
+    GrandpaCall_note_stalled | GrandpaCall_report_equivocation | GrandpaCall_report_equivocation_unsigned
 
 /**
  * Note that the current authority set of the GRANDPA finality gadget has stalled.
@@ -15791,9 +15768,7 @@ export interface BalancesCall_transfer_keep_alive {
  * Contains one variant per dispatchable that can be called by an extrinsic.
  */
 export type BabeCall =
-    | BabeCall_plan_config_change
-    | BabeCall_report_equivocation
-    | BabeCall_report_equivocation_unsigned
+    BabeCall_plan_config_change | BabeCall_report_equivocation | BabeCall_report_equivocation_unsigned
 
 /**
  * Plan an epoch config change. The epoch config change is recorded and will be enacted on
@@ -15852,9 +15827,7 @@ export interface NextConfigDescriptor_V1 {
 }
 
 export type AllowedSlots =
-    | AllowedSlots_PrimaryAndSecondaryPlainSlots
-    | AllowedSlots_PrimaryAndSecondaryVRFSlots
-    | AllowedSlots_PrimarySlots
+    AllowedSlots_PrimaryAndSecondaryPlainSlots | AllowedSlots_PrimaryAndSecondaryVRFSlots | AllowedSlots_PrimarySlots
 
 export interface AllowedSlots_PrimaryAndSecondaryPlainSlots {
     __kind: 'PrimaryAndSecondaryPlainSlots'
