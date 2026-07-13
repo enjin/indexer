@@ -7,13 +7,19 @@ import type { TransactionView } from './types'
 
 /**
  * Build a static TransactionView from platform-decoder `calls` shape.
- * `calls` may be the top-level object `{ Pallet: { method: args } }` or nested under a decode result.
+ *
+ * Accepts either the raw `{ Pallet: { method: args } }` shape or a full decode result
+ * object containing a `calls` field.
  */
 export function buildTransactionView(calls: unknown, network: Network): TransactionView {
     const networkLabel = getNetworkLabel(network)
     const coinId = getNativeCoinId()
 
-    const mainCall = parseCallData(calls)
+    const callData =
+        calls && typeof calls === 'object' && !Array.isArray(calls) && 'calls' in (calls as Record<string, unknown>)
+            ? (calls as Record<string, unknown>).calls
+            : calls
+    const mainCall = parseCallData(callData)
     if (!mainCall) {
         return buildGenericView({
             call: { pallet: '', method: '', params: {} },

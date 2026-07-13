@@ -42,7 +42,16 @@ export function getArg(params: Record<string, unknown>, path: string, defaultVal
 }
 
 export function displayValue(value: unknown): string {
+    const stringify = (v: unknown): string => {
+        try {
+            return JSON.stringify(v, (_k, val) => (typeof val === 'bigint' ? val.toString() : val))
+        } catch {
+            return String(v)
+        }
+    }
+
     if (value === null || value === undefined) return ''
+
     if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
         return String(value)
     }
@@ -51,10 +60,10 @@ export function displayValue(value: unknown): string {
         if (value.length > 0 && value.every((v): v is number => typeof v === 'number')) {
             return '0x' + Buffer.from(value).toString('hex')
         }
-        return JSON.stringify(value)
+        return stringify(value)
     }
-    if (isRecord(value)) return JSON.stringify(value)
-    return JSON.stringify(value)
+    if (isRecord(value)) return stringify(value)
+    return stringify(value)
 }
 
 const FUEL_TANK_CALLS = new Set(['FuelTanks::dispatch', 'FuelTanks::dispatch_and_touch'])
