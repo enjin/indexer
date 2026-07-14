@@ -185,11 +185,21 @@ export class TopCollectionResolver {
         const { timeFrame, orderBy, category, query, order, offset, limit } = args
         const manager = await this.tx()
 
+        // Runtime allowlist guards for values interpolated into the SQL string
+        // (GraphQL enum validation already restricts these, this is defense-in-depth)
+        if (!Object.values(TopCollectionOrderByInput).includes(orderBy)) {
+            throw new Error('Invalid orderBy value')
+        }
+        if (!Object.values(TopCollectionOrderInput).includes(order)) {
+            throw new Error('Invalid order value')
+        }
+
         const params: unknown[] = []
         let paramIdx = 1
 
         let salesAggColumns: string
         let salesAggWhere = ''
+        let usersTimeWhere = ''
 
         if (timeFrame === TopCollectionTimeframeInput.ALL) {
             salesAggColumns = `
@@ -200,21 +210,23 @@ export class TopCollectionResolver {
                 1 AS prev_avg`
         } else {
             const tf = timeFrameMap[timeFrame]
-            salesAggColumns = `
-                SUM(CASE WHEN s.created_at >= NOW() - INTERVAL '${tf.c}' THEN s.amount * s.price ELSE 0 END) AS volume,
-                COUNT(CASE WHEN s.created_at >= NOW() - INTERVAL '${tf.c}' THEN s.id ELSE NULL END)::int AS sales,
-                SUM(CASE WHEN s.created_at >= NOW() - INTERVAL '${tf.p}' AND s.created_at <= NOW() - INTERVAL '${tf.c}' THEN s.amount * s.price ELSE 0 END) AS prev_volume,
-                AVG(CASE WHEN s.created_at >= NOW() - INTERVAL '${tf.c}' THEN s.price ELSE 0 END) AS last_avg,
-                AVG(CASE WHEN s.created_at >= NOW() - INTERVAL '${tf.p}' AND s.created_at <= NOW() - INTERVAL '${tf.c}' THEN s.price ELSE 0 END) AS prev_avg`
-            if (orderBy !== TopCollectionOrderByInput.CREATED_AT) {
-                salesAggWhere = `WHERE s.created_at >= NOW() - INTERVAL '${tf.p}'`
+            if (!tf) {
+                throw new Error('Invalid timeFrame value')
             }
+            const currentInterval = `$${paramIdx++}::interval`
+            const previousInterval = `$${paramIdx++}::interval`
+            params.push(tf.c, tf.p)
+            salesAggColumns = `
+                SUM(CASE WHEN s.created_at >= NOW() - ${currentInterval} THEN s.amount * s.price ELSE 0 END) AS volume,
+                COUNT(CASE WHEN s.created_at >= NOW() - ${currentInterval} THEN s.id ELSE NULL END)::int AS sales,
+                SUM(CASE WHEN s.created_at >= NOW() - ${previousInterval} AND s.created_at <= NOW() - ${currentInterval} THEN s.amount * s.price ELSE 0 END) AS prev_volume,
+                AVG(CASE WHEN s.created_at >= NOW() - ${currentInterval} THEN s.price ELSE 0 END) AS last_avg,
+                AVG(CASE WHEN s.created_at >= NOW() - ${previousInterval} AND s.created_at <= NOW() - ${currentInterval} THEN s.price ELSE 0 END) AS prev_avg`
+            if (orderBy !== TopCollectionOrderByInput.CREATED_AT) {
+                salesAggWhere = `WHERE s.created_at >= NOW() - ${previousInterval}`
+            }
+            usersTimeWhere = `WHERE created_at >= NOW() - ${currentInterval}`
         }
-
-        const usersTimeWhere =
-            timeFrame !== TopCollectionTimeframeInput.ALL
-                ? `WHERE created_at >= NOW() - INTERVAL '${timeFrameMap[timeFrame].c}'`
-                : ''
 
         const collectionWheres: string[] = [`c.id NOT IN ('0', '1')`]
         if (category.length > 0) {
