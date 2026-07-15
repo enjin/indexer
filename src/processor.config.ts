@@ -1,9 +1,11 @@
 import { SubstrateBatchProcessor } from '@subsquid/substrate-processor'
 import config from '~/util/config'
-import { events } from '~/type'
+import { calls, events } from '~/type'
 import { isRelay } from '~/util/tools'
 
 const getEventNames = (pallet: object): string[] => Object.values(pallet).map((event) => event.name)
+
+const getCallNames = (pallet: object): string[] => Object.values(pallet).map((call) => call.name)
 
 const matrixEvents: string[] = [...getEventNames(events.claims), ...getEventNames(events.polkadotXcm)]
 
@@ -71,12 +73,43 @@ const eventItems: string[] = [
     ),
 ]
 
+// Calls are subscribed by name (not only through their events) so that extrinsics
+// which fail on-chain — and therefore emit none of the subscribed events — still
+// arrive with their call data and get indexed with pallet/method/args populated.
+const matrixCalls: string[] = [
+    ...getCallNames(calls.claims),
+    ...getCallNames(calls.matrixUtility),
+    ...getCallNames(calls.polkadotXcm),
+]
+
+const relayCalls: string[] = [
+    ...getCallNames(calls.nominationPools),
+    ...getCallNames(calls.stakeExchange),
+    ...getCallNames(calls.staking),
+    ...getCallNames(calls.xcmPallet),
+]
+
+const commonCalls: string[] = [
+    ...getCallNames(calls.balances),
+    ...getCallNames(calls.fuelTanks),
+    ...getCallNames(calls.identity),
+    ...getCallNames(calls.marketplace),
+    ...getCallNames(calls.multiTokens),
+    ...getCallNames(calls.utility),
+]
+
+const callItems: string[] = [...new Set([...commonCalls, ...(isRelay() ? relayCalls : matrixCalls)])]
+
 export const processorConfig = new SubstrateBatchProcessor()
     .setRpcEndpoint(config.dataSource.chain)
     .setBlockRange({ from: config.dataSource.fromBlock })
     .addEvent({
         name: eventItems,
         call: true,
+        extrinsic: true,
+    })
+    .addCall({
+        name: callItems,
         extrinsic: true,
     })
     .setFields({
@@ -88,6 +121,7 @@ export const processorConfig = new SubstrateBatchProcessor()
             origin: true,
             args: true,
             name: true,
+            success: true,
         },
         extrinsic: {
             fee: true,

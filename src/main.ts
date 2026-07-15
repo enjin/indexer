@@ -84,6 +84,12 @@ async function bootstrap() {
                     }
 
                     for (const call of block.calls) {
+                        // Calls of failed extrinsics are fetched (for pallet/method indexing)
+                        // but must not be processed as if they took effect.
+                        if (!call.success) {
+                            continue
+                        }
+
                         await callHandler(ctx, block.header, call)
                     }
 
@@ -270,30 +276,35 @@ async function processExtrinsics(
 
     if (call && (call.name === calls.fuelTanks.dispatch.name || call.name === calls.fuelTanks.dispatchAndTouch.name)) {
         const tankData = p.fuelTanks.utils.anyDispatch(call)
-        const tank = await ctx.store.findOneByOrFail<FuelTank>(FuelTank, {
+        // A failed dispatch can reference a tank that does not exist.
+        const tank = await ctx.store.findOneBy<FuelTank>(FuelTank, {
             id: unwrapAccount(tankData.tankId),
         })
 
-        fuelTank = new FuelTankData({
-            id: tank.id,
-            name: tank.name,
-            feePaid: 0n,
-            ruleSetId: tankData.ruleSetId,
-            paysRemainingFee:
-                'settings' in tankData && tankData.settings !== undefined ? tankData.settings.paysRemainingFee : null,
-            useNoneOrigin:
-                'settings' in tankData && tankData.settings !== undefined ? tankData.settings.useNoneOrigin : null,
-        })
+        if (tank) {
+            fuelTank = new FuelTankData({
+                id: tank.id,
+                name: tank.name,
+                feePaid: 0n,
+                ruleSetId: tankData.ruleSetId,
+                paysRemainingFee:
+                    'settings' in tankData && tankData.settings !== undefined
+                        ? tankData.settings.paysRemainingFee
+                        : null,
+                useNoneOrigin:
+                    'settings' in tankData && tankData.settings !== undefined ? tankData.settings.useNoneOrigin : null,
+            })
 
-        for (const eventItem of eventItems) {
-            if (eventItem.name !== events.balances.withdraw.name || eventItem.extrinsic?.id !== id) {
-                continue
-            }
+            for (const eventItem of eventItems) {
+                if (eventItem.name !== events.balances.withdraw.name || eventItem.extrinsic?.id !== id) {
+                    continue
+                }
 
-            const transfer = p.balances.events.withdraw(eventItem)
+                const transfer = p.balances.events.withdraw(eventItem)
 
-            if (transfer.who === tank.id) {
-                fuelTank.feePaid = transfer.amount
+                if (transfer.who === tank.id) {
+                    fuelTank.feePaid = transfer.amount
+                }
             }
         }
     }
