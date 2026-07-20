@@ -1,4 +1,4 @@
-import { Args, ArgsType, Field, ObjectType, Query, Resolver, registerEnumType } from 'type-graphql'
+import { Args, ArgsType, createUnionType, Field, ObjectType, Query, Resolver, registerEnumType } from 'type-graphql'
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
 import { Brackets, In, MoreThan } from 'typeorm'
@@ -451,16 +451,167 @@ class CompatibleFuelTanksArgs {
 }
 
 @ObjectType()
-class CompatibleFuelTankRuleSet {
+export class CompatibleFuelTankRequireToken {
+    @Field(() => BigInt)
+    collectionId!: bigint
+
+    @Field(() => BigInt, { nullable: true })
+    tokenId?: bigint | null
+
+    constructor(props: Partial<CompatibleFuelTankRequireToken>) {
+        Object.assign(this, props)
+    }
+}
+
+@ObjectType()
+export class CompatibleFuelTankMaxFuelBurnPerTransaction {
+    @Field(() => BigInt)
+    value!: bigint
+
+    constructor(props: Partial<CompatibleFuelTankMaxFuelBurnPerTransaction>) {
+        Object.assign(this, props)
+    }
+}
+
+@ObjectType()
+export class CompatibleFuelTankPermittedExtrinsic {
+    @Field(() => String, { nullable: true })
+    extrinsicName?: string | null
+
+    @Field(() => String, { nullable: true })
+    palletName?: string | null
+
+    constructor(props: Partial<CompatibleFuelTankPermittedExtrinsic>) {
+        Object.assign(this, props)
+    }
+}
+
+@ObjectType()
+export class CompatibleFuelTankUserFuelBudget {
+    @Field(() => BigInt, { nullable: true })
+    amount?: bigint | null
+
+    @Field(() => BigInt, { nullable: true })
+    resetPeriod?: bigint | null
+
+    constructor(props: Partial<CompatibleFuelTankUserFuelBudget>) {
+        Object.assign(this, props)
+    }
+}
+
+@ObjectType()
+export class CompatibleFuelTankRuleSet {
     @Field(() => String)
     id!: string
 
     @Field(() => Number)
     index!: number
 
+    @Field(() => CompatibleFuelTankRequireToken, { nullable: true })
+    requireToken?: CompatibleFuelTankRequireToken | null
+
+    @Field(() => BigInt, { nullable: true })
+    minimumInfusion?: bigint | null
+
+    @Field(() => [String], { nullable: 'itemsAndList' })
+    whitelistedCollections?: Array<string | null | undefined> | null
+
+    @Field(() => [String], { nullable: true })
+    whitelistedPallets?: string[] | null
+
+    @Field(() => CompatibleFuelTankMaxFuelBurnPerTransaction, { nullable: true })
+    maxFuelBurnPerTransaction?: CompatibleFuelTankMaxFuelBurnPerTransaction | null
+
+    @Field(() => Boolean)
+    isPermittedExtrinsicsNull!: boolean
+
+    @Field(() => [CompatibleFuelTankPermittedExtrinsic])
+    permittedExtrinsics!: CompatibleFuelTankPermittedExtrinsic[]
+
+    @Field(() => CompatibleFuelTankUserFuelBudget, { nullable: true })
+    userFuelBudget?: CompatibleFuelTankUserFuelBudget | null
+
     constructor(props: Partial<CompatibleFuelTankRuleSet>) {
         Object.assign(this, props)
     }
+}
+
+@ObjectType()
+export class CompatibleFuelTankWhitelistedCallersRule {
+    @Field(() => [String])
+    value!: string[]
+
+    constructor(props: Partial<CompatibleFuelTankWhitelistedCallersRule>) {
+        Object.assign(this, props)
+    }
+}
+
+const CompatibleFuelTankAccountRule = createUnionType({
+    name: 'CompatibleFuelTankAccountRule',
+    types: () => [CompatibleFuelTankWhitelistedCallersRule, CompatibleFuelTankRequireToken] as const,
+    resolveType: (value) => {
+        if (value instanceof CompatibleFuelTankWhitelistedCallersRule) {
+            return CompatibleFuelTankWhitelistedCallersRule
+        }
+
+        if (value instanceof CompatibleFuelTankRequireToken) {
+            return CompatibleFuelTankRequireToken
+        }
+
+        return undefined
+    },
+})
+
+export function mapCompatibleFuelTankAccountRules(
+    rules: FuelTank['accountRules'] | null | undefined
+): Array<typeof CompatibleFuelTankAccountRule> {
+    return (rules ?? []).map(({ rule }) => {
+        if (rule.isTypeOf === 'WhitelistedCallers') {
+            return new CompatibleFuelTankWhitelistedCallersRule({
+                value: (rule as WhitelistedCallers).value,
+            })
+        }
+
+        const requireToken = rule as RequireToken
+
+        return new CompatibleFuelTankRequireToken({
+            collectionId: requireToken.collectionId,
+            tokenId: requireToken.tokenId,
+        })
+    })
+}
+
+export function mapCompatibleFuelTankRuleSet(ruleSet: FuelTankRuleSet): CompatibleFuelTankRuleSet {
+    return new CompatibleFuelTankRuleSet({
+        id: ruleSet.id,
+        index: ruleSet.index,
+        requireToken: ruleSet.requireToken
+            ? new CompatibleFuelTankRequireToken({
+                  collectionId: ruleSet.requireToken.collectionId,
+                  tokenId: ruleSet.requireToken.tokenId,
+              })
+            : undefined,
+        minimumInfusion: ruleSet.minimumInfusion,
+        whitelistedCollections: ruleSet.whitelistedCollections,
+        whitelistedPallets: ruleSet.whitelistedPallets,
+        maxFuelBurnPerTransaction: ruleSet.maxFuelBurnPerTransaction
+            ? new CompatibleFuelTankMaxFuelBurnPerTransaction({ value: ruleSet.maxFuelBurnPerTransaction.value })
+            : undefined,
+        isPermittedExtrinsicsNull: ruleSet.isPermittedExtrinsicsNull,
+        permittedExtrinsics: (ruleSet.permittedExtrinsics ?? []).map(
+            (extrinsic) =>
+                new CompatibleFuelTankPermittedExtrinsic({
+                    extrinsicName: extrinsic.extrinsicName,
+                    palletName: extrinsic.palletName,
+                })
+        ),
+        userFuelBudget: ruleSet.userFuelBudget
+            ? new CompatibleFuelTankUserFuelBudget({
+                  amount: ruleSet.userFuelBudget.amount,
+                  resetPeriod: ruleSet.userFuelBudget.resetPeriod,
+              })
+            : undefined,
+    })
 }
 
 @ObjectType()
@@ -479,6 +630,9 @@ export class CompatibleFuelTank {
 
     @Field(() => CompatibleFuelTankRuleSet)
     ruleSet!: CompatibleFuelTankRuleSet
+
+    @Field(() => [CompatibleFuelTankAccountRule])
+    accountRules!: Array<typeof CompatibleFuelTankAccountRule>
 
     @Field(() => BigInt, { nullable: true })
     remainingBudget?: bigint
@@ -561,6 +715,7 @@ export class CompatibleFuelTanksResolver {
                 normalizedPallet,
                 normalizedMethod,
             })
+            .leftJoinAndSelect('ruleSet.permittedExtrinsics', 'permittedExtrinsic')
             // Join only the requesting account's membership row (at most one per tank)
             // instead of hydrating every user account of every tank.
             .leftJoinAndSelect('tank.userAccounts', 'userAccount', 'userAccount.account = :account', { account })
@@ -647,10 +802,8 @@ export class CompatibleFuelTanksResolver {
                 name: tank.name,
                 providesDeposit: tank.providesDeposit,
                 coveragePolicy: tank.coveragePolicy,
-                ruleSet: new CompatibleFuelTankRuleSet({
-                    id: ruleSet.id,
-                    index: ruleSet.index,
-                }),
+                ruleSet: mapCompatibleFuelTankRuleSet(ruleSet),
+                accountRules: mapCompatibleFuelTankAccountRules(tank.accountRules),
                 remainingBudget: remainingBudget ?? undefined,
                 maxBudget: maxBudget ?? undefined,
                 consumedBudget: consumedBudget ?? undefined,
