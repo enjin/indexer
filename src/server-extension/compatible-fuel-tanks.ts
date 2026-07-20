@@ -622,6 +622,9 @@ export class CompatibleFuelTank {
     @Field(() => String)
     name!: string
 
+    @Field(() => String)
+    address: string
+
     @Field(() => Boolean)
     providesDeposit!: boolean
 
@@ -800,6 +803,7 @@ export class CompatibleFuelTanksResolver {
             const entry = new CompatibleFuelTank({
                 id: tank.id,
                 name: tank.name,
+                address: tank.tankAccount.address,
                 providesDeposit: tank.providesDeposit,
                 coveragePolicy: tank.coveragePolicy,
                 ruleSet: mapCompatibleFuelTankRuleSet(ruleSet),
