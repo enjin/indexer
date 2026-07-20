@@ -623,7 +623,7 @@ export class CompatibleFuelTank {
     name!: string
 
     @Field(() => String)
-    address: string
+    address!: string
 
     @Field(() => Boolean)
     providesDeposit!: boolean
