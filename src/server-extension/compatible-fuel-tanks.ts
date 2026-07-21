@@ -302,7 +302,7 @@ async function decodeTransaction(
     const account = signer ? bytesToHex(signer[1]) : (suppliedAccount ?? null)
     const outerCall = firstEntry(decoded.calls)
 
-    if (!account || !outerCall) throw new Error('The encoded transaction must be signed and contain a call')
+    if (!account || !outerCall) throw new Error('The encoded transaction must contain a call and identify an account')
 
     const [outerPallet, outerMethods] = outerCall
     const outerMethod = firstEntry(outerMethods)
