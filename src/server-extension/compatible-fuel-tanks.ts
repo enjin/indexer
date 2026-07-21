@@ -2,12 +2,20 @@ import { Args, ArgsType, createUnionType, Field, ObjectType, Query, Resolver, re
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
 import { Brackets, In, MoreThan } from 'typeorm'
-import { Validate } from 'class-validator'
 import { hexToU8a } from '@polkadot/util'
 import Rpc from '~/util/rpc'
-import { CoveragePolicy, FuelTank, FuelTankRuleSet, RequireToken, TokenAccount, WhitelistedCallers } from '~/model'
-import { IsPublicKey } from './helpers'
+import config from '~/util/config'
+import {
+    CoveragePolicy,
+    FuelTank,
+    FuelTankRuleSet,
+    Listing,
+    RequireToken,
+    TokenAccount,
+    WhitelistedCallers,
+} from '~/model'
 import { ApiPromise } from '@polkadot/api'
+import { decodeExtrinsic, resolveNetwork } from '~/decoder/core'
 
 registerEnumType(CoveragePolicy, {
     name: 'CoveragePolicy',
@@ -210,9 +218,135 @@ function normalizeKey(value: string): string {
     return value.replace(/_/g, '').toLowerCase()
 }
 
+type DecodedCall = Record<string, Record<string, Record<string, unknown>>>
+
+type DecodedTransaction = {
+    signature?: { address?: Record<string, number[]> }
+    calls?: DecodedCall
+}
+
+type TransactionContext = {
+    account: string
+    pallet: string
+    method: string
+    params: Record<string, unknown>
+    requestedTankId?: string
+    requestedRuleSetIndex?: number
+    collectionIds: Set<string>
+}
+
+function firstEntry<T>(value: Record<string, T> | null | undefined): [string, T] | null {
+    return value ? (Object.entries(value)[0] ?? null) : null
+}
+
+function bytesToHex(value: unknown, prefix = true): string | null {
+    if (!Array.isArray(value) || !value.every((byte) => Number.isInteger(byte) && byte >= 0 && byte <= 255)) {
+        return null
+    }
+
+    const hex = Buffer.from(value).toString('hex')
+    return prefix ? `0x${hex}` : hex
+}
+
+function variantBytesToHex(value: unknown, prefix = true): string | null {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return bytesToHex(value, prefix)
+
+    const variant = firstEntry(value as Record<string, unknown>)
+    return variant ? bytesToHex(variant[1], prefix) : null
+}
+
+function collectValuesForKey(value: unknown, key: string, results: unknown[] = []): unknown[] {
+    if (Array.isArray(value)) {
+        for (const entry of value) collectValuesForKey(entry, key, results)
+        return results
+    }
+
+    if (!value || typeof value !== 'object') return results
+
+    for (const [entryKey, entryValue] of Object.entries(value)) {
+        if (entryKey === key) results.push(entryValue)
+        collectValuesForKey(entryValue, key, results)
+    }
+
+    return results
+}
+
+function asCollectionId(value: unknown): string | null {
+    if (typeof value === 'bigint' || typeof value === 'number' || typeof value === 'string') {
+        return value.toString()
+    }
+
+    return null
+}
+
+async function decodeTransaction(encodedTransaction: string, api: ApiPromise): Promise<TransactionContext> {
+    const network = resolveNetwork(config.chainName)
+    if (!network) throw new Error(`Unsupported decoder network: ${config.chainName}`)
+
+    const specVersion = api.runtimeVersion.specVersion.toNumber()
+    const decoded = (await decodeExtrinsic(encodedTransaction, network, specVersion)) as DecodedTransaction
+    const signer = firstEntry(decoded.signature?.address)
+    const account = signer ? bytesToHex(signer[1]) : null
+    const outerCall = firstEntry(decoded.calls)
+
+    if (!account || !outerCall) throw new Error('The encoded transaction must be signed and contain a call')
+
+    const [outerPallet, outerMethods] = outerCall
+    const outerMethod = firstEntry(outerMethods)
+    if (!outerMethod) throw new Error('The encoded transaction does not contain a dispatch method')
+
+    let pallet = outerPallet
+    let [method, params] = outerMethod
+    let requestedTankId: string | undefined
+    let requestedRuleSetIndex: number | undefined
+
+    if (normalizeKey(outerPallet) === 'fueltanks' && ['dispatch', 'dispatchandtouch'].includes(normalizeKey(method))) {
+        requestedTankId = variantBytesToHex(params.tank_id) ?? undefined
+        requestedRuleSetIndex = typeof params.rule_set_id === 'number' ? params.rule_set_id : undefined
+
+        const dispatchedCall = firstEntry(params.call as DecodedCall)
+        const dispatchedMethod = dispatchedCall ? firstEntry(dispatchedCall[1]) : null
+        if (!dispatchedCall || !dispatchedMethod) throw new Error('The fuel tank transaction has no dispatched call')
+
+        pallet = dispatchedCall[0]
+        method = dispatchedMethod[0]
+        params = dispatchedMethod[1]
+    }
+
+    const collectionIds = new Set<string>()
+    for (const value of collectValuesForKey(params, 'collection_id')) {
+        const collectionId = asCollectionId(value)
+        if (collectionId) collectionIds.add(collectionId)
+    }
+
+    return { account, pallet, method, params, requestedTankId, requestedRuleSetIndex, collectionIds }
+}
+
+async function addListingCollectionIds(
+    manager: EntityManager,
+    params: Record<string, unknown>,
+    collectionIds: Set<string>
+): Promise<void> {
+    const listingIds = collectValuesForKey(params, 'listing_id')
+        .map((listingId) => variantBytesToHex(listingId, false) ?? bytesToHex(listingId, false))
+        .filter((listingId): listingId is string => listingId != null)
+
+    if (!listingIds.length) return
+
+    const listings = await manager.find(Listing, {
+        where: { id: In(listingIds) },
+        relations: { makeAssetId: { collection: true }, takeAssetId: { collection: true } },
+    })
+
+    for (const listing of listings) {
+        collectionIds.add(listing.makeAssetId.collection.id)
+        collectionIds.add(listing.takeAssetId.collection.id)
+    }
+}
+
 function matchesWhitelistedCollections(
     collections: (string | undefined | null)[] | null | undefined,
-    heldCollectionIds: Set<string>
+    transactionCollectionIds: Set<string>
 ): boolean {
     const listed = (collections ?? []).filter((entry): entry is string => entry != null)
 
@@ -220,7 +354,7 @@ function matchesWhitelistedCollections(
         return true
     }
 
-    return listed.some((collectionId) => heldCollectionIds.has(collectionId))
+    return listed.some((collectionId) => transactionCollectionIds.has(collectionId))
 }
 
 function satisfiesRequireToken(
@@ -262,10 +396,7 @@ function addRequireTokenLookupKeys(requirement: RequireToken, tokenIds: Set<stri
 
 type PreCandidate = { tank: FuelTank; ruleSet: FuelTankRuleSet }
 
-/**
- * Collect token/collection lookup keys from candidates that already passed cheap checks.
- * Includes whitelistedCollections so those holdings are also resolved correctly.
- */
+/** Collect token/collection lookup keys for account ownership rules. */
 function collectCandidateLookupKeys(candidates: PreCandidate[]): { tokenIds: string[]; collectionIds: string[] } {
     const tokenIds = new Set<string>()
     const collectionIds = new Set<string>()
@@ -274,10 +405,6 @@ function collectCandidateLookupKeys(candidates: PreCandidate[]): { tokenIds: str
     for (const { tank, ruleSet } of candidates) {
         if (ruleSet.requireToken) {
             addRequireTokenLookupKeys(ruleSet.requireToken, tokenIds, collectionIds)
-        }
-
-        for (const collectionId of ruleSet.whitelistedCollections ?? []) {
-            if (collectionId != null) collectionIds.add(collectionId)
         }
 
         if (!seenTanks.has(tank.id)) {
@@ -353,9 +480,11 @@ function isRuleSetCompatibleWithTokens(
     ruleSet: FuelTankRuleSet,
     tank: FuelTank,
     heldTokenIds: Set<string>,
-    heldCollectionIds: Set<string>
+    heldCollectionIds: Set<string>,
+    transactionCollectionIds: Set<string>
 ): boolean {
-    if (!matchesWhitelistedCollections(ruleSet.whitelistedCollections, heldCollectionIds)) return false
+    if (!matchesWhitelistedCollections(ruleSet.whitelistedCollections, transactionCollectionIds)) return false
+    if (ruleSet.minimumInfusion != null && ruleSet.minimumInfusion > 0n) return false
     if (!matchesRequireToken(ruleSet.requireToken, heldTokenIds, heldCollectionIds)) return false
 
     for (const rule of tank.accountRules ?? []) {
@@ -437,17 +566,20 @@ function getRemainingBudget(
     return maxBudget >= consumption ? maxBudget - consumption : 0n
 }
 
+function getAvailableBudget(
+    tankBalance: bigint | null | undefined,
+    remainingBudget: bigint | null | undefined,
+    maxFuelBurn: bigint | null | undefined
+): bigint {
+    const limits = [tankBalance, remainingBudget, maxFuelBurn].filter((value): value is bigint => value != null)
+
+    return limits.reduce((available, limit) => (limit < available ? limit : available), limits[0] ?? 0n)
+}
+
 @ArgsType()
 class CompatibleFuelTanksArgs {
     @Field(() => String)
-    @Validate(IsPublicKey)
-    account!: string
-
-    @Field(() => Pallet, { description: 'Pallet name' })
-    pallet!: Pallet
-
-    @Field(() => MethodName, { description: 'Dispatch method name' })
-    method!: MethodName
+    encodedTransaction!: string
 }
 
 @ObjectType()
@@ -649,6 +781,9 @@ export class CompatibleFuelTank {
     @Field(() => BigInt, { nullable: true })
     tankBalance?: bigint
 
+    @Field(() => BigInt)
+    availableBudget!: bigint
+
     constructor(props: Partial<CompatibleFuelTank>) {
         Object.assign(this, props)
     }
@@ -659,18 +794,21 @@ export class CompatibleFuelTanksResolver {
     constructor(private tx: () => Promise<EntityManager>) {}
 
     @Query(() => [CompatibleFuelTank])
-    async compatibleFuelTanks(
-        @Args() { account, pallet, method }: CompatibleFuelTanksArgs
-    ): Promise<CompatibleFuelTank[]> {
+    async compatibleFuelTanks(@Args() { encodedTransaction }: CompatibleFuelTanksArgs): Promise<CompatibleFuelTank[]> {
         const manager = await this.tx()
 
         const { api } = await Rpc.getInstance()
         api.registerTypes(customTypes)
 
+        const transaction = await decodeTransaction(encodedTransaction, api)
+        await addListingCollectionIds(manager, transaction.params, transaction.collectionIds)
+
+        const { account, pallet, method } = transaction
+
         const normalizedPallet = normalizeKey(pallet)
         const normalizedMethod = normalizeKey(method)
 
-        // All rule-set-level filters (frozen, requireSignature, requireAccount,
+        // All rule-set-level filters (frozen, unsupported signature/tank budget rules, requireAccount,
         // whitelistedPallets, whitelistedCallers, permittedCalls, permittedExtrinsics)
         // are pushed into the JOIN ON condition so PostgreSQL eliminates non-matching
         // rule sets before they are hydrated into TypeScript objects.
@@ -678,6 +816,7 @@ export class CompatibleFuelTanksResolver {
         const ruleSetJoinCondition = `
             ruleSet.isFrozen = false
             AND ruleSet.requireSignature IS NULL
+            AND ruleSet.tankFuelBudget IS NULL
             AND (ruleSet.requireAccount = false OR ruleSet.requireAccount IS NULL
                  OR EXISTS (
                      SELECT 1 FROM fuel_tank_user_accounts ua
@@ -731,6 +870,12 @@ export class CompatibleFuelTanksResolver {
                     qb.where('userAccount.id IS NOT NULL').orWhere('ruleSet.userFuelBudget IS NOT NULL')
                 })
             )
+            .andWhere(transaction.requestedTankId ? 'tank.id = :requestedTankId' : '1 = 1', {
+                requestedTankId: transaction.requestedTankId,
+            })
+            .andWhere(transaction.requestedRuleSetIndex != null ? 'ruleSet.index = :requestedRuleSetIndex' : '1 = 1', {
+                requestedRuleSetIndex: transaction.requestedRuleSetIndex,
+            })
             .orderBy('tank.name', 'ASC')
             .getMany()
 
@@ -783,8 +928,23 @@ export class CompatibleFuelTanksResolver {
         const candidates: Array<{ tank: FuelTank; ruleSet: FuelTankRuleSet; maxBudget: bigint | null }> = []
 
         for (const { tank, ruleSet } of preCandidates) {
-            if (!isRuleSetCompatibleWithTokens(ruleSet, tank, heldTokenIds, heldCollectionIds)) continue
-            candidates.push({ tank, ruleSet, maxBudget: ruleSet.userFuelBudget?.amount ?? null })
+            if (
+                !isRuleSetCompatibleWithTokens(
+                    ruleSet,
+                    tank,
+                    heldTokenIds,
+                    heldCollectionIds,
+                    transaction.collectionIds
+                )
+            )
+                continue
+
+            const configuredBudget = ruleSet.userFuelBudget?.amount
+            candidates.push({
+                tank,
+                ruleSet,
+                maxBudget: configuredBudget != null && configuredBudget !== 0n ? configuredBudget : null,
+            })
         }
 
         // ── Phase 3 filter: remaining budget check (uses pre-fetched RPC data) ───
@@ -799,6 +959,14 @@ export class CompatibleFuelTanksResolver {
             }
 
             const consumedBudget = maxBudget != null && remainingBudget != null ? maxBudget - remainingBudget : null
+            const tankBalance = tank.tankAccount?.balance?.free
+            const availableBudget = getAvailableBudget(
+                tankBalance,
+                remainingBudget,
+                ruleSet.maxFuelBurnPerTransaction?.value
+            )
+
+            if (availableBudget <= 0n) continue
 
             const entry = new CompatibleFuelTank({
                 id: tank.id,
@@ -811,14 +979,13 @@ export class CompatibleFuelTanksResolver {
                 remainingBudget: remainingBudget ?? undefined,
                 maxBudget: maxBudget ?? undefined,
                 consumedBudget: consumedBudget ?? undefined,
-                tankBalance: tank.tankAccount?.balance?.free,
+                tankBalance,
+                availableBudget,
             })
 
             const existing = resultsByTank.get(tank.id)
-            const entryRemaining = remainingBudget ?? 0n
-            const existingRemaining = existing?.remainingBudget ?? 0n
 
-            if (!existing || entryRemaining > existingRemaining) {
+            if (!existing || availableBudget > existing.availableBudget) {
                 resultsByTank.set(tank.id, entry)
             }
         }
