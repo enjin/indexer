@@ -2,6 +2,7 @@ import { Args, ArgsType, createUnionType, Field, ObjectType, Query, Resolver, re
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
 import { Brackets, In, MoreThan } from 'typeorm'
+import { Validate } from 'class-validator'
 import { hexToU8a } from '@polkadot/util'
 import Rpc from '~/util/rpc'
 import config from '~/util/config'
@@ -15,7 +16,8 @@ import {
     WhitelistedCallers,
 } from '~/model'
 import { ApiPromise } from '@polkadot/api'
-import { decodeExtrinsic, resolveNetwork } from '~/decoder/core'
+import { decodeCall, decodeExtrinsic, resolveNetwork } from '~/decoder/core'
+import { IsPublicKey } from './helpers'
 
 registerEnumType(CoveragePolicy, {
     name: 'CoveragePolicy',
@@ -279,14 +281,25 @@ function asCollectionId(value: unknown): string | null {
     return null
 }
 
-async function decodeTransaction(encodedTransaction: string, api: ApiPromise): Promise<TransactionContext> {
+async function decodeTransaction(
+    encodedTransaction: string,
+    api: ApiPromise,
+    suppliedAccount?: string
+): Promise<TransactionContext> {
     const network = resolveNetwork(config.chainName)
     if (!network) throw new Error(`Unsupported decoder network: ${config.chainName}`)
 
     const specVersion = api.runtimeVersion.specVersion.toNumber()
-    const decoded = (await decodeExtrinsic(encodedTransaction, network, specVersion)) as DecodedTransaction
+    let decoded: DecodedTransaction
+    try {
+        decoded = (await decodeExtrinsic(encodedTransaction, network, specVersion)) as DecodedTransaction
+    } catch (error) {
+        if (!suppliedAccount) throw error
+        decoded = (await decodeCall(encodedTransaction, network, specVersion)) as DecodedTransaction
+    }
+
     const signer = firstEntry(decoded.signature?.address)
-    const account = signer ? bytesToHex(signer[1]) : null
+    const account = signer ? bytesToHex(signer[1]) : (suppliedAccount ?? null)
     const outerCall = firstEntry(decoded.calls)
 
     if (!account || !outerCall) throw new Error('The encoded transaction must be signed and contain a call')
@@ -580,6 +593,10 @@ function getAvailableBudget(
 class CompatibleFuelTanksArgs {
     @Field(() => String)
     encodedTransaction!: string
+
+    @Field(() => String, { nullable: true, description: 'Required when encodedTransaction contains an unsigned call' })
+    @Validate(IsPublicKey)
+    account?: string
 }
 
 @ObjectType()
@@ -794,13 +811,15 @@ export class CompatibleFuelTanksResolver {
     constructor(private tx: () => Promise<EntityManager>) {}
 
     @Query(() => [CompatibleFuelTank])
-    async compatibleFuelTanks(@Args() { encodedTransaction }: CompatibleFuelTanksArgs): Promise<CompatibleFuelTank[]> {
+    async compatibleFuelTanks(
+        @Args() { encodedTransaction, account: suppliedAccount }: CompatibleFuelTanksArgs
+    ): Promise<CompatibleFuelTank[]> {
         const manager = await this.tx()
 
         const { api } = await Rpc.getInstance()
         api.registerTypes(customTypes)
 
-        const transaction = await decodeTransaction(encodedTransaction, api)
+        const transaction = await decodeTransaction(encodedTransaction, api, suppliedAccount)
         await addListingCollectionIds(manager, transaction.params, transaction.collectionIds)
 
         const { account, pallet, method } = transaction
