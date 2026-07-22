@@ -38,14 +38,24 @@ check('netReinvested = reward - commission = 186.9261', approx(toEnj(reinv), 186
 // old buggy value (reward + commission) was inflated by exactly 2*commission.
 const buggy = reward + commission
 check('buggy reinvested was 215.0805', approx(toEnj(buggy), 215.0805), toEnj(buggy), 215.0805)
-check('inflation == 2 * commission', approx(toEnj(buggy - reinv), 2 * toEnj(commission), 0.001), toEnj(buggy - reinv), 2 * toEnj(commission))
+check(
+    'inflation == 2 * commission',
+    approx(toEnj(buggy - reinv), 2 * toEnj(commission), 0.001),
+    toEnj(buggy - reinv),
+    2 * toEnj(commission)
+)
 
 // changeInRate * points / 1e18 (member basis) reproduces the same compounded amount.
 const compounded = memberEraReward(poolPoints, changeInRate)
 check('memberEraReward(pool points) = 186.9261', approx(toEnj(compounded), 186.9261, 0.05), toEnj(compounded), 186.9261)
 
 // member-level: the buggy/correct ratio is the constant 1.07/0.93.
-check('buggy * 0.93/1.07 == real growth', approx(195.046193 * 0.93 / 1.07, 169.504, 0.1), 195.046193 * 0.93 / 1.07, 169.504)
+check(
+    'buggy * 0.93/1.07 == real growth',
+    approx((195.046193 * 0.93) / 1.07, 169.504, 0.1),
+    (195.046193 * 0.93) / 1.07,
+    169.504
+)
 
 console.log(`\n${failures === 0 ? 'PASS' : 'FAIL'}: ${failures} failure(s)`)
 process.exit(failures === 0 ? 0 : 1)
