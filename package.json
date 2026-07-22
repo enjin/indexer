@@ -25,6 +25,7 @@
     "dev:worker": "pnpm exec ts-node -r dotenv/config -r tsconfig-paths/register src/worker/index.ts",
     "dev:metris": "pnpm exec ts-node -r dotenv/config -r tsconfig-paths/register src/prom-metrics/index.ts",
     "dev:decoder": "pnpm exec ts-node -r dotenv/config -r tsconfig-paths/register src/decoder/server.ts",
+    "test": "node --test -r ts-node/register -r tsconfig-paths/register test/nomination-pools-member-rewards.test.ts",
     "lint": "eslint --fix --config eslint.config.mjs",
     "prettier": "prettier --write --config prettier.config.mjs .",
     "build": "rm -rf lib && tsc && tsc-alias",

@@ -14,6 +14,7 @@ import { nominationPools } from '~/type/events'
 import { computeEraApy } from '~/pallet/nomination-pools/processors/era-rewards-processed'
 import { RewardPaid } from '~/pallet/nomination-pools/events/types'
 import { QueueUtils } from '~/queue'
+import { calculatePoolMemberReward } from '~/pallet/nomination-pools/member-rewards'
 
 async function getMembersBalance(block: Block, poolId: number): Promise<Record<string, bigint>> {
     type StorageEntry = [k: [bigint, bigint, string], v: TokenAccount | undefined]
@@ -124,8 +125,6 @@ async function calculateMemberRewards(
         },
     })
 
-    const totalPoolPoints = (pool.balance.active * 10n ** 18n) / pool.rate
-
     const inserts: PoolMemberRewards[] = []
 
     for (const member of members) {
@@ -143,7 +142,7 @@ async function calculateMemberRewards(
         }
 
         const points = memberBalances[member.account.id] ?? 0n
-        const eraRewards = (points * reward.reinvested) / totalPoolPoints
+        const eraRewards = calculatePoolMemberReward(points, reward.changeInRate)
         const newAccumulated = (member.accumulatedRewards || 0n) + eraRewards - previousReward
 
         member.accumulatedRewards = newAccumulated

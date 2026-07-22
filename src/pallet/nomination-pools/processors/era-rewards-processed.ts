@@ -10,6 +10,7 @@ import { TokenAccount } from '~/pallet/multi-tokens/storage/types'
 import { needEarlyBirdMerge } from '~/util/earlyBird'
 import { In } from 'typeorm'
 import { EventHandlerResult } from '~/processor.handler'
+import { calculatePoolMemberReward } from '~/pallet/nomination-pools/member-rewards'
 
 async function getMembersBalance(block: Block, poolId: number): Promise<Record<string, bigint>> {
     type StorageEntry = [k: [bigint, bigint, string], v: TokenAccount | undefined]
@@ -191,8 +192,6 @@ export async function eraRewardsProcessed(
         },
     })
 
-    const totalPoolPoints = (pool.balance.active * 10n ** 18n) / pool.rate
-
     // Check if we need to merge with early bird rewards
     const earlyBirdMergeNeeded = await needEarlyBirdMerge(ctx, data.era)
 
@@ -202,7 +201,7 @@ export async function eraRewardsProcessed(
 
     for (const member of members) {
         const points = memberBalances[member.account.id] ?? 0n
-        const eraRewards = (points * data.reinvested) / totalPoolPoints
+        const eraRewards = calculatePoolMemberReward(points, reward.changeInRate)
         const newAccumulated = (member.accumulatedRewards || 0n) + eraRewards
 
         member.accumulatedRewards = newAccumulated
@@ -210,6 +209,7 @@ export async function eraRewardsProcessed(
         const pmrId = `${member.id}-${data.era}`
         const pmrData = {
             id: pmrId,
+            eraIndex: data.era,
             pool,
             member,
             reward,

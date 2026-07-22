@@ -1,10 +1,11 @@
-import { Era, EraReward, NominationPool, PoolMember, PoolMemberRewards } from '~/model'
+import { EarlyBirdMintEvent, Era, EraReward, NominationPool, PoolMember, PoolMemberRewards } from '~/model'
 import { CommonContext, dataHandlerContext } from '~/contexts'
 import { Job } from 'bullmq'
-import { In } from 'typeorm'
+import { In, MoreThan } from 'typeorm'
 import Rpc from '~/util/rpc'
 import { encodeAddress, decodeAddress } from '@polkadot/util-crypto'
 import { decode } from '@subsquid/ss58'
+import { calculatePoolMemberReward } from '~/pallet/nomination-pools/member-rewards'
 
 async function getMembersBalance(blockNumber: number, poolId: number): Promise<Record<string, bigint>> {
     const { api } = await Rpc.getInstance()
@@ -48,8 +49,24 @@ async function calculateMemberRewards(
         },
     })
 
-    const totalPoolPoints = (pool.balance.active * 10n ** 18n) / pool.rate
     const inserts: PoolMemberRewards[] = []
+    const rewardDeltas = new Map<string, bigint>()
+    const earlyBirdRewards = members.length
+        ? await ctx.store.find(EarlyBirdMintEvent, {
+              where: {
+                  era: { id: eraIndex.toString() },
+                  pool: { id: pool.id },
+                  poolMember: { id: In(members.map((member) => member.id)) },
+              },
+              relations: { poolMember: true },
+          })
+        : []
+    const earlyBirdRewardsByMember = new Map<string, bigint>()
+
+    for (const earlyBirdReward of earlyBirdRewards) {
+        const current = earlyBirdRewardsByMember.get(earlyBirdReward.poolMember.id) ?? 0n
+        earlyBirdRewardsByMember.set(earlyBirdReward.poolMember.id, current + earlyBirdReward.reward)
+    }
 
     for (const member of members) {
         // The previous reward is needed in case of duplicate rewards (there could be 2 events of RewardPaid from 2 validators or more)
@@ -66,25 +83,47 @@ async function calculateMemberRewards(
         }
 
         const points = memberBalances[member.account.id] ?? 0n
-        const eraRewards = (points * reward.reinvested) / totalPoolPoints
-        const newAccumulated = (member.accumulatedRewards || 0n) + eraRewards - previousReward
+        const stakingRewards = calculatePoolMemberReward(points, reward.changeInRate)
+        const eraRewards = stakingRewards + (earlyBirdRewardsByMember.get(member.id) ?? 0n)
+        const rewardDelta = eraRewards - previousReward
+        const newAccumulated = (member.accumulatedRewards || 0n) + rewardDelta
+        const historicalAccumulated = existingReward ? existingReward.accumulatedRewards + rewardDelta : newAccumulated
 
         member.accumulatedRewards = newAccumulated
+        rewardDeltas.set(member.id, rewardDelta)
 
         const pmrData = {
             id: pmrId,
+            eraIndex,
             pool,
             member,
             reward,
             points,
             rewards: eraRewards,
-            accumulatedRewards: newAccumulated,
+            accumulatedRewards: historicalAccumulated,
         }
 
         inserts.push(new PoolMemberRewards(pmrData))
     }
 
-    return { inserts, members }
+    const changedMemberIds = [...rewardDeltas.entries()]
+        .filter(([, rewardDelta]) => rewardDelta !== 0n)
+        .map(([memberId]) => memberId)
+    const laterRewards = changedMemberIds.length
+        ? await ctx.store.find(PoolMemberRewards, {
+              where: {
+                  member: { id: In(changedMemberIds) },
+                  eraIndex: MoreThan(eraIndex),
+              },
+              relations: { member: true },
+          })
+        : []
+
+    for (const laterReward of laterRewards) {
+        laterReward.accumulatedRewards += rewardDeltas.get(laterReward.member.id) ?? 0n
+    }
+
+    return { inserts, members, laterRewards }
 }
 
 export async function computePoolMemberRewards(_job: Job, eraIndex: number): Promise<void> {
@@ -127,7 +166,14 @@ export async function computePoolMemberRewards(_job: Job, eraIndex: number): Pro
 
         const memberBalances = await getMembersBalance(era.startBlock, parseInt(pool.id))
 
-        const { inserts, members } = await calculateMemberRewards(ctx, eraIndex, pool, memberBalances, eraReward, _job)
+        const { inserts, members, laterRewards } = await calculateMemberRewards(
+            ctx,
+            eraIndex,
+            pool,
+            memberBalances,
+            eraReward,
+            _job
+        )
 
         if (inserts.length > 0) {
             await ctx.store.save(inserts)
@@ -135,6 +181,10 @@ export async function computePoolMemberRewards(_job: Job, eraIndex: number): Pro
 
         if (members.length > 0) {
             await ctx.store.save(members)
+        }
+
+        if (laterRewards.length > 0) {
+            await ctx.store.save(laterRewards)
         }
 
         processed++
