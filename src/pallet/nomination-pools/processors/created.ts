@@ -1,5 +1,5 @@
 import { hexToString } from '@polkadot/util'
-import { Commission, NominationPool, PoolBalance, PoolState, Token } from '~/model'
+import { BonusCycle, Commission, NominationPool, PoolBalance, PoolState, Token } from '~/model'
 import { storage } from '~/type'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import * as mappings from '~/pallet/index'
@@ -27,6 +27,16 @@ export async function created(ctx: CommonContext, block: Block, item: EventItem)
     if (!currentEraInfo) {
         throw new Error('Active era info is not provided')
     }
+
+    // The bonus mechanism was removed in v1060: the create call no longer carries `duration`.
+    // Populate bonusCycle ONLY when the call actually provides a duration (pre-1060 pools, when
+    // bonuses were live) so a full resync preserves the real historical cycle; for v1060+ pools
+    // leave it null instead of fabricating a meaningless (start, start+300) cycle. The GraphQL
+    // field is kept for nft.io compatibility. See reward-math.ts.
+    const bonusCycle =
+        callData.duration !== undefined
+            ? new BonusCycle({ start: currentEraInfo, end: currentEraInfo + callData.duration })
+            : null
 
     const token = await ctx.store.findOneOrFail(Token, {
         where: { id: `2-${callData.tokenId}` },
@@ -57,8 +67,7 @@ export async function created(ctx: CommonContext, block: Block, item: EventItem)
             bonus: 0n,
             active: 0n,
         }),
-        // Bonus mechanism was removed from the runtime (no bonus since era 903). bonusCycle is
-        // deprecated and no longer populated (left null). Field kept for nft.io compatibility.
+        bonusCycle,
         apy: 0,
         rate: 1000_000_000_000_000_000n,
         historicalApy: 0,

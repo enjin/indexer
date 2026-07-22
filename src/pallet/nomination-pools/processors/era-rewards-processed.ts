@@ -1,6 +1,6 @@
 import Big from 'big.js'
 import * as Sentry from '@sentry/node'
-import { CommissionPayment, Era, EraReward, PoolMember, PoolMemberRewards } from '~/model'
+import { BonusCycle, CommissionPayment, Era, EraReward, PoolMember, PoolMemberRewards } from '~/model'
 import { updatePool } from '~/pallet/nomination-pools/processors/pool'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { SnsEvent } from '~/util/sns'
@@ -62,12 +62,26 @@ export async function eraRewardsProcessed(
     ])
     const pool = await updatePool(ctx, block, data.poolId.toString())
 
-    // The bonus mechanism was removed from the runtime (no bonus since era 903). We no longer
-    // populate pool.bonusCycle from chain storage; the field is kept (nft.io reads it) but is
-    // left as-is / zeroed. EraReward.bonus is likewise recorded as 0. See reward-math.ts.
+    // This event was removed in v1060 (enjinV1062), so it only fires for historical blocks —
+    // the period when the bonus mechanism was still live. Faithfully record what the chain
+    // reports (bonusCycle from storage, EraReward.bonus from the event) so a full resync
+    // reconstructs the real historical bonus data. See reward-math.ts.
+    if ('bonusCycleEnded' in data && data.bonusCycleEnded) {
+        const poolInfo = await mappings.nominationPools.storage.bondedPools(block, data.poolId)
+        if (!poolInfo) throw new Error('Pool info not found')
+        if (poolInfo.bonusCycle !== undefined) {
+            pool.bonusCycle = new BonusCycle({
+                start: poolInfo.bonusCycle.start,
+                end: poolInfo.bonusCycle.end,
+                previousStart: poolInfo.bonusCycle.previousStart,
+                pendingDuration: poolInfo.bonusCycle.pendingDuration,
+            })
+            await ctx.store.save(pool)
+        }
+    }
 
     if (existReward) {
-        existReward.bonus = 0n
+        existReward.bonus = data.bonus
         existReward.commission = data.commission
             ? new CommissionPayment({
                   beneficiary: data.commission.beneficiary,
@@ -120,7 +134,7 @@ export async function eraRewardsProcessed(
     const reward = new EraReward({
         id: `${data.poolId}-${data.era}`,
         era: new Era({ id: data.era.toString() }),
-        bonus: 0n, // bonus mechanism removed from runtime; no longer populated
+        bonus: data.bonus, // historical path only (event removed in v1060) — real chain value
         rate: pool.rate,
         commission: data.commission
             ? new CommissionPayment({
