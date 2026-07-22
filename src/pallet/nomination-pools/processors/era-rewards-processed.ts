@@ -10,6 +10,7 @@ import { TokenAccount } from '~/pallet/multi-tokens/storage/types'
 import { needEarlyBirdMerge } from '~/util/earlyBird'
 import { In } from 'typeorm'
 import { EventHandlerResult } from '~/processor.handler'
+import { memberEraReward } from '~/pallet/nomination-pools/processors/reward-math'
 
 async function getMembersBalance(block: Block, poolId: number): Promise<Record<string, bigint>> {
     type StorageEntry = [k: [bigint, bigint, string], v: TokenAccount | undefined]
@@ -61,6 +62,10 @@ export async function eraRewardsProcessed(
     ])
     const pool = await updatePool(ctx, block, data.poolId.toString())
 
+    // This event was removed in v1060 (enjinV1062), so it only fires for historical blocks —
+    // the period when the bonus mechanism was still live. Faithfully record what the chain
+    // reports (bonusCycle from storage, EraReward.bonus from the event) so a full resync
+    // reconstructs the real historical bonus data. See reward-math.ts.
     if ('bonusCycleEnded' in data && data.bonusCycleEnded) {
         const poolInfo = await mappings.nominationPools.storage.bondedPools(block, data.poolId)
         if (!poolInfo) throw new Error('Pool info not found')
@@ -129,7 +134,7 @@ export async function eraRewardsProcessed(
     const reward = new EraReward({
         id: `${data.poolId}-${data.era}`,
         era: new Era({ id: data.era.toString() }),
-        bonus: data.bonus,
+        bonus: data.bonus, // historical path only (event removed in v1060) — real chain value
         rate: pool.rate,
         commission: data.commission
             ? new CommissionPayment({
@@ -191,8 +196,6 @@ export async function eraRewardsProcessed(
         },
     })
 
-    const totalPoolPoints = (pool.balance.active * 10n ** 18n) / pool.rate
-
     // Check if we need to merge with early bird rewards
     const earlyBirdMergeNeeded = await needEarlyBirdMerge(ctx, data.era)
 
@@ -202,7 +205,9 @@ export async function eraRewardsProcessed(
 
     for (const member of members) {
         const points = memberBalances[member.account.id] ?? 0n
-        const eraRewards = (points * data.reinvested) / totalPoolPoints
+        // Share of what actually compounded into the pool rate (points * changeInRate / 1e18);
+        // matches the member's real value growth and Subscan. See reward-math.ts.
+        const eraRewards = memberEraReward(points, reward.changeInRate)
         const newAccumulated = (member.accumulatedRewards || 0n) + eraRewards
 
         member.accumulatedRewards = newAccumulated
