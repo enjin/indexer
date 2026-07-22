@@ -1,5 +1,5 @@
 import { hexToString } from '@polkadot/util'
-import { BonusCycle, Commission, NominationPool, PoolBalance, PoolState, Token } from '~/model'
+import { Commission, NominationPool, PoolBalance, PoolState, Token } from '~/model'
 import { storage } from '~/type'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import * as mappings from '~/pallet/index'
@@ -23,12 +23,6 @@ export async function created(ctx: CommonContext, block: Block, item: EventItem)
     const callData = mappings.nominationPools.calls.create(item.call)
 
     const currentEraInfo = await getCurrentEra(ctx, block)
-
-    let duration = 300
-
-    if (callData.duration) {
-        duration = callData.duration // 300 era is the default duration // changed in v1060
-    }
 
     if (!currentEraInfo) {
         throw new Error('Active era info is not provided')
@@ -63,10 +57,8 @@ export async function created(ctx: CommonContext, block: Block, item: EventItem)
             bonus: 0n,
             active: 0n,
         }),
-        bonusCycle: new BonusCycle({
-            start: currentEraInfo,
-            end: currentEraInfo + duration,
-        }),
+        // Bonus mechanism was removed from the runtime (no bonus since era 903). bonusCycle is
+        // deprecated and no longer populated (left null). Field kept for nft.io compatibility.
         apy: 0,
         rate: 1000_000_000_000_000_000n,
         historicalApy: 0,

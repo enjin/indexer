@@ -1,6 +1,6 @@
 import Big from 'big.js'
 import * as Sentry from '@sentry/node'
-import { BonusCycle, CommissionPayment, Era, EraReward, PoolMember, PoolMemberRewards } from '~/model'
+import { CommissionPayment, Era, EraReward, PoolMember, PoolMemberRewards } from '~/model'
 import { updatePool } from '~/pallet/nomination-pools/processors/pool'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { SnsEvent } from '~/util/sns'
@@ -10,6 +10,7 @@ import { TokenAccount } from '~/pallet/multi-tokens/storage/types'
 import { needEarlyBirdMerge } from '~/util/earlyBird'
 import { In } from 'typeorm'
 import { EventHandlerResult } from '~/processor.handler'
+import { memberEraReward } from '~/pallet/nomination-pools/processors/reward-math'
 
 async function getMembersBalance(block: Block, poolId: number): Promise<Record<string, bigint>> {
     type StorageEntry = [k: [bigint, bigint, string], v: TokenAccount | undefined]
@@ -61,22 +62,12 @@ export async function eraRewardsProcessed(
     ])
     const pool = await updatePool(ctx, block, data.poolId.toString())
 
-    if ('bonusCycleEnded' in data && data.bonusCycleEnded) {
-        const poolInfo = await mappings.nominationPools.storage.bondedPools(block, data.poolId)
-        if (!poolInfo) throw new Error('Pool info not found')
-        if (poolInfo.bonusCycle !== undefined) {
-            pool.bonusCycle = new BonusCycle({
-                start: poolInfo.bonusCycle.start,
-                end: poolInfo.bonusCycle.end,
-                previousStart: poolInfo.bonusCycle.previousStart,
-                pendingDuration: poolInfo.bonusCycle.pendingDuration,
-            })
-            await ctx.store.save(pool)
-        }
-    }
+    // The bonus mechanism was removed from the runtime (no bonus since era 903). We no longer
+    // populate pool.bonusCycle from chain storage; the field is kept (nft.io reads it) but is
+    // left as-is / zeroed. EraReward.bonus is likewise recorded as 0. See reward-math.ts.
 
     if (existReward) {
-        existReward.bonus = data.bonus
+        existReward.bonus = 0n
         existReward.commission = data.commission
             ? new CommissionPayment({
                   beneficiary: data.commission.beneficiary,
@@ -129,7 +120,7 @@ export async function eraRewardsProcessed(
     const reward = new EraReward({
         id: `${data.poolId}-${data.era}`,
         era: new Era({ id: data.era.toString() }),
-        bonus: data.bonus,
+        bonus: 0n, // bonus mechanism removed from runtime; no longer populated
         rate: pool.rate,
         commission: data.commission
             ? new CommissionPayment({
@@ -191,8 +182,6 @@ export async function eraRewardsProcessed(
         },
     })
 
-    const totalPoolPoints = (pool.balance.active * 10n ** 18n) / pool.rate
-
     // Check if we need to merge with early bird rewards
     const earlyBirdMergeNeeded = await needEarlyBirdMerge(ctx, data.era)
 
@@ -202,7 +191,9 @@ export async function eraRewardsProcessed(
 
     for (const member of members) {
         const points = memberBalances[member.account.id] ?? 0n
-        const eraRewards = (points * data.reinvested) / totalPoolPoints
+        // Share of what actually compounded into the pool rate (points * changeInRate / 1e18);
+        // matches the member's real value growth and Subscan. See reward-math.ts.
+        const eraRewards = memberEraReward(points, reward.changeInRate)
         const newAccumulated = (member.accumulatedRewards || 0n) + eraRewards
 
         member.accumulatedRewards = newAccumulated

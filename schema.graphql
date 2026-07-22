@@ -1547,7 +1547,8 @@ type NominationPool @entity {
   commission: Commission!
   capacity: BigInt!
   deposit: BigInt!
-  bonusCycle: BonusCycle!
+  "Deprecated: the bonus mechanism was removed from the runtime (no bonus since era 903). No longer populated; null for pools created after the change."
+  bonusCycle: BonusCycle
   tokenId: BigInt!
 
   balance: PoolBalance!

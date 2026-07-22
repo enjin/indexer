@@ -29,7 +29,8 @@ export async function poolMutated(ctx: CommonContext, block: Block, item: EventI
     if (!pool) return undefined
 
     if (data.mutation.duration !== undefined) {
-        pool.bonusCycle.pendingDuration = data.mutation.duration
+        // Bonus mechanism removed from runtime: no longer written onto pool.bonusCycle.
+        // The mutation is still recorded on the event model below for completeness.
         mutation.duration = data.mutation.duration
     }
 

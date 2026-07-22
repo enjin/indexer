@@ -5,6 +5,7 @@ import { In } from 'typeorm'
 import Rpc from '~/util/rpc'
 import { encodeAddress, decodeAddress } from '@polkadot/util-crypto'
 import { decode } from '@subsquid/ss58'
+import { memberEraReward } from '~/pallet/nomination-pools/processors/reward-math'
 
 async function getMembersBalance(blockNumber: number, poolId: number): Promise<Record<string, bigint>> {
     const { api } = await Rpc.getInstance()
@@ -48,7 +49,6 @@ async function calculateMemberRewards(
         },
     })
 
-    const totalPoolPoints = (pool.balance.active * 10n ** 18n) / pool.rate
     const inserts: PoolMemberRewards[] = []
 
     for (const member of members) {
@@ -66,7 +66,9 @@ async function calculateMemberRewards(
         }
 
         const points = memberBalances[member.account.id] ?? 0n
-        const eraRewards = (points * reward.reinvested) / totalPoolPoints
+        // Share of what actually compounded into the pool rate (points * changeInRate / 1e18);
+        // matches the member's real value growth and Subscan. See reward-math.ts.
+        const eraRewards = memberEraReward(points, reward.changeInRate)
         const newAccumulated = (member.accumulatedRewards || 0n) + eraRewards - previousReward
 
         member.accumulatedRewards = newAccumulated
