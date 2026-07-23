@@ -5,198 +5,22 @@ import { Brackets, In, MoreThan } from 'typeorm'
 import { Validate } from 'class-validator'
 import { hexToU8a } from '@polkadot/util'
 import Rpc from '~/util/rpc'
-import { CoveragePolicy, FuelTank, FuelTankRuleSet, RequireToken, TokenAccount, WhitelistedCallers } from '~/model'
-import { IsPublicKey } from './helpers'
+import config from '~/util/config'
+import {
+    CoveragePolicy,
+    FuelTank,
+    FuelTankRuleSet,
+    Listing,
+    RequireToken,
+    TokenAccount,
+    WhitelistedCallers,
+} from '~/model'
 import { ApiPromise } from '@polkadot/api'
+import { decodeCall, decodeExtrinsic, resolveNetwork } from '~/decoder/core'
+import { IsPublicKey } from './helpers'
 
 registerEnumType(CoveragePolicy, {
     name: 'CoveragePolicy',
-})
-
-export enum Pallet {
-    balances = 'balances',
-    fuel_tanks = 'fuel_tanks',
-    marketplace = 'marketplace',
-    multi_tokens = 'multi_tokens',
-    nomination_pools = 'nomination_pools',
-    stake_exchange = 'stake_exchange',
-    staking = 'staking',
-    utility = 'utility',
-}
-
-registerEnumType(Pallet, {
-    name: 'Pallet',
-    description: 'Substrate pallet name',
-})
-
-export enum MethodName {
-    // Balances
-    burn = 'burn',
-    force_adjust_total_issuance = 'force_adjust_total_issuance',
-    force_set_balance = 'force_set_balance',
-    force_transfer = 'force_transfer',
-    force_unreserve = 'force_unreserve',
-    transfer_all = 'transfer_all',
-    transfer_allow_death = 'transfer_allow_death',
-    transfer_keep_alive = 'transfer_keep_alive',
-    upgrade_accounts = 'upgrade_accounts',
-    // FuelTanks
-    add_account = 'add_account',
-    batch_add_account = 'batch_add_account',
-    batch_remove_account = 'batch_remove_account',
-    create_fuel_tank = 'create_fuel_tank',
-    destroy_fuel_tank = 'destroy_fuel_tank',
-    dispatch = 'dispatch',
-    dispatch_and_touch = 'dispatch_and_touch',
-    force_batch_add_account = 'force_batch_add_account',
-    force_create_fuel_tank = 'force_create_fuel_tank',
-    force_insert_rule_set = 'force_insert_rule_set',
-    force_set_consumption = 'force_set_consumption',
-    insert_rule_set = 'insert_rule_set',
-    mutate_freeze_state = 'mutate_freeze_state',
-    mutate_fuel_tank = 'mutate_fuel_tank',
-    remove_account = 'remove_account',
-    remove_account_rule_data = 'remove_account_rule_data',
-    remove_expired_account = 'remove_expired_account',
-    remove_expired_account_unsigned = 'remove_expired_account_unsigned',
-    remove_rule_set = 'remove_rule_set',
-    // MultiTokens
-    accept_collection_transfer = 'accept_collection_transfer',
-    add_token_to_group = 'add_token_to_group',
-    approve_collection = 'approve_collection',
-    approve_token = 'approve_token',
-    batch_infuse = 'batch_infuse',
-    batch_mint = 'batch_mint',
-    batch_set_attribute = 'batch_set_attribute',
-    batch_transfer = 'batch_transfer',
-    cancel_collection_transfer = 'cancel_collection_transfer',
-    claim_collections = 'claim_collections',
-    claim_tokens = 'claim_tokens',
-    create_collection = 'create_collection',
-    create_token_group = 'create_token_group',
-    destroy_collection = 'destroy_collection',
-    destroy_token_group = 'destroy_token_group',
-    finish_claim_tokens = 'finish_claim_tokens',
-    force_approve_collection = 'force_approve_collection',
-    force_burn = 'force_burn',
-    force_create_collection = 'force_create_collection',
-    force_create_ethereum_collection = 'force_create_ethereum_collection',
-    force_freeze = 'force_freeze',
-    force_mint = 'force_mint',
-    force_mutate_collection = 'force_mutate_collection',
-    force_set_attribute = 'force_set_attribute',
-    force_set_collection = 'force_set_collection',
-    force_set_collection_account = 'force_set_collection_account',
-    force_set_ethereum_account = 'force_set_ethereum_account',
-    force_set_ethereum_collection_id = 'force_set_ethereum_collection_id',
-    force_set_ethereum_unmintable_token_ids = 'force_set_ethereum_unmintable_token_ids',
-    force_set_next_collection_id = 'force_set_next_collection_id',
-    force_set_token = 'force_set_token',
-    force_set_token_account = 'force_set_token_account',
-    force_set_unmintable_token_ids = 'force_set_unmintable_token_ids',
-    freeze = 'freeze',
-    infuse = 'infuse',
-    mint = 'mint',
-    mutate_collection = 'mutate_collection',
-    mutate_token = 'mutate_token',
-    remove_all_attributes = 'remove_all_attributes',
-    remove_attribute = 'remove_attribute',
-    remove_token_from_group = 'remove_token_from_group',
-    remove_token_group_attribute = 'remove_token_group_attribute',
-    set_attribute = 'set_attribute',
-    set_token_group_attribute = 'set_token_group_attribute',
-    set_token_groups = 'set_token_groups',
-    thaw = 'thaw',
-    transfer = 'transfer',
-    unapprove_collection = 'unapprove_collection',
-    unapprove_token = 'unapprove_token',
-    update_account_deposit = 'update_account_deposit',
-    // Marketplace
-    add_whitelisted_accounts = 'add_whitelisted_accounts',
-    answer_counter_offer = 'answer_counter_offer',
-    cancel_listing = 'cancel_listing',
-    convert_listings = 'convert_listings',
-    create_listing = 'create_listing',
-    fill_listing = 'fill_listing',
-    finalize_auction = 'finalize_auction',
-    finalize_auction_unsigned = 'finalize_auction_unsigned',
-    force_cancel_listing = 'force_cancel_listing',
-    force_create_listing = 'force_create_listing',
-    force_place_bid = 'force_place_bid',
-    place_bid = 'place_bid',
-    place_counter_offer = 'place_counter_offer',
-    remove_expired_listing = 'remove_expired_listing',
-    remove_expired_listing_unsigned = 'remove_expired_listing_unsigned',
-    remove_whitelisted_accounts = 'remove_whitelisted_accounts',
-    set_protocol_fee = 'set_protocol_fee',
-    upgrade_listings = 'upgrade_listings',
-    // NominationPools
-    bond = 'bond',
-    chill = 'chill',
-    create = 'create',
-    destroy = 'destroy',
-    fully_unbond_deleted_pool = 'fully_unbond_deleted_pool',
-    mutate = 'mutate',
-    nominate = 'nominate',
-    payout_rewards = 'payout_rewards',
-    payout_rewards_unsigned = 'payout_rewards_unsigned',
-    payout_validator_bonus = 'payout_validator_bonus',
-    pool_withdraw_unbonded = 'pool_withdraw_unbonded',
-    remove_empty_unbonding_members = 'remove_empty_unbonding_members',
-    set_configs = 'set_configs',
-    set_staking_info = 'set_staking_info',
-    set_validator_bonus_config = 'set_validator_bonus_config',
-    unbond = 'unbond',
-    unbond_deposit = 'unbond_deposit',
-    withdraw_deposit = 'withdraw_deposit',
-    withdraw_free_balance = 'withdraw_free_balance',
-    withdraw_unbonded = 'withdraw_unbonded',
-    // StakeExchange
-    add_liquidity = 'add_liquidity',
-    buy = 'buy',
-    cancel_offer = 'cancel_offer',
-    configure_liquidity_account = 'configure_liquidity_account',
-    create_offer = 'create_offer',
-    withdraw_liquidity = 'withdraw_liquidity',
-    // Staking
-    bond_extra = 'bond_extra',
-    cancel_deferred_slash = 'cancel_deferred_slash',
-    chill_other = 'chill_other',
-    deprecate_controller_batch = 'deprecate_controller_batch',
-    force_apply_min_commission = 'force_apply_min_commission',
-    force_new_era = 'force_new_era',
-    force_new_era_always = 'force_new_era_always',
-    force_no_eras = 'force_no_eras',
-    force_unstake = 'force_unstake',
-    increase_validator_count = 'increase_validator_count',
-    kick = 'kick',
-    manual_slash = 'manual_slash',
-    migrate_currency = 'migrate_currency',
-    payout_stakers = 'payout_stakers',
-    payout_stakers_by_page = 'payout_stakers_by_page',
-    reap_stash = 'reap_stash',
-    rebond = 'rebond',
-    restore_ledger = 'restore_ledger',
-    scale_validator_count = 'scale_validator_count',
-    set_controller = 'set_controller',
-    set_invulnerables = 'set_invulnerables',
-    set_min_commission = 'set_min_commission',
-    set_payee = 'set_payee',
-    set_staking_configs = 'set_staking_configs',
-    set_validator_count = 'set_validator_count',
-    update_payee = 'update_payee',
-    validate = 'validate',
-    // Utility
-    batch = 'batch',
-    batch_all = 'batch_all',
-    dispatch_as = 'dispatch_as',
-    dispatch_as_fallible = 'dispatch_as_fallible',
-    force_batch = 'force_batch',
-}
-
-registerEnumType(MethodName, {
-    name: 'MethodName',
-    description: 'Method name within a pallet',
 })
 
 const customTypes = {
@@ -210,9 +34,148 @@ function normalizeKey(value: string): string {
     return value.replace(/_/g, '').toLowerCase()
 }
 
+type DecodedCall = Record<string, Record<string, Record<string, unknown>>>
+
+type DecodedTransaction = {
+    signature?: { address?: Record<string, number[]> }
+    calls?: DecodedCall
+}
+
+type TransactionContext = {
+    account: string
+    pallet: string
+    method: string
+    params: Record<string, unknown>
+    requestedTankId?: string
+    requestedRuleSetIndex?: number
+    collectionIds: Set<string>
+}
+
+function firstEntry<T>(value: Record<string, T> | null | undefined): [string, T] | null {
+    return value ? (Object.entries(value)[0] ?? null) : null
+}
+
+function bytesToHex(value: unknown, prefix = true): string | null {
+    if (!Array.isArray(value) || !value.every((byte) => Number.isInteger(byte) && byte >= 0 && byte <= 255)) {
+        return null
+    }
+
+    const hex = Buffer.from(value).toString('hex')
+    return prefix ? `0x${hex}` : hex
+}
+
+function variantBytesToHex(value: unknown, prefix = true): string | null {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return bytesToHex(value, prefix)
+
+    const variant = firstEntry(value as Record<string, unknown>)
+    return variant ? bytesToHex(variant[1], prefix) : null
+}
+
+function collectValuesForKey(value: unknown, key: string, results: unknown[] = []): unknown[] {
+    if (Array.isArray(value)) {
+        for (const entry of value) collectValuesForKey(entry, key, results)
+        return results
+    }
+
+    if (!value || typeof value !== 'object') return results
+
+    for (const [entryKey, entryValue] of Object.entries(value)) {
+        if (entryKey === key) results.push(entryValue)
+        collectValuesForKey(entryValue, key, results)
+    }
+
+    return results
+}
+
+function asCollectionId(value: unknown): string | null {
+    if (typeof value === 'bigint' || typeof value === 'number' || typeof value === 'string') {
+        return value.toString()
+    }
+
+    return null
+}
+
+async function decodeTransaction(
+    encodedTransaction: string,
+    api: ApiPromise,
+    suppliedAccount?: string
+): Promise<TransactionContext> {
+    const network = resolveNetwork(config.chainName)
+    if (!network) throw new Error(`Unsupported decoder network: ${config.chainName}`)
+
+    const specVersion = api.runtimeVersion.specVersion.toNumber()
+    let decoded: DecodedTransaction
+    try {
+        decoded = (await decodeExtrinsic(encodedTransaction, network, specVersion)) as DecodedTransaction
+    } catch (error) {
+        if (!suppliedAccount) throw error
+        decoded = (await decodeCall(encodedTransaction, network, specVersion)) as DecodedTransaction
+    }
+
+    const signer = firstEntry(decoded.signature?.address)
+    const normalizedSuppliedAccount =
+        suppliedAccount != null ? api.registry.createType('AccountId', suppliedAccount).toHex().toLowerCase() : null
+    const account = signer ? bytesToHex(signer[1]) : normalizedSuppliedAccount
+    const outerCall = firstEntry(decoded.calls)
+
+    if (!account || !outerCall) throw new Error('The encoded transaction must contain a call and identify an account')
+
+    const [outerPallet, outerMethods] = outerCall
+    const outerMethod = firstEntry(outerMethods)
+    if (!outerMethod) throw new Error('The encoded transaction does not contain a dispatch method')
+
+    let pallet = outerPallet
+    let [method, params] = outerMethod
+    let requestedTankId: string | undefined
+    let requestedRuleSetIndex: number | undefined
+
+    if (normalizeKey(outerPallet) === 'fueltanks' && ['dispatch', 'dispatchandtouch'].includes(normalizeKey(method))) {
+        requestedTankId = variantBytesToHex(params.tank_id) ?? undefined
+        requestedRuleSetIndex = typeof params.rule_set_id === 'number' ? params.rule_set_id : undefined
+
+        const dispatchedCall = firstEntry(params.call as DecodedCall)
+        const dispatchedMethod = dispatchedCall ? firstEntry(dispatchedCall[1]) : null
+        if (!dispatchedCall || !dispatchedMethod) throw new Error('The fuel tank transaction has no dispatched call')
+
+        pallet = dispatchedCall[0]
+        method = dispatchedMethod[0]
+        params = dispatchedMethod[1]
+    }
+
+    const collectionIds = new Set<string>()
+    for (const value of collectValuesForKey(params, 'collection_id')) {
+        const collectionId = asCollectionId(value)
+        if (collectionId) collectionIds.add(collectionId)
+    }
+
+    return { account, pallet, method, params, requestedTankId, requestedRuleSetIndex, collectionIds }
+}
+
+async function addListingCollectionIds(
+    manager: EntityManager,
+    params: Record<string, unknown>,
+    collectionIds: Set<string>
+): Promise<void> {
+    const listingIds = collectValuesForKey(params, 'listing_id')
+        .map((listingId) => variantBytesToHex(listingId, false) ?? bytesToHex(listingId, false))
+        .filter((listingId): listingId is string => listingId != null)
+
+    if (!listingIds.length) return
+
+    const listings = await manager.find(Listing, {
+        where: { id: In(listingIds) },
+        relations: { makeAssetId: { collection: true }, takeAssetId: { collection: true } },
+    })
+
+    for (const listing of listings) {
+        collectionIds.add(listing.makeAssetId.collection.id)
+        collectionIds.add(listing.takeAssetId.collection.id)
+    }
+}
+
 function matchesWhitelistedCollections(
     collections: (string | undefined | null)[] | null | undefined,
-    heldCollectionIds: Set<string>
+    transactionCollectionIds: Set<string>
 ): boolean {
     const listed = (collections ?? []).filter((entry): entry is string => entry != null)
 
@@ -220,7 +183,7 @@ function matchesWhitelistedCollections(
         return true
     }
 
-    return listed.some((collectionId) => heldCollectionIds.has(collectionId))
+    return listed.some((collectionId) => transactionCollectionIds.has(collectionId))
 }
 
 function satisfiesRequireToken(
@@ -262,10 +225,7 @@ function addRequireTokenLookupKeys(requirement: RequireToken, tokenIds: Set<stri
 
 type PreCandidate = { tank: FuelTank; ruleSet: FuelTankRuleSet }
 
-/**
- * Collect token/collection lookup keys from candidates that already passed cheap checks.
- * Includes whitelistedCollections so those holdings are also resolved correctly.
- */
+/** Collect token/collection lookup keys for account ownership rules. */
 function collectCandidateLookupKeys(candidates: PreCandidate[]): { tokenIds: string[]; collectionIds: string[] } {
     const tokenIds = new Set<string>()
     const collectionIds = new Set<string>()
@@ -274,10 +234,6 @@ function collectCandidateLookupKeys(candidates: PreCandidate[]): { tokenIds: str
     for (const { tank, ruleSet } of candidates) {
         if (ruleSet.requireToken) {
             addRequireTokenLookupKeys(ruleSet.requireToken, tokenIds, collectionIds)
-        }
-
-        for (const collectionId of ruleSet.whitelistedCollections ?? []) {
-            if (collectionId != null) collectionIds.add(collectionId)
         }
 
         if (!seenTanks.has(tank.id)) {
@@ -353,9 +309,11 @@ function isRuleSetCompatibleWithTokens(
     ruleSet: FuelTankRuleSet,
     tank: FuelTank,
     heldTokenIds: Set<string>,
-    heldCollectionIds: Set<string>
+    heldCollectionIds: Set<string>,
+    transactionCollectionIds: Set<string>
 ): boolean {
-    if (!matchesWhitelistedCollections(ruleSet.whitelistedCollections, heldCollectionIds)) return false
+    if (!matchesWhitelistedCollections(ruleSet.whitelistedCollections, transactionCollectionIds)) return false
+    if (ruleSet.minimumInfusion != null && ruleSet.minimumInfusion > 0n) return false
     if (!matchesRequireToken(ruleSet.requireToken, heldTokenIds, heldCollectionIds)) return false
 
     for (const rule of tank.accountRules ?? []) {
@@ -437,21 +395,28 @@ function getRemainingBudget(
     return maxBudget >= consumption ? maxBudget - consumption : 0n
 }
 
+function getAvailableBudget(
+    tankBalance: bigint | null | undefined,
+    remainingBudget: bigint | null | undefined,
+    maxFuelBurn: bigint | null | undefined
+): bigint {
+    const limits = [tankBalance, remainingBudget, maxFuelBurn].filter((value): value is bigint => value != null)
+
+    return limits.reduce((available, limit) => (limit < available ? limit : available), limits[0] ?? 0n)
+}
+
 @ArgsType()
 class CompatibleFuelTanksArgs {
     @Field(() => String)
+    encodedTransaction!: string
+
+    @Field(() => String, { nullable: true, description: 'Required when encodedTransaction contains an unsigned call' })
     @Validate(IsPublicKey)
-    account!: string
-
-    @Field(() => Pallet, { description: 'Pallet name' })
-    pallet!: Pallet
-
-    @Field(() => MethodName, { description: 'Dispatch method name' })
-    method!: MethodName
+    account?: string
 }
 
 @ObjectType()
-class CompatibleFuelTankRuleSet {
+export class CompatibleFuelTankRuleSet {
     @Field(() => String)
     id!: string
 
@@ -463,6 +428,13 @@ class CompatibleFuelTankRuleSet {
     }
 }
 
+export function mapCompatibleFuelTankRuleSet(ruleSet: FuelTankRuleSet): CompatibleFuelTankRuleSet {
+    return new CompatibleFuelTankRuleSet({
+        id: ruleSet.id,
+        index: ruleSet.index,
+    })
+}
+
 @ObjectType()
 export class CompatibleFuelTank {
     @Field(() => String)
@@ -470,6 +442,9 @@ export class CompatibleFuelTank {
 
     @Field(() => String)
     name!: string
+
+    @Field(() => String)
+    address!: string
 
     @Field(() => Boolean)
     providesDeposit!: boolean
@@ -481,16 +456,10 @@ export class CompatibleFuelTank {
     ruleSet!: CompatibleFuelTankRuleSet
 
     @Field(() => BigInt, { nullable: true })
-    remainingBudget?: bigint
-
-    @Field(() => BigInt, { nullable: true })
-    maxBudget?: bigint
-
-    @Field(() => BigInt, { nullable: true })
-    consumedBudget?: bigint
-
-    @Field(() => BigInt, { nullable: true })
     tankBalance?: bigint
+
+    @Field(() => BigInt)
+    availableBudget!: bigint
 
     constructor(props: Partial<CompatibleFuelTank>) {
         Object.assign(this, props)
@@ -503,17 +472,22 @@ export class CompatibleFuelTanksResolver {
 
     @Query(() => [CompatibleFuelTank])
     async compatibleFuelTanks(
-        @Args() { account, pallet, method }: CompatibleFuelTanksArgs
+        @Args() { encodedTransaction, account: suppliedAccount }: CompatibleFuelTanksArgs
     ): Promise<CompatibleFuelTank[]> {
         const manager = await this.tx()
 
         const { api } = await Rpc.getInstance()
         api.registerTypes(customTypes)
 
+        const transaction = await decodeTransaction(encodedTransaction, api, suppliedAccount)
+        await addListingCollectionIds(manager, transaction.params, transaction.collectionIds)
+
+        const { account, pallet, method } = transaction
+
         const normalizedPallet = normalizeKey(pallet)
         const normalizedMethod = normalizeKey(method)
 
-        // All rule-set-level filters (frozen, requireSignature, requireAccount,
+        // All rule-set-level filters (frozen, unsupported signature/tank budget rules, requireAccount,
         // whitelistedPallets, whitelistedCallers, permittedCalls, permittedExtrinsics)
         // are pushed into the JOIN ON condition so PostgreSQL eliminates non-matching
         // rule sets before they are hydrated into TypeScript objects.
@@ -521,6 +495,7 @@ export class CompatibleFuelTanksResolver {
         const ruleSetJoinCondition = `
             ruleSet.isFrozen = false
             AND ruleSet.requireSignature IS NULL
+            AND ruleSet.tankFuelBudget IS NULL
             AND (ruleSet.requireAccount = false OR ruleSet.requireAccount IS NULL
                  OR EXISTS (
                      SELECT 1 FROM fuel_tank_user_accounts ua
@@ -561,6 +536,7 @@ export class CompatibleFuelTanksResolver {
                 normalizedPallet,
                 normalizedMethod,
             })
+            .leftJoinAndSelect('ruleSet.permittedExtrinsics', 'permittedExtrinsic')
             // Join only the requesting account's membership row (at most one per tank)
             // instead of hydrating every user account of every tank.
             .leftJoinAndSelect('tank.userAccounts', 'userAccount', 'userAccount.account = :account', { account })
@@ -573,6 +549,12 @@ export class CompatibleFuelTanksResolver {
                     qb.where('userAccount.id IS NOT NULL').orWhere('ruleSet.userFuelBudget IS NOT NULL')
                 })
             )
+            .andWhere(transaction.requestedTankId ? 'tank.id = :requestedTankId' : '1 = 1', {
+                requestedTankId: transaction.requestedTankId,
+            })
+            .andWhere(transaction.requestedRuleSetIndex != null ? 'ruleSet.index = :requestedRuleSetIndex' : '1 = 1', {
+                requestedRuleSetIndex: transaction.requestedRuleSetIndex,
+            })
             .orderBy('tank.name', 'ASC')
             .getMany()
 
@@ -625,8 +607,23 @@ export class CompatibleFuelTanksResolver {
         const candidates: Array<{ tank: FuelTank; ruleSet: FuelTankRuleSet; maxBudget: bigint | null }> = []
 
         for (const { tank, ruleSet } of preCandidates) {
-            if (!isRuleSetCompatibleWithTokens(ruleSet, tank, heldTokenIds, heldCollectionIds)) continue
-            candidates.push({ tank, ruleSet, maxBudget: ruleSet.userFuelBudget?.amount ?? null })
+            if (
+                !isRuleSetCompatibleWithTokens(
+                    ruleSet,
+                    tank,
+                    heldTokenIds,
+                    heldCollectionIds,
+                    transaction.collectionIds
+                )
+            )
+                continue
+
+            const configuredBudget = ruleSet.userFuelBudget?.amount
+            candidates.push({
+                tank,
+                ruleSet,
+                maxBudget: configuredBudget != null && configuredBudget !== 0n ? configuredBudget : null,
+            })
         }
 
         // ── Phase 3 filter: remaining budget check (uses pre-fetched RPC data) ───
@@ -640,28 +637,29 @@ export class CompatibleFuelTanksResolver {
                 continue
             }
 
-            const consumedBudget = maxBudget != null && remainingBudget != null ? maxBudget - remainingBudget : null
+            const tankBalance = tank.tankAccount?.balance?.free
+            const availableBudget = getAvailableBudget(
+                tankBalance,
+                remainingBudget,
+                ruleSet.maxFuelBurnPerTransaction?.value
+            )
+
+            if (availableBudget <= 0n) continue
 
             const entry = new CompatibleFuelTank({
                 id: tank.id,
                 name: tank.name,
+                address: tank.tankAccount.address,
                 providesDeposit: tank.providesDeposit,
                 coveragePolicy: tank.coveragePolicy,
-                ruleSet: new CompatibleFuelTankRuleSet({
-                    id: ruleSet.id,
-                    index: ruleSet.index,
-                }),
-                remainingBudget: remainingBudget ?? undefined,
-                maxBudget: maxBudget ?? undefined,
-                consumedBudget: consumedBudget ?? undefined,
-                tankBalance: tank.tankAccount?.balance?.free,
+                ruleSet: mapCompatibleFuelTankRuleSet(ruleSet),
+                tankBalance,
+                availableBudget,
             })
 
             const existing = resultsByTank.get(tank.id)
-            const entryRemaining = remainingBudget ?? 0n
-            const existingRemaining = existing?.remainingBudget ?? 0n
 
-            if (!existing || entryRemaining > existingRemaining) {
+            if (!existing || availableBudget > existing.availableBudget) {
                 resultsByTank.set(tank.id, entry)
             }
         }
