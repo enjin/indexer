@@ -113,9 +113,11 @@ async function decodeTransaction(
     }
 
     const signer = firstEntry(decoded.signature?.address)
-    const account = signer ? bytesToHex(signer[1]) : (suppliedAccount ?? null)
+    const normalizedSuppliedAccount =
+    suppliedAccount != null ? api.registry.createType('AccountId', suppliedAccount).toHex().toLowerCase() : null
+    const account = signer ? bytesToHex(signer[1]) : normalizedSuppliedAccount
     const outerCall = firstEntry(decoded.calls)
-
+    
     if (!account || !outerCall) throw new Error('The encoded transaction must contain a call and identify an account')
 
     const [outerPallet, outerMethods] = outerCall
