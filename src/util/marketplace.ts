@@ -94,7 +94,7 @@ export async function fetchAccountsDetail(ids: string[]) {
                 verifiedAt: account.verified ? new Date(account.verifiedDate) : null,
             }
         })
-    } catch (error) {
+    } catch {
         return []
     }
 }
