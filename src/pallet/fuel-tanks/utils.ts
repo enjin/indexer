@@ -86,7 +86,10 @@ function convertTypeToModel(
     const value = match(rule)
         .with({ __kind: 'WhitelistedCallers' }, (r) => r.value.map((account) => account))
         .with({ __kind: 'WhitelistedCollections' }, (r) => r.value.map((c) => c.toString()))
-        .with({ __kind: 'WhitelistedPallets' }, (r) => r.value.map((p) => `${p.__kind}:${p.value.__kind}`))
+        .with({ __kind: 'WhitelistedPallets' }, (r) =>
+            // Chain-storage-derived entries know only the pallet name; store it alone then.
+            r.value.map((p) => (p.value.__kind ? `${p.__kind}:${p.value.__kind}` : p.__kind))
+        )
         .with({ __kind: 'MaxFuelBurnPerTransaction' }, (r) => new MaxFuelBurnPerTransaction({ value: r.value }))
         .with(
             { __kind: 'UserFuelBudget' },
