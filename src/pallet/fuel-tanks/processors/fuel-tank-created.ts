@@ -3,6 +3,7 @@ import { randomBytes } from 'crypto'
 import { CallNotDefinedError } from '~/util/errors'
 import { safeString } from '~/util/tools'
 import {
+    CoveragePolicy,
     Event as EventModel,
     Extrinsic,
     FuelTank,
@@ -50,7 +51,6 @@ export async function fuelTankCreated(
         //  'providesDeposit' in callData.descriptor ? callData.descriptor.providesDeposit : false,
         providesDeposit = call.descriptor.providesDeposit
     }
-    //  'coveragePolicy' in callData.descriptor ? CoveragePolicy[callData.descriptor.coveragePolicy.__kind] : null,
 
     const fuelTank = new FuelTank({
         id: tankAccount.id,
@@ -60,7 +60,9 @@ export async function fuelTankCreated(
         isFrozen: false,
         accountCount: 0,
         providesDeposit: providesDeposit ?? false,
-        coveragePolicy: null,
+        coveragePolicy: call.descriptor.coveragePolicy
+            ? CoveragePolicy[call.descriptor.coveragePolicy.__kind]
+            : null,
         userAccountManagement,
     })
 
@@ -94,8 +96,10 @@ export async function fuelTankCreated(
         for (const ruleSet of call.descriptor.ruleSets) {
             const index = ruleSet[0]
             let rules = ruleSet[1]
+            let requireAccount = false
 
             if (!Array.isArray(rules)) {
+                requireAccount = rules.requireAccount
                 rules = rules.rules
             }
 
@@ -118,6 +122,7 @@ export async function fuelTankCreated(
                 tank: fuelTank,
                 index,
                 isFrozen: false,
+                requireAccount,
                 isPermittedExtrinsicsEmpty: permittedExtrinsics === undefined || permittedExtrinsics.length === 0,
                 isPermittedExtrinsicsNull: permittedExtrinsics === undefined,
                 whitelistedCallers,
