@@ -1,4 +1,5 @@
 import type { ApiPromise } from '@polkadot/api'
+import { hexToString } from '@polkadot/util'
 import { FuelTank, FuelTankRuleSet, PermittedExtrinsics } from '~/model'
 import { connectionManager } from '~/contexts'
 import { Job } from 'bullmq'
@@ -40,6 +41,28 @@ function big(v: { toString?: () => string } | bigint | number | string | null | 
 
 function capitalizeKind(s: string): string {
     return s.charAt(0).toUpperCase() + s.slice(1)
+}
+
+/**
+ * WhitelistedPallets storage keeps only the pallet name as SCALE Bytes (hex in storage JSON,
+ * e.g. 0x5574696c697479 = "Utility"); legacy codec shapes carry {type, value:{type}} call
+ * variants. Only the pallet name is knowable here, so the method __kind stays empty and
+ * rulesToMap stores the plain pallet name.
+ */
+function whitelistedPalletToCall(entry: unknown): Call {
+    if (entry && typeof entry === 'object') {
+        const p = entry as { type?: string; value?: { type?: string } }
+        if (typeof p.type === 'string') {
+            return {
+                __kind: capitalizeKind(p.type),
+                value: { __kind: p.value?.type ? capitalizeKind(p.value.type) : '' },
+            }
+        }
+    }
+
+    const s = String(entry ?? '')
+    const name = s.startsWith('0x') ? hexToString(s) : s
+    return { __kind: capitalizeKind(name), value: { __kind: '' } }
 }
 
 function callIndexToCall(api: ApiPromise, palletIndex: number, functionIndex: number): Call {
@@ -143,18 +166,12 @@ function jsonVariantToDescriptor(api: ApiPromise, kind: string, raw: unknown): D
             return { __kind: 'WhitelistedCollections', value: arr.filter((c) => c != null).map((c) => big(String(c))) }
         }
         case 'WhitelistedPallets': {
-            const arr = (Array.isArray(v) ? v : ((v.value as unknown[]) ?? [])) as {
-                type?: string
-                value?: { type?: string }
-            }[]
+            const arr = (
+                Array.isArray(v) ? v : (((v.whitelistedPallets ?? v.value) as unknown[] | undefined) ?? [])
+            ) as unknown[]
             return {
                 __kind: 'WhitelistedPallets',
-                value: arr.map((p) => ({
-                    __kind: (p.type ?? 'Unknown').charAt(0).toUpperCase() + (p.type ?? 'unknown').slice(1),
-                    value: {
-                        __kind: (p.value?.type ?? 'Unknown').charAt(0).toUpperCase() + (p.value?.type ?? 'x').slice(1),
-                    },
-                })),
+                value: arr.map(whitelistedPalletToCall),
             }
         }
         case 'MaxFuelBurnPerTransaction': {
@@ -241,12 +258,7 @@ function ruleCodecToDescriptor(api: ApiPromise, rule: { type: string; value: unk
         case 'whitelistedPallets':
             return {
                 __kind: 'WhitelistedPallets',
-                value: [...(v as unknown as Iterable<{ type: string; value: { type: string } }>)].map((p) => ({
-                    __kind: p.type.charAt(0).toUpperCase() + p.type.slice(1),
-                    value: {
-                        __kind: p.value.type.charAt(0).toUpperCase() + p.value.type.slice(1),
-                    },
-                })),
+                value: [...(v as unknown as Iterable<unknown>)].map(whitelistedPalletToCall),
             }
         case 'maxFuelBurnPerTransaction':
             return { __kind: 'MaxFuelBurnPerTransaction', value: big(v as { toString: () => string }) }
