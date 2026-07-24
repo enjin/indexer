@@ -60,9 +60,7 @@ export async function fuelTankCreated(
         isFrozen: false,
         accountCount: 0,
         providesDeposit: providesDeposit ?? false,
-        coveragePolicy: call.descriptor.coveragePolicy
-            ? CoveragePolicy[call.descriptor.coveragePolicy.__kind]
-            : null,
+        coveragePolicy: call.descriptor.coveragePolicy ? CoveragePolicy[call.descriptor.coveragePolicy.__kind] : null,
         userAccountManagement,
     })
 
