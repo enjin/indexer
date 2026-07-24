@@ -54,45 +54,49 @@ type CollectionExtra = {
 }
 
 export async function fetchAccountsDetail(ids: string[]) {
-    const response = await axios.post<{ data: { result: AddressVerification[] } } | { errors: string }>(
-        isMainnet() ? processorConfig.marketplace.prod : processorConfig.marketplace.stg,
-        {
-            query: addressesQuery,
-            variables: {
-                ids,
+    try {
+        const response = await axios.post<{ data: { result: AddressVerification[] } } | { errors: string }>(
+            isMainnet() ? processorConfig.marketplace.prod : processorConfig.marketplace.stg,
+            {
+                query: addressesQuery,
+                variables: {
+                    ids,
+                },
             },
-        },
-        {
-            headers: {
-                Accept: 'application/json',
-                'X-Network': isMainnet() ? 'enjin' : 'canary',
-                'CF-Access-Client-Id': process.env.CF_ACCESS_CLIENT_ID,
-                'CF-Access-Client-Secret': process.env.CF_ACCESS_CLIENT_SECRET,
-            },
+            {
+                headers: {
+                    Accept: 'application/json',
+                    'X-Network': isMainnet() ? 'enjin' : 'canary',
+                    'CF-Access-Client-Id': process.env.CF_ACCESS_CLIENT_ID,
+                    'CF-Access-Client-Secret': process.env.CF_ACCESS_CLIENT_SECRET,
+                },
+            }
+        )
+
+        if ('errors' in response.data) {
+            throw new Error(JSON.stringify(response.data.errors[0]))
         }
-    )
 
-    if ('errors' in response.data) {
-        throw new Error(JSON.stringify(response.data.errors[0]))
-    }
-
-    if (response.data.data.result.length === 0) {
-        throw new Error('No data returned')
-    }
-
-    const accounts = response.data.data
-
-    return ids.map((id) => {
-        const account = accounts.result.find((i) => i.publicKey === id)
-        if (!account) return null
-
-        return {
-            publicKey: id,
-            username: account.username || null,
-            image: account.image || null,
-            verifiedAt: account.verified ? new Date(account.verifiedDate) : null,
+        if (response.data.data.result.length === 0) {
+            throw new Error('No data returned')
         }
-    })
+
+        const accounts = response.data.data
+
+        return ids.map((id) => {
+            const account = accounts.result.find((i) => i.publicKey === id)
+            if (!account) return null
+
+            return {
+                publicKey: id,
+                username: account.username || null,
+                image: account.image || null,
+                verifiedAt: account.verified ? new Date(account.verifiedDate) : null,
+            }
+        })
+    } catch {
+        return []
+    }
 }
 
 export async function fetchCollectionsExtra(ids: string[]) {

@@ -17,6 +17,11 @@ export async function syncAccounts(_job: Job, ids: string[] | null): Promise<voi
 
     const data = await fetchAccountsDetail(accountIds)
 
+    if (data.length === 0) {
+        await _job.log('No data returned')
+        return
+    }
+
     await _job.updateProgress(40)
 
     const accounts = await Promise.all(
@@ -37,6 +42,8 @@ export async function syncAccounts(_job: Job, ids: string[] | null): Promise<voi
     await _job.updateProgress(80)
 
     await ctx.store.save<Account>(accounts)
+
+    await _job.log(`Synced ${accounts.length} accounts`)
 
     await _job.updateProgress(100)
 }
