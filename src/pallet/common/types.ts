@@ -54,11 +54,7 @@ type MultiAddress_Raw = {
 }
 
 export type MultiAddress =
-    | MultiAddress_Address20
-    | MultiAddress_Address32
-    | MultiAddress_Id
-    | MultiAddress_Raw
-    | MultiAddress_Index // TODO: Need to check how index is parsed
+    MultiAddress_Address20 | MultiAddress_Address32 | MultiAddress_Id | MultiAddress_Raw | MultiAddress_Index // TODO: Need to check how index is parsed
 
 type Data_BlakeTwo256 = {
     __kind: 'BlakeTwo256'
@@ -242,9 +238,7 @@ type CounterOfferResponse_Reject = {
 }
 
 export type CounterOfferResponse =
-    | CounterOfferResponse_Accept
-    | CounterOfferResponse_Counter
-    | CounterOfferResponse_Reject
+    CounterOfferResponse_Accept | CounterOfferResponse_Counter | CounterOfferResponse_Reject
 
 export type Deposit = {
     depositor: AccountId32
@@ -554,10 +548,7 @@ type FreezeType_TokenAccount = {
 }
 
 export type FreezeType =
-    | FreezeType_Collection
-    | FreezeType_CollectionAccount
-    | FreezeType_Token
-    | FreezeType_TokenAccount
+    FreezeType_Collection | FreezeType_CollectionAccount | FreezeType_Token | FreezeType_TokenAccount
 
 export type ThawType = ThawType_Collection | ThawType_CollectionAccount | ThawType_Token | ThawType_TokenAccount
 
@@ -639,8 +630,7 @@ export type ShouldMutate_ListingForbidden_SomeMutation = {
 }
 
 export type ShouldMutate_ListingForbidden =
-    | ShouldMutate_ListingForbidden_NoMutation
-    | ShouldMutate_ListingForbidden_SomeMutation
+    ShouldMutate_ListingForbidden_NoMutation | ShouldMutate_ListingForbidden_SomeMutation
 
 export type ForeignTokenMetadata = {
     decimalCount: number
@@ -673,9 +663,7 @@ export type DefaultTokenMetadata_Current = {
 }
 
 export type DefaultTokenMetadata =
-    | DefaultTokenMetadata_Foreign
-    | DefaultTokenMetadata_Native
-    | DefaultTokenMetadata_Current
+    DefaultTokenMetadata_Foreign | DefaultTokenMetadata_Native | DefaultTokenMetadata_Current
 
 export type ShouldMutate_Metadata_NoMutation = {
     __kind: 'NoMutation'
@@ -709,8 +697,7 @@ export type ShouldMutate_AnyoneCanInfuse_SomeMutation = {
 }
 
 export type ShouldMutate_AnyoneCanInfuse =
-    | ShouldMutate_AnyoneCanInfuse_NoMutation
-    | ShouldMutate_AnyoneCanInfuse_SomeMutation
+    ShouldMutate_AnyoneCanInfuse_NoMutation | ShouldMutate_AnyoneCanInfuse_SomeMutation
 
 export type TokenMutation = {
     behavior: ShouldMutate_Behavior
@@ -901,8 +888,7 @@ export interface AccountRuleDescriptor_WhitelistedCallers {
 }
 
 export type ShouldMutate_UserAccountManagement =
-    | ShouldMutate_UserAccountManagement_NoMutation
-    | ShouldMutate_UserAccountManagement_SomeMutation
+    ShouldMutate_UserAccountManagement_NoMutation | ShouldMutate_UserAccountManagement_SomeMutation
 
 export interface ShouldMutate_UserAccountManagement_NoMutation {
     __kind: 'NoMutation'
@@ -924,8 +910,7 @@ export interface ShouldMutate_UserAccountManagement_SomeMutation {
 }
 
 export type ShouldMutate_AccountExpiration =
-    | ShouldMutate_AccountExpiration_NoMutation
-    | ShouldMutate_AccountExpiration_SomeMutation
+    ShouldMutate_AccountExpiration_NoMutation | ShouldMutate_AccountExpiration_SomeMutation
 
 export interface ShouldMutate_AccountExpiration_NoMutation {
     __kind: 'NoMutation'

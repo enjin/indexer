@@ -1019,10 +1019,7 @@ export interface DoubleEncoded {
 }
 
 export type V2OriginKind =
-    | V2OriginKind_Native
-    | V2OriginKind_SovereignAccount
-    | V2OriginKind_Superuser
-    | V2OriginKind_Xcm
+    V2OriginKind_Native | V2OriginKind_SovereignAccount | V2OriginKind_Superuser | V2OriginKind_Xcm
 
 export interface V2OriginKind_Native {
     __kind: 'Native'
@@ -1186,10 +1183,7 @@ export interface V3MultiAssetFilter_Wild {
 }
 
 export type V3WildMultiAsset =
-    | V3WildMultiAsset_All
-    | V3WildMultiAsset_AllCounted
-    | V3WildMultiAsset_AllOf
-    | V3WildMultiAsset_AllOfCounted
+    V3WildMultiAsset_All | V3WildMultiAsset_AllCounted | V3WildMultiAsset_AllOf | V3WildMultiAsset_AllOfCounted
 
 export interface V3WildMultiAsset_All {
     __kind: 'All'
@@ -1905,9 +1899,7 @@ export interface V3MultiLocation {
  * The `Event` enum of this pallet
  */
 export type WhitelistEvent =
-    | WhitelistEvent_CallWhitelisted
-    | WhitelistEvent_WhitelistedCallDispatched
-    | WhitelistEvent_WhitelistedCallRemoved
+    WhitelistEvent_CallWhitelisted | WhitelistEvent_WhitelistedCallDispatched | WhitelistEvent_WhitelistedCallRemoved
 
 export interface WhitelistEvent_CallWhitelisted {
     __kind: 'CallWhitelisted'
@@ -2170,8 +2162,7 @@ export type Vote = number
  * The `Event` enum of this pallet
  */
 export type ValidatorManagerEvent =
-    | ValidatorManagerEvent_ValidatorsDeregistered
-    | ValidatorManagerEvent_ValidatorsRegistered
+    ValidatorManagerEvent_ValidatorsDeregistered | ValidatorManagerEvent_ValidatorsRegistered
 
 /**
  * Validators were removed from the set.
@@ -2910,10 +2901,7 @@ export interface SchedulerEvent_Scheduled {
  * The `Event` enum of this pallet
  */
 export type RegistrarEvent =
-    | RegistrarEvent_Deregistered
-    | RegistrarEvent_Registered
-    | RegistrarEvent_Reserved
-    | RegistrarEvent_Swapped
+    RegistrarEvent_Deregistered | RegistrarEvent_Registered | RegistrarEvent_Reserved | RegistrarEvent_Swapped
 
 export interface RegistrarEvent_Deregistered {
     __kind: 'Deregistered'
@@ -3262,9 +3250,7 @@ export interface PreimageEvent_Requested {
  * The `Event` enum of this pallet
  */
 export type ParasDisputesEvent =
-    | ParasDisputesEvent_DisputeConcluded
-    | ParasDisputesEvent_DisputeInitiated
-    | ParasDisputesEvent_Revert
+    ParasDisputesEvent_DisputeConcluded | ParasDisputesEvent_DisputeInitiated | ParasDisputesEvent_Revert
 
 /**
  * A dispute has concluded for or against a candidate.
@@ -4823,10 +4809,7 @@ export interface RootOrSigned_Signed {
 }
 
 export type MigrationStage =
-    | MigrationStage_Completed
-    | MigrationStage_Failed
-    | MigrationStage_InProgress
-    | MigrationStage_NotStarted
+    MigrationStage_Completed | MigrationStage_Failed | MigrationStage_InProgress | MigrationStage_NotStarted
 
 export interface MigrationStage_Completed {
     __kind: 'Completed'
@@ -4850,10 +4833,7 @@ export interface Freeze {
 }
 
 export type FreezeType =
-    | FreezeType_Collection
-    | FreezeType_CollectionAccount
-    | FreezeType_Token
-    | FreezeType_TokenAccount
+    FreezeType_Collection | FreezeType_CollectionAccount | FreezeType_Token | FreezeType_TokenAccount
 
 export interface FreezeType_Collection {
     __kind: 'Collection'
@@ -10597,11 +10577,7 @@ export interface VoterListCall_rebag {
 }
 
 export type MultiAddress =
-    | MultiAddress_Address20
-    | MultiAddress_Address32
-    | MultiAddress_Id
-    | MultiAddress_Index
-    | MultiAddress_Raw
+    MultiAddress_Address20 | MultiAddress_Address32 | MultiAddress_Id | MultiAddress_Index | MultiAddress_Raw
 
 export interface MultiAddress_Address20 {
     __kind: 'Address20'
@@ -10631,10 +10607,7 @@ export interface MultiAddress_Raw {
  * Contains a variant per dispatchable extrinsic that this pallet has.
  */
 export type VoteManagerCall =
-    | VoteManagerCall_remove_other_vote
-    | VoteManagerCall_remove_vote
-    | VoteManagerCall_unlock
-    | VoteManagerCall_vote
+    VoteManagerCall_remove_other_vote | VoteManagerCall_remove_vote | VoteManagerCall_unlock | VoteManagerCall_vote
 
 /**
  * See [`Pallet::remove_other_vote`].
@@ -13157,9 +13130,7 @@ export interface Attribute {
 }
 
 export type FlexibleMintParams =
-    | FlexibleMintParams_CreateOrMint
-    | FlexibleMintParams_CreateToken
-    | FlexibleMintParams_Mint
+    FlexibleMintParams_CreateOrMint | FlexibleMintParams_CreateToken | FlexibleMintParams_Mint
 
 export interface FlexibleMintParams_CreateOrMint {
     __kind: 'CreateOrMint'
@@ -13900,9 +13871,7 @@ export interface HrmpCall_hrmp_init_open_channel {
  * Contains a variant per dispatchable extrinsic that this pallet has.
  */
 export type GrandpaCall =
-    | GrandpaCall_note_stalled
-    | GrandpaCall_report_equivocation
-    | GrandpaCall_report_equivocation_unsigned
+    GrandpaCall_note_stalled | GrandpaCall_report_equivocation | GrandpaCall_report_equivocation_unsigned
 
 /**
  * See [`Pallet::note_stalled`].
@@ -15261,9 +15230,7 @@ export interface BalancesCall_upgrade_accounts {
  * Contains a variant per dispatchable extrinsic that this pallet has.
  */
 export type BabeCall =
-    | BabeCall_plan_config_change
-    | BabeCall_report_equivocation
-    | BabeCall_report_equivocation_unsigned
+    BabeCall_plan_config_change | BabeCall_report_equivocation | BabeCall_report_equivocation_unsigned
 
 /**
  * See [`Pallet::plan_config_change`].
@@ -15309,9 +15276,7 @@ export interface NextConfigDescriptor_V1 {
 }
 
 export type AllowedSlots =
-    | AllowedSlots_PrimaryAndSecondaryPlainSlots
-    | AllowedSlots_PrimaryAndSecondaryVRFSlots
-    | AllowedSlots_PrimarySlots
+    AllowedSlots_PrimaryAndSecondaryPlainSlots | AllowedSlots_PrimaryAndSecondaryVRFSlots | AllowedSlots_PrimarySlots
 
 export interface AllowedSlots_PrimaryAndSecondaryPlainSlots {
     __kind: 'PrimaryAndSecondaryPlainSlots'

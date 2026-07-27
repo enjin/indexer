@@ -25,6 +25,8 @@ export interface DecodeRequest {
     events?: string // Single hex string containing Vec<EventRecord>
     network?: string
     spec_version?: number
+    /** When true, attach a static TransactionView as `view` on call/extrinsic responses. */
+    readable?: boolean
 }
 
 export interface DecodeResponse {

@@ -416,11 +416,7 @@ export interface ProxyDefinition {
 }
 
 export type ProxyType =
-    | ProxyType_Any
-    | ProxyType_Governance
-    | ProxyType_MultiTokensTransfer
-    | ProxyType_Staking
-    | ProxyType_Tokens
+    ProxyType_Any | ProxyType_Governance | ProxyType_MultiTokensTransfer | ProxyType_Staking | ProxyType_Tokens
 
 export interface ProxyType_Any {
     __kind: 'Any'
@@ -2061,10 +2057,7 @@ export interface DoubleEncoded {
 }
 
 export type V3OriginKind =
-    | V3OriginKind_Native
-    | V3OriginKind_SovereignAccount
-    | V3OriginKind_Superuser
-    | V3OriginKind_Xcm
+    V3OriginKind_Native | V3OriginKind_SovereignAccount | V3OriginKind_Superuser | V3OriginKind_Xcm
 
 export interface V3OriginKind_Native {
     __kind: 'Native'
@@ -2144,9 +2137,7 @@ export interface V5QueryResponseInfo {
 }
 
 export type V5AssetTransferFilter =
-    | V5AssetTransferFilter_ReserveDeposit
-    | V5AssetTransferFilter_ReserveWithdraw
-    | V5AssetTransferFilter_Teleport
+    V5AssetTransferFilter_ReserveDeposit | V5AssetTransferFilter_ReserveWithdraw | V5AssetTransferFilter_Teleport
 
 export interface V5AssetTransferFilter_ReserveDeposit {
     __kind: 'ReserveDeposit'
@@ -4632,11 +4623,7 @@ export interface TechnicalMembershipCall_swap_member {
 }
 
 export type MultiAddress =
-    | MultiAddress_Address20
-    | MultiAddress_Address32
-    | MultiAddress_Id
-    | MultiAddress_Index
-    | MultiAddress_Raw
+    MultiAddress_Address20 | MultiAddress_Address32 | MultiAddress_Id | MultiAddress_Index | MultiAddress_Raw
 
 export interface MultiAddress_Address20 {
     __kind: 'Address20'
@@ -6121,10 +6108,7 @@ export interface PolkadotXcmCall_transfer_assets_using_type_and_then {
 }
 
 export type TransferType =
-    | TransferType_DestinationReserve
-    | TransferType_LocalReserve
-    | TransferType_RemoteReserve
-    | TransferType_Teleport
+    TransferType_DestinationReserve | TransferType_LocalReserve | TransferType_RemoteReserve | TransferType_Teleport
 
 export interface TransferType_DestinationReserve {
     __kind: 'DestinationReserve'
@@ -6873,10 +6857,7 @@ export interface V3MultiAssetFilter_Wild {
 }
 
 export type V3WildMultiAsset =
-    | V3WildMultiAsset_All
-    | V3WildMultiAsset_AllCounted
-    | V3WildMultiAsset_AllOf
-    | V3WildMultiAsset_AllOfCounted
+    V3WildMultiAsset_All | V3WildMultiAsset_AllCounted | V3WildMultiAsset_AllOf | V3WildMultiAsset_AllOfCounted
 
 export interface V3WildMultiAsset_All {
     __kind: 'All'
@@ -9333,10 +9314,7 @@ export interface Freeze {
 }
 
 export type FreezeType =
-    | FreezeType_Collection
-    | FreezeType_CollectionAccount
-    | FreezeType_Token
-    | FreezeType_TokenAccount
+    FreezeType_Collection | FreezeType_CollectionAccount | FreezeType_Token | FreezeType_TokenAccount
 
 export interface FreezeType_Collection {
     __kind: 'Collection'
@@ -9534,9 +9512,7 @@ export interface MessageQueueCall_reap_page {
 }
 
 export type AggregateMessageOrigin =
-    | AggregateMessageOrigin_Here
-    | AggregateMessageOrigin_Parent
-    | AggregateMessageOrigin_Sibling
+    AggregateMessageOrigin_Here | AggregateMessageOrigin_Parent | AggregateMessageOrigin_Sibling
 
 export interface AggregateMessageOrigin_Here {
     __kind: 'Here'
@@ -10052,9 +10028,7 @@ export interface ListingDescriptor {
 }
 
 export type CounterOfferResponse =
-    | CounterOfferResponse_Accept
-    | CounterOfferResponse_Counter
-    | CounterOfferResponse_Reject
+    CounterOfferResponse_Accept | CounterOfferResponse_Counter | CounterOfferResponse_Reject
 
 export interface CounterOfferResponse_Accept {
     __kind: 'Accept'
@@ -13532,10 +13506,7 @@ export interface Error_SignedMigrationNotAllowed {
  * The `Event` enum of this pallet
  */
 export type SessionEvent =
-    | SessionEvent_NewQueued
-    | SessionEvent_NewSession
-    | SessionEvent_ValidatorDisabled
-    | SessionEvent_ValidatorReenabled
+    SessionEvent_NewQueued | SessionEvent_NewSession | SessionEvent_ValidatorDisabled | SessionEvent_ValidatorReenabled
 
 /**
  * The `NewSession` event in the current block also implies a new validator set to be
@@ -15834,9 +15805,7 @@ export interface MatrixXcmEvent_XcmTransferFailed {
  * The `Event` enum of this pallet
  */
 export type MatrixUtilityEvent =
-    | MatrixUtilityEvent_BatchDispatched
-    | MatrixUtilityEvent_BatchFailed
-    | MatrixUtilityEvent_BatchPartiallyDispatched
+    MatrixUtilityEvent_BatchDispatched | MatrixUtilityEvent_BatchFailed | MatrixUtilityEvent_BatchPartiallyDispatched
 
 /**
  * Batch of calls dispatched without errors.
@@ -16847,9 +16816,7 @@ export interface DemocracyEvent_Voted {
 }
 
 export type VoteThreshold =
-    | VoteThreshold_SimpleMajority
-    | VoteThreshold_SuperMajorityAgainst
-    | VoteThreshold_SuperMajorityApprove
+    VoteThreshold_SimpleMajority | VoteThreshold_SuperMajorityAgainst | VoteThreshold_SuperMajorityApprove
 
 export interface VoteThreshold_SimpleMajority {
     __kind: 'SimpleMajority'
@@ -16867,9 +16834,7 @@ export interface VoteThreshold_SuperMajorityApprove {
  * The `Event` enum of this pallet
  */
 export type CumulusXcmEvent =
-    | CumulusXcmEvent_ExecutedDownward
-    | CumulusXcmEvent_InvalidFormat
-    | CumulusXcmEvent_UnsupportedVersion
+    CumulusXcmEvent_ExecutedDownward | CumulusXcmEvent_InvalidFormat | CumulusXcmEvent_UnsupportedVersion
 
 /**
  * Downward message executed with the given outcome.

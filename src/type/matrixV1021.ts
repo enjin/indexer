@@ -8,9 +8,7 @@ export interface CollectionDepositUpdateStatus {
 }
 
 export type LastUpdatedKeyStatus =
-    | LastUpdatedKeyStatus_Finished
-    | LastUpdatedKeyStatus_InProgress
-    | LastUpdatedKeyStatus_NotStarted
+    LastUpdatedKeyStatus_Finished | LastUpdatedKeyStatus_InProgress | LastUpdatedKeyStatus_NotStarted
 
 export interface LastUpdatedKeyStatus_Finished {
     __kind: 'Finished'

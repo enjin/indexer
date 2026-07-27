@@ -1371,10 +1371,7 @@ export interface DoubleEncoded {
 }
 
 export type V3OriginKind =
-    | V3OriginKind_Native
-    | V3OriginKind_SovereignAccount
-    | V3OriginKind_Superuser
-    | V3OriginKind_Xcm
+    V3OriginKind_Native | V3OriginKind_SovereignAccount | V3OriginKind_Superuser | V3OriginKind_Xcm
 
 export interface V3OriginKind_Native {
     __kind: 'Native'
@@ -1452,9 +1449,7 @@ export interface V5QueryResponseInfo {
 }
 
 export type V5AssetTransferFilter =
-    | V5AssetTransferFilter_ReserveDeposit
-    | V5AssetTransferFilter_ReserveWithdraw
-    | V5AssetTransferFilter_Teleport
+    V5AssetTransferFilter_ReserveDeposit | V5AssetTransferFilter_ReserveWithdraw | V5AssetTransferFilter_Teleport
 
 export interface V5AssetTransferFilter_ReserveDeposit {
     __kind: 'ReserveDeposit'
@@ -3043,9 +3038,7 @@ export interface PendingSlashes {
 }
 
 export type DisputeOffenceKind =
-    | DisputeOffenceKind_AgainstValid
-    | DisputeOffenceKind_ForInvalidApproved
-    | DisputeOffenceKind_ForInvalidBacked
+    DisputeOffenceKind_AgainstValid | DisputeOffenceKind_ForInvalidApproved | DisputeOffenceKind_ForInvalidBacked
 
 export interface DisputeOffenceKind_AgainstValid {
     __kind: 'AgainstValid'
@@ -5352,9 +5345,7 @@ export interface VersionedAssets_V5 {
  * The `Event` enum of this pallet
  */
 export type WhitelistEvent =
-    | WhitelistEvent_CallWhitelisted
-    | WhitelistEvent_WhitelistedCallDispatched
-    | WhitelistEvent_WhitelistedCallRemoved
+    WhitelistEvent_CallWhitelisted | WhitelistEvent_WhitelistedCallDispatched | WhitelistEvent_WhitelistedCallRemoved
 
 export interface WhitelistEvent_CallWhitelisted {
     __kind: 'CallWhitelisted'
@@ -5693,8 +5684,7 @@ export type Vote = number
  * The `Event` enum of this pallet
  */
 export type ValidatorManagerEvent =
-    | ValidatorManagerEvent_ValidatorsDeregistered
-    | ValidatorManagerEvent_ValidatorsRegistered
+    ValidatorManagerEvent_ValidatorsDeregistered | ValidatorManagerEvent_ValidatorsRegistered
 
 /**
  * Validators were removed from the set.
@@ -6510,10 +6500,7 @@ export interface SlotsEvent_NewLeasePeriod {
  * The `Event` enum of this pallet
  */
 export type SessionEvent =
-    | SessionEvent_NewQueued
-    | SessionEvent_NewSession
-    | SessionEvent_ValidatorDisabled
-    | SessionEvent_ValidatorReenabled
+    SessionEvent_NewQueued | SessionEvent_NewSession | SessionEvent_ValidatorDisabled | SessionEvent_ValidatorReenabled
 
 /**
  * The `NewSession` event in the current block also implies a new validator set to be
@@ -6752,10 +6739,7 @@ export interface ExitReason_Timeout {
  * The `Event` enum of this pallet
  */
 export type RegistrarEvent =
-    | RegistrarEvent_Deregistered
-    | RegistrarEvent_Registered
-    | RegistrarEvent_Reserved
-    | RegistrarEvent_Swapped
+    RegistrarEvent_Deregistered | RegistrarEvent_Registered | RegistrarEvent_Reserved | RegistrarEvent_Swapped
 
 export interface RegistrarEvent_Deregistered {
     __kind: 'Deregistered'
@@ -7223,9 +7207,7 @@ export interface PreimageEvent_Requested {
  * The `Event` enum of this pallet
  */
 export type ParasDisputesEvent =
-    | ParasDisputesEvent_DisputeConcluded
-    | ParasDisputesEvent_DisputeInitiated
-    | ParasDisputesEvent_Revert
+    ParasDisputesEvent_DisputeConcluded | ParasDisputesEvent_DisputeInitiated | ParasDisputesEvent_Revert
 
 /**
  * A dispute has concluded for or against a candidate.
@@ -8950,10 +8932,7 @@ export interface Freeze {
 }
 
 export type FreezeType =
-    | FreezeType_Collection
-    | FreezeType_CollectionAccount
-    | FreezeType_Token
-    | FreezeType_TokenAccount
+    FreezeType_Collection | FreezeType_CollectionAccount | FreezeType_Token | FreezeType_TokenAccount
 
 export interface FreezeType_Collection {
     __kind: 'Collection'
@@ -9540,9 +9519,7 @@ export interface CounterOffer {
 }
 
 export type CounterOfferResponse =
-    | CounterOfferResponse_Accept
-    | CounterOfferResponse_Counter
-    | CounterOfferResponse_Reject
+    CounterOfferResponse_Accept | CounterOfferResponse_Counter | CounterOfferResponse_Reject
 
 export interface CounterOfferResponse_Accept {
     __kind: 'Accept'
@@ -13705,10 +13682,7 @@ export const TransferType: sts.Type<TransferType> = sts.closedEnum(() => {
 })
 
 export type TransferType =
-    | TransferType_DestinationReserve
-    | TransferType_LocalReserve
-    | TransferType_RemoteReserve
-    | TransferType_Teleport
+    TransferType_DestinationReserve | TransferType_LocalReserve | TransferType_RemoteReserve | TransferType_Teleport
 
 export interface TransferType_DestinationReserve {
     __kind: 'DestinationReserve'
@@ -15975,10 +15949,7 @@ export interface V3MultiAssetFilter_Wild {
 }
 
 export type V3WildMultiAsset =
-    | V3WildMultiAsset_All
-    | V3WildMultiAsset_AllCounted
-    | V3WildMultiAsset_AllOf
-    | V3WildMultiAsset_AllOfCounted
+    V3WildMultiAsset_All | V3WildMultiAsset_AllCounted | V3WildMultiAsset_AllOf | V3WildMultiAsset_AllOfCounted
 
 export interface V3WildMultiAsset_All {
     __kind: 'All'
@@ -17649,11 +17620,7 @@ export interface VoterListCall_rebag {
 }
 
 export type MultiAddress =
-    | MultiAddress_Address20
-    | MultiAddress_Address32
-    | MultiAddress_Id
-    | MultiAddress_Index
-    | MultiAddress_Raw
+    MultiAddress_Address20 | MultiAddress_Address32 | MultiAddress_Id | MultiAddress_Index | MultiAddress_Raw
 
 export interface MultiAddress_Address20 {
     __kind: 'Address20'
@@ -17683,10 +17650,7 @@ export interface MultiAddress_Raw {
  * Contains a variant per dispatchable extrinsic that this pallet has.
  */
 export type VoteManagerCall =
-    | VoteManagerCall_remove_other_vote
-    | VoteManagerCall_remove_vote
-    | VoteManagerCall_unlock
-    | VoteManagerCall_vote
+    VoteManagerCall_remove_other_vote | VoteManagerCall_remove_vote | VoteManagerCall_unlock | VoteManagerCall_vote
 
 /**
  * Remove a vote for a poll.
@@ -18333,11 +18297,7 @@ export interface SystemCall_set_storage {
  * Contains a variant per dispatchable extrinsic that this pallet has.
  */
 export type SudoCall =
-    | SudoCall_remove_key
-    | SudoCall_set_key
-    | SudoCall_sudo
-    | SudoCall_sudo_as
-    | SudoCall_sudo_unchecked_weight
+    SudoCall_remove_key | SudoCall_set_key | SudoCall_sudo | SudoCall_sudo_as | SudoCall_sudo_unchecked_weight
 
 /**
  * Permanently removes the sudo key.
@@ -23102,9 +23062,7 @@ export interface HrmpCall_poke_channel_deposits {
  * Contains a variant per dispatchable extrinsic that this pallet has.
  */
 export type GrandpaCall =
-    | GrandpaCall_note_stalled
-    | GrandpaCall_report_equivocation
-    | GrandpaCall_report_equivocation_unsigned
+    GrandpaCall_note_stalled | GrandpaCall_report_equivocation | GrandpaCall_report_equivocation_unsigned
 
 /**
  * Note that the current authority set of the GRANDPA finality gadget has stalled.
@@ -25186,9 +25144,7 @@ export interface AdjustmentDirection_Increase {
  * Contains a variant per dispatchable extrinsic that this pallet has.
  */
 export type BabeCall =
-    | BabeCall_plan_config_change
-    | BabeCall_report_equivocation
-    | BabeCall_report_equivocation_unsigned
+    BabeCall_plan_config_change | BabeCall_report_equivocation | BabeCall_report_equivocation_unsigned
 
 /**
  * Plan an epoch config change. The epoch config change is recorded and will be enacted on
@@ -25247,9 +25203,7 @@ export interface NextConfigDescriptor_V1 {
 }
 
 export type AllowedSlots =
-    | AllowedSlots_PrimaryAndSecondaryPlainSlots
-    | AllowedSlots_PrimaryAndSecondaryVRFSlots
-    | AllowedSlots_PrimarySlots
+    AllowedSlots_PrimaryAndSecondaryPlainSlots | AllowedSlots_PrimaryAndSecondaryVRFSlots | AllowedSlots_PrimarySlots
 
 export interface AllowedSlots_PrimaryAndSecondaryPlainSlots {
     __kind: 'PrimaryAndSecondaryPlainSlots'

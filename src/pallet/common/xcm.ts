@@ -1247,7 +1247,4 @@ export interface VersionedLocation_V2 {
 }
 
 export type VersionedLocation =
-    | VersionedLocation_V2
-    | VersionedLocation_V3
-    | VersionedLocation_V4
-    | VersionedLocation_V5
+    VersionedLocation_V2 | VersionedLocation_V3 | VersionedLocation_V4 | VersionedLocation_V5
