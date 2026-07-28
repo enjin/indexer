@@ -236,7 +236,9 @@ export async function decode(requestData: DecodeRequest): Promise<unknown> {
     }
 
     if (calls && calls.length > 0) {
-        return decodeCalls(calls, network, specVersion)
+        const results = await decodeCalls(calls, network, specVersion)
+        if (!readable) return results
+        return results.map((item) => withReadableView(item, network))
     }
 
     if (extrinsic) {
