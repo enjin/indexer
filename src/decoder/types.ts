@@ -20,6 +20,7 @@ export interface DecodeRequest {
      * This is NOT an extrinsic. Use when you have unwrapped call data.
      */
     call?: string
+    calls?: string[]
     extrinsic?: string
     extrinsics?: string[]
     events?: string // Single hex string containing Vec<EventRecord>
