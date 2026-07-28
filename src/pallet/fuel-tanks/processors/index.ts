@@ -1,6 +1,7 @@
 export * from '~/pallet/fuel-tanks/processors/account-added'
 export * from '~/pallet/fuel-tanks/processors/account-removed'
 export * from '~/pallet/fuel-tanks/processors/account-rule-data-removed'
+export * from '~/pallet/fuel-tanks/processors/dispatch-failed'
 export * from '~/pallet/fuel-tanks/processors/freeze-state-mutated'
 export * from '~/pallet/fuel-tanks/processors/fuel-tank-created'
 export * from '~/pallet/fuel-tanks/processors/fuel-tank-destroyed'

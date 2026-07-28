@@ -23,6 +23,7 @@ const commonEvents: string[] = [
     ...getEventNames(events.identity),
     ...getEventNames(events.marketplace),
     ...getEventNames(events.multiTokens),
+    ...getEventNames(events.utility),
 ]
 
 const ignoreEvents: string[] = [
@@ -32,7 +33,6 @@ const ignoreEvents: string[] = [
     events.imOnline.allGood.name,
     events.imOnline.heartbeatReceived.name,
     events.fuelTanks.callDispatched.name,
-    events.fuelTanks.dispatchFailed.name,
     events.fuelTanks.migrationStep.name,
     events.fuelTanks.mutateFreezeStateScheduled.name,
     events.fuelTanks.scheduleMutateFreezeStateFailed.name,
@@ -46,6 +46,10 @@ const ignoreEvents: string[] = [
     events.multiTokens.tokenUpgraded.name,
     events.multiTokens.tokenUpdated.name,
     events.multiTokens.collectionUpgraded.name,
+    events.utility.batchCompleted.name,
+    events.utility.dispatchedAs.name,
+    events.utility.ifElseMainSuccess.name,
+    events.utility.ifElseFallbackCalled.name,
     events.polkadotXcm.versionNotifyStarted.name,
     events.polkadotXcm.feesPaid.name,
     events.polkadotXcm.sent.name,
