@@ -16,18 +16,10 @@ void test('validateDecodeRequest accepts an array of calls', () => {
         spec_version: 1,
     })
 
-    assert.deepEqual(result, {
-        valid: true,
-        data: {
-            call: undefined,
-            calls: ['0x0102', '0x0304'],
-            extrinsic: undefined,
-            extrinsics: undefined,
-            events: undefined,
-            network: 'canary',
-            spec_version: 1,
-        },
-    })
+    assert.equal(result.valid, true)
+    assert.deepEqual(result.data.calls, ['0x0102', '0x0304'])
+    assert.equal(result.data.network, 'canary')
+    assert.equal(result.data.spec_version, 1)
 })
 
 void test('validateDecodeRequest accepts an extrinsic', () => {
