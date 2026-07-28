@@ -1,1 +1,13 @@
-[]
+- name: indexer_extensions
+  definition:
+    url_from_env: HASURA_EXTENSION_GRAPHQL_URL
+    timeout_seconds: 120
+    forward_client_headers: false
+    headers:
+      - name: x-indexer-extension-secret
+        value_from_env: HASURA_EXTENSION_SECRET
+    customization:
+      type_names:
+        mapping: {}
+        prefix: IndexerExtension
+  comment: Schema-preserving home for the existing TypeGraphQL server extensions

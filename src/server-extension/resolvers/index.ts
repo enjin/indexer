@@ -20,6 +20,9 @@ import {
     RefreshListingsResolver,
     CollectionInventoryResolver,
     ChainStatsResolver,
+    SearchTokensResolver,
+    BlockDetailsResolver,
+    ImportBlockResolver,
 } from '~/server-extension'
 
 export {
@@ -44,4 +47,7 @@ export {
     RefreshListingsResolver,
     CollectionInventoryResolver,
     ChainStatsResolver,
+    SearchTokensResolver,
+    BlockDetailsResolver,
+    ImportBlockResolver,
 }

@@ -1,4 +1,4 @@
-import { Query, Resolver, Arg, ArgsType, Field, Args, registerEnumType } from 'type-graphql'
+import { Args, ArgsType, Field, Mutation, registerEnumType, Resolver } from 'type-graphql'
 import 'reflect-metadata'
 import { QueueUtils } from '~/queue'
 import { decodeAddress, isValidAddress } from '~/util/tools'
@@ -41,7 +41,7 @@ export class RefreshEntityArgs {
 
 @Resolver()
 export class RefreshEntityResolver {
-    @Query(() => Boolean, { nullable: false })
+    @Mutation(() => Boolean, { nullable: false })
     refreshEntity(@Args() args: RefreshEntityArgs): boolean {
         if (args.ids.length > 100) {
             throw new Error('Too many entities to refresh, limit is 100')

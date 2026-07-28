@@ -1,4 +1,4 @@
-import { Field, ObjectType, Query, Resolver, Arg, registerEnumType, InputType } from 'type-graphql'
+import { Arg, Field, InputType, Mutation, ObjectType, registerEnumType, Resolver } from 'type-graphql'
 import 'reflect-metadata'
 import { type EntityManager } from 'typeorm'
 import NodeCache from 'node-cache'
@@ -49,7 +49,7 @@ const mins30 = 30 * 60 * 1000 // 30 minutes in ms
 export class RefreshMetadataResolver {
     constructor(private tx: () => Promise<EntityManager>) {}
 
-    @Query(() => RefreshMetadataResponse, { nullable: false })
+    @Mutation(() => RefreshMetadataResponse, { nullable: false })
     async refreshMetadata(
         @Arg('ids', () => [RefreshMetadataInput]) ids: RefreshMetadataInput[],
         @Arg('force', () => Boolean, { nullable: true }) force?: boolean,

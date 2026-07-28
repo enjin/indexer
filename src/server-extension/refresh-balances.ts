@@ -1,4 +1,4 @@
-import { Args, ArgsType, Field, Query, Resolver } from 'type-graphql'
+import { Args, ArgsType, Field, Mutation, Resolver } from 'type-graphql'
 import { QueueUtils } from '~/queue'
 import { decodeAddress } from '~/util/tools'
 
@@ -10,7 +10,7 @@ export class RefreshBalancesArgs {
 
 @Resolver()
 export class RefreshBalancesResolver {
-    @Query(() => Boolean, { nullable: false })
+    @Mutation(() => Boolean, { nullable: false })
     async refreshBalances(@Args() args: RefreshBalancesArgs): Promise<boolean> {
         if (args.ids.length > 100) {
             throw new Error('Too many accounts to refresh, limit is 100')
