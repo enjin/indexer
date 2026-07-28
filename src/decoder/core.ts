@@ -131,12 +131,22 @@ export async function decodeEvents(
 export async function decodeCall(call: string, network: Network, specVersion: number): Promise<unknown> {
     const runtime = await getRuntimeCached(network, specVersion)
 
+    return decodeCallWithRuntime(call, runtime)
+}
+
+function decodeCallWithRuntime(call: string, runtime: Awaited<ReturnType<typeof getRuntimeCached>>): unknown {
     const hexString = call.startsWith('0x') ? call.slice(2) : call
     const bytes = new Uint8Array(Buffer.from(hexString, 'hex'))
     const src = new Src(bytes)
 
     const decodedCall = runtime.scaleCodec.decode(runtime.description.call, src)
     return { calls: transformCall(decodedCall, runtime) }
+}
+
+export async function decodeCalls(calls: string[], network: Network, specVersion: number): Promise<unknown[]> {
+    const runtime = await getRuntimeCached(network, specVersion)
+
+    return calls.map((call) => decodeCallWithRuntime(call, runtime))
 }
 
 export async function decodeSignedExtrinsicsRaw(
@@ -211,7 +221,7 @@ function withReadableView(result: unknown, network: Network): unknown {
 }
 
 export async function decode(requestData: DecodeRequest): Promise<unknown> {
-    const { call, extrinsic, extrinsics, events, network: networkInput, spec_version, readable } = requestData
+    const { call, calls, extrinsic, extrinsics, events, network: networkInput, spec_version, readable } = requestData
 
     const resolved = networkInput ? resolveNetwork(networkInput) : null
     if (networkInput && !resolved) {
@@ -223,6 +233,10 @@ export async function decode(requestData: DecodeRequest): Promise<unknown> {
     if (call) {
         const result = await decodeCall(call, network, specVersion)
         return readable ? withReadableView(result, network) : result
+    }
+
+    if (calls && calls.length > 0) {
+        return decodeCalls(calls, network, specVersion)
     }
 
     if (extrinsic) {
@@ -241,5 +255,5 @@ export async function decode(requestData: DecodeRequest): Promise<unknown> {
         return decodeEvents(events, network, specVersion)
     }
 
-    throw new Error('Invalid request: no call, extrinsic, extrinsics, or events provided')
+    throw new Error('Invalid request: no call, calls, extrinsic, extrinsics, or events provided')
 }
