@@ -23,6 +23,7 @@ import {
     SearchTokensResolver,
     BlockDetailsResolver,
     ImportBlockResolver,
+    EntityMetadataResolver,
 } from '~/server-extension'
 
 export {
@@ -50,4 +51,5 @@ export {
     SearchTokensResolver,
     BlockDetailsResolver,
     ImportBlockResolver,
+    EntityMetadataResolver,
 }

@@ -20,6 +20,17 @@ array_relationships:
         table:
           name: token_group_token
           schema: public
+remote_relationships:
+  - name: metadata
+    definition:
+      to_remote_schema:
+        remote_schema: indexer_extensions
+        lhs_fields:
+          - id
+        remote_field:
+          resolveTokenGroupMetadata:
+            arguments:
+              id: $id
 select_permissions:
   - role: public
     permission:

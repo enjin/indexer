@@ -104,7 +104,7 @@ export async function startRemoteSchema(): Promise<ListeningServer> {
             plugins: [authenticationPlugin(secret)],
             graphiqlConsole: process.env.EXTENSION_GRAPHQL_ENABLE_CONSOLE === 'true',
             maxRequestSizeBytes: positiveInteger(process.env.EXTENSION_GRAPHQL_MAX_REQUEST_BYTES, 256 * 1024),
-            maxRootFields: positiveInteger(process.env.EXTENSION_GRAPHQL_MAX_ROOT_FIELDS, 10),
+            maxRootFields: positiveInteger(process.env.EXTENSION_GRAPHQL_MAX_ROOT_FIELDS, 100),
             validationMaxErrors: positiveInteger(process.env.EXTENSION_GRAPHQL_VALIDATION_MAX_ERRORS, 10),
             log,
         }),

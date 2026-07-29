@@ -54,7 +54,7 @@ async function createEnjinCollection(ctx: CommonContext, block: Block) {
             marketCap: 0n,
             volume: 0n,
         }),
-        metadata: new Metadata({
+        storedMetadata: new Metadata({
             name: 'Enjin Token (ENJ)',
         }),
 
@@ -111,7 +111,7 @@ async function generateRelayData(ctx: CommonContext, block: Block) {
                 maxTokenSupply: null,
                 forceSingleMint: false,
             }),
-            metadata: new Metadata({
+            storedMetadata: new Metadata({
                 name: 'Staked Enjin Token (sENJ)',
             }),
             transferPolicy: new TransferPolicy({
@@ -155,7 +155,7 @@ async function generateRelayData(ctx: CommonContext, block: Block) {
                 maxTokenSupply: degenCollectionData.policy.mint.maxTokenSupply,
                 forceSingleMint: degenCollectionData.policy.mint.forceSingleMint,
             }),
-            metadata: new Metadata({
+            storedMetadata: new Metadata({
                 name: 'Degen',
             }),
             transferPolicy: new TransferPolicy({

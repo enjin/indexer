@@ -180,7 +180,7 @@ export class BestPoolsResolver {
                 'pool.availableStakePoints AS "availableStakePoints"',
                 'pool.createdAt AS "createdAt"',
                 'token.id AS "tokenId"',
-                'token.metadata AS "tokenMetadata"',
+                'token.storedMetadata AS "tokenMetadata"',
             ])
             .addSelect(
                 `(SELECT json_agg(json_build_object('id', attr.id, 'key', attr.key, 'value', attr.value, 'deposit', attr.deposit)) 
@@ -194,7 +194,7 @@ export class BestPoolsResolver {
             )
             .addSelect('token.collection_id AS "collectionId"')
             .addSelect(
-                `(SELECT metadata 
+                `(SELECT stored_metadata
                           FROM collection 
                           WHERE collection.id = token.collection_id) AS "collectionMetadata"`
             )

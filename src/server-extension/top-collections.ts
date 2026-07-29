@@ -234,7 +234,7 @@ export class TopCollectionResolver {
             params.push(...category)
         }
         if (query) {
-            collectionWheres.push(`c.metadata->>'name' ILIKE $${paramIdx++}`)
+            collectionWheres.push(`c.stored_metadata->>'name' ILIKE $${paramIdx++}`)
             params.push(`%${query}%`)
         }
         const collectionWhere = collectionWheres.length > 0 ? 'WHERE ' + collectionWheres.join(' AND ') : ''
@@ -302,7 +302,7 @@ export class TopCollectionResolver {
         const ids = rankedCollections.map((c) => c.id)
         const enrichmentData: { id: string; metadata: unknown; stats: unknown; attributes: unknown }[] =
             await manager.query(
-                `SELECT c.id, c.metadata, c.stats,
+                `SELECT c.id, c.stored_metadata AS metadata, c.stats,
                     (SELECT json_agg(json_build_object('id', attr.id, 'key', attr.key, 'value', attr.value, 'deposit', attr.deposit))
                      FROM attribute attr
                      WHERE attr.collection_id = c.id AND attr.token_id IS NULL) AS attributes
@@ -316,7 +316,7 @@ export class TopCollectionResolver {
         return rankedCollections.map((collection) => {
             const enrichment = enrichmentMap.get(collection.id as string)
             if (enrichment) {
-                collection.metadata = enrichment.metadata
+                collection.storedMetadata = enrichment.metadata
                 collection.stats = enrichment.stats
                 collection.attributes = enrichment.attributes
             }

@@ -22,7 +22,7 @@ export class TokenGroup {
     attributes!: Relation_<Attribute[]>
 
     @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new Metadata(undefined, obj)}, nullable: true})
-    metadata!: Metadata | undefined | null
+    storedMetadata!: Metadata | undefined | null
 
     @OneToMany_(() => TokenGroupToken, e => e.tokenGroup)
     tokenGroupTokens!: Relation_<TokenGroupToken[]>

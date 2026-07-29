@@ -7,8 +7,8 @@ import { Collection, FreezeState, Listing, Token, TokenAccount } from '~/model'
 import { IsPublicKey } from './helpers'
 
 export enum MyTokensOrderByInput {
-    COLLECTION_NAME = "collection.metadata->>'name'",
-    TOKEN_NAME = "token.metadata->>'name'",
+    COLLECTION_NAME = "collection.stored_metadata->>'name'",
+    TOKEN_NAME = "token.stored_metadata->>'name'",
     FLOOR_PRICE = 'listing.highestPrice',
     DATE = 'token.createdAt',
 }
@@ -179,9 +179,12 @@ export class MyTokensResolver {
             .limit(limit)
 
         if (query) {
-            builder.where("collection.metadata->>'name' ILIKE :query OR token.metadata->>'name' ILIKE :query", {
-                query: `%${query}%`,
-            })
+            builder.where(
+                "collection.stored_metadata->>'name' ILIKE :query OR token.stored_metadata->>'name' ILIKE :query",
+                {
+                    query: `%${query}%`,
+                }
+            )
         }
 
         const [data, count] = (await builder.getManyAndCount()) as any[]

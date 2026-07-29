@@ -71,8 +71,6 @@ services:
     container_name: indexer_hasura
     restart: unless-stopped
     image: hasura/graphql-engine:${HASURA_VERSION:-v2.49.5}.cli-migrations-v3
-    env_file:
-      - .env
     environment:
       HASURA_GRAPHQL_DATABASE_URL: "postgres://${DB_USER:-postgres}:${DB_PASS}@indexer_db:5432/${DB_NAME}"
       HASURA_GRAPHQL_ADMIN_SECRET: ${HASURA_GRAPHQL_ADMIN_SECRET:-local-development-secret}

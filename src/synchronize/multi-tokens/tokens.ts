@@ -72,7 +72,7 @@ export async function tokens(ctx: CommonContext, block: Block) {
                 mintDeposit: data.mintDeposit ?? 1n,
                 attributeCount: data.attributeCount,
                 collection,
-                metadata: null,
+                storedMetadata: null,
                 listingForbidden: 'listingForbidden' in data ? data.listingForbidden : false,
                 accountDepositCount: 0,
                 anyoneCanInfuse: data.anyoneCanInfuse ?? false,

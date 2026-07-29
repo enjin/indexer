@@ -175,8 +175,8 @@ export async function computeMetadata(job: Job) {
             await job.updateProgress(80)
 
             resource.name = metadata.name
-            resource.metadata = metadata
-            resource.metadata.lastUpdated = new Date()
+            resource.storedMetadata = metadata
+            resource.storedMetadata.lastUpdated = new Date()
 
             await em.save(resource)
 

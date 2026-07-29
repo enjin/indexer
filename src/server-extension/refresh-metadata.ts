@@ -85,7 +85,7 @@ export class RefreshMetadataResolver {
                         continue
                     }
 
-                    if (hasExpiredMetadata(resource.metadata)) {
+                    if (hasExpiredMetadata(resource.storedMetadata)) {
                         const uri = includeResourceUris(resource)
                         if (uri) {
                             urisToRefresh.add(uri)
@@ -105,7 +105,7 @@ export class RefreshMetadataResolver {
                         continue
                     }
 
-                    if (hasExpiredMetadata(resource.metadata)) {
+                    if (hasExpiredMetadata(resource.storedMetadata)) {
                         const uri = includeResourceUris(resource)
                         if (uri) {
                             urisToRefresh.add(uri)
@@ -123,7 +123,7 @@ export class RefreshMetadataResolver {
                         continue
                     }
 
-                    if (hasExpiredMetadata(resource.metadata)) {
+                    if (hasExpiredMetadata(resource.storedMetadata)) {
                         const uri = includeResourceUris(resource)
                         if (uri) {
                             urisToRefresh.add(uri)
@@ -174,7 +174,7 @@ export class RefreshMetadataResolver {
 }
 
 function hasExpiredMetadata(metadata: Metadata | null | undefined): boolean {
-    return (metadata?.lastUpdated && metadata.lastUpdated < new Date(Date.now() - 6 * 60 * 60 * 1000)) || false
+    return !metadata?.lastUpdated || metadata.lastUpdated < new Date(Date.now() - 6 * 60 * 60 * 1000)
 }
 
 function includeResourceUris(resource: Collection | Token | TokenGroup): string | null {

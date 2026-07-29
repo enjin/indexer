@@ -465,13 +465,13 @@ export class AccountsTokensConnectionResolver {
                 supply: token.supply as any,
                 isFrozen: token.isFrozen,
                 freezeState: token.freezeState as any,
-                metadata: token.metadata as any,
+                metadata: token.storedMetadata as any,
                 nonFungible: token.nonFungible,
                 createdAt: token.createdAt,
                 collection: {
                     id: token.collection.id.toString(),
                     collectionId: token.collection.collectionId as any,
-                    metadata: token.collection.metadata as any,
+                    metadata: token.collection.storedMetadata as any,
                     stats: token.collection.stats as any,
                     attributes: (token.collection.attributes || []).map((attr: any) => ({
                         key: attr.key,
@@ -491,7 +491,9 @@ export class AccountsTokensConnectionResolver {
                             tokenGroup: new AccountsTokensTokenGroup({
                                 id: tokenGroup.id.toString(),
                                 metadata:
-                                    (tokenGroup.metadata as any)?.toJSON?.() ?? (tokenGroup.metadata as any) ?? null,
+                                    (tokenGroup.storedMetadata as any)?.toJSON?.() ??
+                                    (tokenGroup.storedMetadata as any) ??
+                                    null,
                                 attributes: (tokenGroup.attributes || []).map((attr: any) => ({
                                     key: attr.key,
                                     value: attr.value,

@@ -36,3 +36,27 @@ void test('keeps Hasura Actions empty and registers the authenticated Remote Sch
     assert.match(remoteSchemas, /value_from_env: HASURA_EXTENSION_SECRET/)
     assert.match(remoteSchemas, /prefix: IndexerExtension/)
 })
+
+void test('resolves entity metadata through the extension Remote Schema', () => {
+    const entityMetadata = [
+        source('metadata/databases/default/tables/public_collection.yaml'),
+        source('metadata/databases/default/tables/public_token_group.yaml'),
+        source('metadata/databases/default/tables/public_token.yaml'),
+    ].join('\n')
+    const schema = source('schema.graphql')
+    const migration = source('db/migrations/1785265638528-Data.js')
+    const resolverIndex = source('src/server-extension/resolvers/index.ts')
+
+    assert.match(schema, /type Collection @entity \{[\s\S]*?storedMetadata: Metadata/)
+    assert.match(schema, /type TokenGroup @entity \{[\s\S]*?storedMetadata: Metadata/)
+    assert.match(schema, /type Token @entity \{[\s\S]*?storedMetadata: Metadata/)
+    assert.equal((migration.match(/RENAME COLUMN "metadata" TO "stored_metadata"/g) ?? []).length, 3)
+    assert.equal((migration.match(/RENAME COLUMN "stored_metadata" TO "metadata"/g) ?? []).length, 3)
+    assert.equal((entityMetadata.match(/name: metadata\n {4}definition:\n {6}to_remote_schema:/g) ?? []).length, 3)
+    assert.equal((entityMetadata.match(/remote_schema: indexer_extensions/g) ?? []).length, 3)
+    assert.match(entityMetadata, /resolveCollectionMetadata:/)
+    assert.match(entityMetadata, /resolveTokenGroupMetadata:/)
+    assert.match(entityMetadata, /resolveTokenMetadata:/)
+    assert.equal((entityMetadata.match(/id: \$id/g) ?? []).length, 3)
+    assert.match(resolverIndex, /EntityMetadataResolver/)
+})
