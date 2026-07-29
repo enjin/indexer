@@ -11,19 +11,20 @@ import {
 import { Block, CommonContext, EventItem } from '~/contexts'
 import * as mappings from '~/pallet/index'
 import { CreatePool } from '~/pallet/nomination-pools/calls'
-import { BatchMint, ForceMint, Mint } from '~/pallet/multi-tokens/calls'
+import { ForceMint, Mint } from '~/pallet/multi-tokens/calls'
 import { TokenCreated } from '~/pallet/multi-tokens/events'
-import { TokenMarketBehavior as TokenMarketBehavior500 } from '~/type/matrixV500'
-import { TokenMarketBehavior as TokenMarketBehavior1020 } from '~/type/matrixV1020'
 import { getOrCreateAccount } from '~/util/entities'
 import { getCapType, getFreezeState, isTokenFrozen } from '~/synchronize/common'
 import { EventHandlerResult } from '~/processor.handler'
 import { isDispatchCall, unwrapFuelTankCall } from '~/pallet/fuel-tanks/utils'
-import { Call } from '~/pallet/common/types'
+import { DefaultMintParams, FlexibleMintParams, TokenMarketBehavior } from '~/pallet/common/types'
 import { hexToString } from '@polkadot/util'
 import { safeString } from '~/util/tools'
+import { Token as StoredToken } from '~/pallet/multi-tokens/storage/types'
+import { calls } from '~/type'
+import { selectTokenCreationCall, unwrapFlexibleMintParams } from '~/pallet/multi-tokens/processors/token-created-call'
 
-type TokenMarketBehavior = TokenMarketBehavior500 | TokenMarketBehavior1020
+type TokenParams = DefaultMintParams | FlexibleMintParams | StoredToken
 
 async function getBehavior(
     ctx: CommonContext,
@@ -63,34 +64,19 @@ async function tokenFromCall(
     ctx: CommonContext,
     block: Block,
     event: TokenCreated,
-    call: Mint | ForceMint | CreatePool
+    call?: Mint | ForceMint | CreatePool,
+    useStorage = false
 ): Promise<Token> {
     const collection = await ctx.store.findOne<Collection>(Collection, {
         where: { id: event.collectionId.toString() },
     })
 
-    const tokenCall = call
-
     if (!collection) {
         throwFatalError(`[TokenCreated] We have not found collection ${event.collectionId.toString()}.`)
     }
 
-    let tokenId = event.tokenId
-    if ('params' in tokenCall) {
-        const params = tokenCall.params
-        if ('__kind' in params) {
-            if (params.__kind === 'CreateToken' || params.__kind === 'Mint') {
-                tokenId = params.tokenId
-            } else {
-                tokenId = params.value.tokenId
-            }
-        } else {
-            tokenId = params.tokenId
-        }
-    }
-
     const existingToken = await ctx.store.findOne<Token>(Token, {
-        where: { id: `${event.collectionId}-${tokenId}` },
+        where: { id: `${event.collectionId}-${event.tokenId}` },
     })
 
     let existingSupply = 0n
@@ -99,9 +85,9 @@ async function tokenFromCall(
     }
 
     const token = new Token({
-        id: `${event.collectionId}-${tokenId}`,
+        id: `${event.collectionId}-${event.tokenId}`,
         hidden: false,
-        tokenId: tokenId,
+        tokenId: event.tokenId,
         supply: existingSupply, // Updated on `Minted`
         cap: null, // params.cap,
         behavior: null, // params.behavior,
@@ -124,25 +110,21 @@ async function tokenFromCall(
         createdAt: new Date(block.timestamp ?? 0),
     })
 
-    let tokenParams = null
-
-    if ('capacity' in tokenCall) {
-        const data = await mappings.multiTokens.storage.tokens(block, {
+    let tokenParams: TokenParams | undefined
+    if (useStorage || (call && 'capacity' in call)) {
+        tokenParams = await mappings.multiTokens.storage.tokens(block, {
             collectionId: event.collectionId,
             tokenId: event.tokenId,
         })
-
-        if (data) {
-            tokenParams = data
-        }
+    } else if (call && 'params' in call) {
+        tokenParams = unwrapFlexibleMintParams(call.params)
     }
 
-    if ('params' in tokenCall) {
-        tokenParams = tokenCall.params
-
+    if (tokenParams) {
         if ('sufficiency' in tokenParams) {
-            token.minimumBalance =
-                tokenParams.sufficiency?.__kind === 'Sufficient' ? tokenParams.sufficiency.minimumBalance : 1n
+            if (tokenParams.sufficiency?.__kind === 'Sufficient' && 'minimumBalance' in tokenParams.sufficiency) {
+                token.minimumBalance = tokenParams.sufficiency.minimumBalance
+            }
             token.unitPrice =
                 tokenParams.sufficiency?.__kind === 'Insufficient' ? (tokenParams.sufficiency.unitPrice ?? 1n) : 1n
         }
@@ -161,7 +143,7 @@ async function tokenFromCall(
 
         if ('metadata' in tokenParams) {
             token.nativeMetadata =
-                tokenParams.metadata !== undefined
+                tokenParams.metadata !== undefined && !('__kind' in tokenParams.metadata)
                     ? new NativeTokenMetadata({
                           decimalCount: tokenParams.metadata.decimalCount,
                           symbol: safeString(hexToString(tokenParams.metadata.symbol)),
@@ -170,11 +152,14 @@ async function tokenFromCall(
                     : null
         }
 
-        if ('behavior' in tokenParams) {
-            token.behavior =
-                tokenParams.behavior !== undefined
-                    ? await getBehavior(ctx, tokenParams.behavior as TokenMarketBehavior)
-                    : null
+        const behavior =
+            'behavior' in tokenParams
+                ? tokenParams.behavior
+                : 'marketBehavior' in tokenParams
+                  ? tokenParams.marketBehavior
+                  : undefined
+        if (behavior !== undefined) {
+            token.behavior = await getBehavior(ctx, behavior)
         }
 
         if ('cap' in tokenParams) {
@@ -191,26 +176,13 @@ async function tokenFromCall(
     return token
 }
 
-async function tokenFromBatchCall(
-    ctx: CommonContext,
-    block: Block,
-    event: TokenCreated,
-    call: BatchMint
-): Promise<Token[]> {
-    const tokens = await Promise.all(
-        call.recipients.map(async (recipient) => {
-            return tokenFromCall(ctx, block, event, {
-                recipient: {
-                    __kind: 'Id',
-                    value: recipient.accountId,
-                },
-                collectionId: call.collectionId,
-                params: recipient.params,
-            })
-        })
-    )
-
-    return tokens
+function unwrapComplexMintCall(item: EventItem): { call: unknown } | undefined {
+    if (!item.call) return undefined
+    if (isDispatchCall(item.call)) return { call: unwrapFuelTankCall(item.call) }
+    if (item.call.name === calls.matrixUtility.batch.name) {
+        return { call: mappings.matrixUtility.calls.batch(item.call) }
+    }
+    return undefined
 }
 
 export async function tokenCreated(
@@ -234,29 +206,15 @@ export async function tokenCreated(
         return mappings.multiTokens.events.tokenCreatedEventModel(item, event)
     }
 
-    if (item.call && isDispatchCall(item.call)) {
-        const unwrappedCall = unwrapFuelTankCall(item.call)
-        // @ts-ignore
-        const calls = unwrappedCall?.calls || []
-
-        // Process all batch_mint calls in the batch
-        for (const call of calls) {
-            const batchMintCall = call.value
-            if (batchMintCall?.__kind === 'batch_mint') {
-                const tokens = await tokenFromBatchCall(ctx, block, event, batchMintCall)
-                await ctx.store.save(tokens)
-            }
-        }
-
-        // If we processed any batch_mint calls, return early
-        if (calls.some((c: Call) => c.value.__kind === 'batch_mint')) {
-            return mappings.multiTokens.events.tokenCreatedEventModel(item, event)
-        }
-    }
-
     if (item.call) {
-        const call = mappings.multiTokens.utils.anyMint(item.call, event.collectionId, event.tokenId)
-        const token = await tokenFromCall(ctx, block, event, call)
+        const complexCall = unwrapComplexMintCall(item)
+        // Encoded children include failed and unexecuted calls. Trust call parameters only when one recipient matches
+        // the finalized event; otherwise hydrate that event's token from canonical storage.
+        const call =
+            complexCall === undefined
+                ? mappings.multiTokens.utils.anyMint(item.call, event.collectionId, event.tokenId)
+                : selectTokenCreationCall(complexCall.call, event)
+        const token = await tokenFromCall(ctx, block, event, call, complexCall !== undefined && call === undefined)
         await ctx.store.save(token)
     }
 
