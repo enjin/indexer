@@ -1,8 +1,13 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 
-import { findTokenCreationCalls, selectTokenCreationCall } from '~/pallet/multi-tokens/processors/token-created-call'
+import {
+    findTokenCreationCalls,
+    selectTokenCreationCall,
+    unwrapFlexibleMintParams,
+} from '~/pallet/multi-tokens/processors/token-created-call'
 import { TokenCreated } from '~/pallet/multi-tokens/events'
+import { FlexibleMintParams } from '~/pallet/common/types'
 
 const event: TokenCreated = {
     collectionId: 4519n,
@@ -79,4 +84,28 @@ void test('rejects duplicate token IDs from a failed child before persistence', 
 
     assert.equal(matches.length, 3)
     assert.equal(selectTokenCreationCall(call, event), undefined)
+})
+
+void test('unwraps historical CreateOrMint parameters before token hydration', () => {
+    const params: FlexibleMintParams = {
+        __kind: 'CreateOrMint',
+        value: {
+            tokenId: 1n,
+            amount: 1n,
+            listingForbidden: true,
+            attributes: [],
+            metadata: {
+                decimalCount: 18,
+                name: '0x746f6b656e',
+                symbol: '0x544b4e',
+            },
+        },
+    }
+
+    const unwrapped = unwrapFlexibleMintParams(params)
+
+    assert.ok('listingForbidden' in unwrapped)
+    assert.equal(unwrapped.listingForbidden, true)
+    assert.ok('metadata' in unwrapped)
+    assert.equal(unwrapped.metadata?.decimalCount, 18)
 })

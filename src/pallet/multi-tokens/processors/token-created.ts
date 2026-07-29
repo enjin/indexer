@@ -22,7 +22,7 @@ import { hexToString } from '@polkadot/util'
 import { safeString } from '~/util/tools'
 import { Token as StoredToken } from '~/pallet/multi-tokens/storage/types'
 import { calls } from '~/type'
-import { selectTokenCreationCall } from '~/pallet/multi-tokens/processors/token-created-call'
+import { selectTokenCreationCall, unwrapFlexibleMintParams } from '~/pallet/multi-tokens/processors/token-created-call'
 
 type TokenParams = DefaultMintParams | FlexibleMintParams | StoredToken
 
@@ -117,7 +117,7 @@ async function tokenFromCall(
             tokenId: event.tokenId,
         })
     } else if (call && 'params' in call) {
-        tokenParams = call.params
+        tokenParams = unwrapFlexibleMintParams(call.params)
     }
 
     if (tokenParams) {

@@ -1,5 +1,6 @@
 import { ForceMint, Mint } from '~/pallet/multi-tokens/calls'
 import { TokenCreated } from '~/pallet/multi-tokens/events'
+import { FlexibleMintParams } from '~/pallet/common/types'
 
 type TokenCreationCall = Mint | ForceMint
 type UnknownRecord = Record<string, unknown>
@@ -60,4 +61,8 @@ export function findTokenCreationCalls(call: unknown, event: TokenCreated): Toke
 export function selectTokenCreationCall(call: unknown, event: TokenCreated): TokenCreationCall | undefined {
     const matches = findTokenCreationCalls(call, event)
     return matches.length === 1 ? matches[0] : undefined
+}
+
+export function unwrapFlexibleMintParams(params: FlexibleMintParams): FlexibleMintParams {
+    return '__kind' in params && params.__kind === 'CreateOrMint' ? params.value : params
 }
