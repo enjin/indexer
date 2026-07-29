@@ -404,6 +404,26 @@ type FuelTankDestroyed {
   tank: String!
 }
 
+type FuelTankDispatchFailed {
+  # Human-readable DispatchError of the wrapped call (e.g. "MultiTokens.NoPermission")
+  error: String
+}
+
+type UtilityItemFailed {
+  # Human-readable DispatchError of the failed batch item (e.g. "Token.FundsUnavailable")
+  error: String
+  # Zero-based position of the failed item within the batch, derived from the
+  # ItemCompleted/ItemFailed event sequence of the extrinsic
+  itemIndex: Int
+}
+
+type UtilityBatchInterrupted {
+  # Human-readable DispatchError of the item that interrupted the batch
+  error: String
+  # Zero-based index of the interrupting item, as reported by the event itself
+  itemIndex: Int
+}
+
 type MultiTokensClaimedCollections {
   account: Account!
   ethAccount: String!
@@ -1691,7 +1711,8 @@ union EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiToken
   | MarketplaceOfferCreated | MarketplaceOfferSettled | MarketplaceOfferCancelled | MarketplaceListingRemovedUnderMinimum
   | BalancesTransfer | TeleportBalanceWithdrawn | ClaimsClaimRequested | ClaimsClaimed | MarketplaceWhitelistedAccountsAdded
   | MarketplaceWhitelistedAccountsRemoved
-  | FuelTankCreated | FuelTankDestroyed | MultiTokensClaimedCollections | MultiTokensClaimTokensInitiated
+  | FuelTankCreated | FuelTankDestroyed | FuelTankDispatchFailed | UtilityItemFailed | UtilityBatchInterrupted
+  | MultiTokensClaimedCollections | MultiTokensClaimTokensInitiated
   | MultiTokensClaimTokensCompleted | MultiTokensCollectionTransferred | MultiTokensCollectionTransferCancelled | MultiTokensInfused
   | StakingEraPaid | NominationPoolsBonded | NominationPoolsUnbonded | StakingChilled | StakingBonded | StakingUnbonded | StakingWithdrawn
   | NominationPoolsEarlyBirdBonusPaymentUnlocked | NominationPoolsEarlyBirdBonusCalculated | NominationPoolsStateChanged

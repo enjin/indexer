@@ -21,6 +21,7 @@ import { QueueUtils } from '~/queue'
 import { QueuesEnum } from '~/queue/constants'
 import { Logger } from '~/util/logger'
 import { getSnsEventHash, isRelay } from '~/util/tools'
+import { readableDispatchError } from '~/util/dispatch-error'
 import { isSnsEvent, Sns, SnsEvent } from '~/util/sns'
 import { queueMissingBlocks } from '~/migration/queue-missing-blocks'
 
@@ -325,7 +326,7 @@ async function processExtrinsics(
         signer,
         nonce: signer.nonce,
         tip,
-        error: error as string,
+        error: readableDispatchError(error, block._runtime) ?? undefined,
         fee: new Fee({
             amount: txFee,
             who: signer.id,

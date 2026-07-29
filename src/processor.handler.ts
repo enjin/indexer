@@ -172,7 +172,7 @@ export async function eventHandler(
                 p.marketplace.processors.expiredListingRemoved(ctx, block, item)
             )
             .with(polkadotXcm.attempted.name, () => p.polkadotXcm.processors.attempted(ctx, block, item))
-            .with(fuelTanks.dispatchFailed.name, () => p.fuelTanks.processors.dispatchFailed(item))
+            .with(fuelTanks.dispatchFailed.name, () => p.fuelTanks.processors.dispatchFailed(block, item))
             .with(fuelTanks.accountAdded.name, () => p.fuelTanks.processors.accountAdded(ctx, block, item))
             .with(fuelTanks.accountRemoved.name, () => p.fuelTanks.processors.accountRemoved(ctx, block, item))
             .with(fuelTanks.accountRuleDataRemoved.name, () =>
@@ -241,9 +241,9 @@ export async function eventHandler(
             .with(xcmPallet.attempted.name, () => p.xcmPallet.processors.attempted(ctx, block, item))
             .with(imOnline.someOffline.name, () => p.imOnline.processors.someOffline(ctx, block, item))
             .with(utility.batchCompletedWithErrors.name, () => p.utility.processors.batchCompletedWithErrors(item))
-            .with(utility.batchInterrupted.name, () => p.utility.processors.batchInterrupted(item))
+            .with(utility.batchInterrupted.name, () => p.utility.processors.batchInterrupted(block, item))
             .with(utility.itemCompleted.name, () => p.utility.processors.itemCompleted(item))
-            .with(utility.itemFailed.name, () => p.utility.processors.itemFailed(item))
+            .with(utility.itemFailed.name, () => p.utility.processors.itemFailed(block, item))
             .otherwise(() => {
                 ctx.log.error(`Unsupported event on handle event: ${item.name}`)
                 return undefined
