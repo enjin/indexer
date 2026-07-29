@@ -18,7 +18,8 @@ interface HotChangeLogRow {
     }
 }
 
-const TOKEN_TRAIT_TOKEN_FILTER = `change->>'table' = 'trait_token' AND change->'fields'->>'token_id' = $1`
+const TOKEN_DERIVED_DATA_FILTER = `change->>'table' IN ('trait_token', 'token_rarity')
+    AND change->'fields'->>'token_id' = $1`
 
 export async function logTraitTokenHotChanges(job: Job<LogTraitTokenHotChangesData>): Promise<void> {
     const { tokenId, delete: shouldDelete = false } = job.data
@@ -27,7 +28,7 @@ export async function logTraitTokenHotChanges(job: Job<LogTraitTokenHotChangesDa
     const rows: HotChangeLogRow[] = await em.query(
         `SELECT block_height, index, change
          FROM squid_processor.hot_change_log
-         WHERE ${TOKEN_TRAIT_TOKEN_FILTER}
+         WHERE ${TOKEN_DERIVED_DATA_FILTER}
          ORDER BY block_height, index`,
         [tokenId]
     )
@@ -47,7 +48,7 @@ export async function logTraitTokenHotChanges(job: Job<LogTraitTokenHotChangesDa
 
     const removed: HotChangeLogRow[] = await em.query(
         `DELETE FROM squid_processor.hot_change_log
-         WHERE ${TOKEN_TRAIT_TOKEN_FILTER}
+         WHERE ${TOKEN_DERIVED_DATA_FILTER}
            AND change->>'kind' = 'delete'
          RETURNING block_height, index, change`,
         [tokenId]
