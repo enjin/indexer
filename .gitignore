@@ -15,3 +15,5 @@ apollo.graphql
 .DS_Store
 .cursor/
 docs/
+.graphifyignore
+graphify-out/
