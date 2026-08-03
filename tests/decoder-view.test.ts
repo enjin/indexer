@@ -64,7 +64,7 @@ void test('batch mint call fields derive their subtitle from the decoded recipie
         fields: [
             { type: 'text', title: 'Network', value: 'Enjin Matrixchain' },
             {
-                type: 'call',
+                type: 'item',
                 title: 'Mint NFTs',
                 subtitle: 'x 2',
                 fields: [
@@ -94,7 +94,7 @@ void test('matrix utility batches derive call subtitles from each decoded recipi
         fields: [
             { type: 'text', title: 'Network', value: 'Enjin Matrixchain' },
             {
-                type: 'call',
+                type: 'item',
                 title: 'Mint NFTs',
                 subtitle: 'x 2',
                 fields: [
@@ -103,7 +103,7 @@ void test('matrix utility batches derive call subtitles from each decoded recipi
                 ],
             },
             {
-                type: 'call',
+                type: 'item',
                 title: 'Transfer Item',
                 subtitle: 'x 2',
                 fields: [
@@ -129,7 +129,7 @@ void test('batch set attribute derives its subtitle from decoded attributes', ()
     )
 
     assert.deepEqual(view.fields[2], {
-        type: 'call',
+        type: 'item',
         title: 'Set Collection Attributes',
         subtitle: 'x 1',
         fields: [
@@ -151,7 +151,7 @@ void test('nested call subtitles contain the returned field count', () => {
 
     assert.deepEqual(view.fields, [
         {
-            type: 'call',
+            type: 'item',
             title: 'Mint NFTs',
             subtitle: 'x 1',
             fields: [{ type: 'text', title: 'Collection', value: '42' }],
@@ -165,5 +165,5 @@ void test('nested call subtitles contain a zero count when no fields are returne
         .withCall(nested, { pallet: 'Example', method: 'call', params: {} })
         .build()
 
-    assert.deepEqual(view.fields, [{ type: 'call', title: 'Add Stake', subtitle: 'x 0', fields: [] }])
+    assert.deepEqual(view.fields, [{ type: 'item', title: 'Add Stake', subtitle: 'x 0', fields: [] }])
 })

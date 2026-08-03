@@ -64,7 +64,7 @@ export class TransactionViewBuilder {
         const items = itemPath ? getArg(call.params, itemPath) : undefined
         const itemCount = Array.isArray(items) ? items.length : fields.length
         const field: CallField = {
-            type: 'call',
+            type: 'item',
             title: view.title,
             subtitle: `x ${itemCount}`,
             fields,

@@ -1,4 +1,4 @@
-export type FieldType = 'text' | 'divider' | 'coin' | 'asset' | 'collection' | 'listing' | 'pool' | 'call'
+export type FieldType = 'text' | 'divider' | 'coin' | 'asset' | 'collection' | 'listing' | 'pool' | 'item'
 export type ResourceFieldType = 'asset' | 'collection' | 'listing' | 'pool'
 
 export interface TextField {
@@ -26,7 +26,7 @@ export interface ResourceField {
 
 /** Nested call view (e.g. each item inside a batch). */
 export interface CallField {
-    type: 'call'
+    type: 'item'
     title: string
     subtitle: string
     fields: ViewField[]
