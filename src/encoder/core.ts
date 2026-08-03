@@ -19,6 +19,11 @@ function toKindFormat(input: EncodeCallInput): Record<string, unknown> {
 
 export async function encodeCall(input: EncodeCallInput, network: Network, specVersion: number): Promise<string> {
     const runtime = await getRuntimeCached(network, specVersion)
+
+    return encodeCallWithRuntime(input, runtime)
+}
+
+function encodeCallWithRuntime(input: EncodeCallInput, runtime: Awaited<ReturnType<typeof getRuntimeCached>>): string {
     const callData = toKindFormat(input)
     // Use jsonCodec to decode the call from JSON-compatible types (number/string) into
     // native SCALE types (bigint for U128/U64, etc.) before binary encoding.
@@ -28,8 +33,14 @@ export async function encodeCall(input: EncodeCallInput, network: Network, specV
     return '0x' + Buffer.from(encoded).toString('hex')
 }
 
-export async function encode(requestData: EncodeRequest): Promise<EncodeResponse> {
-    const { call, network: networkInput, spec_version } = requestData
+export async function encodeCalls(inputs: EncodeCallInput[], network: Network, specVersion: number): Promise<string[]> {
+    const runtime = await getRuntimeCached(network, specVersion)
+
+    return inputs.map((input) => encodeCallWithRuntime(input, runtime))
+}
+
+export async function encode(requestData: EncodeRequest): Promise<EncodeResponse | EncodeResponse[]> {
+    const { call, calls, network: networkInput, spec_version } = requestData
 
     const resolved = networkInput ? resolveNetwork(networkInput) : null
     if (networkInput && !resolved) {
@@ -43,5 +54,10 @@ export async function encode(requestData: EncodeRequest): Promise<EncodeResponse
         return { encoded, network, spec_version: specVersion }
     }
 
-    throw new Error('Invalid request: no call provided')
+    if (calls && calls.length > 0) {
+        const results = await encodeCalls(calls, network, specVersion)
+        return results.map((encoded) => ({ encoded, network, spec_version: specVersion }))
+    }
+
+    throw new Error('Invalid request: no call or calls provided')
 }

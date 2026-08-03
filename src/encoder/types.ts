@@ -9,6 +9,7 @@ export interface EncodeCallInput {
 
 export interface EncodeRequest {
     call?: EncodeCallInput
+    calls?: EncodeCallInput[]
     network?: string
     spec_version?: number
 }
