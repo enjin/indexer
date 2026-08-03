@@ -72,9 +72,10 @@ services:
     restart: unless-stopped
     image: hasura/graphql-engine:${HASURA_VERSION:-v2.49.5}.cli-migrations-v3
     environment:
-      HASURA_GRAPHQL_DATABASE_URL: "postgres://${DB_USER:-postgres}:${DB_PASS}@indexer_db:5432/${DB_NAME}"
+      HASURA_GRAPHQL_DATABASE_URL: "postgres://${DB_USER:-postgres}:${DB_PASS}@${DOCKER_DB_HOST:-indexer_db}:${DB_PORT:-5432}/${DB_NAME}"
       HASURA_GRAPHQL_ADMIN_SECRET: ${HASURA_GRAPHQL_ADMIN_SECRET:-local-development-secret}
       HASURA_GRAPHQL_UNAUTHORIZED_ROLE: public
+      HASURA_GRAPHQL_STRINGIFY_NUMERIC_TYPES: ${HASURA_GRAPHQL_STRINGIFY_NUMERIC_TYPES:-true}
       HASURA_GRAPHQL_ENABLE_SUBSCRIPTIONS: "true"
       HASURA_GRAPHQL_ENABLE_CONSOLE: ${HASURA_GRAPHQL_ENABLE_CONSOLE:-true}
       HASURA_GRAPHQL_DEV_MODE: ${HASURA_GRAPHQL_DEV_MODE:-true}
@@ -99,9 +100,9 @@ services:
     env_file:
       - .env
     environment:
+      DB_HOST: ${DOCKER_DB_HOST:-indexer_db}
+      DB_PORT: ${DB_PORT:-5432}
       CONTAINER_ROLE: extensions
-      DB_HOST: indexer_db
-      DB_PORT: "5432"
       REDIS_URL: redis://indexer_redis:6379
       EXTENSION_GRAPHQL_PORT: "4001"
       HASURA_EXTENSION_SECRET: ${HASURA_EXTENSION_SECRET:-local-extension-secret}

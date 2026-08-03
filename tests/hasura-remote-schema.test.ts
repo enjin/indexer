@@ -60,3 +60,11 @@ void test('resolves entity metadata through the extension Remote Schema', () => 
     assert.equal((entityMetadata.match(/id: \$id/g) ?? []).length, 3)
     assert.match(resolverIndex, /EntityMetadataResolver/)
 })
+
+void test('keeps Hasura numeric identifiers lossless', () => {
+    const compose = source('docker-compose.yml')
+    const environment = source('.env.example')
+
+    assert.match(compose, /HASURA_GRAPHQL_STRINGIFY_NUMERIC_TYPES:.*true/)
+    assert.match(environment, /^HASURA_GRAPHQL_STRINGIFY_NUMERIC_TYPES=true$/m)
+})

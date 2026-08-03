@@ -1,7 +1,12 @@
 import 'reflect-metadata'
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { isFreshMetadata, MetadataServiceClient, resolveTokenUri } from '~/server-extension/token-metadata'
+import {
+    isFreshMetadata,
+    metadataUpdateRows,
+    MetadataServiceClient,
+    resolveTokenUri,
+} from '~/server-extension/token-metadata'
 
 void test('substitutes every token ID placeholder in a metadata URI', () => {
     assert.equal(
@@ -18,6 +23,14 @@ void test('treats metadata as fresh for six hours', () => {
     assert.equal(isFreshMetadata({ lastUpdated: '2026-07-29T05:59:59.999Z' }, now), false)
     assert.equal(isFreshMetadata({ lastUpdated: 'invalid' }, now), false)
     assert.equal(isFreshMetadata(null, now), false)
+})
+
+void test('extracts rows from TypeORM update returning results', () => {
+    const row = { storedMetadata: { name: 'Token One' } }
+
+    assert.deepEqual(metadataUpdateRows([[row], 1]), [row])
+    assert.deepEqual(metadataUpdateRows([row]), [row])
+    assert.deepEqual(metadataUpdateRows([[], 0]), [])
 })
 
 void test('normalizes the Enjin metadata service response', async () => {

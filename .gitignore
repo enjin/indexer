@@ -17,3 +17,4 @@ apollo.graphql
 docs/
 .graphifyignore
 graphify-out/
+.codex/

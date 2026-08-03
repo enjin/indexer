@@ -81,6 +81,10 @@ interface MetadataRow {
     collectionUri: string | null
 }
 
+interface StoredMetadataRow {
+    storedMetadata: Record<string, unknown>
+}
+
 interface PendingMetadata {
     entity: MetadataEntity
     resolve: (value: EntityMetadata | null) => void
@@ -380,6 +384,14 @@ function storedMetadata(metadata: EntityMetadata, resolvedAt: string): Record<st
     }
 }
 
+export function metadataUpdateRows(result: unknown): StoredMetadataRow[] {
+    if (!Array.isArray(result)) {
+        return []
+    }
+
+    return Array.isArray(result[0]) ? (result[0] as StoredMetadataRow[]) : (result as StoredMetadataRow[])
+}
+
 async function metadataRows(manager: EntityManager, type: MetadataEntityType, ids: string[]): Promise<MetadataRow[]> {
     if (type === 'collection') {
         return manager.query<MetadataRow[]>(
@@ -450,7 +462,7 @@ async function persistMetadata(
 ): Promise<Record<string, unknown>> {
     const table = entity.type === 'tokenGroup' ? 'token_group' : entity.type
     const value = storedMetadata(metadata, resolvedAt)
-    const updated = await manager.query<Array<{ storedMetadata: Record<string, unknown> }>>(
+    const updateResult = await manager.query<unknown>(
         `UPDATE ${table}
         SET stored_metadata = $1::jsonb
         WHERE id = $2
@@ -460,6 +472,7 @@ async function persistMetadata(
         RETURNING stored_metadata AS "storedMetadata"`,
         [JSON.stringify(value), entity.id, resolvedAt]
     )
+    const updated = metadataUpdateRows(updateResult)
 
     if (updated[0]) {
         return updated[0].storedMetadata
