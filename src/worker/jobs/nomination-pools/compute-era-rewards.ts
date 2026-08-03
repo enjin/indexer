@@ -12,7 +12,6 @@ import { In, LessThan } from 'typeorm'
 import Big from 'big.js'
 import processorConfig from '~/util/config'
 import { computeEraApy } from '~/pallet/nomination-pools/processors'
-import { netReinvested } from '~/pallet/nomination-pools/processors/reward-math'
 
 async function updatePoolApy(
     ctx: CommonContext,
@@ -141,8 +140,7 @@ export async function computeEraRewards(_job: Job, eraIndex: number): Promise<vo
         let commissionBeneficiary: string | undefined
 
         for (const eventData of events) {
-            // Reinvested = net of commission (what actually compounds). See reward-math.ts.
-            accumulatedRewards += netReinvested(eventData.reward, eventData.commission?.amount ?? 0n)
+            accumulatedRewards += eventData.reward + (eventData.commission?.amount ?? 0n)
             if (eventData.commission) {
                 accumulatedCommission += eventData.commission.amount
                 commissionBeneficiary = eventData.commission.beneficiary

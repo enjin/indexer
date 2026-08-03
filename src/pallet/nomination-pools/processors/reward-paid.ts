@@ -14,7 +14,6 @@ import { nominationPools } from '~/type/events'
 import { computeEraApy } from '~/pallet/nomination-pools/processors/era-rewards-processed'
 import { RewardPaid } from '~/pallet/nomination-pools/events/types'
 import { QueueUtils } from '~/queue'
-import { memberEraReward, netReinvested } from '~/pallet/nomination-pools/processors/reward-math'
 
 async function getMembersBalance(block: Block, poolId: number): Promise<Record<string, bigint>> {
     type StorageEntry = [k: [bigint, bigint, string], v: TokenAccount | undefined]
@@ -76,9 +75,7 @@ async function getReward(
         } else {
             existReward.commission = newCommission
         }
-        // Only the amount that actually compounds into the pool (gross reward minus the
-        // operator commission) is reinvested. See reward-math.ts for on-chain semantics.
-        existReward.reinvested += netReinvested(eventData.reward, newCommission?.amount ?? 0n)
+        existReward.reinvested += eventData.reward + (newCommission?.amount ?? 0n)
         existReward.rate = pool.rate
 
         await ctx.store.save(existReward)
@@ -100,7 +97,7 @@ async function getReward(
             averageApy: 0,
             bonus: 0n,
             active: pool.balance.active,
-            reinvested: netReinvested(eventData.reward, eventData.commission?.amount ?? 0n),
+            reinvested: eventData.reward + (eventData.commission?.amount ?? 0n),
             changeInRate: 0n,
         })
     }
@@ -127,6 +124,8 @@ async function calculateMemberRewards(
         },
     })
 
+    const totalPoolPoints = (pool.balance.active * 10n ** 18n) / pool.rate
+
     const inserts: PoolMemberRewards[] = []
 
     for (const member of members) {
@@ -144,11 +143,7 @@ async function calculateMemberRewards(
         }
 
         const points = memberBalances[member.account.id] ?? 0n
-        // Member reward = share of what actually compounded into the pool rate this era.
-        // Derived from the on-chain rate movement (points * changeInRate / 1e18), which
-        // equals the member's real value growth and matches Subscan. changeInRate is set on
-        // `reward` by updatePoolApy() before this runs.
-        const eraRewards = memberEraReward(points, reward.changeInRate)
+        const eraRewards = (points * reward.reinvested) / totalPoolPoints
         const newAccumulated = (member.accumulatedRewards || 0n) + eraRewards - previousReward
 
         member.accumulatedRewards = newAccumulated
