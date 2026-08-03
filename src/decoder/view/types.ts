@@ -28,6 +28,7 @@ export interface ResourceField {
 export interface CallField {
     type: 'call'
     title: string
+    subtitle: string
     fields: ViewField[]
 }
 

@@ -2,6 +2,8 @@ import { buildTransferBalanceView } from './builders/balances'
 import { buildGenericView } from './builders/generic'
 import {
     buildApproveCollectionView,
+    buildBatchMintTokenView,
+    buildBatchSetAttributeView,
     buildBatchTransferTokenView,
     buildBurnTokenView,
     buildCreateCollectionView,
@@ -36,6 +38,8 @@ const CALL_BUILDERS: Record<string, ViewBuilderFn> = {
     'XcmPallet::limited_teleport_assets': buildTeleportView,
     'PolkadotXcm::limited_teleport_assets': buildTeleportView,
     'MultiTokens::transfer': buildTransferTokenView,
+    'MultiTokens::batch_mint': buildBatchMintTokenView,
+    'MultiTokens::batch_set_attribute': buildBatchSetAttributeView,
     'MultiTokens::batch_transfer': buildBatchTransferTokenView,
     'MultiTokens::burn': buildBurnTokenView,
     'MultiTokens::mint': buildMintTokenView,
@@ -58,6 +62,8 @@ const CALL_BUILDERS: Record<string, ViewBuilderFn> = {
     'StakeExchange::create_offer': buildCreateOfferView,
     'StakeExchange::cancel_offer': buildCancelOfferView,
     'StakeExchange::buy': buildBuyOfferView,
+    'MatrixUtility::batch': buildBatchView,
+    'MatrixUtility::batch_all': buildBatchView,
     'Utility::batch': buildBatchView,
     'Utility::batch_all': buildBatchView,
 }

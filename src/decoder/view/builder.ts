@@ -1,4 +1,5 @@
 import type {
+    CallParts,
     CallField,
     CoinField,
     DividerField,
@@ -8,6 +9,14 @@ import type {
     TransactionView,
     ViewField,
 } from './types'
+import { getArg, getCallId } from './call'
+
+const CALL_ITEM_PATHS: Record<string, string> = {
+    'MultiTokens::batch_mint': 'recipients',
+    'MultiTokens::batch_set_attribute': 'attributes',
+    'MultiTokens::batch_transfer': 'recipients',
+    'NominationPools::nominate': 'validators',
+}
 
 export class TransactionViewBuilder {
     private fields: ViewField[] = []
@@ -49,11 +58,16 @@ export class TransactionViewBuilder {
         return this
     }
 
-    withCall(view: TransactionView): this {
+    withCall(view: TransactionView, call: CallParts): this {
+        const fields = view.fields.filter((f) => !(f.type === 'text' && f.title === 'Network'))
+        const itemPath = CALL_ITEM_PATHS[getCallId(call)]
+        const items = itemPath ? getArg(call.params, itemPath) : undefined
+        const itemCount = Array.isArray(items) ? items.length : fields.length
         const field: CallField = {
             type: 'call',
             title: view.title,
-            fields: view.fields.filter((f) => !(f.type === 'text' && f.title === 'Network')),
+            subtitle: `x ${itemCount}`,
+            fields,
         }
         this.fields.push(field)
         return this

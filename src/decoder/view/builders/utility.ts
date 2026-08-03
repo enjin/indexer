@@ -14,7 +14,7 @@ export const buildBatchView: ViewBuilderFn = ({ call, network, coinId }) => {
 
     for (const inner of batched) {
         const view = getBuilderForCall(inner)({ call: inner, network, coinId })
-        builder.withCall(view)
+        builder.withCall(view, inner)
     }
 
     return builder.build()
