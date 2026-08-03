@@ -139,6 +139,40 @@ void test('batch set attribute derives its subtitle from decoded attributes', ()
     })
 })
 
+void test('release stake converts its subtitle from base units to ENJ', () => {
+    const view = buildTransactionView(
+        {
+            Utility: {
+                batch_all: {
+                    calls: [
+                        {
+                            StakeExchange: {
+                                buy: {
+                                    offer_id: '5219',
+                                    token_id: '0',
+                                    amount: '948536817298206600',
+                                },
+                            },
+                        },
+                    ],
+                },
+            },
+        },
+        'enjin-matrixchain'
+    )
+
+    assert.deepEqual(view.fields[1], {
+        type: 'item',
+        title: 'Release Stake',
+        subtitle: '0.9485368172982066',
+        fields: [
+            { type: 'text', title: 'Offer ID', value: '5219' },
+            { type: 'text', title: 'Token ID', value: '0' },
+            { type: 'coin', title: 'Amount', coinId: 'enjin', value: '948536817298206600' },
+        ],
+    })
+})
+
 void test('nested call subtitles contain the returned field count', () => {
     const nested = TransactionViewBuilder.create('Mint NFTs')
         .withNetwork('Enjin Matrixchain')

@@ -18,6 +18,37 @@ const CALL_ITEM_PATHS: Record<string, string> = {
     'NominationPools::nominate': 'validators',
 }
 
+const ENJ_DECIMALS = 18
+
+function formatEnjAmount(value: unknown): string | undefined {
+    if (typeof value !== 'string' && typeof value !== 'bigint') return undefined
+
+    const raw = value.toString()
+    if (!/^\d+$/.test(raw)) return undefined
+
+    const normalized = raw.replace(/^0+(?=\d)/, '')
+    const padded = normalized.padStart(ENJ_DECIMALS + 1, '0')
+    const whole = padded.slice(0, -ENJ_DECIMALS)
+    const fraction = padded.slice(-ENJ_DECIMALS).replace(/0+$/, '')
+
+    return fraction ? `${whole}.${fraction}` : whole
+}
+
+function getCallSubtitle(call: CallParts, fields: ViewField[]): string {
+    const callId = getCallId(call)
+
+    if (callId === 'StakeExchange::buy') {
+        const amount = formatEnjAmount(getArg(call.params, 'amount'))
+        if (amount !== undefined) return amount
+    }
+
+    const itemPath = CALL_ITEM_PATHS[callId]
+    const items = itemPath ? getArg(call.params, itemPath) : undefined
+    const itemCount = Array.isArray(items) ? items.length : fields.length
+
+    return `x ${itemCount}`
+}
+
 export class TransactionViewBuilder {
     private fields: ViewField[] = []
 
@@ -60,13 +91,10 @@ export class TransactionViewBuilder {
 
     withCall(view: TransactionView, call: CallParts): this {
         const fields = view.fields.filter((f) => !(f.type === 'text' && f.title === 'Network'))
-        const itemPath = CALL_ITEM_PATHS[getCallId(call)]
-        const items = itemPath ? getArg(call.params, itemPath) : undefined
-        const itemCount = Array.isArray(items) ? items.length : fields.length
         const field: CallField = {
             type: 'item',
             title: view.title,
-            subtitle: `x ${itemCount}`,
+            subtitle: getCallSubtitle(call, fields),
             fields,
         }
         this.fields.push(field)
