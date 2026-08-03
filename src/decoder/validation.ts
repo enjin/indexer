@@ -7,7 +7,7 @@ import type {
 } from './types'
 import { NETWORKS } from './types'
 import { resolveNetwork } from './core'
-import type { EncodeRequest } from '../encoder/types'
+import type { EncodeCallInput, EncodeRequest } from '../encoder/types'
 
 export function validateDecodeRequest(
     body: unknown
@@ -108,6 +108,38 @@ export function validateDecodeRequest(
     }
 }
 
+function validateEncodeCallInput(
+    value: unknown,
+    label: string
+): { valid: true; data: EncodeCallInput } | { valid: false; error: string } {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) {
+        return { valid: false, error: `"${label}" must be an object` }
+    }
+
+    const call = value as Record<string, unknown>
+
+    if (typeof call.pallet !== 'string' || !call.pallet) {
+        return { valid: false, error: `"${label}.pallet" must be a non-empty string` }
+    }
+
+    if (typeof call.name !== 'string' || !call.name) {
+        return { valid: false, error: `"${label}.name" must be a non-empty string` }
+    }
+
+    if (call.args !== undefined && (typeof call.args !== 'object' || Array.isArray(call.args))) {
+        return { valid: false, error: `"${label}.args" must be an object` }
+    }
+
+    return {
+        valid: true,
+        data: {
+            pallet: call.pallet,
+            name: call.name,
+            args: call.args as Record<string, unknown> | undefined,
+        },
+    }
+}
+
 export function validateEncodeRequest(
     body: unknown
 ): { valid: true; data: EncodeRequest } | { valid: false; error: string } {
@@ -117,26 +149,39 @@ export function validateEncodeRequest(
 
     const req = body as Record<string, unknown>
 
-    if (req.call === undefined) {
-        return { valid: false, error: 'Missing "call" field' }
+    const hasCall = req.call !== undefined
+    const hasCalls = req.calls !== undefined
+
+    if (!hasCall && !hasCalls) {
+        return { valid: false, error: 'Missing "call" or "calls" field' }
     }
 
-    if (!req.call || typeof req.call !== 'object' || Array.isArray(req.call)) {
-        return { valid: false, error: '"call" must be an object' }
+    let call: EncodeCallInput | undefined
+    if (hasCall) {
+        const result = validateEncodeCallInput(req.call, 'call')
+        if (!result.valid) {
+            return result
+        }
+        call = result.data
     }
 
-    const call = req.call as Record<string, unknown>
+    let calls: EncodeCallInput[] | undefined
+    if (hasCalls) {
+        if (!Array.isArray(req.calls)) {
+            return { valid: false, error: '"calls" must be an array' }
+        }
+        if (req.calls.length === 0) {
+            return { valid: false, error: '"calls" must not be empty' }
+        }
 
-    if (typeof call.pallet !== 'string' || !call.pallet) {
-        return { valid: false, error: '"call.pallet" must be a non-empty string' }
-    }
-
-    if (typeof call.name !== 'string' || !call.name) {
-        return { valid: false, error: '"call.name" must be a non-empty string' }
-    }
-
-    if (call.args !== undefined && (typeof call.args !== 'object' || Array.isArray(call.args))) {
-        return { valid: false, error: '"call.args" must be an object' }
+        calls = []
+        for (const [index, item] of req.calls.entries()) {
+            const result = validateEncodeCallInput(item, `calls[${index}]`)
+            if (!result.valid) {
+                return result
+            }
+            calls.push(result.data)
+        }
     }
 
     if (req.network !== undefined) {
@@ -158,11 +203,8 @@ export function validateEncodeRequest(
     return {
         valid: true,
         data: {
-            call: {
-                pallet: call.pallet,
-                name: call.name,
-                args: call.args as Record<string, unknown> | undefined,
-            },
+            call,
+            calls,
             network: req.network,
             spec_version: req.spec_version,
         },
