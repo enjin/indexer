@@ -22,13 +22,55 @@ export const buildTransferTokenView: ViewBuilderFn = ({ call, network }) => {
 export const buildBatchTransferTokenView: ViewBuilderFn = ({ call, network }) => {
     const collectionId = displayValue(getArg(call.params, 'collection_id'))
     const recipients = getArg(call.params, 'recipients', [])
-    const count = Array.isArray(recipients) ? recipients.length : 0
+    const builder = TransactionViewBuilder.create('Transfer Item').withNetwork(network)
 
-    return TransactionViewBuilder.create('Batch Transfer Tokens')
-        .when(collectionId, (b) => b.withResource('collection', collectionId))
+    if (!collectionId || !Array.isArray(recipients)) return builder.build()
+
+    for (const [index] of recipients.entries()) {
+        const tokenId = displayValue(getArg(call.params, `recipients.${index}.params.Simple.token_id`))
+        if (tokenId) builder.withResource('asset', assetId(collectionId, tokenId))
+    }
+
+    return builder.build()
+}
+
+export const buildBatchMintTokenView: ViewBuilderFn = ({ call, network }) => {
+    const collectionId = displayValue(getArg(call.params, 'collection_id'))
+    const recipients = getArg(call.params, 'recipients', [])
+    const builder = TransactionViewBuilder.create('Mint NFTs').withNetwork(network)
+
+    if (!collectionId || !Array.isArray(recipients)) return builder.build()
+
+    for (const [index] of recipients.entries()) {
+        const tokenId = displayValue(
+            getArg(call.params, `recipients.${index}.params.CreateToken.token_id`) ??
+                getArg(call.params, `recipients.${index}.params.Mint.token_id`)
+        )
+        if (tokenId) builder.withResource('asset', assetId(collectionId, tokenId))
+    }
+
+    return builder.build()
+}
+
+export const buildBatchSetAttributeView: ViewBuilderFn = ({ call, network }) => {
+    const collectionId = displayValue(getArg(call.params, 'collection_id'))
+    const tokenId = displayValue(getArg(call.params, 'token_id'))
+    const attributes = getArg(call.params, 'attributes', [])
+    const title = tokenId ? 'Set NFT Attributes' : 'Set Collection Attributes'
+    const builder = TransactionViewBuilder.create(title)
+        .when(collectionId && !tokenId, (b) => b.withResource('collection', collectionId))
+        .when(collectionId && tokenId, (b) => b.withResource('asset', assetId(collectionId, tokenId)))
         .withNetwork(network)
-        .when(count > 0, (b) => b.withText('Transfers', String(count)))
-        .build()
+
+    if (!Array.isArray(attributes)) return builder.build()
+
+    for (const [index] of attributes.entries()) {
+        const key = displayValue(getArg(call.params, `attributes.${index}.key`))
+        const value = displayValue(getArg(call.params, `attributes.${index}.value`))
+        if (key || value) builder.withText(key, value)
+    }
+
+    return builder.build()
 }
 
 export const buildBurnTokenView: ViewBuilderFn = ({ call, network }) => {
