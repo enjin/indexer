@@ -10,12 +10,12 @@ enum ListingType {
     Offer = 'Offer',
 }
 
-enum ListingOrderByInput {
+export enum ListingOrderByInput {
     AMOUNT = 'amount',
     PRICE = 'price',
 }
 
-enum ListingOrderInput {
+export enum ListingOrderInput {
     ASC = 'ASC',
     DESC = 'DESC',
 }

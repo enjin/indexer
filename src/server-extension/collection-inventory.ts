@@ -457,7 +457,7 @@ export class CollectionInventoryResolver {
                 .leftJoinAndSelect('tg.collection', 'collection')
                 .leftJoinAndSelect('tg.attributes', 'tgAttrs')
                 .leftJoinAndSelect('collection.attributes', 'collectionAttrs', 'collectionAttrs.token IS NULL')
-                .addSelect('tg.metadata')
+                .addSelect('tg.storedMetadata')
                 .where('tg.id IN (:...groupIds)', { groupIds: pageGroupIds })
                 .getMany()
 
@@ -495,7 +495,7 @@ export class CollectionInventoryResolver {
 
                 groupsMap.set(groupId, {
                     ownedCount,
-                    metadata: group.metadata as any,
+                    metadata: group.storedMetadata as any,
                     attributes: (group.attributes || []).map((attr: any) => ({
                         key: attr.key,
                         value: attr.value,
@@ -505,7 +505,7 @@ export class CollectionInventoryResolver {
                         ? new CollectionInventoryItemCollection({
                               id: group.collection.id.toString(),
                               collectionId: group.collection.collectionId as any,
-                              metadata: group.collection.metadata as any,
+                              metadata: group.collection.storedMetadata as any,
                               attributes: collectionAttrs,
                           })
                         : undefined,
@@ -642,14 +642,14 @@ export class CollectionInventoryResolver {
                     tokenId: token.tokenId,
                     supply: token.supply,
                     isFrozen: token.isFrozen,
-                    metadata: token.metadata as any,
+                    metadata: token.storedMetadata as any,
                     nonFungible: token.nonFungible,
                     createdAt: token.createdAt,
                     collection: token.collection
                         ? new CollectionInventoryItemCollection({
                               id: token.collection.id.toString(),
                               collectionId: token.collection.collectionId as any,
-                              metadata: token.collection.metadata as any,
+                              metadata: token.collection.storedMetadata as any,
                               attributes: collectionAttrs,
                           })
                         : undefined,

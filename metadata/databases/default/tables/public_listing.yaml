@@ -1,0 +1,55 @@
+table:
+  name: listing
+  schema: public
+object_relationships:
+  - name: makeAssetId
+    using:
+      foreign_key_constraint_on: make_asset_id_id
+  - name: seller
+    using:
+      foreign_key_constraint_on: seller_id
+  - name: takeAssetId
+    using:
+      foreign_key_constraint_on: take_asset_id_id
+array_relationships:
+  - name: bids
+    using:
+      foreign_key_constraint_on:
+        column: listing_id
+        table:
+          name: bid
+          schema: public
+  - name: counterOffers
+    using:
+      foreign_key_constraint_on:
+        column: listing_id
+        table:
+          name: counter_offer
+          schema: public
+  - name: sales
+    using:
+      foreign_key_constraint_on:
+        column: listing_id
+        table:
+          name: listing_sale
+          schema: public
+  - name: status
+    using:
+      foreign_key_constraint_on:
+        column: listing_id
+        table:
+          name: listing_status
+          schema: public
+  - name: whitelistedAccounts
+    using:
+      foreign_key_constraint_on:
+        column: listing_id
+        table:
+          name: whitelisted_account
+          schema: public
+select_permissions:
+  - role: public
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true

@@ -1,4 +1,4 @@
-import { Query, Resolver, Arg, ArgsType, Field, Args } from 'type-graphql'
+import { Args, ArgsType, Field, Mutation, Resolver } from 'type-graphql'
 import 'reflect-metadata'
 import { QueueUtils } from '~/queue'
 
@@ -10,7 +10,7 @@ export class RefreshListingsArgs {
 
 @Resolver()
 export class RefreshListingsResolver {
-    @Query(() => Boolean, { nullable: false })
+    @Mutation(() => Boolean, { nullable: false })
     refreshListings(@Args() args: RefreshListingsArgs): boolean {
         if (args.ids.length > 100) {
             throw new Error('Too many listings to refresh, limit is 100')

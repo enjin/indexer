@@ -25,13 +25,13 @@ export async function computeExtras(_job: Job, ids: string[]): Promise<void> {
             })
 
             collection.verifiedAt = _c.verifiedAt ? new Date(_c.verifiedAt) : null
-            if (!collection.metadata) {
-                collection.metadata = new Metadata()
+            if (!collection.storedMetadata) {
+                collection.storedMetadata = new Metadata()
             }
             if (_c.website) {
-                collection.metadata.externalUrl = _c.website
+                collection.storedMetadata.externalUrl = _c.website
             }
-            collection.metadata.socials = new EntitySocials({
+            collection.storedMetadata.socials = new EntitySocials({
                 discord: _c.discord,
                 x: _c.twitter,
                 instagram: _c.instagram,

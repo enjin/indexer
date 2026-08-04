@@ -15,15 +15,17 @@ Enjin Indexer is a TypeScript/Subsquid application that reads Enjin blockchain d
 
 ## Runtime architecture
 
-The deployed system has five cooperating services:
+The deployed system has seven cooperating services:
 
 1. **Processor** — `src/main.ts` configures the Subsquid batch processor, decodes blocks, dispatches calls/events to pallet handlers, and persists entities to PostgreSQL.
 2. **PostgreSQL** — stores indexed entities, chain state, events, extrinsics, and derived data through TypeORM.
-3. **GraphQL API** — Subsquid's GraphQL server exposes schema entities and custom resolvers from `src/server-extension/`.
-4. **Worker** — `src/worker/index.ts` runs BullMQ consumers for metadata and derived-data jobs and exposes Bull Board on port 9090.
-5. **Redis** — backs BullMQ and the GraphQL dumb cache.
+3. **Hasura GraphQL API** — exposes tracked PostgreSQL tables and the indexer extension Remote Schema as one graph.
+4. **Extension Remote Schema** — `src/remote-schema/index.ts` serves the TypeGraphQL queries and command mutations from `src/server-extension/` without duplicating the persisted entity graph.
+5. **Worker** — `src/worker/index.ts` runs BullMQ consumers for metadata and derived-data jobs and exposes Bull Board on port 9090.
+6. **Redis** — backs BullMQ and the transitional Subsquid GraphQL dumb cache.
+7. **Transitional Subsquid GraphQL API** — preserves the previous combined entity/extension endpoint while clients migrate to Hasura.
 
-The GraphQL container also starts the Prometheus metrics process and decoder server. `start.sh` selects processor, GraphQL, or worker behavior through `CONTAINER_ROLE`. `docker-compose.yml` is the simplest way to run the full local topology and additionally includes Hasura.
+The transitional GraphQL container also starts the Prometheus metrics process and decoder server. `start.sh` selects processor, GraphQL, worker, or extension Remote Schema behavior through `CONTAINER_ROLE`. `docker-compose.yml` is the simplest way to run the full local topology. Its pinned Hasura `cli-migrations-v3` image applies the version-controlled `metadata/` directory at startup.
 
 ## Main processing flow
 
@@ -72,10 +74,11 @@ Important semantics:
 | `src/queue/` | BullMQ queue instances, options, constants, and dispatch helpers |
 | `src/worker/` | Worker bootstrap, job implementations, and processors |
 | `src/server-extension/` | Custom GraphQL resolvers and query helpers |
+| `src/remote-schema/` | Dedicated GraphQL host used by Hasura as a Remote Schema |
+| `metadata/` | Canonical Hasura tables, Remote Schemas, and permissions |
 | `src/decoder/`, `src/encoder/` | Runtime data decode/encode services |
 | `src/prom-metrics/` | Prometheus registry and metric definitions |
 | `db/migrations/` | TypeORM migration artifacts |
-| `hasura_metadata.json` | Generated/applied Hasura metadata |
 | `lib/` | Ignored JavaScript build output |
 
 ## Pallet organization and compatibility
@@ -94,7 +97,7 @@ Adding a type definition alone does not index it. The subscription, handler rout
 
 ## Data model and schema workflow
 
-`schema.graphql` defines the persisted entity model. The generated classes in `src/model/generated/` should be considered disposable output.
+`schema.graphql` defines the persisted entity model. The generated classes in `src/model/generated/` should be considered disposable output. Hasura metadata is maintained separately under `metadata/`; do not use Subsquid's monolithic metadata regeneration/apply commands because they omit Remote Schemas and other directory metadata.
 
 For a schema change:
 
@@ -110,7 +113,7 @@ Inspect the generated model and migration, especially nullability, indexes, uniq
 pnpm run db:migrate
 ```
 
-The current `schema:generate` package script references `hasura:regenerate`, while the defined script is named `schema:regenerate`. Until those names are aligned, run the individual schema/codegen/build/Hasura commands deliberately rather than relying on `schema:generate`.
+After reviewing and applying the database migration, update the affected tracked-table YAML under `metadata/databases/default/tables/` and apply the complete metadata directory with `pnpm run schema:hasura`. Never replace it with a generated monolithic metadata file; doing so would remove the extension Remote Schema.
 
 ## Chain metadata and type generation
 
@@ -136,7 +139,9 @@ During initial synchronization, selected queues are paused and later resumed. Ch
 
 ## GraphQL and server extensions
 
-Subsquid exposes persisted entities from the schema. Custom API operations live in `src/server-extension/`; resolver classes are collected in `src/server-extension/resolvers/index.ts`.
+Hasura is the primary GraphQL boundary. It exposes persisted entities from tracked tables and merges the dedicated extension service defined by `metadata/remote_schemas.yaml`. Custom API operations live in `src/server-extension/`; every resolver class exposed to clients must be collected in `src/server-extension/resolvers/index.ts`.
+
+The extension Remote Schema owns both read/compute queries and queue-oriented command mutations. Refresh and import resolvers must use `@Mutation` so their state-changing behavior is explicit in the merged Hasura graph. Hasura Actions are intentionally unused. Hasura-to-extension requests are authenticated with `HASURA_EXTENSION_SECRET`, and the extension service should not be published outside the service network.
 
 Some extensions enqueue refresh/import work, and others execute database queries. Changes here should account for:
 
@@ -170,6 +175,7 @@ pnpm run dev:processor
 pnpm run dev:worker
 pnpm run dev:decoder
 pnpm run dev:metris
+pnpm run dev:extensions
 ```
 
 `dev:metris` is the existing script name despite the spelling. The quickest full environment remains:
@@ -192,7 +198,7 @@ pnpm run build
 
 `pnpm run lint` and `pnpm run prettier` are auto-fixing commands. Markdown, generated models/types, migrations, and several integration-heavy directories are excluded from some formatting or lint rules, so a passing check does not replace focused review.
 
-There is no unit-test command at present. Validate behavior proportionally with a local processor replay, a focused GraphQL query, a queue job run, or migration inspection, and record what was exercised.
+Run focused unit tests with `pnpm run test`. Integration-heavy behavior still requires proportional validation with a local processor replay, a focused GraphQL query, a queue job run, or migration inspection; record what was exercised.
 
 ## High-risk areas
 

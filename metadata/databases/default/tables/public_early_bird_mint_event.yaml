@@ -1,0 +1,19 @@
+table:
+  name: early_bird_mint_event
+  schema: public
+object_relationships:
+  - name: era
+    using:
+      foreign_key_constraint_on: era_id
+  - name: pool
+    using:
+      foreign_key_constraint_on: pool_id
+  - name: poolMember
+    using:
+      foreign_key_constraint_on: pool_member_id
+select_permissions:
+  - role: public
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true

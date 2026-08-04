@@ -79,16 +79,16 @@ export async function attributeSet(
         attribute.value = value
         attribute.updatedAt = new Date(block.timestamp ?? 0)
         if (token) {
-            if (!token.metadata) {
-                token.metadata = new Metadata()
+            if (!token.storedMetadata) {
+                token.storedMetadata = new Metadata()
             }
             if (attribute.key === 'hidden') {
                 token.hidden = value === 'true'
             }
             await ctx.store.save(token)
         } else {
-            if (!collection.metadata) {
-                collection.metadata = new Metadata()
+            if (!collection.storedMetadata) {
+                collection.storedMetadata = new Metadata()
             }
             if (attribute.key === 'hidden') {
                 collection.hidden = value === 'true'
@@ -111,8 +111,8 @@ export async function attributeSet(
         await ctx.store.insert(attribute)
 
         if (token) {
-            if (!token.metadata) {
-                token.metadata = new Metadata()
+            if (!token.storedMetadata) {
+                token.storedMetadata = new Metadata()
             }
             if (attribute.key === 'hidden') {
                 token.hidden = value === 'true'
@@ -120,8 +120,8 @@ export async function attributeSet(
             token.attributeCount += 1
             await ctx.store.save(token)
         } else {
-            if (!collection.metadata) {
-                collection.metadata = new Metadata()
+            if (!collection.storedMetadata) {
+                collection.storedMetadata = new Metadata()
             }
             collection.attributeCount += 1
             if (attribute.key === 'hidden') {

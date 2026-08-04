@@ -51,7 +51,7 @@ export async function bonded(ctx: CommonContext, block: Block, item: EventItem):
                 mintDeposit: 0n,
                 attributeCount: 0,
                 collection: new Collection({ id: '1' }),
-                metadata: null,
+                storedMetadata: null,
                 nonFungible: true,
                 listingForbidden: false,
                 createdAt: new Date(block.timestamp ?? 0),

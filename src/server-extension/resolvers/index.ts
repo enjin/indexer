@@ -20,6 +20,10 @@ import {
     RefreshListingsResolver,
     CollectionInventoryResolver,
     ChainStatsResolver,
+    SearchTokensResolver,
+    BlockDetailsResolver,
+    ImportBlockResolver,
+    EntityMetadataResolver,
 } from '~/server-extension'
 
 export {
@@ -44,4 +48,8 @@ export {
     RefreshListingsResolver,
     CollectionInventoryResolver,
     ChainStatsResolver,
+    SearchTokensResolver,
+    BlockDetailsResolver,
+    ImportBlockResolver,
+    EntityMetadataResolver,
 }

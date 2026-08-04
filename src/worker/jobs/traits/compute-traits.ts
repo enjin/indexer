@@ -25,7 +25,7 @@ export async function computeTraits(job: Job, id: string) {
             .getRepository(Token)
             .createQueryBuilder('token')
             .select('token.id')
-            .addSelect('token.metadata')
+            .addSelect('token.storedMetadata')
             .addSelect('token.supply')
             .where('token.collection = :id', { id })
             .andWhere('token.supply > 0')
@@ -53,8 +53,13 @@ export async function computeTraits(job: Job, id: string) {
     await job.updateProgress(30)
 
     tokens.forEach((token) => {
-        if (!token.metadata || !token.metadata.attributes || !isPlainObject(token.metadata.attributes)) return
-        const attributes = token.metadata.attributes as Record<
+        if (
+            !token.storedMetadata ||
+            !token.storedMetadata.attributes ||
+            !isPlainObject(token.storedMetadata.attributes)
+        )
+            return
+        const attributes = token.storedMetadata.attributes as Record<
             string,
             { value: string; name?: string; display_name?: string; display_value?: string } | string
         >

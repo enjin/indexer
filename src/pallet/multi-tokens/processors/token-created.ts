@@ -99,7 +99,7 @@ async function tokenFromCall(
         attributeCount: 0,
         creationSupply: existingSupply,
         collection,
-        metadata: null,
+        storedMetadata: null,
         nonFungible: false,
         listingForbidden: false,
         accountDepositCount: 0,

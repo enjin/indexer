@@ -23,6 +23,8 @@ elif [ "$ROLE" = "graphql" ]; then
     wait $P1 $P2 $P3
 elif [ "$ROLE" = "worker" ]; then
     pnpm run worker
+elif [ "$ROLE" = "extensions" ]; then
+    pnpm run extensions
 else
     echo "Could not match the container role \"$ROLE\""
     exit 1

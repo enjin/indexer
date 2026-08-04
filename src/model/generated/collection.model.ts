@@ -91,7 +91,7 @@ export class Collection {
     name!: string | undefined | null
 
     @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new Metadata(undefined, obj)}, nullable: true})
-    metadata!: Metadata | undefined | null
+    storedMetadata!: Metadata | undefined | null
 
     @DateTimeColumn_({nullable: false})
     createdAt!: Date

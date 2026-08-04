@@ -14,7 +14,7 @@ const stakingTimeFrameMap = {
     ALL: '0',
 }
 
-enum StakingTimeframeInput {
+export enum StakingTimeframeInput {
     DAY = 'DAY',
     WEEK = 'WEEK',
     MONTH = 'MONTH',

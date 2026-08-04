@@ -1,4 +1,4 @@
-import { Query, Resolver, ArgsType, Field, Args, Int } from 'type-graphql'
+import { Args, ArgsType, Field, Int, Mutation, Resolver } from 'type-graphql'
 import 'reflect-metadata'
 import { QueueUtils } from '~/queue'
 import { Min } from 'class-validator'
@@ -16,9 +16,17 @@ export class ImportBlockArgs {
 
 @Resolver()
 export class ImportBlockResolver {
-    @Query(() => Boolean, { nullable: false })
+    @Mutation(() => Boolean, { nullable: false })
     importBlock(@Args() args: ImportBlockArgs): boolean {
         const { blockNumber, toBlock } = args
+
+        if (!Number.isSafeInteger(blockNumber) || blockNumber < 1) {
+            throw new Error('blockNumber must be a positive integer')
+        }
+
+        if (toBlock !== undefined && (!Number.isSafeInteger(toBlock) || toBlock < 1)) {
+            throw new Error('toBlock must be a positive integer')
+        }
 
         if (toBlock !== undefined && toBlock < blockNumber) {
             throw new Error(`toBlock (${toBlock}) must be >= blockNumber (${blockNumber})`)

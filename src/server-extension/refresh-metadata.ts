@@ -1,4 +1,4 @@
-import { Field, ObjectType, Query, Resolver, Arg, registerEnumType, InputType } from 'type-graphql'
+import { Arg, Field, InputType, Mutation, ObjectType, registerEnumType, Resolver } from 'type-graphql'
 import 'reflect-metadata'
 import { type EntityManager } from 'typeorm'
 import NodeCache from 'node-cache'
@@ -14,7 +14,7 @@ registerEnumType(RefreshMetadataResponseStatus, {
     name: 'RefreshMetadataResponseStatus',
 })
 
-enum RefreshMetadataType {
+export enum RefreshMetadataType {
     COLLECTION = 'collection',
     TOKEN = 'token',
     TOKEN_GROUP = 'token_group',
@@ -49,7 +49,7 @@ const mins30 = 30 * 60 * 1000 // 30 minutes in ms
 export class RefreshMetadataResolver {
     constructor(private tx: () => Promise<EntityManager>) {}
 
-    @Query(() => RefreshMetadataResponse, { nullable: false })
+    @Mutation(() => RefreshMetadataResponse, { nullable: false })
     async refreshMetadata(
         @Arg('ids', () => [RefreshMetadataInput]) ids: RefreshMetadataInput[],
         @Arg('force', () => Boolean, { nullable: true }) force?: boolean,
@@ -85,7 +85,7 @@ export class RefreshMetadataResolver {
                         continue
                     }
 
-                    if (hasExpiredMetadata(resource.metadata)) {
+                    if (hasExpiredMetadata(resource.storedMetadata)) {
                         const uri = includeResourceUris(resource)
                         if (uri) {
                             urisToRefresh.add(uri)
@@ -105,7 +105,7 @@ export class RefreshMetadataResolver {
                         continue
                     }
 
-                    if (hasExpiredMetadata(resource.metadata)) {
+                    if (hasExpiredMetadata(resource.storedMetadata)) {
                         const uri = includeResourceUris(resource)
                         if (uri) {
                             urisToRefresh.add(uri)
@@ -123,7 +123,7 @@ export class RefreshMetadataResolver {
                         continue
                     }
 
-                    if (hasExpiredMetadata(resource.metadata)) {
+                    if (hasExpiredMetadata(resource.storedMetadata)) {
                         const uri = includeResourceUris(resource)
                         if (uri) {
                             urisToRefresh.add(uri)
@@ -174,7 +174,7 @@ export class RefreshMetadataResolver {
 }
 
 function hasExpiredMetadata(metadata: Metadata | null | undefined): boolean {
-    return (metadata?.lastUpdated && metadata.lastUpdated < new Date(Date.now() - 6 * 60 * 60 * 1000)) || false
+    return !metadata?.lastUpdated || metadata.lastUpdated < new Date(Date.now() - 6 * 60 * 60 * 1000)
 }
 
 function includeResourceUris(resource: Collection | Token | TokenGroup): string | null {

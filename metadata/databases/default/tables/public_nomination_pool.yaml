@@ -1,0 +1,42 @@
+table:
+  name: nomination_pool
+  schema: public
+object_relationships:
+  - name: degenToken
+    using:
+      foreign_key_constraint_on: degen_token_id
+array_relationships:
+  - name: eraRewards
+    using:
+      foreign_key_constraint_on:
+        column: pool_id
+        table:
+          name: era_reward
+          schema: public
+  - name: members
+    using:
+      foreign_key_constraint_on:
+        column: pool_id
+        table:
+          name: pool_member
+          schema: public
+  - name: stakeExchangeOffers
+    using:
+      foreign_key_constraint_on:
+        column: pool_id
+        table:
+          name: pools_offers
+          schema: public
+  - name: validators
+    using:
+      foreign_key_constraint_on:
+        column: pool_id
+        table:
+          name: pool_validator
+          schema: public
+select_permissions:
+  - role: public
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true

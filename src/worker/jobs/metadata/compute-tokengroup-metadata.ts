@@ -133,7 +133,8 @@ export async function computeTokenGroupMetadata(job: Job) {
 
             await job.updateProgress(90)
 
-            resource.metadata = metadata
+            resource.storedMetadata = metadata
+            resource.storedMetadata.lastUpdated = new Date()
 
             await em.save(resource)
 

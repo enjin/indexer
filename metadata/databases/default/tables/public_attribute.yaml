@@ -1,0 +1,19 @@
+table:
+  name: attribute
+  schema: public
+object_relationships:
+  - name: collection
+    using:
+      foreign_key_constraint_on: collection_id
+  - name: token
+    using:
+      foreign_key_constraint_on: token_id
+  - name: tokenGroup
+    using:
+      foreign_key_constraint_on: token_group_id
+select_permissions:
+  - role: public
+    permission:
+      columns: '*'
+      filter: {}
+      allow_aggregations: true
