@@ -275,9 +275,9 @@ function parseMetadata(uri: string, response: MetadataResponse | null | undefine
     })
 }
 
-export function isFreshMetadata(metadata: Record<string, unknown> | null, now = Date.now()): boolean {
+export function isFreshMetadata(metadata: Record<string, unknown> | null, uri: string | null, now = Date.now()): boolean {
     const lastUpdated = optionalDate(metadata?.lastUpdated)
-    return lastUpdated !== undefined && lastUpdated.getTime() >= now - METADATA_MAX_AGE_MS
+    return lastUpdated !== undefined && lastUpdated.getTime() >= now - METADATA_MAX_AGE_MS && uri === optionalString(metadata?.originUrl)
 }
 
 export class MetadataServiceClient {
@@ -562,13 +562,13 @@ class EntityMetadataLoader {
                 results.set(key, null)
                 continue
             }
+            const uri = resolvedUri(entity, row)
 
-            if (isFreshMetadata(row.storedMetadata)) {
+            if (isFreshMetadata(row.storedMetadata, uri)) {
                 results.set(key, toEntityMetadata(row.storedMetadata))
                 continue
             }
 
-            const uri = resolvedUri(entity, row)
             if (!uri) {
                 results.set(key, toEntityMetadata(row.storedMetadata))
                 continue

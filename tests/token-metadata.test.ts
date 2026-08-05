@@ -18,11 +18,21 @@ void test('substitutes every token ID placeholder in a metadata URI', () => {
 void test('treats metadata as fresh for six hours', () => {
     const now = Date.parse('2026-07-29T12:00:00.000Z')
 
-    assert.equal(isFreshMetadata({ lastUpdated: '2026-07-29T06:00:00.001Z' }, now), true)
-    assert.equal(isFreshMetadata({ lastUpdated: '2026-07-29T06:00:00.000Z' }, now), true)
-    assert.equal(isFreshMetadata({ lastUpdated: '2026-07-29T05:59:59.999Z' }, now), false)
-    assert.equal(isFreshMetadata({ lastUpdated: 'invalid' }, now), false)
-    assert.equal(isFreshMetadata(null, now), false)
+    assert.equal(
+        isFreshMetadata({ lastUpdated: '2026-07-29T06:00:00.001Z' }, 'https://origin.example/2000-1', now),
+        true
+    )
+    assert.equal(
+        isFreshMetadata({ lastUpdated: '2026-07-29T06:00:00.000Z' }, 'https://origin.example/2000-1', now),
+        true
+    )
+    assert.equal(
+        isFreshMetadata({ lastUpdated: '2026-07-29T05:59:59.999Z' }, 'https://origin.example/2000-1', now),
+        false
+    )
+    assert.equal(isFreshMetadata({ lastUpdated: 'invalid' }, 'https://origin.example/2000-1', now), false)
+    assert.equal(isFreshMetadata(null, null, now), false)
+    assert.equal(isFreshMetadata(null, 'https://origin.example/2000-1', now), false)
 })
 
 void test('extracts rows from TypeORM update returning results', () => {
@@ -54,7 +64,7 @@ void test('normalizes the Enjin metadata service response', async () => {
             assert.equal(typeof init?.body, 'string')
             requests.push({
                 url: typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url,
-                body: JSON.parse(init.body) as {
+                body: JSON.parse(init?.body as string) as {
                     variables: {
                         urls: string[]
                         language?: string
