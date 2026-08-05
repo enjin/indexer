@@ -1,7 +1,8 @@
 import { EntityManager, IsNull } from 'typeorm'
-import { Attribute, Collection, Metadata, Token } from '~/model'
+import { Attribute, Collection, Token } from '~/model'
 import { connectionManager } from '~/contexts'
-import { fetchMetadata, metadataParser } from '~/util/metadata'
+import { fetchMetadata } from '~/util/metadata'
+import { MetadataService } from '~/util/metadata-service'
 import { Job } from 'bullmq'
 import { QueueUtils } from '~/queue'
 
@@ -40,6 +41,7 @@ export async function computeMetadata(job: Job) {
 
         await con.transaction('READ COMMITTED', async (em) => {
             const jobData = job.data
+            const metadataService = new MetadataService()
 
             let resource: Collection | Token | null
             let attributes: Attribute[] = []
@@ -121,7 +123,6 @@ export async function computeMetadata(job: Job) {
             await job.updateProgress(25)
 
             let externalMetadata: any = {}
-            let metadata = new Metadata()
 
             if (uriAttribute) {
                 const response = await em.connection.query<MetadataType[]>(
@@ -160,23 +161,15 @@ export async function computeMetadata(job: Job) {
                     }
                     await job.updateProgress(60)
                 }
-
-                metadata = metadataParser(metadata, uriAttribute, externalMetadata)
                 await job.updateProgress(70)
             }
 
-            // add other attributes
-            attributes
-                .filter((a) => a.key !== 'uri')
-                .forEach(async (a) => {
-                    metadata = metadataParser(metadata, a, null)
-                })
-
             await job.updateProgress(80)
 
-            resource.name = metadata.name
-            resource.metadata = metadata
-            resource.metadata.lastUpdated = new Date()
+            const metadata =
+                resource instanceof Token
+                    ? metadataService.applyTokenMetadata(resource, externalMetadata)
+                    : metadataService.applyMetadata(resource, externalMetadata, attributes)
 
             await em.save(resource)
 

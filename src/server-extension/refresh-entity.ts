@@ -118,18 +118,6 @@ export class RefreshEntityResolver {
                     QueueUtils.dispatchComputeAccountStats(id)
                 }
                 break
-            case EntityType.COMPUTE_METADATA:
-                for (const id of args.ids) {
-                    const resourceType = id.includes('-') ? 'token' : 'collection'
-                    QueueUtils.dispatchComputeMetadata({
-                        id: id,
-                        type: resourceType,
-                        allTokens: false,
-                        force: true,
-                        delay: 10000,
-                    })
-                }
-                break
             case EntityType.SYNC_FUEL_TANK_RULE_SETS:
                 for (const id of args.ids) {
                     QueueUtils.dispatchSyncFuelTankRuleSets(id)

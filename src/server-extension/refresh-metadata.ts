@@ -1,8 +1,7 @@
 import { Field, ObjectType, Query, Resolver, Arg, registerEnumType, InputType } from 'type-graphql'
 import 'reflect-metadata'
 import { type EntityManager } from 'typeorm'
-import NodeCache from 'node-cache'
-import { Collection, Metadata, Token, TokenGroup } from '~/model'
+import { Collection, Token, TokenGroup } from '~/model'
 import { QueueUtils } from '~/queue'
 
 enum RefreshMetadataResponseStatus {
@@ -42,9 +41,6 @@ class RefreshMetadataResponse {
     error?: string
 }
 
-const rateLimitMap = new NodeCache({ stdTTL: 60 * 60 * 24, checkperiod: 60 * 60 })
-const mins30 = 30 * 60 * 1000 // 30 minutes in ms
-
 @Resolver()
 export class RefreshMetadataResolver {
     constructor(private tx: () => Promise<EntityManager>) {}
@@ -64,7 +60,6 @@ export class RefreshMetadataResolver {
 
         const errors: string[] = []
         const processedCollections = new Set<string>()
-        const urisToRefresh = new Set<string>()
 
         for (const item of ids) {
             try {
@@ -75,28 +70,15 @@ export class RefreshMetadataResolver {
                 if (item.type === RefreshMetadataType.TOKEN) {
                     resource = await manager.findOne(Token, {
                         where: { id: item.id },
-                        relations: {
-                            attributes: true,
-                        },
                     })
 
                     if (!resource) {
                         errors.push(`Token not found: ${item.id}`)
                         continue
                     }
-
-                    if (hasExpiredMetadata(resource.metadata)) {
-                        const uri = includeResourceUris(resource)
-                        if (uri) {
-                            urisToRefresh.add(uri)
-                        }
-                    }
                 } else if (item.type === RefreshMetadataType.COLLECTION) {
                     resource = await manager.findOne(Collection, {
                         where: { id: item.id },
-                        relations: {
-                            attributes: true,
-                        },
                     })
                     collectionId = item.id
 
@@ -104,34 +86,17 @@ export class RefreshMetadataResolver {
                         errors.push(`Collection not found: ${item.id}`)
                         continue
                     }
-
-                    if (hasExpiredMetadata(resource.metadata)) {
-                        const uri = includeResourceUris(resource)
-                        if (uri) {
-                            urisToRefresh.add(uri)
-                        }
-                    }
                 } else if (item.type === RefreshMetadataType.TOKEN_GROUP) {
                     resource = await manager.findOne(TokenGroup, {
                         where: { id: item.id },
-                        relations: {
-                            attributes: true,
-                        },
                     })
                     if (!resource) {
                         errors.push(`Token group not found: ${item.id}`)
                         continue
                     }
 
-                    if (hasExpiredMetadata(resource.metadata)) {
-                        const uri = includeResourceUris(resource)
-                        if (uri) {
-                            urisToRefresh.add(uri)
-                        }
-                    }
-
                     // Dispatch token group metadata computation
-                    await QueueUtils.dispatchComputeTokenGroupMetadata(item.id)
+                    await QueueUtils.dispatchComputeTokenGroupMetadata(item.id, undefined, force ?? true)
                     continue
                 } else {
                     errors.push(`Unknown type for ID: ${item.id}`)
@@ -171,18 +136,4 @@ export class RefreshMetadataResolver {
 
         return { status: RefreshMetadataResponseStatus.SUCCESS }
     }
-}
-
-function hasExpiredMetadata(metadata: Metadata | null | undefined): boolean {
-    return (metadata?.lastUpdated && metadata.lastUpdated < new Date(Date.now() - 6 * 60 * 60 * 1000)) || false
-}
-
-function includeResourceUris(resource: Collection | Token | TokenGroup): string | null {
-    const attributes = resource.attributes ?? []
-    const uriAttribute = attributes.find((a) => a.key === 'uri')
-    if (uriAttribute) {
-        return uriAttribute.value
-    }
-
-    return null
 }

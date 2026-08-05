@@ -314,14 +314,14 @@ export async function dispatchComputeMetadata({
     })
 }
 
-export async function dispatchComputeTokenGroupMetadata(id: string, delay?: number): Promise<void> {
-    const jobId = `metadata.tokenGroup.${id}`
+export async function dispatchComputeTokenGroupMetadata(id: string, delay?: number, force = false): Promise<void> {
+    const jobId = force ? `metadata.tokenGroup.force.${id}` : `metadata.tokenGroup.${id}`
     const job = await MetadataQueue.getJob(jobId)
     if (job?.id && (await hasExistingJob(job))) return
     if (job?.id) await MetadataQueue.remove(job.id)
     MetadataQueue.add(
         JobsEnum.COMPUTE_TOKEN_GROUP_METADATA,
-        { id },
+        { id, force },
         {
             delay,
             jobId,
