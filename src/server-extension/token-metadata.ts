@@ -76,6 +76,8 @@ interface ManyMetadataResponse {
 interface MetadataRow {
     id: string
     storedMetadata: Record<string, unknown> | null
+    groupStoredMetadata: Record<string, unknown> | null
+    collectionStoredMetadata: Record<string, unknown> | null
     ownUri: string | null
     groupUri: string | null
     collectionUri: string | null
@@ -160,6 +162,20 @@ export class EntityMetadata {
     }
 }
 
+type InheritableMetadataField =
+    'name' | 'description' | 'externalUrl' | 'keywords' | 'fallbackImage' | 'bannerImage' | 'media' | 'meta'
+
+const INHERITABLE_METADATA_FIELDS: InheritableMetadataField[] = [
+    'name',
+    'description',
+    'externalUrl',
+    'keywords',
+    'fallbackImage',
+    'bannerImage',
+    'media',
+    'meta',
+]
+
 function positiveInteger(value: string | undefined, fallback: number): number {
     if (value === undefined || value === '') {
         return fallback
@@ -236,6 +252,67 @@ function optionalMedia(value: unknown): EntityMetadataMedia[] | undefined {
     })
 }
 
+function isMissingMetadataValue(value: unknown): boolean {
+    if (value === null || value === undefined || value === '') {
+        return true
+    }
+
+    if (Array.isArray(value)) {
+        return value.length === 0
+    }
+
+    return (
+        typeof value === 'object' &&
+        Object.getPrototypeOf(value) === Object.prototype &&
+        Object.keys(value).length === 0
+    )
+}
+
+function metadataAttributes(value: unknown): Record<string, unknown> {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) {
+        return {}
+    }
+
+    return Object.fromEntries(
+        Object.entries(value).filter(([, attributeValue]) => {
+            if (isMissingMetadataValue(attributeValue)) {
+                return false
+            }
+
+            if (typeof attributeValue === 'object' && attributeValue !== null && 'value' in attributeValue) {
+                return !isMissingMetadataValue(attributeValue.value)
+            }
+
+            return true
+        })
+    )
+}
+
+export function inheritEntityMetadata(
+    metadata: EntityMetadata,
+    inheritedMetadata: EntityMetadata | null | undefined
+): EntityMetadata {
+    if (!inheritedMetadata) {
+        return metadata
+    }
+
+    for (const field of INHERITABLE_METADATA_FIELDS) {
+        if (isMissingMetadataValue(metadata[field]) && !isMissingMetadataValue(inheritedMetadata[field])) {
+            metadata[field] = inheritedMetadata[field] as never
+        }
+    }
+
+    const inheritedAttributes = metadataAttributes(inheritedMetadata.attributes)
+    if (Object.keys(inheritedAttributes).length > 0) {
+        metadata.attributes = {
+            ...inheritedAttributes,
+            ...metadataAttributes(metadata.attributes),
+        } as unknown as typeof Json
+    }
+
+    return metadata
+}
+
 function toEntityMetadata(metadata: Record<string, unknown> | null): EntityMetadata | null {
     if (!metadata) {
         return null
@@ -258,6 +335,32 @@ function toEntityMetadata(metadata: Record<string, unknown> | null): EntityMetad
     })
 }
 
+function withInheritedMetadata(
+    entity: MetadataEntity,
+    row: MetadataRow,
+    metadata: EntityMetadata | null
+): EntityMetadata | null {
+    const inheritedMetadata =
+        entity.type === 'token'
+            ? [row.groupStoredMetadata, row.collectionStoredMetadata]
+            : entity.type === 'tokenGroup'
+              ? [row.collectionStoredMetadata]
+              : []
+    let resolvedMetadata = metadata
+
+    for (const inherited of inheritedMetadata) {
+        const parentMetadata = toEntityMetadata(inherited)
+        if (!parentMetadata) {
+            continue
+        }
+
+        resolvedMetadata ??= new EntityMetadata({})
+        inheritEntityMetadata(resolvedMetadata, parentMetadata)
+    }
+
+    return resolvedMetadata
+}
+
 function parseMetadata(uri: string, response: MetadataResponse | null | undefined): EntityMetadata | null {
     if (!response) {
         return null
@@ -275,9 +378,17 @@ function parseMetadata(uri: string, response: MetadataResponse | null | undefine
     })
 }
 
-export function isFreshMetadata(metadata: Record<string, unknown> | null, uri: string | null, now = Date.now()): boolean {
+export function isFreshMetadata(
+    metadata: Record<string, unknown> | null,
+    uri: string | null,
+    now = Date.now()
+): boolean {
     const lastUpdated = optionalDate(metadata?.lastUpdated)
-    return lastUpdated !== undefined && lastUpdated.getTime() >= now - METADATA_MAX_AGE_MS && uri === optionalString(metadata?.originUrl)
+    return (
+        lastUpdated !== undefined &&
+        lastUpdated.getTime() >= now - METADATA_MAX_AGE_MS &&
+        uri === optionalString(metadata?.originUrl)
+    )
 }
 
 export class MetadataServiceClient {
@@ -397,6 +508,8 @@ async function metadataRows(manager: EntityManager, type: MetadataEntityType, id
         return manager.query<MetadataRow[]>(
             `SELECT collection.id,
                 collection.stored_metadata AS "storedMetadata",
+                NULL::jsonb AS "groupStoredMetadata",
+                NULL::jsonb AS "collectionStoredMetadata",
                 own_uri.value AS "ownUri",
                 NULL::text AS "groupUri",
                 NULL::text AS "collectionUri"
@@ -414,6 +527,8 @@ async function metadataRows(manager: EntityManager, type: MetadataEntityType, id
         return manager.query<MetadataRow[]>(
             `SELECT token_group.id,
                 token_group.stored_metadata AS "storedMetadata",
+                NULL::jsonb AS "groupStoredMetadata",
+                collection.stored_metadata AS "collectionStoredMetadata",
                 own_uri.value AS "ownUri",
                 NULL::text AS "groupUri",
                 collection_uri.value AS "collectionUri"
@@ -423,6 +538,7 @@ async function metadataRows(manager: EntityManager, type: MetadataEntityType, id
                 AND collection_uri.token_id IS NULL
                 AND collection_uri.token_group_id IS NULL
                 AND collection_uri.key = 'uri'
+            LEFT JOIN collection ON collection.id = token_group.collection_id
             WHERE token_group.id = ANY($1::text[])`,
             [ids]
         )
@@ -431,24 +547,28 @@ async function metadataRows(manager: EntityManager, type: MetadataEntityType, id
     return manager.query<MetadataRow[]>(
         `SELECT token.id,
             token.stored_metadata AS "storedMetadata",
+            group_metadata.stored_metadata AS "groupStoredMetadata",
+            collection.stored_metadata AS "collectionStoredMetadata",
             own_uri.value AS "ownUri",
-            group_uri.value AS "groupUri",
+            group_metadata.value AS "groupUri",
             collection_uri.value AS "collectionUri"
         FROM token
         LEFT JOIN attribute own_uri ON own_uri.token_id = token.id AND own_uri.key = 'uri'
         LEFT JOIN LATERAL (
-            SELECT attribute.value
+            SELECT attribute.value, token_group.stored_metadata
             FROM token_group_token
-            INNER JOIN attribute ON attribute.token_group_id = token_group_token.token_group_id
+            INNER JOIN token_group ON token_group.id = token_group_token.token_group_id
+            LEFT JOIN attribute ON attribute.token_group_id = token_group_token.token_group_id
                 AND attribute.key = 'uri'
             WHERE token_group_token.token_id = token.id
             ORDER BY token_group_token.position NULLS LAST, token_group_token.id
             LIMIT 1
-        ) group_uri ON TRUE
+        ) group_metadata ON TRUE
         LEFT JOIN attribute collection_uri ON collection_uri.collection_id = token.collection_id
             AND collection_uri.token_id IS NULL
             AND collection_uri.token_group_id IS NULL
             AND collection_uri.key = 'uri'
+        LEFT JOIN collection ON collection.id = token.collection_id
         WHERE token.id = ANY($1::text[])`,
         [ids]
     )
@@ -565,12 +685,12 @@ class EntityMetadataLoader {
             const uri = resolvedUri(entity, row)
 
             if (isFreshMetadata(row.storedMetadata, uri)) {
-                results.set(key, toEntityMetadata(row.storedMetadata))
+                results.set(key, withInheritedMetadata(entity, row, toEntityMetadata(row.storedMetadata)))
                 continue
             }
 
             if (!uri) {
-                results.set(key, toEntityMetadata(row.storedMetadata))
+                results.set(key, withInheritedMetadata(entity, row, toEntityMetadata(row.storedMetadata)))
                 continue
             }
 
@@ -590,11 +710,17 @@ class EntityMetadataLoader {
                     const key = entityKey(entity)
                     const metadata = resolvedByUri.get(uri)
                     if (!metadata) {
-                        results.set(key, toEntityMetadata(rowsByKey.get(key)?.storedMetadata ?? null))
+                        const row = rowsByKey.get(key)
+                        results.set(
+                            key,
+                            row ? withInheritedMetadata(entity, row, toEntityMetadata(row.storedMetadata)) : null
+                        )
                         continue
                     }
 
-                    const persisted = await persistMetadata(manager, entity, metadata, resolvedAt)
+                    const row = rowsByKey.get(key)
+                    const resolvedMetadata = row ? withInheritedMetadata(entity, row, metadata) : metadata
+                    const persisted = await persistMetadata(manager, entity, resolvedMetadata ?? metadata, resolvedAt)
                     results.set(key, toEntityMetadata(persisted))
                 }
             }

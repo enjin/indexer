@@ -2,11 +2,58 @@ import 'reflect-metadata'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import {
+    EntityMetadata,
+    inheritEntityMetadata,
     isFreshMetadata,
     metadataUpdateRows,
     MetadataServiceClient,
     resolveTokenUri,
 } from '~/server-extension/token-metadata'
+
+void test('inherits missing token metadata through group and collection precedence', () => {
+    const tokenMetadata = new EntityMetadata({
+        name: 'Token name',
+        attributes: {
+            tokenOnly: { value: 'token' },
+        },
+    })
+    const groupMetadata = new EntityMetadata({
+        description: '',
+        fallbackImage: 'https://group.example/fallback.png',
+        attributes: {
+            shared: { value: 'group' },
+        },
+    })
+    const collectionMetadata = new EntityMetadata({
+        description: 'Collection description',
+        fallbackImage: 'https://collection.example/fallback.png',
+        attributes: {
+            shared: { value: 'collection' },
+            collectionOnly: { value: 'collection' },
+        },
+    })
+
+    inheritEntityMetadata(tokenMetadata, groupMetadata)
+    inheritEntityMetadata(tokenMetadata, collectionMetadata)
+
+    assert.equal(tokenMetadata.name, 'Token name')
+    assert.equal(tokenMetadata.description, 'Collection description')
+    assert.equal(tokenMetadata.fallbackImage, 'https://group.example/fallback.png')
+    assert.deepEqual(tokenMetadata.attributes, {
+        shared: { value: 'group' },
+        collectionOnly: { value: 'collection' },
+        tokenOnly: { value: 'token' },
+    })
+})
+
+void test('does not overwrite an existing token description', () => {
+    const tokenMetadata = new EntityMetadata({ description: 'Token description' })
+    const collectionMetadata = new EntityMetadata({ description: 'Collection description' })
+
+    inheritEntityMetadata(tokenMetadata, collectionMetadata)
+
+    assert.equal(tokenMetadata.description, 'Token description')
+})
 
 void test('substitutes every token ID placeholder in a metadata URI', () => {
     assert.equal(
@@ -19,15 +66,36 @@ void test('treats metadata as fresh for six hours', () => {
     const now = Date.parse('2026-07-29T12:00:00.000Z')
 
     assert.equal(
-        isFreshMetadata({ lastUpdated: '2026-07-29T06:00:00.001Z' }, 'https://origin.example/2000-1', now),
+        isFreshMetadata(
+            {
+                lastUpdated: '2026-07-29T06:00:00.001Z',
+                originUrl: 'https://origin.example/2000-1',
+            },
+            'https://origin.example/2000-1',
+            now
+        ),
         true
     )
     assert.equal(
-        isFreshMetadata({ lastUpdated: '2026-07-29T06:00:00.000Z' }, 'https://origin.example/2000-1', now),
+        isFreshMetadata(
+            {
+                lastUpdated: '2026-07-29T06:00:00.000Z',
+                originUrl: 'https://origin.example/2000-1',
+            },
+            'https://origin.example/2000-1',
+            now
+        ),
         true
     )
     assert.equal(
-        isFreshMetadata({ lastUpdated: '2026-07-29T05:59:59.999Z' }, 'https://origin.example/2000-1', now),
+        isFreshMetadata(
+            {
+                lastUpdated: '2026-07-29T05:59:59.999Z',
+                originUrl: 'https://origin.example/2000-1',
+            },
+            'https://origin.example/2000-1',
+            now
+        ),
         false
     )
     assert.equal(isFreshMetadata({ lastUpdated: 'invalid' }, 'https://origin.example/2000-1', now), false)
