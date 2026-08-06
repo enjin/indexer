@@ -1,37 +1,10 @@
 import { Json } from '@subsquid/graphql-server'
 import { Arg, Field, ID, ObjectType, Query, Resolver } from 'type-graphql'
 import type { EntityManager } from 'typeorm'
+import { validateUrlForSSRF } from '~/util/ssrf-protection'
 
 const METADATA_MAX_AGE_MS = 6 * 60 * 60 * 1000
-const METADATA_QUERY = `
-    query ManyMetadata($urls: [String!]!, $language: String) {
-        metadata: ManyMetadata(urls: $urls, language: $language) {
-            metadata {
-                name
-                description
-                keywords
-                fallbackImage: image(type: FALLBACK) {
-                    url
-                }
-                bannerImage: image(type: BANNER) {
-                    url
-                }
-                media {
-                    url
-                    type
-                    alt
-                }
-                attributes {
-                    displayName: name
-                    displayValue: value
-                    name: name(display: false)
-                    value: value(display: false)
-                    type
-                }
-            }
-        }
-    }
-`
+const MAX_METADATA_REDIRECTS = 2
 
 type MetadataEntityType = 'collection' | 'token' | 'tokenGroup'
 
@@ -44,33 +17,21 @@ interface MetadataImageResponse {
     url?: unknown
 }
 
-interface MetadataMediaResponse {
-    url?: unknown
-    type?: unknown
-    alt?: unknown
-}
-
 interface MetadataResponse {
     name?: unknown
     description?: unknown
+    external_url?: unknown
+    externalUrl?: unknown
     keywords?: unknown
-    fallbackImage?: MetadataImageResponse | null
-    bannerImage?: MetadataImageResponse | null
-    media?: MetadataMediaResponse[] | null
+    image?: unknown
+    fallback_image?: unknown
+    fallbackImage?: unknown
+    banner_image?: unknown
+    bannerImage?: unknown
+    media?: unknown
+    properties?: unknown
     attributes?: unknown
-}
-
-interface ManyMetadataItemResponse {
-    metadata?: MetadataResponse | null
-}
-
-interface ManyMetadataResponse {
-    data?: {
-        metadata?: ManyMetadataItemResponse[]
-    }
-    errors?: Array<{
-        message?: string
-    }>
+    meta?: unknown
 }
 
 interface MetadataRow {
@@ -93,9 +54,7 @@ interface PendingMetadata {
     reject: (reason: unknown) => void
 }
 
-export interface MetadataServiceOptions {
-    serviceUrl: string
-    language?: string
+export interface MetadataUriOptions {
     timeoutMs: number
     maxResponseBytes: number
 }
@@ -189,26 +148,11 @@ function positiveInteger(value: string | undefined, fallback: number): number {
     return parsed
 }
 
-function metadataServiceOptionsFromEnv(): MetadataServiceOptions {
+function metadataUriOptionsFromEnv(): MetadataUriOptions {
     return {
-        serviceUrl: process.env.ENJIN_METADATA_SERVICE_URL || '',
-        language: process.env.ENJIN_METADATA_LANGUAGE || undefined,
         timeoutMs: positiveInteger(process.env.ENJIN_METADATA_TIMEOUT_MS, 5000),
         maxResponseBytes: positiveInteger(process.env.ENJIN_METADATA_MAX_RESPONSE_BYTES, 5 * 1024 * 1024),
     }
-}
-
-function metadataEndpoint(serviceUrl: string): URL {
-    const endpoint = new URL(serviceUrl)
-    if (endpoint.protocol !== 'http:' && endpoint.protocol !== 'https:') {
-        throw new Error('ENJIN_METADATA_SERVICE_URL must use HTTP or HTTPS')
-    }
-
-    if (!endpoint.pathname.endsWith('/graphql')) {
-        endpoint.pathname = `${endpoint.pathname.replace(/\/$/, '')}/graphql`
-    }
-
-    return endpoint
 }
 
 function optionalString(value: unknown): string | undefined {
@@ -250,6 +194,18 @@ function optionalMedia(value: unknown): EntityMetadataMedia[] | undefined {
               ]
             : []
     })
+}
+
+function optionalImageUrl(value: unknown): string | undefined {
+    if (typeof value === 'string') {
+        return value
+    }
+
+    if (!value || typeof value !== 'object') {
+        return undefined
+    }
+
+    return optionalString((value as MetadataImageResponse).url)
 }
 
 function isMissingMetadataValue(value: unknown): boolean {
@@ -369,11 +325,16 @@ function parseMetadata(uri: string, response: MetadataResponse | null | undefine
     return new EntityMetadata({
         name: optionalString(response.name),
         description: optionalString(response.description),
+        externalUrl: optionalString(response.externalUrl) ?? optionalString(response.external_url),
         keywords: optionalStringArray(response.keywords),
-        fallbackImage: optionalString(response.fallbackImage?.url),
-        bannerImage: optionalString(response.bannerImage?.url),
+        fallbackImage:
+            optionalImageUrl(response.fallbackImage) ??
+            optionalImageUrl(response.fallback_image) ??
+            optionalImageUrl(response.image),
+        bannerImage: optionalImageUrl(response.bannerImage) ?? optionalImageUrl(response.banner_image),
         media: optionalMedia(response.media),
-        attributes: response.attributes as typeof Json,
+        meta: response.meta as typeof Json,
+        attributes: (response.attributes ?? response.properties) as typeof Json,
         originUrl: uri,
     })
 }
@@ -391,69 +352,76 @@ export function isFreshMetadata(
     )
 }
 
-export class MetadataServiceClient {
-    private readonly endpoint: URL
-
+export class MetadataUriClient {
     constructor(
-        private readonly options: MetadataServiceOptions,
-        private readonly fetchImplementation: typeof fetch = fetch
-    ) {
-        this.endpoint = metadataEndpoint(options.serviceUrl)
-    }
+        private readonly options: MetadataUriOptions,
+        private readonly fetchImplementation: typeof fetch = fetch,
+        private readonly validateUrl: (url: string) => Promise<void> = validateUrlForSSRF
+    ) {}
 
     async resolve(urls: string[]): Promise<Map<string, EntityMetadata | null>> {
-        if (urls.length === 0) {
-            return new Map()
-        }
+        const entries = await Promise.all(urls.map(async (uri) => [uri, await this.resolveUri(uri)] as const))
+
+        return new Map(entries)
+    }
+
+    private async resolveUri(uri: string): Promise<EntityMetadata | null> {
+        let requestUrl = uri.replace('ipfs://', 'https://ipfs.io/ipfs/')
 
         const controller = new AbortController()
         const timeout = setTimeout(() => controller.abort(), this.options.timeoutMs)
 
         try {
-            const response = await this.fetchImplementation(this.endpoint, {
-                method: 'POST',
-                headers: {
-                    accept: 'application/json',
-                    'content-type': 'application/json',
-                },
-                body: JSON.stringify({
-                    query: METADATA_QUERY,
-                    variables: {
-                        urls,
-                        language: this.options.language,
-                    },
-                }),
-                signal: controller.signal,
-            })
-            const contentLength = Number(response.headers.get('content-length'))
-            if (Number.isFinite(contentLength) && contentLength > this.options.maxResponseBytes) {
-                throw new Error('Metadata service response exceeds the configured size limit')
-            }
-            if (!response.ok) {
-                throw new Error(`Metadata service returned HTTP ${response.status}`)
+            for (let redirectCount = 0; redirectCount <= MAX_METADATA_REDIRECTS; redirectCount++) {
+                const parsedUrl = new URL(requestUrl)
+                if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') {
+                    throw new Error(`Metadata URI must use HTTP or HTTPS: ${requestUrl}`)
+                }
+
+                await this.validateUrl(requestUrl)
+
+                const response = await this.fetchImplementation(requestUrl, {
+                    method: 'GET',
+                    headers: { accept: 'application/json' },
+                    redirect: 'manual',
+                    signal: controller.signal,
+                })
+
+                if (response.status >= 300 && response.status < 400) {
+                    const location = response.headers.get('location')
+                    if (!location) {
+                        throw new Error(`Metadata URI returned HTTP ${response.status} without a redirect location`)
+                    }
+                    if (redirectCount === MAX_METADATA_REDIRECTS) {
+                        throw new Error(`Metadata URI exceeded ${MAX_METADATA_REDIRECTS} redirects`)
+                    }
+
+                    requestUrl = new URL(location, requestUrl).toString()
+                    continue
+                }
+
+                const contentLength = Number(response.headers.get('content-length'))
+                if (Number.isFinite(contentLength) && contentLength > this.options.maxResponseBytes) {
+                    throw new Error('Metadata response exceeds the configured size limit')
+                }
+                if (!response.ok) {
+                    throw new Error(`Metadata URI returned HTTP ${response.status}`)
+                }
+
+                const body = await response.text()
+                if (Buffer.byteLength(body) > this.options.maxResponseBytes) {
+                    throw new Error('Metadata response exceeds the configured size limit')
+                }
+
+                const payload: unknown = JSON.parse(body)
+                if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+                    throw new Error('Metadata URI returned an invalid JSON object')
+                }
+
+                return parseMetadata(uri, payload as MetadataResponse)
             }
 
-            const body = await response.text()
-            if (Buffer.byteLength(body) > this.options.maxResponseBytes) {
-                throw new Error('Metadata service response exceeds the configured size limit')
-            }
-
-            const payload = JSON.parse(body) as ManyMetadataResponse
-            if (payload.errors?.length) {
-                throw new Error(
-                    `Metadata service GraphQL error: ${payload.errors
-                        .map((error) => error.message)
-                        .filter(Boolean)
-                        .join('; ')}`
-                )
-            }
-
-            const items = payload.data?.metadata
-            if (!Array.isArray(items) || items.length !== urls.length) {
-                throw new Error('Metadata service returned an unexpected result count')
-            }
-
-            return new Map(urls.map((uri, index) => [uri, parseMetadata(uri, items[index]?.metadata)]))
+            return null
         } finally {
             clearTimeout(timeout)
         }
@@ -611,7 +579,7 @@ class EntityMetadataLoader {
 
     constructor(
         private readonly tx: () => Promise<EntityManager>,
-        private readonly client: MetadataServiceClient,
+        private readonly client: MetadataUriClient,
         private readonly maxBatchSize: number
     ) {}
 
@@ -737,7 +705,7 @@ export class EntityMetadataResolver {
     constructor(private readonly tx: () => Promise<EntityManager>) {
         this.loader = new EntityMetadataLoader(
             tx,
-            new MetadataServiceClient(metadataServiceOptionsFromEnv()),
+            new MetadataUriClient(metadataUriOptionsFromEnv()),
             positiveInteger(process.env.ENJIN_METADATA_MAX_BATCH_SIZE, 100)
         )
     }

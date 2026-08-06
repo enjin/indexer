@@ -6,7 +6,7 @@ import {
     inheritEntityMetadata,
     isFreshMetadata,
     metadataUpdateRows,
-    MetadataServiceClient,
+    MetadataUriClient,
     resolveTokenUri,
 } from '~/server-extension/token-metadata'
 
@@ -111,53 +111,35 @@ void test('extracts rows from TypeORM update returning results', () => {
     assert.deepEqual(metadataUpdateRows([[], 0]), [])
 })
 
-void test('normalizes the Enjin metadata service response', async () => {
+void test('fetches and normalizes metadata directly from its URI', async () => {
     const requests: Array<{
         url: string
-        body: {
-            variables: {
-                urls: string[]
-                language?: string
-            }
-        }
+        method?: string
+        redirect?: RequestRedirect
     }> = []
-    const client = new MetadataServiceClient(
+    const validatedUrls: string[] = []
+    const client = new MetadataUriClient(
         {
-            serviceUrl: 'https://metadata.example',
-            language: 'en',
             timeoutMs: 1000,
             maxResponseBytes: 100_000,
         },
         (input, init) => {
-            assert.equal(typeof init?.body, 'string')
             requests.push({
                 url: typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url,
-                body: JSON.parse(init?.body as string) as {
-                    variables: {
-                        urls: string[]
-                        language?: string
-                    }
-                },
+                method: init?.method,
+                redirect: init?.redirect,
             })
 
             return Promise.resolve(
                 new Response(
                     JSON.stringify({
-                        data: {
-                            metadata: [
-                                {
-                                    metadata: {
-                                        name: 'Token One',
-                                        description: 'Description',
-                                        keywords: ['one', 'two'],
-                                        fallbackImage: { url: 'https://cdn.example/fallback.png' },
-                                        bannerImage: { url: 'https://cdn.example/banner.png' },
-                                        media: [{ url: 'https://cdn.example/model.glb', type: 'model/gltf-binary' }],
-                                        attributes: [{ name: 'rarity', value: 'legendary' }],
-                                    },
-                                },
-                            ],
-                        },
+                        name: 'Token One',
+                        description: 'Description',
+                        keywords: ['one', 'two'],
+                        fallback_image: 'https://cdn.example/fallback.png',
+                        banner_image: { url: 'https://cdn.example/banner.png' },
+                        media: [{ url: 'https://cdn.example/model.glb', type: 'model/gltf-binary' }],
+                        attributes: [{ name: 'rarity', value: 'legendary' }],
                     }),
                     {
                         status: 200,
@@ -165,6 +147,10 @@ void test('normalizes the Enjin metadata service response', async () => {
                     }
                 )
             )
+        },
+        (url) => {
+            validatedUrls.push(url)
+            return Promise.resolve()
         }
     )
 
@@ -172,32 +158,51 @@ void test('normalizes the Enjin metadata service response', async () => {
     const metadata = resolved.get('https://origin.example/2000-1')
 
     assert.equal(requests.length, 1)
-    assert.equal(requests[0].url, 'https://metadata.example/graphql')
-    assert.deepEqual(requests[0].body.variables, {
-        urls: ['https://origin.example/2000-1'],
-        language: 'en',
+    assert.deepEqual(requests[0], {
+        url: 'https://origin.example/2000-1',
+        method: 'GET',
+        redirect: 'manual',
     })
+    assert.deepEqual(validatedUrls, ['https://origin.example/2000-1'])
     assert.equal(metadata?.name, 'Token One')
     assert.equal(metadata.fallbackImage, 'https://cdn.example/fallback.png')
     assert.equal(metadata.media?.[0].url, 'https://cdn.example/model.glb')
     assert.equal(metadata.originUrl, 'https://origin.example/2000-1')
 })
 
-void test('rejects malformed metadata service result counts', async () => {
-    const client = new MetadataServiceClient(
+void test('validates every direct metadata redirect', async () => {
+    const validatedUrls: string[] = []
+    const client = new MetadataUriClient(
         {
-            serviceUrl: 'https://metadata.example/graphql',
             timeoutMs: 1000,
             maxResponseBytes: 100_000,
         },
-        () =>
-            Promise.resolve(
-                new Response(JSON.stringify({ data: { metadata: [] } }), {
+        (input) => {
+            const url = typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url
+            if (url === 'https://origin.example/2000-1') {
+                return Promise.resolve(
+                    new Response(null, {
+                        status: 302,
+                        headers: { location: 'https://cdn.example/2000-1.json' },
+                    })
+                )
+            }
+
+            return Promise.resolve(
+                new Response(JSON.stringify({ name: 'Token One' }), {
                     status: 200,
                     headers: { 'content-type': 'application/json' },
                 })
             )
+        },
+        (url) => {
+            validatedUrls.push(url)
+            return Promise.resolve()
+        }
     )
 
-    await assert.rejects(() => client.resolve(['https://origin.example/2000-1']), /unexpected result count/)
+    const resolved = await client.resolve(['https://origin.example/2000-1'])
+
+    assert.equal(resolved.get('https://origin.example/2000-1')?.name, 'Token One')
+    assert.deepEqual(validatedUrls, ['https://origin.example/2000-1', 'https://cdn.example/2000-1.json'])
 })
