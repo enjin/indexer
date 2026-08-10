@@ -1,5 +1,6 @@
 import express, { Application, Request, Response } from 'express'
 import { createLogger } from '@subsquid/logger'
+import * as Sentry from '@sentry/node'
 import { hexToU8a, isHex, stringToU8a } from '@polkadot/util'
 import { blake2AsHex, signatureVerify } from '@polkadot/util-crypto'
 import {
@@ -18,8 +19,32 @@ import {
     validateVerifyMessageRequest,
     validateDecodeSignedExtrinsicsRequest,
 } from './validation'
+import config from '~/util/config'
 
 const log = createLogger('sqd:decoder')
+
+Sentry.init({
+    dsn: config.sentryDsn,
+    ignoreErrors: ['API/INIT: RPC methods not decorated:', 'REGISTRY: Unknown signed extensions'],
+    tracesSampleRate: 0.0,
+})
+
+function handleServerError(error: unknown, req: Request, res: Response, operation: string): void {
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    log.error(`${operation} error: ${errorMessage}`)
+
+    Sentry.withScope((scope) => {
+        scope.setTag('decoder.operation', operation)
+        scope.setContext('request', {
+            method: req.method,
+            path: req.path,
+            body: req.body,
+        })
+        Sentry.captureException(error)
+    })
+
+    res.status(500).json({ error: errorMessage })
+}
 
 async function handleDecode(req: Request, res: Response): Promise<void> {
     try {
@@ -33,9 +58,7 @@ async function handleDecode(req: Request, res: Response): Promise<void> {
         res.setHeader('Content-Type', 'application/json')
         res.end(JSON.stringify(result, bigIntReplacer))
     } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error)
-        log.error(`Decode error: ${errorMessage}`)
-        res.status(500).json({ error: errorMessage })
+        handleServerError(error, req, res, 'Decode')
     }
 }
 
@@ -50,9 +73,7 @@ async function handleEncode(req: Request, res: Response): Promise<void> {
         const result = await encode(validation.data)
         res.json(result)
     } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error)
-        log.error(`Encode error: ${errorMessage}`)
-        res.status(500).json({ error: errorMessage })
+        handleServerError(error, req, res, 'Encode')
     }
 }
 
@@ -69,9 +90,7 @@ function handleHash(req: Request, res: Response): void {
         const hash = blake2AsHex(isHexData ? hexToU8a(data) : stringToU8a(data), 256)
         res.json({ hash, isHexData })
     } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error)
-        log.error(`Hash error: ${errorMessage}`)
-        res.status(500).json({ error: errorMessage })
+        handleServerError(error, req, res, 'Hash')
     }
 }
 
@@ -96,9 +115,7 @@ function handleVerifyMessage(req: Request, res: Response): void {
 
         res.json(results)
     } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error)
-        log.error(`Verify message error: ${errorMessage}`)
-        res.status(500).json({ error: errorMessage })
+        handleServerError(error, req, res, 'Verify message')
     }
 }
 
@@ -126,9 +143,7 @@ async function handleDecodeSignedExtrinsics(req: Request, res: Response): Promis
 
         res.json(results)
     } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error)
-        log.error(`Decode signed extrinsics error: ${errorMessage}`)
-        res.status(500).json({ error: errorMessage })
+        handleServerError(error, req, res, 'Decode signed extrinsics')
     }
 }
 
