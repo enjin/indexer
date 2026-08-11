@@ -18,6 +18,12 @@ const CALL_ITEM_PATHS: Record<string, string> = {
     'NominationPools::nominate': 'validators',
 }
 
+const CALL_AMOUNT_PATHS: Record<string, string[]> = {
+    'MultiTokens::transfer': ['params.Simple.amount'],
+    'MultiTokens::burn': ['params.amount', 'amount'],
+    'MultiTokens::mint': ['params.CreateToken.initial_supply', 'params.Mint.amount'],
+}
+
 const ENJ_DECIMALS = 18
 
 function getBatchAmount(items: unknown[], amountPaths: string[]): bigint | undefined {
@@ -60,6 +66,13 @@ function getCallSubtitle(call: CallParts, fields: ViewField[]): string {
     if (callId === 'StakeExchange::buy') {
         const amount = formatEnjAmount(getArg(call.params, 'amount'))
         if (amount !== undefined) return amount
+    }
+
+    const amount = CALL_AMOUNT_PATHS[callId]
+        ?.map((path) => getArg(call.params, path))
+        .find((value) => value !== undefined)
+    if ((typeof amount === 'string' || typeof amount === 'bigint') && /^\d+$/.test(amount.toString())) {
+        return `x ${amount}`
     }
 
     const itemPath = CALL_ITEM_PATHS[callId]

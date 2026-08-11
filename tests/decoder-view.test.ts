@@ -280,7 +280,7 @@ void test('nested call subtitles contain one operation for one returned field', 
     ])
 })
 
-void test('nested single calls do not count their detail fields as operations', () => {
+void test('nested single token calls show their operation amounts', () => {
     const view = buildTransactionView(
         {
             Utility: {
@@ -310,7 +310,7 @@ void test('nested single calls do not count their detail fields as operations', 
     )
 
     const subtitles = view.fields.slice(1).map((field) => (field.type === 'item' ? field.subtitle : null))
-    assert.deepEqual(subtitles, ['x 1', 'x 1'])
+    assert.deepEqual(subtitles, ['x 5', 'x 3'])
 })
 
 void test('nested call subtitles contain a zero count when no fields are returned', () => {
@@ -322,12 +322,12 @@ void test('nested call subtitles contain a zero count when no fields are returne
     assert.deepEqual(view.fields, [{ type: 'item', title: 'Add Stake', subtitle: 'x 0', fields: [] }])
 })
 
-void test('decodes the original transfer and melt batch with one operation per inner call', async () => {
+void test('decodes the original transfer and melt batch with their operation amounts', async () => {
     const view = await decodeView(TRANSFER_AND_MELT_BATCH_CALL)
 
     assert.deepEqual(
         view.fields.slice(1).map((field) => (field as { subtitle: string }).subtitle),
-        ['x 1', 'x 1', 'x 1']
+        ['x 5', 'x 3', 'x 1']
     )
 })
 
