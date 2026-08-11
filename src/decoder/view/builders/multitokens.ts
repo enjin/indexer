@@ -28,7 +28,9 @@ export const buildBatchTransferTokenView: ViewBuilderFn = ({ call, network }) =>
 
     for (const [index] of recipients.entries()) {
         const tokenId = displayValue(getArg(call.params, `recipients.${index}.params.Simple.token_id`))
+        const amount = displayValue(getArg(call.params, `recipients.${index}.params.Simple.amount`))
         if (tokenId) builder.withResource('asset', assetId(collectionId, tokenId))
+        if (amount) builder.withText('Amount', amount)
     }
 
     return builder.build()
@@ -46,7 +48,12 @@ export const buildBatchMintTokenView: ViewBuilderFn = ({ call, network }) => {
             getArg(call.params, `recipients.${index}.params.CreateToken.token_id`) ??
                 getArg(call.params, `recipients.${index}.params.Mint.token_id`)
         )
+        const amount = displayValue(
+            getArg(call.params, `recipients.${index}.params.CreateToken.initial_supply`) ??
+                getArg(call.params, `recipients.${index}.params.Mint.amount`)
+        )
         if (tokenId) builder.withResource('asset', assetId(collectionId, tokenId))
+        if (amount) builder.withText('Amount', amount)
     }
 
     return builder.build()

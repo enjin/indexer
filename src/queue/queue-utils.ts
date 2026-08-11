@@ -741,12 +741,12 @@ export function dispatchComputeTokenNativeMetadata(id: string): void {
     })
 }
 
-export function dispatchMigrateTokenGroupIds(collectionId: string): void {
+export function dispatchMigrateTokenGroupIds(id: string): void {
     TokensQueue.add(
         JobsEnum.MIGRATE_TOKEN_GROUP_IDS,
-        { collectionId },
+        { id },
         {
-            jobId: `tokens.migrate-token-group-ids.${collectionId}`,
+            jobId: `tokens.migrate-token-group-ids.${id}`,
         }
     ).catch(() => {
         Logger.error('Failed to dispatch migrate token group IDs', LOGGER_NAMESPACE)

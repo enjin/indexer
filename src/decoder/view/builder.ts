@@ -18,7 +18,33 @@ const CALL_ITEM_PATHS: Record<string, string> = {
     'NominationPools::nominate': 'validators',
 }
 
+const CALL_AMOUNT_PATHS: Record<string, string[]> = {
+    'MultiTokens::transfer': ['params.Simple.amount'],
+    'MultiTokens::burn': ['params.amount', 'amount'],
+    'MultiTokens::mint': ['params.CreateToken.initial_supply', 'params.Mint.amount'],
+}
+
 const ENJ_DECIMALS = 18
+
+function getBatchAmount(items: unknown[], amountPaths: string[]): bigint | undefined {
+    let total = 0n
+
+    for (const recipient of items) {
+        if (!recipient || typeof recipient !== 'object' || Array.isArray(recipient)) return undefined
+
+        const params = (recipient as Record<string, unknown>).params
+        if (!params || typeof params !== 'object' || Array.isArray(params)) return undefined
+
+        const mintParams = params as Record<string, unknown>
+        const amount = amountPaths.map((path) => getArg(mintParams, path)).find((value) => value !== undefined)
+        if (typeof amount !== 'string' && typeof amount !== 'bigint') return undefined
+        if (!/^\d+$/.test(amount.toString())) return undefined
+
+        total += BigInt(amount)
+    }
+
+    return total
+}
 
 function formatEnjAmount(value: unknown): string | undefined {
     if (typeof value !== 'string' && typeof value !== 'bigint') return undefined
@@ -42,9 +68,27 @@ function getCallSubtitle(call: CallParts, fields: ViewField[]): string {
         if (amount !== undefined) return amount
     }
 
+    const amount = CALL_AMOUNT_PATHS[callId]
+        .map((path) => getArg(call.params, path))
+        .find((value) => value !== undefined)
+    if ((typeof amount === 'string' || typeof amount === 'bigint') && /^\d+$/.test(amount.toString())) {
+        return `x ${amount}`
+    }
+
     const itemPath = CALL_ITEM_PATHS[callId]
     const items = itemPath ? getArg(call.params, itemPath) : undefined
-    const itemCount = Array.isArray(items) ? items.length : fields.length
+    if (callId === 'MultiTokens::batch_mint' && Array.isArray(items)) {
+        const amount = getBatchAmount(items, ['CreateToken.initial_supply', 'Mint.amount'])
+        if (amount !== undefined) return `x ${amount}`
+    }
+    if (callId === 'MultiTokens::batch_transfer' && Array.isArray(items)) {
+        const amount = getBatchAmount(items, ['Simple.amount'])
+        if (amount !== undefined) return `x ${amount}`
+    }
+    // A nested call represents one operation unless the call explicitly contains a batch of items.
+    // Its rendered fields can include supporting details (such as an asset and its amount), which
+    // must not inflate the operation count shown in the subtitle.
+    const itemCount = Array.isArray(items) ? items.length : fields.length > 0 ? 1 : 0
 
     return `x ${itemCount}`
 }
