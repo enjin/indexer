@@ -68,7 +68,7 @@ function getCallSubtitle(call: CallParts, fields: ViewField[]): string {
         if (amount !== undefined) return amount
     }
 
-    const amount = CALL_AMOUNT_PATHS[callId]
+    const amount = (CALL_AMOUNT_PATHS[callId] ?? [])
         .map((path) => getArg(call.params, path))
         .find((value) => value !== undefined)
     if ((typeof amount === 'string' || typeof amount === 'bigint') && /^\d+$/.test(amount.toString())) {
