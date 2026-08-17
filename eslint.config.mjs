@@ -21,6 +21,7 @@ export default tseslint.config(
             'src/type/',
             'src/model/',
             'src/worker/jobs',
+            'src/**/*.test.ts',
             'eslint.config.mjs',
             'prettier.config.mjs',
             'lint-staged.config.mjs',

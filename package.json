@@ -27,6 +27,7 @@
     "dev:decoder": "pnpm exec ts-node -r dotenv/config -r tsconfig-paths/register src/decoder/server.ts",
     "lint": "eslint --fix --config eslint.config.mjs",
     "prettier": "prettier --write --config prettier.config.mjs .",
+    "test": "node --require ts-node/register/transpile-only --require tsconfig-paths/register --test tests/*.test.ts",
     "build": "rm -rf lib && tsc && tsc-alias",
     "ci:lint": "eslint --config eslint.config.mjs",
     "ci:prettier": "prettier --check --config prettier.config.mjs .",

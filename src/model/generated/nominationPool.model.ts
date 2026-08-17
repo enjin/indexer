@@ -40,8 +40,8 @@ export class NominationPool {
     @BigIntColumn_({nullable: false})
     deposit!: bigint
 
-    @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => obj == null ? undefined : new BonusCycle(undefined, obj)}, nullable: false})
-    bonusCycle!: BonusCycle
+    @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new BonusCycle(undefined, obj)}, nullable: true})
+    bonusCycle!: BonusCycle | undefined | null
 
     @BigIntColumn_({nullable: false})
     tokenId!: bigint

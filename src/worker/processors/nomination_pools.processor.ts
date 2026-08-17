@@ -4,6 +4,7 @@ import { JobsEnum } from '~/queue/constants'
 import { logDebug, logError } from '~/worker/utils'
 import {
     backfillPoolMemberRewardsEraIndex,
+    backfillPoolMemberRewards,
     computePoolMemberRewards,
     computePoolOffers,
     computePoolRewards,
@@ -52,6 +53,9 @@ export class NominationPoolsProcessor implements ProcessorDef {
                 break
             case JobsEnum.BACKFILL_POOL_MEMBER_REWARDS_ERA_INDEX:
                 await backfillPoolMemberRewardsEraIndex(job)
+                break
+            case JobsEnum.BACKFILL_POOL_MEMBER_REWARDS:
+                await backfillPoolMemberRewards(job)
                 break
             case JobsEnum.SYNC_ACCOUNT_UNBONDING_ERAS:
                 await syncAccountUnbondingEras(job, job.data.id)

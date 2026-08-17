@@ -1567,7 +1567,8 @@ type NominationPool @entity {
   commission: Commission!
   capacity: BigInt!
   deposit: BigInt!
-  bonusCycle: BonusCycle!
+  "Bonus cycle, populated only for pools created while the bonus mechanism was live (pre-v1060). The mechanism was removed in v1060 (no bonus since era ~903), so pools created after the change have a null bonusCycle."
+  bonusCycle: BonusCycle
   tokenId: BigInt!
 
   balance: PoolBalance!
