@@ -31,19 +31,24 @@ Sentry.init({
 
 function handleServerError(error: unknown, req: Request, res: Response, operation: string): void {
     const errorMessage = error instanceof Error ? error.message : String(error)
+    const request = {
+        method: req.method,
+        path: req.path,
+        body: req.body,
+    }
     log.error(`${operation} error: ${errorMessage}`)
 
     Sentry.withScope((scope) => {
         scope.setTag('decoder.operation', operation)
-        scope.setContext('request', {
-            method: req.method,
-            path: req.path,
-            body: req.body,
-        })
+        scope.setContext('request', request)
+        scope.setExtra('decoder.request', request)
         Sentry.captureException(error)
     })
 
-    res.status(500).json({ error: errorMessage })
+    res.status(500).json({
+        error: errorMessage,
+        request,
+    })
 }
 
 async function handleDecode(req: Request, res: Response): Promise<void> {

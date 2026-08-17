@@ -277,7 +277,7 @@ async function processExtrinsics(
 
     if (call && (call.name === calls.fuelTanks.dispatch.name || call.name === calls.fuelTanks.dispatchAndTouch.name)) {
         const tankData = p.fuelTanks.utils.anyDispatch(call)
-        // A failed dispatch can reference a tank that does not exist.
+        // A failed dispatch can reference a tank that does not exist. se
         const tank = await ctx.store.findOneBy<FuelTank>(FuelTank, {
             id: unwrapAccount(tankData.tankId),
         })
