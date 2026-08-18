@@ -8,13 +8,13 @@ import { updatePool } from './pool'
 import Big from 'big.js'
 import processorConfig from '~/util/config'
 import * as Sentry from '@sentry/node'
-import { In, LessThan } from 'typeorm'
+import { In, LessThan, Not } from 'typeorm'
 import { SnsEvent } from '~/util/sns'
 import { nominationPools } from '~/type/events'
 import { computeEraApy } from '~/pallet/nomination-pools/processors/era-rewards-processed'
 import { RewardPaid } from '~/pallet/nomination-pools/events/types'
 import { QueueUtils } from '~/queue'
-import { memberEraReward, netReinvested } from '~/pallet/nomination-pools/processors/reward-math'
+import { memberEraReward, netReinvested, poolRateChange } from '~/pallet/nomination-pools/processors/reward-math'
 
 async function getMembersBalance(block: Block, poolId: number): Promise<Record<string, bigint>> {
     type StorageEntry = [k: [bigint, bigint, string], v: TokenAccount | undefined]
@@ -180,6 +180,7 @@ async function updatePoolApy(
 ): Promise<{ pool: NominationPool; reward: EraReward }> {
     const eraRewards = await ctx.store.find(EraReward, {
         where: {
+            id: Not(reward.id),
             pool: { id: pool.id },
             era: { index: LessThan(eraIndex) },
         },
@@ -190,12 +191,7 @@ async function updatePoolApy(
         take: 30,
     })
 
-    const changeInRate =
-        eraRewards.length > 0
-            ? Big(pool.rate.toString()).minus(Big(eraRewards[0].rate.toString()))
-            : Big(pool.rate.toString()).minus(10 ** 18)
-
-    reward.changeInRate = BigInt(changeInRate.toString())
+    reward.changeInRate = poolRateChange(pool.rate, reward.id, eraRewards)
 
     let apy: Big.Big
 

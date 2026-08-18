@@ -8,11 +8,11 @@ import {
 } from '~/model'
 import { CommonContext, connectionManager, dataHandlerContext } from '~/contexts'
 import { Job } from 'bullmq'
-import { In, LessThan } from 'typeorm'
+import { In, LessThan, Not } from 'typeorm'
 import Big from 'big.js'
 import processorConfig from '~/util/config'
 import { computeEraApy } from '~/pallet/nomination-pools/processors'
-import { netReinvested } from '~/pallet/nomination-pools/processors/reward-math'
+import { netReinvested, poolRateChange } from '~/pallet/nomination-pools/processors/reward-math'
 
 async function updatePoolApy(
     ctx: CommonContext,
@@ -22,6 +22,7 @@ async function updatePoolApy(
 ): Promise<{ pool: NominationPool; reward: EraReward }> {
     const eraRewards = await ctx.store.find(EraReward, {
         where: {
+            id: Not(reward.id),
             pool: { id: pool.id },
             era: { index: LessThan(eraIndex) },
         },
@@ -32,12 +33,7 @@ async function updatePoolApy(
         take: 30,
     })
 
-    const changeInRate =
-        eraRewards.length > 0
-            ? Big(pool.rate.toString()).minus(Big(eraRewards[0].rate.toString()))
-            : Big(pool.rate.toString()).minus(10 ** 18)
-
-    reward.changeInRate = BigInt(changeInRate.toString())
+    reward.changeInRate = poolRateChange(pool.rate, reward.id, eraRewards)
 
     let apy: Big.Big
 

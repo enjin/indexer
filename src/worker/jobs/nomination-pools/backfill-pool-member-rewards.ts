@@ -24,10 +24,12 @@ type MemberIdRow = { member_id: string }
 /**
  * Repairs nomination-pool rewards created by the post-v1060 RewardPaid processor.
  *
- * The job uses stored rate changes and points, so it supports both historical RewardPaid ID
- * conventions (`event.era` and `event.era + 1`) without archival RPC calls. Each batch commits
- * independently to stay below the database statement timeout; every calculation is idempotent,
- * so retrying the job safely repeats already completed batches.
+ * The job restores reinvested amounts from the indexed RewardPaid events, reconstructs each
+ * rate change from the preceding reward, and then repairs member rewards. This fixes eras where
+ * a second validator payout caused the live processor to compare the current reward with itself
+ * and persist a zero rate change. Each batch commits independently to stay below the database
+ * statement timeout; every calculation is idempotent, so retrying the job safely repeats already
+ * completed batches.
  */
 export async function backfillPoolMemberRewards(job: Job<BackfillPoolMemberRewardsData>): Promise<void> {
     const em = await connectionManager()
@@ -97,27 +99,67 @@ async function repairEraBatch(
     eraRewardIds: string[]
 ): Promise<{ eraRewards: number; memberRewards: number }> {
     const eraRows: CountRow[] = await em.query(
-        `WITH updated AS (
-             UPDATE era_reward
-             SET reinvested = GREATEST(
-                 TRUNC((change_in_rate * active) / NULLIF(rate, 0)),
-                 0
-             )
-             WHERE id = ANY($1::text[])
-               AND rate <> 0
+        `WITH selected_rewards AS (
+             SELECT
+                 current_reward.id,
+                 current_reward.pool_id,
+                 current_era.index AS era_index,
+                 current_reward.rate - COALESCE(
+                     (
+                         SELECT previous_reward.rate
+                         FROM era_reward AS previous_reward
+                         INNER JOIN era AS previous_era ON previous_era.id = previous_reward.era_id
+                         WHERE previous_reward.pool_id = current_reward.pool_id
+                           AND previous_reward.id <> current_reward.id
+                           AND previous_era.index < current_era.index
+                         ORDER BY previous_era.index DESC, previous_reward.id DESC
+                         LIMIT 1
+                     ),
+                     $1::numeric
+                 ) AS change_in_rate
+             FROM era_reward AS current_reward
+             INNER JOIN era AS current_era ON current_era.id = current_reward.era_id
+             WHERE current_reward.id = ANY($2::text[])
+         ), event_totals AS (
+             SELECT
+                 selected_reward.id,
+                 selected_reward.change_in_rate,
+                 SUM(
+                     GREATEST(
+                         COALESCE((reward_event.data->>'reward')::numeric, 0) -
+                             COALESCE((reward_event.data->'commission'->>'amount')::numeric, 0),
+                         0
+                     )
+                 ) AS reinvested
+             FROM selected_rewards AS selected_reward
+             LEFT JOIN event AS reward_event
+               ON reward_event.name = 'NominationPoolsRewardPaid'
+              AND reward_event.data->>'poolId' = selected_reward.pool_id
+              AND (reward_event.data->>'era')::integer = selected_reward.era_index
+             GROUP BY selected_reward.id, selected_reward.change_in_rate
+         ), updated AS (
+             UPDATE era_reward AS target_reward
+             SET
+                 change_in_rate = event_totals.change_in_rate,
+                 reinvested = event_totals.reinvested
+             FROM event_totals
+             WHERE target_reward.id = event_totals.id
              RETURNING 1
          )
          SELECT COUNT(*)::text AS count FROM updated`,
-        [eraRewardIds]
+        [RATE_PRECISION, eraRewardIds]
     )
 
     const memberRows: CountRow[] = await em.query(
         `WITH updated AS (
              UPDATE pool_member_rewards AS member_reward
-             SET rewards = GREATEST(
-                 TRUNC((member_reward.points * era_reward.change_in_rate) / $1::numeric),
-                 0
-             )
+             SET rewards = CASE
+                 WHEN era_reward.reinvested = 0 THEN 0
+                 ELSE GREATEST(
+                     TRUNC((member_reward.points * era_reward.change_in_rate) / $1::numeric),
+                     0
+                 )
+             END
              FROM era_reward
              WHERE member_reward.reward_id = era_reward.id
                AND era_reward.id = ANY($2::text[])
