@@ -16,6 +16,11 @@
 
 const RATE_PRECISION = 10n ** 18n
 
+type RateSnapshot = {
+    id: string
+    rate: bigint
+}
+
 /**
  * Net amount reinvested into the pool for a single `RewardPaid` event.
  * This is what compounds into the pool rate: gross reward minus the operator commission.
@@ -40,4 +45,17 @@ export function netReinvested(reward: bigint, commission: bigint): bigint {
 export function memberEraReward(points: bigint, changeInRate: bigint): bigint {
     const reward = (points * changeInRate) / RATE_PRECISION
     return reward > 0n ? reward : 0n
+}
+
+/**
+ * Change in pool rate relative to the most recent different reward.
+ *
+ * Post-v1060 RewardPaid records use an `era + 1` ID while retaining the payout era
+ * relation. That makes the current reward eligible for a `LessThan(era + 1)` history
+ * query after the first validator payout has been saved. Ignore it defensively so a
+ * second validator payout cannot turn the era's rate change into zero.
+ */
+export function poolRateChange(currentRate: bigint, currentRewardId: string, history: RateSnapshot[]): bigint {
+    const previousRate = history.find((reward) => reward.id !== currentRewardId)?.rate ?? RATE_PRECISION
+    return currentRate - previousRate
 }
