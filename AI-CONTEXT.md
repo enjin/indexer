@@ -182,7 +182,7 @@ This can consume substantial local resources because PostgreSQL is configured wi
 
 ## Quality checks
 
-CI builds on Node.js 20 and 22 and runs ESLint and Prettier checks. Use:
+CI builds on Node.js 24 and runs ESLint and Prettier checks. Use:
 
 ```bash
 pnpm run ci:lint

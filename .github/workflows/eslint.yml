@@ -17,10 +17,10 @@ jobs:
         version: 9.15.0
         run_install: false
 
-    - name: Install Node 20.x
+    - name: Install Node 24.x
       uses: actions/setup-node@v4
       with:
-        node-version: '20'
+        node-version: '24'
         cache: 'pnpm'
 
     - name: Install packages
