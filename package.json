@@ -11,7 +11,7 @@
   },
   "private": false,
   "engines": {
-    "node": ">=20"
+    "node": ">=24"
   },
   "scripts": {
     "preinstall": "npx only-allow pnpm",

@@ -29,7 +29,7 @@ We recommend that you read SubSquid docs to understand how it works: https://doc
 
 ## Prerequisites
 
-- Node 20.x
+- Node 24.x
 - PNPM 8.x
 - PostgreSQL 16.x
 - Redis 7.x
