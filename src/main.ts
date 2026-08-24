@@ -39,7 +39,7 @@ async function bootstrap() {
 
     logger.info(`last block number on config: ${dataService.lastBlockNumber}`)
 
-    // Passively queue any blocks missing from ChainInfo so they get backfilled s
+    // Passively queue any blocks missing from ChainInfo so they get backfilled se
     if (config.importMissingBlocks) {
         void queueMissingBlocks().catch((err: unknown) => {
             logger.warn(`queue-missing-blocks migration failed: ${err}`)
