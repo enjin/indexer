@@ -12,6 +12,7 @@ import {
     computeTokenNativeMetadata,
     migrateTokenGroupIds,
     syncCollectionTokensNative,
+    explainQuery,
 } from '~/worker/jobs'
 import { logDebug, logError } from '~/worker/utils'
 
@@ -47,6 +48,9 @@ export class TokensProcessor implements ProcessorDef {
                 break
             case JobsEnum.SYNC_COLLECTION_TOKENS_NATIVE:
                 await syncCollectionTokensNative(job)
+                break
+            case JobsEnum.EXPLAIN_QUERY:
+                await explainQuery(job)
                 break
             default:
                 throw new Error(`${job.name} is not a valid job for this processor`)
