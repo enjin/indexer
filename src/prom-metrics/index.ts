@@ -15,6 +15,15 @@ const log = createLogger('sqd:metrics')
 let cachedMetrics: string = ''
 let metricsUpdatedAt: number = 0
 
+const logMetricsError = (error: unknown): void => {
+    if (error instanceof Error) {
+        log.error(error)
+        return
+    }
+
+    log.error(String(error))
+}
+
 client.collectDefaultMetrics({ register })
 
 const updateMetrics = async () => {
@@ -36,7 +45,7 @@ const updateMetrics = async () => {
 }
 
 setInterval(() => {
-    updateMetrics().catch(log.error)
+    updateMetrics().catch(logMetricsError)
 }, 300_000) // Update metrics every 5 min
 
 const server: Application = express()
@@ -64,5 +73,5 @@ server.get('/', (_req, res) => {
 
 server.listen(process.env.PROM_PORT || 8080, () => {
     log.info(`Prometheus metrics server started on port ${process.env.PROM_PORT || 8080}`)
-    void updateMetrics()
+    void updateMetrics().catch(logMetricsError)
 })
