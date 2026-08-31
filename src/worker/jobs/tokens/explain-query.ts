@@ -23,6 +23,38 @@ const EXPLAIN_QUERIES: Record<string, { sql: string; defaultParams: unknown[] }>
                 AND "collection"."id" = $1`,
         defaultParams: ['2967'],
     },
+    // Same count as collection_activity_count, but filtered directly on
+    // account_token_event.collection_id (indexed, set at creation) instead of
+    // joining through token → collection. This is the shape nft-io would get
+    // by switching CollectionActivityQuery's where to `collection: {id_eq}` —
+    // dispatch both variants to compare timings on production.
+    collection_activity_count_direct: {
+        sql: `SELECT count(*) FROM "account_token_event" AS "account_token_event"
+            LEFT OUTER JOIN "event" "event" ON "event"."id" = "account_token_event"."event_id"
+            LEFT OUTER JOIN "bid" "bid" ON "bid"."id" = "event"."data"->>'winningBid'
+            WHERE (("event"."name" IN ('MarketplaceListingCreated', 'MarketplaceListingCancelled', 'MarketplaceOfferCreated',
+                'MarketplaceOfferCancelled', 'MarketplaceBidPlaced', 'MarketplaceListingFilled', 'MarketplaceOfferSettled',
+                'MultiTokensMinted', 'MultiTokensTransferred', 'MultiTokensBurned', 'MultiTokensInfused'))
+                OR ("bid"."id" IS NOT NULL AND "event"."name" = 'MarketplaceAuctionFinalized' AND "event"."collection_id" != '1'))
+                AND "account_token_event"."collection_id" = $1`,
+        defaultParams: ['2967'],
+    },
+    // Coverage check for the direct filter: with analyze=true the top plan
+    // node's "actual rows" is the number of account_token_event rows that have
+    // no collection_id — must be 0 (or backfilled) before nft-io switches.
+    account_token_event_null_collection: {
+        sql: `SELECT 1 FROM "account_token_event" WHERE "collection_id" IS NULL`,
+        defaultParams: [],
+    },
+    // Consistency check: "actual rows" = rows whose collection_id disagrees
+    // with the token's collection (must be 0 for the direct filter to be
+    // semantically equivalent to the token → collection join).
+    account_token_event_collection_mismatch: {
+        sql: `SELECT 1 FROM "account_token_event" AS "ate"
+            INNER JOIN "token" "token" ON "token"."id" = "ate"."token_id"
+            WHERE "ate"."collection_id" IS DISTINCT FROM "token"."collection_id"`,
+        defaultParams: [],
+    },
     // Filter shape of the Tokens query (nativeMetadata.decimalCount_gt) — used
     // to verify the token_native_metadata_decimal_count_idx expression index.
     tokens_by_decimal_count: {
