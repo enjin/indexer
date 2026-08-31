@@ -15,12 +15,11 @@ if [ "$ROLE" = "processor" ]; then
     fi
 elif [ "$ROLE" = "graphql" ]; then
     pnpm run metrics &
-    P1=$!
     pnpm run decoder &
-    P2=$!
-    pnpm exec squid-graphql-server --subscriptions --dumb-cache redis --dumb-cache-max-age 3000 --max-root-fields 10 --sql-statement-timeout 30000 &
-    P3=$!
-    wait $P1 $P2 $P3
+    # graphql-server must be the container's main process: if it dies, the
+    # container has to exit so Kubernetes restarts it, instead of lingering
+    # NotReady behind the still-alive metrics/decoder side processes.
+    exec pnpm exec squid-graphql-server --subscriptions --dumb-cache redis --dumb-cache-max-age 3000 --max-root-fields 10 --sql-statement-timeout 30000
 elif [ "$ROLE" = "worker" ]; then
     pnpm run worker
 else
