@@ -87,7 +87,7 @@ export default async () => {
         infusedTokensTotal,
         infusedUniqueTokensTotal,
     ] = await Promise.all([
-        em.query('SELECT COUNT(DISTINCT account_id) FROM token_account where total_balance::numeric > 0'),
+        em.query('SELECT COUNT(DISTINCT account_id) AS count FROM token_account WHERE total_balance > 0'),
         em.query('SELECT COUNT(*) as count FROM collection'),
         em.query('SELECT COUNT(*) as count FROM token'),
         em.query(

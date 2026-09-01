@@ -110,6 +110,8 @@ Inspect the generated model and migration, especially nullability, indexes, uniq
 pnpm run db:migrate
 ```
 
+The migration command uses `src/migrate.ts` and commits each migration independently. A migration that must use PostgreSQL operations forbidden inside a transaction, such as `CREATE INDEX CONCURRENTLY`, must declare `transaction = false` and remain retry-safe if it completes only partially.
+
 The current `schema:generate` package script references `hasura:regenerate`, while the defined script is named `schema:regenerate`. Until those names are aligned, run the individual schema/codegen/build/Hasura commands deliberately rather than relying on `schema:generate`.
 
 ## Chain metadata and type generation
