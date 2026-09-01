@@ -34,7 +34,7 @@
     "ci:build": "tsc && tsc-alias && pnpm run ci:sourcemaps",
     "ci:sourcemaps": "sentry-cli sourcemaps inject --org enjin --project enjin-indexer ./lib && sentry-cli sourcemaps upload --org enjin --project enjin-indexer ./lib",
     "db:wipe": "TRUNCATE_DATABASE=true node -r dotenv/config lib/synchronize/clear.js",
-    "db:migrate": "pnpm exec squid-typeorm-migration apply",
+    "db:migrate": "node -r dotenv/config lib/migrate.js",
     "db:generate": "pnpm exec squid-typeorm-migration generate",
     "schema:generate": "pnpm run schema:codegen && pnpm run build && pnpm run hasura:regenerate",
     "schema:codegen": "pnpm exec squid-typeorm-codegen",
