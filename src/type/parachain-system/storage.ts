@@ -5,6 +5,7 @@ import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV604 from '../matrixV604'
 import * as matrixV1010 from '../matrixV1010'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
+import * as matrixV1040 from '../matrixV1040'
 
 export const pendingValidationCode = {
     /**
@@ -876,4 +877,77 @@ export interface UpwardDeliveryFeeFactorMatrixEnjinV1012 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): matrixEnjinV1012.FixedU128
     get(block: Block): Promise<matrixEnjinV1012.FixedU128 | undefined>
+}
+
+export const lastProcessedDownwardMessage = {
+    /**
+     *  The last processed downward message.
+     *
+     *  We need to keep track of this to filter the messages that have been already processed.
+     */
+    matrixV1040: new StorageType(
+        'ParachainSystem.LastProcessedDownwardMessage',
+        'Optional',
+        [],
+        matrixV1040.InboundMessageId
+    ) as LastProcessedDownwardMessageMatrixV1040,
+}
+
+/**
+ *  The last processed downward message.
+ *
+ *  We need to keep track of this to filter the messages that have been already processed.
+ */
+export interface LastProcessedDownwardMessageMatrixV1040 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block): Promise<matrixV1040.InboundMessageId | undefined>
+}
+
+export const lastProcessedHrmpMessage = {
+    /**
+     *  The last processed HRMP message.
+     *
+     *  We need to keep track of this to filter the messages that have been already processed.
+     */
+    matrixV1040: new StorageType(
+        'ParachainSystem.LastProcessedHrmpMessage',
+        'Optional',
+        [],
+        matrixV1040.InboundMessageId
+    ) as LastProcessedHrmpMessageMatrixV1040,
+}
+
+/**
+ *  The last processed HRMP message.
+ *
+ *  We need to keep track of this to filter the messages that have been already processed.
+ */
+export interface LastProcessedHrmpMessageMatrixV1040 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block): Promise<matrixV1040.InboundMessageId | undefined>
+}
+
+export const pendingUpwardSignals = {
+    /**
+     *  Upward signals that are still pending and not yet sent to the relay chain.
+     *
+     *  This will be cleared in `on_finalize` for each block.
+     */
+    matrixV1040: new StorageType(
+        'ParachainSystem.PendingUpwardSignals',
+        'Default',
+        [],
+        sts.array(() => sts.bytes())
+    ) as PendingUpwardSignalsMatrixV1040,
+}
+
+/**
+ *  Upward signals that are still pending and not yet sent to the relay chain.
+ *
+ *  This will be cleared in `on_finalize` for each block.
+ */
+export interface PendingUpwardSignalsMatrixV1040 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): Bytes[]
+    get(block: Block): Promise<Bytes[] | undefined>
 }

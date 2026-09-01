@@ -5,6 +5,7 @@ import * as matrixV500 from '../matrixV500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV1030 from '../matrixV1030'
 import * as matrixEnjinV1031 from '../matrixEnjinV1031'
+import * as matrixV1040 from '../matrixV1040'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
 import * as enjinV1070 from '../enjinV1070'
@@ -86,6 +87,24 @@ export const setKeys = {
         'Session.set_keys',
         sts.struct({
             keys: matrixV1030.SessionKeys,
+            proof: sts.bytes(),
+        })
+    ),
+    /**
+     * Sets the session key(s) of the function caller to `keys`.
+     * Allows an account to set its session key prior to becoming a validator.
+     * This doesn't take effect until the next session.
+     *
+     * The dispatch origin of this function must be signed.
+     *
+     * ## Complexity
+     * - `O(1)`. Actual cost depends on the number of length of `T::Keys::key_ids()` which is
+     *   fixed.
+     */
+    matrixV1040: new CallType(
+        'Session.set_keys',
+        sts.struct({
+            keys: matrixV1040.SessionKeys,
             proof: sts.bytes(),
         })
     ),

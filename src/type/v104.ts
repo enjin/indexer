@@ -19084,27 +19084,6 @@ export const SlotLeasePeriodStart: sts.Type<SlotLeasePeriodStart> = sts.closedEn
     }
 })
 
-export const DispatchErrorWithPostInfo: sts.Type<DispatchErrorWithPostInfo> = sts.struct(() => {
-    return {
-        postInfo: PostDispatchInfo,
-        error: DispatchError,
-    }
-})
-
-export const PostDispatchInfo: sts.Type<PostDispatchInfo> = sts.struct(() => {
-    return {
-        actualWeight: sts.option(() => Weight),
-        paysFee: Pays,
-    }
-})
-
-export const Pays: sts.Type<Pays> = sts.closedEnum(() => {
-    return {
-        No: sts.unit(),
-        Yes: sts.unit(),
-    }
-})
-
 export const Id = sts.number()
 
 export const PoolMutation: sts.Type<PoolMutation> = sts.struct(() => {
@@ -19143,6 +19122,27 @@ export const CommissionPayment: sts.Type<CommissionPayment> = sts.struct(() => {
     return {
         beneficiary: AccountId32,
         amount: sts.bigint(),
+    }
+})
+
+export const DispatchErrorWithPostInfo: sts.Type<DispatchErrorWithPostInfo> = sts.struct(() => {
+    return {
+        postInfo: PostDispatchInfo,
+        error: DispatchError,
+    }
+})
+
+export const PostDispatchInfo: sts.Type<PostDispatchInfo> = sts.struct(() => {
+    return {
+        actualWeight: sts.option(() => Weight),
+        paysFee: Pays,
+    }
+})
+
+export const Pays: sts.Type<Pays> = sts.closedEnum(() => {
+    return {
+        No: sts.unit(),
+        Yes: sts.unit(),
     }
 })
 

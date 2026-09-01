@@ -547,8 +547,25 @@ type FreezeType_TokenAccount = {
     accountId: AccountId32
 }
 
+type FreezeType_Attribute = {
+    __kind: 'Attribute'
+    tokenId?: bigint | undefined
+    key: Bytes
+}
+
+type FreezeType_TokenGroupAttribute = {
+    __kind: 'TokenGroupAttribute'
+    tokenGroupId: bigint
+    key: Bytes
+}
+
 export type FreezeType =
-    FreezeType_Collection | FreezeType_CollectionAccount | FreezeType_Token | FreezeType_TokenAccount
+    | FreezeType_Collection
+    | FreezeType_CollectionAccount
+    | FreezeType_Token
+    | FreezeType_TokenAccount
+    | FreezeType_Attribute
+    | FreezeType_TokenGroupAttribute
 
 export type ThawType = ThawType_Collection | ThawType_CollectionAccount | ThawType_Token | ThawType_TokenAccount
 

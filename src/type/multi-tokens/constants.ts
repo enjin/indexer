@@ -276,3 +276,19 @@ export const maxCollectionAccountUpdateCount = {
      */
     matrixEnjinV1022: new ConstantType('MultiTokens.MaxCollectionAccountUpdateCount', sts.number()),
 }
+
+export const maxScheduledPerBlock = {
+    /**
+     *  The maximum number of ephemeral tokens that may be scheduled to expire on a single
+     *  block. Used to cap on-chain work performed by `on_idle` cleanup.
+     */
+    matrixV1040: new ConstantType('MultiTokens.MaxScheduledPerBlock', sts.number()),
+}
+
+export const mintRateLimitLooseningDelay = {
+    /**
+     *  The delay, in blocks, before a mint rate limit change that loosens the effective
+     *  rate (or removes the limit) takes effect. Tightening changes apply immediately.
+     */
+    matrixV1040: new ConstantType('MultiTokens.MintRateLimitLooseningDelay', sts.number()),
+}

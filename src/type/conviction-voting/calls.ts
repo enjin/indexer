@@ -1,6 +1,6 @@
 import { sts, Block, Bytes, Option, Result, CallType, RuntimeCtx } from '../support'
-import * as enjinV100 from '../enjinV100'
 import * as v100 from '../v100'
+import * as matrixV1040 from '../matrixV1040'
 import * as enjinV1070 from '../enjinV1070'
 import * as v1070 from '../v1070'
 
@@ -17,11 +17,11 @@ export const vote = {
      *
      * Weight: `O(R)` where R is the number of polls the voter has voted on.
      */
-    enjinV100: new CallType(
+    matrixV1040: new CallType(
         'ConvictionVoting.vote',
         sts.struct({
             pollIndex: sts.number(),
-            vote: enjinV100.AccountVote,
+            vote: matrixV1040.AccountVote,
         })
     ),
     /**
@@ -93,8 +93,8 @@ export const delegate = {
      *
      * The dispatch origin of this call must be _Signed_, and the signing account must either:
      *   - be delegating already; or
-     *   - have no voting activity (if there is, then it will need to be removed/consolidated
-     *     through `reap_vote` or `unvote`).
+     *   - have no voting activity (if there is, then it will need to be removed through
+     *     `remove_vote`).
      *
      * - `to`: The account whose voting the `target` account's voting power will follow.
      * - `class`: The class of polls to delegate. To delegate multiple classes, multiple calls
@@ -109,12 +109,12 @@ export const delegate = {
      * Weight: `O(R)` where R is the number of polls the voter delegating to has
      *   voted on. Weight is initially charged as if maximum votes, but is refunded later.
      */
-    enjinV100: new CallType(
+    matrixV1040: new CallType(
         'ConvictionVoting.delegate',
         sts.struct({
             class: sts.number(),
-            to: enjinV100.MultiAddress,
-            conviction: enjinV100.Conviction,
+            to: matrixV1040.MultiAddress,
+            conviction: matrixV1040.Conviction,
             balance: sts.bigint(),
         })
     ),
@@ -242,7 +242,7 @@ export const undelegate = {
      * Weight: `O(R)` where R is the number of polls the voter delegating to has
      *   voted on. Weight is initially charged as if maximum votes, but is refunded later.
      */
-    enjinV100: new CallType(
+    matrixV1040: new CallType(
         'ConvictionVoting.undelegate',
         sts.struct({
             class: sts.number(),
@@ -331,11 +331,11 @@ export const unlock = {
      *
      * Weight: `O(R)` with R number of vote of target.
      */
-    enjinV100: new CallType(
+    matrixV1040: new CallType(
         'ConvictionVoting.unlock',
         sts.struct({
             class: sts.number(),
-            target: enjinV100.MultiAddress,
+            target: matrixV1040.MultiAddress,
         })
     ),
     /**
@@ -429,7 +429,7 @@ export const removeVote = {
      * Weight: `O(R + log R)` where R is the number of polls that `target` has voted on.
      *   Weight is calculated for the maximum number of vote.
      */
-    enjinV100: new CallType(
+    matrixV1040: new CallType(
         'ConvictionVoting.remove_vote',
         sts.struct({
             class: sts.option(() => sts.number()),
@@ -574,10 +574,10 @@ export const removeOtherVote = {
      * Weight: `O(R + log R)` where R is the number of polls that `target` has voted on.
      *   Weight is calculated for the maximum number of vote.
      */
-    enjinV100: new CallType(
+    matrixV1040: new CallType(
         'ConvictionVoting.remove_other_vote',
         sts.struct({
-            target: enjinV100.MultiAddress,
+            target: matrixV1040.MultiAddress,
             class: sts.number(),
             index: sts.number(),
         })

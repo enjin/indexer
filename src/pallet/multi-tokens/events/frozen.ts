@@ -17,6 +17,10 @@ export function frozen(event: EventItem): Freeze {
             () => multiTokens.frozen.enjinV1070.decode(event)
         )
         .when(
+            () => multiTokens.frozen.matrixV1040.is(event),
+            () => multiTokens.frozen.matrixV1040.decode(event)
+        )
+        .when(
             () => multiTokens.frozen.v1070.is(event),
             () => multiTokens.frozen.v1070.decode(event)
         )
@@ -28,7 +32,7 @@ export function frozen(event: EventItem): Freeze {
 export function frozenEventModel(item: EventItem, data: Freeze): EventModel {
     let tokenId: null | string = null
 
-    if (data.freezeType.__kind !== 'Collection' && data.freezeType.__kind !== 'CollectionAccount') {
+    if (data.freezeType.__kind === 'Token' || data.freezeType.__kind === 'TokenAccount') {
         tokenId = `${data.collectionId}-${data.freezeType.tokenId}`
     }
 
