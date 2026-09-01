@@ -21,9 +21,18 @@ export default async () => {
 
     const [uniqueHolders, uniqueEnjHolders] = await Promise.all([
         em.query(
-            "SELECT COUNT(DISTINCT ac.id) as count FROM account ac LEFT JOIN token_account tc ON ac.id = tc.account_id  WHERE (ac.balance->>'free')::numeric >= POW(10,18) OR tc.total_balance > 0"
+            `WITH holder_accounts AS (
+                SELECT id
+                FROM account
+                WHERE (balance->>'free')::numeric >= 1000000000000000000::numeric
+                UNION
+                SELECT account_id
+                FROM token_account
+                WHERE total_balance > 0 AND account_id IS NOT NULL
+            )
+            SELECT COUNT(*) AS count FROM holder_accounts`
         ),
-        em.query("SELECT COUNT(DISTINCT address) FROM account WHERE (balance->>'free')::numeric > 0"),
+        em.query("SELECT COUNT(DISTINCT address) AS count FROM account WHERE (balance->>'free')::numeric > 0"),
     ])
 
     indexer_info_unique_holders_total.set(Number(uniqueHolders[0].count))
