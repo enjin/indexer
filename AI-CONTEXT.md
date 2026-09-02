@@ -25,6 +25,8 @@ The deployed system has five cooperating services:
 
 The GraphQL container also starts the Prometheus metrics process and decoder server. `start.sh` selects processor, GraphQL, or worker behavior through `CONTAINER_ROLE`. `docker-compose.yml` is the simplest way to run the full local topology and additionally includes Hasura.
 
+The decoder service can dry-run batches against any supported network. It lazily reuses one RPC connection per requested network, preferring the deployment's configured `CHAIN_ENDPOINT` for its own `CHAIN_NAME` and the canonical public archive endpoint for other networks.
+
 ## Main processing flow
 
 ```text

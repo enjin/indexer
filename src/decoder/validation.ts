@@ -4,9 +4,11 @@ import type {
     VerifyMessageItem,
     VerifyMessageRequestBody,
     DecodeSignedExtrinsicRequestBody,
+    DryRunInput,
+    DryRunRequestBody,
 } from './types'
-import { NETWORKS } from './types'
-import { resolveNetwork } from './core'
+import { MAX_DRY_RUN_INPUTS, NETWORKS } from './types'
+import { DEFAULT_NETWORK, resolveNetwork } from './core'
 import type { EncodeCallInput, EncodeRequest } from '../encoder/types'
 
 export function validateDecodeRequest(
@@ -297,4 +299,82 @@ export function validateDecodeSignedExtrinsicsRequest(
     }
 
     return { valid: true, data: req }
+}
+
+function normalizeHex(value: unknown, label: string, expectedBytes?: number): { value?: string; error?: string } {
+    if (typeof value !== 'string') {
+        return { error: `"${label}" must be a string` }
+    }
+
+    const hex = value.startsWith('0x') ? value.slice(2) : value
+
+    if (!hex || hex.length % 2 !== 0 || !/^[0-9a-f]+$/iu.test(hex)) {
+        return { error: `"${label}" must be a non-empty, byte-aligned hexadecimal value` }
+    }
+
+    if (expectedBytes !== undefined && hex.length !== expectedBytes * 2) {
+        return { error: `"${label}" must be exactly ${expectedBytes} bytes` }
+    }
+
+    return { value: `0x${hex}` }
+}
+
+export function validateDryRunRequest(
+    body: unknown
+): { valid: true; data: DryRunRequestBody } | { valid: false; error: string } {
+    if (!body || typeof body !== 'object' || Array.isArray(body)) {
+        return { valid: false, error: 'Request body must be an object' }
+    }
+
+    const req = body as Record<string, unknown>
+    if (!Array.isArray(req.inputs) || req.inputs.length === 0) {
+        return { valid: false, error: '"inputs" must be a non-empty array' }
+    }
+    if (req.inputs.length > MAX_DRY_RUN_INPUTS) {
+        return { valid: false, error: `"inputs" must contain at most ${MAX_DRY_RUN_INPUTS} items` }
+    }
+
+    const inputs: DryRunInput[] = []
+    for (const [index, item] of req.inputs.entries()) {
+        if (!item || typeof item !== 'object' || Array.isArray(item)) {
+            return { valid: false, error: `"inputs[${index}]" must be an object` }
+        }
+
+        const input = item as Record<string, unknown>
+        const publicKey = normalizeHex(input.publicKey, `inputs[${index}].publicKey`, 32)
+        if (publicKey.error) {
+            return { valid: false, error: publicKey.error }
+        }
+
+        const encodedData = normalizeHex(input.encodedData, `inputs[${index}].encodedData`)
+        if (encodedData.error) {
+            return { valid: false, error: encodedData.error }
+        }
+
+        inputs.push({
+            publicKey: publicKey.value as string,
+            encodedData: encodedData.value as string,
+        })
+    }
+
+    let network = DEFAULT_NETWORK
+    if (req.network !== undefined) {
+        if (typeof req.network !== 'string') {
+            return { valid: false, error: 'Invalid "network" field (must be string)' }
+        }
+
+        const resolved = resolveNetwork(req.network)
+        if (!resolved) {
+            return {
+                valid: false,
+                error: `Invalid network. Must be one of: ${NETWORKS.join(', ')}, canary`,
+            }
+        }
+        network = resolved
+    }
+
+    return {
+        valid: true,
+        data: { inputs, network },
+    }
 }
