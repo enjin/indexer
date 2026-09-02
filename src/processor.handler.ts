@@ -16,6 +16,7 @@ import {
     xcmPallet,
     imOnline,
     utility,
+    migrations,
 } from '~/type/events'
 import { calls } from '~/type'
 import { SnsEvent } from './util/sns'
@@ -244,6 +245,9 @@ export async function eventHandler(
             .with(utility.batchInterrupted.name, () => p.utility.processors.batchInterrupted(block, item))
             .with(utility.itemCompleted.name, () => p.utility.processors.itemCompleted(item))
             .with(utility.itemFailed.name, () => p.utility.processors.itemFailed(block, item))
+            .with(migrations.upgradeCompleted.name, () =>
+                p.migrations.processors.upgradeCompleted(block, item, skipSave)
+            )
             .otherwise(() => {
                 ctx.log.error(`Unsupported event on handle event: ${item.name}`)
                 return undefined

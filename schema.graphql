@@ -424,6 +424,11 @@ type UtilityBatchInterrupted {
   itemIndex: Int
 }
 
+type MigrationsUpgradeCompleted {
+  blockNumber: Int!
+  specVersion: Int!
+}
+
 type MultiTokensClaimedCollections {
   account: Account!
   ethAccount: String!
@@ -1712,6 +1717,7 @@ union EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiToken
   | BalancesTransfer | TeleportBalanceWithdrawn | ClaimsClaimRequested | ClaimsClaimed | MarketplaceWhitelistedAccountsAdded
   | MarketplaceWhitelistedAccountsRemoved
   | FuelTankCreated | FuelTankDestroyed | FuelTankDispatchFailed | UtilityItemFailed | UtilityBatchInterrupted
+  | MigrationsUpgradeCompleted
   | MultiTokensClaimedCollections | MultiTokensClaimTokensInitiated
   | MultiTokensClaimTokensCompleted | MultiTokensCollectionTransferred | MultiTokensCollectionTransferCancelled | MultiTokensInfused
   | StakingEraPaid | NominationPoolsBonded | NominationPoolsUnbonded | StakingChilled | StakingBonded | StakingUnbonded | StakingWithdrawn
