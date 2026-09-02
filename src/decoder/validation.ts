@@ -240,9 +240,6 @@ export function validateVerifyMessageRequest(
     if (!Array.isArray(req.inputs) || req.inputs.length === 0) {
         return { valid: false, error: '"inputs" must be a non-empty array' }
     }
-    if (req.inputs.length > MAX_DRY_RUN_INPUTS) {
-        return { valid: false, error: `"inputs" must contain at most ${MAX_DRY_RUN_INPUTS} items` }
-    }
 
     for (const [index, item] of req.inputs.entries()) {
         const { message, signature, publicKey } = item
@@ -332,6 +329,9 @@ export function validateDryRunRequest(
     const req = body as Record<string, unknown>
     if (!Array.isArray(req.inputs) || req.inputs.length === 0) {
         return { valid: false, error: '"inputs" must be a non-empty array' }
+    }
+    if (req.inputs.length > MAX_DRY_RUN_INPUTS) {
+        return { valid: false, error: `"inputs" must contain at most ${MAX_DRY_RUN_INPUTS} items` }
     }
 
     const inputs: DryRunInput[] = []
