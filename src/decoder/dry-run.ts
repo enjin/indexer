@@ -1,7 +1,8 @@
 import type { ApiPromise } from '@polkadot/api'
-import type { DryRunError, DryRunRequestBody, DryRunResponse } from './types'
+import type { DryRunBatchResponse, DryRunError, DryRunInput, DryRunResponse } from './types'
 
 export const DRY_RUN_XCM_VERSION = 5
+export const DRY_RUN_CONCURRENCY = 5
 
 interface CodecValue {
     toHex(): string
@@ -103,7 +104,7 @@ export function formatDryRunResult(registry: DryRunRegistry, result: DryRunResul
     }
 }
 
-export async function dryRun(api: ApiPromise, request: DryRunRequestBody): Promise<DryRunResponse> {
+export async function dryRun(api: ApiPromise, request: DryRunInput): Promise<DryRunResponse> {
     const runtimeApi = (api.call as unknown as { dryRunApi?: DryRunRuntimeApi }).dryRunApi
     if (!runtimeApi) {
         throw new Error('dryRunApi.dryRunCall is not available on the configured chain')
@@ -116,4 +117,21 @@ export async function dryRun(api: ApiPromise, request: DryRunRequestBody): Promi
     )
 
     return formatDryRunResult(api.registry as unknown as DryRunRegistry, result)
+}
+
+export async function dryRunBatch(api: ApiPromise, inputs: DryRunInput[]): Promise<DryRunBatchResponse> {
+    const results = new Array<DryRunResponse>(inputs.length)
+    let nextIndex = 0
+
+    async function worker(): Promise<void> {
+        while (nextIndex < inputs.length) {
+            const index = nextIndex++
+            results[index] = await dryRun(api, inputs[index])
+        }
+    }
+
+    const workerCount = Math.min(DRY_RUN_CONCURRENCY, inputs.length)
+    await Promise.all(Array.from({ length: workerCount }, worker))
+
+    return results
 }

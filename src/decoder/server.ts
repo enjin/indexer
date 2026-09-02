@@ -21,8 +21,8 @@ import {
     validateDryRunRequest,
 } from './validation'
 import config from '~/util/config'
-import Rpc from '~/util/rpc'
-import { dryRun } from './dry-run'
+import DecoderRpc from './rpc'
+import { dryRunBatch } from './dry-run'
 
 const log = createLogger('sqd:decoder')
 
@@ -163,10 +163,10 @@ async function handleDryRun(req: Request, res: Response): Promise<void> {
             return
         }
 
-        const rpc = await Rpc.getInstance()
+        const rpc = await DecoderRpc.getInstance(validation.data.network)
         await rpc.ensureConnected()
 
-        res.json(await dryRun(rpc.api, validation.data))
+        res.json(await dryRunBatch(rpc.api, validation.data.inputs))
     } catch (error) {
         handleServerError(error, req, res, 'Dry run')
     }

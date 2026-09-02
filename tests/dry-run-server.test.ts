@@ -31,9 +31,9 @@ void test('dry-run route only accepts valid POST requests', async (t) => {
     const postResponse = await fetch(url, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ publicKey: '0x12', encodedData: '0x0102' }),
+        body: JSON.stringify({ inputs: [{ publicKey: '0x12', encodedData: '0x0102' }] }),
     })
 
     assert.equal(postResponse.status, 400)
-    assert.deepEqual(await postResponse.json(), { error: '"publicKey" must be exactly 32 bytes' })
+    assert.deepEqual(await postResponse.json(), { error: '"inputs[0].publicKey" must be exactly 32 bytes' })
 })

@@ -2,6 +2,7 @@ import type { DecodedCall, ExtrinsicSignature } from '@subsquid/substrate-runtim
 
 // Network constants
 export const NETWORKS = ['enjin-matrixchain', 'canary-matrixchain', 'enjin-relaychain', 'canary-relaychain'] as const
+export const MAX_DRY_RUN_INPUTS = 50
 
 export type Network = (typeof NETWORKS)[number]
 
@@ -75,9 +76,14 @@ export interface DecodeSignedExtrinsicRequestBody {
     spec_version?: number
 }
 
-export interface DryRunRequestBody {
+export interface DryRunInput {
     publicKey: string
     encodedData: string
+}
+
+export interface DryRunRequestBody {
+    inputs: DryRunInput[]
+    network: Network
 }
 
 export interface DryRunError {
@@ -87,6 +93,8 @@ export interface DryRunError {
 }
 
 export type DryRunResponse = { success: true } | { success: false; error: DryRunError }
+
+export type DryRunBatchResponse = DryRunResponse[]
 
 export interface DecodedSignedExtrinsicInput {
     signedExtrinsic: string

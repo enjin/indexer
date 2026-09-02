@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import type { ApiPromise } from '@polkadot/api'
-import { DRY_RUN_XCM_VERSION, dryRun, formatDryRunResult } from '~/decoder/dry-run'
+import { DRY_RUN_CONCURRENCY, DRY_RUN_XCM_VERSION, dryRun, dryRunBatch, formatDryRunResult } from '~/decoder/dry-run'
 
 function codec(code: string, type?: string) {
     return {
@@ -164,4 +164,44 @@ void test('dryRun fails clearly when the runtime API is unavailable', async () =
         dryRun(api, { publicKey: `0x${'12'.repeat(32)}`, encodedData: '0x0102' }),
         /dryRunApi\.dryRunCall is not available/
     )
+})
+
+void test('dryRunBatch preserves input order and bounds concurrency', async () => {
+    let active = 0
+    let maxActive = 0
+    const api = {
+        call: {
+            dryRunApi: {
+                dryRunCall: (_origin: unknown, encodedData: string) => {
+                    active++
+                    maxActive = Math.max(maxActive, active)
+
+                    return new Promise((resolve) => {
+                        setImmediate(() => {
+                            active--
+                            resolve({
+                                isErr: encodedData === '0x02',
+                                asErr: codec(encodedData, 'Rejected'),
+                                asOk: { executionResult: { isOk: true, asErr: undefined as never } },
+                            })
+                        })
+                    })
+                },
+            },
+        },
+        registry: {},
+    } as unknown as ApiPromise
+    const inputs = Array.from({ length: DRY_RUN_CONCURRENCY + 2 }, (_, index) => ({
+        publicKey: `0x${'12'.repeat(32)}`,
+        encodedData: `0x0${index}`,
+    }))
+
+    const results = await dryRunBatch(api, inputs)
+
+    assert.equal(maxActive, DRY_RUN_CONCURRENCY)
+    assert.equal(results.length, inputs.length)
+    assert.deepEqual(results[2], {
+        success: false,
+        error: { code: '0x02', name: 'Rejected', message: 'The dry-run API returned Rejected.' },
+    })
 })
