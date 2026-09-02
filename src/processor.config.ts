@@ -24,6 +24,7 @@ const commonEvents: string[] = [
     ...getEventNames(events.marketplace),
     ...getEventNames(events.multiTokens),
     ...getEventNames(events.utility),
+    events.migrations.upgradeCompleted.name,
 ]
 
 const ignoreEvents: string[] = [
