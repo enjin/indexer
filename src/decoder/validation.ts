@@ -4,6 +4,7 @@ import type {
     VerifyMessageItem,
     VerifyMessageRequestBody,
     DecodeSignedExtrinsicRequestBody,
+    DryRunRequestBody,
 } from './types'
 import { NETWORKS } from './types'
 import { resolveNetwork } from './core'
@@ -297,4 +298,49 @@ export function validateDecodeSignedExtrinsicsRequest(
     }
 
     return { valid: true, data: req }
+}
+
+function normalizeHex(value: unknown, label: string, expectedBytes?: number): { value?: string; error?: string } {
+    if (typeof value !== 'string') {
+        return { error: `"${label}" must be a string` }
+    }
+
+    const hex = value.startsWith('0x') ? value.slice(2) : value
+
+    if (!hex || hex.length % 2 !== 0 || !/^[0-9a-f]+$/iu.test(hex)) {
+        return { error: `"${label}" must be a non-empty, byte-aligned hexadecimal value` }
+    }
+
+    if (expectedBytes !== undefined && hex.length !== expectedBytes * 2) {
+        return { error: `"${label}" must be exactly ${expectedBytes} bytes` }
+    }
+
+    return { value: `0x${hex}` }
+}
+
+export function validateDryRunRequest(
+    body: unknown
+): { valid: true; data: DryRunRequestBody } | { valid: false; error: string } {
+    if (!body || typeof body !== 'object' || Array.isArray(body)) {
+        return { valid: false, error: 'Request body must be an object' }
+    }
+
+    const req = body as Record<string, unknown>
+    const publicKey = normalizeHex(req.publicKey, 'publicKey', 32)
+    if (publicKey.error) {
+        return { valid: false, error: publicKey.error }
+    }
+
+    const encodedData = normalizeHex(req.encodedData, 'encodedData')
+    if (encodedData.error) {
+        return { valid: false, error: encodedData.error }
+    }
+
+    return {
+        valid: true,
+        data: {
+            publicKey: publicKey.value as string,
+            encodedData: encodedData.value as string,
+        },
+    }
 }

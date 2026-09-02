@@ -18,8 +18,11 @@ import {
     validateHashRequest,
     validateVerifyMessageRequest,
     validateDecodeSignedExtrinsicsRequest,
+    validateDryRunRequest,
 } from './validation'
 import config from '~/util/config'
+import Rpc from '~/util/rpc'
+import { dryRun } from './dry-run'
 
 const log = createLogger('sqd:decoder')
 
@@ -152,7 +155,24 @@ async function handleDecodeSignedExtrinsics(req: Request, res: Response): Promis
     }
 }
 
-const server: Application = express()
+async function handleDryRun(req: Request, res: Response): Promise<void> {
+    try {
+        const validation = validateDryRunRequest(req.body)
+        if (!validation.valid) {
+            res.status(400).json({ error: validation.error })
+            return
+        }
+
+        const rpc = await Rpc.getInstance()
+        await rpc.ensureConnected()
+
+        res.json(await dryRun(rpc.api, validation.data))
+    } catch (error) {
+        handleServerError(error, req, res, 'Dry run')
+    }
+}
+
+export const server: Application = express()
 
 server.use(express.json({ limit: '1mb' }))
 
@@ -176,6 +196,10 @@ server.get('/decode/extrinsics', (_req, res) => {
     res.set('Allow', 'POST')
     res.status(405).send('Method Not Allowed')
 })
+server.get('/dry-run', (_req, res) => {
+    res.set('Allow', 'POST')
+    res.status(405).send('Method Not Allowed')
+})
 server.get('/health', (_req, res) => {
     res.json({ status: 'healthy' })
 })
@@ -185,9 +209,14 @@ server.post('/encoder', handleEncode)
 server.post('/hash', handleHash)
 server.post('/verify/messages', handleVerifyMessage)
 server.post('/decode/extrinsics', handleDecodeSignedExtrinsics)
+server.post('/dry-run', handleDryRun)
 
-const port = process.env.DECODER_PORT || 8090
+export function startServer(port: string | number = process.env.DECODER_PORT || 8090): void {
+    server.listen(port, () => {
+        log.info(`Decoder/Encoder server started on port ${port}`)
+    })
+}
 
-server.listen(port, () => {
-    log.info(`Decoder/Encoder server started on port ${port}`)
-})
+if (require.main === module) {
+    startServer()
+}

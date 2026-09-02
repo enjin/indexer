@@ -75,6 +75,19 @@ export interface DecodeSignedExtrinsicRequestBody {
     spec_version?: number
 }
 
+export interface DryRunRequestBody {
+    publicKey: string
+    encodedData: string
+}
+
+export interface DryRunError {
+    code: string
+    name: string
+    message: string
+}
+
+export type DryRunResponse = { success: true } | { success: false; error: DryRunError }
+
 export interface DecodedSignedExtrinsicInput {
     signedExtrinsic: string
 }
