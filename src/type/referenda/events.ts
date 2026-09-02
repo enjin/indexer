@@ -1,12 +1,12 @@
 import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
-import * as enjinV100 from '../enjinV100'
+import * as matrixV1040 from '../matrixV1040'
 
 export const submitted = {
     name: 'Referenda.Submitted',
     /**
      * A referendum has been submitted.
      */
-    enjinV100: new EventType(
+    matrixV1040: new EventType(
         'Referenda.Submitted',
         sts.struct({
             /**
@@ -20,7 +20,7 @@ export const submitted = {
             /**
              * The proposal for the referendum.
              */
-            proposal: enjinV100.Bounded,
+            proposal: matrixV1040.Bounded,
         })
     ),
 }
@@ -30,7 +30,7 @@ export const decisionDepositPlaced = {
     /**
      * The decision deposit has been placed.
      */
-    enjinV100: new EventType(
+    matrixV1040: new EventType(
         'Referenda.DecisionDepositPlaced',
         sts.struct({
             /**
@@ -40,7 +40,7 @@ export const decisionDepositPlaced = {
             /**
              * The account who placed the deposit.
              */
-            who: enjinV100.AccountId32,
+            who: matrixV1040.AccountId32,
             /**
              * The amount placed by the account.
              */
@@ -54,7 +54,7 @@ export const decisionDepositRefunded = {
     /**
      * The decision deposit has been refunded.
      */
-    enjinV100: new EventType(
+    matrixV1040: new EventType(
         'Referenda.DecisionDepositRefunded',
         sts.struct({
             /**
@@ -64,7 +64,7 @@ export const decisionDepositRefunded = {
             /**
              * The account who placed the deposit.
              */
-            who: enjinV100.AccountId32,
+            who: matrixV1040.AccountId32,
             /**
              * The amount placed by the account.
              */
@@ -76,15 +76,15 @@ export const decisionDepositRefunded = {
 export const depositSlashed = {
     name: 'Referenda.DepositSlashed',
     /**
-     * A deposit has been slashaed.
+     * A deposit has been slashed.
      */
-    enjinV100: new EventType(
+    matrixV1040: new EventType(
         'Referenda.DepositSlashed',
         sts.struct({
             /**
              * The account who placed the deposit.
              */
-            who: enjinV100.AccountId32,
+            who: matrixV1040.AccountId32,
             /**
              * The amount placed by the account.
              */
@@ -98,7 +98,7 @@ export const decisionStarted = {
     /**
      * A referendum has moved into the deciding phase.
      */
-    enjinV100: new EventType(
+    matrixV1040: new EventType(
         'Referenda.DecisionStarted',
         sts.struct({
             /**
@@ -112,18 +112,18 @@ export const decisionStarted = {
             /**
              * The proposal for the referendum.
              */
-            proposal: enjinV100.Bounded,
+            proposal: matrixV1040.Bounded,
             /**
              * The current tally of votes in this referendum.
              */
-            tally: enjinV100.Tally,
+            tally: matrixV1040.Tally,
         })
     ),
 }
 
 export const confirmStarted = {
     name: 'Referenda.ConfirmStarted',
-    enjinV100: new EventType(
+    matrixV1040: new EventType(
         'Referenda.ConfirmStarted',
         sts.struct({
             /**
@@ -136,7 +136,7 @@ export const confirmStarted = {
 
 export const confirmAborted = {
     name: 'Referenda.ConfirmAborted',
-    enjinV100: new EventType(
+    matrixV1040: new EventType(
         'Referenda.ConfirmAborted',
         sts.struct({
             /**
@@ -152,7 +152,7 @@ export const confirmed = {
     /**
      * A referendum has ended its confirmation phase and is ready for approval.
      */
-    enjinV100: new EventType(
+    matrixV1040: new EventType(
         'Referenda.Confirmed',
         sts.struct({
             /**
@@ -162,7 +162,7 @@ export const confirmed = {
             /**
              * The final tally of votes in this referendum.
              */
-            tally: enjinV100.Tally,
+            tally: matrixV1040.Tally,
         })
     ),
 }
@@ -172,7 +172,7 @@ export const approved = {
     /**
      * A referendum has been approved and its proposal has been scheduled.
      */
-    enjinV100: new EventType(
+    matrixV1040: new EventType(
         'Referenda.Approved',
         sts.struct({
             /**
@@ -188,7 +188,7 @@ export const rejected = {
     /**
      * A proposal has been rejected by referendum.
      */
-    enjinV100: new EventType(
+    matrixV1040: new EventType(
         'Referenda.Rejected',
         sts.struct({
             /**
@@ -198,7 +198,7 @@ export const rejected = {
             /**
              * The final tally of votes in this referendum.
              */
-            tally: enjinV100.Tally,
+            tally: matrixV1040.Tally,
         })
     ),
 }
@@ -208,7 +208,7 @@ export const timedOut = {
     /**
      * A referendum has been timed out without being decided.
      */
-    enjinV100: new EventType(
+    matrixV1040: new EventType(
         'Referenda.TimedOut',
         sts.struct({
             /**
@@ -218,7 +218,7 @@ export const timedOut = {
             /**
              * The final tally of votes in this referendum.
              */
-            tally: enjinV100.Tally,
+            tally: matrixV1040.Tally,
         })
     ),
 }
@@ -228,7 +228,7 @@ export const cancelled = {
     /**
      * A referendum has been cancelled.
      */
-    enjinV100: new EventType(
+    matrixV1040: new EventType(
         'Referenda.Cancelled',
         sts.struct({
             /**
@@ -238,7 +238,7 @@ export const cancelled = {
             /**
              * The final tally of votes in this referendum.
              */
-            tally: enjinV100.Tally,
+            tally: matrixV1040.Tally,
         })
     ),
 }
@@ -248,7 +248,7 @@ export const killed = {
     /**
      * A referendum has been killed.
      */
-    enjinV100: new EventType(
+    matrixV1040: new EventType(
         'Referenda.Killed',
         sts.struct({
             /**
@@ -258,7 +258,7 @@ export const killed = {
             /**
              * The final tally of votes in this referendum.
              */
-            tally: enjinV100.Tally,
+            tally: matrixV1040.Tally,
         })
     ),
 }
@@ -268,7 +268,7 @@ export const submissionDepositRefunded = {
     /**
      * The submission deposit has been refunded.
      */
-    enjinV100: new EventType(
+    matrixV1040: new EventType(
         'Referenda.SubmissionDepositRefunded',
         sts.struct({
             /**
@@ -278,7 +278,7 @@ export const submissionDepositRefunded = {
             /**
              * The account who placed the deposit.
              */
-            who: enjinV100.AccountId32,
+            who: matrixV1040.AccountId32,
             /**
              * The amount placed by the account.
              */
@@ -292,7 +292,7 @@ export const metadataSet = {
     /**
      * Metadata for a referendum has been set.
      */
-    enjinV100: new EventType(
+    matrixV1040: new EventType(
         'Referenda.MetadataSet',
         sts.struct({
             /**
@@ -302,7 +302,7 @@ export const metadataSet = {
             /**
              * Preimage hash.
              */
-            hash: enjinV100.H256,
+            hash: matrixV1040.H256,
         })
     ),
 }
@@ -312,7 +312,7 @@ export const metadataCleared = {
     /**
      * Metadata for a referendum has been cleared.
      */
-    enjinV100: new EventType(
+    matrixV1040: new EventType(
         'Referenda.MetadataCleared',
         sts.struct({
             /**
@@ -322,7 +322,7 @@ export const metadataCleared = {
             /**
              * Preimage hash.
              */
-            hash: enjinV100.H256,
+            hash: matrixV1040.H256,
         })
     ),
 }

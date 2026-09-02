@@ -4,6 +4,7 @@ import * as v104 from '../v104'
 import * as matrixV500 from '../matrixV500'
 import * as matrixV602 from '../matrixV602'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
+import * as matrixV1040 from '../matrixV1040'
 import * as enjinV1070 from '../enjinV1070'
 
 export const endowed = {
@@ -363,7 +364,7 @@ export const mintedCredit = {
     /**
      * Some credit was balanced and added to the TotalIssuance.
      */
-    enjinV1070: new EventType(
+    matrixV1040: new EventType(
         'Balances.MintedCredit',
         sts.struct({
             amount: sts.bigint(),
@@ -376,7 +377,7 @@ export const burnedDebt = {
     /**
      * Some debt has been dropped from the Total Issuance.
      */
-    enjinV1070: new EventType(
+    matrixV1040: new EventType(
         'Balances.BurnedDebt',
         sts.struct({
             amount: sts.bigint(),
@@ -386,6 +387,17 @@ export const burnedDebt = {
 
 export const held = {
     name: 'Balances.Held',
+    /**
+     * Some balance was placed on hold.
+     */
+    matrixV1040: new EventType(
+        'Balances.Held',
+        sts.struct({
+            reason: matrixV1040.RuntimeHoldReason,
+            who: matrixV1040.AccountId32,
+            amount: sts.bigint(),
+        })
+    ),
     /**
      * Some balance was placed on hold.
      */
@@ -404,6 +416,17 @@ export const burnedHeld = {
     /**
      * Held balance was burned from an account.
      */
+    matrixV1040: new EventType(
+        'Balances.BurnedHeld',
+        sts.struct({
+            reason: matrixV1040.RuntimeHoldReason,
+            who: matrixV1040.AccountId32,
+            amount: sts.bigint(),
+        })
+    ),
+    /**
+     * Held balance was burned from an account.
+     */
     enjinV1070: new EventType(
         'Balances.BurnedHeld',
         sts.struct({
@@ -416,6 +439,18 @@ export const burnedHeld = {
 
 export const transferOnHold = {
     name: 'Balances.TransferOnHold',
+    /**
+     * A transfer of `amount` on hold from `source` to `dest` was initiated.
+     */
+    matrixV1040: new EventType(
+        'Balances.TransferOnHold',
+        sts.struct({
+            reason: matrixV1040.RuntimeHoldReason,
+            source: matrixV1040.AccountId32,
+            dest: matrixV1040.AccountId32,
+            amount: sts.bigint(),
+        })
+    ),
     /**
      * A transfer of `amount` on hold from `source` to `dest` was initiated.
      */
@@ -435,6 +470,18 @@ export const transferAndHold = {
     /**
      * The `transferred` balance is placed on hold at the `dest` account.
      */
+    matrixV1040: new EventType(
+        'Balances.TransferAndHold',
+        sts.struct({
+            reason: matrixV1040.RuntimeHoldReason,
+            source: matrixV1040.AccountId32,
+            dest: matrixV1040.AccountId32,
+            transferred: sts.bigint(),
+        })
+    ),
+    /**
+     * The `transferred` balance is placed on hold at the `dest` account.
+     */
     enjinV1070: new EventType(
         'Balances.TransferAndHold',
         sts.struct({
@@ -448,6 +495,17 @@ export const transferAndHold = {
 
 export const released = {
     name: 'Balances.Released',
+    /**
+     * Some balance was released from hold.
+     */
+    matrixV1040: new EventType(
+        'Balances.Released',
+        sts.struct({
+            reason: matrixV1040.RuntimeHoldReason,
+            who: matrixV1040.AccountId32,
+            amount: sts.bigint(),
+        })
+    ),
     /**
      * Some balance was released from hold.
      */
@@ -466,5 +524,5 @@ export const unexpected = {
     /**
      * An unexpected/defensive event was triggered.
      */
-    enjinV1070: new EventType('Balances.Unexpected', enjinV1070.UnexpectedKind),
+    matrixV1040: new EventType('Balances.Unexpected', matrixV1040.UnexpectedKind),
 }

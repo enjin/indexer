@@ -4,6 +4,7 @@ import * as matrixV602 from '../matrixV602'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV1030 from '../matrixV1030'
 import * as matrixEnjinV1031 from '../matrixEnjinV1031'
+import * as matrixV1040 from '../matrixV1040'
 
 export const setValidationData = {
     name: 'ParachainSystem.set_validation_data',
@@ -73,6 +74,24 @@ export const setValidationData = {
         'ParachainSystem.set_validation_data',
         sts.struct({
             data: matrixV1030.ParachainInherentData,
+        })
+    ),
+    /**
+     * Set the current validation data.
+     *
+     * This should be invoked exactly once per block. It will panic at the finalization
+     * phase if the call was not invoked.
+     *
+     * The dispatch origin for this call must be `Inherent`
+     *
+     * As a side effect, this function upgrades the current validation function
+     * if the appropriate time has come.
+     */
+    matrixV1040: new CallType(
+        'ParachainSystem.set_validation_data',
+        sts.struct({
+            data: matrixV1040.BasicParachainInherentData,
+            inboundMessagesData: matrixV1040.InboundMessagesData,
         })
     ),
 }

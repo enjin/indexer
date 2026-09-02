@@ -1,151 +1,21 @@
 import { sts, Result, Option, Bytes, BitSequence } from './support'
 
-export type Type_935 =
-    Type_935_Approved | Type_935_Cancelled | Type_935_Killed | Type_935_Ongoing | Type_935_Rejected | Type_935_TimedOut
+export type VersionedAssetId = VersionedAssetId_V3
 
-export interface Type_935_Approved {
-    __kind: 'Approved'
-    value: [number, Deposit | undefined, Deposit | undefined]
+export interface VersionedAssetId_V3 {
+    __kind: 'V3'
+    value: V3AssetId
 }
 
-export interface Type_935_Cancelled {
-    __kind: 'Cancelled'
-    value: [number, Deposit | undefined, Deposit | undefined]
-}
+export type V3AssetId = V3AssetId_Abstract | V3AssetId_Concrete
 
-export interface Type_935_Killed {
-    __kind: 'Killed'
-    value: number
-}
-
-export interface Type_935_Ongoing {
-    __kind: 'Ongoing'
-    value: Type_936
-}
-
-export interface Type_935_Rejected {
-    __kind: 'Rejected'
-    value: [number, Deposit | undefined, Deposit | undefined]
-}
-
-export interface Type_935_TimedOut {
-    __kind: 'TimedOut'
-    value: [number, Deposit | undefined, Deposit | undefined]
-}
-
-export interface Type_936 {
-    track: number
-    origin: OriginCaller
-    proposal: Bounded
-    enactment: DispatchTime
-    submitted: number
-    submissionDeposit: Deposit
-    decisionDeposit?: Deposit | undefined
-    deciding?: DecidingStatus | undefined
-    tally: Type_586
-    inQueue: boolean
-    alarm?: [number, [number, number]] | undefined
-}
-
-export interface Type_586 {
-    bareAyes: number
-    ayes: number
-    nays: number
-}
-
-export interface DecidingStatus {
-    since: number
-    confirming?: number | undefined
-}
-
-export type DispatchTime = DispatchTime_After | DispatchTime_At
-
-export interface DispatchTime_After {
-    __kind: 'After'
-    value: number
-}
-
-export interface DispatchTime_At {
-    __kind: 'At'
-    value: number
-}
-
-export type Bounded = Bounded_Inline | Bounded_Legacy | Bounded_Lookup
-
-export interface Bounded_Inline {
-    __kind: 'Inline'
+export interface V3AssetId_Abstract {
+    __kind: 'Abstract'
     value: Bytes
 }
 
-export interface Bounded_Legacy {
-    __kind: 'Legacy'
-    hash: H256
-}
-
-export interface Bounded_Lookup {
-    __kind: 'Lookup'
-    hash: H256
-    len: number
-}
-
-export type H256 = Bytes
-
-export type OriginCaller =
-    | OriginCaller_Origins
-    | OriginCaller_ParachainsOrigin
-    | OriginCaller_Void
-    | OriginCaller_XcmPallet
-    | OriginCaller_system
-
-export interface OriginCaller_Origins {
-    __kind: 'Origins'
-    value: Type_407
-}
-
-export interface OriginCaller_ParachainsOrigin {
-    __kind: 'ParachainsOrigin'
-    value: Origin
-}
-
-export interface OriginCaller_Void {
-    __kind: 'Void'
-    value: Void
-}
-
-export interface OriginCaller_XcmPallet {
-    __kind: 'XcmPallet'
-    value: Type_406
-}
-
-export interface OriginCaller_system {
-    __kind: 'system'
-    value: RawOrigin
-}
-
-export type RawOrigin = RawOrigin_None | RawOrigin_Root | RawOrigin_Signed
-
-export interface RawOrigin_None {
-    __kind: 'None'
-}
-
-export interface RawOrigin_Root {
-    __kind: 'Root'
-}
-
-export interface RawOrigin_Signed {
-    __kind: 'Signed'
-    value: AccountId32
-}
-
-export type Type_406 = Type_406_Response | Type_406_Xcm
-
-export interface Type_406_Response {
-    __kind: 'Response'
-    value: V3MultiLocation
-}
-
-export interface Type_406_Xcm {
-    __kind: 'Xcm'
+export interface V3AssetId_Concrete {
+    __kind: 'Concrete'
     value: V3MultiLocation
 }
 
@@ -417,355 +287,6 @@ export interface V3NetworkId_Westend {
 
 export interface V3NetworkId_Wococo {
     __kind: 'Wococo'
-}
-
-export type Void = never
-
-export type Origin = Origin_Parachain
-
-export interface Origin_Parachain {
-    __kind: 'Parachain'
-    value: Id
-}
-
-export type Id = number
-
-export type Type_407 =
-    | Type_407_AuctionAdmin
-    | Type_407_BigSpender
-    | Type_407_BigTipper
-    | Type_407_ClaimsAdmin
-    | Type_407_ExtrinsicPauseAdmin
-    | Type_407_Fellows
-    | Type_407_Fellowship1Dan
-    | Type_407_Fellowship2Dan
-    | Type_407_Fellowship3Dan
-    | Type_407_Fellowship4Dan
-    | Type_407_Fellowship5Dan
-    | Type_407_Fellowship6Dan
-    | Type_407_Fellowship7Dan
-    | Type_407_Fellowship8Dan
-    | Type_407_Fellowship9Dan
-    | Type_407_FellowshipAdmin
-    | Type_407_FellowshipExperts
-    | Type_407_FellowshipInitiates
-    | Type_407_FellowshipMasters
-    | Type_407_FuelTanksAdmin
-    | Type_407_GeneralAdmin
-    | Type_407_LeaseAdmin
-    | Type_407_MediumSpender
-    | Type_407_MultiTokensAdmin
-    | Type_407_ParachainsAdmin
-    | Type_407_PreimageAdmin
-    | Type_407_ReferendumCanceller
-    | Type_407_ReferendumKiller
-    | Type_407_SmallSpender
-    | Type_407_SmallTipper
-    | Type_407_StakingAdmin
-    | Type_407_TreasuryAdmin
-    | Type_407_WhitelistAdmin
-    | Type_407_WhitelistedCaller
-
-export interface Type_407_AuctionAdmin {
-    __kind: 'AuctionAdmin'
-}
-
-export interface Type_407_BigSpender {
-    __kind: 'BigSpender'
-}
-
-export interface Type_407_BigTipper {
-    __kind: 'BigTipper'
-}
-
-export interface Type_407_ClaimsAdmin {
-    __kind: 'ClaimsAdmin'
-}
-
-export interface Type_407_ExtrinsicPauseAdmin {
-    __kind: 'ExtrinsicPauseAdmin'
-}
-
-export interface Type_407_Fellows {
-    __kind: 'Fellows'
-}
-
-export interface Type_407_Fellowship1Dan {
-    __kind: 'Fellowship1Dan'
-}
-
-export interface Type_407_Fellowship2Dan {
-    __kind: 'Fellowship2Dan'
-}
-
-export interface Type_407_Fellowship3Dan {
-    __kind: 'Fellowship3Dan'
-}
-
-export interface Type_407_Fellowship4Dan {
-    __kind: 'Fellowship4Dan'
-}
-
-export interface Type_407_Fellowship5Dan {
-    __kind: 'Fellowship5Dan'
-}
-
-export interface Type_407_Fellowship6Dan {
-    __kind: 'Fellowship6Dan'
-}
-
-export interface Type_407_Fellowship7Dan {
-    __kind: 'Fellowship7Dan'
-}
-
-export interface Type_407_Fellowship8Dan {
-    __kind: 'Fellowship8Dan'
-}
-
-export interface Type_407_Fellowship9Dan {
-    __kind: 'Fellowship9Dan'
-}
-
-export interface Type_407_FellowshipAdmin {
-    __kind: 'FellowshipAdmin'
-}
-
-export interface Type_407_FellowshipExperts {
-    __kind: 'FellowshipExperts'
-}
-
-export interface Type_407_FellowshipInitiates {
-    __kind: 'FellowshipInitiates'
-}
-
-export interface Type_407_FellowshipMasters {
-    __kind: 'FellowshipMasters'
-}
-
-export interface Type_407_FuelTanksAdmin {
-    __kind: 'FuelTanksAdmin'
-}
-
-export interface Type_407_GeneralAdmin {
-    __kind: 'GeneralAdmin'
-}
-
-export interface Type_407_LeaseAdmin {
-    __kind: 'LeaseAdmin'
-}
-
-export interface Type_407_MediumSpender {
-    __kind: 'MediumSpender'
-}
-
-export interface Type_407_MultiTokensAdmin {
-    __kind: 'MultiTokensAdmin'
-}
-
-export interface Type_407_ParachainsAdmin {
-    __kind: 'ParachainsAdmin'
-}
-
-export interface Type_407_PreimageAdmin {
-    __kind: 'PreimageAdmin'
-}
-
-export interface Type_407_ReferendumCanceller {
-    __kind: 'ReferendumCanceller'
-}
-
-export interface Type_407_ReferendumKiller {
-    __kind: 'ReferendumKiller'
-}
-
-export interface Type_407_SmallSpender {
-    __kind: 'SmallSpender'
-}
-
-export interface Type_407_SmallTipper {
-    __kind: 'SmallTipper'
-}
-
-export interface Type_407_StakingAdmin {
-    __kind: 'StakingAdmin'
-}
-
-export interface Type_407_TreasuryAdmin {
-    __kind: 'TreasuryAdmin'
-}
-
-export interface Type_407_WhitelistAdmin {
-    __kind: 'WhitelistAdmin'
-}
-
-export interface Type_407_WhitelistedCaller {
-    __kind: 'WhitelistedCaller'
-}
-
-export interface Deposit {
-    who: AccountId32
-    amount: bigint
-}
-
-export const Type_935: sts.Type<Type_935> = sts.closedEnum(() => {
-    return {
-        Approved: sts.tuple(() => [sts.number(), sts.option(() => Deposit), sts.option(() => Deposit)]),
-        Cancelled: sts.tuple(() => [sts.number(), sts.option(() => Deposit), sts.option(() => Deposit)]),
-        Killed: sts.number(),
-        Ongoing: Type_936,
-        Rejected: sts.tuple(() => [sts.number(), sts.option(() => Deposit), sts.option(() => Deposit)]),
-        TimedOut: sts.tuple(() => [sts.number(), sts.option(() => Deposit), sts.option(() => Deposit)]),
-    }
-})
-
-export const Type_936: sts.Type<Type_936> = sts.struct(() => {
-    return {
-        track: sts.number(),
-        origin: OriginCaller,
-        proposal: Bounded,
-        enactment: DispatchTime,
-        submitted: sts.number(),
-        submissionDeposit: Deposit,
-        decisionDeposit: sts.option(() => Deposit),
-        deciding: sts.option(() => DecidingStatus),
-        tally: Type_586,
-        inQueue: sts.boolean(),
-        alarm: sts.option(() => sts.tuple(() => [sts.number(), sts.tuple(() => [sts.number(), sts.number()])])),
-    }
-})
-
-export const Type_586: sts.Type<Type_586> = sts.struct(() => {
-    return {
-        bareAyes: sts.number(),
-        ayes: sts.number(),
-        nays: sts.number(),
-    }
-})
-
-export const DecidingStatus: sts.Type<DecidingStatus> = sts.struct(() => {
-    return {
-        since: sts.number(),
-        confirming: sts.option(() => sts.number()),
-    }
-})
-
-export const Deposit: sts.Type<Deposit> = sts.struct(() => {
-    return {
-        who: AccountId32,
-        amount: sts.bigint(),
-    }
-})
-
-export type ReferendumInfo =
-    | ReferendumInfo_Approved
-    | ReferendumInfo_Cancelled
-    | ReferendumInfo_Killed
-    | ReferendumInfo_Ongoing
-    | ReferendumInfo_Rejected
-    | ReferendumInfo_TimedOut
-
-export interface ReferendumInfo_Approved {
-    __kind: 'Approved'
-    value: [number, Deposit | undefined, Deposit | undefined]
-}
-
-export interface ReferendumInfo_Cancelled {
-    __kind: 'Cancelled'
-    value: [number, Deposit | undefined, Deposit | undefined]
-}
-
-export interface ReferendumInfo_Killed {
-    __kind: 'Killed'
-    value: number
-}
-
-export interface ReferendumInfo_Ongoing {
-    __kind: 'Ongoing'
-    value: ReferendumStatus
-}
-
-export interface ReferendumInfo_Rejected {
-    __kind: 'Rejected'
-    value: [number, Deposit | undefined, Deposit | undefined]
-}
-
-export interface ReferendumInfo_TimedOut {
-    __kind: 'TimedOut'
-    value: [number, Deposit | undefined, Deposit | undefined]
-}
-
-export interface ReferendumStatus {
-    track: number
-    origin: OriginCaller
-    proposal: Bounded
-    enactment: DispatchTime
-    submitted: number
-    submissionDeposit: Deposit
-    decisionDeposit?: Deposit | undefined
-    deciding?: DecidingStatus | undefined
-    tally: Tally
-    inQueue: boolean
-    alarm?: [number, [number, number]] | undefined
-}
-
-export interface Tally {
-    ayes: bigint
-    nays: bigint
-    support: bigint
-}
-
-export const ReferendumInfo: sts.Type<ReferendumInfo> = sts.closedEnum(() => {
-    return {
-        Approved: sts.tuple(() => [sts.number(), sts.option(() => Deposit), sts.option(() => Deposit)]),
-        Cancelled: sts.tuple(() => [sts.number(), sts.option(() => Deposit), sts.option(() => Deposit)]),
-        Killed: sts.number(),
-        Ongoing: ReferendumStatus,
-        Rejected: sts.tuple(() => [sts.number(), sts.option(() => Deposit), sts.option(() => Deposit)]),
-        TimedOut: sts.tuple(() => [sts.number(), sts.option(() => Deposit), sts.option(() => Deposit)]),
-    }
-})
-
-export const ReferendumStatus: sts.Type<ReferendumStatus> = sts.struct(() => {
-    return {
-        track: sts.number(),
-        origin: OriginCaller,
-        proposal: Bounded,
-        enactment: DispatchTime,
-        submitted: sts.number(),
-        submissionDeposit: Deposit,
-        decisionDeposit: sts.option(() => Deposit),
-        deciding: sts.option(() => DecidingStatus),
-        tally: Tally,
-        inQueue: sts.boolean(),
-        alarm: sts.option(() => sts.tuple(() => [sts.number(), sts.tuple(() => [sts.number(), sts.number()])])),
-    }
-})
-
-export const Tally: sts.Type<Tally> = sts.struct(() => {
-    return {
-        ayes: sts.bigint(),
-        nays: sts.bigint(),
-        support: sts.bigint(),
-    }
-})
-
-export type VersionedAssetId = VersionedAssetId_V3
-
-export interface VersionedAssetId_V3 {
-    __kind: 'V3'
-    value: V3AssetId
-}
-
-export type V3AssetId = V3AssetId_Abstract | V3AssetId_Concrete
-
-export interface V3AssetId_Abstract {
-    __kind: 'Abstract'
-    value: Bytes
-}
-
-export interface V3AssetId_Concrete {
-    __kind: 'Concrete'
-    value: V3MultiLocation
 }
 
 export type AccountId32 = Bytes
@@ -1559,6 +1080,485 @@ export const PoolState: sts.Type<PoolState> = sts.closedEnum(() => {
     return {
         Destroying: sts.unit(),
         Open: sts.unit(),
+    }
+})
+
+export type Type_935 =
+    Type_935_Approved | Type_935_Cancelled | Type_935_Killed | Type_935_Ongoing | Type_935_Rejected | Type_935_TimedOut
+
+export interface Type_935_Approved {
+    __kind: 'Approved'
+    value: [number, Deposit | undefined, Deposit | undefined]
+}
+
+export interface Type_935_Cancelled {
+    __kind: 'Cancelled'
+    value: [number, Deposit | undefined, Deposit | undefined]
+}
+
+export interface Type_935_Killed {
+    __kind: 'Killed'
+    value: number
+}
+
+export interface Type_935_Ongoing {
+    __kind: 'Ongoing'
+    value: Type_936
+}
+
+export interface Type_935_Rejected {
+    __kind: 'Rejected'
+    value: [number, Deposit | undefined, Deposit | undefined]
+}
+
+export interface Type_935_TimedOut {
+    __kind: 'TimedOut'
+    value: [number, Deposit | undefined, Deposit | undefined]
+}
+
+export interface Type_936 {
+    track: number
+    origin: OriginCaller
+    proposal: Bounded
+    enactment: DispatchTime
+    submitted: number
+    submissionDeposit: Deposit
+    decisionDeposit?: Deposit | undefined
+    deciding?: DecidingStatus | undefined
+    tally: Type_586
+    inQueue: boolean
+    alarm?: [number, [number, number]] | undefined
+}
+
+export interface Type_586 {
+    bareAyes: number
+    ayes: number
+    nays: number
+}
+
+export interface DecidingStatus {
+    since: number
+    confirming?: number | undefined
+}
+
+export type DispatchTime = DispatchTime_After | DispatchTime_At
+
+export interface DispatchTime_After {
+    __kind: 'After'
+    value: number
+}
+
+export interface DispatchTime_At {
+    __kind: 'At'
+    value: number
+}
+
+export type Bounded = Bounded_Inline | Bounded_Legacy | Bounded_Lookup
+
+export interface Bounded_Inline {
+    __kind: 'Inline'
+    value: Bytes
+}
+
+export interface Bounded_Legacy {
+    __kind: 'Legacy'
+    hash: H256
+}
+
+export interface Bounded_Lookup {
+    __kind: 'Lookup'
+    hash: H256
+    len: number
+}
+
+export type H256 = Bytes
+
+export type OriginCaller =
+    | OriginCaller_Origins
+    | OriginCaller_ParachainsOrigin
+    | OriginCaller_Void
+    | OriginCaller_XcmPallet
+    | OriginCaller_system
+
+export interface OriginCaller_Origins {
+    __kind: 'Origins'
+    value: Type_407
+}
+
+export interface OriginCaller_ParachainsOrigin {
+    __kind: 'ParachainsOrigin'
+    value: Origin
+}
+
+export interface OriginCaller_Void {
+    __kind: 'Void'
+    value: Void
+}
+
+export interface OriginCaller_XcmPallet {
+    __kind: 'XcmPallet'
+    value: Type_406
+}
+
+export interface OriginCaller_system {
+    __kind: 'system'
+    value: RawOrigin
+}
+
+export type RawOrigin = RawOrigin_None | RawOrigin_Root | RawOrigin_Signed
+
+export interface RawOrigin_None {
+    __kind: 'None'
+}
+
+export interface RawOrigin_Root {
+    __kind: 'Root'
+}
+
+export interface RawOrigin_Signed {
+    __kind: 'Signed'
+    value: AccountId32
+}
+
+export type Type_406 = Type_406_Response | Type_406_Xcm
+
+export interface Type_406_Response {
+    __kind: 'Response'
+    value: V3MultiLocation
+}
+
+export interface Type_406_Xcm {
+    __kind: 'Xcm'
+    value: V3MultiLocation
+}
+
+export type Void = never
+
+export type Origin = Origin_Parachain
+
+export interface Origin_Parachain {
+    __kind: 'Parachain'
+    value: Id
+}
+
+export type Id = number
+
+export type Type_407 =
+    | Type_407_AuctionAdmin
+    | Type_407_BigSpender
+    | Type_407_BigTipper
+    | Type_407_ClaimsAdmin
+    | Type_407_ExtrinsicPauseAdmin
+    | Type_407_Fellows
+    | Type_407_Fellowship1Dan
+    | Type_407_Fellowship2Dan
+    | Type_407_Fellowship3Dan
+    | Type_407_Fellowship4Dan
+    | Type_407_Fellowship5Dan
+    | Type_407_Fellowship6Dan
+    | Type_407_Fellowship7Dan
+    | Type_407_Fellowship8Dan
+    | Type_407_Fellowship9Dan
+    | Type_407_FellowshipAdmin
+    | Type_407_FellowshipExperts
+    | Type_407_FellowshipInitiates
+    | Type_407_FellowshipMasters
+    | Type_407_FuelTanksAdmin
+    | Type_407_GeneralAdmin
+    | Type_407_LeaseAdmin
+    | Type_407_MediumSpender
+    | Type_407_MultiTokensAdmin
+    | Type_407_ParachainsAdmin
+    | Type_407_PreimageAdmin
+    | Type_407_ReferendumCanceller
+    | Type_407_ReferendumKiller
+    | Type_407_SmallSpender
+    | Type_407_SmallTipper
+    | Type_407_StakingAdmin
+    | Type_407_TreasuryAdmin
+    | Type_407_WhitelistAdmin
+    | Type_407_WhitelistedCaller
+
+export interface Type_407_AuctionAdmin {
+    __kind: 'AuctionAdmin'
+}
+
+export interface Type_407_BigSpender {
+    __kind: 'BigSpender'
+}
+
+export interface Type_407_BigTipper {
+    __kind: 'BigTipper'
+}
+
+export interface Type_407_ClaimsAdmin {
+    __kind: 'ClaimsAdmin'
+}
+
+export interface Type_407_ExtrinsicPauseAdmin {
+    __kind: 'ExtrinsicPauseAdmin'
+}
+
+export interface Type_407_Fellows {
+    __kind: 'Fellows'
+}
+
+export interface Type_407_Fellowship1Dan {
+    __kind: 'Fellowship1Dan'
+}
+
+export interface Type_407_Fellowship2Dan {
+    __kind: 'Fellowship2Dan'
+}
+
+export interface Type_407_Fellowship3Dan {
+    __kind: 'Fellowship3Dan'
+}
+
+export interface Type_407_Fellowship4Dan {
+    __kind: 'Fellowship4Dan'
+}
+
+export interface Type_407_Fellowship5Dan {
+    __kind: 'Fellowship5Dan'
+}
+
+export interface Type_407_Fellowship6Dan {
+    __kind: 'Fellowship6Dan'
+}
+
+export interface Type_407_Fellowship7Dan {
+    __kind: 'Fellowship7Dan'
+}
+
+export interface Type_407_Fellowship8Dan {
+    __kind: 'Fellowship8Dan'
+}
+
+export interface Type_407_Fellowship9Dan {
+    __kind: 'Fellowship9Dan'
+}
+
+export interface Type_407_FellowshipAdmin {
+    __kind: 'FellowshipAdmin'
+}
+
+export interface Type_407_FellowshipExperts {
+    __kind: 'FellowshipExperts'
+}
+
+export interface Type_407_FellowshipInitiates {
+    __kind: 'FellowshipInitiates'
+}
+
+export interface Type_407_FellowshipMasters {
+    __kind: 'FellowshipMasters'
+}
+
+export interface Type_407_FuelTanksAdmin {
+    __kind: 'FuelTanksAdmin'
+}
+
+export interface Type_407_GeneralAdmin {
+    __kind: 'GeneralAdmin'
+}
+
+export interface Type_407_LeaseAdmin {
+    __kind: 'LeaseAdmin'
+}
+
+export interface Type_407_MediumSpender {
+    __kind: 'MediumSpender'
+}
+
+export interface Type_407_MultiTokensAdmin {
+    __kind: 'MultiTokensAdmin'
+}
+
+export interface Type_407_ParachainsAdmin {
+    __kind: 'ParachainsAdmin'
+}
+
+export interface Type_407_PreimageAdmin {
+    __kind: 'PreimageAdmin'
+}
+
+export interface Type_407_ReferendumCanceller {
+    __kind: 'ReferendumCanceller'
+}
+
+export interface Type_407_ReferendumKiller {
+    __kind: 'ReferendumKiller'
+}
+
+export interface Type_407_SmallSpender {
+    __kind: 'SmallSpender'
+}
+
+export interface Type_407_SmallTipper {
+    __kind: 'SmallTipper'
+}
+
+export interface Type_407_StakingAdmin {
+    __kind: 'StakingAdmin'
+}
+
+export interface Type_407_TreasuryAdmin {
+    __kind: 'TreasuryAdmin'
+}
+
+export interface Type_407_WhitelistAdmin {
+    __kind: 'WhitelistAdmin'
+}
+
+export interface Type_407_WhitelistedCaller {
+    __kind: 'WhitelistedCaller'
+}
+
+export interface Deposit {
+    who: AccountId32
+    amount: bigint
+}
+
+export const Type_935: sts.Type<Type_935> = sts.closedEnum(() => {
+    return {
+        Approved: sts.tuple(() => [sts.number(), sts.option(() => Deposit), sts.option(() => Deposit)]),
+        Cancelled: sts.tuple(() => [sts.number(), sts.option(() => Deposit), sts.option(() => Deposit)]),
+        Killed: sts.number(),
+        Ongoing: Type_936,
+        Rejected: sts.tuple(() => [sts.number(), sts.option(() => Deposit), sts.option(() => Deposit)]),
+        TimedOut: sts.tuple(() => [sts.number(), sts.option(() => Deposit), sts.option(() => Deposit)]),
+    }
+})
+
+export const Type_936: sts.Type<Type_936> = sts.struct(() => {
+    return {
+        track: sts.number(),
+        origin: OriginCaller,
+        proposal: Bounded,
+        enactment: DispatchTime,
+        submitted: sts.number(),
+        submissionDeposit: Deposit,
+        decisionDeposit: sts.option(() => Deposit),
+        deciding: sts.option(() => DecidingStatus),
+        tally: Type_586,
+        inQueue: sts.boolean(),
+        alarm: sts.option(() => sts.tuple(() => [sts.number(), sts.tuple(() => [sts.number(), sts.number()])])),
+    }
+})
+
+export const Type_586: sts.Type<Type_586> = sts.struct(() => {
+    return {
+        bareAyes: sts.number(),
+        ayes: sts.number(),
+        nays: sts.number(),
+    }
+})
+
+export const DecidingStatus: sts.Type<DecidingStatus> = sts.struct(() => {
+    return {
+        since: sts.number(),
+        confirming: sts.option(() => sts.number()),
+    }
+})
+
+export const Deposit: sts.Type<Deposit> = sts.struct(() => {
+    return {
+        who: AccountId32,
+        amount: sts.bigint(),
+    }
+})
+
+export type ReferendumInfo =
+    | ReferendumInfo_Approved
+    | ReferendumInfo_Cancelled
+    | ReferendumInfo_Killed
+    | ReferendumInfo_Ongoing
+    | ReferendumInfo_Rejected
+    | ReferendumInfo_TimedOut
+
+export interface ReferendumInfo_Approved {
+    __kind: 'Approved'
+    value: [number, Deposit | undefined, Deposit | undefined]
+}
+
+export interface ReferendumInfo_Cancelled {
+    __kind: 'Cancelled'
+    value: [number, Deposit | undefined, Deposit | undefined]
+}
+
+export interface ReferendumInfo_Killed {
+    __kind: 'Killed'
+    value: number
+}
+
+export interface ReferendumInfo_Ongoing {
+    __kind: 'Ongoing'
+    value: ReferendumStatus
+}
+
+export interface ReferendumInfo_Rejected {
+    __kind: 'Rejected'
+    value: [number, Deposit | undefined, Deposit | undefined]
+}
+
+export interface ReferendumInfo_TimedOut {
+    __kind: 'TimedOut'
+    value: [number, Deposit | undefined, Deposit | undefined]
+}
+
+export interface ReferendumStatus {
+    track: number
+    origin: OriginCaller
+    proposal: Bounded
+    enactment: DispatchTime
+    submitted: number
+    submissionDeposit: Deposit
+    decisionDeposit?: Deposit | undefined
+    deciding?: DecidingStatus | undefined
+    tally: Tally
+    inQueue: boolean
+    alarm?: [number, [number, number]] | undefined
+}
+
+export interface Tally {
+    ayes: bigint
+    nays: bigint
+    support: bigint
+}
+
+export const ReferendumInfo: sts.Type<ReferendumInfo> = sts.closedEnum(() => {
+    return {
+        Approved: sts.tuple(() => [sts.number(), sts.option(() => Deposit), sts.option(() => Deposit)]),
+        Cancelled: sts.tuple(() => [sts.number(), sts.option(() => Deposit), sts.option(() => Deposit)]),
+        Killed: sts.number(),
+        Ongoing: ReferendumStatus,
+        Rejected: sts.tuple(() => [sts.number(), sts.option(() => Deposit), sts.option(() => Deposit)]),
+        TimedOut: sts.tuple(() => [sts.number(), sts.option(() => Deposit), sts.option(() => Deposit)]),
+    }
+})
+
+export const ReferendumStatus: sts.Type<ReferendumStatus> = sts.struct(() => {
+    return {
+        track: sts.number(),
+        origin: OriginCaller,
+        proposal: Bounded,
+        enactment: DispatchTime,
+        submitted: sts.number(),
+        submissionDeposit: Deposit,
+        decisionDeposit: sts.option(() => Deposit),
+        deciding: sts.option(() => DecidingStatus),
+        tally: Tally,
+        inQueue: sts.boolean(),
+        alarm: sts.option(() => sts.tuple(() => [sts.number(), sts.tuple(() => [sts.number(), sts.number()])])),
+    }
+})
+
+export const Tally: sts.Type<Tally> = sts.struct(() => {
+    return {
+        ayes: sts.bigint(),
+        nays: sts.bigint(),
+        support: sts.bigint(),
     }
 })
 
@@ -9645,26 +9645,6 @@ export const Type_588: sts.Type<Type_588> = sts.closedEnum(() => {
     }
 })
 
-export const DispatchTime: sts.Type<DispatchTime> = sts.closedEnum(() => {
-    return {
-        After: sts.number(),
-        At: sts.number(),
-    }
-})
-
-export const Bounded: sts.Type<Bounded> = sts.closedEnum(() => {
-    return {
-        Inline: sts.bytes(),
-        Legacy: sts.enumStruct({
-            hash: H256,
-        }),
-        Lookup: sts.enumStruct({
-            hash: H256,
-            len: sts.number(),
-        }),
-    }
-})
-
 export const StakingInfo: sts.Type<StakingInfo> = sts.struct(() => {
     return {
         annualInflationRate: Perbill,
@@ -9709,6 +9689,26 @@ export interface RewardDestination_Staked {
 export interface RewardDestination_Stash {
     __kind: 'Stash'
 }
+
+export const DispatchTime: sts.Type<DispatchTime> = sts.closedEnum(() => {
+    return {
+        After: sts.number(),
+        At: sts.number(),
+    }
+})
+
+export const Bounded: sts.Type<Bounded> = sts.closedEnum(() => {
+    return {
+        Inline: sts.bytes(),
+        Legacy: sts.enumStruct({
+            hash: H256,
+        }),
+        Lookup: sts.enumStruct({
+            hash: H256,
+            len: sts.number(),
+        }),
+    }
+})
 
 export const DispatchRuleDescriptor: sts.Type<DispatchRuleDescriptor> = sts.closedEnum(() => {
     return {
@@ -19303,6 +19303,8 @@ export const SlotLeasePeriodStart: sts.Type<SlotLeasePeriodStart> = sts.closedEn
     }
 })
 
+export const Id = sts.number()
+
 export const DispatchErrorWithPostInfo: sts.Type<DispatchErrorWithPostInfo> = sts.struct(() => {
     return {
         postInfo: PostDispatchInfo,
@@ -19325,8 +19327,6 @@ export const Pays: sts.Type<Pays> = sts.closedEnum(() => {
 })
 
 export const H256 = sts.bytes()
-
-export const Id = sts.number()
 
 export const ProcessMessageError: sts.Type<ProcessMessageError> = sts.closedEnum(() => {
     return {

@@ -7,7 +7,7 @@ export const maxVotes = {
      *  Also used to compute weight, an overly large value can lead to extrinsics with large
      *  weight estimation: see `delegate` for instance.
      */
-    enjinV100: new ConstantType('ConvictionVoting.MaxVotes', sts.number()),
+    matrixV1040: new ConstantType('ConvictionVoting.MaxVotes', sts.number()),
 }
 
 export const voteLockingPeriod = {
@@ -17,7 +17,7 @@ export const voteLockingPeriod = {
      *  It should be no shorter than enactment period to ensure that in the case of an approval,
      *  those successful voters are locked into the consequences that their votes entail.
      */
-    enjinV100: new ConstantType('ConvictionVoting.VoteLockingPeriod', sts.number()),
+    matrixV1040: new ConstantType('ConvictionVoting.VoteLockingPeriod', sts.number()),
 }
 
 export const stakedEnjCollectionId = {

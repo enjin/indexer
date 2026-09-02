@@ -1,6 +1,6 @@
 import { sts, Block, Bytes, Option, Result, ConstantType, RuntimeCtx } from '../support'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
-import * as enjinV1070 from '../enjinV1070'
+import * as matrixV1040 from '../matrixV1040'
 
 export const minimumBidIncreasePercentage = {
     /**
@@ -108,10 +108,39 @@ export const removeExpiredListingsInterval = {
     matrixEnjinV1031: new ConstantType('Marketplace.RemoveExpiredListingsInterval', sts.number()),
 }
 
+export const maxPriceLevelsPerSide = {
+    /**
+     *  Max number of distinct price levels per side of a (asset, currency) book
+     */
+    matrixV1040: new ConstantType('Marketplace.MaxPriceLevelsPerSide', sts.number()),
+}
+
+export const maxOrdersPerPriceLevel = {
+    /**
+     *  Max number of listings resting at a single price level
+     */
+    matrixV1040: new ConstantType('Marketplace.MaxOrdersPerPriceLevel', sts.number()),
+}
+
+export const maxPendingActivationsPerSide = {
+    /**
+     *  Max number of scheduled listings awaiting activation per side of a (asset, currency)
+     *  book
+     */
+    matrixV1040: new ConstantType('Marketplace.MaxPendingActivationsPerSide', sts.number()),
+}
+
+export const maxMatchLimit = {
+    /**
+     *  Max number of resting listings that a single matching call may examine
+     */
+    matrixV1040: new ConstantType('Marketplace.MaxMatchLimit', sts.number()),
+}
+
 export const insufficientFundsDestination = {
     /**
      *  The account that receives the royalty if the royalty destination doesn't have enough
      *  funds to receive it
      */
-    enjinV1070: new ConstantType('Marketplace.InsufficientFundsDestination', enjinV1070.AccountId32),
+    matrixV1040: new ConstantType('Marketplace.InsufficientFundsDestination', matrixV1040.AccountId32),
 }

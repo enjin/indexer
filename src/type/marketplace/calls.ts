@@ -15,6 +15,7 @@ import * as v1030 from '../v1030'
 import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 import * as v1031 from '../v1031'
 import * as enjinV1032 from '../enjinV1032'
+import * as matrixV1040 from '../matrixV1040'
 import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 import * as v1060 from '../v1060'
@@ -799,14 +800,17 @@ export const fillListing = {
      * - [`Error::InvalidAmount`] if the amount that still needs to be filled is greater than
      *   `amount`
      * - [`Error::ListingNotActive`] if the listing has not passed the `ListingActiveDelay` yet
-     * - [`Error::TakeValueUnderMinimum`] if the listings `take` value is under the minimum
+     * - [`Error::ReceivedValueUnderMinimum`] if the listings `take` value is under the minimum
      *   required
      * - [`Error::LowTokenBalance`] if the buyer does not have enough tokens for reserve
+     *
+     * The weight is charged for the maximum royalty beneficiary count and refunded down to
+     * the listing's actual count.
      */
-    enjinV110: new CallType(
+    matrixV1040: new CallType(
         'Marketplace.fill_listing',
         sts.struct({
-            listingId: enjinV110.H256,
+            listingId: matrixV1040.H256,
             amount: sts.bigint(),
         })
     ),
@@ -1012,7 +1016,7 @@ export const finalizeAuction = {
     ),
     /**
      * Finalize the auction with id: `listing_id`. This will end the auction and transfer
-     * funds. It fails if the auction is not over.
+     * funds. It fails if the auction is not over. It can be called by anyone.
      *
      * # Parameters
      *
@@ -1022,13 +1026,18 @@ export const finalizeAuction = {
      *
      * - [`Error::ListingNotFound`] if listing under `listing_id` does not exist
      * - [`Error::ListingIsWrongType`] if listing is not an auction
-     * - [`Error::AuctionNotOver`] if the auction has not finished yet
-     * - [`Error::TakeValueUnderMinimum`] if the take value is less than the minimum required
+     * - [`Error::AuctionNotOver`] if the auction has not finished yet, or if it's in a bid
+     *   extension and the caller is not the seller
+     * - [`Error::ReceivedValueUnderMinimum`] if the take value is less than the minimum
+     *   required
+     *
+     * The weight is charged for the maximum royalty beneficiary count and refunded down to
+     * the listing's actual count.
      */
-    enjinV110: new CallType(
+    matrixV1040: new CallType(
         'Marketplace.finalize_auction',
         sts.struct({
-            listingId: enjinV110.H256,
+            listingId: matrixV1040.H256,
         })
     ),
     /**
@@ -1949,6 +1958,149 @@ export const finalizeAuctionUnsigned = {
         sts.struct({
             payload: v1070.FinalizeAuctionPayload,
             signature: v1070.MultiSignature,
+        })
+    ),
+}
+
+export const resolveAbandonedListing = {
+    name: 'Marketplace.resolve_abandoned_listing',
+    /**
+     * Resolve a listing the `on_idle` sweep gave up on after
+     * [`MAX_SETTLEMENT_ATTEMPTS`] failed attempts (see
+     * [`Event::ListingSettlementAbandoned`]). This call is permissionless.
+     *
+     * It first retries the settlement, so a listing that can be settled at all is settled and
+     * nobody escapes a trade that works. Only when that retry fails *and* the trade is dead
+     * for a reason the winning bidder cannot lift — the seller cannot deliver the make side,
+     * or the bid funds are frozen — is the listing released instead: the make side returns to
+     * the seller, a winning bid returns to the bidder, the deposit returns to its depositor
+     * and the listing is removed, emitting [`Event::AbandonedListingReleased`] alongside
+     * [`Event::ListingCancelled`].
+     *
+     * This exists because for a permanently failing settlement there is otherwise no
+     * permissionless exit at all, and the funds that are stuck are not only the seller's. A
+     * winning bidder's take-side funds stay reserved under the marketplace hold with no call
+     * they can make to get them back: `finalize_auction` re-runs the transfer that keeps
+     * reverting, `remove_expired_listing` refuses anything that is not an offer,
+     * `cancel_listing` needs either the seller (refused after the end block with a bid
+     * present) or an unlistable asset, and `force_cancel_listing` needs governance. A third
+     * party's funds must not depend on a governance motion to come back.
+     *
+     * The full reasoning behind that gate — in particular why a bidder whose own funds are
+     * locked is refused rather than released — is on `do_resolve_abandoned_listing` in the
+     * `features/expiration` module.
+     *
+     * # Parameters
+     *
+     * - `listing_id`: The ID of the abandoned listing to resolve
+     *
+     * # Errors
+     *
+     * - [`Error::SettlementNotAbandoned`] if the sweep has not given up on this listing
+     * - [`Error::ListingNotFound`] if the listing under `listing_id` does not exist
+     * - [`Error::ListingIsWrongType`] if the listing has no settlement block, so was never
+     *   swept
+     * - [`Error::AuctionNotOver`] if a bid placed after the listing was abandoned has
+     *   re-opened the bid extension window
+     * - [`Error::SettlementNotBlocked`] if the settlement failed again but both sides can
+     *   still deliver, so the failure is not permanent
+     * - [`Error::BidderCannotSettle`] if the winning bidder's own take-side balance is the
+     *   only obstacle, which they can lift themselves (a *freeze* on those funds releases
+     *   instead, since only the asset's owner can lift one)
+     */
+    matrixV1040: new CallType(
+        'Marketplace.resolve_abandoned_listing',
+        sts.struct({
+            listingId: matrixV1040.H256,
+        })
+    ),
+}
+
+export const createListingAndMatch = {
+    name: 'Marketplace.create_listing_and_match',
+    /**
+     * Same as [`Self::create_listing`], but first fills the new listing against the best
+     * resting listings on the opposite side of the (asset, currency) book, in
+     * price-time-priority order and at each resting listing's price. Any unfilled remainder
+     * rests as a normal listing; if the listing fills completely, no listing is created.
+     *
+     * Before matching, up to `match_limit` scheduled listings on the opposite side whose
+     * start block has been reached are promoted from [`PendingActivations`] into the book,
+     * so the scan sees them.
+     *
+     * Auctions cannot be created with this call. A descriptor with an explicit future
+     * `start_block` rests without matching and without promoting.
+     *
+     * If the book has no room for the remainder, the executed fills are kept and the
+     * remainder is discarded (immediate-or-cancel); the dropped amount is reported as
+     * `unrested_amount` on [`Event::OrderMatched`].
+     *
+     * # Parameters
+     *
+     * - `descriptor`: Same as [`Self::create_listing`]
+     * - `match_limit`: Max number of resting listings to examine before the remainder rests.
+     *   Resting listings that are skipped (e.g. your own) or fail to fill also count. Zero
+     *   makes this call behave exactly like [`Self::create_listing`]. `None` uses
+     *   [`MaxMatchLimit`](Config::MaxMatchLimit). The weight is charged up front for the worst
+     *   case and refunded down to the work actually performed.
+     *
+     * # Errors
+     *
+     * - [`Error::MatchLimitTooHigh`] if `match_limit` exceeds `MaxMatchLimit`
+     * - [`Error::ListingIsWrongType`] if the descriptor is an auction
+     * - Same as [`Self::create_listing`] for the resting remainder, except the book-capacity
+     *   errors, which drop the remainder instead of failing
+     */
+    matrixV1040: new CallType(
+        'Marketplace.create_listing_and_match',
+        sts.struct({
+            descriptor: matrixV1040.ListingDescriptor,
+            matchLimit: sts.option(() => sts.number()),
+        })
+    ),
+}
+
+export const migrate = {
+    name: 'Marketplace.migrate',
+    /**
+     * Drive the storage-version 8 migration forward. Permissionless.
+     *
+     * Refunds open counter-offer deposits first, then converts listings — re-encoding each
+     * one, indexing it into the matching book and into [`ExpiringListings`] for the `on_idle`
+     * expiration sweep — processing as many items as fit the call's weight: one guaranteed
+     * unit of progress plus whatever `weight_limit` admits on top. Progress is kept in
+     * [`ListingsMigrationCursor`], so repeated calls resume where the last one stopped and
+     * never revisit an item. Until the migration completes, every other marketplace call is
+     * paused (the `on_runtime_upgrade` hook pauses them through [`Config::ExtrinsicPauser`])
+     * and the expiration sweep stays off; the call that exhausts the final phase writes the
+     * current storage version, resumes every paused extrinsic and emits
+     * [`Event::MigrationCompleted`]. Emits [`Event::MigrationStep`] per phase advanced
+     * (`phase` 0: counter offers, 1: listings) with the items processed.
+     *
+     * # Parameters
+     *
+     * - `weight_limit`: Weight to spend on migration items beyond the guaranteed first one.
+     *   The declared call weight is `weight_limit` plus that guaranteed step plus a fixed
+     *   overhead, **capped at what a `Normal` extrinsic may declare** — so
+     *   `migrate(Weight::MAX)` is not rejected, it simply takes the largest step the block
+     *   allows, and that is the value to pass unless you deliberately want smaller calls.
+     *   Unspent weight is refunded.
+     *
+     * # Fees
+     *
+     * Free (`Pays::No`) when the call advanced or completed the migration, which every call
+     * dispatched while the migration is in progress does.
+     *
+     * # Errors
+     *
+     * - [`Error::MigrationAlreadyCompleted`] if the storage version is already current. The
+     *   call is charged in that case, which is what keeps the `Pays::No` path from being free
+     *   block space once the migration is done.
+     */
+    matrixV1040: new CallType(
+        'Marketplace.migrate',
+        sts.struct({
+            weightLimit: matrixV1040.Weight,
         })
     ),
 }

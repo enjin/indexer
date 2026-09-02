@@ -28,6 +28,7 @@ import * as matrixV1030 from '../matrixV1030'
 import * as v1030 from '../v1030'
 import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 import * as enjinV1032 from '../enjinV1032'
+import * as matrixV1040 from '../matrixV1040'
 import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 import * as v1060 from '../v1060'
@@ -259,6 +260,43 @@ export const createCollection = {
         'MultiTokens.create_collection',
         sts.struct({
             descriptor: matrixV1030.DefaultCollectionDescriptor,
+        })
+    ),
+    /**
+     * Creates a new [`Collection`](ep_multi_tokens::Collection) from `descriptor`
+     *
+     * See [`CollectionDescriptor`](ep_multi_tokens::DefaultCollectionDescriptor) and
+     * [`CollectionPolicyDescriptor`](ep_multi_tokens::DefaultCollectionPolicyDescriptor)
+     * for more info about specific parameters. The [Mint
+     * Policy](ep_multi_tokens::DefaultMintPolicyDescriptor) has the most parameters.
+     *
+     * **Minting Policy**
+     *
+     * - Max token count (optional)
+     * - Max token supply (optional)
+     * - Force Single Mint
+     *   - If Yes, each token minted in the collection MUST be an NFT with a cap of 1.
+     *
+     * **Royalty (optional)**
+     *
+     *   - Beneficiary address
+     *   - The percentage of marketplace sale royalty that will be sent to the beneficiary.
+     *
+     * **Explicit Royalty Currencies (optional)**
+     *
+     *   Optionally provide a list of tokens (must be currencies).
+     *   - If no currencies are provided here, then ALL currencies are allowed for royalties.
+     *   - If one or more currencies are provided here, they will be whitelisted for use as a
+     *     royalty currency and ONLY this list of currencies will be allowed for royalties.
+     *
+     * # Errors
+     *
+     * - [`Error::DepositReserveFailed`] if the deposit cannot be reserved
+     */
+    matrixV1040: new CallType(
+        'MultiTokens.create_collection',
+        sts.struct({
+            descriptor: matrixV1040.DefaultCollectionDescriptor,
         })
     ),
     /**
@@ -813,6 +851,36 @@ export const mutateToken = {
      * Modify [`Token`](ep_multi_tokens::Token) with `token_id`  from
      * [`Collection`](ep_multi_tokens::Collection) with `collection_id` by applying `mutation`
      *
+     * The collection creator/owner can mutate the settings of a token.
+     * See [DefaultTokenMutation](ep_multi_tokens::DefaultTokenMutation) for specific fields
+     * and descriptions.
+     *
+     * Note that `behavior` is a nested option of type
+     * [TokenMarketBehavior](ep_multi_tokens::TokenMarketBehavior). This can either be set to
+     * `None`, a `Currency`, or a royalty.
+     *
+     * All fields are `Optional`, so only set the specific fields you want to change to `Some`.
+     *
+     * # Errors
+     *
+     * - [`Error::CurrencyIncompatibleWithCollectionRoyalty`] if token has already been
+     *   assigned a royalty
+     * - [`Error::NoPermission`] if not the collection owner
+     * - [`Error::TokenNotFound`] if Token does not exist
+     * - [`Error::ConflictingLocation`] if the new location is already occupied
+     */
+    matrixV1040: new CallType(
+        'MultiTokens.mutate_token',
+        sts.struct({
+            collectionId: sts.bigint(),
+            tokenId: sts.bigint(),
+            mutation: matrixV1040.DefaultTokenMutation,
+        })
+    ),
+    /**
+     * Modify [`Token`](ep_multi_tokens::Token) with `token_id`  from
+     * [`Collection`](ep_multi_tokens::Collection) with `collection_id` by applying `mutation`
+     *
      * # Errors
      *
      * - [`Error::CurrencyIncompatibleWithCollectionRoyalty`] if token has already been
@@ -1275,6 +1343,53 @@ export const mint = {
             recipient: matrixV1030.MultiAddress,
             collectionId: sts.bigint(),
             params: matrixV1030.DefaultMintParams,
+        })
+    ),
+    /**
+     * `origin` mints to `recipient` for `collection_id` with `params` using the pallet's
+     * [`MintPolicy`](traits::CollectionPolicy::Mint).
+     *
+     * Tokens are minted using [`MintParams`], and it may only be done by the collection's
+     * owner. There are two types of mint operations:
+     *
+     * **Create**
+     *
+     * This must be called the first time a token is being created. Any token id can be chosen
+     * when creating a token. They do not have to be sequential.
+     *
+     * You can specify additional parameters that can apply constraints to the token or give it
+     * a royalty. Some of these values can be changed later using the
+     * [`mutateToken`](Self::mutate_token) extrinsic.
+     *
+     * **Mint**
+     *
+     * After a token is created, you can mint additional balance using this variant.
+     *
+     * # Errors
+     *
+     * - [`Error::AmountZero`] if `amount == 0`.
+     * - [`Error::CollectionNotFound`] if `Collection` does not exist.
+     * - [`Error::TokenNotFound`] if `Token` does not exist.
+     * - [`Error::TokenAlreadyExists`] if attempting to create a token that already exists
+     * - [`Error::NoPermission`] if `caller` is not allowed to mint the `collection`.
+     * - [`Error::TokenMintCapExceeded`] if the mint policy TokenCap does not allow minting
+     * - `MaxTokenCountExceeded` if the mint policy max_token_count is exceeded
+     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficient balance for
+     *   token deposit
+     * - [`Error::ConflictingLocation`] if the token is foreign and the location is already
+     *   mapped to another asset in `AssetIdsByLocation`
+     * - `BadOrigin` if `privileged_params` sets any privileged field (a deposit-free token or
+     *   a foreign token) and `origin` is not [`Config::ForceOrigin`]
+     * - [`Error::NoPermission`] if `privileged_params` sets a privileged field *and*
+     *   `attributes` or `groups` is non-empty: that call runs as root, which has no account to
+     *   set them on behalf of. Set them in a follow-up call instead.
+     */
+    matrixV1040: new CallType(
+        'MultiTokens.mint',
+        sts.struct({
+            recipient: matrixV1040.MultiAddress,
+            collectionId: sts.bigint(),
+            params: matrixV1040.DefaultMintParams,
         })
     ),
     /**
@@ -2041,6 +2156,24 @@ export const freeze = {
     /**
      * Freeze collection, token or account
      */
+    matrixV1040: new CallType(
+        'MultiTokens.freeze',
+        sts.struct({
+            info: matrixV1040.Freeze,
+        })
+    ),
+    /**
+     * Freeze collection, token or account
+     */
+    enjinV100: new CallType(
+        'MultiTokens.freeze',
+        sts.struct({
+            info: enjinV100.Freeze,
+        })
+    ),
+    /**
+     * Freeze collection, token or account
+     */
     enjinV1070: new CallType(
         'MultiTokens.freeze',
         sts.struct({
@@ -2076,6 +2209,24 @@ export const thaw = {
         'MultiTokens.thaw',
         sts.struct({
             info: matrixEnjinV603.Freeze,
+        })
+    ),
+    /**
+     * Thaw collection, token or account
+     */
+    matrixV1040: new CallType(
+        'MultiTokens.thaw',
+        sts.struct({
+            info: matrixV1040.Thaw,
+        })
+    ),
+    /**
+     * Thaw collection, token or account
+     */
+    enjinV100: new CallType(
+        'MultiTokens.thaw',
+        sts.struct({
+            info: enjinV100.Freeze,
         })
     ),
     /**
@@ -2216,6 +2367,57 @@ export const setAttribute = {
      *   storage.
      */
     matrixV1030: new CallType(
+        'MultiTokens.set_attribute',
+        sts.struct({
+            collectionId: sts.bigint(),
+            tokenId: sts.option(() => sts.bigint()),
+            key: sts.bytes(),
+            value: sts.bytes(),
+        })
+    ),
+    /**
+     * Sets the attribute `key` to `value` for `collection_id`.
+     * If `token_id` is [`None`], the attribute is added to the collection. If it is [`Some`],
+     * the attribute is added to the token.
+     * Only callable by the collection's owner.
+     *
+     * If `frozen` is true, the attribute is permanently frozen: it can never be modified
+     * or removed afterwards. An existing unfrozen attribute can be set-and-frozen in one
+     * call.
+     *
+     * # Errors
+     * - [`Error::InvalidAttributeKey`] if `key.len() == 0`
+     * - [`Error::CollectionNotFound`] if `collection_id` does not exist.
+     * - [`Error::TokenNotFound`] if `token_id` is `Some` and does not exist.
+     * - [`Error::NoPermission`] if `source` account is not the owner of the collection.
+     * - [`Error::AttributeFrozen`] if the attribute is frozen.
+     * - [`Error::DepositReserveFailed`] if unable to reserve the deposit for the attribute
+     *   storage.
+     */
+    matrixV1040: new CallType(
+        'MultiTokens.set_attribute',
+        sts.struct({
+            collectionId: sts.bigint(),
+            tokenId: sts.option(() => sts.bigint()),
+            key: sts.bytes(),
+            value: sts.bytes(),
+            frozen: sts.boolean(),
+        })
+    ),
+    /**
+     * Sets the attribute `key` to `value` for `collection_id`.
+     * If `token_id` is [`None`], the attribute is added to the collection. If it is [`Some`],
+     * the attribute is added to the token.
+     *
+     * # Errors
+     * - [`Error::InvalidAttributeKey`] if `key.len() == 0`
+     * - [`Error::CollectionNotFound`] if `collection_id` does not exist.
+     * - [`Error::TokenNotFound`] if `token_id` is `Some` and does not exist.
+     * - [`Error::NoPermission`] if `source` account is not the owner of the collection.
+     * - [`Error::DepositReserveFailed`] if unable to reserve the deposit for the attribute
+     *   storage.
+     */
+    enjinV100: new CallType(
         'MultiTokens.set_attribute',
         sts.struct({
             collectionId: sts.bigint(),
@@ -2827,6 +3029,34 @@ export const batchMint = {
      * [`AccountId`](frame_system::Config::AccountId) and [`MintParams`]. A single mint failure
      * will fail all of them in the batch.
      *
+     * Batch minting is slightly less expensive than performing the same number of mint calls
+     * sequentially.
+     *
+     * # Errors
+     * - [`Error::AmountZero`] if `amount == 0`.
+     * - [`Error::CollectionNotFound`] if `collection` does **not** exist.
+     * - [`Error::NoPermission`] if `caller` is not allowed to mint the `collection`.
+     * - [`Error::TokenMintCapExceeded`] if the mint policy TokenCap does not allow minting
+     * - [`Error::MaxTokenCountExceeded`] if the mint policy max_token_count is exceeded
+     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficient balance for
+     *   token deposit
+     * - `BadOrigin` if any recipient's `privileged_params` sets a privileged field (a
+     *   deposit-free token or a foreign token) and `origin` is not [`Config::ForceOrigin`]
+     * - [`Error::NoPermission`] if any recipient sets a privileged field: the whole batch then
+     *   runs as root, so no recipient in it may carry `attributes` or `groups`
+     */
+    matrixV1040: new CallType(
+        'MultiTokens.batch_mint',
+        sts.struct({
+            collectionId: sts.bigint(),
+            recipients: sts.array(() => matrixV1040.Type_460),
+        })
+    ),
+    /**
+     * Collection owner mints tokens of `collection_id` to `recipients` consisting of an
+     * [`AccountId`](frame_system::Config::AccountId) and [`MintParams`]. A single mint failure
+     * will fail all of them in the batch.
+     *
      * # Errors
      * - [`Error::AmountZero`] if `amount == 0`.
      * - [`Error::CollectionNotFound`] if `collection` does **not** exist.
@@ -3145,6 +3375,52 @@ export const batchSetAttribute = {
             collectionId: sts.bigint(),
             tokenId: sts.option(() => sts.bigint()),
             attributes: sts.array(() => matrixV1030.AttributeKeyValuePair),
+        })
+    ),
+    /**
+     * Collection owner sets `attributes` to `collection_id`
+     *
+     * If `token_id` is [`None`], the attribute is added to the collection. If it is [`Some`],
+     * the attribute is added to the token.
+     *
+     * # Errors
+     *
+     * - [`Error::InvalidAttributeKey`] if `key.len() == 0`
+     * - [`Error::CollectionNotFound`] if `collection_id` does not exist.
+     * - [`Error::TokenNotFound`] if `token_id` is `Some` and does not exist.
+     * - [`Error::NoPermission`] if `source` account is not the owner of the collection.
+     * - [`Error::DepositReserveFailed`] if unable to reserve the deposit for the attribute
+     *   storage.
+     */
+    matrixV1040: new CallType(
+        'MultiTokens.batch_set_attribute',
+        sts.struct({
+            collectionId: sts.bigint(),
+            tokenId: sts.option(() => sts.bigint()),
+            attributes: sts.array(() => matrixV1040.AttributeKeyValuePair),
+        })
+    ),
+    /**
+     * Collection owner sets `attributes` to `collection_id`
+     *
+     * If `token_id` is [`None`], the attribute is added to the collection. If it is [`Some`],
+     * the attribute is added to the token.
+     *
+     * # Errors
+     *
+     * - [`Error::InvalidAttributeKey`] if `key.len() == 0`
+     * - [`Error::CollectionNotFound`] if `collection_id` does not exist.
+     * - [`Error::TokenNotFound`] if `token_id` is `Some` and does not exist.
+     * - [`Error::NoPermission`] if `source` account is not the owner of the collection.
+     * - [`Error::DepositReserveFailed`] if unable to reserve the deposit for the attribute
+     *   storage.
+     */
+    enjinV100: new CallType(
+        'MultiTokens.batch_set_attribute',
+        sts.struct({
+            collectionId: sts.bigint(),
+            tokenId: sts.option(() => sts.bigint()),
+            attributes: sts.array(() => enjinV100.AttributeKeyValuePair),
         })
     ),
     /**
@@ -4067,6 +4343,16 @@ export const forceSetCollection = {
     /**
      * Set the Collections storage to the given `value`, origin must be root
      */
+    matrixV1040: new CallType(
+        'MultiTokens.force_set_collection',
+        sts.struct({
+            collectionId: sts.bigint(),
+            value: sts.option(() => matrixV1040.Collection),
+        })
+    ),
+    /**
+     * Set the Collections storage to the given `value`, origin must be root
+     */
     enjinV100: new CallType(
         'MultiTokens.force_set_collection',
         sts.struct({
@@ -4250,6 +4536,17 @@ export const forceSetToken = {
     /**
      * Set the Tokens storage to the given `value`, origin must be root
      */
+    matrixV1040: new CallType(
+        'MultiTokens.force_set_token',
+        sts.struct({
+            collectionId: sts.bigint(),
+            tokenId: sts.bigint(),
+            value: sts.option(() => matrixV1040.Token),
+        })
+    ),
+    /**
+     * Set the Tokens storage to the given `value`, origin must be root
+     */
     enjinV100: new CallType(
         'MultiTokens.force_set_token',
         sts.struct({
@@ -4396,6 +4693,18 @@ export const forceSetAttribute = {
             tokenId: sts.option(() => sts.bigint()),
             key: sts.bytes(),
             value: sts.option(() => matrixV1010.Attribute),
+        })
+    ),
+    /**
+     * Set the Tokens storage to the given `value`, origin must be root
+     */
+    matrixV1040: new CallType(
+        'MultiTokens.force_set_attribute',
+        sts.struct({
+            collectionId: sts.bigint(),
+            tokenId: sts.option(() => sts.bigint()),
+            key: sts.bytes(),
+            value: sts.option(() => matrixV1040.Attribute),
         })
     ),
     /**
@@ -4571,6 +4880,18 @@ export const forceSetTokenAccount = {
             tokenId: sts.bigint(),
             accountId: matrixV1030.MultiAddress,
             value: sts.option(() => matrixV1030.TokenAccount),
+        })
+    ),
+    /**
+     * Set the TokenAccounts storage to the given `value`, origin must be root
+     */
+    matrixV1040: new CallType(
+        'MultiTokens.force_set_token_account',
+        sts.struct({
+            collectionId: sts.bigint(),
+            tokenId: sts.bigint(),
+            accountId: matrixV1040.MultiAddress,
+            value: sts.option(() => matrixV1040.TokenAccount),
         })
     ),
     /**
@@ -4817,6 +5138,22 @@ export const forceCreateCollection = {
             collectionId: sts.bigint(),
             descriptor: matrixV1030.DefaultCollectionDescriptor,
             depositor: sts.option(() => matrixV1030.AccountId32),
+        })
+    ),
+    /**
+     * Creates a new collection from `descriptor` at `collection_id`, origin must be root
+     *
+     * # Errors
+     * - [`Error::DepositReserveFailed`] if the deposit cannot be reserved
+     * - [`Error::CollectionIdAlreadyInUse`] if the collection id is already in use
+     */
+    matrixV1040: new CallType(
+        'MultiTokens.force_create_collection',
+        sts.struct({
+            owner: matrixV1040.AccountId32,
+            collectionId: sts.bigint(),
+            descriptor: matrixV1040.DefaultCollectionDescriptor,
+            depositor: sts.option(() => matrixV1040.AccountId32),
         })
     ),
     /**
@@ -5095,6 +5432,29 @@ export const forceMint = {
     ),
     /**
      * Same as [`mint`](Self::mint), but it is callable by
+     * [`Config::EthereumMigrationOrigin`]. If `caller` is None, it will use the collection
+     * owner. If `depositor` is `Some`, they will pay the deposit for minting.
+     *
+     * Unlike [`mint`](Self::mint), this path deliberately permits deposit-free minting —
+     * migrated tokens legitimately skip the storage deposit.
+     *
+     * ## Errors
+     * - [`Error::NoPermission`] if `params` would create a foreign token. Registering an XCM
+     *   `Location` requires [`Config::ForceOrigin`], which is strictly stronger than
+     *   [`Config::EthereumMigrationOrigin`]; use [`mint`](Self::mint) for that.
+     */
+    matrixV1040: new CallType(
+        'MultiTokens.force_mint',
+        sts.struct({
+            caller: sts.option(() => matrixV1040.MultiAddress),
+            recipient: matrixV1040.MultiAddress,
+            collectionId: sts.bigint(),
+            params: matrixV1040.FlexibleMintParams,
+            depositor: sts.option(() => matrixV1040.MultiAddress),
+        })
+    ),
+    /**
+     * Same as [`mint`](Self::mint), but it is callable by
      * [`Config::ForceOrigin`].
      */
     enjinV101: new CallType(
@@ -5369,6 +5729,24 @@ export const forceFreeze = {
         'MultiTokens.force_freeze',
         sts.struct({
             info: matrixEnjinV603.Freeze,
+        })
+    ),
+    /**
+     * Same as [`freeze`](Self::freeze), but it is callable by [`Config::ForceOrigin`]
+     */
+    matrixV1040: new CallType(
+        'MultiTokens.force_freeze',
+        sts.struct({
+            info: matrixV1040.Freeze,
+        })
+    ),
+    /**
+     * Same as [`freeze`](Self::freeze), but it is callable by [`Config::ForceOrigin`]
+     */
+    enjinV101: new CallType(
+        'MultiTokens.force_freeze',
+        sts.struct({
+            info: enjinV101.Freeze,
         })
     ),
     /**
@@ -5701,6 +6079,29 @@ export const forceCreateEthereumCollection = {
             claimer: matrixV1030.H160,
             ethereumCollectionId: sts.bigint(),
             descriptor: matrixV1030.DefaultCollectionDescriptor,
+        })
+    ),
+    /**
+     * Creates a new collection from `descriptor` at `collection_id`, origin must be
+     * [`Config::EthereumMigrationOrigin`]. It differs from `force_create_collection`
+     * since it writes to `NativeCollectionIds` and `ClaimableCollectionIds`.
+     *
+     * # Params
+     * - `owner` - the account that will own the new collection
+     * - `claimer` - the ethereum address that will be able to claim the collection
+     * - `ethereum_collection_id` - the collection id on ethereum
+     *
+     * # Errors
+     * - [`Error::DepositReserveFailed`] if the deposit cannot be reserved
+     * - [`Error::CollectionIdAlreadyInUse`] if the collection id is already in use
+     */
+    matrixV1040: new CallType(
+        'MultiTokens.force_create_ethereum_collection',
+        sts.struct({
+            owner: matrixV1040.AccountId32,
+            claimer: matrixV1040.H160,
+            ethereumCollectionId: sts.bigint(),
+            descriptor: matrixV1040.DefaultCollectionDescriptor,
         })
     ),
     /**
@@ -6246,6 +6647,50 @@ export const setTokenGroupAttribute = {
             value: sts.bytes(),
         })
     ),
+    /**
+     * Sets the attribute `key` to `value` for `token_group_id`.
+     * Only callable by the collection's owner.
+     *
+     * If `frozen` is true, the attribute is permanently frozen: it can never be modified
+     * or removed afterwards. An existing unfrozen attribute can be set-and-frozen in one
+     * call.
+     *
+     * # Errors
+     * - [`Error::InvalidAttributeKey`] if `key.len() == 0`
+     * - [`Error::TokenGroupNotFound`] if `token_group_id` does not exist.
+     * - [`Error::NoPermission`] if `source` account is not the owner of the collection.
+     * - [`Error::AttributeFrozen`] if the attribute is frozen.
+     * - [`Error::DepositReserveFailed`] if unable to reserve the deposit for the attribute
+     *   storage.
+     */
+    matrixV1040: new CallType(
+        'MultiTokens.set_token_group_attribute',
+        sts.struct({
+            tokenGroupId: sts.bigint(),
+            key: sts.bytes(),
+            value: sts.bytes(),
+            frozen: sts.boolean(),
+        })
+    ),
+    /**
+     * Sets the attribute `key` to `value` for `token_group_id`.
+     * Only callable by the collection's owner.
+     *
+     * # Errors
+     * - [`Error::InvalidAttributeKey`] if `key.len() == 0`
+     * - [`Error::TokenGroupNotFound`] if `token_group_id` does not exist.
+     * - [`Error::NoPermission`] if `source` account is not the owner of the collection.
+     * - [`Error::DepositReserveFailed`] if unable to reserve the deposit for the attribute
+     *   storage.
+     */
+    enjinV1062: new CallType(
+        'MultiTokens.set_token_group_attribute',
+        sts.struct({
+            tokenGroupId: sts.bigint(),
+            key: sts.bytes(),
+            value: sts.bytes(),
+        })
+    ),
 }
 
 export const removeTokenGroupAttribute = {
@@ -6364,6 +6809,284 @@ export const batchInfuse = {
         sts.struct({
             collectionId: sts.bigint(),
             infusions: sts.array(() => matrixEnjinV1031.BatchInfusion),
+        })
+    ),
+}
+
+export const cleanupExpiredEphemeral = {
+    name: 'MultiTokens.cleanup_expired_ephemeral',
+    /**
+     * Permissionless fallback that performs up to `max_items` units of expired
+     * ephemeral-token cleanup (one unit per token destroyed, attribute removed, or
+     * schedule bucket visited).
+     *
+     * Acts as a manual nudge when `on_idle` cleanup is not keeping up with the schedule.
+     * Anyone may call it; the fee is waived (`Pays::No`) when at least one token was
+     * destroyed, and unused weight is refunded.
+     *
+     * # Errors
+     * This extrinsic does not produce errors for an empty schedule or zero work
+     * performed; it simply returns `Ok(())`.
+     */
+    matrixV1040: new CallType(
+        'MultiTokens.cleanup_expired_ephemeral',
+        sts.struct({
+            maxItems: sts.number(),
+        })
+    ),
+}
+
+export const retryFailedEphemeralCleanup = {
+    name: 'MultiTokens.retry_failed_ephemeral_cleanup',
+    /**
+     * Permissionless retry for an ephemeral token whose automatic destruction failed and
+     * was parked in [`FailedEphemeralCleanups`]. `max_units` caps the weight charged up
+     * front (see [`Self::cleanup_expired_ephemeral`] for the unit definition); a retry
+     * consumes one unit.
+     *
+     * The fee is waived (`Pays::No`) when the token is fully destroyed.
+     *
+     * # Errors
+     * - [`Error::NoFailedEphemeralCleanup`] if the token is not parked
+     * - any error from the destruction attempt itself (state is rolled back and the token
+     *   remains parked)
+     */
+    matrixV1040: new CallType(
+        'MultiTokens.retry_failed_ephemeral_cleanup',
+        sts.struct({
+            collectionId: sts.bigint(),
+            tokenId: sts.bigint(),
+            maxUnits: sts.number(),
+        })
+    ),
+}
+
+export const upgradeAttributes = {
+    name: 'MultiTokens.upgrade_attributes',
+    /**
+     * Upgrade a list of attributes in storage to the latest encoding (storage version 6).
+     *
+     * Pre-v6 attribute values are upgraded lazily whenever they are mutated; this
+     * extrinsic rewrites them proactively so off-chain consumers that decode raw storage
+     * see the current encoding. Permissionless; a no-op for keys that are missing or
+     * already upgraded.
+     */
+    matrixV1040: new CallType(
+        'MultiTokens.upgrade_attributes',
+        sts.struct({
+            attributeKeys: sts.array(() =>
+                sts.tuple(() => [sts.bigint(), sts.option(() => sts.bigint()), sts.bytes()])
+            ),
+        })
+    ),
+}
+
+export const lend = {
+    name: 'MultiTokens.lend',
+    /**
+     * Lend a token to `borrower` until `expiration`, at which block it is automatically
+     * returned to the caller. The token moves to the borrower through the standard
+     * transfer path; the caller funds the borrower's token account deposit.
+     *
+     * While lent, the token cannot be listed or burned and can only be transferred back
+     * to the lender — a return supersedes freeze and transferability restrictions. The
+     * borrower may return early by transferring the token back; the lender may extend
+     * the loan via [`Self::extend_loan`] but cannot claw it back early.
+     *
+     * Only single-supply NFTs (cap == `Supply(1)` or `CollapsingSupply(1)`) with
+     * lending enabled may be lent. Ephemeral tokens may be lent, but destruction
+     * supersedes return: once the ephemeral expiration is reached the token is
+     * destroyed, not returned.
+     *
+     * # Errors
+     * - [`Error::LoanExpirationInPast`] if `expiration` is not in the future
+     * - [`Error::TokenNotFound`] if the token does not exist
+     * - [`Error::TokenNotLendable`] if lending is disabled for the token
+     * - [`Error::TokenAlreadyLent`] if the token is already lent
+     * - [`Error::LendingRequiresSingleSupply`] if the token is not a single-supply NFT
+     * - [`Error::LoanScheduleFull`] if too many loans already come due on `expiration`
+     * - any error from the transfer itself (e.g. [`Error::Frozen`], [`Error::BalanceLow`],
+     *   [`Error::CannotTransferToSelf`])
+     */
+    matrixV1040: new CallType(
+        'MultiTokens.lend',
+        sts.struct({
+            collectionId: sts.bigint(),
+            tokenId: sts.bigint(),
+            borrower: matrixV1040.MultiAddress,
+            expiration: sts.number(),
+        })
+    ),
+}
+
+export const extendLoan = {
+    name: 'MultiTokens.extend_loan',
+    /**
+     * Extend the expiration of an active loan to a strictly later block. Only the
+     * lender may extend, and only before the current expiration has been reached.
+     *
+     * # Errors
+     * - [`Error::TokenNotFound`] if the token does not exist
+     * - [`Error::LoanNotFound`] if the token is not lent
+     * - [`Error::NoPermission`] if the caller is not the lender
+     * - [`Error::LoanExpired`] if the loan has already reached its expiration block
+     * - [`Error::LoanExpirationNotLater`] if `new_expiration` is not strictly later
+     * - [`Error::LoanScheduleFull`] if too many loans already come due on `new_expiration`
+     */
+    matrixV1040: new CallType(
+        'MultiTokens.extend_loan',
+        sts.struct({
+            collectionId: sts.bigint(),
+            tokenId: sts.bigint(),
+            newExpiration: sts.number(),
+        })
+    ),
+}
+
+export const processExpiredLoans = {
+    name: 'MultiTokens.process_expired_loans',
+    /**
+     * Permissionless fallback that performs up to `max_items` units of expired-loan
+     * processing (one unit per token returned or schedule bucket visited).
+     *
+     * Acts as a manual nudge when `on_idle` processing is not keeping up with the
+     * schedule. Anyone may call it; the fee is waived (`Pays::No`) when at least one
+     * token was returned, and unused weight is refunded.
+     *
+     * # Errors
+     * This extrinsic does not produce errors for an empty schedule or zero work
+     * performed; it simply returns `Ok(())`.
+     */
+    matrixV1040: new CallType(
+        'MultiTokens.process_expired_loans',
+        sts.struct({
+            maxItems: sts.number(),
+        })
+    ),
+}
+
+export const retryFailedLoanReturn = {
+    name: 'MultiTokens.retry_failed_loan_return',
+    /**
+     * Permissionless retry for a lent token whose automatic return failed and was
+     * parked in [`FailedLoanReturns`]. The fee is waived (`Pays::No`) on success.
+     *
+     * # Errors
+     * - [`Error::NoFailedLoanReturn`] if the token is not parked
+     * - any error from the return attempt itself (state is rolled back and the token remains
+     *   parked)
+     */
+    matrixV1040: new CallType(
+        'MultiTokens.retry_failed_loan_return',
+        sts.struct({
+            collectionId: sts.bigint(),
+            tokenId: sts.bigint(),
+        })
+    ),
+}
+
+export const cleanupOrphanedAttributes = {
+    name: 'MultiTokens.cleanup_orphaned_attributes',
+    /**
+     * Permissionless fallback that performs up to `max_units` units of orphaned-attribute
+     * removal (one unit per attribute removed or drained queue entry; see
+     * [`PendingAttributeCleanups`] and [`PendingGroupAttributeCleanups`]).
+     *
+     * Acts as a manual nudge when `on_idle` sweeping is not keeping up — for example to
+     * unblock the re-creation of a destroyed token id
+     * ([`Error::PendingAttributeCleanup`]). Anyone may call it; the fee is waived
+     * (`Pays::No`) whenever the call made progress — removed an attribute or drained a
+     * queue entry (which is what unblocks re-creation) — and unused weight is refunded.
+     *
+     * # Errors
+     * This extrinsic does not produce errors for empty queues or zero work performed;
+     * it simply returns `Ok(())`.
+     */
+    matrixV1040: new CallType(
+        'MultiTokens.cleanup_orphaned_attributes',
+        sts.struct({
+            maxUnits: sts.number(),
+        })
+    ),
+}
+
+export const setMintRateLimit = {
+    name: 'MultiTokens.set_mint_rate_limit',
+    /**
+     * Set, change, or remove the mint rate limit of a collection (`token_id` = `None`) or
+     * a single token. Only callable by the collection owner.
+     *
+     * Adding a limit or tightening it (a lower `max` and a period that is not shorter)
+     * takes effect immediately. Any other change — loosening, mixed changes, and removal
+     * (`limit` = `None`) — is scheduled to take effect after
+     * [`Config::MintRateLimitLooseningDelay`] blocks and can be cancelled until then with
+     * [`cancel_mint_rate_limit_change`](Self::cancel_mint_rate_limit_change). A new
+     * request overwrites a pending one and restarts the delay.
+     *
+     * # Errors
+     *
+     * - [`Error::CollectionNotFound`] if `collection_id` does not exist
+     * - [`Error::TokenNotFound`] if `token_id` is `Some` and the token does not exist
+     * - [`Error::NoPermission`] if `origin` is not the owner of the collection
+     * - [`Error::InvalidMintRateLimit`] if `limit` has a zero `period` or `max`
+     * - [`Error::MintRateLimitNotFound`] if removing while no limit is set
+     */
+    matrixV1040: new CallType(
+        'MultiTokens.set_mint_rate_limit',
+        sts.struct({
+            collectionId: sts.bigint(),
+            tokenId: sts.option(() => sts.bigint()),
+            limit: sts.option(() => matrixV1040.MintRateLimit),
+        })
+    ),
+}
+
+export const cancelMintRateLimitChange = {
+    name: 'MultiTokens.cancel_mint_rate_limit_change',
+    /**
+     * Cancel a pending mint rate limit change scheduled with
+     * [`set_mint_rate_limit`](Self::set_mint_rate_limit) before it takes effect.
+     * Cancellation is a tightening action and applies immediately. Only callable by the
+     * collection owner.
+     *
+     * # Errors
+     *
+     * - [`Error::CollectionNotFound`] if `collection_id` does not exist
+     * - [`Error::TokenNotFound`] if `token_id` is `Some` and the token does not exist
+     * - [`Error::NoPermission`] if `origin` is not the owner of the collection
+     * - [`Error::NoPendingMintRateLimitChange`] if there is no pending change, including when
+     *   the change has already taken effect
+     */
+    matrixV1040: new CallType(
+        'MultiTokens.cancel_mint_rate_limit_change',
+        sts.struct({
+            collectionId: sts.bigint(),
+            tokenId: sts.option(() => sts.bigint()),
+        })
+    ),
+}
+
+export const forceSetMintRateLimit = {
+    name: 'MultiTokens.force_set_mint_rate_limit',
+    /**
+     * Same as [`set_mint_rate_limit`](Self::set_mint_rate_limit), but only callable by
+     * [`Config::ForceOrigin`] and every change — including loosening and removal — takes
+     * effect immediately. Serves as the governance escape hatch, e.g. to tighten a limit
+     * or clear a malicious pending loosening on a collection with a compromised owner key.
+     *
+     * # Errors
+     *
+     * - [`Error::CollectionNotFound`] if `collection_id` does not exist
+     * - [`Error::TokenNotFound`] if `token_id` is `Some` and the token does not exist
+     * - [`Error::InvalidMintRateLimit`] if `limit` has a zero `period` or `max`
+     * - [`Error::MintRateLimitNotFound`] if removing while no limit is set
+     */
+    matrixV1040: new CallType(
+        'MultiTokens.force_set_mint_rate_limit',
+        sts.struct({
+            collectionId: sts.bigint(),
+            tokenId: sts.option(() => sts.bigint()),
+            limit: sts.option(() => matrixV1040.MintRateLimit),
         })
     ),
 }

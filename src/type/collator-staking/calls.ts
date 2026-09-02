@@ -40,6 +40,27 @@ export const joinCandidates = {
             rewardsCut: matrixEnjinV603.Perbill,
         })
     ),
+    /**
+     * Join the list of candidates for collation.
+     *
+     * Being added to the candidate set means the caller may be selected to be a collator from
+     * the next session onwards.
+     *
+     * # Errors
+     *
+     * - [`Error::BelowMinStakeAmount`] if `amount` is below the minimum required amount.
+     * - [`Error::NominationExists`] if nomination already exists.
+     * - [`Error::AccountIdNotRegistered`] if `AccountId` is not registered as a collator.
+     * - [`Error::NoAssociatedValidatorId`] if no associated validator ID for `AccountId`.
+     * - [`Error::TooManyCandidates`] if the number of candidates is already at the maximum.
+     * - [`Error::AlreadyInvulnerable`] if `AccountId` is already an invulnerable.
+     */
+    matrixV1040: new CallType(
+        'CollatorStaking.join_candidates',
+        sts.struct({
+            amount: sts.bigint(),
+        })
+    ),
 }
 
 export const unbond = {

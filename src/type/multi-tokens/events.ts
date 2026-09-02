@@ -22,6 +22,7 @@ import * as v1030 from '../v1030'
 import * as matrixV1030 from '../matrixV1030'
 import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 import * as enjinV1032 from '../enjinV1032'
+import * as matrixV1040 from '../matrixV1040'
 import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 import * as v1060 from '../v1060'
@@ -394,6 +395,26 @@ export const tokenMutated = {
         })
     ),
     /**
+     * A token was mutated
+     */
+    matrixV1040: new EventType(
+        'MultiTokens.TokenMutated',
+        sts.struct({
+            /**
+             * The collection id where the Token belongs
+             */
+            collectionId: sts.bigint(),
+            /**
+             * Id of the Token mutated
+             */
+            tokenId: sts.bigint(),
+            /**
+             * mutation that was applied to the Token
+             */
+            mutation: matrixV1040.DefaultTokenMutation,
+        })
+    ),
+    /**
      * A [`Token`](ep_multi_tokens::Token) was mutated
      */
     enjinV100: new EventType(
@@ -619,6 +640,14 @@ export const frozen = {
     /**
      * Collection, token or account was frozen
      */
+    matrixV1040: new EventType('MultiTokens.Frozen', matrixV1040.Freeze),
+    /**
+     * Collection, token or account was frozen
+     */
+    enjinV100: new EventType('MultiTokens.Frozen', enjinV100.Freeze),
+    /**
+     * Collection, token or account was frozen
+     */
     enjinV1070: new EventType('MultiTokens.Frozen', enjinV1070.Freeze),
     /**
      * Collection, token or account was frozen
@@ -636,6 +665,14 @@ export const thawed = {
      * Collection, token or account was unfrozen
      */
     matrixEnjinV603: new EventType('MultiTokens.Thawed', matrixEnjinV603.Freeze),
+    /**
+     * Collection, token or account was unfrozen
+     */
+    matrixV1040: new EventType('MultiTokens.Thawed', matrixV1040.Thaw),
+    /**
+     * Collection, token or account was unfrozen
+     */
+    enjinV100: new EventType('MultiTokens.Thawed', enjinV100.Freeze),
     /**
      * Collection, token or account was unfrozen
      */
@@ -1054,6 +1091,34 @@ export const reserved = {
              * The identifier of the reserves
              */
             reserveId: matrixV1030.RuntimeHoldReason,
+        })
+    ),
+    /**
+     * Token units were reserved
+     */
+    matrixV1040: new EventType(
+        'MultiTokens.Reserved',
+        sts.struct({
+            /**
+             * The collection in which token was reserved
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token that was reserved
+             */
+            tokenId: sts.bigint(),
+            /**
+             * The account that reserved the tokens
+             */
+            accountId: matrixV1040.AccountId32,
+            /**
+             * The amount that was reserved
+             */
+            amount: sts.bigint(),
+            /**
+             * The identifier of the reserves
+             */
+            reserveId: matrixV1040.RuntimeHoldReason,
         })
     ),
     /**
@@ -1478,6 +1543,34 @@ export const unreserved = {
              * The identifier of the unreserved tokens
              */
             reserveId: matrixV1030.RuntimeHoldReason,
+        })
+    ),
+    /**
+     * Token units were unreserved
+     */
+    matrixV1040: new EventType(
+        'MultiTokens.Unreserved',
+        sts.struct({
+            /**
+             * The collection id in which token was unreserved
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token id that was unreserved
+             */
+            tokenId: sts.bigint(),
+            /**
+             * The account that unreserved the tokens
+             */
+            accountId: matrixV1040.AccountId32,
+            /**
+             * The amount that was unreserved
+             */
+            amount: sts.bigint(),
+            /**
+             * The identifier of the unreserved tokens
+             */
+            reserveId: matrixV1040.RuntimeHoldReason,
         })
     ),
     /**
@@ -1930,6 +2023,38 @@ export const movedReserves = {
              * The identifier of the moved reserves
              */
             reserveId: matrixV1030.RuntimeHoldReason,
+        })
+    ),
+    /**
+     * Reserved token units were moved
+     */
+    matrixV1040: new EventType(
+        'MultiTokens.MovedReserves',
+        sts.struct({
+            /**
+             * The collection id in which token was moved
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token id that was moved
+             */
+            tokenId: sts.bigint(),
+            /**
+             * The account that reserves were moved from
+             */
+            source: matrixV1040.AccountId32,
+            /**
+             * The account that received the moved reserves
+             */
+            destination: matrixV1040.AccountId32,
+            /**
+             * The amount that was moved
+             */
+            amount: sts.bigint(),
+            /**
+             * The identifier of the moved reserves
+             */
+            reserveId: matrixV1040.RuntimeHoldReason,
         })
     ),
     /**
@@ -2419,6 +2544,38 @@ export const reserveRepatriated = {
     /**
      * Reserved token units were transferred
      */
+    matrixV1040: new EventType(
+        'MultiTokens.ReserveRepatriated',
+        sts.struct({
+            /**
+             * The collection id in which token was moved
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token id that was moved
+             */
+            tokenId: sts.bigint(),
+            /**
+             * The account that reserves were moved from
+             */
+            source: matrixV1040.AccountId32,
+            /**
+             * The account that received the moved reserves
+             */
+            destination: matrixV1040.AccountId32,
+            /**
+             * The amount that was moved
+             */
+            amount: sts.bigint(),
+            /**
+             * The identifier of the moved reserves
+             */
+            reserveId: matrixV1040.RuntimeHoldReason,
+        })
+    ),
+    /**
+     * Reserved token units were transferred
+     */
     enjinV100: new EventType(
         'MultiTokens.ReserveRepatriated',
         sts.struct({
@@ -2891,6 +3048,22 @@ export const collectionUpdated = {
     /**
      * Collection storage was set to `value`
      */
+    matrixV1040: new EventType(
+        'MultiTokens.CollectionUpdated',
+        sts.struct({
+            /**
+             * The collection id for which the value is set
+             */
+            collectionId: sts.bigint(),
+            /**
+             * new value of Collection storage
+             */
+            value: sts.option(() => matrixV1040.Collection),
+        })
+    ),
+    /**
+     * Collection storage was set to `value`
+     */
     enjinV100: new EventType(
         'MultiTokens.CollectionUpdated',
         sts.struct({
@@ -3198,6 +3371,26 @@ export const tokenUpdated = {
              * new value of Token storage
              */
             value: sts.option(() => matrixV1030.Token),
+        })
+    ),
+    /**
+     * Token storage was set to `value`
+     */
+    matrixV1040: new EventType(
+        'MultiTokens.TokenUpdated',
+        sts.struct({
+            /**
+             * The collection id for which the value is set
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token id for which the value is set
+             */
+            tokenId: sts.bigint(),
+            /**
+             * new value of Token storage
+             */
+            value: sts.option(() => matrixV1040.Token),
         })
     ),
     /**
@@ -3635,6 +3828,30 @@ export const tokenAccountUpdated = {
              * new value of TokenAccount storage
              */
             value: sts.option(() => matrixV1030.TokenAccount),
+        })
+    ),
+    /**
+     * TokenAccount storage was set to `value`
+     */
+    matrixV1040: new EventType(
+        'MultiTokens.TokenAccountUpdated',
+        sts.struct({
+            /**
+             * The collection id for which the value is set
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token id of the updated account
+             */
+            tokenId: sts.bigint(),
+            /**
+             * The account id that owned the token account
+             */
+            accountId: matrixV1040.AccountId32,
+            /**
+             * new value of TokenAccount storage
+             */
+            value: sts.option(() => matrixV1040.TokenAccount),
         })
     ),
     /**
@@ -4819,7 +5036,7 @@ export const locked = {
     /**
      * Token units were locked
      */
-    enjinV1070: new EventType(
+    matrixV1040: new EventType(
         'MultiTokens.Locked',
         sts.struct({
             /**
@@ -4833,7 +5050,7 @@ export const locked = {
             /**
              * The account that was locked
              */
-            accountId: enjinV1070.AccountId32,
+            accountId: matrixV1040.AccountId32,
             /**
              * The amount that was locked
              */
@@ -4847,7 +5064,7 @@ export const unlocked = {
     /**
      * Token units were unlocked
      */
-    enjinV1070: new EventType(
+    matrixV1040: new EventType(
         'MultiTokens.Unlocked',
         sts.struct({
             /**
@@ -4861,11 +5078,288 @@ export const unlocked = {
             /**
              * The account that was unlocked
              */
-            accountId: enjinV1070.AccountId32,
+            accountId: matrixV1040.AccountId32,
             /**
              * The amount that was unlocked
              */
             amount: sts.bigint(),
+        })
+    ),
+}
+
+export const ephemeralTokenDestroyed = {
+    name: 'MultiTokens.EphemeralTokenDestroyed',
+    /**
+     * An ephemeral token reached its expiration block and was automatically destroyed.
+     */
+    matrixV1040: new EventType(
+        'MultiTokens.EphemeralTokenDestroyed',
+        sts.struct({
+            /**
+             * id of the collection
+             */
+            collectionId: sts.bigint(),
+            /**
+             * id of the token that was destroyed
+             */
+            tokenId: sts.bigint(),
+            /**
+             * the block at which the token was scheduled to expire
+             */
+            expiration: sts.number(),
+        })
+    ),
+}
+
+export const attributeUpgraded = {
+    name: 'MultiTokens.AttributeUpgraded',
+    /**
+     * An attribute was upgraded to the latest storage encoding
+     */
+    matrixV1040: new EventType(
+        'MultiTokens.AttributeUpgraded',
+        sts.struct({
+            /**
+             * The collection id of the attribute
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token id of the attribute, or `None` for a collection-level attribute
+             */
+            tokenId: sts.option(() => sts.bigint()),
+            /**
+             * The attribute key
+             */
+            key: sts.bytes(),
+            /**
+             * The version of the storage this element was migrated to
+             */
+            storageVersion: sts.number(),
+        })
+    ),
+}
+
+export const ephemeralCleanupFailed = {
+    name: 'MultiTokens.EphemeralCleanupFailed',
+    /**
+     * Automatic destruction of an expired ephemeral token failed. The token was parked
+     * in [`FailedEphemeralCleanups`] and can be retried via
+     * [`Pallet::retry_failed_ephemeral_cleanup`].
+     */
+    matrixV1040: new EventType(
+        'MultiTokens.EphemeralCleanupFailed',
+        sts.struct({
+            /**
+             * id of the collection
+             */
+            collectionId: sts.bigint(),
+            /**
+             * id of the token that could not be destroyed
+             */
+            tokenId: sts.bigint(),
+            /**
+             * the block at which the token was scheduled to expire
+             */
+            expiration: sts.number(),
+            /**
+             * why the destruction failed
+             */
+            error: matrixV1040.DispatchError,
+        })
+    ),
+}
+
+export const tokenLent = {
+    name: 'MultiTokens.TokenLent',
+    /**
+     * A token was lent to a borrower. It will be automatically returned to the lender at
+     * the expiration block.
+     */
+    matrixV1040: new EventType(
+        'MultiTokens.TokenLent',
+        sts.struct({
+            /**
+             * id of the collection
+             */
+            collectionId: sts.bigint(),
+            /**
+             * id of the token that was lent
+             */
+            tokenId: sts.bigint(),
+            /**
+             * the account that lent the token and will receive it back
+             */
+            lender: matrixV1040.AccountId32,
+            /**
+             * the account holding the token for the duration of the loan
+             */
+            borrower: matrixV1040.AccountId32,
+            /**
+             * the block at which the token is scheduled to be returned
+             */
+            expiration: sts.number(),
+        })
+    ),
+}
+
+export const loanExtended = {
+    name: 'MultiTokens.LoanExtended',
+    /**
+     * The expiration block of an active loan was extended by the lender.
+     */
+    matrixV1040: new EventType(
+        'MultiTokens.LoanExtended',
+        sts.struct({
+            /**
+             * id of the collection
+             */
+            collectionId: sts.bigint(),
+            /**
+             * id of the lent token
+             */
+            tokenId: sts.bigint(),
+            /**
+             * the previous expiration block
+             */
+            oldExpiration: sts.number(),
+            /**
+             * the new expiration block
+             */
+            newExpiration: sts.number(),
+        })
+    ),
+}
+
+export const tokenReturned = {
+    name: 'MultiTokens.TokenReturned',
+    /**
+     * A lent token was returned to its lender, either by the borrower transferring it
+     * back or by the automatic return at the loan's expiration block.
+     */
+    matrixV1040: new EventType(
+        'MultiTokens.TokenReturned',
+        sts.struct({
+            /**
+             * id of the collection
+             */
+            collectionId: sts.bigint(),
+            /**
+             * id of the token that was returned
+             */
+            tokenId: sts.bigint(),
+            /**
+             * the account the token was returned to
+             */
+            lender: matrixV1040.AccountId32,
+            /**
+             * the account that held the token during the loan
+             */
+            borrower: matrixV1040.AccountId32,
+        })
+    ),
+}
+
+export const loanReturnFailed = {
+    name: 'MultiTokens.LoanReturnFailed',
+    /**
+     * Automatic return of a lent token failed. The token was parked in
+     * [`FailedLoanReturns`] and can be retried via [`Pallet::retry_failed_loan_return`].
+     */
+    matrixV1040: new EventType(
+        'MultiTokens.LoanReturnFailed',
+        sts.struct({
+            /**
+             * id of the collection
+             */
+            collectionId: sts.bigint(),
+            /**
+             * id of the token that could not be returned
+             */
+            tokenId: sts.bigint(),
+            /**
+             * the block at which the token was scheduled to be returned
+             */
+            expiration: sts.number(),
+            /**
+             * why the return failed
+             */
+            error: matrixV1040.DispatchError,
+        })
+    ),
+}
+
+export const mintRateLimitUpdated = {
+    name: 'MultiTokens.MintRateLimitUpdated',
+    /**
+     * A mint rate limit was added or tightened, effective immediately. If `token_id` is
+     * `None`, it applies to the collection scope.
+     */
+    matrixV1040: new EventType(
+        'MultiTokens.MintRateLimitUpdated',
+        sts.struct({
+            /**
+             * The collection the rate limit applies to
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token the rate limit applies to, or `None` for the collection scope
+             */
+            tokenId: sts.option(() => sts.bigint()),
+            /**
+             * The rate limit now being enforced. `None` means the limit was removed (only
+             * possible via [`force_set_mint_rate_limit`](Pallet::force_set_mint_rate_limit)).
+             */
+            limit: sts.option(() => matrixV1040.MintRateLimit),
+        })
+    ),
+}
+
+export const mintRateLimitChangeScheduled = {
+    name: 'MultiTokens.MintRateLimitChangeScheduled',
+    /**
+     * A loosening or removal of a mint rate limit was scheduled. It takes effect at
+     * `effective_block` unless cancelled or superseded before then.
+     */
+    matrixV1040: new EventType(
+        'MultiTokens.MintRateLimitChangeScheduled',
+        sts.struct({
+            /**
+             * The collection the change applies to
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token the change applies to, or `None` for the collection scope
+             */
+            tokenId: sts.option(() => sts.bigint()),
+            /**
+             * The rate limit that will be enforced from `effective_block`. `None` removes the
+             * limit entirely.
+             */
+            newLimit: sts.option(() => matrixV1040.MintRateLimit),
+            /**
+             * The block at which `new_limit` takes effect
+             */
+            effectiveBlock: sts.number(),
+        })
+    ),
+}
+
+export const mintRateLimitChangeCancelled = {
+    name: 'MultiTokens.MintRateLimitChangeCancelled',
+    /**
+     * A pending mint rate limit change was cancelled before taking effect
+     */
+    matrixV1040: new EventType(
+        'MultiTokens.MintRateLimitChangeCancelled',
+        sts.struct({
+            /**
+             * The collection the cancelled change applied to
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token the cancelled change applied to, or `None` for the collection scope
+             */
+            tokenId: sts.option(() => sts.bigint()),
         })
     ),
 }

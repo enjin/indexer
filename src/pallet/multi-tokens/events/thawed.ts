@@ -17,6 +17,10 @@ export function thawed(event: EventItem): Thaw {
             () => multiTokens.thawed.enjinV1070.decode(event)
         )
         .when(
+            () => multiTokens.thawed.matrixV1040.is(event),
+            () => multiTokens.thawed.matrixV1040.decode(event)
+        )
+        .when(
             () => multiTokens.thawed.v1070.is(event),
             () => multiTokens.thawed.v1070.decode(event)
         )
@@ -27,7 +31,7 @@ export function thawed(event: EventItem): Thaw {
 
 export function thawedEventModel(item: EventItem, data: Thaw): EventModel {
     let tokenId: null | string = null
-    if (data.freezeType && data.freezeType.__kind !== 'Collection' && data.freezeType.__kind !== 'CollectionAccount') {
+    if (data.freezeType && (data.freezeType.__kind === 'Token' || data.freezeType.__kind === 'TokenAccount')) {
         tokenId = `${data.collectionId}-${data.freezeType.tokenId}`
     }
 

@@ -3,6 +3,7 @@ import * as matrixV500 from '../matrixV500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV1010 from '../matrixV1010'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
+import * as matrixV1040 from '../matrixV1040'
 
 export const inboundXcmpStatus = {
     /**
@@ -99,6 +100,20 @@ export const outboundXcmpStatus = {
         [],
         sts.array(() => matrixEnjinV603.OutboundChannelDetails)
     ) as OutboundXcmpStatusMatrixEnjinV603,
+    /**
+     *  The non-empty XCMP channels in order of becoming non-empty, and the index of the first
+     *  and last outbound message. If the two indices are equal, then it indicates an empty
+     *  queue and there must be a non-`Ok` `OutboundStatus`. We assume queues grow no greater
+     *  than 65535 items. Queue indices for normal messages begin at one; zero is reserved in
+     *  case of the need to send a high-priority signal message this block.
+     *  The bool is true if there is a signal message waiting to be sent.
+     */
+    matrixV1040: new StorageType(
+        'XcmpQueue.OutboundXcmpStatus',
+        'Default',
+        [],
+        sts.array(() => matrixV1040.OutboundChannelDetails)
+    ) as OutboundXcmpStatusMatrixV1040,
 }
 
 /**
@@ -113,6 +128,20 @@ export interface OutboundXcmpStatusMatrixEnjinV603 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): matrixEnjinV603.OutboundChannelDetails[]
     get(block: Block): Promise<matrixEnjinV603.OutboundChannelDetails[] | undefined>
+}
+
+/**
+ *  The non-empty XCMP channels in order of becoming non-empty, and the index of the first
+ *  and last outbound message. If the two indices are equal, then it indicates an empty
+ *  queue and there must be a non-`Ok` `OutboundStatus`. We assume queues grow no greater
+ *  than 65535 items. Queue indices for normal messages begin at one; zero is reserved in
+ *  case of the need to send a high-priority signal message this block.
+ *  The bool is true if there is a signal message waiting to be sent.
+ */
+export interface OutboundXcmpStatusMatrixV1040 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): matrixV1040.OutboundChannelDetails[]
+    get(block: Block): Promise<matrixV1040.OutboundChannelDetails[] | undefined>
 }
 
 export const outboundXcmpMessages = {

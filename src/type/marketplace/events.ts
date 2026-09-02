@@ -15,6 +15,7 @@ import * as v1030 from '../v1030'
 import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 import * as v1031 from '../v1031'
 import * as enjinV1032 from '../enjinV1032'
+import * as matrixV1040 from '../matrixV1040'
 import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 import * as v1060 from '../v1060'
@@ -166,6 +167,22 @@ export const listingCreated = {
              * The listing
              */
             listing: matrixV1030.Listing,
+        })
+    ),
+    /**
+     * A listing was created
+     */
+    matrixV1040: new EventType(
+        'Marketplace.ListingCreated',
+        sts.struct({
+            /**
+             * Id for the listing
+             */
+            listingId: matrixV1040.H256,
+            /**
+             * The listing
+             */
+            listing: matrixV1040.Listing,
         })
     ),
     /**
@@ -1390,6 +1407,142 @@ export const whitelistedAccountsRemoved = {
              * The account ids that were removed
              */
             accountIds: sts.array(() => matrixEnjinV1022.AccountId32),
+        })
+    ),
+}
+
+export const orderMatched = {
+    name: 'Marketplace.OrderMatched',
+    /**
+     * A matching call examined resting listings on the book. Each fill also emits
+     * [`Event::ListingFilled`] for the resting listing.
+     */
+    matrixV1040: new EventType(
+        'Marketplace.OrderMatched',
+        sts.struct({
+            /**
+             * The account whose listing was matched against the book
+             */
+            taker: matrixV1040.AccountId32,
+            /**
+             * The asset side of the book
+             */
+            assetId: matrixV1040.AssetId,
+            /**
+             * The currency side of the book
+             */
+            currencyId: matrixV1040.AssetId,
+            /**
+             * The side of the book the taker's listing belongs to
+             */
+            side: matrixV1040.OrderSide,
+            /**
+             * The total amount filled by matching
+             */
+            amountMatched: sts.bigint(),
+            /**
+             * The number of resting listings examined (filled or skipped)
+             */
+            ordersExamined: sts.number(),
+            /**
+             * The listing id of the resting remainder, if any
+             */
+            remainderListingId: sts.option(() => matrixV1040.H256),
+            /**
+             * The amount of the taker's order that was neither filled nor rested because the
+             * book had no room for the remainder (immediate-or-cancel). Zero when the remainder
+             * rested or the order filled completely.
+             */
+            unrestedAmount: sts.bigint(),
+        })
+    ),
+}
+
+export const listingNotIndexed = {
+    name: 'Marketplace.ListingNotIndexed',
+    /**
+     * A listing could not be indexed into the book during the migration because the book was
+     * full. It stays fillable via `fill_listing` and can be cancelled normally.
+     */
+    matrixV1040: new EventType(
+        'Marketplace.ListingNotIndexed',
+        sts.struct({
+            /**
+             * Id for the listing
+             */
+            listingId: matrixV1040.H256,
+        })
+    ),
+}
+
+export const listingSettlementAbandoned = {
+    name: 'Marketplace.ListingSettlementAbandoned',
+    /**
+     * Automatic settlement of a listing failed
+     * [`MAX_SETTLEMENT_ATTEMPTS`] times, so the `on_idle`
+     * sweep has stopped retrying it. Nothing was destroyed and no funds moved: the listing,
+     * the seller's reserved make side and any winning bid all stay as they were.
+     *
+     * Calling `finalize_auction` or `remove_expired_listing` by hand only settles it if the
+     * failure was transient. It usually is not, since ten sweeps failed on it: those two
+     * calls re-run the settlement that keeps reverting, and `remove_expired_listing` refuses
+     * anything that is not an offer. Use
+     * [`resolve_abandoned_listing`](Pallet::resolve_abandoned_listing), which retries the
+     * settlement and releases both sides when the trade cannot be completed at all.
+     */
+    matrixV1040: new EventType(
+        'Marketplace.ListingSettlementAbandoned',
+        sts.struct({
+            /**
+             * Id for the listing
+             */
+            listingId: matrixV1040.H256,
+            /**
+             * How many attempts were made
+             */
+            attempts: sts.number(),
+        })
+    ),
+}
+
+export const abandonedListingReleased = {
+    name: 'Marketplace.AbandonedListingReleased',
+    /**
+     * An abandoned listing was released by
+     * [`resolve_abandoned_listing`](Pallet::resolve_abandoned_listing) because its settlement
+     * could not be completed at all. The make side is
+     * back with the seller, the bid is back with the bidder, the deposit is back with its
+     * depositor and the listing is gone. `ListingCancelled` is emitted for the same listing.
+     */
+    matrixV1040: new EventType(
+        'Marketplace.AbandonedListingReleased',
+        sts.struct({
+            /**
+             * Id for the listing
+             */
+            listingId: matrixV1040.H256,
+            /**
+             * The bid whose reserved funds were returned to the bidder, if the listing held one
+             */
+            returnedBid: sts.option(() => matrixV1040.Bid),
+        })
+    ),
+}
+
+export const migrationCompleted = {
+    name: 'Marketplace.MigrationCompleted',
+    /**
+     * The storage migration driven by [`Pallet::migrate`] completed: every phase is
+     * exhausted, the on-chain storage version is current, and every marketplace call is
+     * available again
+     */
+    matrixV1040: new EventType(
+        'Marketplace.MigrationCompleted',
+        sts.struct({
+            /**
+             * The storage version the migration upgraded to
+             */
+            storageVersion: sts.number(),
         })
     ),
 }

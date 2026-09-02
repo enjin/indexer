@@ -1,5 +1,81 @@
 import { sts, Result, Option, Bytes, BitSequence } from './support'
 
+export type Id = number
+
+export interface FundInfo {
+    depositor: AccountId32
+    verifier?: MultiSigner | undefined
+    deposit: bigint
+    raised: bigint
+    end: number
+    cap: bigint
+    lastContribution: LastContribution
+    firstPeriod: number
+    lastPeriod: number
+    fundIndex: number
+}
+
+export type LastContribution = LastContribution_Ending | LastContribution_Never | LastContribution_PreEnding
+
+export interface LastContribution_Ending {
+    __kind: 'Ending'
+    value: number
+}
+
+export interface LastContribution_Never {
+    __kind: 'Never'
+}
+
+export interface LastContribution_PreEnding {
+    __kind: 'PreEnding'
+    value: number
+}
+
+export type MultiSigner = MultiSigner_Ecdsa | MultiSigner_Ed25519 | MultiSigner_Eth | MultiSigner_Sr25519
+
+export interface MultiSigner_Ecdsa {
+    __kind: 'Ecdsa'
+    value: Bytes
+}
+
+export interface MultiSigner_Ed25519 {
+    __kind: 'Ed25519'
+    value: Bytes
+}
+
+export interface MultiSigner_Eth {
+    __kind: 'Eth'
+    value: Bytes
+}
+
+export interface MultiSigner_Sr25519 {
+    __kind: 'Sr25519'
+    value: Bytes
+}
+
+export const FundInfo: sts.Type<FundInfo> = sts.struct(() => {
+    return {
+        depositor: AccountId32,
+        verifier: sts.option(() => MultiSigner),
+        deposit: sts.bigint(),
+        raised: sts.bigint(),
+        end: sts.number(),
+        cap: sts.bigint(),
+        lastContribution: LastContribution,
+        firstPeriod: sts.number(),
+        lastPeriod: sts.number(),
+        fundIndex: sts.number(),
+    }
+})
+
+export const LastContribution: sts.Type<LastContribution> = sts.closedEnum(() => {
+    return {
+        Ending: sts.number(),
+        Never: sts.unit(),
+        PreEnding: sts.number(),
+    }
+})
+
 export type Type_1106 =
     | Type_1106_Approved
     | Type_1106_Cancelled
@@ -876,82 +952,6 @@ export const Casting: sts.Type<Casting> = sts.struct(() => {
         votes: sts.array(() => sts.tuple(() => [sts.number(), AccountVote])),
         delegations: Delegations,
         prior: PriorLock,
-    }
-})
-
-export type Id = number
-
-export interface FundInfo {
-    depositor: AccountId32
-    verifier?: MultiSigner | undefined
-    deposit: bigint
-    raised: bigint
-    end: number
-    cap: bigint
-    lastContribution: LastContribution
-    firstPeriod: number
-    lastPeriod: number
-    fundIndex: number
-}
-
-export type LastContribution = LastContribution_Ending | LastContribution_Never | LastContribution_PreEnding
-
-export interface LastContribution_Ending {
-    __kind: 'Ending'
-    value: number
-}
-
-export interface LastContribution_Never {
-    __kind: 'Never'
-}
-
-export interface LastContribution_PreEnding {
-    __kind: 'PreEnding'
-    value: number
-}
-
-export type MultiSigner = MultiSigner_Ecdsa | MultiSigner_Ed25519 | MultiSigner_Eth | MultiSigner_Sr25519
-
-export interface MultiSigner_Ecdsa {
-    __kind: 'Ecdsa'
-    value: Bytes
-}
-
-export interface MultiSigner_Ed25519 {
-    __kind: 'Ed25519'
-    value: Bytes
-}
-
-export interface MultiSigner_Eth {
-    __kind: 'Eth'
-    value: Bytes
-}
-
-export interface MultiSigner_Sr25519 {
-    __kind: 'Sr25519'
-    value: Bytes
-}
-
-export const FundInfo: sts.Type<FundInfo> = sts.struct(() => {
-    return {
-        depositor: AccountId32,
-        verifier: sts.option(() => MultiSigner),
-        deposit: sts.bigint(),
-        raised: sts.bigint(),
-        end: sts.number(),
-        cap: sts.bigint(),
-        lastContribution: LastContribution,
-        firstPeriod: sts.number(),
-        lastPeriod: sts.number(),
-        fundIndex: sts.number(),
-    }
-})
-
-export const LastContribution: sts.Type<LastContribution> = sts.closedEnum(() => {
-    return {
-        Ending: sts.number(),
-        Never: sts.unit(),
-        PreEnding: sts.number(),
     }
 })
 
@@ -12979,6 +12979,13 @@ export const BalancesEvent: sts.Type<BalancesEvent> = sts.closedEnum(() => {
     }
 })
 
+export const UnexpectedKind: sts.Type<UnexpectedKind> = sts.closedEnum(() => {
+    return {
+        BalanceUpdated: sts.unit(),
+        FailedToMutateAccount: sts.unit(),
+    }
+})
+
 export const BalanceStatus: sts.Type<BalanceStatus> = sts.closedEnum(() => {
     return {
         Free: sts.unit(),
@@ -13051,6 +13058,33 @@ export const Type_784: sts.Type<Type_784> = sts.closedEnum(() => {
     }
 })
 
+export const MultiSigner: sts.Type<MultiSigner> = sts.closedEnum(() => {
+    return {
+        Ecdsa: sts.bytes(),
+        Ed25519: sts.bytes(),
+        Eth: sts.bytes(),
+        Sr25519: sts.bytes(),
+    }
+})
+
+export const PayoutRewardsPayload: sts.Type<PayoutRewardsPayload> = sts.struct(() => {
+    return {
+        payoutValidatorStash: AccountId32,
+        era: sts.number(),
+        validatorId: AccountId32,
+        public: MultiSigner,
+        signerAccount: AccountId32,
+    }
+})
+
+export interface PayoutRewardsPayload {
+    payoutValidatorStash: AccountId32
+    era: number
+    validatorId: AccountId32
+    public: MultiSigner
+    signerAccount: AccountId32
+}
+
 export const DispatchTime: sts.Type<DispatchTime> = sts.closedEnum(() => {
     return {
         After: sts.number(),
@@ -13082,33 +13116,6 @@ export const Conviction: sts.Type<Conviction> = sts.closedEnum(() => {
         None: sts.unit(),
     }
 })
-
-export const MultiSigner: sts.Type<MultiSigner> = sts.closedEnum(() => {
-    return {
-        Ecdsa: sts.bytes(),
-        Ed25519: sts.bytes(),
-        Eth: sts.bytes(),
-        Sr25519: sts.bytes(),
-    }
-})
-
-export const PayoutRewardsPayload: sts.Type<PayoutRewardsPayload> = sts.struct(() => {
-    return {
-        payoutValidatorStash: AccountId32,
-        era: sts.number(),
-        validatorId: AccountId32,
-        public: MultiSigner,
-        signerAccount: AccountId32,
-    }
-})
-
-export interface PayoutRewardsPayload {
-    payoutValidatorStash: AccountId32
-    era: number
-    validatorId: AccountId32
-    public: MultiSigner
-    signerAccount: AccountId32
-}
 
 export const FinalizeAuctionPayload: sts.Type<FinalizeAuctionPayload> = sts.struct(() => {
     return {
@@ -28698,13 +28705,6 @@ export const FreezeType: sts.Type<FreezeType> = sts.closedEnum(() => {
             tokenId: sts.bigint(),
             accountId: AccountId32,
         }),
-    }
-})
-
-export const UnexpectedKind: sts.Type<UnexpectedKind> = sts.closedEnum(() => {
-    return {
-        BalanceUpdated: sts.unit(),
-        FailedToMutateAccount: sts.unit(),
     }
 })
 
