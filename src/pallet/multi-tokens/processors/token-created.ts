@@ -23,6 +23,7 @@ import { safeString } from '~/util/tools'
 import { Token as StoredToken } from '~/pallet/multi-tokens/storage/types'
 import { calls } from '~/type'
 import { selectTokenCreationCall, unwrapFlexibleMintParams } from '~/pallet/multi-tokens/processors/token-created-call'
+import { QueueUtils } from '~/queue'
 
 type TokenParams = DefaultMintParams | FlexibleMintParams | StoredToken
 
@@ -69,6 +70,9 @@ async function tokenFromCall(
 ): Promise<Token> {
     const collection = await ctx.store.findOne<Collection>(Collection, {
         where: { id: event.collectionId.toString() },
+        relations: {
+            attributes: true,
+        },
     })
 
     if (!collection) {
@@ -173,6 +177,8 @@ async function tokenFromCall(
         }
     }
 
+    await checkMetadataInheritance(token)
+
     return token
 }
 
@@ -183,6 +189,20 @@ function unwrapComplexMintCall(item: EventItem): { call: unknown } | undefined {
         return { call: mappings.matrixUtility.calls.batch(item.call) }
     }
     return undefined
+}
+
+async function checkMetadataInheritance(token: Token): Promise<void> {
+    const uriAttribute = token.collection.attributes.find((attribute) => attribute.key === 'uri')
+
+    if (!uriAttribute?.value.includes('{id}')) return
+
+    await QueueUtils.dispatchComputeMetadata({
+        id: token.id,
+        type: 'token',
+        force: true,
+        traits: true,
+        delay: 10000,
+    })
 }
 
 export async function tokenCreated(
