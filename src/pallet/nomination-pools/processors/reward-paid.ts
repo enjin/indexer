@@ -14,7 +14,12 @@ import { nominationPools } from '~/type/events'
 import { computeEraApy } from '~/pallet/nomination-pools/processors/era-rewards-processed'
 import { RewardPaid } from '~/pallet/nomination-pools/events/types'
 import { QueueUtils } from '~/queue'
-import { memberEraReward, netReinvested, poolRateChange } from '~/pallet/nomination-pools/processors/reward-math'
+import {
+    memberEraReward,
+    mergeCommissionPayment,
+    netReinvested,
+    poolRateChange,
+} from '~/pallet/nomination-pools/processors/reward-math'
 
 async function getMembersBalance(block: Block, poolId: number): Promise<Record<string, bigint>> {
     type StorageEntry = [k: [bigint, bigint, string], v: TokenAccount | undefined]
@@ -61,24 +66,11 @@ async function getReward(
 
     if (existReward) {
         existReward.bonus = existReward.bonus ?? 0n
-        const newCommission = eventData.commission
-            ? new CommissionPayment({
-                  beneficiary: eventData.commission.beneficiary,
-                  amount: eventData.commission.amount,
-              })
-            : null
-
-        if (existReward.commission) {
-            existReward.commission = new CommissionPayment({
-                beneficiary: newCommission?.beneficiary,
-                amount: existReward.commission.amount + (newCommission?.amount ?? 0n),
-            })
-        } else {
-            existReward.commission = newCommission
-        }
+        const mergedCommission = mergeCommissionPayment(existReward.commission, eventData.commission)
+        existReward.commission = mergedCommission ? new CommissionPayment(mergedCommission) : null
         // Only the amount that actually compounds into the pool (gross reward minus the
         // operator commission) is reinvested. See reward-math.ts for on-chain semantics.
-        existReward.reinvested += netReinvested(eventData.reward, newCommission?.amount ?? 0n)
+        existReward.reinvested += netReinvested(eventData.reward, eventData.commission?.amount ?? 0n)
         existReward.rate = pool.rate
 
         await ctx.store.save(existReward)

@@ -1,7 +1,12 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 
-import { memberEraReward, netReinvested, poolRateChange } from '~/pallet/nomination-pools/processors/reward-math'
+import {
+    memberEraReward,
+    mergeCommissionPayment,
+    netReinvested,
+    poolRateChange,
+} from '~/pallet/nomination-pools/processors/reward-math'
 
 const commission = 14_077_200_000_000_000_000n
 const reward = 201_003_300_000_000_000_000n
@@ -33,6 +38,20 @@ void test('ignores the current reward when multiple validators pay the same pool
     ])
 
     assert.equal(rateChange, 821_462_320_216_806n)
+})
+
+void test('preserves the commission beneficiary when a later validator payout has no commission', () => {
+    const existing = {
+        beneficiary: '0xbeneficiary',
+        amount: 10n,
+    }
+
+    assert.deepEqual(mergeCommissionPayment(existing, undefined), existing)
+    assert.deepEqual(mergeCommissionPayment(undefined, existing), existing)
+    assert.deepEqual(mergeCommissionPayment(existing, { beneficiary: '0xnew', amount: 5n }), {
+        beneficiary: '0xnew',
+        amount: 15n,
+    })
 })
 
 void test('restores pool 2 member rewards when reinvested is non-zero but the stored rate change was zero', () => {

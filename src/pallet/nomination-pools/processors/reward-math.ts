@@ -21,6 +21,31 @@ type RateSnapshot = {
     rate: bigint
 }
 
+type CommissionSnapshot = {
+    beneficiary: string
+    amount: bigint
+}
+
+/**
+ * Merge commission from another validator payout into the era total.
+ *
+ * Not every RewardPaid event carries commission. In that case, keep the existing
+ * beneficiary instead of constructing an invalid CommissionPayment with an undefined
+ * required field.
+ */
+export function mergeCommissionPayment(
+    existing: CommissionSnapshot | null | undefined,
+    incoming: CommissionSnapshot | null | undefined
+): CommissionSnapshot | undefined {
+    if (!existing) return incoming ? { beneficiary: incoming.beneficiary, amount: incoming.amount } : undefined
+    if (!incoming) return { beneficiary: existing.beneficiary, amount: existing.amount }
+
+    return {
+        beneficiary: incoming.beneficiary,
+        amount: existing.amount + incoming.amount,
+    }
+}
+
 /**
  * Net amount reinvested into the pool for a single `RewardPaid` event.
  * This is what compounds into the pool rate: gross reward minus the operator commission.
