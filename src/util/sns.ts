@@ -51,13 +51,12 @@ export class Sns {
         return Sns.instance
     }
 
-    public async send(message: { id: string; name: string; body: Record<string, unknown> }): Promise<void> {
+    public async send(message: SnsEvent, blockNumber: number): Promise<void> {
         if (!Sns.client) {
             return
         }
 
-        const messageBlockHeight = parseInt(message.id.split('-')[0], 10)
-        if (messageBlockHeight < DataService.getInstance().lastBlockNumber) {
+        if (blockNumber < DataService.getInstance().lastBlockNumber) {
             return
         }
 
@@ -71,6 +70,7 @@ export class Sns {
         const attr: Record<string, MessageAttributeValue> = {
             EventId: { DataType: 'String', StringValue: message.id },
             EventName: { DataType: 'String', StringValue: message.name },
+            BlockNumber: { DataType: 'Number', StringValue: blockNumber.toString() },
         }
 
         if (message.body.extrinsic) {

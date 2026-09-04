@@ -136,7 +136,7 @@ async function bootstrap() {
                     if (snsEvents.length > 0) {
                         for (const snsEvent of snsEvents) {
                             if (await isValidEvent(ctx, snsEvent.id)) {
-                                await Sns.getInstance().send(snsEvent)
+                                await Sns.getInstance().send(snsEvent, block.header.height)
                             }
                         }
                         snsEventsCache = clearExpiredCache(snsEventsCache)
