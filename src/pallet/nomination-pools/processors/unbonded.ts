@@ -64,18 +64,21 @@ export async function unbonded(ctx: CommonContext, block: Block, item: EventItem
     }
 
     if (!poolMember.isStash && bondedMembers.length === 0 && pool.isDestroying()) {
-        await Sns.getInstance().send({
-            id: `${item.id}-all-members-unbonded`,
-            name: CustomStakingEvent.AllMembersUnbond,
-            body: {
-                pool: pool.id,
-                extrinsic: item.extrinsic.id,
-                name: pool.name,
-                tokenId: `2-${pool.tokenId}`,
-                state: pool.state,
-                owner: owner?.account.id,
+        await Sns.getInstance().send(
+            {
+                id: `${item.id}-all-members-unbonded`,
+                name: CustomStakingEvent.AllMembersUnbond,
+                body: {
+                    pool: pool.id,
+                    extrinsic: item.extrinsic.id,
+                    name: pool.name,
+                    tokenId: `2-${pool.tokenId}`,
+                    state: pool.state,
+                    owner: owner?.account.id,
+                },
             },
-        })
+            block.height
+        )
     }
 
     return [mappings.nominationPools.events.unbondedEventModel(item, data, pool.tokenId), snsEvent]
