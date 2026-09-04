@@ -1,6 +1,5 @@
 import { TypeormDatabase } from '@subsquid/typeorm-store'
 import _ from 'lodash'
-import * as Sentry from '@sentry/node'
 import { IsNull } from 'typeorm'
 import config from '~/util/config'
 import { AccountTokenEvent, ChainInfo, Event, Extrinsic, Fee, FuelTank, FuelTankData, Listing } from '~/model'
@@ -24,16 +23,13 @@ import { getSnsEventHash, isRelay } from '~/util/tools'
 import { readableDispatchError } from '~/util/dispatch-error'
 import { isSnsEvent, Sns, SnsEvent } from '~/util/sns'
 import { queueMissingBlocks } from '~/migration/queue-missing-blocks'
+import { initializeCrashReporting, reportCrash } from '~/util/crash-report'
 
 const logger = new Logger('sqd:processor', config.logLevel)
 
-async function bootstrap() {
-    Sentry.init({
-        dsn: config.sentryDsn,
-        ignoreErrors: ['API/INIT: RPC methods not decorated:', 'REGISTRY: Unknown signed extensions'],
-        tracesSampleRate: 0.0,
-    })
+initializeCrashReporting('processor')
 
+async function bootstrap() {
     const dataService = DataService.getInstance()
     await dataService.initialize()
 
@@ -174,11 +170,24 @@ async function bootstrap() {
                     await linkExtrinsicsToChainBlock(ctx, lastBlock)
                 }
             } catch (error) {
-                await QueueUtils.resumeQueue(QueuesEnum.COLLECTIONS)
-                await QueueUtils.resumeQueue(QueuesEnum.METADATA)
+                const queueRecovery = await Promise.allSettled([
+                    QueueUtils.resumeQueue(QueuesEnum.COLLECTIONS),
+                    QueueUtils.resumeQueue(QueuesEnum.METADATA),
+                ])
 
-                logger.fatal(error)
-                Sentry.captureException(error)
+                await reportCrash(error, logger, 'processor', 'processor.batch', {
+                    fromBlock: ctx.blocks[0]?.header.height,
+                    queueRecovery: queueRecovery.map((result) =>
+                        result.status === 'fulfilled'
+                            ? { status: result.status }
+                            : {
+                                  reason:
+                                      result.reason instanceof Error ? result.reason.message : String(result.reason),
+                                  status: result.status,
+                              }
+                    ),
+                    toBlock: ctx.blocks[ctx.blocks.length - 1]?.header.height,
+                })
 
                 throw error
             }
@@ -382,7 +391,7 @@ function getParticipants(args: Json, _events: EventItem[], signer: string): stri
     return Array.from(accounts)
 }
 
-bootstrap().catch((error: unknown) => {
-    logger.fatal(error)
-    Sentry.captureException(error)
+bootstrap().catch(async (error: unknown) => {
+    await reportCrash(error, logger, 'processor', 'processor.bootstrap')
+    process.exitCode = 1
 })
