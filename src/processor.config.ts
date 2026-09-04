@@ -74,7 +74,6 @@ const ignoreEvents: string[] = [
     events.balances.released.name,
     events.balances.held.name,
     events.balances.mintedCredit.name,
-    
 ]
 
 const eventItems: string[] = [
