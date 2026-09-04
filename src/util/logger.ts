@@ -118,6 +118,10 @@ export class Logger {
         }
     }
 
+    async flush(): Promise<void> {
+        await this.logtail?.flush()
+    }
+
     private formatLogtailMessage(msg: unknown): string | Error {
         switch (typeof msg) {
             case 'string':

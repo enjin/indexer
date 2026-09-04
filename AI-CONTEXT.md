@@ -27,6 +27,8 @@ The GraphQL container also starts the Prometheus metrics process and decoder ser
 
 The decoder service can dry-run batches against any supported network. It lazily reuses one RPC connection per requested network, preferring the deployment's configured `CHAIN_ENDPOINT` for its own `CHAIN_NAME` and the canonical public archive endpoint for other networks.
 
+Processor batch failures emit a structured `process_crash` report with block, pod, runtime, and memory context and flush both Logtail and Sentry before Subsquid terminates the process. `start.sh` also reports unexpected processor and worker exit codes after the child process stops; exit code 137 is labeled as SIGKILL and a possible OOM, but Kubernetes pod status remains the authoritative source for `OOMKilled`.
+
 ## Main processing flow
 
 ```text
