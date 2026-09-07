@@ -4,8 +4,14 @@ import * as mappings from '~/pallet/index'
 import { EventHandlerResult } from '~/processor.handler'
 import { QueueUtils } from '~/queue'
 
-export async function tokenGroupAdded(ctx: CommonContext, block: Block, item: EventItem): Promise<EventHandlerResult> {
+export async function tokenGroupAdded(
+    ctx: CommonContext,
+    block: Block,
+    item: EventItem,
+    skipSave: boolean
+): Promise<EventHandlerResult> {
     const data = mappings.multiTokens.events.tokenGroupAdded(item)
+    if (skipSave) return mappings.multiTokens.events.tokenGroupAddedEventModel(item, data)
 
     const [tokenGroup, token] = await Promise.all([
         ctx.store.findOne(TokenGroup, {

@@ -8,9 +8,11 @@ import { QueueUtils } from '~/queue'
 export async function tokenGroupUpdated(
     ctx: CommonContext,
     block: Block,
-    item: EventItem
+    item: EventItem,
+    skipSave: boolean
 ): Promise<EventHandlerResult> {
     const data = mappings.multiTokens.events.tokenGroupUpdated(item)
+    if (skipSave) return mappings.multiTokens.events.tokenGroupUpdatedEventModel(item, data)
 
     const tokenGroupIds = data.tokenGroups.map((tokenGroupId) => tokenGroupId.toString())
 

@@ -5,12 +5,15 @@ import {
     FreezeState,
     RoyaltyBeneficiary,
     Token,
+    TokenGroup,
+    TokenGroupToken,
     TokenBehaviorHasRoyalty,
     TokenBehaviorIsCurrency,
     TokenBehaviorType,
 } from '~/model'
 import { isNonFungible } from '~/util/helpers'
 import { BATCH_SIZE, getCapType, getFreezeState, isTokenFrozen } from '~/synchronize/common'
+import { In } from 'typeorm'
 
 export async function tokens(ctx: CommonContext, block: Block) {
     ctx.log.info('Syncing tokens...')
@@ -19,6 +22,7 @@ export async function tokens(ctx: CommonContext, block: Block) {
 
     for await (const tokenPairs of iterable) {
         const tokens = []
+        const memberships: { token: Token; groupIds: bigint[] }[] = []
 
         for (const [key, data] of tokenPairs) {
             if (!data) continue
@@ -84,10 +88,33 @@ export async function tokens(ctx: CommonContext, block: Block) {
 
             token.nonFungible = isNonFungible(token)
             tokens.push(token)
+            memberships.push({ token, groupIds: data.groups ?? [] })
             // TODO: Should we process the metadata here?
         }
 
         await ctx.store.insert(tokens)
+
+        const groupIds = [...new Set(memberships.flatMap(({ groupIds }) => groupIds.map(String)))]
+        if (groupIds.length !== 0) {
+            const groups = await ctx.store.find(TokenGroup, { where: { id: In(groupIds) } })
+            const groupMap = new Map(groups.map((group) => [group.id, group]))
+            const tokenGroupTokens = memberships.flatMap(({ token, groupIds }) =>
+                groupIds.flatMap((groupId, position) => {
+                    const tokenGroup = groupMap.get(groupId.toString())
+                    if (!tokenGroup) return []
+
+                    return [
+                        new TokenGroupToken({
+                            id: `${token.tokenId}-${groupId}`,
+                            token,
+                            tokenGroup,
+                            position,
+                        }),
+                    ]
+                })
+            )
+            await ctx.store.insert(tokenGroupTokens)
+        }
     }
 
     ctx.log.info(`Successfully imported ${await ctx.store.count(Token)} tokens`)

@@ -97,14 +97,16 @@ export async function eventHandler(
                 p.multiTokens.processors.claimTokensCompleted(ctx, block, item)
             )
             .with(multiTokens.tokenGroupCreated.name, () =>
-                p.multiTokens.processors.tokenGroupCreated(ctx, block, item)
+                p.multiTokens.processors.tokenGroupCreated(ctx, block, item, skipSave)
             )
-            .with(multiTokens.tokenGroupAdded.name, () => p.multiTokens.processors.tokenGroupAdded(ctx, block, item))
+            .with(multiTokens.tokenGroupAdded.name, () =>
+                p.multiTokens.processors.tokenGroupAdded(ctx, block, item, skipSave)
+            )
             .with(multiTokens.tokenGroupRemoved.name, () =>
-                p.multiTokens.processors.tokenGroupRemoved(ctx, block, item)
+                p.multiTokens.processors.tokenGroupRemoved(ctx, block, item, skipSave)
             )
             .with(multiTokens.tokenGroupDestroyed.name, () =>
-                p.multiTokens.processors.tokenGroupDestroyed(ctx, block, item)
+                p.multiTokens.processors.tokenGroupDestroyed(ctx, block, item, skipSave)
             )
             .with(multiTokens.tokenGroupAttributeSet.name, () =>
                 p.multiTokens.processors.tokenGroupAttributeSet(ctx, block, item, skipSave)
@@ -113,7 +115,7 @@ export async function eventHandler(
                 p.multiTokens.processors.tokenGroupAttributeRemoved(ctx, block, item, skipSave)
             )
             .with(multiTokens.tokenGroupsUpdated.name, () =>
-                p.multiTokens.processors.tokenGroupUpdated(ctx, block, item)
+                p.multiTokens.processors.tokenGroupUpdated(ctx, block, item, skipSave)
             )
             .with(balances.transfer.name, () => {
                 p.balances.processors.save(item)

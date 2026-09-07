@@ -53,10 +53,12 @@ export async function syncState(ctx: CommonContext): Promise<void> {
 
     console.time('syncHeaderChainState')
     await multiTokens.collections(ctx, block)
+    await multiTokens.tokenGroups(ctx, block)
     await multiTokens.tokens(ctx, block)
     await multiTokens.collectionAccounts(ctx, block)
     await multiTokens.tokenAccounts(ctx, block)
     await multiTokens.attributes(ctx, block)
+    await multiTokens.tokenGroupAttributes(ctx, block)
     await system.balances(ctx, block)
     console.timeEnd('syncHeaderChainState')
 

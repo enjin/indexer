@@ -4,4 +4,5 @@ export type Attribute = {
     value: Bytes
     deposit: bigint
     depositor?: AccountId32
+    isFrozen: boolean
 }

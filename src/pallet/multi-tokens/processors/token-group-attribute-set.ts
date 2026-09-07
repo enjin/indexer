@@ -6,6 +6,7 @@ import { safeString } from '~/util/tools'
 import { EventHandlerResult } from '~/processor.handler'
 import { QueueUtils } from '~/queue'
 import { throwFatalError } from '~/util/errors'
+import { readAttributeStorage } from '~/pallet/multi-tokens/processors/common/attribute-storage'
 
 export async function tokenGroupAttributeSet(
     ctx: CommonContext,
@@ -21,7 +22,7 @@ export async function tokenGroupAttributeSet(
     const value = safeString(hexToString(data.value))
     const attributeId = `${data.tokenGroupId.toString()}-${data.key}-tg`
 
-    const [attribute, tokenGroup] = await Promise.all([
+    const [attribute, tokenGroup, storageAttribute] = await Promise.all([
         ctx.store.findOne<Attribute>(Attribute, {
             where: { id: attributeId },
         }),
@@ -30,6 +31,11 @@ export async function tokenGroupAttributeSet(
             relations: {
                 collection: true,
             },
+        }),
+        readAttributeStorage(block, {
+            kind: 'tokenGroupAttribute',
+            tokenGroupId: data.tokenGroupId,
+            key: data.key,
         }),
     ])
 
@@ -41,6 +47,7 @@ export async function tokenGroupAttributeSet(
 
     if (attribute) {
         attribute.value = value
+        attribute.isFrozen = storageAttribute?.isFrozen ?? false
         attribute.updatedAt = new Date(block.timestamp ?? 0)
         await ctx.store.save(attribute)
     } else {
@@ -49,6 +56,7 @@ export async function tokenGroupAttributeSet(
             key,
             value,
             deposit: 0n, // TODO: Change fixed for now
+            isFrozen: storageAttribute?.isFrozen ?? false,
             tokenGroup: tokenGroup,
             createdAt: new Date(block.timestamp ?? 0),
             updatedAt: new Date(block.timestamp ?? 0),
