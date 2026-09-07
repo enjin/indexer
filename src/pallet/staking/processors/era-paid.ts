@@ -35,12 +35,12 @@ export async function eraPaid(ctx: CommonContext, block: Block, item: EventItem)
 
     await ctx.store.save(newEra)
     await QueueUtils.dispatchComputeValidators()
-    await dispatchStakePoolsEvents(ctx, newEra.index, item)
+    await dispatchStakePoolsEvents(ctx, block.height, newEra.index, item)
 
     return mappings.staking.events.eraPaidEventModel(item, event)
 }
 
-async function dispatchStakePoolsEvents(ctx: CommonContext, eraIndex: number, item: EventItem) {
+async function dispatchStakePoolsEvents(ctx: CommonContext, blockNumber: number, eraIndex: number, item: EventItem) {
     const pools = await ctx.store.find(NominationPool, {
         where: {
             state: Not(PoolState.Destroyed),
@@ -70,20 +70,23 @@ async function dispatchStakePoolsEvents(ctx: CommonContext, eraIndex: number, it
                         return acc
                     }, 0n)
 
-                    await Sns.getInstance().send({
-                        id: `${pool.id}-${eraIndex}`,
-                        name: CustomStakingEvent.MemberUnbonded,
-                        body: {
-                            pool: pool.id,
-                            member: member.account.id,
-                            balance: totalUnbondingBalance,
-                            era: eraIndex,
-                            extrinsic: item.extrinsic?.id,
-                            name: pool.name,
-                            tokenId: `2-${pool.tokenId}`,
-                            state: pool.state,
+                    await Sns.getInstance().send(
+                        {
+                            id: `${pool.id}-${eraIndex}`,
+                            name: CustomStakingEvent.MemberUnbonded,
+                            body: {
+                                pool: pool.id,
+                                member: member.account.id,
+                                balance: totalUnbondingBalance,
+                                era: eraIndex,
+                                extrinsic: item.extrinsic?.id,
+                                name: pool.name,
+                                tokenId: `2-${pool.tokenId}`,
+                                state: pool.state,
+                            },
                         },
-                    })
+                        blockNumber
+                    )
                 }
             }
         } else {
@@ -116,19 +119,22 @@ async function dispatchStakePoolsEvents(ctx: CommonContext, eraIndex: number, it
                     ? CustomStakingEvent.DepositUnbonded
                     : CustomStakingEvent.AllMembersUnbonded
 
-                await Sns.getInstance().send({
-                    id: `${pool.id}-${eraIndex}`,
-                    name: eventName,
-                    body: {
-                        pool: pool.id,
-                        era: eraIndex,
-                        extrinsic: item.extrinsic?.id,
-                        name: pool.name,
-                        tokenId: `2-${pool.tokenId}`,
-                        state: pool.state,
-                        owner: owner.account.id,
+                await Sns.getInstance().send(
+                    {
+                        id: `${pool.id}-${eraIndex}`,
+                        name: eventName,
+                        body: {
+                            pool: pool.id,
+                            era: eraIndex,
+                            extrinsic: item.extrinsic?.id,
+                            name: pool.name,
+                            tokenId: `2-${pool.tokenId}`,
+                            state: pool.state,
+                            owner: owner.account.id,
+                        },
                     },
-                })
+                    blockNumber
+                )
             }
         }
     }

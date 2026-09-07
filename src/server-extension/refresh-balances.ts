@@ -24,7 +24,7 @@ export class RefreshBalancesResolver {
             return id
         })
 
-        QueueUtils.dispatchFetchBalances(publicKeys)
+        await Promise.all(publicKeys.map((publicKey) => QueueUtils.dispatchFetchAccountBalance(publicKey)))
 
         return true
     }

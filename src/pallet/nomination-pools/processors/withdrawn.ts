@@ -94,19 +94,22 @@ export async function withdrawn(ctx: CommonContext, block: Block, item: EventIte
     }
 
     if (!isStashWithdrawing && unbondingMembers.length === 0 && pool.isDestroying()) {
-        await Sns.getInstance().send({
-            id: `${item.id}-all-members-withdrawn`,
-            name: CustomStakingEvent.AllMembersWithdrawn,
-            body: {
-                pool: pool.id,
-                extrinsic: item.extrinsic.id,
-                hash: item.extrinsic.hash,
-                name: pool.name,
-                tokenId: `2-${pool.tokenId}`,
-                state: pool.state,
-                owner: owner?.account.id,
+        await Sns.getInstance().send(
+            {
+                id: `${item.id}-all-members-withdrawn`,
+                name: CustomStakingEvent.AllMembersWithdrawn,
+                body: {
+                    pool: pool.id,
+                    extrinsic: item.extrinsic.id,
+                    hash: item.extrinsic.hash,
+                    name: pool.name,
+                    tokenId: `2-${pool.tokenId}`,
+                    state: pool.state,
+                    owner: owner?.account.id,
+                },
             },
-        })
+            block.height
+        )
     }
 
     return [mappings.nominationPools.events.withdrawnEventModel(item, data, pool.tokenId), snsEvent]
