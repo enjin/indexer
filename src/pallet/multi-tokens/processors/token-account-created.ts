@@ -1,4 +1,3 @@
-import { throwFatalError } from '~/util/errors'
 import { Collection, CollectionAccount, NominationPool, PoolMember, Token, TokenAccount } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
@@ -15,26 +14,14 @@ export async function tokenAccountCreated(
 ): Promise<EventHandlerResult> {
     const data = mappings.multiTokens.events.tokenAccountCreated(item)
 
-    if (skipSave && data.collectionId.toString() != '1') {
-        const tokenAccount = await ctx.store.findOne(TokenAccount, {
-            where: { id: `${data.accountId}-${data.collectionId}-${data.tokenId}` },
-        })
-
-        if (tokenAccount) {
-            tokenAccount.createdAt = new Date(block.timestamp ?? 0)
-            tokenAccount.updatedAt = new Date(block.timestamp ?? 0)
-            await ctx.store.save(tokenAccount)
-        }
-
-        return mappings.multiTokens.events.tokenAccountCreatedEventModel(item, data)
-    }
+    if (skipSave) return mappings.multiTokens.events.tokenAccountCreatedEventModel(item, data)
 
     const collection = new Collection({ id: data.collectionId.toString() })
     const token = await ctx.store.findOneBy(Token, { id: `${data.collectionId}-${data.tokenId}` })
 
     if (!token) {
-        throwFatalError(`[TokenAccountCreated] We have not found token ${data.collectionId}-${data.tokenId}.`)
-        return undefined
+        ctx.log.warn(`[TokenAccountCreated] Token ${data.collectionId}-${data.tokenId} was already absent`)
+        return mappings.multiTokens.events.tokenAccountCreatedEventModel(item, data)
     }
 
     const account = await getOrCreateAccount(ctx, data.accountId)

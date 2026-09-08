@@ -8,7 +8,13 @@ export async function computeTokenBestListing(_job: Job, id: string): Promise<vo
 
     await _job.updateProgress(20)
 
-    const token: Token = await ctx.store.findOneByOrFail<Token>(Token, { id })
+    const token = await ctx.store.findOneBy<Token>(Token, { id })
+
+    if (!token) {
+        await _job.log(`Token ${id} not found`)
+        await _job.updateProgress(100)
+        return
+    }
 
     await _job.updateProgress(40)
 

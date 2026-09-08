@@ -78,6 +78,10 @@ export class Token {
     creationSupply!: bigint | undefined | null
 
     @Index_()
+    @BigIntColumn_({nullable: true})
+    ephemeralExpiration!: bigint | undefined | null
+
+    @Index_()
     @ManyToOne_(() => Collection, {nullable: true})
     collection!: Relation_<Collection>
 

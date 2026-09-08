@@ -843,6 +843,8 @@ export interface DefaultMintParams_CreateToken {
     anyoneCanInfuse?: boolean // Added on v1030
     metadata?: DefaultTokenMetadata_Current // Added on v1030
     privilegedParams?: PrivilegedCreateTokenParams // Added on v1030
+    ephemeralExpiration?: number // Added on matrixV1040
+    isLendable?: boolean // Added on matrixV1040
 }
 
 export interface DefaultMintParams_Mint {
@@ -869,6 +871,8 @@ type CreateOrMintParams = {
     anyoneCanInfuse?: boolean // Added on v1030
     metadata?: DefaultTokenMetadata_Current // Added on v1030
     foreignParams?: ForeignTokenMetadata // Removed on v1030
+    ephemeralExpiration?: number // Added on matrixV1040
+    isLendable?: boolean // Added on matrixV1040
 }
 
 type FlexibleMintParams_CreateOrMint = {

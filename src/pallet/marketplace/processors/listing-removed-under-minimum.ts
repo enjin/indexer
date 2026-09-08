@@ -9,7 +9,7 @@ export async function listingRemovedUnderMinimum(
     ctx: CommonContext,
     block: Block,
     item: EventItem
-): Promise<[EventModel, AccountTokenEvent, SnsEvent | undefined] | undefined> {
+): Promise<[EventModel, AccountTokenEvent | undefined, SnsEvent | undefined] | undefined> {
     const event = mappings.marketplace.events.listingRemovedUnderMinimum(item)
     const listingId = event.listingId.substring(2)
 
@@ -25,7 +25,10 @@ export async function listingRemovedUnderMinimum(
             },
         },
     })
-    if (!listing) return undefined
+    if (!listing) {
+        const [eventModel] = mappings.marketplace.events.listingRemovedUnderMinimumEventModel(item, event.listingId)
+        return [eventModel, undefined, undefined]
+    }
 
     const takeAssetId = listing.takeAssetId
     const makeAssetId = listing.makeAssetId
@@ -73,13 +76,12 @@ export async function listingRemovedUnderMinimum(
     await QueueUtils.dispatchComputeStats(makeAssetId.collection.id)
 
     return [
-        ...mappings.marketplace.events.listingRemovedUnderMinimumEventModel(
-            item,
+        ...mappings.marketplace.events.listingRemovedUnderMinimumEventModel(item, event.listingId, {
             listing,
-            seller,
-            isOffer ? takeAssetId.collection : makeAssetId.collection,
-            isOffer ? takeAssetId : makeAssetId
-        ),
+            account: seller,
+            collection: isOffer ? takeAssetId.collection : makeAssetId.collection,
+            token: isOffer ? takeAssetId : makeAssetId,
+        }),
         item.extrinsic ? snsEvent : undefined,
     ]
 }

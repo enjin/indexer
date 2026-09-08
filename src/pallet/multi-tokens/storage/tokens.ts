@@ -3,6 +3,7 @@ import { UnsupportedStorageError } from '~/util/errors'
 import { multiTokens } from '~/type/storage'
 import { match } from 'ts-pattern'
 import { Token } from '~/pallet/multi-tokens/storage/types'
+import { getMixedToken, getMixedTokenPairs, normalizeToken, normalizeTokenPairs } from './token-values'
 
 export async function tokens(
     block: Block,
@@ -17,14 +18,26 @@ export async function tokens(
     params?: { collectionId?: bigint; tokenId?: bigint; batchSize?: number }
 ): Promise<Token | AsyncIterable<[k: [bigint, bigint], v: Token | undefined][]> | undefined> {
     const getTokens = async (version: (typeof multiTokens.tokens)[keyof typeof multiTokens.tokens]) => {
-        if (params?.collectionId && params.tokenId !== undefined) {
-            return version.get(block, params.collectionId, params.tokenId)
+        if (params?.collectionId !== undefined && params.tokenId !== undefined) {
+            return normalizeToken(await version.get(block, params.collectionId, params.tokenId))
         }
-        return version.getPairsPaged(params?.batchSize ?? 1000, block)
+        return normalizeTokenPairs(version.getPairsPaged(params?.batchSize ?? 1000, block))
     }
 
     return match(block)
         .returnType<Promise<Token | AsyncIterable<[k: [bigint, bigint], v: Token | undefined][]> | undefined>>()
+        .when(
+            () => multiTokens.tokens.matrixV1040.is(block),
+            () => {
+                if (params?.collectionId !== undefined && params.tokenId !== undefined) {
+                    return getMixedToken(block, [params.collectionId, params.tokenId])
+                }
+
+                return Promise.resolve(
+                    getMixedTokenPairs(block, multiTokens.tokens.matrixV1040, params?.batchSize ?? 1000)
+                )
+            }
+        )
         .when(
             () => multiTokens.tokens.matrixEnjinV1031.is(block),
             () => getTokens(multiTokens.tokens.matrixEnjinV1031)

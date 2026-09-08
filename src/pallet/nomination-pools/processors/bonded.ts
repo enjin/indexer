@@ -46,6 +46,7 @@ export async function bonded(ctx: CommonContext, block: Block, item: EventItem):
                 accountDepositCount: 0,
                 infusion: 0n,
                 anyoneCanInfuse: false,
+                ephemeralExpiration: null,
                 minimumBalance: 1n,
                 unitPrice: null,
                 mintDeposit: 0n,
