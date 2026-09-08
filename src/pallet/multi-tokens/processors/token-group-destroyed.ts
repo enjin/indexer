@@ -1,5 +1,5 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { Attribute, TokenGroup, TokenGroupToken } from '~/model'
+import { Attribute, TokenGroup } from '~/model'
 import * as mappings from '~/pallet/index'
 import { EventHandlerResult } from '~/processor.handler'
 import { QueueUtils } from '~/queue'
@@ -28,10 +28,8 @@ export async function tokenGroupDestroyed(
         return mappings.multiTokens.events.tokenGroupDestroyedEventModel(item, data)
     }
 
-    const [attributes, tokenGroupTokens] = await Promise.all([
-        ctx.store.find(Attribute, { where: { tokenGroup: { id: tokenGroup.id } } }),
-        ctx.store.find(TokenGroupToken, { where: { tokenGroup: { id: tokenGroup.id } } }),
-    ])
+    const attributes = await ctx.store.find(Attribute, { where: { tokenGroup: { id: tokenGroup.id } } })
+    const tokenGroupTokens = tokenGroup.tokenGroupTokens
 
     const tokenIds = tokenGroupTokens.map((tokenGroupToken) => tokenGroupToken.token.id)
 

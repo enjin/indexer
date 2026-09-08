@@ -310,15 +310,18 @@ void test('token group destruction skips snapshot writes and removes children be
     await tokenGroupDestroyed(skipContext, block, item, true)
     assert.equal(calls, 0)
 
-    const group = new TokenGroup({ id: '9' })
-    const groupAttributes = [new Attribute({ id: '9-0x01-tg' })]
     const token = new Token({ id: '7-0' })
     const memberships = [new TokenGroupToken({ id: '9-7-0', token })]
+    const group = new TokenGroup({ id: '9', tokenGroupTokens: memberships })
+    const groupAttributes = [new Attribute({ id: '9-0x01-tg' })]
     const removed: unknown[] = []
     const ctx = {
         store: {
             findOne: () => Promise.resolve(group),
-            find: (entity: unknown) => Promise.resolve(entity === Attribute ? groupAttributes : memberships),
+            find: (entity: unknown) => {
+                assert.equal(entity, Attribute, 'memberships should be reused from the loaded token group relation')
+                return Promise.resolve(groupAttributes)
+            },
             remove: (entity: unknown) => Promise.resolve(removed.push(entity)),
         },
     } as never
