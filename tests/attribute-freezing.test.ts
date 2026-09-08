@@ -312,7 +312,8 @@ void test('token group destruction skips snapshot writes and removes children be
 
     const group = new TokenGroup({ id: '9' })
     const groupAttributes = [new Attribute({ id: '9-0x01-tg' })]
-    const memberships = [new TokenGroupToken({ id: '9-7-0' })]
+    const token = new Token({ id: '7-0' })
+    const memberships = [new TokenGroupToken({ id: '9-7-0', token })]
     const removed: unknown[] = []
     const ctx = {
         store: {
