@@ -7,6 +7,7 @@ import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
 import { safeString } from '~/util/tools'
 import { EventHandlerResult } from '~/processor.handler'
+import { readAttributeStorage } from '~/pallet/multi-tokens/processors/common/attribute-storage'
 
 export async function attributeSet(
     ctx: CommonContext,
@@ -23,14 +24,22 @@ export async function attributeSet(
     const id = data.tokenId !== undefined ? `${data.collectionId}-${data.tokenId}` : data.collectionId.toString()
     const attributeId = `${id}-${data.key}`
 
-    let [attribute, collection] = await Promise.all([
+    const [existingAttribute, existingCollection, storageAttribute] = await Promise.all([
         ctx.store.findOne<Attribute>(Attribute, {
             where: { id: attributeId },
         }),
         ctx.store.findOne<Collection>(Collection, {
             where: { id: data.collectionId.toString() },
         }),
+        readAttributeStorage(block, {
+            kind: 'attribute',
+            collectionId: data.collectionId,
+            tokenId: data.tokenId,
+            key: data.key,
+        }),
     ])
+    let attribute = existingAttribute
+    let collection = existingCollection
     if (!collection) {
         collection = new Collection({
             id: data.collectionId.toString(),
@@ -77,6 +86,7 @@ export async function attributeSet(
     }
     if (attribute) {
         attribute.value = value
+        attribute.isFrozen = storageAttribute?.isFrozen ?? false
         attribute.updatedAt = new Date(block.timestamp ?? 0)
         if (token) {
             if (!token.metadata) {
@@ -102,6 +112,7 @@ export async function attributeSet(
             key,
             value,
             deposit: 0n, // TODO: Change fixed for now
+            isFrozen: storageAttribute?.isFrozen ?? false,
             collection: token ? undefined : collection,
             token,
             createdAt: new Date(block.timestamp ?? 0),

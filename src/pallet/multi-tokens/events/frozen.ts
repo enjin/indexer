@@ -31,10 +31,25 @@ export function frozen(event: EventItem): Freeze {
 
 export function frozenEventModel(item: EventItem, data: Freeze): EventModel {
     let tokenId: null | string = null
+    let rawTokenId: bigint | undefined
+    let tokenGroupId: bigint | undefined
+    let attributeKey: string | undefined
+    let accountId: string | undefined
 
     if (data.freezeType.__kind === 'Token' || data.freezeType.__kind === 'TokenAccount') {
         tokenId = `${data.collectionId}-${data.freezeType.tokenId}`
+        rawTokenId = data.freezeType.tokenId
+    } else if (data.freezeType.__kind === 'Attribute') {
+        rawTokenId = data.freezeType.tokenId
+        attributeKey = data.freezeType.key
+        if (rawTokenId !== undefined) tokenId = `${data.collectionId}-${rawTokenId}`
+    } else if (data.freezeType.__kind === 'TokenGroupAttribute') {
+        tokenGroupId = data.freezeType.tokenGroupId
+        attributeKey = data.freezeType.key
     }
+
+    if (data.freezeType.__kind === 'CollectionAccount') accountId = data.freezeType.value
+    if (data.freezeType.__kind === 'TokenAccount') accountId = data.freezeType.accountId
 
     return new EventModel({
         id: item.id,
@@ -42,6 +57,13 @@ export function frozenEventModel(item: EventItem, data: Freeze): EventModel {
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         collectionId: data.collectionId.toString(),
         tokenId: tokenId,
-        data: new MultiTokensFrozen(),
+        data: new MultiTokensFrozen({
+            kind: data.freezeType.__kind,
+            collectionId: data.collectionId,
+            tokenId: rawTokenId,
+            tokenGroupId,
+            attributeKey,
+            targetAccount: accountId,
+        }),
     })
 }

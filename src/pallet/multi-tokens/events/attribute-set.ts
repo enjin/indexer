@@ -25,7 +25,7 @@ export function attributeSetEventModel(item: EventItem, data: AttributeSet): Eve
         name: MultiTokensAttributeSet.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         collectionId: data.collectionId.toString(),
-        tokenId: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
+        tokenId: data.tokenId !== undefined ? `${data.collectionId}-${data.tokenId}` : null,
         data: new MultiTokensAttributeSet({
             collectionId: data.collectionId,
             tokenId: data.tokenId,

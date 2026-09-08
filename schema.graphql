@@ -269,6 +269,12 @@ type MultiTokensCollectionTransferCancelled {
 
 type MultiTokensFrozen {
   extrinsic: Extrinsic
+  kind: String
+  collectionId: BigInt
+  tokenId: BigInt
+  tokenGroupId: BigInt
+  attributeKey: String
+  targetAccount: String
 }
 
 type MultiTokensMinted {
@@ -906,6 +912,7 @@ type Attribute @entity {
   key: String! @index
   value: String!
   deposit: BigInt!
+  isFrozen: Boolean!
 
   # Relations
   collection: Collection @index

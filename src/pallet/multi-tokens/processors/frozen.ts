@@ -1,5 +1,5 @@
 import { throwFatalError } from '~/util/errors'
-import { Collection, CollectionAccount, FreezeState, Token, TokenAccount, TransferPolicy } from '~/model'
+import { Attribute, Collection, CollectionAccount, FreezeState, Token, TokenAccount, TransferPolicy } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
@@ -7,6 +7,22 @@ import { match } from 'ts-pattern'
 import { QueueUtils } from '~/queue'
 import { isTokenFrozen } from '~/synchronize/common'
 import { EventHandlerResult } from '~/processor.handler'
+import { Freeze } from '~/pallet/multi-tokens/events/types'
+
+type AttributeFreezeType = Extract<Freeze['freezeType'], { __kind: 'Attribute' | 'TokenGroupAttribute' }>
+
+function frozenAttributeId(collectionId: bigint, freezeType: AttributeFreezeType): string {
+    switch (freezeType.__kind) {
+        case 'Attribute':
+            return `${freezeType.tokenId === undefined ? collectionId : `${collectionId}-${freezeType.tokenId}`}-${freezeType.key}`
+        case 'TokenGroupAttribute':
+            return `${freezeType.tokenGroupId}-${freezeType.key}-tg`
+        default: {
+            const exhaustive: never = freezeType
+            throw new Error(`Unhandled attribute freeze type: ${JSON.stringify(exhaustive)}`)
+        }
+    }
+}
 
 export async function frozen(
     ctx: CommonContext,
@@ -77,7 +93,7 @@ export async function frozen(
         token.isFrozen = isTokenFrozen(token.freezeState)
 
         await ctx.store.save(token)
-    } else {
+    } else if (event.freezeType.__kind === 'Collection') {
         const collection = await ctx.store.findOne<Collection>(Collection, {
             where: { id: event.collectionId.toString() },
         })
@@ -89,6 +105,18 @@ export async function frozen(
 
         collection.transferPolicy = new TransferPolicy({ isFrozen: true })
         await ctx.store.save(collection)
+    } else {
+        const attributeId = frozenAttributeId(event.collectionId, event.freezeType)
+        const attribute = await ctx.store.findOne<Attribute>(Attribute, { where: { id: attributeId } })
+
+        if (!attribute) {
+            throwFatalError(`[Frozen] We have not found attribute ${attributeId}`)
+            return [mappings.multiTokens.events.frozenEventModel(item, event), undefined]
+        }
+
+        attribute.isFrozen = true
+        attribute.updatedAt = new Date(block.timestamp ?? 0)
+        await ctx.store.save(attribute)
     }
 
     if (item.extrinsic) {
@@ -97,6 +125,7 @@ export async function frozen(
             .with({ __kind: 'CollectionAccount' }, (t) => ({ address: t.value, tokenId: null }))
             .with({ __kind: 'TokenAccount' }, (t) => ({ address: t.accountId, tokenId: t.tokenId }))
             .with({ __kind: 'Token' }, (t) => ({ address: null, tokenId: t.tokenId }))
+            .with({ __kind: 'Attribute' }, (t) => ({ address: null, tokenId: t.tokenId ?? null }))
             .otherwise(() => ({ address: null, tokenId: null }))
 
         snsEvent = {
@@ -107,7 +136,7 @@ export async function frozen(
                 address: address,
                 collectionId: event.collectionId.toString(),
                 tokenId: tokenId,
-                token: tokenId ? `${event.collectionId}-${tokenId}` : null,
+                token: tokenId !== null ? `${event.collectionId}-${tokenId}` : null,
                 extrinsic: item.extrinsic.id,
             },
         }

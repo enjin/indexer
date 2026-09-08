@@ -4,6 +4,12 @@ import { multiTokens } from '~/type/storage'
 import { match } from 'ts-pattern'
 import { Attribute } from '~/pallet/multi-tokens/storage/types'
 import { Bytes } from '~/pallet/common/types'
+import {
+    getMixedAttribute,
+    getMixedAttributePairs,
+    normalizeLegacyAttribute,
+    normalizeLegacyAttributePairs,
+} from '~/pallet/multi-tokens/storage/attribute-values'
 
 export async function attributes(
     block: Block,
@@ -18,17 +24,40 @@ export async function attributes(
     params?: { collectionId?: bigint; tokenId?: bigint; key?: string; batchSize?: number }
 ): Promise<Attribute | AsyncIterable<[k: [bigint, bigint?, string?], v: Attribute | undefined][]> | undefined> {
     const getAttributes = async (version: (typeof multiTokens.attributes)[keyof typeof multiTokens.attributes]) => {
-        if (params?.collectionId && params.tokenId) {
-            return version.get(block, params.collectionId, params.tokenId, params.key ?? '')
+        if (params?.collectionId !== undefined && 'key' in params) {
+            return normalizeLegacyAttribute(
+                await version.get(block, params.collectionId, params.tokenId, params.key ?? '')
+            )
         }
 
-        return version.getPairsPaged(params?.batchSize ?? 1000, block)
+        return normalizeLegacyAttributePairs(version.getPairsPaged(params?.batchSize ?? 1000, block))
     }
 
     return match(block)
         .returnType<
             Promise<Attribute | AsyncIterable<[k: [bigint, bigint?, string?], v: Attribute | undefined][]> | undefined>
         >()
+        .when(
+            () => multiTokens.attributes.matrixV1040.is(block),
+            () => {
+                if (params?.collectionId !== undefined && 'key' in params) {
+                    return getMixedAttribute(block, 'Attributes', [
+                        params.collectionId,
+                        params.tokenId,
+                        params.key ?? '',
+                    ])
+                }
+
+                return Promise.resolve(
+                    getMixedAttributePairs(
+                        block,
+                        'Attributes',
+                        multiTokens.attributes.matrixV1040,
+                        params?.batchSize ?? 1000
+                    )
+                )
+            }
+        )
         .when(
             () => multiTokens.attributes.matrixEnjinV1012.is(block),
             () => getAttributes(multiTokens.attributes.matrixEnjinV1012)

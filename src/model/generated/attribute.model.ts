@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, StringColumn as StringColumn_, Index as Index_, BigIntColumn as BigIntColumn_, ManyToOne as ManyToOne_, Relation as Relation_, DateTimeColumn as DateTimeColumn_} from "@subsquid/typeorm-store"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, StringColumn as StringColumn_, Index as Index_, BigIntColumn as BigIntColumn_, BooleanColumn as BooleanColumn_, ManyToOne as ManyToOne_, Relation as Relation_, DateTimeColumn as DateTimeColumn_} from "@subsquid/typeorm-store"
 import {Collection} from "./collection.model"
 import {Token} from "./token.model"
 import {TokenGroup} from "./tokenGroup.model"
@@ -21,6 +21,9 @@ export class Attribute {
 
     @BigIntColumn_({nullable: false})
     deposit!: bigint
+
+    @BooleanColumn_({nullable: false})
+    isFrozen!: boolean
 
     @Index_()
     @ManyToOne_(() => Collection, {nullable: true})

@@ -7,9 +7,11 @@ import { QueueUtils } from '~/queue'
 export async function tokenGroupRemoved(
     ctx: CommonContext,
     block: Block,
-    item: EventItem
+    item: EventItem,
+    skipSave: boolean
 ): Promise<EventHandlerResult> {
     const data = mappings.multiTokens.events.tokenGroupRemoved(item)
+    if (skipSave) return mappings.multiTokens.events.tokenGroupRemovedEventModel(item, data)
 
     const [tokenGroupToken, tokenGroup, token] = await Promise.all([
         ctx.store.findOne(TokenGroupToken, {

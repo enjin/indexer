@@ -6,9 +6,11 @@ import { EventHandlerResult } from '~/processor.handler'
 export async function tokenGroupCreated(
     ctx: CommonContext,
     block: Block,
-    item: EventItem
+    item: EventItem,
+    skipSave: boolean
 ): Promise<EventHandlerResult> {
     const data = mappings.multiTokens.events.tokenGroupCreated(item)
+    if (skipSave) return mappings.multiTokens.events.tokenGroupCreatedEventModel(item, data)
 
     const collection = await ctx.store.findOne(Collection, {
         where: {

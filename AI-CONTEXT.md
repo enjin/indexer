@@ -57,6 +57,7 @@ Important semantics:
 - State-changing call handlers run only for successful calls. Do not remove that guard.
 - `supportHotBlocks: true` means reorganizations and non-finalized blocks matter. Entity IDs, block hashes, and SNS reorganization handling must remain deterministic.
 - Historical/warp synchronization and live processing can take different paths. The `skipSave` behavior passed to event handlers prevents duplicate historical writes in selected processors.
+- Initial synchronization imports token groups, their ordered token memberships, and group attributes from the same finalized snapshot as collections, tokens, and collection/token attributes. Attribute readers accept both strict pre-v6 and current encodings while the runtime's lazy migration is active.
 - Large writes are intentionally chunked. Keep batch size and database pressure in mind when adding per-block work.
 
 ## Repository map
