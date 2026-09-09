@@ -36,6 +36,7 @@ import {
     ephemeralCleanupFailedEventModel,
 } from '~/pallet/multi-tokens/events/ephemeral-cleanup-failed'
 import { listingCancelledEventModel } from '~/pallet/marketplace/events/listing-cancelled'
+import { FinalizedTokenStorageReader } from '~/worker/jobs/tokens/token-storage-reader'
 
 const testRequire = createRequire(__filename)
 const queueModulePath = testRequire.resolve('~/queue')
@@ -201,6 +202,44 @@ void test('mixed token point reads preserve token zero and pin the block hash', 
     assert(token)
     assert.equal(token.supply, 1n)
     assert.equal(token.isLendable, true)
+})
+
+void test('mixed token point reads treat null and empty storage values as missing', async () => {
+    for (const value of [null, '0x']) {
+        const runtime = matrixV1040Runtime((method, params) => {
+            assert.equal(method, 'state_getStorageAt')
+            assert.equal(params?.[1], '0x01')
+            return Promise.resolve(value)
+        })
+
+        const token = await getMixedToken({ _runtime: runtime, hash: '0x01' } as Block, [7n, 9n])
+        assert.equal(token, undefined)
+    }
+})
+
+void test('finalized token storage reader treats null and empty storage values as missing', async () => {
+    const runtime = matrixV1040Runtime()
+
+    for (const value of [null, { toHex: () => '0x' }]) {
+        const api = {
+            rpc: {
+                state: {
+                    getStorage: (key: string, blockHash: string) => {
+                        assert.equal(key, runtime.encodeStorageKey('MultiTokens.Tokens', 7n, 9n))
+                        assert.equal(blockHash, '0x01')
+                        return Promise.resolve(value)
+                    },
+                },
+            },
+        }
+        const reader = Reflect.construct(FinalizedTokenStorageReader, [
+            api,
+            '0x01',
+            runtime,
+        ]) as FinalizedTokenStorageReader
+
+        assert.equal(await reader.token(7n, 9n), undefined)
+    }
 })
 
 void test('v1040 direct, batch and force mint wrappers retain ephemeral fields', () => {

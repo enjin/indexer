@@ -139,7 +139,7 @@ export async function getMixedToken(block: Block, key: [bigint, bigint]): Promis
     const encodedKey = block._runtime.encodeStorageKey('MultiTokens.Tokens', ...key)
     const value = await block._runtime.rpc.call('state_getStorageAt', [encodedKey, block.hash])
 
-    return typeof value === 'string' ? decodeTokenStorageValue(block._runtime, value) : undefined
+    return typeof value === 'string' && value !== '0x' ? decodeTokenStorageValue(block._runtime, value) : undefined
 }
 
 export async function* getMixedTokenPairs<K extends [bigint, bigint]>(

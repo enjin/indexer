@@ -3,6 +3,10 @@ import { Runtime } from '@subsquid/substrate-runtime'
 import { decodeTokenStorageValue } from '~/pallet/multi-tokens/storage/token-values'
 import { Token as StorageToken } from '~/pallet/multi-tokens/storage/types'
 
+function hasToHex(value: unknown): value is { toHex(): string } {
+    return typeof value === 'object' && value !== null && 'toHex' in value && typeof value.toHex === 'function'
+}
+
 export class FinalizedTokenStorageReader {
     private constructor(
         private readonly api: ApiPromise,
@@ -35,7 +39,10 @@ export class FinalizedTokenStorageReader {
 
     async token(collectionId: bigint, tokenId: bigint): Promise<StorageToken | undefined> {
         const key = this.runtime.encodeStorageKey('MultiTokens.Tokens', collectionId, tokenId)
-        const value = (await this.api.rpc.state.getStorage(key, this.blockHash)) as { toHex(): string }
+        const value: unknown = await this.api.rpc.state.getStorage(key, this.blockHash)
+        if (value === null || value === undefined) return undefined
+        if (!hasToHex(value)) throw new Error('Unexpected MultiTokens.Tokens storage response')
+
         const encoded = value.toHex()
 
         return encoded === '0x' ? undefined : decodeTokenStorageValue(this.runtime, encoded)
