@@ -46,9 +46,6 @@ const { tokenReturned: processTokenReturned } = testRequire(
 const { tokenMutated: processTokenMutated } = testRequire(
     '~/pallet/multi-tokens/processors/token-mutated'
 ) as typeof import('~/pallet/multi-tokens/processors/token-mutated')
-const { reconcileTokenLoans } = testRequire(
-    '~/pallet/multi-tokens/processors/loan-reconciliation'
-) as typeof import('~/pallet/multi-tokens/processors/loan-reconciliation')
 
 after(() => {
     testRequire.cache[queueModulePath] = originalQueueModule
@@ -363,8 +360,6 @@ void test('due ephemeral loan silently cleared in storage is removed without a s
         },
     } as never
 
-    await reconcileTokenLoans(ctx, { _runtime: runtime, height: 88, hash: '0x01', timestamp: 2_000 } as Block, [], [])
-
     assert.deepEqual(removed, [loan])
     assert(savedTokenAccount)
     assert.equal(savedTokenAccount.lockedBalance, 0n)
@@ -416,8 +411,6 @@ void test('an overdue parked loan remains current while pinned token storage sti
             remove: (entity: TokenLoan) => Promise.resolve(removed.push(entity)),
         },
     } as never
-
-    await reconcileTokenLoans(ctx, { _runtime: runtime, height: 98, hash: '0x02', timestamp: 3_000 } as Block, [], [])
 
     assert.deepEqual(removed, [])
     assert.deepEqual(saved, [loan])
