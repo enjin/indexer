@@ -112,6 +112,7 @@ const callItems: string[] = [...new Set([...commonCalls, ...(isRelay() ? relayCa
 export const processorConfig = new SubstrateBatchProcessor()
     .setRpcEndpoint(config.dataSource.chain)
     .setBlockRange({ from: config.dataSource.fromBlock })
+    .includeAllBlocks()
     .addEvent({
         name: eventItems,
         call: true,

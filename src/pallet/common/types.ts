@@ -719,6 +719,7 @@ export type ShouldMutate_AnyoneCanInfuse =
 export type TokenMutation = {
     behavior: ShouldMutate_Behavior
     listingForbidden: ShouldMutate_ListingForbidden
+    isLendable?: ShouldMutate_AnyoneCanInfuse // Added on matrixV1040
     metadata?: ShouldMutate_Metadata // Removed on v1030
     anyoneCanInfuse?: ShouldMutate_AnyoneCanInfuse // Added on v1030
     name?: ShouldMutate_Name // Added on v1030

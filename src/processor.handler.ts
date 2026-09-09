@@ -87,6 +87,16 @@ export async function eventHandler(
             .with(multiTokens.ephemeralCleanupFailed.name, () =>
                 p.multiTokens.processors.ephemeralCleanupFailed(ctx, block, item)
             )
+            .with(multiTokens.tokenLent.name, () => p.multiTokens.processors.tokenLent(ctx, block, item, skipSave))
+            .with(multiTokens.loanExtended.name, () =>
+                p.multiTokens.processors.loanExtended(ctx, block, item, skipSave)
+            )
+            .with(multiTokens.tokenReturned.name, () =>
+                p.multiTokens.processors.tokenReturned(ctx, block, item, skipSave)
+            )
+            .with(multiTokens.loanReturnFailed.name, () =>
+                p.multiTokens.processors.loanReturnFailed(ctx, block, item, skipSave)
+            )
             .with(multiTokens.tokenMutated.name, () =>
                 p.multiTokens.processors.tokenMutated(ctx, block, item, skipSave)
             )

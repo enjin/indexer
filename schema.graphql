@@ -369,8 +369,42 @@ type MultiTokensEphemeralCleanupFailed {
   error: String
 }
 
+type MultiTokensTokenLent {
+  collectionId: BigInt!
+  tokenId: BigInt!
+  lender: String!
+  borrower: String!
+  expirationBlock: BigInt!
+  observedBlock: BigInt!
+}
+
+type MultiTokensLoanExtended {
+  collectionId: BigInt!
+  tokenId: BigInt!
+  oldExpirationBlock: BigInt!
+  newExpirationBlock: BigInt!
+  observedBlock: BigInt!
+}
+
+type MultiTokensTokenReturned {
+  collectionId: BigInt!
+  tokenId: BigInt!
+  lender: String!
+  borrower: String!
+  observedBlock: BigInt!
+}
+
+type MultiTokensLoanReturnFailed {
+  collectionId: BigInt!
+  tokenId: BigInt!
+  expirationBlock: BigInt!
+  observedBlock: BigInt!
+  error: String
+}
+
 type MultiTokensTokenMutated {
   extrinsic: Extrinsic
+  isLendable: Boolean
 }
 
 type MultiTokensTransferred {
@@ -560,6 +594,8 @@ type Account @entity {
   identity: Identity @derivedFrom(field: "account")
   registrar: IdentityRegistrar @derivedFrom(field: "account")
   userInfusions: [UserInfusion] @derivedFrom(field: "account")
+  loansLent: [TokenLoan] @derivedFrom(field: "lender")
+  loansBorrowed: [TokenLoan] @derivedFrom(field: "borrower")
 
   # Extras
   lastUpdateBlock: Int
@@ -805,6 +841,7 @@ type Token @entity {
   bestListingPrice: BigInt
   creationSupply: BigInt
   ephemeralExpiration: BigInt @index
+  isLendable: Boolean! @index
 
   # Relations
   collection: Collection! @index
@@ -817,6 +854,7 @@ type Token @entity {
   nominationPool: NominationPool
   tokenGroupTokens: [TokenGroupToken] @derivedFrom(field: "token")
   userInfusions: [UserInfusion] @derivedFrom(field: "token")
+  loan: TokenLoan @derivedFrom(field: "token")
 
   bestListing: Listing
   recentListing: Listing
@@ -829,6 +867,17 @@ type Token @entity {
   metadata: Metadata
   updatedAt: DateTime
   createdAt: DateTime! @index
+}
+
+type TokenLoan @entity {
+  id: ID!
+  token: Token! @unique
+  lender: Account! @index
+  borrower: Account! @index
+  expiration: BigInt! @index
+  lastObservedBlock: BigInt! @index
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
 type UserInfusion @entity {
@@ -1733,7 +1782,7 @@ union EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiToken
   | MultiTokensCollectionAccountCreated | MultiTokensCollectionAccountDestroyed | MultiTokensCollectionCreated
   | MultiTokensCollectionDestroyed | MultiTokensCollectionMutated | MultiTokensFrozen | MultiTokensMinted
   | MultiTokensThawed | MultiTokensTokenAccountCreated | MultiTokensTokenAccountDestroyed | MultiTokensTokenCreated | MultiTokensTokenGroupCreated
-  | MultiTokensTokenDestroyed | MultiTokensEphemeralTokenDestroyed | MultiTokensEphemeralCleanupFailed | MultiTokensTokenMutated | MultiTokensTransferred | MultiTokensUnapproved | MultiTokensTokenGroupAdded | MultiTokensTokenGroupRemoved | MultiTokensTokenGroupDestroyed | MultiTokensTokenGroupAttributeSet | MultiTokensTokenGroupAttributeRemoved | MultiTokensTokenGroupsUpdated
+  | MultiTokensTokenDestroyed | MultiTokensEphemeralTokenDestroyed | MultiTokensEphemeralCleanupFailed | MultiTokensTokenLent | MultiTokensLoanExtended | MultiTokensTokenReturned | MultiTokensLoanReturnFailed | MultiTokensTokenMutated | MultiTokensTransferred | MultiTokensUnapproved | MultiTokensTokenGroupAdded | MultiTokensTokenGroupRemoved | MultiTokensTokenGroupDestroyed | MultiTokensTokenGroupAttributeSet | MultiTokensTokenGroupAttributeRemoved | MultiTokensTokenGroupsUpdated
   | MarketplaceAuctionFinalized | MarketplaceBidPlaced | MarketplaceListingCancelled | MarketplaceListingCreated
   | MarketplaceListingFilled | MarketplaceCounterOfferPlaced | MarketplaceCounterOfferAnswered | MarketplaceCounterOfferRemoved
   | MarketplaceOfferCreated | MarketplaceOfferSettled | MarketplaceOfferCancelled | MarketplaceListingRemovedUnderMinimum

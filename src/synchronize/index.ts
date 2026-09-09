@@ -57,6 +57,7 @@ export async function syncState(ctx: CommonContext): Promise<void> {
     await multiTokens.tokens(ctx, block)
     await multiTokens.collectionAccounts(ctx, block)
     await multiTokens.tokenAccounts(ctx, block)
+    await multiTokens.loans(ctx, block)
     await multiTokens.attributes(ctx, block)
     await multiTokens.tokenGroupAttributes(ctx, block)
     await system.balances(ctx, block)

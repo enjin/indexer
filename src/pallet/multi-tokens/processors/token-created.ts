@@ -109,6 +109,7 @@ async function tokenFromCall(
         accountDepositCount: 0,
         anyoneCanInfuse: false,
         ephemeralExpiration: null,
+        isLendable: false,
         nativeMetadata: null,
         infusion: 0n, // Updated on `Infused event`
         tokenGroupTokens: [],
@@ -150,6 +151,10 @@ async function tokenFromCall(
         if ('ephemeralExpiration' in tokenParams) {
             token.ephemeralExpiration =
                 tokenParams.ephemeralExpiration === undefined ? null : BigInt(tokenParams.ephemeralExpiration)
+        }
+
+        if ('isLendable' in tokenParams) {
+            token.isLendable = tokenParams.isLendable ?? false
         }
 
         if ('metadata' in tokenParams) {

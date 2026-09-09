@@ -13,6 +13,7 @@ import {TokenRarity} from "./tokenRarity.model"
 import {NominationPool} from "./nominationPool.model"
 import {TokenGroupToken} from "./tokenGroupToken.model"
 import {UserInfusion} from "./userInfusion.model"
+import {TokenLoan} from "./tokenLoan.model"
 import {ListingSale} from "./listingSale.model"
 import {Metadata} from "./_metadata"
 
@@ -82,6 +83,10 @@ export class Token {
     ephemeralExpiration!: bigint | undefined | null
 
     @Index_()
+    @BooleanColumn_({nullable: false})
+    isLendable!: boolean
+
+    @Index_()
     @ManyToOne_(() => Collection, {nullable: true})
     collection!: Relation_<Collection>
 
@@ -112,6 +117,9 @@ export class Token {
 
     @OneToMany_(() => UserInfusion, e => e.token)
     userInfusions!: Relation_<UserInfusion[]>
+
+    @OneToOne_(() => TokenLoan, e => e.token)
+    loan!: Relation_<TokenLoan> | undefined | null
 
     @Index_()
     @ManyToOne_(() => Listing, {nullable: true})
