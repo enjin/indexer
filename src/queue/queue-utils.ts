@@ -15,6 +15,7 @@ import { match } from 'ts-pattern'
 import { type Queue, type Job } from 'bullmq'
 import { QueueType } from '~/queue/types'
 import { Logger } from '~/util/logger'
+import type { BackfillEphemeralTokensData } from '~/worker/jobs/tokens/backfill-ephemeral-tokens'
 
 const LOGGER_NAMESPACE = 'sqd:queue'
 
@@ -763,4 +764,14 @@ export function dispatchMigrateTokenGroupIds(id: string): void {
     ).catch(() => {
         Logger.error('Failed to dispatch migrate token group IDs', LOGGER_NAMESPACE)
     })
+}
+
+export async function dispatchBackfillEphemeralTokens(data: BackfillEphemeralTokensData = {}): Promise<void> {
+    const cursor = data.afterId ?? 'start'
+    const jobId = `tokens.backfill-ephemeral.${cursor}`
+    const job = await TokensQueue.getJob(jobId)
+    if (job?.id && (await hasExistingJob(job))) return
+    if (job?.id) await TokensQueue.remove(job.id)
+
+    await TokensQueue.add(JobsEnum.BACKFILL_EPHEMERAL_TOKENS, data, { jobId })
 }

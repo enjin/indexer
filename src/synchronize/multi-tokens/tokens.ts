@@ -80,6 +80,7 @@ export async function tokens(ctx: CommonContext, block: Block) {
                 listingForbidden: 'listingForbidden' in data ? data.listingForbidden : false,
                 accountDepositCount: 0,
                 anyoneCanInfuse: data.anyoneCanInfuse ?? false,
+                ephemeralExpiration: data.ephemeralExpiration ?? null,
                 nativeMetadata: null,
                 tokenGroupTokens: [],
                 infusion: data.infusion,

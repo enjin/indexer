@@ -354,6 +354,21 @@ type MultiTokensTokenDestroyed {
   caller: Account!
 }
 
+type MultiTokensEphemeralTokenDestroyed {
+  collectionId: BigInt!
+  tokenId: BigInt!
+  expirationBlock: BigInt!
+  observedBlock: BigInt!
+}
+
+type MultiTokensEphemeralCleanupFailed {
+  collectionId: BigInt!
+  tokenId: BigInt!
+  expirationBlock: BigInt!
+  observedBlock: BigInt!
+  error: String
+}
+
 type MultiTokensTokenMutated {
   extrinsic: Extrinsic
 }
@@ -789,6 +804,7 @@ type Token @entity {
   infusion: BigInt!
   bestListingPrice: BigInt
   creationSupply: BigInt
+  ephemeralExpiration: BigInt @index
 
   # Relations
   collection: Collection! @index
@@ -1717,7 +1733,7 @@ union EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiToken
   | MultiTokensCollectionAccountCreated | MultiTokensCollectionAccountDestroyed | MultiTokensCollectionCreated
   | MultiTokensCollectionDestroyed | MultiTokensCollectionMutated | MultiTokensFrozen | MultiTokensMinted
   | MultiTokensThawed | MultiTokensTokenAccountCreated | MultiTokensTokenAccountDestroyed | MultiTokensTokenCreated | MultiTokensTokenGroupCreated
-  | MultiTokensTokenDestroyed | MultiTokensTokenMutated | MultiTokensTransferred | MultiTokensUnapproved | MultiTokensTokenGroupAdded | MultiTokensTokenGroupRemoved | MultiTokensTokenGroupDestroyed | MultiTokensTokenGroupAttributeSet | MultiTokensTokenGroupAttributeRemoved | MultiTokensTokenGroupsUpdated
+  | MultiTokensTokenDestroyed | MultiTokensEphemeralTokenDestroyed | MultiTokensEphemeralCleanupFailed | MultiTokensTokenMutated | MultiTokensTransferred | MultiTokensUnapproved | MultiTokensTokenGroupAdded | MultiTokensTokenGroupRemoved | MultiTokensTokenGroupDestroyed | MultiTokensTokenGroupAttributeSet | MultiTokensTokenGroupAttributeRemoved | MultiTokensTokenGroupsUpdated
   | MarketplaceAuctionFinalized | MarketplaceBidPlaced | MarketplaceListingCancelled | MarketplaceListingCreated
   | MarketplaceListingFilled | MarketplaceCounterOfferPlaced | MarketplaceCounterOfferAnswered | MarketplaceCounterOfferRemoved
   | MarketplaceOfferCreated | MarketplaceOfferSettled | MarketplaceOfferCancelled | MarketplaceListingRemovedUnderMinimum

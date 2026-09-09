@@ -4,6 +4,7 @@ import { Job } from 'bullmq'
 import Rpc from '~/util/rpc'
 import { hexToString } from '@polkadot/util'
 import { safeString } from '~/util/tools'
+import { FinalizedTokenStorageReader } from './token-storage-reader'
 
 export async function computeTokenNativeMetadata(_job: Job, id: string): Promise<void> {
     const ctx = await dataHandlerContext()
@@ -11,31 +12,37 @@ export async function computeTokenNativeMetadata(_job: Job, id: string): Promise
 
     await _job.updateProgress(20)
 
-    const token = await ctx.store.findOneOrFail<Token>(Token, { where: { id }, relations: { collection: true } })
+    const token = await ctx.store.findOne<Token>(Token, { where: { id }, relations: { collection: true } })
+
+    if (!token) {
+        await _job.log(`Token ${id} not found`)
+        await _job.updateProgress(100)
+        return
+    }
 
     await _job.updateProgress(40)
 
-    const rpcToken = await api.query.multiTokens.tokens(token.collection.id, token.tokenId)
-    const rpcTokenJson: any = rpcToken.toJSON()
+    const storage = await FinalizedTokenStorageReader.create(api)
+    const rpcToken = await storage.token(BigInt(token.collection.id), token.tokenId)
 
     await _job.updateProgress(70)
 
-    if (!rpcTokenJson) {
+    if (!rpcToken) {
         await _job.log(`RPC token ${token.id} not found`)
         await _job.updateProgress(100)
         return
     }
 
-    if (!rpcTokenJson.metadata) {
+    if (!rpcToken.metadata || '__kind' in rpcToken.metadata) {
         await _job.log(`Token ${token.id} has no native metadata, skipping`)
         await _job.updateProgress(100)
         return
     }
 
     token.nativeMetadata = new NativeTokenMetadata({
-        decimalCount: rpcTokenJson.metadata.decimalCount,
-        symbol: safeString(hexToString(rpcTokenJson.metadata.symbol)),
-        name: safeString(hexToString(rpcTokenJson.metadata.name)),
+        decimalCount: rpcToken.metadata.decimalCount,
+        symbol: safeString(hexToString(rpcToken.metadata.symbol)),
+        name: safeString(hexToString(rpcToken.metadata.name)),
     })
 
     await ctx.store.save(token)

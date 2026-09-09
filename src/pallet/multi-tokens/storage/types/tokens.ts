@@ -1,4 +1,5 @@
 import {
+    AccountId32,
     AmbiguousDeposit,
     DefaultTokenMetadata,
     FreezeState,
@@ -6,6 +7,11 @@ import {
     TokenCap,
     TokenMarketBehavior,
 } from '~/pallet/common/types'
+
+export type LendingInfo = {
+    lender: AccountId32
+    expiration: bigint
+}
 
 export type Token = {
     supply: bigint
@@ -26,4 +32,7 @@ export type Token = {
     infusion?: bigint // Added on v1030
     anyoneCanInfuse?: boolean // Added on v1030
     groups?: bigint[] // Added on v1030
+    ephemeralExpiration?: bigint // Added on matrixV1040
+    isLendable: boolean // Added on matrixV1040; true for pre-v6 values
+    lending?: LendingInfo // Added on matrixV1040; undefined for pre-v6 values
 }

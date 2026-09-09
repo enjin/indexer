@@ -81,6 +81,12 @@ export async function eventHandler(
             .with(multiTokens.tokenDestroyed.name, () =>
                 p.multiTokens.processors.tokenDestroyed(ctx, block, item, skipSave)
             )
+            .with(multiTokens.ephemeralTokenDestroyed.name, () =>
+                p.multiTokens.processors.ephemeralTokenDestroyed(ctx, block, item, skipSave)
+            )
+            .with(multiTokens.ephemeralCleanupFailed.name, () =>
+                p.multiTokens.processors.ephemeralCleanupFailed(ctx, block, item)
+            )
             .with(multiTokens.tokenMutated.name, () =>
                 p.multiTokens.processors.tokenMutated(ctx, block, item, skipSave)
             )

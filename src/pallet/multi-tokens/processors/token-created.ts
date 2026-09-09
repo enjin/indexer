@@ -67,7 +67,7 @@ async function tokenFromCall(
     event: TokenCreated,
     call?: Mint | ForceMint | CreatePool,
     useStorage = false
-): Promise<Token> {
+): Promise<Token | undefined> {
     const collection = await ctx.store.findOne<Collection>(Collection, {
         where: { id: event.collectionId.toString() },
         relations: {
@@ -101,13 +101,14 @@ async function tokenFromCall(
         unitPrice: 1n,
         mintDeposit: 0n, // TODO: Fixed for now
         attributeCount: 0,
-        creationSupply: existingSupply,
+        creationSupply: event.initialSupply,
         collection,
         metadata: null,
         nonFungible: false,
         listingForbidden: false,
         accountDepositCount: 0,
         anyoneCanInfuse: false,
+        ephemeralExpiration: null,
         nativeMetadata: null,
         infusion: 0n, // Updated on `Infused event`
         tokenGroupTokens: [],
@@ -120,6 +121,7 @@ async function tokenFromCall(
             collectionId: event.collectionId,
             tokenId: event.tokenId,
         })
+        if (!tokenParams) return undefined
     } else if (call && 'params' in call) {
         tokenParams = unwrapFlexibleMintParams(call.params)
     }
@@ -143,6 +145,11 @@ async function tokenFromCall(
 
         if ('anyoneCanInfuse' in tokenParams) {
             token.anyoneCanInfuse = tokenParams.anyoneCanInfuse === undefined ? false : tokenParams.anyoneCanInfuse
+        }
+
+        if ('ephemeralExpiration' in tokenParams) {
+            token.ephemeralExpiration =
+                tokenParams.ephemeralExpiration === undefined ? null : BigInt(tokenParams.ephemeralExpiration)
         }
 
         if ('metadata' in tokenParams) {
@@ -213,18 +220,7 @@ export async function tokenCreated(
 ): Promise<EventHandlerResult> {
     const event = mappings.multiTokens.events.tokenCreated(item)
 
-    if (skipSave && item.call) {
-        const token = await ctx.store.findOne<Token>(Token, {
-            where: { id: `${event.collectionId}-${event.tokenId}` },
-        })
-
-        if (token) {
-            token.createdAt = new Date(block.timestamp ?? 0)
-            await ctx.store.save(token)
-        }
-
-        return mappings.multiTokens.events.tokenCreatedEventModel(item, event)
-    }
+    if (skipSave) return mappings.multiTokens.events.tokenCreatedEventModel(item, event)
 
     if (item.call) {
         const complexCall = unwrapComplexMintCall(item)
@@ -235,7 +231,10 @@ export async function tokenCreated(
                 ? mappings.multiTokens.utils.anyMint(item.call, event.collectionId, event.tokenId)
                 : selectTokenCreationCall(complexCall.call, event)
         const token = await tokenFromCall(ctx, block, event, call, complexCall !== undefined && call === undefined)
-        await ctx.store.save(token)
+        if (token) await ctx.store.save(token)
+    } else {
+        const token = await tokenFromCall(ctx, block, event, undefined, true)
+        if (token) await ctx.store.save(token)
     }
 
     return mappings.multiTokens.events.tokenCreatedEventModel(item, event)

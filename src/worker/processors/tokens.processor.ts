@@ -13,6 +13,7 @@ import {
     migrateTokenGroupIds,
     syncCollectionTokensNative,
     explainQuery,
+    backfillEphemeralTokens,
 } from '~/worker/jobs'
 import { logDebug, logError } from '~/worker/utils'
 
@@ -51,6 +52,9 @@ export class TokensProcessor implements ProcessorDef {
                 break
             case JobsEnum.EXPLAIN_QUERY:
                 await explainQuery(job)
+                break
+            case JobsEnum.BACKFILL_EPHEMERAL_TOKENS:
+                await backfillEphemeralTokens(job)
                 break
             default:
                 throw new Error(`${job.name} is not a valid job for this processor`)

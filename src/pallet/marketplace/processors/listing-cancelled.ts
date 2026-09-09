@@ -19,7 +19,7 @@ export async function listingCancelled(
     ctx: CommonContext,
     block: Block,
     item: EventItem
-): Promise<[EventModel, AccountTokenEvent, SnsEvent | undefined] | undefined> {
+): Promise<[EventModel, AccountTokenEvent | undefined, SnsEvent | undefined] | undefined> {
     const event = mappings.marketplace.events.listingCancelled(item)
     const listingId = event.listingId.substring(2)
 
@@ -35,7 +35,10 @@ export async function listingCancelled(
             },
         },
     })
-    if (!listing) return undefined
+    if (!listing) {
+        const [eventModel] = mappings.marketplace.events.listingCancelledEventModel(item, event.listingId)
+        return [eventModel, undefined, undefined]
+    }
 
     const makeAssetId = listing.makeAssetId
     const takeAssetId = listing.takeAssetId
@@ -113,13 +116,12 @@ export async function listingCancelled(
     await QueueUtils.dispatchComputeAccountStats(seller.id)
 
     return [
-        ...mappings.marketplace.events.listingCancelledEventModel(
-            item,
+        ...mappings.marketplace.events.listingCancelledEventModel(item, event.listingId, {
             listing,
-            seller,
-            isOffer ? takeAssetId.collection : makeAssetId.collection,
-            isOffer ? takeAssetId : makeAssetId
-        ),
+            account: seller,
+            collection: isOffer ? takeAssetId.collection : makeAssetId.collection,
+            token: isOffer ? takeAssetId : makeAssetId,
+        }),
         item.extrinsic ? snsEvent : undefined,
     ]
 }

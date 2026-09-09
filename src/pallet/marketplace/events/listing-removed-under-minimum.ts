@@ -14,6 +14,13 @@ import {
 } from '~/model'
 import { ListingRemovedUnderMinimum } from '~/pallet/marketplace/events/types'
 
+type ListingRemovedUnderMinimumRelations = {
+    listing: Listing
+    account: Account
+    collection: Collection
+    token: Token
+}
+
 export function listingRemovedUnderMinimum(event: EventItem): ListingRemovedUnderMinimum {
     return match(event)
         .returnType<ListingRemovedUnderMinimum>()
@@ -26,32 +33,38 @@ export function listingRemovedUnderMinimum(event: EventItem): ListingRemovedUnde
         })
 }
 
+export function listingRemovedUnderMinimumEventModel(item: EventItem, listingId: string): [EventModel, undefined]
 export function listingRemovedUnderMinimumEventModel(
     item: EventItem,
-    listing: Listing,
-    account: Account,
-    collection: Collection,
-    token: Token
-): [EventModel, AccountTokenEvent] {
+    listingId: string,
+    relations: ListingRemovedUnderMinimumRelations
+): [EventModel, AccountTokenEvent]
+export function listingRemovedUnderMinimumEventModel(
+    item: EventItem,
+    listingId: string,
+    relations?: ListingRemovedUnderMinimumRelations
+): [EventModel, AccountTokenEvent | undefined] {
     const event = new EventModel({
         id: item.id,
         name: MarketplaceListingRemovedUnderMinimum.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-        collectionId: collection.id,
-        tokenId: token.id,
+        collectionId: relations?.collection.id,
+        tokenId: relations?.token.id,
         data: new MarketplaceListingRemovedUnderMinimum({
-            listing: listing.id,
+            listing: listingId,
         }),
     })
+
+    if (!relations) return [event, undefined]
 
     return [
         event,
         new AccountTokenEvent({
             id: item.id,
-            from: account,
+            from: relations.account,
             event,
-            token,
-            collection,
+            token: relations.token,
+            collection: relations.collection,
         }),
     ]
 }

@@ -2,7 +2,17 @@ import { TypeormDatabase } from '@subsquid/typeorm-store'
 import _ from 'lodash'
 import { IsNull } from 'typeorm'
 import config from '~/util/config'
-import { AccountTokenEvent, ChainInfo, Event, Extrinsic, Fee, FuelTank, FuelTankData, Listing } from '~/model'
+import {
+    AccountTokenEvent,
+    ChainInfo,
+    Event,
+    Extrinsic,
+    Fee,
+    FuelTank,
+    FuelTankData,
+    Listing,
+    MultiTokensTokenDestroyed,
+} from '~/model'
 import { genesisData } from '~/genesis-data'
 import { chainState } from '~/chain-state'
 import * as p from '~/pallet'
@@ -93,6 +103,11 @@ async function bootstrap() {
                     for (const eventItem of block.events) {
                         const [e, a, s] = await processEvents(ctx, block.header, eventItem, dataService.lastBlockNumber)
                         if (e) eventsCollection.push(e)
+                        if (e?.name === MultiTokensTokenDestroyed.name && e.tokenId) {
+                            for (const accountTokenEvent of accountTokenEvents) {
+                                if (accountTokenEvent.token?.id === e.tokenId) accountTokenEvent.token = null
+                            }
+                        }
                         if (a) accountTokenEvents.push(a)
                         if (s) {
                             const eventCacheKey = getSnsEventHash(s.name, s.body)

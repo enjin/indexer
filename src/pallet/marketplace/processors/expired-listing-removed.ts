@@ -107,13 +107,12 @@ export async function expiredListingRemoved(
     await QueueUtils.dispatchComputeAccountStats(seller.id)
 
     return [
-        ...mappings.marketplace.events.listingCancelledEventModel(
-            item,
+        ...mappings.marketplace.events.listingCancelledEventModel(item, event.listingId, {
             listing,
-            seller,
-            isOffer ? takeAssetId.collection : makeAssetId.collection,
-            isOffer ? takeAssetId : makeAssetId
-        ),
+            account: seller,
+            collection: isOffer ? takeAssetId.collection : makeAssetId.collection,
+            token: isOffer ? takeAssetId : makeAssetId,
+        }),
         item.extrinsic ? snsEvent : undefined,
     ]
 }

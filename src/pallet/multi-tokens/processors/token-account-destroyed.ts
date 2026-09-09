@@ -1,4 +1,3 @@
-import { throwFatalError } from '~/util/errors'
 import { CollectionAccount, PoolMember, TokenAccount } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import * as mappings from '~/pallet/index'
@@ -15,49 +14,45 @@ export async function tokenAccountDestroyed(
 
     if (skipSave) return mappings.multiTokens.events.tokenAccountDestroyedEventModel(item, data)
 
-    const collectionAccount = await ctx.store.findOneBy<CollectionAccount>(CollectionAccount, {
-        id: `${data.collectionId}-${data.accountId}`,
-    })
+    const [collectionAccount, tokenAccount] = await Promise.all([
+        ctx.store.findOneBy<CollectionAccount>(CollectionAccount, {
+            id: `${data.collectionId}-${data.accountId}`,
+        }),
+        ctx.store.findOne<TokenAccount>(TokenAccount, {
+            where: { id: `${data.accountId}-${data.collectionId}-${data.tokenId}` },
+            relations: { account: true },
+        }),
+    ])
+
+    if (!tokenAccount) {
+        ctx.log.warn(
+            `[TokenAccountDestroyed] Token account ${data.accountId}-${data.collectionId}-${data.tokenId} was absent`
+        )
+        return mappings.multiTokens.events.tokenAccountDestroyedEventModel(item, data)
+    }
 
     if (!collectionAccount) {
-        throwFatalError(
-            `[TokenAccountDestroyed] We have not found collection account ${data.collectionId}-${data.accountId}.`
-        )
-
+        ctx.log.warn(`[TokenAccountDestroyed] Collection account ${data.collectionId}-${data.accountId} was absent`)
         return mappings.multiTokens.events.tokenAccountDestroyedEventModel(item, data)
     }
 
     collectionAccount.accountCount -= 1
     await ctx.store.save(collectionAccount)
 
-    const tokenAccount = await ctx.store.findOne<TokenAccount>(TokenAccount, {
-        where: { id: `${data.accountId}-${data.collectionId}-${data.tokenId}` },
-        relations: { account: true },
+    await dispatchComputeAccountStats(tokenAccount.account.id)
+
+    const poolMembers = await ctx.store.find(PoolMember, {
+        where: { tokenAccount: { id: tokenAccount.id } },
     })
-
-    const account = tokenAccount?.account
-    if (account) {
-        await dispatchComputeAccountStats(account.id)
-    }
-
-    if (tokenAccount) {
-        const poolMembers = await ctx.store.find(PoolMember, {
-            where: { tokenAccount: { id: tokenAccount.id } },
-        })
-        for (const member of poolMembers) {
-            member.tokenAccount = null
-            if (member.unbondingEras === null) {
-                member.isActive = false
-            }
+    for (const member of poolMembers) {
+        member.tokenAccount = null
+        if (member.unbondingEras === null) {
+            member.isActive = false
         }
-
-        await ctx.store.save(poolMembers)
-        await ctx.store.remove(tokenAccount)
-    } else {
-        throwFatalError(
-            `[TokenAccountDestroyed] We have not found token account ${data.accountId}-${data.collectionId}-${data.tokenId}.`
-        )
     }
+
+    await ctx.store.save(poolMembers)
+    await ctx.store.remove(tokenAccount)
 
     return mappings.multiTokens.events.tokenAccountDestroyedEventModel(item, data)
 }

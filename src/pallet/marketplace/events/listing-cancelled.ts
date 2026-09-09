@@ -16,6 +16,13 @@ import {
 } from '~/model'
 import { ListingCancelled } from '~/pallet/marketplace/events/types'
 
+type ListingCancelledRelations = {
+    listing: Listing
+    account: Account
+    collection: Collection
+    token: Token
+}
+
 export function listingCancelled(event: EventItem): ListingCancelled {
     return match(event)
         .returnType<ListingCancelled>()
@@ -28,45 +35,51 @@ export function listingCancelled(event: EventItem): ListingCancelled {
         })
 }
 
+export function listingCancelledEventModel(item: EventItem, listingId: string): [EventModel, undefined]
 export function listingCancelledEventModel(
     item: EventItem,
-    listing: Listing,
-    account: Account,
-    collection: Collection,
-    token: Token
-): [EventModel, AccountTokenEvent] {
+    listingId: string,
+    relations: ListingCancelledRelations
+): [EventModel, AccountTokenEvent]
+export function listingCancelledEventModel(
+    item: EventItem,
+    listingId: string,
+    relations?: ListingCancelledRelations
+): [EventModel, AccountTokenEvent | undefined] {
     let event: EventModel = new EventModel({
         id: item.id,
         name: MarketplaceListingCancelled.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-        collectionId: collection.id,
-        tokenId: token.id,
+        collectionId: relations?.collection.id,
+        tokenId: relations?.token.id,
         data: new MarketplaceListingCancelled({
-            listing: listing.id,
+            listing: listingId,
         }),
     })
 
-    if (listing.type === ListingType.Offer) {
+    if (relations?.listing.type === ListingType.Offer) {
         event = new EventModel({
             id: item.id,
             name: MarketplaceOfferCancelled.name,
             extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-            collectionId: collection.id,
-            tokenId: token.id,
+            collectionId: relations.collection.id,
+            tokenId: relations.token.id,
             data: new MarketplaceOfferCancelled({
-                listing: listing.id,
+                listing: listingId,
             }),
         })
     }
+
+    if (!relations) return [event, undefined]
 
     return [
         event,
         new AccountTokenEvent({
             id: item.id,
-            from: account,
+            from: relations.account,
             event,
-            token,
-            collection,
+            token: relations.token,
+            collection: relations.collection,
         }),
     ]
 }

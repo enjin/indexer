@@ -4,6 +4,7 @@ import { Job } from 'bullmq'
 import Rpc from '~/util/rpc'
 import { TokenCapSupply } from '~/model/generated/_tokenCapSupply'
 import { CapType } from '~/model/generated/_capType'
+import { FinalizedTokenStorageReader } from './token-storage-reader'
 
 function getCapType(capSupply: string, capType: string) {
     if (capType === 'supply') {
@@ -43,22 +44,22 @@ export async function computeTokenSupply(job: Job, tokenId: string) {
         return
     }
 
-    const rpcToken = await api.query.multiTokens.tokens(token.collection.id, token.tokenId)
-    const rpcTokenJson: any = rpcToken.toJSON()
+    const storage = await FinalizedTokenStorageReader.create(api)
+    const rpcToken = await storage.token(BigInt(token.collection.id), token.tokenId)
 
     await job.updateProgress(60)
 
-    if (!rpcTokenJson) {
+    if (!rpcToken) {
         await job.log(`RPC token ${tokenId} not found`)
         await job.updateProgress(100)
         return
     }
 
-    if (rpcTokenJson.cap) {
-        if (rpcTokenJson.cap.collapsingSupply) {
-            token.cap = getCapType(rpcTokenJson.cap.collapsingSupply, 'collapsingSupply')
-        } else if (rpcTokenJson.cap.supply) {
-            token.cap = getCapType(rpcTokenJson.cap.supply, 'supply')
+    if (rpcToken.cap) {
+        if (rpcToken.cap.__kind === 'CollapsingSupply') {
+            token.cap = getCapType(rpcToken.cap.value.toString(), 'collapsingSupply')
+        } else if (rpcToken.cap.__kind === 'Supply') {
+            token.cap = getCapType(rpcToken.cap.value.toString(), 'supply')
         }
     } else {
         await job.log(`Token ${tokenId} cap not found`)
