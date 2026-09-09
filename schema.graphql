@@ -402,6 +402,45 @@ type MultiTokensLoanReturnFailed {
   error: String
 }
 
+type MintRateLimit {
+  period: BigInt!
+  max: BigInt!
+}
+
+type MintRateWindow {
+  lastSlot: BigInt!
+  buckets: [BigInt!]!
+}
+
+type PendingMintRateLimitChange {
+  newLimit: MintRateLimit
+  effectiveBlock: BigInt!
+}
+
+type MintRateLimitState {
+  limit: MintRateLimit!
+  window: MintRateWindow!
+  pending: PendingMintRateLimitChange
+}
+
+type MultiTokensMintRateLimitUpdated {
+  collectionId: BigInt!
+  tokenId: BigInt
+  limit: MintRateLimit
+}
+
+type MultiTokensMintRateLimitChangeScheduled {
+  collectionId: BigInt!
+  tokenId: BigInt
+  newLimit: MintRateLimit
+  effectiveBlock: BigInt!
+}
+
+type MultiTokensMintRateLimitChangeCancelled {
+  collectionId: BigInt!
+  tokenId: BigInt
+}
+
 type MultiTokensTokenMutated {
   extrinsic: Extrinsic
   isLendable: Boolean
@@ -704,6 +743,7 @@ type Collection @entity {
   totalDeposit: BigInt!
   isTransferPending: Boolean
   pendingTransfer: Account
+  mintRateLimit: MintRateLimitState
 
   # Relations
   tokens: [Token] @derivedFrom(field: "collection")
@@ -842,6 +882,7 @@ type Token @entity {
   creationSupply: BigInt
   ephemeralExpiration: BigInt @index
   isLendable: Boolean! @index
+  mintRateLimit: MintRateLimitState
 
   # Relations
   collection: Collection! @index
@@ -1782,7 +1823,7 @@ union EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiToken
   | MultiTokensCollectionAccountCreated | MultiTokensCollectionAccountDestroyed | MultiTokensCollectionCreated
   | MultiTokensCollectionDestroyed | MultiTokensCollectionMutated | MultiTokensFrozen | MultiTokensMinted
   | MultiTokensThawed | MultiTokensTokenAccountCreated | MultiTokensTokenAccountDestroyed | MultiTokensTokenCreated | MultiTokensTokenGroupCreated
-  | MultiTokensTokenDestroyed | MultiTokensEphemeralTokenDestroyed | MultiTokensEphemeralCleanupFailed | MultiTokensTokenLent | MultiTokensLoanExtended | MultiTokensTokenReturned | MultiTokensLoanReturnFailed | MultiTokensTokenMutated | MultiTokensTransferred | MultiTokensUnapproved | MultiTokensTokenGroupAdded | MultiTokensTokenGroupRemoved | MultiTokensTokenGroupDestroyed | MultiTokensTokenGroupAttributeSet | MultiTokensTokenGroupAttributeRemoved | MultiTokensTokenGroupsUpdated
+  | MultiTokensTokenDestroyed | MultiTokensEphemeralTokenDestroyed | MultiTokensEphemeralCleanupFailed | MultiTokensTokenLent | MultiTokensLoanExtended | MultiTokensTokenReturned | MultiTokensLoanReturnFailed | MultiTokensMintRateLimitUpdated | MultiTokensMintRateLimitChangeScheduled | MultiTokensMintRateLimitChangeCancelled | MultiTokensTokenMutated | MultiTokensTransferred | MultiTokensUnapproved | MultiTokensTokenGroupAdded | MultiTokensTokenGroupRemoved | MultiTokensTokenGroupDestroyed | MultiTokensTokenGroupAttributeSet | MultiTokensTokenGroupAttributeRemoved | MultiTokensTokenGroupsUpdated
   | MarketplaceAuctionFinalized | MarketplaceBidPlaced | MarketplaceListingCancelled | MarketplaceListingCreated
   | MarketplaceListingFilled | MarketplaceCounterOfferPlaced | MarketplaceCounterOfferAnswered | MarketplaceCounterOfferRemoved
   | MarketplaceOfferCreated | MarketplaceOfferSettled | MarketplaceOfferCancelled | MarketplaceListingRemovedUnderMinimum

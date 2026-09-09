@@ -6,6 +6,7 @@ import {
     Sufficiency,
     TokenCap,
     TokenMarketBehavior,
+    MintRateLimitState,
 } from '~/pallet/common/types'
 
 export type LendingInfo = {
@@ -35,4 +36,5 @@ export type Token = {
     ephemeralExpiration?: bigint // Added on matrixV1040
     isLendable: boolean // Added on matrixV1040; false for pre-v6 values
     lending?: LendingInfo // Added on matrixV1040; undefined for pre-v6 values
+    mintRateLimit?: MintRateLimitState // Added on matrixV1040; undefined for pre-v6 values
 }

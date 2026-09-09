@@ -5,6 +5,7 @@ import {MintPolicy} from "./_mintPolicy"
 import {MarketPolicy} from "./_marketPolicy"
 import {RoyaltyCurrency} from "./royaltyCurrency.model"
 import {TransferPolicy} from "./_transferPolicy"
+import {MintRateLimitState} from "./_mintRateLimitState"
 import {Token} from "./token.model"
 import {CollectionAccount} from "./collectionAccount.model"
 import {TokenAccount} from "./tokenAccount.model"
@@ -64,6 +65,9 @@ export class Collection {
     @Index_()
     @ManyToOne_(() => Account, {nullable: true})
     pendingTransfer!: Relation_<Account> | undefined | null
+
+    @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new MintRateLimitState(undefined, obj)}, nullable: true})
+    mintRateLimit!: MintRateLimitState | undefined | null
 
     @OneToMany_(() => Token, e => e.collection)
     tokens!: Relation_<Token[]>
