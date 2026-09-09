@@ -77,6 +77,10 @@ export async function tokenMutated(
         token.listingForbidden = data.mutation.listingForbidden.value
     }
 
+    if (data.mutation.isLendable?.__kind === 'SomeMutation') {
+        token.isLendable = data.mutation.isLendable.value
+    }
+
     if (data.mutation.name !== undefined && data.mutation.name.__kind === 'SomeMutation') {
         token.nativeMetadata = new NativeTokenMetadata({
             decimalCount: token.nativeMetadata?.decimalCount ?? 0,

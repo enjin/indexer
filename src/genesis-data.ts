@@ -85,6 +85,7 @@ async function createEnjinToken(ctx: CommonContext, block: Block) {
         accountDepositCount: 0,
         anyoneCanInfuse: false,
         ephemeralExpiration: null,
+        isLendable: false,
         listingForbidden: true,
         unitPrice: 1n,
         infusion: 0n,
