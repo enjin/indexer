@@ -57,7 +57,8 @@ Important semantics:
 - State-changing call handlers run only for successful calls. Do not remove that guard.
 - `supportHotBlocks: true` means reorganizations and non-finalized blocks matter. Entity IDs, block hashes, and SNS reorganization handling must remain deterministic.
 - Historical/warp synchronization and live processing can take different paths. The `skipSave` behavior passed to event handlers prevents duplicate historical writes in selected processors.
-- Initial synchronization imports token groups, their ordered token memberships, group attributes, and tokens from the same finalized snapshot. Attribute and token readers accept both strict pre-v6 and current encodings while the runtime's lazy migration is active. Token worker reads and the bounded ephemeral-token backfill pin raw storage decoding to one finalized block.
+- Initial synchronization imports token groups, their ordered token memberships, group attributes, tokens, token accounts, and active loans from the same finalized snapshot. Attribute and token readers accept both strict pre-v6 and current encodings while the runtime's lazy migration is active. Token worker reads and the bounded token-property/loan backfill pin raw storage decoding to one finalized block. Lending storage contains only the lender and expiration, so snapshot/backfill borrowers come from the single positive-balance holder. Loan-return failure details remain on historical events rather than the current loan entity.
+- Every block is delivered so hook-driven loan clearing is observable. After ordinary events, a bounded block-hash-pinned pass checks due loans and successful retry/lifecycle candidates, removes only loans confirmed absent from token storage, and refreshes affected token-account lock fields without synthesizing returns or balance movements.
 - Large writes are intentionally chunked. Keep batch size and database pressure in mind when adding per-block work.
 
 ## Repository map

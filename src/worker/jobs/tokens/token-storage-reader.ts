@@ -11,14 +11,16 @@ export class FinalizedTokenStorageReader {
     private constructor(
         private readonly api: ApiPromise,
         private readonly blockHash: string,
+        private readonly blockHeight: number,
         private readonly runtime: Runtime
     ) {}
 
     static async create(api: ApiPromise, blockHash?: string): Promise<FinalizedTokenStorageReader> {
         const finalizedHead = blockHash ?? (await api.rpc.chain.getFinalizedHead()).toString()
-        const [version, metadata] = await Promise.all([
+        const [version, metadata, header] = await Promise.all([
             api.rpc.state.getRuntimeVersion(finalizedHead),
             api.rpc.state.getMetadata(finalizedHead),
+            api.rpc.chain.getHeader(finalizedHead),
         ])
         const runtime = new Runtime(
             {
@@ -30,11 +32,15 @@ export class FinalizedTokenStorageReader {
             metadata.toHex()
         )
 
-        return new FinalizedTokenStorageReader(api, finalizedHead.toString(), runtime)
+        return new FinalizedTokenStorageReader(api, finalizedHead.toString(), header.number.toNumber(), runtime)
     }
 
     get hash(): string {
         return this.blockHash
+    }
+
+    get height(): number {
+        return this.blockHeight
     }
 
     async token(collectionId: bigint, tokenId: bigint): Promise<StorageToken | undefined> {

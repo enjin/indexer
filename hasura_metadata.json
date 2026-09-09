@@ -462,6 +462,18 @@
             ],
             "object_relationships": [
               {
+                "name": "loan",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "token_id",
+                    "table": {
+                      "name": "token_loan",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
                 "name": "rarity",
                 "using": {
                   "foreign_key_constraint_on": {
@@ -495,6 +507,42 @@
                 "name": "lastSale",
                 "using": {
                   "foreign_key_constraint_on": "last_sale_id"
+                }
+              }
+            ],
+            "select_permissions": [
+              {
+                "role": "public",
+                "permission": {
+                  "columns": "*",
+                  "filter": {},
+                  "allow_aggregations": true
+                }
+              }
+            ]
+          },
+          {
+            "table": {
+              "name": "token_loan",
+              "schema": "public"
+            },
+            "object_relationships": [
+              {
+                "name": "token",
+                "using": {
+                  "foreign_key_constraint_on": "token_id"
+                }
+              },
+              {
+                "name": "lender",
+                "using": {
+                  "foreign_key_constraint_on": "lender_id"
+                }
+              },
+              {
+                "name": "borrower",
+                "using": {
+                  "foreign_key_constraint_on": "borrower_id"
                 }
               }
             ],
@@ -904,6 +952,30 @@
                     "column": "signer_id",
                     "table": {
                       "name": "extrinsic",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "loansLent",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "lender_id",
+                    "table": {
+                      "name": "token_loan",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "loansBorrowed",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "borrower_id",
+                    "table": {
+                      "name": "token_loan",
                       "schema": "public"
                     }
                   }

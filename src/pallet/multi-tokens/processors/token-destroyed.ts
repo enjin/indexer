@@ -11,6 +11,7 @@ import {
     Token,
     TokenAccount,
     TokenGroupToken,
+    TokenLoan,
     TokenRarity,
     TraitToken,
     UserInfusion,
@@ -45,6 +46,9 @@ export async function tokenDestroyed(
     token.recentListing = null
     token.lastSale = null
     await ctx.store.save(token)
+
+    const loan = await ctx.store.findOneBy(TokenLoan, { id: token.id })
+    if (loan) await ctx.store.remove(loan)
 
     const [
         accountTokenEvents,

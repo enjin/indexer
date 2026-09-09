@@ -87,7 +87,7 @@ function normalizedToken(value: unknown): Token {
     return {
         ...raw,
         ephemeralExpiration: raw.ephemeralExpiration === undefined ? undefined : BigInt(raw.ephemeralExpiration),
-        isLendable: raw.isLendable ?? true,
+        isLendable: raw.isLendable ?? false,
         lending: raw.lending
             ? {
                   lender: raw.lending.lender,

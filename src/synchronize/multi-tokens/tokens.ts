@@ -81,6 +81,7 @@ export async function tokens(ctx: CommonContext, block: Block) {
                 accountDepositCount: 0,
                 anyoneCanInfuse: data.anyoneCanInfuse ?? false,
                 ephemeralExpiration: data.ephemeralExpiration ?? null,
+                isLendable: data.isLendable,
                 nativeMetadata: null,
                 tokenGroupTokens: [],
                 infusion: data.infusion,
