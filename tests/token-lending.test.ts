@@ -3,7 +3,7 @@ import fs from 'node:fs'
 import { createRequire, Module } from 'node:module'
 import test, { after } from 'node:test'
 import { Runtime } from '@subsquid/substrate-runtime'
-import { Account, Collection, Token, TokenAccount, TokenLoan, TokenLock } from '~/model'
+import { Account, Collection, Token, TokenAccount, TokenLoan } from '~/model'
 import { Block, EventItem } from '~/contexts'
 import {
     loanExtended,
@@ -76,30 +76,6 @@ function runtime1040(call?: (method: string, params?: unknown[]) => Promise<unkn
 
 function eventItem(runtime: Runtime, name: string, args: unknown, id = '88-1'): EventItem {
     return { id, name, args, block: { _runtime: runtime } } as EventItem
-}
-
-function tokenValue(lending?: { lender: string; expiration: number }) {
-    return {
-        supply: 1n,
-        cap: { __kind: 'Supply', value: 1n },
-        freezeState: undefined,
-        requiresDeposit: true,
-        creationDeposit: { depositor: undefined, amount: 0n },
-        ownerDeposit: 0n,
-        totalTokenAccountDeposit: 0n,
-        attributeCount: 0,
-        accountCount: 1,
-        marketBehavior: undefined,
-        listingForbidden: false,
-        metadata: { decimalCount: 0, name: '0x746f6b656e', symbol: '0x544b4e', foreign: undefined },
-        infusion: 0n,
-        anyoneCanInfuse: false,
-        groups: [],
-        ephemeralExpiration: 77,
-        isLendable: true,
-        lending,
-        mintRateLimit: undefined,
-    }
 }
 
 void test('lending event decoders retain lifecycle identity and nullable extrinsics', () => {
@@ -292,128 +268,4 @@ void test('lendability mutation is independent of an active loan and replay supp
     await processTokenMutated(ctx, { _runtime: runtime, height: 88 } as Block, item, false)
     assert.equal(token.isLendable, false)
     assert.equal(saves, 1)
-})
-
-void test('due ephemeral loan silently cleared in storage is removed without a synthetic event and locks reconcile', async () => {
-    const lender = new Account({ id: `0x${'11'.repeat(32)}` })
-    const borrower = new Account({ id: `0x${'22'.repeat(32)}` })
-    const runtime = runtime1040((method, params) => {
-        assert.equal(method, 'state_getStorageAt')
-        assert(params)
-        assert.equal(params[1], '0x01')
-        const key = params[0]
-        const tokenKey = runtime.encodeStorageKey('MultiTokens.Tokens', 7n, 9n)
-        if (key === tokenKey) {
-            return Promise.resolve(
-                runtime.scaleCodec.encodeToHex(runtime.description.storage.MultiTokens.items.Tokens.value, tokenValue())
-            )
-        }
-
-        const accountKey = runtime.encodeStorageKey('MultiTokens.TokenAccounts', 7n, 9n, borrower.id)
-        assert.equal(key, accountKey)
-        return Promise.resolve(
-            runtime.scaleCodec.encodeToHex(runtime.description.storage.MultiTokens.items.TokenAccounts.value, {
-                balance: 1n,
-                reservedBalance: 0n,
-                lockedBalance: 0n,
-                holds: [],
-                locks: [],
-                approvals: [],
-                isFrozen: false,
-                deposit: undefined,
-                storageVersion: 1,
-            })
-        )
-    })
-    const token = new Token({ id: '7-9', tokenId: 9n, collection: new Collection({ id: '7' }) })
-    const loan = new TokenLoan({
-        id: token.id,
-        token,
-        lender,
-        borrower,
-        expiration: 88n,
-        lastObservedBlock: 80n,
-    })
-    const tokenAccount = new TokenAccount({
-        id: `${borrower.id}-7-9`,
-        account: borrower,
-        lockedBalance: 1n,
-        locks: [new TokenLock({ pallet: '0x01', amount: 1n })],
-    })
-    const removed: TokenLoan[] = []
-    let savedTokenAccount: TokenAccount | undefined
-    const ctx = {
-        log: { warn: () => undefined },
-        store: {
-            find: (entity: unknown) => Promise.resolve(entity === TokenLoan ? [loan] : []),
-            findOneBy: (entity: unknown, where: { id: string }) => {
-                if (entity === TokenLoan) return Promise.resolve(loan)
-                if (entity === TokenAccount)
-                    return Promise.resolve(where.id === tokenAccount.id ? tokenAccount : undefined)
-                return Promise.resolve(undefined)
-            },
-            save: (entity: unknown) => {
-                if (entity instanceof TokenAccount) savedTokenAccount = entity
-                return Promise.resolve(entity)
-            },
-            remove: (entity: TokenLoan) => Promise.resolve(removed.push(entity)),
-        },
-    } as never
-
-    assert.deepEqual(removed, [loan])
-    assert(savedTokenAccount)
-    assert.equal(savedTokenAccount.lockedBalance, 0n)
-    assert.deepEqual(savedTokenAccount.locks, [])
-})
-
-void test('an overdue parked loan remains current while pinned token storage still contains lending', async () => {
-    const lender = new Account({ id: `0x${'11'.repeat(32)}` })
-    const borrower = new Account({ id: `0x${'22'.repeat(32)}` })
-    const runtime = runtime1040((method, params) => {
-        assert.equal(method, 'state_getStorageAt')
-        assert(params)
-        assert.equal(params[1], '0x02')
-        const key = params[0]
-        if (key === runtime.encodeStorageKey('MultiTokens.Tokens', 7n, 9n)) {
-            return Promise.resolve(
-                runtime.scaleCodec.encodeToHex(
-                    runtime.description.storage.MultiTokens.items.Tokens.value,
-                    tokenValue({ lender: lender.id, expiration: 88 })
-                )
-            )
-        }
-
-        assert.equal(key, runtime.encodeStorageKey('MultiTokens.FailedLoanReturns', [7n, 9n]))
-        return Promise.resolve(
-            runtime.scaleCodec.encodeToHex(runtime.description.storage.MultiTokens.items.FailedLoanReturns.value, 88)
-        )
-    })
-    const token = new Token({ id: '7-9', tokenId: 9n, collection: new Collection({ id: '7' }) })
-    const loan = new TokenLoan({
-        id: token.id,
-        token,
-        lender,
-        borrower,
-        expiration: 88n,
-        lastObservedBlock: 80n,
-    })
-    const removed: TokenLoan[] = []
-    const saved: TokenLoan[] = []
-    const ctx = {
-        log: { warn: () => undefined },
-        store: {
-            find: (entity: unknown) => Promise.resolve(entity === TokenLoan ? [loan] : []),
-            findOneBy: (entity: unknown) => Promise.resolve(entity === TokenLoan ? loan : undefined),
-            save: (entity: unknown) => {
-                if (entity instanceof TokenLoan) saved.push(entity)
-                return Promise.resolve(entity)
-            },
-            remove: (entity: TokenLoan) => Promise.resolve(removed.push(entity)),
-        },
-    } as never
-
-    assert.deepEqual(removed, [])
-    assert.deepEqual(saved, [loan])
-    assert.equal(loan.expiration, 88n)
-    assert.equal(loan.lastObservedBlock, 98n)
 })

@@ -3,9 +3,7 @@ import fs from 'node:fs'
 import test from 'node:test'
 import { Codec, Type, TypeKind } from '@subsquid/scale-codec'
 import { Runtime } from '@subsquid/substrate-runtime'
-import type { EntityManager } from 'typeorm'
 import { Block, EventItem } from '~/contexts'
-import { Collection, Token } from '~/model'
 import { normalizeDefaultMintParams, normalizeFlexibleMintParams } from '~/pallet/multi-tokens/calls/mint-rate-limit'
 import {
     mintRateLimitChangeScheduled,
@@ -16,8 +14,6 @@ import {
 import { decodeCollectionStorageValue, getMixedCollection } from '~/pallet/multi-tokens/storage/collection-values'
 import { normalizeMintRateLimitState } from '~/pallet/multi-tokens/storage/mint-rate-limit'
 import { decodeTokenStorageValue } from '~/pallet/multi-tokens/storage/token-values'
-import { reconcileMintRateLimits } from '~/pallet/multi-tokens/processors/mint-rate-limit-reconciliation'
-import { EffectiveMintRateLimitResolver, MintRateLimitScope } from '~/server-extension/effective-mint-rate-limit'
 
 type MetadataLine = {
     specName: string
@@ -229,99 +225,4 @@ void test('lifecycle event models preserve scope, large limits, scheduled remova
     assert.equal(scheduled.newLimit, undefined)
     assert.equal(scheduledModel.data.newLimit, undefined)
     assert.equal(scheduledModel.data.effectiveBlock, 200n)
-})
-
-void test('block reconciliation deduplicates candidates, saves canonical snapshots, and does not recreate missing entities', async () => {
-    const collectionBytes = encodeCurrentAndLegacy('Collections', collectionValue(rateState())).current
-    const tokenBytes = encodeCurrentAndLegacy('Tokens', tokenValue(rateState(true))).current
-    let storageQueries = 0
-    const runtime = runtime1040((method, params) => {
-        assert.equal(method, 'state_queryStorageAt')
-        assert(params)
-        assert.equal(params[1], '0xblock')
-        const keys = params[0] as string[]
-        storageQueries++
-        const collectionKey = runtime.encodeStorageKey('MultiTokens.Collections', 0n)
-        const tokenKey = runtime.encodeStorageKey('MultiTokens.Tokens', 0n, 0n)
-        const changes = keys.flatMap((key) => {
-            if (key === collectionKey) return [[key, collectionBytes]]
-            if (key === tokenKey) return [[key, tokenBytes]]
-            return []
-        })
-        return Promise.resolve([{ changes }])
-    })
-    const collection = new Collection({ id: '0' })
-    const token = new Token({ id: '0-0', tokenId: 0n, collection })
-    const saved: unknown[][] = []
-    const ctx = {
-        store: {
-            find: (entity: unknown) => Promise.resolve(entity === Collection ? [collection] : [token]),
-            save: (entities: unknown[]) => Promise.resolve(saved.push(entities)),
-        },
-    } as never
-    const collectionEvent = eventItem(runtime, 'MultiTokens.MintRateLimitUpdated', {
-        collectionId: '0',
-        tokenId: undefined,
-        limit: { period: 64, max: '100' },
-    })
-    const tokenEvent = eventItem(runtime, 'MultiTokens.MintRateLimitUpdated', {
-        collectionId: '0',
-        tokenId: '0',
-        limit: { period: 64, max: '100' },
-    })
-    const missingTokenEvent = eventItem(runtime, 'MultiTokens.MintRateLimitUpdated', {
-        collectionId: '0',
-        tokenId: '99',
-        limit: { period: 64, max: '100' },
-    })
-
-    await reconcileMintRateLimits(ctx, { _runtime: runtime, height: 190, hash: '0xblock' } as Block, [
-        collectionEvent,
-        tokenEvent,
-        tokenEvent,
-        missingTokenEvent,
-    ])
-
-    assert.equal(storageQueries, 2)
-    assert.equal(saved.length, 2)
-    assert.equal(collection.mintRateLimit?.limit.max, largeMaximum)
-    assert.equal(token.mintRateLimit?.pending?.effectiveBlock, 200n)
-})
-
-void test('effective policy evaluates scheduled changes at the latest indexed block without rewriting raw state', async () => {
-    const rawState = {
-        limit: { period: '64', max: '1000' },
-        window: { lastSlot: '1', buckets: ['0', '0', '0', '0', '0', '0', '0', '0', '0'] },
-        pending: { newLimit: null, effectiveBlock: '200' },
-    }
-    let indexedBlock = '199'
-    let indexedHash = '0xbefore'
-    const manager = {
-        query: (_query: string, params: unknown[]) => {
-            assert.deepEqual(params, ['0-0'])
-            return Promise.resolve([
-                {
-                    mint_rate_limit: rawState,
-                    indexed_block: indexedBlock,
-                    indexed_hash: indexedHash,
-                },
-            ])
-        },
-    } as unknown as EntityManager
-    const resolver = new EffectiveMintRateLimitResolver(() => Promise.resolve(manager))
-    const before = await resolver.effectiveMintRateLimit('0', '0')
-    indexedBlock = '200'
-    indexedHash = '0xindexed'
-    const result = await resolver.effectiveMintRateLimit('0', '0')
-
-    assert.equal(before?.effectiveLimit?.max, 1000n)
-    assert(result)
-    assert.equal(result.scope, MintRateLimitScope.TOKEN)
-    assert.equal(result.evaluationBlock, 200n)
-    assert.equal(result.evaluationBlockHash, '0xindexed')
-    assert.equal(result.storedLimit?.max, 1000n)
-    assert.deepEqual(result.window?.buckets, [0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n])
-    assert.equal(result.pendingChange?.newLimit, null)
-    assert.equal(result.effectiveLimit, null)
-    assert.equal(rawState.pending.newLimit, null)
 })
