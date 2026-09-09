@@ -101,7 +101,7 @@ async function tokenFromCall(
         unitPrice: 1n,
         mintDeposit: 0n, // TODO: Fixed for now
         attributeCount: 0,
-        creationSupply: existingSupply,
+        creationSupply: event.initialSupply,
         collection,
         metadata: null,
         nonFungible: false,

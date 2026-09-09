@@ -62,6 +62,9 @@ const { forceMint } = testRequire(
 const { tokenDestroyed } = testRequire(
     '~/pallet/multi-tokens/processors/token-destroyed'
 ) as typeof import('~/pallet/multi-tokens/processors/token-destroyed')
+const { tokenCreated } = testRequire(
+    '~/pallet/multi-tokens/processors/token-created'
+) as typeof import('~/pallet/multi-tokens/processors/token-created')
 
 after(() => {
     testRequire.cache[queueModulePath] = originalQueueModule
@@ -232,6 +235,36 @@ void test('v1040 direct, batch and force mint wrappers retain ephemeral fields',
     assert.equal(direct.params.__kind === 'CreateToken' && direct.params.ephemeralExpiration, 77)
     assert.equal(batch.recipients[0].params.__kind === 'CreateToken' && batch.recipients[0].params.isLendable, false)
     assert.equal(force.params.__kind === 'CreateOrMint' && force.params.value.ephemeralExpiration, 77)
+})
+
+void test('token creation stores the event initial supply separately from live supply', async () => {
+    const runtime = matrixV1040Runtime()
+    const account = `0x${'22'.repeat(32)}`
+    const collection = new Collection({ id: '7', attributes: [] })
+    const saved: Token[] = []
+    const item = eventItem(runtime, 'MultiTokens.TokenCreated', {
+        collectionId: '7',
+        tokenId: '9',
+        issuer: { __kind: 'Signed', value: account },
+        initialSupply: '3',
+    })
+    item.call = callItem(runtime, 'MultiTokens.mint', {
+        recipient: { __kind: 'Id', value: account },
+        collectionId: '7',
+        params: { ...createParams(), initialSupply: '3' },
+    })
+    const ctx = {
+        store: {
+            findOne: (entity: unknown) => Promise.resolve(entity === Collection ? collection : undefined),
+            save: (token: Token) => Promise.resolve(saved.push(token)),
+        },
+    } as never
+
+    await tokenCreated(ctx, { _runtime: runtime, height: 10, timestamp: 0 } as Block, item, false)
+
+    assert.equal(saved.length, 1)
+    assert.equal(saved[0].supply, 0n)
+    assert.equal(saved[0].creationSupply, 3n)
 })
 
 void test('ephemeral events retain scalar identity and support hook events without extrinsics', () => {
