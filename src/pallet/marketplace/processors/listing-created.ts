@@ -7,13 +7,11 @@ import {
     Extrinsic,
     FeeSide,
     FixedPriceData,
-    FixedPriceState,
     Listing,
     ListingStatus,
     ListingStatusType,
     ListingType,
     OfferData,
-    OfferState,
     Token,
     TokenAccount,
 } from '~/model'
@@ -24,6 +22,8 @@ import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
 import { match } from 'ts-pattern'
 import Big from 'big.js'
+import { marketplace as marketplaceEvents } from '~/type/events'
+import { initialBookState, rebuildFixedPriceState, rebuildOfferState } from '~/pallet/marketplace/utils/listing-state'
 
 export async function listingCreated(
     ctx: CommonContext,
@@ -70,21 +70,31 @@ export async function listingCreated(
         .exhaustive()
 
     const listingState = match(data.listing.state)
-        .returnType<AuctionState | OfferState | FixedPriceState>()
+        .returnType<AuctionState | ReturnType<typeof rebuildOfferState> | ReturnType<typeof rebuildFixedPriceState>>()
         .with({ __kind: 'Auction' }, () => new AuctionState({ listingType: ListingType.Auction, isExpired: false }))
-        .with(
-            { __kind: 'Offer' },
-            () => new OfferState({ listingType: ListingType.Offer, counterOfferCount: 0, isExpired: false })
-        )
-        .with(
-            { __kind: 'FixedPrice' },
-            () => new FixedPriceState({ listingType: ListingType.FixedPrice, amountFilled: 0n })
+        .with({ __kind: 'Offer' }, (offer) => {
+            const state = offer.value as { amountFilled?: bigint; counterOfferCount?: number } | undefined
+            return rebuildOfferState(data.listing.amount, {
+                amountFilled: state?.amountFilled ?? 0n,
+                counterOfferCount: state?.counterOfferCount ?? offer.counterOfferCount ?? 0,
+            })
+        })
+        .with({ __kind: 'FixedPrice' }, (fixedPrice) =>
+            rebuildFixedPriceState(data.listing.amount, data.listing.amount - fixedPrice.amountFilled)
         )
         .exhaustive()
 
     const feeSide = data.listing.feeSide.__kind as FeeSide
     const usesWhitelist = typeof data.listing.whitelistedAccountCount === 'number'
+    const explicitStartBlock = data.listing.startBlock
     const startBlock = data.listing.startBlock ?? block.height + 10
+    const bookState = initialBookState(
+        marketplaceEvents.listingCreated.matrixV1040.is(item),
+        listingData.listingType,
+        usesWhitelist,
+        explicitStartBlock,
+        block.height
+    )
 
     const listing = new Listing({
         id: listingId,
@@ -102,6 +112,7 @@ export async function listingCreated(
         data: listingData,
         state: listingState,
         isActive: true,
+        bookState,
         startBlock,
         type: listingData.listingType,
         usesWhitelist,

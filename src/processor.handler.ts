@@ -199,6 +199,13 @@ export async function eventHandler(
             .with(marketplace.expiredListingRemoved.name, () =>
                 p.marketplace.processors.expiredListingRemoved(ctx, block, item)
             )
+            .with(marketplace.orderMatched.name, () => p.marketplace.processors.orderMatched(ctx, block, item))
+            .with(marketplace.listingNotIndexed.name, () =>
+                p.marketplace.processors.listingNotIndexed(ctx, block, item)
+            )
+            .with(marketplace.migrationCompleted.name, () =>
+                p.marketplace.processors.migrationCompleted(ctx, block, item)
+            )
             .with(polkadotXcm.attempted.name, () => p.polkadotXcm.processors.attempted(ctx, block, item))
             .with(fuelTanks.dispatchFailed.name, () => p.fuelTanks.processors.dispatchFailed(block, item))
             .with(fuelTanks.accountAdded.name, () => p.fuelTanks.processors.accountAdded(ctx, block, item))

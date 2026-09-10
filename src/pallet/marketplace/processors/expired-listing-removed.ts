@@ -5,7 +5,7 @@ import {
     ListingStatus,
     ListingStatusType,
     ListingType,
-    OfferState,
+    MarketplaceListingBookState,
     TokenAccount,
 } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
@@ -13,6 +13,7 @@ import { getOrCreateAccount } from '~/util/entities'
 import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
+import { rebuildOfferState } from '~/pallet/marketplace/utils/listing-state'
 
 export async function expiredListingRemoved(
     ctx: CommonContext,
@@ -49,14 +50,11 @@ export async function expiredListingRemoved(
     })
 
     listing.isActive = false
+    listing.bookState = MarketplaceListingBookState.Removed
     listing.updatedAt = new Date(block.timestamp ?? 0)
 
     if (listing.type === ListingType.Offer) {
-        listing.state = new OfferState({
-            listingType: ListingType.Offer,
-            counterOfferCount: (listing.state as OfferState).counterOfferCount,
-            isExpired: true,
-        })
+        listing.state = rebuildOfferState(listing.amount, listing.state, { isExpired: true })
     }
 
     await ctx.store.save(listingStatus)

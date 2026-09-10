@@ -6,12 +6,14 @@ export class FixedPriceState {
     public readonly isTypeOf = 'FixedPriceState'
     private _listingType!: ListingType
     private _amountFilled!: bigint
+    private _amountRemaining!: bigint
 
     constructor(props?: Partial<Omit<FixedPriceState, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
         if (json != null) {
             this._listingType = marshal.enumFromJson(json.listingType, ListingType)
             this._amountFilled = marshal.bigint.fromJSON(json.amountFilled)
+            this._amountRemaining = marshal.bigint.fromJSON(json.amountRemaining)
         }
     }
 
@@ -33,11 +35,21 @@ export class FixedPriceState {
         this._amountFilled = value
     }
 
+    get amountRemaining(): bigint {
+        assert(this._amountRemaining != null, 'uninitialized access')
+        return this._amountRemaining
+    }
+
+    set amountRemaining(value: bigint) {
+        this._amountRemaining = value
+    }
+
     toJSON(): object {
         return {
             isTypeOf: this.isTypeOf,
             listingType: this.listingType,
             amountFilled: marshal.bigint.toJSON(this.amountFilled),
+            amountRemaining: marshal.bigint.toJSON(this.amountRemaining),
         }
     }
 }

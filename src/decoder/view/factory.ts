@@ -15,6 +15,7 @@ import {
 import {
     buildCancelListingView,
     buildCreateListingView,
+    buildCreateListingAndMatchView,
     buildFillListingView,
     buildFinalizeAuctionView,
     buildPlaceBidView,
@@ -48,6 +49,7 @@ const CALL_BUILDERS: Record<string, ViewBuilderFn> = {
     'MultiTokens::create_collection': buildCreateCollectionView,
     'MultiTokens::approve_collection': buildApproveCollectionView,
     'Marketplace::create_listing': buildCreateListingView,
+    'Marketplace::create_listing_and_match': buildCreateListingAndMatchView,
     'Marketplace::fill_listing': buildFillListingView,
     'Marketplace::cancel_listing': buildCancelListingView,
     'Marketplace::finalize_auction': buildFinalizeAuctionView,
