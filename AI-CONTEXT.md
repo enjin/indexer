@@ -59,6 +59,7 @@ Important semantics:
 - Historical/warp synchronization and live processing can take different paths. The `skipSave` behavior passed to event handlers prevents duplicate historical writes in selected processors.
 - Initial synchronization imports token groups, their ordered token memberships, group attributes, tokens, token accounts, and active loans from the same finalized snapshot. Attribute and token readers accept both strict pre-v6 and current encodings while the runtime's lazy migration is active. Token worker reads and the bounded token-property/loan backfill pin raw storage decoding to one finalized block. Lending storage contains only the lender and expiration, so snapshot/backfill borrowers come from the single positive-balance holder. Loan-return failure details remain on historical events rather than the current loan entity.
 - Every block is delivered so hook-driven loan clearing is observable. After ordinary events, a bounded block-hash-pinned pass checks due loans and successful retry/lifecycle candidates, removes only loans confirmed absent from token storage, and refreshes affected token-account lock fields without synthesizing returns or balance movements.
+- Multi-token mint rate limits are canonical storage snapshots, not values reconstructed from events. Initial sync reads collection/token state at one finalized hash; live processing refreshes event and mint candidates from raw storage at the processed block hash. The custom `effectiveMintRateLimit` query returns the current window and evaluates pending changes against the latest indexed database block without mutating the stored lazy-settlement state.
 - Large writes are intentionally chunked. Keep batch size and database pressure in mind when adding per-block work.
 
 ## Repository map
@@ -160,6 +161,8 @@ Configuration is loaded from environment variables in `src/util/config.ts`. `.en
 
 Core local dependencies are PostgreSQL 16 and Redis 7. The application defaults target Enjin Matrixchain, but explicit environment configuration is preferable for any data-affecting work. When running application processes on the host while databases run in Docker, use host-reachable values such as `DB_HOST=localhost` and `REDIS_URL=redis://localhost:6379`; the example's Docker service names resolve only inside the Compose network.
 
+Mint-rate-limit event history is recovered separately from the current-state snapshot. Set an explicitly verified inclusive `MINT_RATE_LIMIT_HISTORY_FROM_BLOCK`/`MINT_RATE_LIMIT_HISTORY_TO_BLOCK` range and run `pnpm run replay:mint-rate-limit-history`. It uses deterministic event IDs and a dedicated processor progress schema, suppresses SNS and current-state writes, and should only be started after confirming activation heights and archive coverage.
+
 Never log, document, or commit real values for Sentry, AWS/SNS, Logtail, Pinata, Hasura admin secrets, archive API keys, or marketplace credentials.
 
 ## Development commands
@@ -193,6 +196,7 @@ This can consume substantial local resources because PostgreSQL is configured wi
 CI builds on Node.js 24 and runs ESLint and Prettier checks. Use:
 
 ```bash
+pnpm test
 pnpm run ci:lint
 pnpm run ci:prettier
 pnpm run build
@@ -200,7 +204,7 @@ pnpm run build
 
 `pnpm run lint` and `pnpm run prettier` are auto-fixing commands. Markdown, generated models/types, migrations, and several integration-heavy directories are excluded from some formatting or lint rules, so a passing check does not replace focused review.
 
-There is no unit-test command at present. Validate behavior proportionally with a local processor replay, a focused GraphQL query, a queue job run, or migration inspection, and record what was exercised.
+The Node test suite includes focused runtime-codec and processor fixtures. For storage, queue, or migration changes, supplement it proportionally with a local recorded-block replay, a focused GraphQL query, a queue job run, or migration inspection, and record what was exercised.
 
 ## High-risk areas
 

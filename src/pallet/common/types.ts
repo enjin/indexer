@@ -258,6 +258,29 @@ export type AssetId = {
     tokenId: bigint
 }
 
+export type OrderSide = { __kind: 'Ask' } | { __kind: 'Bid' }
+
+export type MintRateLimit = {
+    period: bigint
+    max: bigint
+}
+
+export type MintRateWindow = {
+    lastSlot: bigint
+    buckets: bigint[]
+}
+
+export type PendingMintRateLimitChange = {
+    newLimit?: MintRateLimit
+    effectiveBlock: bigint
+}
+
+export type MintRateLimitState = {
+    limit: MintRateLimit
+    window: MintRateWindow
+    pending?: PendingMintRateLimitChange
+}
+
 export type FeeSide = FeeSide_Make | FeeSide_NoFee | FeeSide_Take
 
 export type FeeSide_Make = {
@@ -313,7 +336,8 @@ export interface ListingState_FixedPrice {
 
 export interface ListingState_Offer {
     __kind: 'Offer' // Added on v1010
-    counterOfferCount?: number // Added on v1010
+    value?: object
+    counterOfferCount?: number // Kept for the earliest v1010 shape
 }
 
 export type ListingState = ListingState_Auction | ListingState_FixedPrice | ListingState_Offer
@@ -846,6 +870,7 @@ export interface DefaultMintParams_CreateToken {
     privilegedParams?: PrivilegedCreateTokenParams // Added on v1030
     ephemeralExpiration?: number // Added on matrixV1040
     isLendable?: boolean // Added on matrixV1040
+    mintRateLimit?: MintRateLimit // Added on matrixV1040
 }
 
 export interface DefaultMintParams_Mint {
@@ -874,6 +899,7 @@ type CreateOrMintParams = {
     foreignParams?: ForeignTokenMetadata // Removed on v1030
     ephemeralExpiration?: number // Added on matrixV1040
     isLendable?: boolean // Added on matrixV1040
+    mintRateLimit?: MintRateLimit // Added on matrixV1040
 }
 
 type FlexibleMintParams_CreateOrMint = {

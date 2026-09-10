@@ -110,6 +110,7 @@ async function tokenFromCall(
         anyoneCanInfuse: false,
         ephemeralExpiration: null,
         isLendable: false,
+        mintRateLimit: null,
         nativeMetadata: null,
         infusion: 0n, // Updated on `Infused event`
         tokenGroupTokens: [],

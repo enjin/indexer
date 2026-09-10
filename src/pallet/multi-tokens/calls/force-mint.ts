@@ -4,13 +4,17 @@ import { calls } from '~/type'
 import { match } from 'ts-pattern'
 import { ForceMint } from '~/pallet/multi-tokens/calls/types'
 import { withDispatchCheck } from '~/pallet/fuel-tanks/utils'
+import { normalizeFlexibleMintParams } from './mint-rate-limit'
 
 export const forceMint = withDispatchCheck((call: CallItem): ForceMint => {
     return match(call)
         .returnType<ForceMint>()
         .when(
             () => calls.multiTokens.forceMint.matrixV1040.is(call),
-            () => calls.multiTokens.forceMint.matrixV1040.decode(call)
+            () => {
+                const data = calls.multiTokens.forceMint.matrixV1040.decode(call)
+                return { ...data, params: normalizeFlexibleMintParams(data.params) }
+            }
         )
         .when(
             () => calls.multiTokens.forceMint.matrixEnjinV1031.is(call),

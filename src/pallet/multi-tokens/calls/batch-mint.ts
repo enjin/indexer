@@ -4,13 +4,23 @@ import { calls } from '~/type'
 import { match } from 'ts-pattern'
 import { BatchMint } from '~/pallet/multi-tokens/calls/types'
 import { withDispatchCheck } from '~/pallet/fuel-tanks/utils'
+import { normalizeDefaultMintParams } from './mint-rate-limit'
 
 export const batchMint = withDispatchCheck((call: CallItem): BatchMint => {
     return match(call)
         .returnType<BatchMint>()
         .when(
             () => calls.multiTokens.batchMint.matrixV1040.is(call),
-            () => calls.multiTokens.batchMint.matrixV1040.decode(call)
+            () => {
+                const data = calls.multiTokens.batchMint.matrixV1040.decode(call)
+                return {
+                    ...data,
+                    recipients: data.recipients.map((recipient) => ({
+                        ...recipient,
+                        params: normalizeDefaultMintParams(recipient.params),
+                    })),
+                }
+            }
         )
         .when(
             () => calls.multiTokens.batchMint.matrixEnjinV1031.is(call),

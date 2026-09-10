@@ -44,6 +44,50 @@ export const buildCreateListingView: ViewBuilderFn = ({ call, network, coinId })
     return builder.build()
 }
 
+export const buildCreateListingAndMatchView: ViewBuilderFn = ({ call, network, coinId }) => {
+    const offer = isOfferMakeAsset(call.params)
+    const amount = displayValue(getArg(call.params, 'descriptor.amount', '1'))
+    const price = displayValue(getArg(call.params, 'descriptor.price', '0'))
+    const makeCollection = displayValue(getArg(call.params, 'descriptor.make_asset_id.collection_id'))
+    const makeToken = displayValue(getArg(call.params, 'descriptor.make_asset_id.token_id'))
+    const takeCollection = displayValue(getArg(call.params, 'descriptor.take_asset_id.collection_id'))
+    const takeToken = displayValue(getArg(call.params, 'descriptor.take_asset_id.token_id'))
+    const startBlock = displayValue(getArg(call.params, 'descriptor.start_block'))
+    const rawMatchLimit = getArg(call.params, 'match_limit')
+    const matchLimit =
+        rawMatchLimit === null || rawMatchLimit === undefined
+            ? 'Chain maximum'
+            : displayValue(rawMatchLimit) === '0'
+              ? '0 (post only)'
+              : displayValue(rawMatchLimit)
+    const listedAsset = offer ? assetId(takeCollection, takeToken) : assetId(makeCollection, makeToken)
+    const builder = TransactionViewBuilder.create(offer ? 'Buy or Place Offer' : 'Sell or List Asset')
+        .when(listedAsset !== '-', (b) => b.withResource('asset', listedAsset))
+        .withNetwork(network)
+        .withText('Amount', amount)
+        .withCoin('Limit Price', price, coinId)
+        .withText('Match Limit', matchLimit)
+        .when(startBlock, (b) => b.withText('Start Block', startBlock))
+        .withText(
+            'Matching',
+            startBlock
+                ? 'Scheduled orders do not match immediately'
+                : 'Executes on chain at resting maker prices; fills are not guaranteed'
+        )
+        .withText('Remainder', 'Rests only if unmatched and book capacity permits')
+        .withCoin('Conditional Listing Deposit', MARKETPLACE_LISTING_DEPOSIT, coinId)
+
+    if (offer) {
+        try {
+            builder.withCoin('Maximum Offer Total', (BigInt(price || '0') * BigInt(amount || '1')).toString(), coinId)
+        } catch {
+            // ignore non-numeric price/amount
+        }
+    }
+
+    return builder.build()
+}
+
 export const buildFillListingView: ViewBuilderFn = ({ call, network }) => {
     const listingId = displayValue(getArg(call.params, 'listing_id'))
     const amount = displayValue(getArg(call.params, 'amount'))
