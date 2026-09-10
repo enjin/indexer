@@ -16,6 +16,7 @@ import { type Queue, type Job } from 'bullmq'
 import { QueueType } from '~/queue/types'
 import { Logger } from '~/util/logger'
 import type { BackfillEphemeralTokensData } from '~/worker/jobs/tokens/backfill-ephemeral-tokens'
+import type { BackfillCancellationListingIdsData } from '~/worker/jobs/listings/backfill-cancellation-listing-ids'
 
 const LOGGER_NAMESPACE = 'sqd:queue'
 
@@ -578,6 +579,18 @@ export function dispatchRefreshListings(ids: string[]): void {
     ).catch(() => {
         Logger.error('Failed to dispatch refresh listings', LOGGER_NAMESPACE)
     })
+}
+
+export async function dispatchBackfillCancellationListingIds(
+    data: BackfillCancellationListingIdsData = {}
+): Promise<void> {
+    const cursor = data.afterId ?? 'start'
+    const jobId = `listings.backfill-cancellation-listing-ids.${cursor}`
+    const job = await ListingsQueue.getJob(jobId)
+    if (job?.id && (await hasExistingJob(job))) return
+    if (job?.id) await ListingsQueue.remove(job.id)
+
+    await ListingsQueue.add(JobsEnum.BACKFILL_CANCELLATION_LISTING_IDS, data, { jobId })
 }
 
 export async function dispatchComputeTokenBestListing(id: string): Promise<void> {

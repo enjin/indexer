@@ -258,6 +258,8 @@ export type AssetId = {
     tokenId: bigint
 }
 
+export type OrderSide = { __kind: 'Ask' } | { __kind: 'Bid' }
+
 export type MintRateLimit = {
     period: bigint
     max: bigint
@@ -334,7 +336,8 @@ export interface ListingState_FixedPrice {
 
 export interface ListingState_Offer {
     __kind: 'Offer' // Added on v1010
-    counterOfferCount?: number // Added on v1010
+    value?: object
+    counterOfferCount?: number // Kept for the earliest v1010 shape
 }
 
 export type ListingState = ListingState_Auction | ListingState_FixedPrice | ListingState_Offer

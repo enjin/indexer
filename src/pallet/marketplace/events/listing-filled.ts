@@ -60,7 +60,8 @@ export function listingFilledEventModel(
     item: EventItem,
     data: ListingFilled,
     listing: Listing,
-    account: Account,
+    seller: Account,
+    buyer: Account,
     collection: Collection,
     token: Token
 ): [EventModel, AccountTokenEvent] {
@@ -74,7 +75,7 @@ export function listingFilledEventModel(
         tokenId: token.id,
         data: new MarketplaceListingFilled({
             listing: listing.id,
-            buyer: data.buyer,
+            buyer: buyer.id,
             amountFilled: data.amountFilled,
             amountRemaining: data.amountRemaining,
             price: 'price' in data ? data.price : listing.highestPrice,
@@ -92,7 +93,7 @@ export function listingFilledEventModel(
             tokenId: token.id,
             data: new MarketplaceOfferSettled({
                 listing: listing.id,
-                buyer: data.buyer,
+                buyer: buyer.id,
                 amount: data.amountFilled,
                 price: 'price' in data ? data.price : listing.highestPrice,
                 protocolFee: data.protocolFee,
@@ -105,8 +106,8 @@ export function listingFilledEventModel(
         event,
         new AccountTokenEvent({
             id: item.id,
-            from: account,
-            to: listing.data.listingType === ListingType.Offer ? listing.seller : new Account({ id: data.buyer }),
+            from: seller,
+            to: buyer,
             event,
             token,
             collection,
