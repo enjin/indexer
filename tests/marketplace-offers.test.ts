@@ -7,6 +7,7 @@ import { EventItem } from '~/contexts'
 import {
     Account,
     Collection,
+    Event as EventModel,
     FixedPriceData,
     Listing,
     ListingType,
@@ -32,6 +33,7 @@ import { counterOfferRemovedEventModel } from '~/pallet/marketplace/events/count
 import { listingCancelledEventModel } from '~/pallet/marketplace/events/listing-cancelled'
 import { listingFilledEventModel } from '~/pallet/marketplace/events/listing-filled'
 import { listingRemovedUnderMinimumEventModel } from '~/pallet/marketplace/events/listing-removed-under-minimum'
+import { stripCancellationListingIdPrefix } from '~/worker/jobs/listings/cancellation-listing-id'
 import {
     initialBookState,
     listingFillParties,
@@ -178,6 +180,32 @@ void test('marketplace removal events use canonical listing relation IDs', () =>
     assert.equal(offerEvent.data.listing, offer.id)
     assert(underMinimumEvent.data instanceof MarketplaceListingRemovedUnderMinimum)
     assert.equal(underMinimumEvent.data.listing, fixedPrice.id)
+})
+
+void test('cancellation listing ID backfill strips only prefixed cancellation relations', () => {
+    const listingId = 'aa'.repeat(32)
+    const listingCancellation = new EventModel({
+        id: '191-7',
+        name: MarketplaceListingCancelled.name,
+        data: new MarketplaceListingCancelled({ listing: `0x${listingId}` }),
+    })
+    const offerCancellation = new EventModel({
+        id: '191-8',
+        name: MarketplaceOfferCancelled.name,
+        data: new MarketplaceOfferCancelled({ listing: `0x${listingId}` }),
+    })
+    const alreadyCanonical = new EventModel({
+        id: '191-9',
+        name: MarketplaceListingCancelled.name,
+        data: new MarketplaceListingCancelled({ listing: listingId }),
+    })
+
+    assert.equal(stripCancellationListingIdPrefix(listingCancellation), true)
+    assert.equal(listingCancellation.data?.listing, listingId)
+    assert.equal(stripCancellationListingIdPrefix(offerCancellation), true)
+    assert.equal(offerCancellation.data?.listing, listingId)
+    assert.equal(stripCancellationListingIdPrefix(alreadyCanonical), false)
+    assert.equal(alreadyCanonical.data?.listing, listingId)
 })
 
 void test('partial-fill state preserves progress and clamps stale counters', () => {
