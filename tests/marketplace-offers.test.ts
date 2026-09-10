@@ -11,7 +11,10 @@ import {
     Listing,
     ListingType,
     MarketplaceListingBookState,
+    MarketplaceListingCancelled,
     MarketplaceListingFilled,
+    MarketplaceListingRemovedUnderMinimum,
+    MarketplaceOfferCancelled,
     MarketplaceOfferSettled,
     MarketplaceOrderMatched,
     OfferData,
@@ -26,7 +29,9 @@ import {
     orderMatchedEventModel,
 } from '~/pallet/marketplace/events'
 import { counterOfferRemovedEventModel } from '~/pallet/marketplace/events/counter-offer-removed'
+import { listingCancelledEventModel } from '~/pallet/marketplace/events/listing-cancelled'
 import { listingFilledEventModel } from '~/pallet/marketplace/events/listing-filled'
+import { listingRemovedUnderMinimumEventModel } from '~/pallet/marketplace/events/listing-removed-under-minimum'
 import {
     initialBookState,
     listingFillParties,
@@ -143,6 +148,36 @@ void test('migration observability survives missing listing relations', () => {
     assert.equal(completedModel.data.storageVersion, 8)
     assert.equal(removedModel.data.isTypeOf, 'MarketplaceCounterOfferRemoved')
     assert.equal(removedModel.data.listing, undefined)
+})
+
+void test('marketplace removal events use canonical listing relation IDs', () => {
+    const account = new Account({ id: taker, address: taker })
+    const collection = new Collection({ id: '10', collectionId: 10n })
+    const token = new Token({ id: '10-20', tokenId: 20n, collection })
+    const fixedPrice = new Listing({ id: 'aa'.repeat(32), type: ListingType.FixedPrice })
+    const offer = new Listing({ id: 'bb'.repeat(32), type: ListingType.Offer })
+    const fixedPriceEvent = listingCancelledEventModel(
+        { id: '191-4', name: 'Marketplace.ListingCancelled' } as EventItem,
+        `0x${fixedPrice.id}`,
+        { listing: fixedPrice, account, collection, token }
+    )[0]
+    const offerEvent = listingCancelledEventModel(
+        { id: '191-5', name: 'Marketplace.ListingCancelled' } as EventItem,
+        `0x${offer.id}`,
+        { listing: offer, account, collection, token }
+    )[0]
+    const underMinimumEvent = listingRemovedUnderMinimumEventModel(
+        { id: '191-6', name: 'Marketplace.ListingRemovedUnderMinimum' } as EventItem,
+        `0x${fixedPrice.id}`,
+        { listing: fixedPrice, account, collection, token }
+    )[0]
+
+    assert(fixedPriceEvent.data instanceof MarketplaceListingCancelled)
+    assert.equal(fixedPriceEvent.data.listing, fixedPrice.id)
+    assert(offerEvent.data instanceof MarketplaceOfferCancelled)
+    assert.equal(offerEvent.data.listing, offer.id)
+    assert(underMinimumEvent.data instanceof MarketplaceListingRemovedUnderMinimum)
+    assert.equal(underMinimumEvent.data.listing, fixedPrice.id)
 })
 
 void test('partial-fill state preserves progress and clamps stale counters', () => {
