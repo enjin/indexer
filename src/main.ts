@@ -134,10 +134,6 @@ async function bootstrap() {
                     }
 
                     if (block.header.height > dataService.lastBlockNumber) {
-                        await p.multiTokens.processors.reconcileTokenLoans(ctx, block.header, block.events, block.calls)
-                    }
-
-                    if (block.header.height > dataService.lastBlockNumber) {
                         p.balances.processors.addAccountsToSet(Array.from(signers))
                         await p.balances.processors.saveAccounts(ctx, block.header)
                     }
