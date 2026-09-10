@@ -1,4 +1,12 @@
-import { AccountTokenEvent, Event as EventModel, Listing, ListingStatus, ListingStatusType, ListingType } from '~/model'
+import {
+    AccountTokenEvent,
+    Event as EventModel,
+    Listing,
+    ListingStatus,
+    ListingStatusType,
+    ListingType,
+    MarketplaceListingBookState,
+} from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
 import { SnsEvent } from '~/util/sns'
@@ -46,6 +54,7 @@ export async function listingRemovedUnderMinimum(
     })
 
     listing.isActive = false
+    listing.bookState = MarketplaceListingBookState.Removed
     listing.updatedAt = new Date(block.timestamp ?? 0)
 
     await ctx.store.insert(listingStatus)

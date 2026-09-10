@@ -5,6 +5,7 @@ import {
     ListingSale,
     ListingStatus,
     ListingStatusType,
+    MarketplaceListingBookState,
     TokenAccount,
 } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
@@ -74,6 +75,7 @@ export async function auctionFinalized(
     }
 
     listing.isActive = false
+    listing.bookState = MarketplaceListingBookState.Removed
     listing.updatedAt = new Date(block.timestamp ?? 0)
 
     await ctx.store.save(listing)

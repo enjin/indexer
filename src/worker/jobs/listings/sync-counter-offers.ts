@@ -1,14 +1,7 @@
 import { connectionManager } from '~/contexts'
 import { Job } from 'bullmq'
-import {
-    AccountTokenEvent,
-    Listing,
-    ListingType,
-    MarketplaceOfferCancelled,
-    MarketplaceOfferCreated,
-    OfferState,
-} from '~/model'
-import { MoreThan } from 'typeorm'
+import { Listing, ListingType } from '~/model'
+import { rebuildOfferState } from '~/pallet/marketplace/utils/listing-state'
 
 export async function syncCounterOffers(job: Job): Promise<void> {
     const em = await connectionManager()
@@ -25,11 +18,7 @@ export async function syncCounterOffers(job: Job): Promise<void> {
     await job.log(`Syncing ${listings.length} counter offers`)
 
     for (const listing of listings) {
-        listing.state = new OfferState({
-            listingType: ListingType.Offer,
-            counterOfferCount: (listing.state as OfferState).counterOfferCount,
-            isExpired: false,
-        })
+        listing.state = rebuildOfferState(listing.amount, listing.state, { isExpired: false })
 
         promises.push(em.save(listing))
     }

@@ -4,13 +4,17 @@ import { calls } from '~/type'
 import { match } from 'ts-pattern'
 import { Mint } from '~/pallet/multi-tokens/calls/types'
 import { withDispatchCheck } from '~/pallet/fuel-tanks/utils'
+import { normalizeDefaultMintParams } from './mint-rate-limit'
 
 export const mint = withDispatchCheck((call: CallItem): Mint => {
     return match(call)
         .returnType<Mint>()
         .when(
             () => calls.multiTokens.mint.matrixV1040.is(call),
-            () => calls.multiTokens.mint.matrixV1040.decode(call)
+            () => {
+                const data = calls.multiTokens.mint.matrixV1040.decode(call)
+                return { ...data, params: normalizeDefaultMintParams(data.params) }
+            }
         )
         .when(
             () => calls.multiTokens.mint.matrixEnjinV1022.is(call),
