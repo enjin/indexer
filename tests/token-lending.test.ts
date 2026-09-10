@@ -3,7 +3,7 @@ import fs from 'node:fs'
 import { createRequire, Module } from 'node:module'
 import test, { after } from 'node:test'
 import { Runtime } from '@subsquid/substrate-runtime'
-import { Account, Collection, Token, TokenAccount, TokenLoan } from '~/model'
+import { Account, AccountTokenEvent, Collection, Token, TokenAccount, TokenLoan } from '~/model'
 import { Block, EventItem } from '~/contexts'
 import {
     loanExtended,
@@ -82,6 +82,10 @@ void test('lending event decoders retain lifecycle identity and nullable extrins
     const runtime = runtime1040()
     const lender = `0x${'11'.repeat(32)}`
     const borrower = `0x${'22'.repeat(32)}`
+    const lenderAccount = new Account({ id: lender })
+    const borrowerAccount = new Account({ id: borrower })
+    const collection = new Collection({ id: '7' })
+    const token = new Token({ id: '7-9', tokenId: 9n, collection })
     const lentItem = eventItem(runtime, 'MultiTokens.TokenLent', {
         collectionId: '7',
         tokenId: '9',
@@ -114,16 +118,38 @@ void test('lending event decoders retain lifecycle identity and nullable extrins
     const failed = loanReturnFailed(failedItem)
     const block = { _runtime: runtime, height: 100 } as Block
 
-    assert.equal(tokenLentEventModel(lentItem, 88, lent).data.expirationBlock, 88n)
+    const [lentEvent, lentAccountEvent] = tokenLentEventModel(
+        lentItem,
+        88,
+        lent,
+        lenderAccount,
+        borrowerAccount,
+        collection,
+        token
+    )
+    assert.equal(lentEvent.data.expirationBlock, 88n)
+    assert.equal(lentAccountEvent.from.id, lender)
+    assert.equal(lentAccountEvent.to?.id, borrower)
     assert.equal(loanExtendedEventModel(extendedItem, 89, extended).data.newExpirationBlock, 99n)
-    assert.equal(tokenReturnedEventModel(returnedItem, 99, returned).data.borrower, borrower)
+    const [returnedEvent, returnedAccountEvent] = tokenReturnedEventModel(
+        returnedItem,
+        99,
+        returned,
+        lenderAccount,
+        borrowerAccount,
+        collection,
+        token
+    )
+    assert.equal(returnedEvent.data.borrower, borrower)
+    assert.equal(returnedAccountEvent.from.id, borrower)
+    assert.equal(returnedAccountEvent.to?.id, lender)
     const failedModel = loanReturnFailedEventModel(failedItem, block, failed)
     assert.equal(failedModel.extrinsic, null)
     assert.equal(failedModel.data.error, 'BadOrigin')
     assert.equal(failedModel.data.observedBlock, 100n)
 })
 
-void test('loan processors update current state without touching token-account balances', async () => {
+void test('loan processors update current state and emit account history without touching token-account balances', async () => {
     const runtime = runtime1040()
     const lender = new Account({ id: `0x${'11'.repeat(32)}` })
     const borrower = new Account({ id: `0x${'22'.repeat(32)}` })
@@ -133,6 +159,7 @@ void test('loan processors update current state without touching token-account b
     const ctx = {
         log: { warn: () => undefined },
         store: {
+            findOne: (entity: unknown) => Promise.resolve(entity === Token ? token : undefined),
             findOneBy: (entity: unknown, where: { id: string }) => {
                 if (entity === Token) return Promise.resolve(token)
                 if (entity === Account) return Promise.resolve(where.id === lender.id ? lender : borrower)
@@ -152,7 +179,7 @@ void test('loan processors update current state without touching token-account b
     } as never
     const block = { _runtime: runtime, height: 88, timestamp: 1_000 } as Block
 
-    await processTokenLent(
+    const lentResult = await processTokenLent(
         ctx,
         block,
         eventItem(runtime, 'MultiTokens.TokenLent', {
@@ -164,6 +191,24 @@ void test('loan processors update current state without touching token-account b
         }),
         false
     )
+    assert(Array.isArray(lentResult))
+    assert(lentResult[1] instanceof AccountTokenEvent)
+    assert.equal(lentResult[1].from.id, lender.id)
+    assert.equal(lentResult[1].to?.id, borrower.id)
+    assert.deepEqual(lentResult[2], {
+        id: '88-1',
+        name: 'MultiTokens.TokenLent',
+        body: {
+            collectionId: 7n,
+            tokenId: 9n,
+            token: '7-9',
+            lender: lender.id,
+            borrower: borrower.id,
+            expiration: 88,
+            observedBlock: 88,
+            extrinsic: undefined,
+        },
+    })
     assert.equal(loan.borrower.id, borrower.id)
     assert.equal(loan.expiration, 88n)
 
@@ -194,7 +239,7 @@ void test('loan processors update current state without touching token-account b
     assert.equal(loan.expiration, 99n)
     assert.equal(loan.lastObservedBlock, 99n)
 
-    await processTokenReturned(
+    const returnedResult = await processTokenReturned(
         ctx,
         { ...block, height: 100 },
         eventItem(runtime, 'MultiTokens.TokenReturned', {
@@ -205,6 +250,23 @@ void test('loan processors update current state without touching token-account b
         }),
         false
     )
+    assert(Array.isArray(returnedResult))
+    assert(returnedResult[1] instanceof AccountTokenEvent)
+    assert.equal(returnedResult[1].from.id, borrower.id)
+    assert.equal(returnedResult[1].to?.id, lender.id)
+    assert.deepEqual(returnedResult[2], {
+        id: '88-1',
+        name: 'MultiTokens.TokenReturned',
+        body: {
+            collectionId: 7n,
+            tokenId: 9n,
+            token: '7-9',
+            lender: lender.id,
+            borrower: borrower.id,
+            observedBlock: 100,
+            extrinsic: undefined,
+        },
+    })
     assert.equal(loan, undefined)
 
     await processTokenLent(

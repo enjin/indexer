@@ -1,5 +1,13 @@
 import { EventItem } from '~/contexts'
-import { Event as EventModel, Extrinsic, MultiTokensTokenReturned } from '~/model'
+import {
+    Account,
+    AccountTokenEvent,
+    Collection,
+    Event as EventModel,
+    Extrinsic,
+    MultiTokensTokenReturned,
+    Token,
+} from '~/model'
 import { TokenReturned } from '~/pallet/multi-tokens/events/types'
 import { multiTokens } from '~/type/events'
 import { UnsupportedEventError } from '~/util/errors'
@@ -12,8 +20,16 @@ export function tokenReturned(event: EventItem): TokenReturned {
     throw new UnsupportedEventError(event)
 }
 
-export function tokenReturnedEventModel(item: EventItem, observedBlock: number, data: TokenReturned): EventModel {
-    return new EventModel({
+export function tokenReturnedEventModel(
+    item: EventItem,
+    observedBlock: number,
+    data: TokenReturned,
+    lender: Account,
+    borrower: Account,
+    collection: Collection | null,
+    token: Token | null
+): [EventModel, AccountTokenEvent] {
+    const event = new EventModel({
         id: item.id,
         name: MultiTokensTokenReturned.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
@@ -27,4 +43,16 @@ export function tokenReturnedEventModel(item: EventItem, observedBlock: number, 
             observedBlock: BigInt(observedBlock),
         }),
     })
+
+    return [
+        event,
+        new AccountTokenEvent({
+            id: item.id,
+            from: borrower,
+            to: lender,
+            event,
+            collection,
+            token,
+        }),
+    ]
 }

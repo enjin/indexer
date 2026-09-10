@@ -1,5 +1,13 @@
 import { EventItem } from '~/contexts'
-import { Event as EventModel, Extrinsic, MultiTokensTokenLent } from '~/model'
+import {
+    Account,
+    AccountTokenEvent,
+    Collection,
+    Event as EventModel,
+    Extrinsic,
+    MultiTokensTokenLent,
+    Token,
+} from '~/model'
 import { TokenLent } from '~/pallet/multi-tokens/events/types'
 import { multiTokens } from '~/type/events'
 import { UnsupportedEventError } from '~/util/errors'
@@ -12,8 +20,16 @@ export function tokenLent(event: EventItem): TokenLent {
     throw new UnsupportedEventError(event)
 }
 
-export function tokenLentEventModel(item: EventItem, observedBlock: number, data: TokenLent): EventModel {
-    return new EventModel({
+export function tokenLentEventModel(
+    item: EventItem,
+    observedBlock: number,
+    data: TokenLent,
+    lender: Account,
+    borrower: Account,
+    collection: Collection | null,
+    token: Token | null
+): [EventModel, AccountTokenEvent] {
+    const event = new EventModel({
         id: item.id,
         name: MultiTokensTokenLent.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
@@ -28,4 +44,16 @@ export function tokenLentEventModel(item: EventItem, observedBlock: number, data
             observedBlock: BigInt(observedBlock),
         }),
     })
+
+    return [
+        event,
+        new AccountTokenEvent({
+            id: item.id,
+            from: lender,
+            to: borrower,
+            event,
+            collection,
+            token,
+        }),
+    ]
 }
