@@ -942,7 +942,6 @@ type TokenLoan @entity {
   lender: Account! @index
   borrower: Account! @index
   expiration: BigInt! @index
-  lastObservedBlock: BigInt! @index
   createdAt: DateTime!
   updatedAt: DateTime!
 }

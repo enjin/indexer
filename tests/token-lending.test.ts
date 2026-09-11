@@ -237,7 +237,6 @@ void test('loan processors update current state and emit account history without
         false
     )
     assert.equal(loan.expiration, 99n)
-    assert.equal(loan.lastObservedBlock, 99n)
 
     const returnedResult = await processTokenReturned(
         ctx,

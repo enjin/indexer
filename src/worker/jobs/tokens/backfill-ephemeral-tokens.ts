@@ -69,7 +69,6 @@ export async function backfillEphemeralTokens(job: Job<BackfillEphemeralTokensDa
                         lender,
                         borrower: borrowers[0].account,
                         expiration: lending.expiration,
-                        lastObservedBlock: BigInt(storage.height),
                         updatedAt: observedAt,
                     })
                 )

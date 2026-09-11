@@ -28,10 +28,6 @@ export class TokenLoan {
     @BigIntColumn_({nullable: false})
     expiration!: bigint
 
-    @Index_()
-    @BigIntColumn_({nullable: false})
-    lastObservedBlock!: bigint
-
     @DateTimeColumn_({nullable: false})
     createdAt!: Date
 

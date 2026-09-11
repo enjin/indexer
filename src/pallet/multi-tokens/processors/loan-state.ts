@@ -65,7 +65,6 @@ export async function upsertTokenLoan(
     loan.lender = lender
     loan.borrower = borrower
     loan.expiration = expiration
-    loan.lastObservedBlock = BigInt(block.height)
     loan.updatedAt = now
     await ctx.store.save(loan)
     return loan
