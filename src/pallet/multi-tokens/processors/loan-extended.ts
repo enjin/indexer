@@ -21,7 +21,6 @@ export async function loanExtended(
     }
 
     loan.expiration = BigInt(data.newExpiration)
-    loan.lastObservedBlock = BigInt(block.height)
     loan.updatedAt = new Date(block.timestamp ?? 0)
     await ctx.store.save(loan)
     return event

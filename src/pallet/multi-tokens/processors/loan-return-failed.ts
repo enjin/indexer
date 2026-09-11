@@ -22,7 +22,6 @@ export async function loanReturnFailed(
     }
 
     loan.expiration = BigInt(data.expiration)
-    loan.lastObservedBlock = BigInt(block.height)
     loan.updatedAt = new Date(block.timestamp ?? 0)
     await ctx.store.save(loan)
     return event
