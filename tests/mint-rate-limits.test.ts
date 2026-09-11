@@ -1,9 +1,11 @@
 import assert from 'node:assert/strict'
 import fs from 'node:fs'
-import test from 'node:test'
+import { createRequire, Module } from 'node:module'
+import test, { after } from 'node:test'
 import { Codec, Type, TypeKind } from '@subsquid/scale-codec'
 import { Runtime } from '@subsquid/substrate-runtime'
 import { Block, EventItem } from '~/contexts'
+import { Collection, Token } from '~/model'
 import { normalizeDefaultMintParams, normalizeFlexibleMintParams } from '~/pallet/multi-tokens/calls/mint-rate-limit'
 import {
     mintRateLimitChangeScheduled,
@@ -14,6 +16,33 @@ import {
 import { decodeCollectionStorageValue, getMixedCollection } from '~/pallet/multi-tokens/storage/collection-values'
 import { normalizeMintRateLimitState } from '~/pallet/multi-tokens/storage/mint-rate-limit'
 import { decodeTokenStorageValue } from '~/pallet/multi-tokens/storage/token-values'
+
+const testRequire = createRequire(__filename)
+const queueModulePath = testRequire.resolve('~/queue')
+const originalQueueModule = testRequire.cache[queueModulePath]
+assert.equal(originalQueueModule, undefined, 'queue module loaded before the test stub was installed')
+const queueModule = new Module(queueModulePath)
+queueModule.loaded = true
+queueModule.exports = {
+    QueueUtils: {
+        dispatchComputeAccountStats: () => Promise.resolve(),
+        dispatchComputeStats: () => Promise.resolve(),
+        dispatchComputeTokenNativeMetadata: () => Promise.resolve(),
+    },
+}
+testRequire.cache[queueModulePath] = queueModule
+
+const {
+    mintRateLimitUpdated: processMintRateLimitUpdated,
+    mintRateLimitChangeScheduled: processMintRateLimitChangeScheduled,
+    mintRateLimitChangeCancelled: processMintRateLimitChangeCancelled,
+} = testRequire(
+    '~/pallet/multi-tokens/processors/mint-rate-limit'
+) as typeof import('~/pallet/multi-tokens/processors/mint-rate-limit')
+
+after(() => {
+    testRequire.cache[queueModulePath] = originalQueueModule
+})
 
 type MetadataLine = {
     specName: string
@@ -225,4 +254,62 @@ void test('lifecycle event models preserve scope, large limits, scheduled remova
     assert.equal(scheduled.newLimit, undefined)
     assert.equal(scheduledModel.data.newLimit, undefined)
     assert.equal(scheduledModel.data.effectiveBlock, 200n)
+})
+
+void test('all live mint rate limit event processors persist their scoped state from pinned storage', async () => {
+    const collectionBytes = encodeCurrentAndLegacy('Collections', collectionValue(rateState())).current
+    const tokenBytes = encodeCurrentAndLegacy('Tokens', tokenValue(rateState(true))).current
+    let storageQueries = 0
+    const runtime = runtime1040((method, params) => {
+        assert.equal(method, 'state_getStorageAt')
+        assert(params)
+        assert.equal(params[1], '0xblock')
+        storageQueries++
+        const collectionKey = runtime.encodeStorageKey('MultiTokens.Collections', 0n)
+        const tokenKey = runtime.encodeStorageKey('MultiTokens.Tokens', 0n, 0n)
+        if (params[0] === collectionKey) return Promise.resolve(collectionBytes)
+        if (params[0] === tokenKey) return Promise.resolve(tokenBytes)
+        return Promise.resolve(null)
+    })
+    const collection = new Collection({ id: '0' })
+    const token = new Token({ id: '0-0', tokenId: 0n, collection })
+    const saved: unknown[] = []
+    const ctx = {
+        log: { warn: () => undefined },
+        store: {
+            findOneBy: (entity: unknown) => Promise.resolve(entity === Collection ? collection : token),
+            save: (entity: unknown) => Promise.resolve(saved.push(entity)),
+        },
+    } as never
+    const collectionEvent = eventItem(runtime, 'MultiTokens.MintRateLimitUpdated', {
+        collectionId: '0',
+        tokenId: undefined,
+        limit: { period: 64, max: '100' },
+    })
+    const tokenEvent = eventItem(runtime, 'MultiTokens.MintRateLimitUpdated', {
+        collectionId: '0',
+        tokenId: '0',
+        limit: { period: 64, max: '100' },
+    })
+    const scheduledEvent = eventItem(runtime, 'MultiTokens.MintRateLimitChangeScheduled', {
+        collectionId: '0',
+        tokenId: undefined,
+        newLimit: undefined,
+        effectiveBlock: 200,
+    })
+    const cancelledEvent = eventItem(runtime, 'MultiTokens.MintRateLimitChangeCancelled', {
+        collectionId: '0',
+        tokenId: '0',
+    })
+
+    const block = { _runtime: runtime, height: 190, hash: '0xblock' }
+    await processMintRateLimitUpdated(ctx, block, collectionEvent, false)
+    await processMintRateLimitUpdated(ctx, block, tokenEvent, false)
+    await processMintRateLimitChangeScheduled(ctx, block, scheduledEvent, false)
+    await processMintRateLimitChangeCancelled(ctx, block, cancelledEvent, false)
+
+    assert.equal(storageQueries, 4)
+    assert.equal(saved.length, 4)
+    assert.equal(collection.mintRateLimit?.limit.max, largeMaximum)
+    assert.equal(token.mintRateLimit?.pending?.effectiveBlock, 200n)
 })
