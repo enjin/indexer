@@ -3,6 +3,7 @@ import type { DryRunBatchResponse, DryRunError, DryRunInput, DryRunResponse } fr
 
 export const DRY_RUN_XCM_VERSION = 5
 export const DRY_RUN_CONCURRENCY = 5
+export const DRY_RUN_BILLED_DEPOSIT = 0n
 
 interface CodecValue {
     toHex(): string
@@ -38,8 +39,27 @@ interface DryRunResult {
     asOk: DryRunEffects
 }
 
+/**
+ * `OriginCaller` variants the dry-run API accepts. `FuelTanks.FuelTank` mirrors
+ * `PalletFuelTanksOrigin` as defined by the runtime (spec 1040):
+ * `{ caller, tankId, providesDeposit, ruleSetId: Option<u32>, billedDeposit }`.
+ */
+export type DryRunOriginCaller =
+    | { system: { Signed: string } }
+    | {
+          FuelTanks: {
+              FuelTank: {
+                  caller: string
+                  tankId: string
+                  providesDeposit: boolean
+                  ruleSetId: number | null
+                  billedDeposit: bigint
+              }
+          }
+      }
+
 interface DryRunRuntimeApi {
-    dryRunCall(origin: { system: { Signed: string } }, encodedData: string, xcmVersion: number): Promise<DryRunResult>
+    dryRunCall(origin: DryRunOriginCaller, encodedData: string, xcmVersion: number): Promise<DryRunResult>
 }
 
 interface DryRunRegistry {
@@ -104,17 +124,35 @@ export function formatDryRunResult(registry: DryRunRegistry, result: DryRunResul
     }
 }
 
+export function buildDryRunOrigin(request: DryRunInput): DryRunOriginCaller {
+    const fuelTank = request.origin?.fuelTank
+    if (!fuelTank) {
+        return { system: { Signed: request.publicKey } }
+    }
+
+    return {
+        FuelTanks: {
+            FuelTank: {
+                caller: request.publicKey,
+                tankId: fuelTank.tankId,
+                // The fuel-tank signed extension computes these during a real dispatch.
+                // A simulation only needs an origin the runtime accepts, and the
+                // dispatchable's own rule checks run regardless of the billed amount.
+                providesDeposit: false,
+                ruleSetId: fuelTank.ruleSetId ?? null,
+                billedDeposit: DRY_RUN_BILLED_DEPOSIT,
+            },
+        },
+    }
+}
+
 export async function dryRun(api: ApiPromise, request: DryRunInput): Promise<DryRunResponse> {
     const runtimeApi = (api.call as unknown as { dryRunApi?: DryRunRuntimeApi }).dryRunApi
     if (!runtimeApi) {
         throw new Error('dryRunApi.dryRunCall is not available on the configured chain')
     }
 
-    const result = await runtimeApi.dryRunCall(
-        { system: { Signed: request.publicKey } },
-        request.encodedData,
-        DRY_RUN_XCM_VERSION
-    )
+    const result = await runtimeApi.dryRunCall(buildDryRunOrigin(request), request.encodedData, DRY_RUN_XCM_VERSION)
 
     return formatDryRunResult(api.registry as unknown as DryRunRegistry, result)
 }

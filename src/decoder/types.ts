@@ -76,9 +76,30 @@ export interface DecodeSignedExtrinsicRequestBody {
     spec_version?: number
 }
 
+/**
+ * Simulate the call with a `FuelTanks.FuelTank` origin instead of `system.Signed`.
+ * Required for fuel-tank sponsored calls, which the runtime rejects with `BadOrigin`
+ * under a signed origin.
+ */
+export interface DryRunFuelTankOrigin {
+    /** Public key of the fuel tank account (32 bytes, hex). */
+    tankId: string
+    /**
+     * Rule set the dispatch runs under. Omit or pass `null` to let the runtime
+     * auto-select the first passing rule set, mirroring a dispatch with `ruleSetId: None`.
+     */
+    ruleSetId?: number | null
+}
+
+export interface DryRunOrigin {
+    fuelTank: DryRunFuelTankOrigin
+}
+
 export interface DryRunInput {
     publicKey: string
     encodedData: string
+    /** Absent means `system.Signed(publicKey)`. */
+    origin?: DryRunOrigin
 }
 
 export interface DryRunRequestBody {
