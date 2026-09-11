@@ -39,6 +39,9 @@ const {
 } = testRequire(
     '~/pallet/multi-tokens/processors/mint-rate-limit'
 ) as typeof import('~/pallet/multi-tokens/processors/mint-rate-limit')
+const { refreshMintRateLimits } = testRequire(
+    '~/pallet/multi-tokens/processors/minted'
+) as typeof import('~/pallet/multi-tokens/processors/minted')
 
 after(() => {
     testRequire.cache[queueModulePath] = originalQueueModule
@@ -312,4 +315,40 @@ void test('all live mint rate limit event processors persist their scoped state 
     assert.equal(saved.length, 4)
     assert.equal(collection.mintRateLimit?.limit.max, largeMaximum)
     assert.equal(token.mintRateLimit?.pending?.effectiveBlock, 200n)
+})
+
+void test('mint refreshes both token and collection rate limit windows from pinned storage', async () => {
+    const collectionBytes = encodeCurrentAndLegacy('Collections', collectionValue(rateState())).current
+    const tokenBytes = encodeCurrentAndLegacy('Tokens', tokenValue(rateState(true))).current
+    let storageQueries = 0
+    const runtime = runtime1040((method, params) => {
+        assert.equal(method, 'state_getStorageAt')
+        assert(params)
+        assert.equal(params[1], '0xmint')
+        storageQueries++
+
+        const collectionKey = runtime.encodeStorageKey('MultiTokens.Collections', 0n)
+        const tokenKey = runtime.encodeStorageKey('MultiTokens.Tokens', 0n, 0n)
+        if (params[0] === collectionKey) return Promise.resolve(collectionBytes)
+        if (params[0] === tokenKey) return Promise.resolve(tokenBytes)
+        return Promise.resolve(null)
+    })
+    const collection = new Collection({ id: '0', collectionId: 0n, mintRateLimit: null })
+    const token = new Token({ id: '0-0', tokenId: 0n, collection, mintRateLimit: null })
+    const warnings: string[] = []
+    const ctx = { log: { warn: (message: string) => warnings.push(message) } } as never
+
+    const collectionUpdated = await refreshMintRateLimits(
+        ctx,
+        { _runtime: runtime, hash: '0xmint' } as Block,
+        token,
+        0n,
+        0n
+    )
+
+    assert.equal(collectionUpdated, true)
+    assert.equal(storageQueries, 2)
+    assert.deepEqual(warnings, [])
+    assert.equal(token.mintRateLimit?.pending?.effectiveBlock, 200n)
+    assert.equal(collection.mintRateLimit?.limit.max, largeMaximum)
 })

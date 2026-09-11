@@ -115,7 +115,11 @@ function tokenValue() {
         ephemeralExpiration: 77,
         isLendable: false,
         lending: { lender: `0x${'11'.repeat(32)}`, expiration: 88 },
-        mintRateLimit: undefined,
+        mintRateLimit: {
+            limit: { period: 120, max: 2n },
+            window: { lastSlot: 10, buckets: [1n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n] },
+            pending: undefined,
+        },
     }
 }
 
@@ -177,6 +181,7 @@ void test('token storage decoder accepts strict current and pre-v6 layouts', () 
     assert.equal(currentToken.ephemeralExpiration, 77n)
     assert.equal(currentToken.isLendable, false)
     assert.equal(currentToken.lending?.expiration, 88n)
+    assert.equal(currentToken.mintRateLimit?.window.buckets[0], 1n)
     assert.equal(legacyToken.ephemeralExpiration, undefined)
     assert.equal(legacyToken.isLendable, false)
     assert.equal(legacyToken.lending, undefined)
@@ -279,7 +284,12 @@ void test('v1040 direct, batch and force mint wrappers retain ephemeral fields',
 })
 
 void test('token creation stores the event initial supply separately from live supply', async () => {
-    const runtime = matrixV1040Runtime()
+    const { current } = encodedTokens()
+    const runtime = matrixV1040Runtime((method, params) => {
+        assert.equal(method, 'state_getStorageAt')
+        assert.equal(params?.[1], '0x01')
+        return Promise.resolve(current)
+    })
     const account = `0x${'22'.repeat(32)}`
     const collection = new Collection({ id: '7', attributes: [] })
     const saved: Token[] = []
@@ -292,7 +302,7 @@ void test('token creation stores the event initial supply separately from live s
     item.call = callItem(runtime, 'MultiTokens.mint', {
         recipient: { __kind: 'Id', value: account },
         collectionId: '7',
-        params: { ...createParams(), initialSupply: '3' },
+        params: { ...createParams(), initialSupply: '3', mintRateLimit: { period: 120, max: '2' } },
     })
     const ctx = {
         store: {
@@ -301,12 +311,16 @@ void test('token creation stores the event initial supply separately from live s
         },
     } as never
 
-    await tokenCreated(ctx, { _runtime: runtime, height: 10, timestamp: 0 } as Block, item, false)
+    await tokenCreated(ctx, { _runtime: runtime, height: 10, hash: '0x01', timestamp: 0 } as Block, item, false)
 
     assert.equal(saved.length, 1)
     assert.equal(saved[0].supply, 0n)
     assert.equal(saved[0].creationSupply, 3n)
     assert.equal(saved[0].isLendable, false)
+    const mintRateLimit = saved[0].mintRateLimit
+    assert(mintRateLimit)
+    assert.equal(mintRateLimit.limit.max, 2n)
+    assert.equal(mintRateLimit.window.buckets[0], 1n)
 })
 
 void test('ephemeral events retain scalar identity and support hook events without extrinsics', () => {

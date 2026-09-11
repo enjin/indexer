@@ -19,6 +19,41 @@ import { calls } from '~/type'
 import { getOrCreatePoolMemberRewards } from '~/util/earlyBird'
 import { EventHandlerResult } from '~/processor.handler'
 import Big from 'big.js'
+import { hasV6CollectionLayout } from '~/pallet/multi-tokens/storage/collection-values'
+import { hasV6TokenLayout } from '~/pallet/multi-tokens/storage/token-values'
+import { toMintRateLimitStateModel } from '~/pallet/multi-tokens/processors/mint-rate-limit-state'
+
+export async function refreshMintRateLimits(
+    ctx: CommonContext,
+    block: Block,
+    token: Token,
+    collectionId: bigint,
+    tokenId: bigint
+): Promise<boolean> {
+    if (!hasV6TokenLayout(block._runtime) || !hasV6CollectionLayout(block._runtime)) return false
+
+    const [chainToken, chainCollection] = await Promise.all([
+        mappings.multiTokens.storage.tokens(block, {
+            collectionId,
+            tokenId,
+        }),
+        mappings.multiTokens.storage.collections(block, { collectionId }),
+    ])
+
+    if (chainToken) {
+        token.mintRateLimit = toMintRateLimitStateModel(chainToken.mintRateLimit)
+    } else {
+        ctx.log.warn(`[Minted] Token ${token.id} was absent while refreshing its mint rate limit`)
+    }
+
+    if (!chainCollection) {
+        ctx.log.warn(`[Minted] Collection ${token.collection.id} was absent while refreshing its mint rate limit`)
+        return false
+    }
+
+    token.collection.mintRateLimit = toMintRateLimitStateModel(chainCollection.mintRateLimit)
+    return true
+}
 
 export async function getActiveEra(ctx: CommonContext) {
     const eras = await ctx.store.find(Era, {
@@ -132,7 +167,17 @@ export async function minted(
 
     token.supply += data.amount
     token.nonFungible = isNonFungible(token)
-    await ctx.store.save(token)
+    const collectionMintRateLimitUpdated = await refreshMintRateLimits(
+        ctx,
+        block,
+        token,
+        data.collectionId,
+        data.tokenId
+    )
+    await Promise.all([
+        ctx.store.save(token),
+        collectionMintRateLimitUpdated ? ctx.store.save(token.collection) : Promise.resolve(),
+    ])
 
     const tokenAccount = await ctx.store.findOne<TokenAccount>(TokenAccount, {
         where: { id: `${data.recipient}-${data.collectionId}-${data.tokenId}` },
