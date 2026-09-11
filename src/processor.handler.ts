@@ -98,13 +98,13 @@ export async function eventHandler(
                 p.multiTokens.processors.loanReturnFailed(ctx, block, item, skipSave)
             )
             .with(multiTokens.mintRateLimitUpdated.name, () =>
-                p.multiTokens.processors.mintRateLimitUpdated(item, skipSave)
+                p.multiTokens.processors.mintRateLimitUpdated(ctx, block, item, skipSave)
             )
             .with(multiTokens.mintRateLimitChangeScheduled.name, () =>
-                p.multiTokens.processors.mintRateLimitChangeScheduled(item, skipSave)
+                p.multiTokens.processors.mintRateLimitChangeScheduled(ctx, block, item, skipSave)
             )
             .with(multiTokens.mintRateLimitChangeCancelled.name, () =>
-                p.multiTokens.processors.mintRateLimitChangeCancelled(item, skipSave)
+                p.multiTokens.processors.mintRateLimitChangeCancelled(ctx, block, item, skipSave)
             )
             .with(multiTokens.tokenMutated.name, () =>
                 p.multiTokens.processors.tokenMutated(ctx, block, item, skipSave)
