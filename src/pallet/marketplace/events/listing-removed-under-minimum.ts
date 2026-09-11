@@ -44,6 +44,7 @@ export function listingRemovedUnderMinimumEventModel(
     listingId: string,
     relations?: ListingRemovedUnderMinimumRelations
 ): [EventModel, AccountTokenEvent | undefined] {
+    const canonicalListingId = relations?.listing.id ?? listingId
     const event = new EventModel({
         id: item.id,
         name: MarketplaceListingRemovedUnderMinimum.name,
@@ -51,7 +52,7 @@ export function listingRemovedUnderMinimumEventModel(
         collectionId: relations?.collection.id,
         tokenId: relations?.token.id,
         data: new MarketplaceListingRemovedUnderMinimum({
-            listing: listingId,
+            listing: canonicalListingId,
         }),
     })
 

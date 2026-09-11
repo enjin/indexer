@@ -1,4 +1,4 @@
-import { AccountId32, Deposit, AssetId, DefaultCollectionPolicy } from '~/pallet/common/types'
+import { AccountId32, Deposit, AssetId, DefaultCollectionPolicy, MintRateLimitState } from '~/pallet/common/types'
 
 export type Collection = {
     owner: AccountId32
@@ -9,4 +9,6 @@ export type Collection = {
     totalDeposit: bigint
     explicitRoyaltyCurrencies: [AssetId, null][]
     totalInfusion?: bigint // Added on v1030
+    tokenGroupCount?: number // Added on matrixV1030
+    mintRateLimit?: MintRateLimitState // Added on matrixV1040; undefined for pre-v6 values
 }

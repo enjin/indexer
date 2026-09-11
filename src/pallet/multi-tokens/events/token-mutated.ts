@@ -68,6 +68,9 @@ export function tokenMutatedEventModel(item: EventItem, data: TokenMutated): Eve
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         collectionId: data.collectionId.toString(),
         tokenId: `${data.collectionId}-${data.tokenId}`,
-        data: new MultiTokensTokenMutated(),
+        data: new MultiTokensTokenMutated({
+            isLendable:
+                data.mutation.isLendable?.__kind === 'SomeMutation' ? data.mutation.isLendable.value : undefined,
+        }),
     })
 }

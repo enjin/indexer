@@ -14,6 +14,7 @@ import {
 import { isNonFungible } from '~/util/helpers'
 import { BATCH_SIZE, getCapType, getFreezeState, isTokenFrozen } from '~/synchronize/common'
 import { In } from 'typeorm'
+import { toMintRateLimitStateModel } from '~/pallet/multi-tokens/processors/mint-rate-limit-state'
 
 export async function tokens(ctx: CommonContext, block: Block) {
     ctx.log.info('Syncing tokens...')
@@ -81,6 +82,8 @@ export async function tokens(ctx: CommonContext, block: Block) {
                 accountDepositCount: 0,
                 anyoneCanInfuse: data.anyoneCanInfuse ?? false,
                 ephemeralExpiration: data.ephemeralExpiration ?? null,
+                isLendable: data.isLendable,
+                mintRateLimit: toMintRateLimitStateModel(data.mintRateLimit),
                 nativeMetadata: null,
                 tokenGroupTokens: [],
                 infusion: data.infusion,

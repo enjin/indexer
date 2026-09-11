@@ -10,6 +10,7 @@ import {
     TransferPolicy,
 } from '~/model'
 import { BATCH_SIZE, getAccountMap } from '~/synchronize/common'
+import { toMintRateLimitStateModel } from '~/pallet/multi-tokens/processors/mint-rate-limit-state'
 
 export async function collections(ctx: CommonContext, block: Block) {
     ctx.log.info('Syncing collections...')
@@ -89,6 +90,7 @@ export async function collections(ctx: CommonContext, block: Block) {
                 attributePolicy: null,
                 attributeCount: data.attributeCount,
                 totalDeposit: data.totalDeposit,
+                mintRateLimit: toMintRateLimitStateModel(data.mintRateLimit),
                 tokenGroups: [],
                 createdAt: new Date(block.timestamp ?? 0),
                 collectionId: id,

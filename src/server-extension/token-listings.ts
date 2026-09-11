@@ -86,6 +86,9 @@ export class FixedPriceState {
 
     @Field(() => BigInteger)
     amountFilled!: typeof BigInteger
+
+    @Field(() => BigInteger)
+    amountRemaining!: typeof BigInteger
 }
 
 @ObjectType()
@@ -99,8 +102,14 @@ export class OfferState {
     @Field(() => ListingType)
     listingType!: ListingType.Offer
 
-    @Field(() => Int)
+    @Field(() => Int, { deprecationReason: 'Counter offers were removed in marketplace storage version 8' })
     counterOfferCount!: number
+
+    @Field(() => BigInteger)
+    amountFilled!: typeof BigInteger
+
+    @Field(() => BigInteger)
+    amountRemaining!: typeof BigInteger
 }
 
 const ListingState = createUnionType({

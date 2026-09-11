@@ -3,6 +3,7 @@ import { Codec, Type, TypeKind } from '@subsquid/scale-codec'
 import { Runtime } from '@subsquid/substrate-runtime'
 import { Block } from '~/contexts'
 import { Token } from '~/pallet/multi-tokens/storage/types'
+import { normalizeOptionalMintRateLimitState } from './mint-rate-limit'
 
 type TokenStorage<K extends unknown[]> = {
     getKeysPaged(pageSize: number, block: Block): AsyncIterable<K[]>
@@ -64,10 +65,11 @@ function normalizedToken(value: unknown): Token {
         'Token storage value must contain a listing-forbidden flag'
     )
 
-    const raw = value as Omit<Token, 'ephemeralExpiration' | 'isLendable' | 'lending'> & {
+    const raw = value as Omit<Token, 'ephemeralExpiration' | 'isLendable' | 'lending' | 'mintRateLimit'> & {
         ephemeralExpiration?: number | bigint
         isLendable?: boolean
         lending?: { lender: string; expiration: number | bigint }
+        mintRateLimit?: unknown
     }
     assert(
         raw.ephemeralExpiration === undefined ||
@@ -87,13 +89,14 @@ function normalizedToken(value: unknown): Token {
     return {
         ...raw,
         ephemeralExpiration: raw.ephemeralExpiration === undefined ? undefined : BigInt(raw.ephemeralExpiration),
-        isLendable: raw.isLendable ?? true,
+        isLendable: raw.isLendable ?? false,
         lending: raw.lending
             ? {
                   lender: raw.lending.lender,
                   expiration: BigInt(raw.lending.expiration),
               }
             : undefined,
+        mintRateLimit: normalizeOptionalMintRateLimitState(raw.mintRateLimit),
     }
 }
 
@@ -135,6 +138,11 @@ async function queryRawValues(block: Block, keys: unknown[][]): Promise<(string 
     return encodedKeys.map((key) => changes.get(key) ?? undefined)
 }
 
+export async function getMixedTokens(block: Block, keys: [bigint, bigint][]): Promise<(Token | undefined)[]> {
+    const values = await queryRawValues(block, keys)
+    return values.map((value) => (value === undefined ? undefined : decodeTokenStorageValue(block._runtime, value)))
+}
+
 export async function getMixedToken(block: Block, key: [bigint, bigint]): Promise<Token | undefined> {
     const encodedKey = block._runtime.encodeStorageKey('MultiTokens.Tokens', ...key)
     const value = await block._runtime.rpc.call('state_getStorageAt', [encodedKey, block.hash])
@@ -156,14 +164,12 @@ export async function* getMixedTokenPairs<K extends [bigint, bigint]>(
     }
 }
 
-export function normalizeToken(
-    value: (Omit<Token, 'isLendable'> & { isLendable?: boolean }) | undefined
-): Token | undefined {
+export function normalizeToken(value: unknown): Token | undefined {
     return value ? normalizedToken(value) : undefined
 }
 
 export async function* normalizeTokenPairs<K>(
-    pairs: AsyncIterable<[K, (Omit<Token, 'isLendable'> & { isLendable?: boolean }) | undefined][]>
+    pairs: AsyncIterable<[K, unknown][]>
 ): AsyncIterable<[K, Token | undefined][]> {
     for await (const page of pairs) {
         yield page.map(([key, value]) => [key, normalizeToken(value)])

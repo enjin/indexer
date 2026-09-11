@@ -8,6 +8,7 @@ import {
     syncCounterOffers,
     syncListings,
     syncOfferEvents,
+    backfillCancellationListingIds,
 } from '~/worker/jobs'
 import { logError, logInfo } from '~/worker/utils'
 
@@ -31,6 +32,9 @@ export class ListingsProcessor implements ProcessorDef {
                 break
             case JobsEnum.SYNC_OFFER_EVENTS:
                 await syncOfferEvents(job)
+                break
+            case JobsEnum.BACKFILL_CANCELLATION_LISTING_IDS:
+                await backfillCancellationListingIds(job)
                 break
             default:
                 throw new Error(`${job.name} is not a valid job for this processor`)

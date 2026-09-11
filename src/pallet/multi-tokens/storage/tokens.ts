@@ -75,6 +75,10 @@ export async function tokens(
             () => getTokens(multiTokens.tokens.matrixV500)
         )
         .when(
+            () => multiTokens.tokens.enjinV1062.is(block),
+            () => getTokens(multiTokens.tokens.enjinV1062)
+        )
+        .when(
             () => multiTokens.tokens.enjinV1050.is(block),
             () => getTokens(multiTokens.tokens.enjinV1050)
         )
