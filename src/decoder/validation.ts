@@ -5,6 +5,7 @@ import type {
     VerifyMessageRequestBody,
     DecodeSignedExtrinsicRequestBody,
     DryRunInput,
+    DryRunOrigin,
     DryRunRequestBody,
 } from './types'
 import { MAX_DRY_RUN_INPUTS, NETWORKS } from './types'
@@ -319,6 +320,49 @@ function normalizeHex(value: unknown, label: string, expectedBytes?: number): { 
     return { value: `0x${hex}` }
 }
 
+function validateDryRunOrigin(
+    value: unknown,
+    label: string
+): { valid: true; data: DryRunOrigin | undefined } | { valid: false; error: string } {
+    if (value === undefined || value === null) {
+        return { valid: true, data: undefined }
+    }
+
+    if (typeof value !== 'object' || Array.isArray(value)) {
+        return { valid: false, error: `"${label}" must be an object` }
+    }
+
+    const origin = value as Record<string, unknown>
+    const unknownKeys = Object.keys(origin).filter((key) => key !== 'fuelTank')
+    if (unknownKeys.length > 0) {
+        return { valid: false, error: `"${label}" supports only the "fuelTank" variant` }
+    }
+
+    const fuelTank = origin.fuelTank
+    if (!fuelTank || typeof fuelTank !== 'object' || Array.isArray(fuelTank)) {
+        return { valid: false, error: `"${label}.fuelTank" must be an object` }
+    }
+
+    const tank = fuelTank as Record<string, unknown>
+    const tankId = normalizeHex(tank.tankId, `${label}.fuelTank.tankId`, 32)
+    if (tankId.error) {
+        return { valid: false, error: tankId.error }
+    }
+
+    let ruleSetId: number | null = null
+    if (tank.ruleSetId !== undefined && tank.ruleSetId !== null) {
+        if (typeof tank.ruleSetId !== 'number' || !Number.isInteger(tank.ruleSetId) || tank.ruleSetId < 0) {
+            return { valid: false, error: `"${label}.fuelTank.ruleSetId" must be a non-negative integer` }
+        }
+        ruleSetId = tank.ruleSetId
+    }
+
+    return {
+        valid: true,
+        data: { fuelTank: { tankId: tankId.value as string, ruleSetId } },
+    }
+}
+
 export function validateDryRunRequest(
     body: unknown
 ): { valid: true; data: DryRunRequestBody } | { valid: false; error: string } {
@@ -351,9 +395,15 @@ export function validateDryRunRequest(
             return { valid: false, error: encodedData.error }
         }
 
+        const origin = validateDryRunOrigin(input.origin, `inputs[${index}].origin`)
+        if (!origin.valid) {
+            return { valid: false, error: origin.error }
+        }
+
         inputs.push({
             publicKey: publicKey.value as string,
             encodedData: encodedData.value as string,
+            ...(origin.data ? { origin: origin.data } : {}),
         })
     }
 
