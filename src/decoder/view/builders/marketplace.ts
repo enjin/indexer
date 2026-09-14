@@ -125,3 +125,11 @@ export const buildPlaceBidView: ViewBuilderFn = ({ call, network, coinId }) => {
         .when(price, (b) => b.withCoin('Bid', price, coinId))
         .build()
 }
+
+export const buildSetProtocolFeeView: ViewBuilderFn = ({ call, network }) => {
+    const protocolFee = displayValue(getArg(call.params, 'protocol_fee'))
+    return TransactionViewBuilder.create('Set Marketplace Protocol Fee')
+        .withNetwork(network)
+        .when(protocolFee, (b) => b.withText('Protocol Fee', protocolFee))
+        .build()
+}

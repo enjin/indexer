@@ -6,6 +6,7 @@ import { buildTransactionView } from '~/decoder/view'
 
 const NETWORK = 'enjin-matrixchain'
 
+const TRANSFER_ALL_CALL = '0x0a040090f6f0f77bfa00f9e8026b8ca242bf3e1bb2407052fb531d4d721ec4af51e66f00'
 const TRANSFER_AND_MELT_BATCH_CALL =
     '0x09020c2806003c5058b4984860f4a2ff5624eb688dbdb9d4ba28712b2bfcb8a1f7a73a8288099524000414280595241c0c0028059524140400'
 const BATCH_MINT_CALL =
@@ -51,6 +52,194 @@ const batchSetAttributeCall = {
         },
     },
 }
+
+void test('decodes a transfer-all call into a specific transaction view', async () => {
+    const view = await decodeView(TRANSFER_ALL_CALL)
+
+    assert.deepEqual(view, {
+        title: 'Transfer All ENJ',
+        fields: [
+            { type: 'text', title: 'Network', value: 'Enjin Matrixchain' },
+            { type: 'text', title: 'Amount', value: 'All transferable balance' },
+            { type: 'text', title: 'Keep Alive', value: 'No' },
+        ],
+    })
+})
+
+void test('all Platform transaction-view backlog calls have dedicated views', () => {
+    const account = { Id: [1, 2, 3, 4] }
+    const calls: Array<{
+        pallet: string
+        method: string
+        params: Record<string, unknown>
+        title: string
+    }> = [
+        {
+            pallet: 'Balances',
+            method: 'transfer_allow_death',
+            params: { dest: account, value: '100' },
+            title: 'Transfer ENJ',
+        },
+        {
+            pallet: 'MultiTokens',
+            method: 'accept_collection_transfer',
+            params: { collection_id: '10' },
+            title: 'Accept Collection Transfer',
+        },
+        {
+            pallet: 'MultiTokens',
+            method: 'approve_token',
+            params: { collection_id: '10', token_id: '20', operator: [1, 2], amount: '5' },
+            title: 'Approve Token',
+        },
+        {
+            pallet: 'MultiTokens',
+            method: 'destroy_collection',
+            params: { collection_id: '10' },
+            title: 'Destroy Collection',
+        },
+        {
+            pallet: 'MultiTokens',
+            method: 'freeze',
+            params: { info: { collection_id: '10', freeze_type: { Token: { token_id: '20' } } } },
+            title: 'Freeze Token',
+        },
+        {
+            pallet: 'MultiTokens',
+            method: 'mutate_collection',
+            params: { collection_id: '10', mutation: { owner: [1, 2] } },
+            title: 'Edit Collection',
+        },
+        {
+            pallet: 'MultiTokens',
+            method: 'mutate_token',
+            params: { collection_id: '10', token_id: '20', mutation: { listing_forbidden: true } },
+            title: 'Edit Token',
+        },
+        {
+            pallet: 'MultiTokens',
+            method: 'remove_all_attributes',
+            params: { collection_id: '10', token_id: '20', attribute_count: 2 },
+            title: 'Remove All NFT Attributes',
+        },
+        {
+            pallet: 'MultiTokens',
+            method: 'remove_attribute',
+            params: { collection_id: '10', token_id: null, key: [107, 101, 121] },
+            title: 'Remove Collection Attribute',
+        },
+        {
+            pallet: 'MultiTokens',
+            method: 'set_royalty',
+            params: { collection_id: '10', token_id: '20', descriptor: { percentage: 50000000 } },
+            title: 'Set Royalty',
+        },
+        {
+            pallet: 'MultiTokens',
+            method: 'thaw',
+            params: { info: { collection_id: '10', thaw_type: { Token: { token_id: '20' } } } },
+            title: 'Thaw Token',
+        },
+        {
+            pallet: 'MultiTokens',
+            method: 'unapprove_collection',
+            params: { collection_id: '10', operator: [1, 2] },
+            title: 'Revoke Collection Approval',
+        },
+        {
+            pallet: 'MultiTokens',
+            method: 'unapprove_token',
+            params: { collection_id: '10', token_id: '20', operator: [1, 2] },
+            title: 'Revoke Token Approval',
+        },
+        {
+            pallet: 'Marketplace',
+            method: 'set_protocol_fee',
+            params: { protocol_fee: 25000000 },
+            title: 'Set Marketplace Protocol Fee',
+        },
+        {
+            pallet: 'FuelTanks',
+            method: 'add_account',
+            params: { tank_id: account, user_id: account },
+            title: 'Add Account to Fuel Tank',
+        },
+        {
+            pallet: 'FuelTanks',
+            method: 'batch_add_account',
+            params: { tank_id: account, user_ids: [account, account] },
+            title: 'Add Accounts to Fuel Tank',
+        },
+        {
+            pallet: 'FuelTanks',
+            method: 'batch_remove_account',
+            params: { tank_id: account, user_ids: [account, account] },
+            title: 'Remove Accounts from Fuel Tank',
+        },
+        {
+            pallet: 'FuelTanks',
+            method: 'create_fuel_tank',
+            params: { descriptor: { name: [84, 97, 110, 107], coverage_policy: 'Fees' } },
+            title: 'Create Fuel Tank',
+        },
+        {
+            pallet: 'FuelTanks',
+            method: 'destroy_fuel_tank',
+            params: { tank_id: account },
+            title: 'Destroy Fuel Tank',
+        },
+        {
+            pallet: 'FuelTanks',
+            method: 'force_set_consumption',
+            params: { tank_id: account, rule_set_id: 1, consumption: { total_consumed: '100' } },
+            title: 'Set Fuel Consumption',
+        },
+        {
+            pallet: 'FuelTanks',
+            method: 'insert_rule_set',
+            params: { tank_id: account, rule_set_id: 1, rule_set: { rules: [], require_account: true } },
+            title: 'Add Fuel Tank Rule Set',
+        },
+        {
+            pallet: 'FuelTanks',
+            method: 'mutate_freeze_state',
+            params: { tank_id: account, is_frozen: false },
+            title: 'Unfreeze Fuel Tank',
+        },
+        {
+            pallet: 'FuelTanks',
+            method: 'mutate_fuel_tank',
+            params: { tank_id: account, mutation: { coverage_policy: 'Fees' } },
+            title: 'Edit Fuel Tank',
+        },
+        {
+            pallet: 'FuelTanks',
+            method: 'remove_account',
+            params: { tank_id: account, user_id: account },
+            title: 'Remove Account from Fuel Tank',
+        },
+        {
+            pallet: 'FuelTanks',
+            method: 'remove_account_rule_data',
+            params: { tank_id: account, user_id: account, rule_set_id: 1, rule_kind: 'UserFuelBudget' },
+            title: 'Remove Fuel Tank Account Rule Data',
+        },
+        {
+            pallet: 'FuelTanks',
+            method: 'remove_rule_set',
+            params: { tank_id: account, rule_set_id: 1 },
+            title: 'Remove Fuel Tank Rule Set',
+        },
+    ]
+
+    assert.equal(calls.length, 26)
+    for (const { pallet, method, params, title } of calls) {
+        const view = buildTransactionView({ [pallet]: { [method]: params } }, NETWORK)
+        assert.equal(view.title, title, `${pallet}.${method}`)
+        assert.notEqual(view.title, 'Transaction Request', `${pallet}.${method}`)
+        assert.ok(view.fields.some((field) => field.type === 'text' && field.title === 'Network'))
+    }
+})
 
 void test('batch mint returns one asset field per decoded recipient', () => {
     const view = buildTransactionView(batchMintCall, 'enjin-matrixchain')
