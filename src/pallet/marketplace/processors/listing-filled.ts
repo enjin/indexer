@@ -18,8 +18,8 @@ import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
 import { ListingFilled } from '~/pallet/marketplace/events'
 import { dispatchComputeAccountStats } from '~/queue/queue-utils'
-import Big from 'big.js'
 import { listingFillParties, rebuildFixedPriceState, rebuildOfferState } from '~/pallet/marketplace/utils/listing-state'
+import { listingFilledSnsEvent } from '~/pallet/marketplace/processors/listing-filled-sns'
 
 export async function listingFilled(
     ctx: CommonContext,
@@ -122,41 +122,7 @@ export async function listingFilled(
 
     await QueueUtils.dispatchComputeTokenBestListing(!isOffer ? makeAssetId.id : takeAssetId.id)
 
-    const snsEvent: SnsEvent = {
-        id: item.id,
-        name: item.name,
-        body: {
-            listing: {
-                id: listing.id,
-                price: Big(listing.price.toString())
-                    .mul(10 ** (makeAssetId.nativeMetadata?.decimalCount ?? 0))
-                    .toNumber(),
-                amount: Big(listing.amount.toString())
-                    .div(10 ** (makeAssetId.nativeMetadata?.decimalCount ?? 0))
-                    .toNumber(),
-                highestPrice: Big(listing.highestPrice.toString())
-                    .mul(10 ** (makeAssetId.nativeMetadata?.decimalCount ?? 0))
-                    .toNumber(),
-                seller: {
-                    id: seller.id,
-                },
-                type: listing.type.toString(),
-                data: listing.data.toJSON(),
-                state: listing.state.toJSON(),
-            },
-            token: isOffer ? takeAssetId.id : makeAssetId.id,
-            buyer: {
-                id: buyer.id,
-            },
-            amountFilled: event.amountFilled,
-            price: 'price' in event ? event.price : listing.highestPrice,
-            amountRemaining: event.amountRemaining,
-            protocolFee: event.protocolFee,
-            royalty: event.royalty,
-            decimalCount: makeAssetId.nativeMetadata?.decimalCount,
-            extrinsic: item.extrinsic?.id,
-        },
-    }
+    const snsEvent = listingFilledSnsEvent(item, event, listing, makeAssetId, takeAssetId)
 
     await QueueUtils.dispatchComputeStats(isOffer ? takeAssetId.collection.id : makeAssetId.collection.id)
 

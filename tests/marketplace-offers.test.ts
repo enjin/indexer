@@ -9,6 +9,7 @@ import {
     Collection,
     Event as EventModel,
     FixedPriceData,
+    FixedPriceState,
     Listing,
     ListingType,
     MarketplaceListingBookState,
@@ -19,6 +20,7 @@ import {
     MarketplaceOfferSettled,
     MarketplaceOrderMatched,
     OfferData,
+    OfferState,
     Token,
 } from '~/model'
 import {
@@ -33,6 +35,7 @@ import { counterOfferRemovedEventModel } from '~/pallet/marketplace/events/count
 import { listingCancelledEventModel } from '~/pallet/marketplace/events/listing-cancelled'
 import { listingFilledEventModel } from '~/pallet/marketplace/events/listing-filled'
 import { listingRemovedUnderMinimumEventModel } from '~/pallet/marketplace/events/listing-removed-under-minimum'
+import { listingFilledSnsEvent } from '~/pallet/marketplace/processors/listing-filled-sns'
 import { stripCancellationListingIdPrefix } from '~/worker/jobs/listings/cancellation-listing-id'
 import {
     initialBookState,
@@ -78,6 +81,13 @@ function marketplaceVariants(runtime: Runtime, rootType: number): Set<string> {
 }
 
 const taker = `0x${'11'.repeat(32)}`
+
+function snsParties(event: ReturnType<typeof listingFilledSnsEvent>): { listingSeller: string; buyer: string } {
+    const listing = event.body.listing as { seller: { id: string } }
+    const buyer = event.body.buyer as { id: string }
+
+    return { listingSeller: listing.seller.id, buyer: buyer.id }
+}
 
 void test('v1040 metadata exposes order-book matching, observability, and migration lifecycle', () => {
     const runtime = runtime1040()
@@ -323,4 +333,88 @@ void test('maker fills retain independent prices and offer fills assign the econ
     assert.equal(offerEvent.data.buyer, creator.id)
     assert.equal(activity.from.id, filler.id)
     assert.equal(activity.to?.id, creator.id)
+})
+
+void test('fixed-price ListingFilled SNS identifies the creator as seller and filler as buyer', () => {
+    const collection = new Collection({ id: '10', collectionId: 10n })
+    const token = new Token({ id: '10-20', tokenId: 20n, collection })
+    const currency = new Token({ id: '0-0', tokenId: 0n, collection: new Collection({ id: '0' }) })
+    const creator = new Account({ id: 'creator', address: 'creator' })
+    const filler = new Account({ id: 'filler', address: 'filler' })
+    const listing = new Listing({
+        id: 'fixed-price',
+        seller: creator,
+        makeAssetId: token,
+        takeAssetId: currency,
+        amount: 2n,
+        price: 10n,
+        highestPrice: 10n,
+        type: ListingType.FixedPrice,
+        data: new FixedPriceData({ listingType: ListingType.FixedPrice }),
+        state: new FixedPriceState({ listingType: ListingType.FixedPrice, amountFilled: 1n, amountRemaining: 1n }),
+    })
+    const fill = {
+        listingId: listing.id,
+        buyer: filler.id,
+        amountFilled: 1n,
+        amountRemaining: 1n,
+        protocolFee: 0n,
+        royalty: 0n,
+    }
+    const snsEvent = listingFilledSnsEvent(
+        { id: '193-1', name: 'Marketplace.ListingFilled', extrinsic: { id: '193-1' } } as EventItem,
+        fill,
+        listing,
+        token,
+        currency
+    )
+
+    assert.deepEqual(snsParties(snsEvent), { listingSeller: listing.seller.id, buyer: fill.buyer })
+})
+
+void test('offer ListingFilled SNS preserves creator and filler roles instead of economic parties', () => {
+    const collection = new Collection({ id: '10', collectionId: 10n })
+    const token = new Token({ id: '10-20', tokenId: 20n, collection })
+    const currency = new Token({ id: '0-0', tokenId: 0n, collection: new Collection({ id: '0' }) })
+    const creator = new Account({ id: 'offer-maker', address: 'offer-maker' })
+    const filler = new Account({ id: 'offer-filler', address: 'offer-filler' })
+    const listing = new Listing({
+        id: 'offer',
+        seller: creator,
+        makeAssetId: currency,
+        takeAssetId: token,
+        amount: 2n,
+        price: 10n,
+        highestPrice: 10n,
+        type: ListingType.Offer,
+        data: new OfferData({ listingType: ListingType.Offer }),
+        state: new OfferState({
+            listingType: ListingType.Offer,
+            counterOfferCount: 0,
+            amountFilled: 1n,
+            amountRemaining: 1n,
+        }),
+    })
+    const economicParties = listingFillParties(listing.type, creator, filler)
+    const fill = {
+        listingId: listing.id,
+        buyer: filler.id,
+        amountFilled: 1n,
+        amountRemaining: 1n,
+        protocolFee: 0n,
+        royalty: 0n,
+    }
+    const snsEvent = listingFilledSnsEvent(
+        { id: '193-2', name: 'Marketplace.ListingFilled', extrinsic: { id: '193-2' } } as EventItem,
+        fill,
+        listing,
+        currency,
+        token
+    )
+
+    assert.deepEqual(
+        { buyer: economicParties.buyer.id, seller: economicParties.seller.id },
+        { buyer: creator.id, seller: filler.id }
+    )
+    assert.deepEqual(snsParties(snsEvent), { listingSeller: listing.seller.id, buyer: fill.buyer })
 })
