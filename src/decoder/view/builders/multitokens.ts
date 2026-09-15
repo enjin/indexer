@@ -138,6 +138,23 @@ export const buildInfuseTokenView: ViewBuilderFn = ({ call, network, coinId }) =
         .build()
 }
 
+export const buildBatchInfuseTokenView: ViewBuilderFn = ({ call, network, coinId }) => {
+    const collectionId = displayValue(getArg(call.params, 'collection_id'))
+    const infusions = getArg(call.params, 'infusions', [])
+    const builder = TransactionViewBuilder.create('Infuse Tokens').withNetwork(network)
+
+    if (!collectionId || !Array.isArray(infusions)) return builder.build()
+
+    for (const [index] of infusions.entries()) {
+        const tokenId = displayValue(getArg(call.params, `infusions.${index}.token_id`))
+        const amount = displayValue(getArg(call.params, `infusions.${index}.amount`))
+        if (tokenId) builder.withResource('asset', assetId(collectionId, tokenId))
+        if (amount) builder.withCoin('Infuse Amount', amount, coinId)
+    }
+
+    return builder.build()
+}
+
 export const buildSetAttributeView: ViewBuilderFn = ({ call, network }) => {
     const tokenId = getArg(call.params, 'token_id')
     const title = tokenId === null || tokenId === undefined ? 'Set Collection Attribute' : 'Set NFT Attribute'
@@ -175,6 +192,91 @@ export const buildAcceptCollectionTransferView: ViewBuilderFn = ({ call, network
     return TransactionViewBuilder.create('Accept Collection Transfer')
         .when(collectionId, (b) => b.withResource('collection', collectionId))
         .withNetwork(network)
+        .build()
+}
+
+export const buildCancelCollectionTransferView: ViewBuilderFn = ({ call, network }) => {
+    const collectionId = displayValue(getArg(call.params, 'collection_id'))
+    return TransactionViewBuilder.create('Cancel Collection Transfer')
+        .when(collectionId, (b) => b.withResource('collection', collectionId))
+        .withNetwork(network)
+        .build()
+}
+
+export const buildCreateTokenGroupView: ViewBuilderFn = ({ call, network }) => {
+    const collectionId = displayValue(getArg(call.params, 'collection_id'))
+    return TransactionViewBuilder.create('Create Token Group')
+        .when(collectionId, (b) => b.withResource('collection', collectionId))
+        .withNetwork(network)
+        .build()
+}
+
+export const buildDestroyTokenGroupView: ViewBuilderFn = ({ call, network }) => {
+    const tokenGroupId = displayValue(getArg(call.params, 'token_group_id'))
+    return TransactionViewBuilder.create('Destroy Token Group')
+        .withNetwork(network)
+        .when(tokenGroupId, (b) => b.withText('Token Group ID', tokenGroupId))
+        .build()
+}
+
+function buildTokenGroupMembershipView(call: Parameters<ViewBuilderFn>[0]['call'], network: string, title: string) {
+    const collectionId = displayValue(getArg(call.params, 'collection_id'))
+    const tokenId = displayValue(getArg(call.params, 'token_id'))
+    const tokenGroupId = displayValue(getArg(call.params, 'token_group_id'))
+
+    return TransactionViewBuilder.create(title)
+        .when(collectionId && tokenId, (b) => b.withResource('asset', assetId(collectionId, tokenId)))
+        .withNetwork(network)
+        .when(tokenGroupId, (b) => b.withText('Token Group ID', tokenGroupId))
+        .build()
+}
+
+export const buildAddTokenToGroupView: ViewBuilderFn = ({ call, network }) =>
+    buildTokenGroupMembershipView(call, network, 'Add Token to Group')
+
+export const buildRemoveTokenFromGroupView: ViewBuilderFn = ({ call, network }) =>
+    buildTokenGroupMembershipView(call, network, 'Remove Token from Group')
+
+export const buildSetTokenGroupsView: ViewBuilderFn = ({ call, network }) => {
+    const collectionId = displayValue(getArg(call.params, 'collection_id'))
+    const tokenId = displayValue(getArg(call.params, 'token_id'))
+    const tokenGroups = getArg(call.params, 'token_groups', [])
+    const builder = TransactionViewBuilder.create('Set Token Groups')
+        .when(collectionId && tokenId, (b) => b.withResource('asset', assetId(collectionId, tokenId)))
+        .withNetwork(network)
+
+    if (!Array.isArray(tokenGroups)) return builder.build()
+
+    builder.withText('Token Group Count', String(tokenGroups.length))
+    for (const tokenGroup of tokenGroups) {
+        builder.withText('Token Group ID', displayValue(tokenGroup))
+    }
+    return builder.build()
+}
+
+export const buildSetTokenGroupAttributeView: ViewBuilderFn = ({ call, network }) => {
+    const tokenGroupId = displayValue(getArg(call.params, 'token_group_id'))
+    const key = displayValue(getArg(call.params, 'key'))
+    const value = displayValue(getArg(call.params, 'value'))
+    const frozen = getArg(call.params, 'frozen')
+
+    return TransactionViewBuilder.create('Set Token Group Attribute')
+        .withNetwork(network)
+        .when(tokenGroupId, (b) => b.withText('Token Group ID', tokenGroupId))
+        .when(key, (b) => b.withText('Key', key))
+        .when(value, (b) => b.withText('Value', value))
+        .when(typeof frozen === 'boolean', (b) => b.withText('Frozen', frozen ? 'Yes' : 'No'))
+        .build()
+}
+
+export const buildRemoveTokenGroupAttributeView: ViewBuilderFn = ({ call, network }) => {
+    const tokenGroupId = displayValue(getArg(call.params, 'token_group_id'))
+    const key = displayValue(getArg(call.params, 'key'))
+
+    return TransactionViewBuilder.create('Remove Token Group Attribute')
+        .withNetwork(network)
+        .when(tokenGroupId, (b) => b.withText('Token Group ID', tokenGroupId))
+        .when(key, (b) => b.withText('Key', key))
         .build()
 }
 

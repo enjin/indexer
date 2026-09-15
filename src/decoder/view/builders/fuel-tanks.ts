@@ -155,3 +155,13 @@ export const buildRemoveFuelTankRuleSetView: ViewBuilderFn = ({ call, network })
         .when(ruleSetId, (b) => b.withText('Rule Set ID', ruleSetId))
         .build()
 }
+
+export const buildRemoveExpiredFuelTankAccountView: ViewBuilderFn = ({ call, network }) => {
+    return addIdentifier(
+        addTank(TransactionViewBuilder.create('Remove Expired Fuel Tank Account'), call),
+        'Account',
+        identifier(call.params, 'user_id')
+    )
+        .withNetwork(network)
+        .build()
+}

@@ -2,14 +2,18 @@ import { buildTransferAllBalanceView, buildTransferBalanceView } from './builder
 import { buildGenericView } from './builders/generic'
 import {
     buildAcceptCollectionTransferView,
+    buildAddTokenToGroupView,
     buildApproveCollectionView,
     buildApproveTokenView,
     buildBatchMintTokenView,
+    buildBatchInfuseTokenView,
     buildBatchSetAttributeView,
     buildBatchTransferTokenView,
     buildBurnTokenView,
     buildCreateCollectionView,
+    buildCreateTokenGroupView,
     buildDestroyCollectionView,
+    buildDestroyTokenGroupView,
     buildFreezeView,
     buildInfuseTokenView,
     buildMintTokenView,
@@ -17,20 +21,29 @@ import {
     buildMutateTokenView,
     buildRemoveAllAttributesView,
     buildRemoveAttributeView,
+    buildRemoveTokenFromGroupView,
+    buildRemoveTokenGroupAttributeView,
     buildSetAttributeView,
+    buildSetTokenGroupAttributeView,
+    buildSetTokenGroupsView,
     buildSetRoyaltyView,
     buildThawView,
     buildTransferTokenView,
     buildUnapproveCollectionView,
     buildUnapproveTokenView,
+    buildCancelCollectionTransferView,
 } from './builders/multitokens'
 import {
+    buildAddWhitelistedAccountsView,
+    buildAnswerCounterOfferView,
     buildCancelListingView,
     buildCreateListingView,
     buildCreateListingAndMatchView,
     buildFillListingView,
     buildFinalizeAuctionView,
     buildPlaceBidView,
+    buildPlaceCounterOfferView,
+    buildRemoveWhitelistedAccountsView,
     buildSetProtocolFeeView,
 } from './builders/marketplace'
 import {
@@ -44,6 +57,7 @@ import {
     buildMutateFuelTankView,
     buildRemoveFuelTankAccountRuleDataView,
     buildRemoveFuelTankAccountView,
+    buildRemoveExpiredFuelTankAccountView,
     buildRemoveFuelTankRuleSetView,
     buildSetFuelTankConsumptionView,
 } from './builders/fuel-tanks'
@@ -57,7 +71,7 @@ import {
     buildWithdrawUnbondedView,
 } from './builders/nomination-pools'
 import { buildBuyOfferView, buildCancelOfferView, buildCreateOfferView } from './builders/stake-exchange'
-import { buildBatchView } from './builders/utility'
+import { buildBatchView, buildForceBatchView, buildMatrixBatchView } from './builders/utility'
 import { buildTeleportView } from './builders/xcm'
 import type { CallParts, ViewBuilderFn } from './types'
 
@@ -74,10 +88,19 @@ const CALL_BUILDERS: Record<string, ViewBuilderFn> = {
     'MultiTokens::burn': buildBurnTokenView,
     'MultiTokens::mint': buildMintTokenView,
     'MultiTokens::infuse': buildInfuseTokenView,
+    'MultiTokens::batch_infuse': buildBatchInfuseTokenView,
     'MultiTokens::set_attribute': buildSetAttributeView,
     'MultiTokens::create_collection': buildCreateCollectionView,
     'MultiTokens::approve_collection': buildApproveCollectionView,
     'MultiTokens::accept_collection_transfer': buildAcceptCollectionTransferView,
+    'MultiTokens::cancel_collection_transfer': buildCancelCollectionTransferView,
+    'MultiTokens::create_token_group': buildCreateTokenGroupView,
+    'MultiTokens::destroy_token_group': buildDestroyTokenGroupView,
+    'MultiTokens::add_token_to_group': buildAddTokenToGroupView,
+    'MultiTokens::remove_token_from_group': buildRemoveTokenFromGroupView,
+    'MultiTokens::set_token_groups': buildSetTokenGroupsView,
+    'MultiTokens::set_token_group_attribute': buildSetTokenGroupAttributeView,
+    'MultiTokens::remove_token_group_attribute': buildRemoveTokenGroupAttributeView,
     'MultiTokens::approve_token': buildApproveTokenView,
     'MultiTokens::destroy_collection': buildDestroyCollectionView,
     'MultiTokens::freeze': buildFreezeView,
@@ -95,6 +118,10 @@ const CALL_BUILDERS: Record<string, ViewBuilderFn> = {
     'Marketplace::cancel_listing': buildCancelListingView,
     'Marketplace::finalize_auction': buildFinalizeAuctionView,
     'Marketplace::place_bid': buildPlaceBidView,
+    'Marketplace::add_whitelisted_accounts': buildAddWhitelistedAccountsView,
+    'Marketplace::remove_whitelisted_accounts': buildRemoveWhitelistedAccountsView,
+    'Marketplace::place_counter_offer': buildPlaceCounterOfferView,
+    'Marketplace::answer_counter_offer': buildAnswerCounterOfferView,
     'Marketplace::set_protocol_fee': buildSetProtocolFeeView,
     'FuelTanks::add_account': buildAddFuelTankAccountView,
     'FuelTanks::batch_add_account': buildBatchAddFuelTankAccountView,
@@ -108,6 +135,7 @@ const CALL_BUILDERS: Record<string, ViewBuilderFn> = {
     'FuelTanks::remove_account': buildRemoveFuelTankAccountView,
     'FuelTanks::remove_account_rule_data': buildRemoveFuelTankAccountRuleDataView,
     'FuelTanks::remove_rule_set': buildRemoveFuelTankRuleSetView,
+    'FuelTanks::remove_expired_account': buildRemoveExpiredFuelTankAccountView,
     'NominationPools::create': buildCreatePoolView,
     'NominationPools::bond': buildBondView,
     'NominationPools::unbond': buildUnbondView,
@@ -118,10 +146,11 @@ const CALL_BUILDERS: Record<string, ViewBuilderFn> = {
     'StakeExchange::create_offer': buildCreateOfferView,
     'StakeExchange::cancel_offer': buildCancelOfferView,
     'StakeExchange::buy': buildBuyOfferView,
-    'MatrixUtility::batch': buildBatchView,
+    'MatrixUtility::batch': buildMatrixBatchView,
     'MatrixUtility::batch_all': buildBatchView,
     'Utility::batch': buildBatchView,
     'Utility::batch_all': buildBatchView,
+    'Utility::force_batch': buildForceBatchView,
 }
 
 export function getBuilderForCall(call: CallParts): ViewBuilderFn {

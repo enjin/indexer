@@ -104,6 +104,60 @@ void test('all Platform transaction-view backlog calls have dedicated views', ()
         },
         {
             pallet: 'MultiTokens',
+            method: 'batch_infuse',
+            params: { collection_id: '10', infusions: [{ token_id: '20', amount: '100' }] },
+            title: 'Infuse Tokens',
+        },
+        {
+            pallet: 'MultiTokens',
+            method: 'cancel_collection_transfer',
+            params: { collection_id: '10' },
+            title: 'Cancel Collection Transfer',
+        },
+        {
+            pallet: 'MultiTokens',
+            method: 'create_token_group',
+            params: { collection_id: '10' },
+            title: 'Create Token Group',
+        },
+        {
+            pallet: 'MultiTokens',
+            method: 'destroy_token_group',
+            params: { token_group_id: '30' },
+            title: 'Destroy Token Group',
+        },
+        {
+            pallet: 'MultiTokens',
+            method: 'add_token_to_group',
+            params: { collection_id: '10', token_id: '20', token_group_id: '30' },
+            title: 'Add Token to Group',
+        },
+        {
+            pallet: 'MultiTokens',
+            method: 'remove_token_from_group',
+            params: { collection_id: '10', token_id: '20', token_group_id: '30' },
+            title: 'Remove Token from Group',
+        },
+        {
+            pallet: 'MultiTokens',
+            method: 'set_token_groups',
+            params: { collection_id: '10', token_id: '20', token_groups: ['30', '31'] },
+            title: 'Set Token Groups',
+        },
+        {
+            pallet: 'MultiTokens',
+            method: 'set_token_group_attribute',
+            params: { token_group_id: '30', key: [107, 101, 121], value: [118, 97, 108, 117, 101] },
+            title: 'Set Token Group Attribute',
+        },
+        {
+            pallet: 'MultiTokens',
+            method: 'remove_token_group_attribute',
+            params: { token_group_id: '30', key: [107, 101, 121] },
+            title: 'Remove Token Group Attribute',
+        },
+        {
+            pallet: 'MultiTokens',
             method: 'approve_token',
             params: { collection_id: '10', token_id: '20', operator: [1, 2], amount: '5' },
             title: 'Approve Token',
@@ -173,6 +227,35 @@ void test('all Platform transaction-view backlog calls have dedicated views', ()
             method: 'set_protocol_fee',
             params: { protocol_fee: 25000000 },
             title: 'Set Marketplace Protocol Fee',
+        },
+        {
+            pallet: 'Marketplace',
+            method: 'add_whitelisted_accounts',
+            params: { listing_id: '0x1234', accounts: [{ account_id: account, allowance: '2' }] },
+            title: 'Add Whitelisted Accounts',
+        },
+        {
+            pallet: 'Marketplace',
+            method: 'remove_whitelisted_accounts',
+            params: { listing_id: '0x1234', account_ids: [account] },
+            title: 'Remove Whitelisted Accounts',
+        },
+        {
+            pallet: 'Marketplace',
+            method: 'place_counter_offer',
+            params: { listing_id: '0x1234', price: '100' },
+            title: 'Place Counter Offer',
+        },
+        {
+            pallet: 'Marketplace',
+            method: 'answer_counter_offer',
+            params: {
+                listing_id: '0x1234',
+                creator: account,
+                response: { Counter: '120' },
+                current_price: '100',
+            },
+            title: 'Answer Counter Offer',
         },
         {
             pallet: 'FuelTanks',
@@ -246,15 +329,245 @@ void test('all Platform transaction-view backlog calls have dedicated views', ()
             params: { tank_id: account, rule_set_id: 1 },
             title: 'Remove Fuel Tank Rule Set',
         },
+        {
+            pallet: 'FuelTanks',
+            method: 'remove_expired_account',
+            params: { tank_id: account, user_id: account },
+            title: 'Remove Expired Fuel Tank Account',
+        },
     ]
 
-    assert.equal(calls.length, 26)
+    assert.equal(calls.length, 40)
     for (const { pallet, method, params, title } of calls) {
         const view = buildTransactionView({ [pallet]: { [method]: params } }, NETWORK)
         assert.equal(view.title, title, `${pallet}.${method}`)
         assert.notEqual(view.title, 'Transaction Request', `${pallet}.${method}`)
         assert.ok(view.fields.some((field) => field.type === 'text' && field.title === 'Network'))
     }
+})
+
+void test('new Platform views expose their decoded domain details', () => {
+    const batchInfuse = buildTransactionView(
+        {
+            MultiTokens: {
+                batch_infuse: {
+                    collection_id: '10',
+                    infusions: [
+                        { token_id: '20', amount: '100' },
+                        { token_id: '21', amount: '200' },
+                    ],
+                },
+            },
+        },
+        NETWORK
+    )
+    assert.deepEqual(batchInfuse.fields, [
+        { type: 'text', title: 'Network', value: 'Enjin Matrixchain' },
+        { type: 'asset', value: '10-20' },
+        { type: 'coin', title: 'Infuse Amount', coinId: 'enjin', value: '100' },
+        { type: 'asset', value: '10-21' },
+        { type: 'coin', title: 'Infuse Amount', coinId: 'enjin', value: '200' },
+    ])
+
+    const answerCounterOffer = buildTransactionView(
+        {
+            Marketplace: {
+                answer_counter_offer: {
+                    listing_id: '0x1234',
+                    creator: { Id: [1, 2, 3, 4] },
+                    response: { Counter: '120' },
+                    current_price: '100',
+                },
+            },
+        },
+        NETWORK
+    )
+    assert.deepEqual(answerCounterOffer.fields, [
+        { type: 'listing', value: '0x1234' },
+        { type: 'text', title: 'Network', value: 'Enjin Matrixchain' },
+        { type: 'text', title: 'Creator', value: '0x01020304' },
+        { type: 'text', title: 'Response', value: 'Counter' },
+        { type: 'coin', title: 'Current Price', coinId: 'enjin', value: '100' },
+        { type: 'coin', title: 'Counter Price', coinId: 'enjin', value: '120' },
+    ])
+})
+
+void test('unwraps Platform proxy and fuel tank wrappers recursively', () => {
+    const view = buildTransactionView(
+        {
+            FuelTanks: {
+                dispatch: {
+                    tank_id: { Id: [9, 9, 9, 9] },
+                    call: {
+                        Proxy: {
+                            proxy: {
+                                real: { Id: [1, 2, 3, 4] },
+                                call: {
+                                    MultiTokens: {
+                                        cancel_collection_transfer: { collection_id: '10' },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        NETWORK
+    )
+
+    assert.deepEqual(view, {
+        title: 'Cancel Collection Transfer',
+        fields: [
+            { type: 'collection', value: '10' },
+            { type: 'text', title: 'Network', value: 'Enjin Matrixchain' },
+        ],
+    })
+})
+
+void test('force batch has a readable continue-on-error view and unwraps proxied items', () => {
+    const view = buildTransactionView(
+        {
+            Proxy: {
+                proxy: {
+                    real: { Id: [1, 2, 3, 4] },
+                    call: {
+                        Utility: {
+                            force_batch: {
+                                calls: [
+                                    {
+                                        Proxy: {
+                                            proxy: {
+                                                real: { Id: [1, 2, 3, 4] },
+                                                call: {
+                                                    MultiTokens: {
+                                                        create_token_group: { collection_id: '10' },
+                                                    },
+                                                },
+                                            },
+                                        },
+                                    },
+                                    {
+                                        Balances: {
+                                            transfer_keep_alive: {
+                                                dest: { Id: [5, 6, 7, 8] },
+                                                value: '100',
+                                            },
+                                        },
+                                    },
+                                ],
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        NETWORK
+    )
+
+    assert.equal(view.title, 'Batch Transaction')
+    assert.deepEqual(view.fields, [
+        { type: 'text', title: 'Network', value: 'Enjin Matrixchain' },
+        { type: 'text', title: 'Execution', value: 'Continue on error' },
+        {
+            type: 'item',
+            title: 'Create Token Group',
+            subtitle: 'x 1',
+            fields: [{ type: 'collection', value: '10' }],
+        },
+        {
+            type: 'item',
+            title: 'Transfer ENJ',
+            subtitle: 'x 1',
+            fields: [{ type: 'coin', title: 'Amount', coinId: 'enjin', value: '100' }],
+        },
+    ])
+})
+
+void test('malformed wrappers stop unwrapping and retain a call-specific fallback', () => {
+    const view = buildTransactionView({ Proxy: { proxy: { real: { Id: [1, 2, 3, 4] } } } }, NETWORK)
+    assert.deepEqual(view, {
+        title: 'Proxy: Proxy',
+        fields: [
+            { type: 'text', title: 'Network', value: 'Enjin Matrixchain' },
+            { type: 'text', title: 'Real · ID', value: '0x01020304' },
+        ],
+    })
+})
+
+void test('generic views identify unsupported calls and render all decoded parameters', () => {
+    const view = buildTransactionView(
+        {
+            System: {
+                remark_with_event: {
+                    remark: [104, 105],
+                    audit: {
+                        requested_by: { Id: [1, 2, 3, 4] },
+                        retries: 2n,
+                    },
+                    tags: ['alpha', 'beta'],
+                    optional: null,
+                    empty: [],
+                },
+            },
+        },
+        NETWORK
+    )
+
+    assert.deepEqual(view, {
+        title: 'System: Remark With Event',
+        fields: [
+            { type: 'text', title: 'Network', value: 'Enjin Matrixchain' },
+            { type: 'text', title: 'Remark', value: '0x6869' },
+            { type: 'text', title: 'Audit · Requested By · ID', value: '0x01020304' },
+            { type: 'text', title: 'Audit · Retries', value: '2' },
+            { type: 'text', title: 'Tags · #1', value: 'alpha' },
+            { type: 'text', title: 'Tags · #2', value: 'beta' },
+            { type: 'text', title: 'Optional', value: 'None' },
+            { type: 'text', title: 'Empty', value: '[]' },
+        ],
+    })
+})
+
+void test('generic views remain specific when a decoded call has no parameters', () => {
+    assert.deepEqual(buildTransactionView({ System: { remark: {} } }, NETWORK), {
+        title: 'System: Remark',
+        fields: [{ type: 'text', title: 'Network', value: 'Enjin Matrixchain' }],
+    })
+})
+
+void test('batches retain call-specific generic views for unsupported nested calls', () => {
+    assert.deepEqual(
+        buildTransactionView(
+            {
+                Utility: {
+                    batch: {
+                        calls: [{ System: { remark: { remark: [104, 105] } } }],
+                    },
+                },
+            },
+            NETWORK
+        ),
+        {
+            title: 'Batch Transaction',
+            fields: [
+                { type: 'text', title: 'Network', value: 'Enjin Matrixchain' },
+                {
+                    type: 'item',
+                    title: 'System: Remark',
+                    subtitle: 'x 1',
+                    fields: [{ type: 'text', title: 'Remark', value: '0x6869' }],
+                },
+            ],
+        }
+    )
+})
+
+void test('generic views use the transaction request title only when no call can be decoded', () => {
+    assert.deepEqual(buildTransactionView(undefined, NETWORK), {
+        title: 'Transaction Request',
+        fields: [{ type: 'text', title: 'Network', value: 'Enjin Matrixchain' }],
+    })
 })
 
 void test('batch mint returns one asset field per decoded recipient', () => {
@@ -453,6 +766,7 @@ void test('matrix utility batches derive call subtitles from each decoded recipi
         title: 'Batch Transaction',
         fields: [
             { type: 'text', title: 'Network', value: 'Enjin Matrixchain' },
+            { type: 'text', title: 'Execution', value: 'Stop on error' },
             {
                 type: 'item',
                 title: 'Mint NFTs',
@@ -477,6 +791,34 @@ void test('matrix utility batches derive call subtitles from each decoded recipi
     })
 })
 
+void test('matrix utility batches expose continue-on-failure execution', () => {
+    const view = buildTransactionView(
+        {
+            MatrixUtility: {
+                batch: {
+                    calls: [{ System: { remark: { remark: [104, 105] } } }],
+                    continue_on_failure: true,
+                },
+            },
+        },
+        NETWORK
+    )
+
+    assert.deepEqual(view, {
+        title: 'Batch Transaction',
+        fields: [
+            { type: 'text', title: 'Network', value: 'Enjin Matrixchain' },
+            { type: 'text', title: 'Execution', value: 'Continue on error' },
+            {
+                type: 'item',
+                title: 'System: Remark',
+                subtitle: 'x 1',
+                fields: [{ type: 'text', title: 'Remark', value: '0x6869' }],
+            },
+        ],
+    })
+})
+
 void test('batch set attribute derives its subtitle from decoded attributes', () => {
     const view = buildTransactionView(
         {
@@ -490,7 +832,7 @@ void test('batch set attribute derives its subtitle from decoded attributes', ()
         'enjin-matrixchain'
     )
 
-    assert.deepEqual(view.fields[2], {
+    assert.deepEqual(view.fields[3], {
         type: 'item',
         title: 'Set Collection Attributes',
         subtitle: 'x 1',

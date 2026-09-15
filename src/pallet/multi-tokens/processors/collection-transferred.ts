@@ -6,6 +6,7 @@ import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { EventHandlerResult } from '~/processor.handler'
 import { dispatchComputeAccountStats } from '~/queue/queue-utils'
+import { collectionTransferredSnsEvent } from '~/pallet/multi-tokens/processors/collection-transferred-sns'
 
 export async function collectionTransferred(
     ctx: CommonContext,
@@ -38,19 +39,7 @@ export async function collectionTransferred(
     await dispatchComputeAccountStats(newOwner.id)
     await dispatchComputeAccountStats(oldOwner.id)
 
-    const snsEvent: SnsEvent = {
-        id: item.id,
-        name: item.name,
-        body: {
-            id: item.id,
-            name: item.name,
-            body: {
-                collectionId: data.collectionId,
-                owner: data.newOwner,
-                extrinsic: item.extrinsic?.id,
-            },
-        },
-    }
+    const snsEvent: SnsEvent = collectionTransferredSnsEvent(item, data)
 
     return [mappings.multiTokens.events.collectionTransferredEventModel(item, data), snsEvent]
 }
