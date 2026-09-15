@@ -40,6 +40,10 @@ export function dispatch(call: CallItem): Dispatch {
             () => calls.fuelTanks.dispatch.matrixEnjinV603.decode(call)
         )
         .when(
+            () => calls.fuelTanks.dispatch.matrixV1040.is(call),
+            () => calls.fuelTanks.dispatch.matrixV1040.decode(call)
+        )
+        .when(
             () => calls.fuelTanks.dispatch.matrixV1030.is(call),
             () => calls.fuelTanks.dispatch.matrixV1030.decode(call)
         )

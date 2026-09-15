@@ -1,7 +1,15 @@
 import { connectionManager } from '~/contexts'
-import { AuctionState, Listing, ListingStatus, ListingStatusType, ListingType, OfferState } from '~/model'
+import {
+    AuctionState,
+    Listing,
+    ListingStatus,
+    ListingStatusType,
+    ListingType,
+    MarketplaceListingBookState,
+} from '~/model'
 import { Brackets } from 'typeorm'
 import { Job } from 'bullmq'
+import { rebuildOfferState } from '~/pallet/marketplace/utils/listing-state'
 
 export async function computeListings(_job: Job) {
     const con = await connectionManager()
@@ -82,6 +90,7 @@ export async function computeListings(_job: Job) {
                         createdAt: now,
                     })
                     listing.isActive = false
+                    listing.bookState = MarketplaceListingBookState.Removed
                     listing.updatedAt = now
                     await em.save(listingStatus)
                     await em.save(listing)
@@ -96,11 +105,7 @@ export async function computeListings(_job: Job) {
                     ((offerData.expiration != null && offerData.expiration < height) ||
                         listing.state.isExpired === true)
                 ) {
-                    listing.state = new OfferState({
-                        listingType: ListingType.Offer,
-                        counterOfferCount: listing.state.counterOfferCount,
-                        isExpired: true,
-                    })
+                    listing.state = rebuildOfferState(listing.amount, listing.state, { isExpired: true })
                     const listingStatus = new ListingStatus({
                         id: `${listing.id}-${height}`,
                         type: ListingStatusType.Cancelled,
@@ -109,6 +114,7 @@ export async function computeListings(_job: Job) {
                         createdAt: now,
                     })
                     listing.isActive = false
+                    listing.bookState = MarketplaceListingBookState.Removed
                     listing.updatedAt = now
                     await em.save(listingStatus)
                     await em.save(listing)

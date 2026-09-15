@@ -1,4 +1,4 @@
-import { AccountTokenEvent, CounterOffer, Event as EventModel, Listing, ListingType, OfferState } from '~/model'
+import { AccountTokenEvent, CounterOffer, Event as EventModel, Listing } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
@@ -43,12 +43,6 @@ export async function counterOfferAnswered(
 
         await ctx.store.save(counterOffer)
     }
-
-    listing.state = new OfferState({
-        listingType: ListingType.Offer,
-        counterOfferCount: (listing.state as OfferState).counterOfferCount - 1,
-        isExpired: false,
-    })
 
     listing.updatedAt = new Date(block.timestamp ?? 0)
     await ctx.store.save(listing)

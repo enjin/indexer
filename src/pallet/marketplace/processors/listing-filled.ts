@@ -2,9 +2,9 @@ import {
     Account,
     AccountTokenEvent,
     Event as EventModel,
-    FixedPriceState,
     Listing,
     ListingSale,
+    MarketplaceListingBookState,
     ListingStatus,
     ListingStatusType,
     ListingType,
@@ -18,7 +18,8 @@ import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
 import { ListingFilled } from '~/pallet/marketplace/events'
 import { dispatchComputeAccountStats } from '~/queue/queue-utils'
-import Big from 'big.js'
+import { listingFillParties, rebuildFixedPriceState, rebuildOfferState } from '~/pallet/marketplace/utils/listing-state'
+import { listingFilledSnsEvent } from '~/pallet/marketplace/processors/listing-filled-sns'
 
 export async function listingFilled(
     ctx: CommonContext,
@@ -44,9 +45,10 @@ export async function listingFilled(
 
     const makeAssetId = listing.makeAssetId
     const takeAssetId = listing.takeAssetId
-    const buyer: Account = await getOrCreateAccount(ctx, event.buyer)
-    const seller: Account = await getOrCreateAccount(ctx, listing.seller.id)
+    const filler: Account = await getOrCreateAccount(ctx, event.buyer)
+    const listingCreator: Account = await getOrCreateAccount(ctx, listing.seller.id)
     const isOffer: boolean = listing.type === ListingType.Offer
+    const { buyer, seller } = listingFillParties(listing.type, listingCreator, filler)
 
     const sale = new ListingSale({
         id: `${listingId}-${item.id}`,
@@ -60,7 +62,7 @@ export async function listingFilled(
 
     if (listing.usesWhitelist) {
         const whitelistAccount = await ctx.store.findOne<WhitelistedAccount>(WhitelistedAccount, {
-            where: { listing: { id: listingId }, account: { id: buyer.id } },
+            where: { listing: { id: listingId }, account: { id: filler.id } },
         })
 
         if (whitelistAccount) {
@@ -98,13 +100,15 @@ export async function listingFilled(
         })
 
         listing.isActive = false
+        listing.bookState = MarketplaceListingBookState.Removed
         await ctx.store.save(listingStatus)
     }
 
     if (listing.state.listingType === ListingType.FixedPrice) {
-        listing.state = new FixedPriceState({
-            listingType: ListingType.FixedPrice,
-            amountFilled: listing.amount - event.amountRemaining,
+        listing.state = rebuildFixedPriceState(listing.amount, event.amountRemaining)
+    } else if (listing.state.listingType === ListingType.Offer) {
+        listing.state = rebuildOfferState(listing.amount, listing.state, {
+            amountRemaining: event.amountRemaining,
         })
     }
 
@@ -118,41 +122,7 @@ export async function listingFilled(
 
     await QueueUtils.dispatchComputeTokenBestListing(!isOffer ? makeAssetId.id : takeAssetId.id)
 
-    const snsEvent: SnsEvent = {
-        id: item.id,
-        name: item.name,
-        body: {
-            listing: {
-                id: listing.id,
-                price: Big(listing.price.toString())
-                    .mul(10 ** (makeAssetId.nativeMetadata?.decimalCount ?? 0))
-                    .toNumber(),
-                amount: Big(listing.amount.toString())
-                    .div(10 ** (makeAssetId.nativeMetadata?.decimalCount ?? 0))
-                    .toNumber(),
-                highestPrice: Big(listing.highestPrice.toString())
-                    .mul(10 ** (makeAssetId.nativeMetadata?.decimalCount ?? 0))
-                    .toNumber(),
-                seller: {
-                    id: seller.id,
-                },
-                type: listing.type.toString(),
-                data: listing.data.toJSON(),
-                state: listing.state.toJSON(),
-            },
-            token: isOffer ? takeAssetId.id : makeAssetId.id,
-            buyer: {
-                id: buyer.id,
-            },
-            amountFilled: event.amountFilled,
-            price: 'price' in event ? event.price : listing.highestPrice,
-            amountRemaining: event.amountRemaining,
-            protocolFee: event.protocolFee,
-            royalty: event.royalty,
-            decimalCount: makeAssetId.nativeMetadata?.decimalCount,
-            extrinsic: item.extrinsic?.id,
-        },
-    }
+    const snsEvent = listingFilledSnsEvent(item, event, listing, makeAssetId, takeAssetId)
 
     await QueueUtils.dispatchComputeStats(isOffer ? takeAssetId.collection.id : makeAssetId.collection.id)
 
@@ -161,7 +131,8 @@ export async function listingFilled(
             item,
             event,
             listing,
-            isOffer ? buyer : seller,
+            seller,
+            buyer,
             isOffer ? takeAssetId.collection : makeAssetId.collection,
             isOffer ? takeAssetId : makeAssetId
         ),

@@ -137,6 +137,32 @@ type MarketplaceListingFilled {
   royalty: BigInt
 }
 
+enum MarketplaceOrderSide {
+  Ask
+  Bid
+}
+
+type MarketplaceOrderMatched {
+  taker: Account!
+  assetId: String!
+  currencyId: String!
+  side: MarketplaceOrderSide!
+  amountMatched: BigInt!
+  ordersExamined: Int!
+  remainderListingId: String
+  remainderListing: Listing
+  unrestedAmount: BigInt!
+}
+
+type MarketplaceListingNotIndexed {
+  listingId: String!
+  listing: Listing
+}
+
+type MarketplaceMigrationCompleted {
+  storageVersion: Int!
+}
+
 type MarketplaceCounterOfferPlaced {
   listing: Listing
   accountId: Account!
@@ -369,8 +395,81 @@ type MultiTokensEphemeralCleanupFailed {
   error: String
 }
 
+type MultiTokensTokenLent {
+  collectionId: BigInt!
+  tokenId: BigInt!
+  lender: String!
+  borrower: String!
+  expirationBlock: BigInt!
+  observedBlock: BigInt!
+}
+
+type MultiTokensLoanExtended {
+  collectionId: BigInt!
+  tokenId: BigInt!
+  oldExpirationBlock: BigInt!
+  newExpirationBlock: BigInt!
+  observedBlock: BigInt!
+}
+
+type MultiTokensTokenReturned {
+  collectionId: BigInt!
+  tokenId: BigInt!
+  lender: String!
+  borrower: String!
+  observedBlock: BigInt!
+}
+
+type MultiTokensLoanReturnFailed {
+  collectionId: BigInt!
+  tokenId: BigInt!
+  expirationBlock: BigInt!
+  observedBlock: BigInt!
+  error: String
+}
+
+type MintRateLimit {
+  period: BigInt!
+  max: BigInt!
+}
+
+type MintRateWindow {
+  lastSlot: BigInt!
+  buckets: [BigInt!]!
+}
+
+type PendingMintRateLimitChange {
+  newLimit: MintRateLimit
+  effectiveBlock: BigInt!
+}
+
+type MintRateLimitState {
+  limit: MintRateLimit!
+  window: MintRateWindow!
+  pending: PendingMintRateLimitChange
+}
+
+type MultiTokensMintRateLimitUpdated {
+  collectionId: BigInt!
+  tokenId: BigInt
+  limit: MintRateLimit
+}
+
+type MultiTokensMintRateLimitChangeScheduled {
+  collectionId: BigInt!
+  tokenId: BigInt
+  newLimit: MintRateLimit
+  effectiveBlock: BigInt!
+}
+
+type MultiTokensMintRateLimitChangeCancelled {
+  collectionId: BigInt!
+  tokenId: BigInt
+}
+
 type MultiTokensTokenMutated {
   extrinsic: Extrinsic
+  isLendable: Boolean
 }
 
 type MultiTokensTransferred {
@@ -560,6 +659,8 @@ type Account @entity {
   identity: Identity @derivedFrom(field: "account")
   registrar: IdentityRegistrar @derivedFrom(field: "account")
   userInfusions: [UserInfusion] @derivedFrom(field: "account")
+  loansLent: [TokenLoan] @derivedFrom(field: "lender")
+  loansBorrowed: [TokenLoan] @derivedFrom(field: "borrower")
 
   # Extras
   lastUpdateBlock: Int
@@ -668,6 +769,7 @@ type Collection @entity {
   totalDeposit: BigInt!
   isTransferPending: Boolean
   pendingTransfer: Account
+  mintRateLimit: MintRateLimitState
 
   # Relations
   tokens: [Token] @derivedFrom(field: "collection")
@@ -805,6 +907,8 @@ type Token @entity {
   bestListingPrice: BigInt
   creationSupply: BigInt
   ephemeralExpiration: BigInt @index
+  isLendable: Boolean! @index
+  mintRateLimit: MintRateLimitState
 
   # Relations
   collection: Collection! @index
@@ -817,6 +921,7 @@ type Token @entity {
   nominationPool: NominationPool
   tokenGroupTokens: [TokenGroupToken] @derivedFrom(field: "token")
   userInfusions: [UserInfusion] @derivedFrom(field: "token")
+  loan: TokenLoan @derivedFrom(field: "token")
 
   bestListing: Listing
   recentListing: Listing
@@ -829,6 +934,16 @@ type Token @entity {
   metadata: Metadata
   updatedAt: DateTime
   createdAt: DateTime! @index
+}
+
+type TokenLoan @entity {
+  id: ID!
+  token: Token! @unique
+  lender: Account! @index
+  borrower: Account! @index
+  expiration: BigInt! @index
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
 type UserInfusion @entity {
@@ -972,6 +1087,7 @@ union ListingData = FixedPriceData | AuctionData | OfferData
 type FixedPriceState {
   listingType: ListingType!
   amountFilled: BigInt!
+  amountRemaining: BigInt!
 }
 
 type AuctionState {
@@ -982,7 +1098,9 @@ type AuctionState {
 
 type OfferState {
   listingType: ListingType!
-  counterOfferCount: Int!
+  counterOfferCount: Int! @deprecated(reason: "Counter offers were removed in marketplace storage version 8")
+  amountFilled: BigInt!
+  amountRemaining: BigInt!
   isExpired: Boolean
 }
 
@@ -1007,6 +1125,15 @@ enum ListingStatusType {
   Active
   Cancelled
   Finalized
+}
+
+enum MarketplaceListingBookState {
+  Unknown
+  Indexed
+  PendingActivation
+  NotIndexed
+  Ineligible
+  Removed
 }
 
 type ListingStatus @entity {
@@ -1074,6 +1201,7 @@ type Listing @entity {
   deadListing: Boolean
   isActive: Boolean! @index
   type: ListingType! @index
+  bookState: MarketplaceListingBookState! @index
   hasRoyaltyIncreased: Boolean @index
 
   createdAt: DateTime! @index
@@ -1733,9 +1861,10 @@ union EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiToken
   | MultiTokensCollectionAccountCreated | MultiTokensCollectionAccountDestroyed | MultiTokensCollectionCreated
   | MultiTokensCollectionDestroyed | MultiTokensCollectionMutated | MultiTokensFrozen | MultiTokensMinted
   | MultiTokensThawed | MultiTokensTokenAccountCreated | MultiTokensTokenAccountDestroyed | MultiTokensTokenCreated | MultiTokensTokenGroupCreated
-  | MultiTokensTokenDestroyed | MultiTokensEphemeralTokenDestroyed | MultiTokensEphemeralCleanupFailed | MultiTokensTokenMutated | MultiTokensTransferred | MultiTokensUnapproved | MultiTokensTokenGroupAdded | MultiTokensTokenGroupRemoved | MultiTokensTokenGroupDestroyed | MultiTokensTokenGroupAttributeSet | MultiTokensTokenGroupAttributeRemoved | MultiTokensTokenGroupsUpdated
+  | MultiTokensTokenDestroyed | MultiTokensEphemeralTokenDestroyed | MultiTokensEphemeralCleanupFailed | MultiTokensTokenLent | MultiTokensLoanExtended | MultiTokensTokenReturned | MultiTokensLoanReturnFailed | MultiTokensMintRateLimitUpdated | MultiTokensMintRateLimitChangeScheduled | MultiTokensMintRateLimitChangeCancelled | MultiTokensTokenMutated | MultiTokensTransferred | MultiTokensUnapproved | MultiTokensTokenGroupAdded | MultiTokensTokenGroupRemoved | MultiTokensTokenGroupDestroyed | MultiTokensTokenGroupAttributeSet | MultiTokensTokenGroupAttributeRemoved | MultiTokensTokenGroupsUpdated
   | MarketplaceAuctionFinalized | MarketplaceBidPlaced | MarketplaceListingCancelled | MarketplaceListingCreated
   | MarketplaceListingFilled | MarketplaceCounterOfferPlaced | MarketplaceCounterOfferAnswered | MarketplaceCounterOfferRemoved
+  | MarketplaceOrderMatched | MarketplaceListingNotIndexed | MarketplaceMigrationCompleted
   | MarketplaceOfferCreated | MarketplaceOfferSettled | MarketplaceOfferCancelled | MarketplaceListingRemovedUnderMinimum
   | BalancesTransfer | TeleportBalanceWithdrawn | ClaimsClaimRequested | ClaimsClaimed | MarketplaceWhitelistedAccountsAdded
   | MarketplaceWhitelistedAccountsRemoved

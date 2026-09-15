@@ -65,6 +65,76 @@ void test('batch mint returns one asset field per decoded recipient', () => {
     })
 })
 
+void test('matching offer preview distinguishes limits, maker pricing, and conditional remainder deposit', () => {
+    const view = buildTransactionView(
+        {
+            Marketplace: {
+                create_listing_and_match: {
+                    descriptor: {
+                        make_asset_id: { collection_id: '0', token_id: '0' },
+                        take_asset_id: { collection_id: '7', token_id: '9' },
+                        amount: '100',
+                        price: '12',
+                        start_block: null,
+                    },
+                    match_limit: '3',
+                },
+            },
+        },
+        NETWORK
+    )
+
+    assert.equal(view.title, 'Buy or Place Offer')
+    assert.deepEqual(view.fields, [
+        { type: 'asset', value: '7-9' },
+        { type: 'text', title: 'Network', value: 'Enjin Matrixchain' },
+        { type: 'text', title: 'Amount', value: '100' },
+        { type: 'coin', title: 'Limit Price', coinId: 'enjin', value: '12' },
+        { type: 'text', title: 'Match Limit', value: '3' },
+        {
+            type: 'text',
+            title: 'Matching',
+            value: 'Executes on chain at resting maker prices; fills are not guaranteed',
+        },
+        { type: 'text', title: 'Remainder', value: 'Rests only if unmatched and book capacity permits' },
+        { type: 'coin', title: 'Conditional Listing Deposit', coinId: 'enjin', value: '507225000000000000' },
+        { type: 'coin', title: 'Maximum Offer Total', coinId: 'enjin', value: '1200' },
+    ])
+})
+
+void test('scheduled matching preview explains that matching is deferred and None uses the chain maximum', () => {
+    const view = buildTransactionView(
+        {
+            Marketplace: {
+                create_listing_and_match: {
+                    descriptor: {
+                        make_asset_id: { collection_id: '7', token_id: '9' },
+                        take_asset_id: { collection_id: '0', token_id: '0' },
+                        amount: '5',
+                        price: '10',
+                        start_block: '500',
+                    },
+                    match_limit: null,
+                },
+            },
+        },
+        NETWORK
+    )
+
+    assert.equal(view.title, 'Sell or List Asset')
+    assert.deepEqual(
+        view.fields.filter((field) => field.type === 'text').map((field) => [field.title, field.value]),
+        [
+            ['Network', 'Enjin Matrixchain'],
+            ['Amount', '5'],
+            ['Match Limit', 'Chain maximum'],
+            ['Start Block', '500'],
+            ['Matching', 'Scheduled orders do not match immediately'],
+            ['Remainder', 'Rests only if unmatched and book capacity permits'],
+        ]
+    )
+})
+
 void test('batch mint includes the amount for each minted token', () => {
     const view = buildTransactionView(
         {

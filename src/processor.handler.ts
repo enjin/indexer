@@ -87,6 +87,25 @@ export async function eventHandler(
             .with(multiTokens.ephemeralCleanupFailed.name, () =>
                 p.multiTokens.processors.ephemeralCleanupFailed(ctx, block, item)
             )
+            .with(multiTokens.tokenLent.name, () => p.multiTokens.processors.tokenLent(ctx, block, item, skipSave))
+            .with(multiTokens.loanExtended.name, () =>
+                p.multiTokens.processors.loanExtended(ctx, block, item, skipSave)
+            )
+            .with(multiTokens.tokenReturned.name, () =>
+                p.multiTokens.processors.tokenReturned(ctx, block, item, skipSave)
+            )
+            .with(multiTokens.loanReturnFailed.name, () =>
+                p.multiTokens.processors.loanReturnFailed(ctx, block, item, skipSave)
+            )
+            .with(multiTokens.mintRateLimitUpdated.name, () =>
+                p.multiTokens.processors.mintRateLimitUpdated(ctx, block, item, skipSave)
+            )
+            .with(multiTokens.mintRateLimitChangeScheduled.name, () =>
+                p.multiTokens.processors.mintRateLimitChangeScheduled(ctx, block, item, skipSave)
+            )
+            .with(multiTokens.mintRateLimitChangeCancelled.name, () =>
+                p.multiTokens.processors.mintRateLimitChangeCancelled(ctx, block, item, skipSave)
+            )
             .with(multiTokens.tokenMutated.name, () =>
                 p.multiTokens.processors.tokenMutated(ctx, block, item, skipSave)
             )
@@ -179,6 +198,13 @@ export async function eventHandler(
             )
             .with(marketplace.expiredListingRemoved.name, () =>
                 p.marketplace.processors.expiredListingRemoved(ctx, block, item)
+            )
+            .with(marketplace.orderMatched.name, () => p.marketplace.processors.orderMatched(ctx, block, item))
+            .with(marketplace.listingNotIndexed.name, () =>
+                p.marketplace.processors.listingNotIndexed(ctx, block, item)
+            )
+            .with(marketplace.migrationCompleted.name, () =>
+                p.marketplace.processors.migrationCompleted(ctx, block, item)
             )
             .with(polkadotXcm.attempted.name, () => p.polkadotXcm.processors.attempted(ctx, block, item))
             .with(fuelTanks.dispatchFailed.name, () => p.fuelTanks.processors.dispatchFailed(block, item))

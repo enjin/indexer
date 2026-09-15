@@ -21,6 +21,7 @@ import {
     Token,
     TokenAccount,
     TokenGroupToken,
+    TokenLoan,
     TokenRarity,
     TraitToken,
     UserInfusion,
@@ -114,7 +115,11 @@ function tokenValue() {
         ephemeralExpiration: 77,
         isLendable: false,
         lending: { lender: `0x${'11'.repeat(32)}`, expiration: 88 },
-        mintRateLimit: undefined,
+        mintRateLimit: {
+            limit: { period: 120, max: 2n },
+            window: { lastSlot: 10, buckets: [1n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n] },
+            pending: undefined,
+        },
     }
 }
 
@@ -176,8 +181,9 @@ void test('token storage decoder accepts strict current and pre-v6 layouts', () 
     assert.equal(currentToken.ephemeralExpiration, 77n)
     assert.equal(currentToken.isLendable, false)
     assert.equal(currentToken.lending?.expiration, 88n)
+    assert.equal(currentToken.mintRateLimit?.window.buckets[0], 1n)
     assert.equal(legacyToken.ephemeralExpiration, undefined)
-    assert.equal(legacyToken.isLendable, true)
+    assert.equal(legacyToken.isLendable, false)
     assert.equal(legacyToken.lending, undefined)
 })
 
@@ -201,7 +207,7 @@ void test('mixed token point reads preserve token zero and pin the block hash', 
     const token = await getMixedToken({ _runtime: runtime, hash: '0x01' } as Block, [0n, 0n])
     assert(token)
     assert.equal(token.supply, 1n)
-    assert.equal(token.isLendable, true)
+    assert.equal(token.isLendable, false)
 })
 
 void test('mixed token point reads treat null and empty storage values as missing', async () => {
@@ -235,6 +241,7 @@ void test('finalized token storage reader treats null and empty storage values a
         const reader = Reflect.construct(FinalizedTokenStorageReader, [
             api,
             '0x01',
+            1,
             runtime,
         ]) as FinalizedTokenStorageReader
 
@@ -277,7 +284,12 @@ void test('v1040 direct, batch and force mint wrappers retain ephemeral fields',
 })
 
 void test('token creation stores the event initial supply separately from live supply', async () => {
-    const runtime = matrixV1040Runtime()
+    const { current } = encodedTokens()
+    const runtime = matrixV1040Runtime((method, params) => {
+        assert.equal(method, 'state_getStorageAt')
+        assert.equal(params?.[1], '0x01')
+        return Promise.resolve(current)
+    })
     const account = `0x${'22'.repeat(32)}`
     const collection = new Collection({ id: '7', attributes: [] })
     const saved: Token[] = []
@@ -290,7 +302,7 @@ void test('token creation stores the event initial supply separately from live s
     item.call = callItem(runtime, 'MultiTokens.mint', {
         recipient: { __kind: 'Id', value: account },
         collectionId: '7',
-        params: { ...createParams(), initialSupply: '3' },
+        params: { ...createParams(), initialSupply: '3', mintRateLimit: { period: 120, max: '2' } },
     })
     const ctx = {
         store: {
@@ -299,11 +311,16 @@ void test('token creation stores the event initial supply separately from live s
         },
     } as never
 
-    await tokenCreated(ctx, { _runtime: runtime, height: 10, timestamp: 0 } as Block, item, false)
+    await tokenCreated(ctx, { _runtime: runtime, height: 10, hash: '0x01', timestamp: 0 } as Block, item, false)
 
     assert.equal(saved.length, 1)
     assert.equal(saved[0].supply, 0n)
     assert.equal(saved[0].creationSupply, 3n)
+    assert.equal(saved[0].isLendable, false)
+    const mintRateLimit = saved[0].mintRateLimit
+    assert(mintRateLimit)
+    assert.equal(mintRateLimit.limit.max, 2n)
+    assert.equal(mintRateLimit.window.buckets[0], 1n)
 })
 
 void test('ephemeral events retain scalar identity and support hook events without extrinsics', () => {
@@ -376,6 +393,7 @@ void test('token destruction removes fixed-price, auction and offer dependants b
         takeAssetId: destroyed,
     })
     const tokenAccount = new TokenAccount({ id: `${buyer.id}-7-9`, account: buyer })
+    const activeLoan = new TokenLoan({ id: destroyed.id, token: destroyed, lender: seller, borrower: buyer })
     const accountEvent = new AccountTokenEvent({ id: '9-1', token: destroyed })
     const bid = new Bid({ id: 'bid', bidder: buyer, listing: auction })
     const sale = new ListingSale({ id: 'sale', buyer, listing: fixed })
@@ -393,7 +411,11 @@ void test('token destruction removes fixed-price, auction and offer dependants b
     const ctx = {
         log: { warn: () => undefined },
         store: {
-            findOneBy: () => Promise.resolve(destroyed),
+            findOneBy: (entity: unknown) => {
+                if (entity === Token) return Promise.resolve(destroyed)
+                if (entity === TokenLoan) return Promise.resolve(activeLoan)
+                return Promise.resolve(undefined)
+            },
             find: (entity: unknown, options: { where?: Record<string, unknown> }) => {
                 if (entity === AccountTokenEvent) return Promise.resolve([accountEvent])
                 if (entity === TokenAccount) return Promise.resolve([tokenAccount])
@@ -450,9 +472,11 @@ void test('token destruction removes fixed-price, auction and offer dependants b
         rarity,
         attribute,
         infusion,
+        activeLoan,
         destroyed,
     ]) {
         assert(flattened.includes(expected), `${expected.constructor.name} was not removed`)
     }
+    assert(flattened.indexOf(activeLoan) < flattened.indexOf(destroyed))
     assert.equal(flattened.at(-1), destroyed)
 })
