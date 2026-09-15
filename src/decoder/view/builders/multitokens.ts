@@ -106,7 +106,7 @@ export const buildBurnTokenView: ViewBuilderFn = ({ call, network }) => {
         .build()
 }
 
-export const buildMintTokenView: ViewBuilderFn = ({ call, network }) => {
+export const buildMintTokenView: ViewBuilderFn = ({ call, network, coinId }) => {
     const isCreate = !!getArg(call.params, 'params.CreateToken')
     const title = isCreate ? 'Create NFT' : 'Mint NFT'
     const collectionId = displayValue(getArg(call.params, 'collection_id'))
@@ -116,11 +116,13 @@ export const buildMintTokenView: ViewBuilderFn = ({ call, network }) => {
     const amount = displayValue(
         getArg(call.params, 'params.CreateToken.initial_supply') ?? getArg(call.params, 'params.Mint.amount')
     )
+    const infusion = displayValue(getArg(call.params, 'params.CreateToken.infusion'))
 
     return TransactionViewBuilder.create(title)
         .when(collectionId, (b) => b.withResource('asset', assetId(collectionId, tokenId)))
         .withNetwork(network)
         .when(amount, (b) => b.withText('Amount', amount))
+        .when(infusion, (b) => b.withCoin('Infusion per token', infusion, coinId))
         .build()
 }
 

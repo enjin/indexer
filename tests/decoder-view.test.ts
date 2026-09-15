@@ -7,6 +7,8 @@ import { buildTransactionView } from '~/decoder/view'
 const NETWORK = 'enjin-matrixchain'
 
 const TRANSFER_ALL_CALL = '0x0a040090f6f0f77bfa00f9e8026b8ca242bf3e1bb2407052fb531d4d721ec4af51e66f00'
+const CREATE_TOKEN_WITH_INFUSION_CALL =
+    '0x280400d4a2a84e8e512c405cfdc37204aa7cbf7aece6abb938e2dbf45cf72e367b0b183a8902000018910100000000000013000064a7b3b6e00d000000000000000000'
 const TRANSFER_AND_MELT_BATCH_CALL =
     '0x09020c2806003c5058b4984860f4a2ff5624eb688dbdb9d4ba28712b2bfcb8a1f7a73a8288099524000414280595241c0c0028059524140400'
 const BATCH_MINT_CALL =
@@ -62,6 +64,20 @@ void test('decodes a transfer-all call into a specific transaction view', async 
             { type: 'text', title: 'Network', value: 'Enjin Matrixchain' },
             { type: 'text', title: 'Amount', value: 'All transferable balance' },
             { type: 'text', title: 'Keep Alive', value: 'No' },
+        ],
+    })
+})
+
+void test('includes the per-token infusion in a create-token transaction view', async () => {
+    const view = await decodeView(CREATE_TOKEN_WITH_INFUSION_CALL)
+
+    assert.deepEqual(view, {
+        title: 'Create NFT',
+        fields: [
+            { type: 'asset', value: '41550-6' },
+            { type: 'text', title: 'Network', value: 'Enjin Matrixchain' },
+            { type: 'text', title: 'Amount', value: '100' },
+            { type: 'coin', title: 'Infusion per token', coinId: 'enjin', value: '1000000000000000000' },
         ],
     })
 })
