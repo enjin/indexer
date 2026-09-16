@@ -62,7 +62,7 @@
     "@polkadot/api-augment": "^16.5.2",
     "@polkadot/util": "^14.0.1",
     "@polkadot/util-crypto": "^14.0.1",
-    "@sentry/node": "^9.47.1",
+    "@sentry/node": "^10.74.0",
     "@subsquid/cli": "^3.3.5",
     "@subsquid/graphql-server": "^4.12.0",
     "@subsquid/hasura-configuration": "^2.0.0",
@@ -82,8 +82,8 @@
     "dotenv": "^16.6.1",
     "express": "^5.2.1",
     "graphql-type-json": "^0.3.2",
-    "lodash": "^4.17.21",
-    "mathjs": "^14.8.2",
+    "lodash": "^4.18.1",
+    "mathjs": "^15.2.0",
     "mime-types": "^3.0.2",
     "node-cache": "^5.1.2",
     "pg": "^8.17.1",
@@ -123,6 +123,21 @@
     "@subsquid/typeorm-config": "4.1.1",
     "@subsquid/util-internal-hex": "1.2.2",
     "reflect-metadata": "^0.2.2",
-    "typeorm": "^0.3.28"
+    "typeorm": "^0.3.31"
+  },
+  "pnpm": {
+    "overrides": {
+      "brace-expansion@<1.1.18": "1.1.18",
+      "brace-expansion@>=2.0.0 <2.1.4": "2.1.4",
+      "brace-expansion@>=4.0.0 <5.0.9": "5.0.12",
+      "joi@>=16.0.0 <17.13.6": "17.13.6",
+      "js-yaml@>=3.0.0 <3.15.2": "3.15.2",
+      "js-yaml@>=4.0.0 <4.3.2": "4.3.2",
+      "lodash@<4.18.0": "4.18.1",
+      "qs@>=2.2.5 <6.16.0": "6.16.0",
+      "tmp@<0.2.6": "0.2.7",
+      "uuid@<11.1.1": "11.1.1",
+      "xml2js@<0.5.0": "0.5.0"
+    }
   }
 }
