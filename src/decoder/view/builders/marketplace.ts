@@ -13,6 +13,16 @@ function assetId(collectionId: string, tokenId: string): string {
     return `${collectionId}-${tokenId}`
 }
 
+function account(params: Record<string, unknown>, path: string): string {
+    return displayValue(getArg(params, `${path}.Id`) ?? getArg(params, path))
+}
+
+function variantName(value: unknown): string {
+    if (typeof value === 'string') return value
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return ''
+    return Object.keys(value)[0] ?? ''
+}
+
 export const buildCreateListingView: ViewBuilderFn = ({ call, network, coinId }) => {
     const offer = isOfferMakeAsset(call.params)
     const title = offer ? 'Make Offer' : 'List Asset'
@@ -123,5 +133,80 @@ export const buildPlaceBidView: ViewBuilderFn = ({ call, network, coinId }) => {
         .when(listingId, (b) => b.withResource('listing', listingId))
         .withNetwork(network)
         .when(price, (b) => b.withCoin('Bid', price, coinId))
+        .build()
+}
+
+export const buildAddWhitelistedAccountsView: ViewBuilderFn = ({ call, network }) => {
+    const listingId = displayValue(getArg(call.params, 'listing_id'))
+    const accounts = getArg(call.params, 'accounts', [])
+    const builder = TransactionViewBuilder.create('Add Whitelisted Accounts')
+        .when(listingId, (b) => b.withResource('listing', listingId))
+        .withNetwork(network)
+
+    if (!Array.isArray(accounts)) return builder.build()
+
+    for (const [index] of accounts.entries()) {
+        const accountId = account(call.params, `accounts.${index}.account_id`)
+        const allowance = displayValue(getArg(call.params, `accounts.${index}.allowance`))
+        if (accountId) builder.withText('Account', accountId)
+        if (allowance) builder.withText('Allowance', allowance)
+    }
+    return builder.build()
+}
+
+export const buildRemoveWhitelistedAccountsView: ViewBuilderFn = ({ call, network }) => {
+    const listingId = displayValue(getArg(call.params, 'listing_id'))
+    const accountIds = getArg(call.params, 'account_ids', [])
+    const builder = TransactionViewBuilder.create('Remove Whitelisted Accounts')
+        .when(listingId, (b) => b.withResource('listing', listingId))
+        .withNetwork(network)
+
+    if (!Array.isArray(accountIds)) return builder.build()
+
+    for (const [index] of accountIds.entries()) {
+        const accountId = account(call.params, `account_ids.${index}`)
+        if (accountId) builder.withText('Account', accountId)
+    }
+    return builder.build()
+}
+
+export const buildPlaceCounterOfferView: ViewBuilderFn = ({ call, network, coinId }) => {
+    const listingId = displayValue(getArg(call.params, 'listing_id'))
+    const price = displayValue(getArg(call.params, 'price'))
+
+    return TransactionViewBuilder.create('Place Counter Offer')
+        .when(listingId, (b) => b.withResource('listing', listingId))
+        .withNetwork(network)
+        .when(price, (b) => b.withCoin('Counter Offer', price, coinId))
+        .build()
+}
+
+export const buildAnswerCounterOfferView: ViewBuilderFn = ({ call, network, coinId }) => {
+    const listingId = displayValue(getArg(call.params, 'listing_id'))
+    const creator = account(call.params, 'creator')
+    const response = getArg(call.params, 'response')
+    const responseName = variantName(response)
+    const accept = getArg(call.params, 'accept')
+    const currentPrice = displayValue(getArg(call.params, 'current_price'))
+    const counterPrice = displayValue(
+        getArg(call.params, 'response.Counter.value') ?? getArg(call.params, 'response.Counter')
+    )
+
+    return TransactionViewBuilder.create('Answer Counter Offer')
+        .when(listingId, (b) => b.withResource('listing', listingId))
+        .withNetwork(network)
+        .when(creator, (b) => b.withText('Creator', creator))
+        .when(responseName, (b) => b.withText('Response', responseName))
+        .when(typeof accept === 'boolean', (b) => b.withText('Response', accept ? 'Accept' : 'Reject'))
+        .when(currentPrice, (b) => b.withCoin('Current Price', currentPrice, coinId))
+        .when(counterPrice, (b) => b.withCoin('Counter Price', counterPrice, coinId))
+        .build()
+}
+
+export const buildSetProtocolFeeView: ViewBuilderFn = ({ call, network }) => {
+    const protocolFee = displayValue(getArg(call.params, 'protocol_fee'))
+    return TransactionViewBuilder.create('Set Marketplace Protocol Fee')
+        .withNetwork(network)
+        .when(protocolFee, (b) => b.withText('Protocol Fee', protocolFee))
         .build()
 }

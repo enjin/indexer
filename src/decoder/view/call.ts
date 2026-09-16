@@ -66,13 +66,26 @@ export function displayValue(value: unknown): string {
     return stringify(value)
 }
 
-const FUEL_TANK_CALLS = new Set(['FuelTanks::dispatch', 'FuelTanks::dispatch_and_touch'])
+const WRAPPER_CALLS = new Set([
+    'FuelTanks::dispatch',
+    'FuelTanks::dispatch_and_touch',
+    'Proxy::proxy',
+    'Proxy::proxy_announced',
+])
+const MAX_WRAPPER_DEPTH = 16
 
 export function getDispatchCall(call: CallParts): CallParts {
-    if (!FUEL_TANK_CALLS.has(getCallId(call))) return call
-    const inner = getArg(call.params, 'call')
-    const parsed = parseCallData(inner)
-    return parsed ?? call
+    let current = call
+
+    for (let depth = 0; depth < MAX_WRAPPER_DEPTH; depth++) {
+        if (!WRAPPER_CALLS.has(getCallId(current))) return current
+
+        const parsed = parseCallData(getArg(current.params, 'call'))
+        if (!parsed) return current
+        current = parsed
+    }
+
+    return current
 }
 
 export function getBatchedCalls(call: CallParts): CallParts[] {

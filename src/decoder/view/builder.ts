@@ -12,7 +12,10 @@ import type {
 import { getArg, getCallId } from './call'
 
 const CALL_ITEM_PATHS: Record<string, string> = {
+    'FuelTanks::batch_add_account': 'user_ids',
+    'FuelTanks::batch_remove_account': 'user_ids',
     'MultiTokens::batch_mint': 'recipients',
+    'MultiTokens::batch_infuse': 'infusions',
     'MultiTokens::batch_set_attribute': 'attributes',
     'MultiTokens::batch_transfer': 'recipients',
     'NominationPools::nominate': 'validators',
