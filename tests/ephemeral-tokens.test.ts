@@ -150,6 +150,15 @@ function callItem(runtime: Runtime, name: string, args: unknown): CallItem {
     return { id: '10-1', name, args, success: true, block: { _runtime: runtime } } as CallItem
 }
 
+function dispatchCall(runtime: Runtime, account: string, call: unknown): CallItem {
+    return callItem(runtime, 'FuelTanks.dispatch', {
+        tankId: { __kind: 'Id', value: account },
+        ruleSetId: undefined,
+        call,
+        settings: undefined,
+    })
+}
+
 function createParams(tokenId = '9') {
     return {
         __kind: 'CreateToken',
@@ -281,6 +290,56 @@ void test('v1040 direct, batch and force mint wrappers retain ephemeral fields',
     assert.equal(direct.params.__kind === 'CreateToken' && direct.params.ephemeralExpiration, 77)
     assert.equal(batch.recipients[0].params.__kind === 'CreateToken' && batch.recipients[0].params.isLendable, false)
     assert.equal(force.params.__kind === 'CreateOrMint' && force.params.value.ephemeralExpiration, 77)
+})
+
+void test('v1040 fuel tank mint wrappers normalize mint rate limits after unwrapping', () => {
+    const runtime = matrixV1040Runtime()
+    const account = `0x${'22'.repeat(32)}`
+    const rateLimit = { period: 120, max: '2' }
+    const direct = mint(
+        dispatchCall(runtime, account, {
+            __kind: 'MultiTokens',
+            value: {
+                __kind: 'mint',
+                recipient: { __kind: 'Id', value: account },
+                collectionId: '7',
+                params: { ...createParams(), mintRateLimit: rateLimit },
+            },
+        })
+    )
+    const batch = batchMint(
+        dispatchCall(runtime, account, {
+            __kind: 'MultiTokens',
+            value: {
+                __kind: 'batch_mint',
+                collectionId: '7',
+                recipients: [{ accountId: account, params: { ...createParams('10'), mintRateLimit: rateLimit } }],
+            },
+        })
+    )
+    const force = forceMint(
+        dispatchCall(runtime, account, {
+            __kind: 'MultiTokens',
+            value: {
+                __kind: 'force_mint',
+                caller: undefined,
+                recipient: { __kind: 'Id', value: account },
+                collectionId: '7',
+                params: {
+                    __kind: 'CreateOrMint',
+                    value: { ...createParams('11'), amount: '1', __kind: undefined, mintRateLimit: rateLimit },
+                },
+                depositBacker: undefined,
+            },
+        })
+    )
+
+    assert.equal(direct.params.__kind === 'CreateToken' && direct.params.mintRateLimit?.period, 120n)
+    assert.equal(
+        batch.recipients[0].params.__kind === 'CreateToken' && batch.recipients[0].params.mintRateLimit?.max,
+        2n
+    )
+    assert.equal(force.params.__kind === 'CreateOrMint' && force.params.value.mintRateLimit?.period, 120n)
 })
 
 void test('token creation stores the event initial supply separately from live supply', async () => {

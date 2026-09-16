@@ -12,6 +12,8 @@ export function listingFilledSnsEvent(
     takeAssetId: Token
 ): SnsEvent {
     const isOffer = listing.type === ListingType.Offer
+    const tokenAsset = isOffer ? takeAssetId : makeAssetId
+    const priceAsset = isOffer ? makeAssetId : takeAssetId
 
     // Preserve the established SNS contract: for offers, seller is still the offer maker and buyer is the filler.
     return {
@@ -21,13 +23,13 @@ export function listingFilledSnsEvent(
             listing: {
                 id: listing.id,
                 price: Big(listing.price.toString())
-                    .mul(10 ** (makeAssetId.nativeMetadata?.decimalCount ?? 0))
+                    .mul(10 ** (priceAsset.nativeMetadata?.decimalCount ?? 0))
                     .toNumber(),
                 amount: Big(listing.amount.toString())
-                    .div(10 ** (makeAssetId.nativeMetadata?.decimalCount ?? 0))
+                    .div(10 ** (tokenAsset.nativeMetadata?.decimalCount ?? 0))
                     .toNumber(),
                 highestPrice: Big(listing.highestPrice.toString())
-                    .mul(10 ** (makeAssetId.nativeMetadata?.decimalCount ?? 0))
+                    .mul(10 ** (priceAsset.nativeMetadata?.decimalCount ?? 0))
                     .toNumber(),
                 seller: {
                     id: listing.seller.id,
@@ -36,7 +38,7 @@ export function listingFilledSnsEvent(
                 data: listing.data.toJSON(),
                 state: listing.state.toJSON(),
             },
-            token: isOffer ? takeAssetId.id : makeAssetId.id,
+            token: tokenAsset.id,
             buyer: {
                 id: event.buyer,
             },
@@ -45,7 +47,7 @@ export function listingFilledSnsEvent(
             amountRemaining: event.amountRemaining,
             protocolFee: event.protocolFee,
             royalty: event.royalty,
-            decimalCount: makeAssetId.nativeMetadata?.decimalCount,
+            decimalCount: tokenAsset.nativeMetadata?.decimalCount,
             extrinsic: item.extrinsic?.id,
         },
     }

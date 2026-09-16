@@ -18,7 +18,7 @@ export async function findLoanBorrower(
         where: { token: { id: tokenId }, totalBalance: MoreThan(0n) },
         relations: { account: true },
         order: { id: 'ASC' },
-        take: 2,
+        take: lenderId ? 3 : 2,
     })
     const borrowers = lenderId ? holders.filter((holder) => holder.account.id !== lenderId) : holders
 

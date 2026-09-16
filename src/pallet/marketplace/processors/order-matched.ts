@@ -77,11 +77,7 @@ export async function orderMatched(
         }),
     ])
 
-    try {
-        await refreshPromotedListings(ctx, block, data)
-    } catch (error) {
-        ctx.log.warn(`[OrderMatched] Failed to refresh scheduled book membership at ${item.id}: ${String(error)}`)
-    }
+    await refreshPromotedListings(ctx, block, data)
 
     const snsEvent: SnsEvent = {
         id: item.id,

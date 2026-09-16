@@ -5,20 +5,25 @@ import { migratedBookState } from '~/pallet/marketplace/utils/listing-state'
 
 export async function migrationCompleted(ctx: CommonContext, block: Block, item: EventItem): Promise<EventModel> {
     const data = mappings.marketplace.events.migrationCompleted(item)
-    const listings = await ctx.store.find<Listing>(Listing, {
-        where: {
-            bookState: MarketplaceListingBookState.Unknown,
-            isActive: true,
-        },
-    })
+    const batchSize = 1000
+    let hasMore = true
 
-    for (let index = 0; index < listings.length; index += 1000) {
-        const chunk = listings.slice(index, index + 1000)
-        for (const listing of chunk) {
+    while (hasMore) {
+        const listings = await ctx.store.find<Listing>(Listing, {
+            where: {
+                bookState: MarketplaceListingBookState.Unknown,
+                isActive: true,
+            },
+            order: { id: 'ASC' },
+            take: batchSize,
+        })
+
+        for (const listing of listings) {
             listing.bookState = migratedBookState(listing, block.height)
             listing.updatedAt = new Date(block.timestamp ?? 0)
         }
-        await ctx.store.save(chunk)
+        if (listings.length > 0) await ctx.store.save(listings)
+        hasMore = listings.length === batchSize
     }
 
     return mappings.marketplace.events.migrationCompletedEventModel(item, data)

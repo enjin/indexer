@@ -62,6 +62,11 @@ void test('decodes a transfer-all call into a specific transaction view', async 
         title: 'Transfer All ENJ',
         fields: [
             { type: 'text', title: 'Network', value: 'Enjin Matrixchain' },
+            {
+                type: 'text',
+                title: 'Destination',
+                value: '0x90f6f0f77bfa00f9e8026b8ca242bf3e1bb2407052fb531d4d721ec4af51e66f',
+            },
             { type: 'text', title: 'Amount', value: 'All transferable balance' },
             { type: 'text', title: 'Keep Alive', value: 'No' },
         ],

@@ -161,8 +161,6 @@ Configuration is loaded from environment variables in `src/util/config.ts`. `.en
 
 Core local dependencies are PostgreSQL 16 and Redis 7. The application defaults target Enjin Matrixchain, but explicit environment configuration is preferable for any data-affecting work. When running application processes on the host while databases run in Docker, use host-reachable values such as `DB_HOST=localhost` and `REDIS_URL=redis://localhost:6379`; the example's Docker service names resolve only inside the Compose network.
 
-Mint-rate-limit event history is recovered separately from the current-state snapshot. Set an explicitly verified inclusive `MINT_RATE_LIMIT_HISTORY_FROM_BLOCK`/`MINT_RATE_LIMIT_HISTORY_TO_BLOCK` range and run `pnpm run replay:mint-rate-limit-history`. It uses deterministic event IDs and a dedicated processor progress schema, suppresses SNS and current-state writes, and should only be started after confirming activation heights and archive coverage.
-
 Never log, document, or commit real values for Sentry, AWS/SNS, Logtail, Pinata, Hasura admin secrets, archive API keys, or marketplace credentials.
 
 ## Development commands

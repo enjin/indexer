@@ -2,6 +2,7 @@ import { TokenLoan } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import * as mappings from '~/pallet/index'
 import { EventHandlerResult } from '~/processor.handler'
+import { upsertTokenLoanFromStorage } from './loan-state'
 
 export async function loanExtended(
     ctx: CommonContext,
@@ -16,7 +17,7 @@ export async function loanExtended(
     const id = `${data.collectionId}-${data.tokenId}`
     const loan = await ctx.store.findOneBy(TokenLoan, { id })
     if (!loan) {
-        ctx.log.warn(`[LoanExtended] Loan ${id} was absent`)
+        await upsertTokenLoanFromStorage(ctx, block, data.collectionId, data.tokenId)
         return event
     }
 

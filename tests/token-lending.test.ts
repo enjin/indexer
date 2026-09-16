@@ -209,6 +209,7 @@ void test('loan processors update current state and emit account history without
             extrinsic: undefined,
         },
     })
+    assert(loan)
     assert.equal(loan.borrower.id, borrower.id)
     assert.equal(loan.expiration, 88n)
 
@@ -223,6 +224,7 @@ void test('loan processors update current state and emit account history without
         }),
         false
     )
+    assert(loan)
     assert.equal(loan.expiration, 99n)
 
     await processLoanReturnFailed(
@@ -236,6 +238,7 @@ void test('loan processors update current state and emit account history without
         }),
         false
     )
+    assert(loan)
     assert.equal(loan.expiration, 99n)
 
     const returnedResult = await processTokenReturned(
@@ -285,6 +288,7 @@ void test('loan processors update current state and emit account history without
         ),
         false
     )
+    assert(loan)
     assert.equal(loan.expiration, 120n)
     assert.equal(savedTokenAccounts.length, 0)
 })

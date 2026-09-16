@@ -21,6 +21,7 @@ import {
     MarketplaceOrderMatched,
     OfferData,
     OfferState,
+    NativeTokenMetadata,
     Token,
 } from '~/model'
 import {
@@ -337,8 +338,18 @@ void test('maker fills retain independent prices and offer fills assign the econ
 
 void test('fixed-price ListingFilled SNS identifies the creator as seller and filler as buyer', () => {
     const collection = new Collection({ id: '10', collectionId: 10n })
-    const token = new Token({ id: '10-20', tokenId: 20n, collection })
-    const currency = new Token({ id: '0-0', tokenId: 0n, collection: new Collection({ id: '0' }) })
+    const token = new Token({
+        id: '10-20',
+        tokenId: 20n,
+        collection,
+        nativeMetadata: new NativeTokenMetadata({ decimalCount: 1 }),
+    })
+    const currency = new Token({
+        id: '0-0',
+        tokenId: 0n,
+        collection: new Collection({ id: '0' }),
+        nativeMetadata: new NativeTokenMetadata({ decimalCount: 2 }),
+    })
     const creator = new Account({ id: 'creator', address: 'creator' })
     const filler = new Account({ id: 'filler', address: 'filler' })
     const listing = new Listing({
@@ -370,12 +381,33 @@ void test('fixed-price ListingFilled SNS identifies the creator as seller and fi
     )
 
     assert.deepEqual(snsParties(snsEvent), { listingSeller: listing.seller.id, buyer: fill.buyer })
+    assert.deepEqual(snsEvent.body.listing, {
+        id: listing.id,
+        price: 1000,
+        amount: 0.2,
+        highestPrice: 1000,
+        seller: { id: listing.seller.id },
+        type: listing.type.toString(),
+        data: listing.data.toJSON(),
+        state: listing.state.toJSON(),
+    })
+    assert.equal(snsEvent.body.decimalCount, 1)
 })
 
 void test('offer ListingFilled SNS preserves creator and filler roles instead of economic parties', () => {
     const collection = new Collection({ id: '10', collectionId: 10n })
-    const token = new Token({ id: '10-20', tokenId: 20n, collection })
-    const currency = new Token({ id: '0-0', tokenId: 0n, collection: new Collection({ id: '0' }) })
+    const token = new Token({
+        id: '10-20',
+        tokenId: 20n,
+        collection,
+        nativeMetadata: new NativeTokenMetadata({ decimalCount: 1 }),
+    })
+    const currency = new Token({
+        id: '0-0',
+        tokenId: 0n,
+        collection: new Collection({ id: '0' }),
+        nativeMetadata: new NativeTokenMetadata({ decimalCount: 2 }),
+    })
     const creator = new Account({ id: 'offer-maker', address: 'offer-maker' })
     const filler = new Account({ id: 'offer-filler', address: 'offer-filler' })
     const listing = new Listing({
@@ -417,4 +449,15 @@ void test('offer ListingFilled SNS preserves creator and filler roles instead of
         { buyer: creator.id, seller: filler.id }
     )
     assert.deepEqual(snsParties(snsEvent), { listingSeller: listing.seller.id, buyer: fill.buyer })
+    assert.deepEqual(snsEvent.body.listing, {
+        id: listing.id,
+        price: 1000,
+        amount: 0.2,
+        highestPrice: 1000,
+        seller: { id: listing.seller.id },
+        type: listing.type.toString(),
+        data: listing.data.toJSON(),
+        state: listing.state.toJSON(),
+    })
+    assert.equal(snsEvent.body.decimalCount, 1)
 })

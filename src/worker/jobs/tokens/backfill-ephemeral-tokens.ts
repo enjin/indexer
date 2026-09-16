@@ -55,7 +55,7 @@ export async function backfillEphemeralTokens(job: Job<BackfillEphemeralTokensDa
                 where: { token: { id: token.id }, totalBalance: MoreThan(0n) },
                 relations: { account: true },
                 order: { id: 'ASC' },
-                take: 2,
+                take: 3,
             })
             const borrowers = holders.filter((holder) => holder.account.id !== lending.lender)
             if (borrowers.length !== 1) {

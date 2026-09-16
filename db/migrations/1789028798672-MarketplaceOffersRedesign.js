@@ -59,7 +59,7 @@ module.exports = class MarketplaceOffersRedesign1789028798672 {
                 ELSE state
             END
         `)
-        await db.query(`DROP INDEX "public"."IDX_b563bb2b2cf3e681afcefc7a3f"`)
+        await db.query(`DROP INDEX "IDX_b563bb2b2cf3e681afcefc7a3f"`)
         await db.query(`ALTER TABLE "listing" DROP COLUMN "book_state"`)
     }
 }

@@ -49,7 +49,7 @@ export async function computeListings(_job: Job) {
                             auctionType: ListingType.Auction,
                             height,
                         }
-                    ).orWhere("listing.type = :offerType AND (listing.data->>'expiration')::int < :height", {
+                    ).orWhere("listing.type = :offerType AND (listing.data->>'expiration')::int <= :height", {
                         offerType: ListingType.Offer,
                         height,
                     })
@@ -102,7 +102,7 @@ export async function computeListings(_job: Job) {
                 const offerData = listing.data
                 if (
                     listing.state.isTypeOf === 'OfferState' &&
-                    ((offerData.expiration != null && offerData.expiration < height) ||
+                    ((offerData.expiration != null && offerData.expiration <= height) ||
                         listing.state.isExpired === true)
                 ) {
                     listing.state = rebuildOfferState(listing.amount, listing.state, { isExpired: true })
