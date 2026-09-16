@@ -417,7 +417,6 @@ type MultiTokensTokenReturned {
   tokenId: BigInt!
   lender: String!
   borrower: String!
-  observedBlock: BigInt!
 }
 
 type MultiTokensLoanReturnFailed {

@@ -22,7 +22,6 @@ export async function tokenReturned(
     ])
     const event = mappings.multiTokens.events.tokenReturnedEventModel(
         item,
-        block.height,
         data,
         lender,
         borrower,
@@ -43,7 +42,6 @@ export async function tokenReturned(
             token: `${data.collectionId}-${data.tokenId}`,
             lender: data.lender,
             borrower: data.borrower,
-            observedBlock: block.height,
             extrinsic: item.extrinsic?.id,
         },
     }

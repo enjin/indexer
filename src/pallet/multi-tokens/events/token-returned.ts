@@ -22,7 +22,6 @@ export function tokenReturned(event: EventItem): TokenReturned {
 
 export function tokenReturnedEventModel(
     item: EventItem,
-    observedBlock: number,
     data: TokenReturned,
     lender: Account,
     borrower: Account,
@@ -40,7 +39,6 @@ export function tokenReturnedEventModel(
             tokenId: data.tokenId,
             lender: data.lender,
             borrower: data.borrower,
-            observedBlock: BigInt(observedBlock),
         }),
     })
 

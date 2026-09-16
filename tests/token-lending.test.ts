@@ -105,6 +105,7 @@ void test('lending event decoders retain lifecycle identity and nullable extrins
         lender,
         borrower,
     })
+    returnedItem.extrinsic = { id: '88-2' } as EventItem['extrinsic']
     const failedItem = eventItem(runtime, 'MultiTokens.LoanReturnFailed', {
         collectionId: '7',
         tokenId: '9',
@@ -133,7 +134,6 @@ void test('lending event decoders retain lifecycle identity and nullable extrins
     assert.equal(loanExtendedEventModel(extendedItem, 89, extended).data.newExpirationBlock, 99n)
     const [returnedEvent, returnedAccountEvent] = tokenReturnedEventModel(
         returnedItem,
-        99,
         returned,
         lenderAccount,
         borrowerAccount,
@@ -141,6 +141,7 @@ void test('lending event decoders retain lifecycle identity and nullable extrins
         token
     )
     assert.equal(returnedEvent.data.borrower, borrower)
+    assert.equal(returnedEvent.extrinsic?.id, '88-2')
     assert.equal(returnedAccountEvent.from.id, borrower)
     assert.equal(returnedAccountEvent.to?.id, lender)
     const failedModel = loanReturnFailedEventModel(failedItem, block, failed)
@@ -265,7 +266,6 @@ void test('loan processors update current state and emit account history without
             token: '7-9',
             lender: lender.id,
             borrower: borrower.id,
-            observedBlock: 100,
             extrinsic: undefined,
         },
     })

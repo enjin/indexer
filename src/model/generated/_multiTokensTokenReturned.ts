@@ -7,7 +7,6 @@ export class MultiTokensTokenReturned {
     private _tokenId!: bigint
     private _lender!: string
     private _borrower!: string
-    private _observedBlock!: bigint
 
     constructor(props?: Partial<Omit<MultiTokensTokenReturned, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
@@ -16,7 +15,6 @@ export class MultiTokensTokenReturned {
             this._tokenId = marshal.bigint.fromJSON(json.tokenId)
             this._lender = marshal.string.fromJSON(json.lender)
             this._borrower = marshal.string.fromJSON(json.borrower)
-            this._observedBlock = marshal.bigint.fromJSON(json.observedBlock)
         }
     }
 
@@ -56,15 +54,6 @@ export class MultiTokensTokenReturned {
         this._borrower = value
     }
 
-    get observedBlock(): bigint {
-        assert(this._observedBlock != null, 'uninitialized access')
-        return this._observedBlock
-    }
-
-    set observedBlock(value: bigint) {
-        this._observedBlock = value
-    }
-
     toJSON(): object {
         return {
             isTypeOf: this.isTypeOf,
@@ -72,7 +61,6 @@ export class MultiTokensTokenReturned {
             tokenId: marshal.bigint.toJSON(this.tokenId),
             lender: this.lender,
             borrower: this.borrower,
-            observedBlock: marshal.bigint.toJSON(this.observedBlock),
         }
     }
 }
