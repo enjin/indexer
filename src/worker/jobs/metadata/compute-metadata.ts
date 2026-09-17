@@ -158,6 +158,14 @@ export async function computeMetadata(job: Job) {
                         }
 
                         externalMetadata = externalResponse
+                    } else if (response.length > 0 && typeof response[0].metadata === 'object') {
+                        // The fetch came back empty (404 or an unusable body). Fall back to
+                        // the last known good payload instead of computing from nothing,
+                        // which would drop media that a previous run resolved.
+                        await job.log(`Fetch returned no metadata for ${uriAttribute.value}, reusing stored payload`)
+                        externalMetadata = response[0].metadata
+                    } else {
+                        await job.log(`Fetch returned no metadata for ${uriAttribute.value} and no payload is stored`)
                     }
                     await job.updateProgress(60)
                 }

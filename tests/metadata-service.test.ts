@@ -94,3 +94,74 @@ void test('stores socials only on collection metadata', () => {
     assert.equal(collectionMetadata.socials?.discord, 'collection-discord')
     assert.equal(tokenMetadata.socials, undefined)
 })
+
+void test('keeps previously computed media when external metadata is empty', () => {
+    const metadataService = new MetadataService()
+    const token = new Token({
+        id: '4603-1',
+        attributes: [attribute('name', 'Grimp #1')],
+        tokenGroupTokens: [],
+    })
+
+    metadataService.applyTokenMetadata(token, {
+        name: 'Grimp #1',
+        image: 'https://cdn.example.com/grimp/1.png',
+    })
+
+    // Second pass: the external fetch produced nothing (404 / unusable body),
+    // which computeMetadata surfaces as an empty object.
+    const recomputed = metadataService.applyTokenMetadata(token, {})
+
+    assert.equal(recomputed.fallbackImage, 'https://cdn.example.com/grimp/1.png')
+    assert.ok(recomputed.media)
+    assert.equal(recomputed.media.length, 1)
+    assert.equal(recomputed.media[0].url, 'https://cdn.example.com/grimp/1.png')
+})
+
+void test('keeps previously computed media when external metadata is null', () => {
+    const metadataService = new MetadataService()
+    const token = new Token({
+        id: '4603-2',
+        attributes: [],
+        tokenGroupTokens: [],
+    })
+
+    metadataService.applyTokenMetadata(token, { image: 'https://cdn.example.com/grimp/2.png' })
+    const recomputed = metadataService.applyTokenMetadata(token, null)
+
+    assert.equal(recomputed.fallbackImage, 'https://cdn.example.com/grimp/2.png')
+    assert.equal(recomputed.media?.[0].url, 'https://cdn.example.com/grimp/2.png')
+})
+
+void test('lets a successful external fetch replace existing media', () => {
+    const metadataService = new MetadataService()
+    const token = new Token({
+        id: '4603-3',
+        attributes: [],
+        tokenGroupTokens: [],
+    })
+
+    metadataService.applyTokenMetadata(token, { image: 'https://cdn.example.com/old.png' })
+    const recomputed = metadataService.applyTokenMetadata(token, { image: 'https://cdn.example.com/new.png' })
+
+    assert.equal(recomputed.fallbackImage, 'https://cdn.example.com/new.png')
+    assert.equal(recomputed.media?.[0].url, 'https://cdn.example.com/new.png')
+})
+
+void test('prefers collection metadata over stale token media on recompute', () => {
+    const metadataService = new MetadataService()
+    const collection = new Collection({
+        id: '4603',
+        metadata: new Metadata({ fallbackImage: 'https://collection/banner.png' }),
+    })
+    const token = new Token({
+        id: '4603-4',
+        attributes: [],
+        collection,
+        tokenGroupTokens: [],
+    })
+
+    const first = metadataService.applyTokenMetadata(token, {})
+
+    assert.equal(first.fallbackImage, 'https://collection/banner.png')
+})
