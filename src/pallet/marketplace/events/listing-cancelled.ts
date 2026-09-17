@@ -46,6 +46,7 @@ export function listingCancelledEventModel(
     listingId: string,
     relations?: ListingCancelledRelations
 ): [EventModel, AccountTokenEvent | undefined] {
+    const canonicalListingId = relations?.listing.id ?? listingId
     let event: EventModel = new EventModel({
         id: item.id,
         name: MarketplaceListingCancelled.name,
@@ -53,7 +54,7 @@ export function listingCancelledEventModel(
         collectionId: relations?.collection.id,
         tokenId: relations?.token.id,
         data: new MarketplaceListingCancelled({
-            listing: listingId,
+            listing: canonicalListingId,
         }),
     })
 
@@ -65,7 +66,7 @@ export function listingCancelledEventModel(
             collectionId: relations.collection.id,
             tokenId: relations.token.id,
             data: new MarketplaceOfferCancelled({
-                listing: listingId,
+                listing: canonicalListingId,
             }),
         })
     }

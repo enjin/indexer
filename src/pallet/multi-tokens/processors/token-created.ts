@@ -24,6 +24,8 @@ import { Token as StoredToken } from '~/pallet/multi-tokens/storage/types'
 import { calls } from '~/type'
 import { selectTokenCreationCall, unwrapFlexibleMintParams } from '~/pallet/multi-tokens/processors/token-created-call'
 import { QueueUtils } from '~/queue'
+import { toMintRateLimitStateModel } from '~/pallet/multi-tokens/processors/mint-rate-limit-state'
+import { hasV6TokenLayout } from '~/pallet/multi-tokens/storage/token-values'
 
 type TokenParams = DefaultMintParams | FlexibleMintParams | StoredToken
 
@@ -109,6 +111,8 @@ async function tokenFromCall(
         accountDepositCount: 0,
         anyoneCanInfuse: false,
         ephemeralExpiration: null,
+        isLendable: false,
+        mintRateLimit: null,
         nativeMetadata: null,
         infusion: 0n, // Updated on `Infused event`
         tokenGroupTokens: [],
@@ -116,12 +120,14 @@ async function tokenFromCall(
     })
 
     let tokenParams: TokenParams | undefined
+    let storedToken: StoredToken | undefined
     if (useStorage || (call && 'capacity' in call)) {
-        tokenParams = await mappings.multiTokens.storage.tokens(block, {
+        storedToken = await mappings.multiTokens.storage.tokens(block, {
             collectionId: event.collectionId,
             tokenId: event.tokenId,
         })
-        if (!tokenParams) return undefined
+        if (!storedToken) return undefined
+        tokenParams = storedToken
     } else if (call && 'params' in call) {
         tokenParams = unwrapFlexibleMintParams(call.params)
     }
@@ -150,6 +156,10 @@ async function tokenFromCall(
         if ('ephemeralExpiration' in tokenParams) {
             token.ephemeralExpiration =
                 tokenParams.ephemeralExpiration === undefined ? null : BigInt(tokenParams.ephemeralExpiration)
+        }
+
+        if ('isLendable' in tokenParams) {
+            token.isLendable = tokenParams.isLendable ?? false
         }
 
         if ('metadata' in tokenParams) {
@@ -182,6 +192,14 @@ async function tokenFromCall(
             token.freezeState = freezeState
             token.isFrozen = isTokenFrozen(freezeState)
         }
+    }
+
+    if (hasV6TokenLayout(block._runtime)) {
+        storedToken ??= await mappings.multiTokens.storage.tokens(block, {
+            collectionId: event.collectionId,
+            tokenId: event.tokenId,
+        })
+        token.mintRateLimit = toMintRateLimitStateModel(storedToken?.mintRateLimit)
     }
 
     await checkMetadataInheritance(token)

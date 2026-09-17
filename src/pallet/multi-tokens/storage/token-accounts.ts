@@ -34,7 +34,7 @@ export async function tokenAccounts(
     const getTokenAccounts = async (
         version: (typeof multiTokens.tokenAccounts)[keyof typeof multiTokens.tokenAccounts]
     ) => {
-        if (params?.collectionId && params.tokenId && params.accountId) {
+        if (params?.collectionId !== undefined && params.tokenId !== undefined && params.accountId !== undefined) {
             // The order on v100 storage is different, so we need to check the version
             if (version === multiTokens.tokenAccounts.v100) {
                 return version.get(block, params.accountId, params.collectionId, params.tokenId)
@@ -46,7 +46,7 @@ export async function tokenAccounts(
             return storage.get(block, params.collectionId, params.tokenId, params.accountId)
         }
 
-        if (params?.collectionId && params.tokenId) {
+        if (params?.collectionId !== undefined && params.tokenId !== undefined) {
             // The order on v100 storage is different, so we need to check the version
             if (version === multiTokens.tokenAccounts.v100) {
                 throw new Error('Not possible to retrieve a token account without the AccountId on v100')

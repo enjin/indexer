@@ -11,6 +11,7 @@ import {ListingSale} from "./listingSale.model"
 import {CounterOffer} from "./counterOffer.model"
 import {WhitelistedAccount} from "./whitelistedAccount.model"
 import {ListingType} from "./_listingType"
+import {MarketplaceListingBookState} from "./_marketplaceListingBookState"
 
 @Entity_()
 export class Listing {
@@ -98,6 +99,10 @@ export class Listing {
     @Index_()
     @Column_("varchar", {length: 10, nullable: false})
     type!: ListingType
+
+    @Index_()
+    @Column_("varchar", {length: 17, nullable: false})
+    bookState!: MarketplaceListingBookState
 
     @Index_()
     @BooleanColumn_({nullable: true})

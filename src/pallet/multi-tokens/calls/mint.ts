@@ -4,13 +4,14 @@ import { calls } from '~/type'
 import { match } from 'ts-pattern'
 import { Mint } from '~/pallet/multi-tokens/calls/types'
 import { withDispatchCheck } from '~/pallet/fuel-tanks/utils'
+import { normalizeDefaultMintParams } from './mint-rate-limit'
 
-export const mint = withDispatchCheck((call: CallItem): Mint => {
+const decodeMint = withDispatchCheck((call: CallItem): Mint => {
     return match(call)
         .returnType<Mint>()
         .when(
             () => calls.multiTokens.mint.matrixV1040.is(call),
-            () => calls.multiTokens.mint.matrixV1040.decode(call)
+            () => calls.multiTokens.mint.matrixV1040.decode(call) as unknown as Mint
         )
         .when(
             () => calls.multiTokens.mint.matrixEnjinV1022.is(call),
@@ -72,3 +73,8 @@ export const mint = withDispatchCheck((call: CallItem): Mint => {
             throw new UnsupportedCallError(call)
         })
 })
+
+export function mint(call: CallItem): Mint {
+    const data = decodeMint(call)
+    return { ...data, params: normalizeDefaultMintParams(data.params) }
+}

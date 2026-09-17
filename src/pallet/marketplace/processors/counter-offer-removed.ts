@@ -1,15 +1,16 @@
-import { AccountTokenEvent, CounterOffer, Event as EventModel, Listing, OfferState } from '~/model'
+import { AccountTokenEvent, CounterOffer, Event as EventModel, Listing } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { getOrCreateAccount } from '~/util/entities'
 import Big from 'big.js'
+import { rebuildOfferState } from '~/pallet/marketplace/utils/listing-state'
 
 export async function counterOfferRemoved(
     ctx: CommonContext,
     block: Block,
     item: EventItem
-): Promise<[EventModel, AccountTokenEvent, SnsEvent | undefined] | undefined> {
+): Promise<[EventModel, AccountTokenEvent | undefined, SnsEvent | undefined] | undefined> {
     const event = mappings.marketplace.events.counterOfferRemoved(item)
     const listingId = event.listingId.substring(2)
 
@@ -22,22 +23,25 @@ export async function counterOfferRemoved(
             },
         },
     })
-    if (!listing || listing.state.isTypeOf !== 'OfferState') return undefined
-
-    const takeAssetId = listing.takeAssetId
     const creator = await getOrCreateAccount(ctx, event.creator)
-    const offer = await ctx.store.findOneBy<CounterOffer>(CounterOffer, { id: `${listing.id}-${creator.id}` })
+    const offer = await ctx.store.findOneBy<CounterOffer>(CounterOffer, { id: `${listingId}-${creator.id}` })
 
     if (offer) {
         await ctx.store.remove(offer)
     }
 
+    if (!listing) {
+        return [...mappings.marketplace.events.counterOfferRemovedEventModel(item, event, creator), undefined]
+    }
+
+    const takeAssetId = listing.takeAssetId
+
     listing.updatedAt = new Date(block.timestamp ?? 0)
-    listing.state = new OfferState({
-        listingType: listing.state.listingType,
-        counterOfferCount: listing.state.counterOfferCount - 1,
-        isExpired: false,
-    })
+    if (listing.state.isTypeOf === 'OfferState' && offer) {
+        listing.state = rebuildOfferState(listing.amount, listing.state, {
+            counterOfferDelta: -1,
+        })
+    }
 
     await ctx.store.save(listing)
 
@@ -72,14 +76,11 @@ export async function counterOfferRemoved(
     }
 
     return [
-        ...mappings.marketplace.events.counterOfferRemovedEventModel(
-            item,
-            event,
+        ...mappings.marketplace.events.counterOfferRemovedEventModel(item, event, creator, {
             listing,
-            creator,
-            takeAssetId.collection,
-            takeAssetId
-        ),
+            collection: takeAssetId.collection,
+            token: takeAssetId,
+        }),
         item.extrinsic ? snsEvent : undefined,
     ]
 }

@@ -14,15 +14,15 @@ import {
 } from '~/worker/processors'
 
 const processors: Map<QueuesEnum, { processor: ProcessorDef; options?: WorkerOptions }> = new Map([
-    [QueuesEnum.ACCOUNTS, { processor: new AccountsProcessor() }],
-    [QueuesEnum.BALANCES, { processor: new BalancesProcessor() }],
-    [QueuesEnum.COLLECTIONS, { processor: new CollectionsProcessor() }],
-    [QueuesEnum.LISTINGS, { processor: new ListingsProcessor() }],
+    [QueuesEnum.ACCOUNTS, { processor: new AccountsProcessor(), options: { concurrency: 1 } }],
+    [QueuesEnum.BALANCES, { processor: new BalancesProcessor(), options: { concurrency: 1 } }],
+    [QueuesEnum.COLLECTIONS, { processor: new CollectionsProcessor(), options: { concurrency: 1 } }],
+    [QueuesEnum.LISTINGS, { processor: new ListingsProcessor(), options: { concurrency: 1 } }],
     [QueuesEnum.METADATA, { processor: new MetadataProcessor() }],
-    [QueuesEnum.TOKENS, { processor: new TokensProcessor() }],
-    [QueuesEnum.TRAITS, { processor: new TraitsProcessor() }],
-    [QueuesEnum.VALIDATORS, { processor: new ValidatorsProcessor() }],
-    [QueuesEnum.NOMINATION_POOLS, { processor: new NominationPoolsProcessor() }],
+    [QueuesEnum.TOKENS, { processor: new TokensProcessor(), options: { concurrency: 1 } }],
+    [QueuesEnum.TRAITS, { processor: new TraitsProcessor(), options: { concurrency: 1 } }],
+    [QueuesEnum.VALIDATORS, { processor: new ValidatorsProcessor(), options: { concurrency: 1 } }],
+    [QueuesEnum.NOMINATION_POOLS, { processor: new NominationPoolsProcessor(), options: { concurrency: 1 } }],
 ])
 
 export function createWorker(queueType: QueuesEnum, options: WorkerOptions = {}): BaseWorker {

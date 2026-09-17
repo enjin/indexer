@@ -29,22 +29,22 @@ export function counterOfferRemoved(event: EventItem): CounterOfferRemoved {
 export function counterOfferRemovedEventModel(
     item: EventItem,
     data: CounterOfferRemoved,
-    listing: Listing,
     account: Account,
-    collection: Collection,
-    token: Token
-): [EventModel, AccountTokenEvent] {
+    relations?: { listing: Listing; collection: Collection; token: Token }
+): [EventModel, AccountTokenEvent | undefined] {
     const event = new EventModel({
         id: item.id,
         name: MarketplaceCounterOfferRemoved.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-        collectionId: collection.id,
-        tokenId: token.id,
+        collectionId: relations?.collection.id,
+        tokenId: relations?.token.id,
         data: new MarketplaceCounterOfferRemoved({
-            listing: listing.id,
-            creator: data.creator,
+            listing: relations?.listing.id,
+            creator: account.id,
         }),
     })
+
+    if (!relations) return [event, undefined]
 
     return [
         event,
@@ -52,8 +52,8 @@ export function counterOfferRemovedEventModel(
             id: item.id,
             from: account,
             event,
-            token,
-            collection,
+            token: relations.token,
+            collection: relations.collection,
         }),
     ]
 }
