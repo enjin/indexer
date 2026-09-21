@@ -1,6 +1,7 @@
 import assert from "assert"
 import * as marshal from "./marshal"
 import {Account} from "./account.model"
+import {MintRateLimit} from "./_mintRateLimit"
 
 export class MultiTokensTokenCreated {
     public readonly isTypeOf = 'MultiTokensTokenCreated'
@@ -8,6 +9,9 @@ export class MultiTokensTokenCreated {
     private _tokenId!: bigint
     private _issuer!: string
     private _initialSupply!: bigint
+    private _isLendable!: boolean | undefined | null
+    private _ephemeralExpiration!: bigint | undefined | null
+    private _mintRateLimit!: MintRateLimit | undefined | null
 
     constructor(props?: Partial<Omit<MultiTokensTokenCreated, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
@@ -16,6 +20,9 @@ export class MultiTokensTokenCreated {
             this._tokenId = marshal.bigint.fromJSON(json.tokenId)
             this._issuer = marshal.string.fromJSON(json.issuer)
             this._initialSupply = marshal.bigint.fromJSON(json.initialSupply)
+            this._isLendable = json.isLendable == null ? undefined : marshal.boolean.fromJSON(json.isLendable)
+            this._ephemeralExpiration = json.ephemeralExpiration == null ? undefined : marshal.bigint.fromJSON(json.ephemeralExpiration)
+            this._mintRateLimit = json.mintRateLimit == null ? undefined : new MintRateLimit(undefined, json.mintRateLimit)
         }
     }
 
@@ -55,6 +62,30 @@ export class MultiTokensTokenCreated {
         this._initialSupply = value
     }
 
+    get isLendable(): boolean | undefined | null {
+        return this._isLendable
+    }
+
+    set isLendable(value: boolean | undefined | null) {
+        this._isLendable = value
+    }
+
+    get ephemeralExpiration(): bigint | undefined | null {
+        return this._ephemeralExpiration
+    }
+
+    set ephemeralExpiration(value: bigint | undefined | null) {
+        this._ephemeralExpiration = value
+    }
+
+    get mintRateLimit(): MintRateLimit | undefined | null {
+        return this._mintRateLimit
+    }
+
+    set mintRateLimit(value: MintRateLimit | undefined | null) {
+        this._mintRateLimit = value
+    }
+
     toJSON(): object {
         return {
             isTypeOf: this.isTypeOf,
@@ -62,6 +93,9 @@ export class MultiTokensTokenCreated {
             tokenId: marshal.bigint.toJSON(this.tokenId),
             issuer: this.issuer,
             initialSupply: marshal.bigint.toJSON(this.initialSupply),
+            isLendable: this.isLendable,
+            ephemeralExpiration: this.ephemeralExpiration == null ? undefined : marshal.bigint.toJSON(this.ephemeralExpiration),
+            mintRateLimit: this.mintRateLimit == null ? undefined : this.mintRateLimit.toJSON(),
         }
     }
 }

@@ -16,6 +16,7 @@ import {
     ListingSale,
     ListingStatus,
     ListingType,
+    MultiTokensTokenCreated,
     PoolMember,
     RoyaltyCurrency,
     Token,
@@ -370,7 +371,12 @@ void test('token creation stores the event initial supply separately from live s
         },
     } as never
 
-    await tokenCreated(ctx, { _runtime: runtime, height: 10, hash: '0x01', timestamp: 0 } as Block, item, false)
+    const createdEvent = await tokenCreated(
+        ctx,
+        { _runtime: runtime, height: 10, hash: '0x01', timestamp: 0 } as Block,
+        item,
+        false
+    )
 
     assert.equal(saved.length, 1)
     assert.equal(saved[0].supply, 0n)
@@ -380,6 +386,17 @@ void test('token creation stores the event initial supply separately from live s
     assert(mintRateLimit)
     assert.equal(mintRateLimit.limit.max, 2n)
     assert.equal(mintRateLimit.window.buckets[0], 1n)
+
+    assert(createdEvent && !Array.isArray(createdEvent))
+    assert(createdEvent.data instanceof MultiTokensTokenCreated)
+    assert.equal(createdEvent.data.isLendable, true)
+    assert.equal(createdEvent.data.ephemeralExpiration, 77n)
+    assert.equal(createdEvent.data.mintRateLimit?.max, 2n)
+
+    const persisted = JSON.parse(JSON.stringify(createdEvent.data))
+    assert.equal(persisted.isLendable, true)
+    assert.equal(persisted.ephemeralExpiration, '77')
+    assert.deepEqual(persisted.mintRateLimit, { period: '120', max: '2' })
 })
 
 void test('ephemeral events retain scalar identity and support hook events without extrinsics', () => {

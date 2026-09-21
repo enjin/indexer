@@ -2,7 +2,7 @@ import { multiTokens } from '~/type/events'
 import { EventItem } from '~/contexts'
 import { UnsupportedEventError } from '~/util/errors'
 import { match } from 'ts-pattern'
-import { Event as EventModel, Extrinsic, MultiTokensTokenCreated } from '~/model'
+import { Event as EventModel, Extrinsic, MultiTokensTokenCreated, Token } from '~/model'
 import { TokenCreated } from '~/pallet/multi-tokens/events/types'
 import { unwrapAccount } from '~/util/entities'
 
@@ -18,7 +18,7 @@ export function tokenCreated(event: EventItem): TokenCreated {
         })
 }
 
-export function tokenCreatedEventModel(item: EventItem, data: TokenCreated): EventModel {
+export function tokenCreatedEventModel(item: EventItem, data: TokenCreated, token?: Token): EventModel {
     return new EventModel({
         id: item.id,
         name: MultiTokensTokenCreated.name,
@@ -30,6 +30,9 @@ export function tokenCreatedEventModel(item: EventItem, data: TokenCreated): Eve
             tokenId: data.tokenId,
             issuer: unwrapAccount(data.issuer),
             initialSupply: data.initialSupply,
+            isLendable: token?.isLendable,
+            ephemeralExpiration: token?.ephemeralExpiration,
+            mintRateLimit: token?.mintRateLimit?.limit,
         }),
     })
 }

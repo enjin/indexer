@@ -241,6 +241,7 @@ export async function tokenCreated(
 
     if (skipSave) return mappings.multiTokens.events.tokenCreatedEventModel(item, event)
 
+    let token: Token | undefined
     if (item.call) {
         const complexCall = unwrapComplexMintCall(item)
         // Encoded children include failed and unexecuted calls. Trust call parameters only when one recipient matches
@@ -249,12 +250,15 @@ export async function tokenCreated(
             complexCall === undefined
                 ? mappings.multiTokens.utils.anyMint(item.call, event.collectionId, event.tokenId)
                 : selectTokenCreationCall(complexCall.call, event)
-        const token = await tokenFromCall(ctx, block, event, call, complexCall !== undefined && call === undefined)
-        if (token) await ctx.store.save(token)
+        token = await tokenFromCall(ctx, block, event, call, complexCall !== undefined && call === undefined)
     } else {
-        const token = await tokenFromCall(ctx, block, event, undefined, true)
-        if (token) await ctx.store.save(token)
+        token = await tokenFromCall(ctx, block, event, undefined, true)
     }
+    if (token) await ctx.store.save(token)
 
-    return mappings.multiTokens.events.tokenCreatedEventModel(item, event)
+    return mappings.multiTokens.events.tokenCreatedEventModel(
+        item,
+        event,
+        hasV6TokenLayout(block._runtime) ? token : undefined
+    )
 }

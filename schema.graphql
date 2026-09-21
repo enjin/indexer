@@ -334,6 +334,9 @@ type MultiTokensTokenCreated {
   tokenId: BigInt!
   issuer: Account!
   initialSupply: BigInt!
+  isLendable: Boolean
+  ephemeralExpiration: BigInt
+  mintRateLimit: MintRateLimit
 }
 
 type MultiTokensTokenGroupCreated {
