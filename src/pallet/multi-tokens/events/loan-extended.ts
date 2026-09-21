@@ -12,7 +12,7 @@ export function loanExtended(event: EventItem): LoanExtended {
     throw new UnsupportedEventError(event)
 }
 
-export function loanExtendedEventModel(item: EventItem, observedBlock: number, data: LoanExtended): EventModel {
+export function loanExtendedEventModel(item: EventItem, data: LoanExtended): EventModel {
     return new EventModel({
         id: item.id,
         name: MultiTokensLoanExtended.name,
@@ -24,7 +24,6 @@ export function loanExtendedEventModel(item: EventItem, observedBlock: number, d
             tokenId: data.tokenId,
             oldExpirationBlock: BigInt(data.oldExpiration),
             newExpirationBlock: BigInt(data.newExpiration),
-            observedBlock: BigInt(observedBlock),
         }),
     })
 }

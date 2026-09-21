@@ -23,7 +23,6 @@ export async function tokenLent(
     ])
     const event = mappings.multiTokens.events.tokenLentEventModel(
         item,
-        block.height,
         data,
         lender,
         borrower,
@@ -51,7 +50,6 @@ export async function tokenLent(
             lender: data.lender,
             borrower: data.borrower,
             expiration: data.expiration,
-            observedBlock: block.height,
             extrinsic: item.extrinsic?.id,
         },
     }

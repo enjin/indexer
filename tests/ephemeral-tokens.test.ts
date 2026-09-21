@@ -397,7 +397,7 @@ void test('ephemeral events retain scalar identity and support hook events witho
     })
     const destroyed = ephemeralTokenDestroyed(destroyedItem)
     const failed = ephemeralCleanupFailed(failureItem)
-    const destroyedModel = ephemeralTokenDestroyedEventModel(destroyedItem, 80, destroyed)
+    const destroyedModel = ephemeralTokenDestroyedEventModel(destroyedItem, destroyed)
     const failedModel = ephemeralCleanupFailedEventModel(
         failureItem,
         { _runtime: runtime, height: 80 } as Block,
@@ -407,7 +407,6 @@ void test('ephemeral events retain scalar identity and support hook events witho
     assert.equal(destroyedModel.extrinsic, null)
     assert.equal(destroyedModel.tokenId, '7-9')
     assert.equal(destroyedModel.data.expirationBlock, 77n)
-    assert.equal(destroyedModel.data.observedBlock, 80n)
     assert.equal(failedModel.extrinsic, null)
     assert.equal(failedModel.data.error, 'BadOrigin')
 })

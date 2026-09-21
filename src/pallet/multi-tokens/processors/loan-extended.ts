@@ -11,7 +11,7 @@ export async function loanExtended(
     skipSave: boolean
 ): Promise<EventHandlerResult> {
     const data = mappings.multiTokens.events.loanExtended(item)
-    const event = mappings.multiTokens.events.loanExtendedEventModel(item, block.height, data)
+    const event = mappings.multiTokens.events.loanExtendedEventModel(item, data)
     if (skipSave) return event
 
     const id = `${data.collectionId}-${data.tokenId}`

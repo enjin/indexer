@@ -384,14 +384,12 @@ type MultiTokensEphemeralTokenDestroyed {
   collectionId: BigInt!
   tokenId: BigInt!
   expirationBlock: BigInt!
-  observedBlock: BigInt!
 }
 
 type MultiTokensEphemeralCleanupFailed {
   collectionId: BigInt!
   tokenId: BigInt!
   expirationBlock: BigInt!
-  observedBlock: BigInt!
   error: String
 }
 
@@ -401,7 +399,6 @@ type MultiTokensTokenLent {
   lender: String!
   borrower: String!
   expirationBlock: BigInt!
-  observedBlock: BigInt!
 }
 
 type MultiTokensLoanExtended {
@@ -409,7 +406,6 @@ type MultiTokensLoanExtended {
   tokenId: BigInt!
   oldExpirationBlock: BigInt!
   newExpirationBlock: BigInt!
-  observedBlock: BigInt!
 }
 
 type MultiTokensTokenReturned {
@@ -423,7 +419,6 @@ type MultiTokensLoanReturnFailed {
   collectionId: BigInt!
   tokenId: BigInt!
   expirationBlock: BigInt!
-  observedBlock: BigInt!
   error: String
 }
 

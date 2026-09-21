@@ -121,7 +121,6 @@ void test('lending event decoders retain lifecycle identity and nullable extrins
 
     const [lentEvent, lentAccountEvent] = tokenLentEventModel(
         lentItem,
-        88,
         lent,
         lenderAccount,
         borrowerAccount,
@@ -131,7 +130,7 @@ void test('lending event decoders retain lifecycle identity and nullable extrins
     assert.equal(lentEvent.data.expirationBlock, 88n)
     assert.equal(lentAccountEvent.from.id, lender)
     assert.equal(lentAccountEvent.to?.id, borrower)
-    assert.equal(loanExtendedEventModel(extendedItem, 89, extended).data.newExpirationBlock, 99n)
+    assert.equal(loanExtendedEventModel(extendedItem, extended).data.newExpirationBlock, 99n)
     const [returnedEvent, returnedAccountEvent] = tokenReturnedEventModel(
         returnedItem,
         returned,
@@ -147,7 +146,6 @@ void test('lending event decoders retain lifecycle identity and nullable extrins
     const failedModel = loanReturnFailedEventModel(failedItem, block, failed)
     assert.equal(failedModel.extrinsic, null)
     assert.equal(failedModel.data.error, 'BadOrigin')
-    assert.equal(failedModel.data.observedBlock, 100n)
 })
 
 void test('loan processors update current state and emit account history without touching token-account balances', async () => {
@@ -206,7 +204,6 @@ void test('loan processors update current state and emit account history without
             lender: lender.id,
             borrower: borrower.id,
             expiration: 88,
-            observedBlock: 88,
             extrinsic: undefined,
         },
     })

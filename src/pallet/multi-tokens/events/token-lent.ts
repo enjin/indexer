@@ -22,7 +22,6 @@ export function tokenLent(event: EventItem): TokenLent {
 
 export function tokenLentEventModel(
     item: EventItem,
-    observedBlock: number,
     data: TokenLent,
     lender: Account,
     borrower: Account,
@@ -41,7 +40,6 @@ export function tokenLentEventModel(
             lender: data.lender,
             borrower: data.borrower,
             expirationBlock: BigInt(data.expiration),
-            observedBlock: BigInt(observedBlock),
         }),
     })
 

@@ -6,7 +6,6 @@ export class MultiTokensLoanReturnFailed {
     private _collectionId!: bigint
     private _tokenId!: bigint
     private _expirationBlock!: bigint
-    private _observedBlock!: bigint
     private _error!: string | undefined | null
 
     constructor(props?: Partial<Omit<MultiTokensLoanReturnFailed, 'toJSON'>>, json?: any) {
@@ -15,7 +14,6 @@ export class MultiTokensLoanReturnFailed {
             this._collectionId = marshal.bigint.fromJSON(json.collectionId)
             this._tokenId = marshal.bigint.fromJSON(json.tokenId)
             this._expirationBlock = marshal.bigint.fromJSON(json.expirationBlock)
-            this._observedBlock = marshal.bigint.fromJSON(json.observedBlock)
             this._error = json.error == null ? undefined : marshal.string.fromJSON(json.error)
         }
     }
@@ -47,15 +45,6 @@ export class MultiTokensLoanReturnFailed {
         this._expirationBlock = value
     }
 
-    get observedBlock(): bigint {
-        assert(this._observedBlock != null, 'uninitialized access')
-        return this._observedBlock
-    }
-
-    set observedBlock(value: bigint) {
-        this._observedBlock = value
-    }
-
     get error(): string | undefined | null {
         return this._error
     }
@@ -70,7 +59,6 @@ export class MultiTokensLoanReturnFailed {
             collectionId: marshal.bigint.toJSON(this.collectionId),
             tokenId: marshal.bigint.toJSON(this.tokenId),
             expirationBlock: marshal.bigint.toJSON(this.expirationBlock),
-            observedBlock: marshal.bigint.toJSON(this.observedBlock),
             error: this.error,
         }
     }
