@@ -317,6 +317,45 @@ void test('all live mint rate limit event processors persist their scoped state 
     assert.equal(token.mintRateLimit?.pending?.effectiveBlock, 200n)
 })
 
+void test('mint rate limit refresh distinguishes deleted indexed entities from missing pinned storage', async () => {
+    const runtime = runtime1040((method, params) => {
+        assert.equal(method, 'state_getStorageAt')
+        assert.equal(params?.[1], '0xmissing')
+        return Promise.resolve(null)
+    })
+    const event = eventItem(runtime, 'MultiTokens.MintRateLimitUpdated', {
+        collectionId: '0',
+        tokenId: undefined,
+        limit: { period: 64, max: '100' },
+    })
+    const warnings: string[] = []
+    const block = { _runtime: runtime, height: 190, hash: '0xmissing' }
+    const missingEntityCtx = {
+        log: { warn: (message: string) => warnings.push(message) },
+        store: {
+            findOneBy: () => Promise.resolve(undefined),
+            save: () => Promise.reject(new Error('unexpected save')),
+        },
+    } as never
+
+    await processMintRateLimitUpdated(missingEntityCtx, block, event, false)
+    assert.deepEqual(warnings, ['[MintRateLimit] Indexed collection 0 was absent'])
+
+    const staleCollection = new Collection({ id: '0', mintRateLimit: null })
+    const missingStorageCtx = {
+        log: { warn: () => undefined },
+        store: {
+            findOneBy: () => Promise.resolve(staleCollection),
+            save: () => Promise.reject(new Error('unexpected save')),
+        },
+    } as never
+
+    await assert.rejects(
+        processMintRateLimitUpdated(missingStorageCtx, block, event, false),
+        /Collection 0 storage was absent at block 190/
+    )
+})
+
 void test('mint refreshes both token and collection rate limit windows from pinned storage', async () => {
     const collectionBytes = encodeCurrentAndLegacy('Collections', collectionValue(rateState())).current
     const tokenBytes = encodeCurrentAndLegacy('Tokens', tokenValue(rateState(true))).current

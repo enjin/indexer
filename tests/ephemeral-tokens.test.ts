@@ -95,7 +95,7 @@ function matrixV1040Runtime(call?: (method: string, params?: unknown[]) => Promi
     )
 }
 
-function tokenValue() {
+function tokenValue(isLendable = false) {
     return {
         supply: 1n,
         cap: { __kind: 'Supply', value: 1n },
@@ -113,7 +113,7 @@ function tokenValue() {
         anyoneCanInfuse: false,
         groups: [],
         ephemeralExpiration: 77,
-        isLendable: false,
+        isLendable,
         lending: { lender: `0x${'11'.repeat(32)}`, expiration: 88 },
         mintRateLimit: {
             limit: { period: 120, max: 2n },
@@ -123,16 +123,16 @@ function tokenValue() {
     }
 }
 
-function encodedTokens() {
+function encodedTokens(isLendable = false) {
     const runtime = matrixV1040Runtime()
     const type = runtime.description.storage.MultiTokens.items.Tokens.value
-    const current = runtime.scaleCodec.encodeToHex(type, tokenValue())
+    const current = runtime.scaleCodec.encodeToHex(type, tokenValue(isLendable))
     const definition = runtime.description.types[type]
     assert.equal(definition.kind, TypeKind.Composite)
 
     const types = runtime.description.types.slice() as Type[]
     types[type] = { ...definition, fields: definition.fields.slice(0, -4) }
-    const legacyValue = tokenValue() as Record<string, unknown>
+    const legacyValue = tokenValue(isLendable) as Record<string, unknown>
     delete legacyValue.ephemeralExpiration
     delete legacyValue.isLendable
     delete legacyValue.lending
@@ -343,7 +343,7 @@ void test('v1040 fuel tank mint wrappers normalize mint rate limits after unwrap
 })
 
 void test('token creation stores the event initial supply separately from live supply', async () => {
-    const { current } = encodedTokens()
+    const { current } = encodedTokens(true)
     const runtime = matrixV1040Runtime((method, params) => {
         assert.equal(method, 'state_getStorageAt')
         assert.equal(params?.[1], '0x01')
@@ -375,7 +375,7 @@ void test('token creation stores the event initial supply separately from live s
     assert.equal(saved.length, 1)
     assert.equal(saved[0].supply, 0n)
     assert.equal(saved[0].creationSupply, 3n)
-    assert.equal(saved[0].isLendable, false)
+    assert.equal(saved[0].isLendable, true)
     const mintRateLimit = saved[0].mintRateLimit
     assert(mintRateLimit)
     assert.equal(mintRateLimit.limit.max, 2n)
@@ -418,7 +418,7 @@ void test('missing marketplace cancellation preserves listing identity without g
     )
 
     assert.equal(event.data.isTypeOf, 'MarketplaceListingCancelled')
-    assert.equal(event.data.listing, '0xdeadbeef')
+    assert.equal(event.data.listing, 'deadbeef')
     assert.equal(event.listing, undefined)
 })
 

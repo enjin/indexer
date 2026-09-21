@@ -15,6 +15,7 @@ import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
 import Big from 'big.js'
 import { rebuildOfferState } from '~/pallet/marketplace/utils/listing-state'
+import { normalizeListingId } from '~/pallet/marketplace/utils/listing-id'
 
 export async function listingCancelled(
     ctx: CommonContext,
@@ -22,7 +23,7 @@ export async function listingCancelled(
     item: EventItem
 ): Promise<[EventModel, AccountTokenEvent | undefined, SnsEvent | undefined] | undefined> {
     const event = mappings.marketplace.events.listingCancelled(item)
-    const listingId = event.listingId.substring(2)
+    const listingId = normalizeListingId(event.listingId)
 
     const listing = await ctx.store.findOne<Listing>(Listing, {
         where: { id: listingId },

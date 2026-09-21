@@ -1,5 +1,5 @@
 import type { Network } from '../types'
-import { getDispatchCall, parseCallData } from './call'
+import { parseCallData, unwrapDispatchCall, withWrapperContext } from './call'
 import { getBuilderForCall } from './factory'
 import { getNativeCoinId, getNetworkLabel } from './network'
 import { buildGenericView } from './builders/generic'
@@ -28,14 +28,17 @@ export function buildTransactionView(calls: unknown, network: Network): Transact
         })
     }
 
-    const dispatchCall = getDispatchCall(mainCall)
+    const { call: dispatchCall, wrappers } = unwrapDispatchCall(mainCall)
     const builder = getBuilderForCall(dispatchCall)
 
-    return builder({
-        call: dispatchCall,
-        network: networkLabel,
-        coinId,
-    })
+    return withWrapperContext(
+        builder({
+            call: dispatchCall,
+            network: networkLabel,
+            coinId,
+        }),
+        wrappers
+    )
 }
 
 export type { TransactionView } from './types'

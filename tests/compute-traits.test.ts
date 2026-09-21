@@ -65,6 +65,54 @@ void test('ignores missing and malformed trait values', () => {
     ])
 })
 
+void test('retains numeric zero and boolean false trait values', () => {
+    const token = new Token({
+        id: '1-3',
+        metadata: new Metadata({
+            attributes: {
+                Level: 0,
+                Active: false,
+            },
+        }),
+    })
+
+    assert.deepEqual(extractTokenTraits(token, '1'), [
+        {
+            id: hash('1-Level-0'),
+            traitType: 'Level',
+            value: '0',
+            displayType: undefined,
+            displayValue: undefined,
+        },
+        {
+            id: hash('1-Active-false'),
+            traitType: 'Active',
+            value: 'false',
+            displayType: undefined,
+            displayValue: undefined,
+        },
+    ])
+})
+
+void test('keeps display values isolated by trait identity', () => {
+    const color = extractTokenTraits(
+        new Token({
+            id: '1-4',
+            metadata: new Metadata({
+                attributes: {
+                    color: { value: '1', display_value: 'Blue' },
+                    level: { value: '1', display_value: 'One' },
+                },
+            }),
+        }),
+        '1'
+    )
+
+    assert.notEqual(color[0].id, color[1].id)
+    assert.equal(color[0].displayValue, 'Blue')
+    assert.equal(color[1].displayValue, 'One')
+})
+
 void test('reads token batches with a keyset instead of retaining an offset', async () => {
     const tokens = Array.from({ length: 5 }, (_, index) => new Token({ id: `1-${String(index + 1).padStart(3, '0')}` }))
     const requestedLastIds: Array<string | undefined> = []

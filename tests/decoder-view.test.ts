@@ -426,6 +426,7 @@ void test('unwraps Platform proxy and fuel tank wrappers recursively', () => {
         fields: [
             { type: 'collection', value: '10' },
             { type: 'text', title: 'Network', value: 'Enjin Matrixchain' },
+            { type: 'text', title: 'Proxy Real', value: '0x01020304' },
         ],
     })
 })
@@ -436,6 +437,7 @@ void test('force batch has a readable continue-on-error view and unwraps proxied
             Proxy: {
                 proxy: {
                     real: { Id: [1, 2, 3, 4] },
+                    force_proxy_type: 'Any',
                     call: {
                         Utility: {
                             force_batch: {
@@ -444,6 +446,8 @@ void test('force batch has a readable continue-on-error view and unwraps proxied
                                         Proxy: {
                                             proxy: {
                                                 real: { Id: [1, 2, 3, 4] },
+                                                force_proxy_type: 'NonTransfer',
+                                                delegate: { Id: [9, 10, 11, 12] },
                                                 call: {
                                                     MultiTokens: {
                                                         create_token_group: { collection_id: '10' },
@@ -473,12 +477,19 @@ void test('force batch has a readable continue-on-error view and unwraps proxied
     assert.equal(view.title, 'Batch Transaction')
     assert.deepEqual(view.fields, [
         { type: 'text', title: 'Network', value: 'Enjin Matrixchain' },
+        { type: 'text', title: 'Proxy Real', value: '0x01020304' },
+        { type: 'text', title: 'Proxy Type', value: 'Any' },
         { type: 'text', title: 'Execution', value: 'Continue on error' },
         {
             type: 'item',
             title: 'Create Token Group',
             subtitle: 'x 1',
-            fields: [{ type: 'collection', value: '10' }],
+            fields: [
+                { type: 'collection', value: '10' },
+                { type: 'text', title: 'Proxy Real', value: '0x01020304' },
+                { type: 'text', title: 'Proxy Type', value: 'NonTransfer' },
+                { type: 'text', title: 'Proxy Delegate', value: '0x090a0b0c' },
+            ],
         },
         {
             type: 'item',
@@ -646,7 +657,7 @@ void test('scheduled matching preview explains that matching is deferred and Non
 
     assert.equal(view.title, 'Sell or List Asset')
     assert.deepEqual(
-        view.fields.filter((field) => field.type === 'text').map((field) => [field.title, field.value]),
+        view.fields.flatMap((field) => (field.type === 'text' ? [[field.title, field.value]] : [])),
         [
             ['Network', 'Enjin Matrixchain'],
             ['Amount', '5'],

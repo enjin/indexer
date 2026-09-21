@@ -13,6 +13,7 @@ import {
     Token,
 } from '~/model'
 import { ListingRemovedUnderMinimum } from '~/pallet/marketplace/events/types'
+import { normalizeListingId } from '~/pallet/marketplace/utils/listing-id'
 
 type ListingRemovedUnderMinimumRelations = {
     listing: Listing
@@ -44,7 +45,7 @@ export function listingRemovedUnderMinimumEventModel(
     listingId: string,
     relations?: ListingRemovedUnderMinimumRelations
 ): [EventModel, AccountTokenEvent | undefined] {
-    const canonicalListingId = relations?.listing.id ?? listingId
+    const canonicalListingId = relations?.listing.id ?? normalizeListingId(listingId)
     const event = new EventModel({
         id: item.id,
         name: MarketplaceListingRemovedUnderMinimum.name,

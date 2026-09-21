@@ -13,6 +13,7 @@ import {
     Token,
 } from '~/model'
 import { CounterOfferRemoved } from '~/pallet/marketplace/events/types'
+import { normalizeListingId } from '~/pallet/marketplace/utils/listing-id'
 
 export function counterOfferRemoved(event: EventItem): CounterOfferRemoved {
     return match(event)
@@ -39,7 +40,7 @@ export function counterOfferRemovedEventModel(
         collectionId: relations?.collection.id,
         tokenId: relations?.token.id,
         data: new MarketplaceCounterOfferRemoved({
-            listing: relations?.listing.id,
+            listing: relations?.listing.id ?? normalizeListingId(data.listingId),
             creator: account.id,
         }),
     })

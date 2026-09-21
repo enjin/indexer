@@ -1,5 +1,5 @@
 import { TransactionViewBuilder } from '../builder'
-import { getArg, getBatchedCalls, getCallId, getDispatchCall } from '../call'
+import { getArg, getBatchedCalls, getCallId, unwrapDispatchCall, withWrapperContext } from '../call'
 import type { CallParts, ViewBuilderFn } from '../types'
 import { getBuilderForCall } from '../factory'
 
@@ -23,15 +23,15 @@ export const buildMatrixBatchView: ViewBuilderFn = ({ call, network, coinId }) =
 }
 
 function buildBatch(call: CallParts, network: string, coinId: string, execution?: string) {
-    const batched = getBatchedCalls(call).map(getDispatchCall)
-    const title = resolveBatchTitle(batched)
+    const batched = getBatchedCalls(call).map(unwrapDispatchCall)
+    const title = resolveBatchTitle(batched.map(({ call: dispatchCall }) => dispatchCall))
 
     const builder = TransactionViewBuilder.create(title).withNetwork(network)
     if (execution) builder.withText('Execution', execution)
 
-    for (const inner of batched) {
+    for (const { call: inner, wrappers } of batched) {
         const view = getBuilderForCall(inner)({ call: inner, network, coinId })
-        builder.withCall(view, inner)
+        builder.withCall(withWrapperContext(view, wrappers), inner)
     }
 
     return builder.build()

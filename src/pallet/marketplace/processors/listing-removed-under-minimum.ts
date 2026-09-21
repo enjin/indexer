@@ -12,6 +12,7 @@ import { getOrCreateAccount } from '~/util/entities'
 import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
+import { normalizeListingId } from '~/pallet/marketplace/utils/listing-id'
 
 export async function listingRemovedUnderMinimum(
     ctx: CommonContext,
@@ -19,7 +20,7 @@ export async function listingRemovedUnderMinimum(
     item: EventItem
 ): Promise<[EventModel, AccountTokenEvent | undefined, SnsEvent | undefined] | undefined> {
     const event = mappings.marketplace.events.listingRemovedUnderMinimum(item)
-    const listingId = event.listingId.substring(2)
+    const listingId = normalizeListingId(event.listingId)
 
     const listing = await ctx.store.findOne<Listing>(Listing, {
         where: { id: listingId },

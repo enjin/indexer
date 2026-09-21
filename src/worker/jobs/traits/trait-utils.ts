@@ -64,7 +64,7 @@ export function extractTokenTraits(token: Pick<Token, 'id' | 'metadata'>, collec
             if (data.display_value) displayValue = String(data.display_value)
         }
 
-        if (!value) return
+        if (value === null || value === undefined || value === '') return
 
         const normalizedValue = String(value)
         traits.push({

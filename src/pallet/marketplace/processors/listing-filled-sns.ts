@@ -14,6 +14,8 @@ export function listingFilledSnsEvent(
     const isOffer = listing.type === ListingType.Offer
     const tokenAsset = isOffer ? takeAssetId : makeAssetId
     const priceAsset = isOffer ? makeAssetId : takeAssetId
+    const priceMultiplier = Big(10).pow(priceAsset.nativeMetadata?.decimalCount ?? 0)
+    const tokenDivisor = Big(10).pow(tokenAsset.nativeMetadata?.decimalCount ?? 0)
 
     // Preserve the established SNS contract: for offers, seller is still the offer maker and buyer is the filler.
     return {
@@ -22,15 +24,9 @@ export function listingFilledSnsEvent(
         body: {
             listing: {
                 id: listing.id,
-                price: Big(listing.price.toString())
-                    .mul(10 ** (priceAsset.nativeMetadata?.decimalCount ?? 0))
-                    .toNumber(),
-                amount: Big(listing.amount.toString())
-                    .div(10 ** (tokenAsset.nativeMetadata?.decimalCount ?? 0))
-                    .toNumber(),
-                highestPrice: Big(listing.highestPrice.toString())
-                    .mul(10 ** (priceAsset.nativeMetadata?.decimalCount ?? 0))
-                    .toNumber(),
+                price: Big(listing.price.toString()).mul(priceMultiplier).toFixed(),
+                amount: Big(listing.amount.toString()).div(tokenDivisor).toFixed(),
+                highestPrice: Big(listing.highestPrice.toString()).mul(priceMultiplier).toFixed(),
                 seller: {
                     id: listing.seller.id,
                 },

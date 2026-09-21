@@ -27,9 +27,14 @@ async function updateMintRateLimit(
             ctx.store.findOneBy(Collection, { id: collectionId.toString() }),
             mappings.multiTokens.storage.collections(block, { collectionId }),
         ])
-        if (!collection || !chainCollection) {
-            ctx.log.warn(`[MintRateLimit] Collection ${collectionId} was absent`)
+        if (!collection) {
+            ctx.log.warn(`[MintRateLimit] Indexed collection ${collectionId} was absent`)
             return
+        }
+        if (!chainCollection) {
+            throw new Error(
+                `[MintRateLimit] Collection ${collectionId} storage was absent at block ${block.height}; refusing a stale refresh`
+            )
         }
 
         collection.mintRateLimit = toMintRateLimitStateModel(chainCollection.mintRateLimit)
@@ -42,9 +47,14 @@ async function updateMintRateLimit(
         ctx.store.findOneBy(Token, { id }),
         mappings.multiTokens.storage.tokens(block, { collectionId, tokenId }),
     ])
-    if (!token || !chainToken) {
-        ctx.log.warn(`[MintRateLimit] Token ${id} was absent`)
+    if (!token) {
+        ctx.log.warn(`[MintRateLimit] Indexed token ${id} was absent`)
         return
+    }
+    if (!chainToken) {
+        throw new Error(
+            `[MintRateLimit] Token ${id} storage was absent at block ${block.height}; refusing a stale refresh`
+        )
     }
 
     token.mintRateLimit = toMintRateLimitStateModel(chainToken.mintRateLimit)

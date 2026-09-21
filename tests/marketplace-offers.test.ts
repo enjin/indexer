@@ -160,10 +160,10 @@ void test('migration observability survives missing listing relations', () => {
     assert.equal(completedModel.data.isTypeOf, 'MarketplaceMigrationCompleted')
     assert.equal(completedModel.data.storageVersion, 8)
     assert.equal(removedModel.data.isTypeOf, 'MarketplaceCounterOfferRemoved')
-    assert.equal(removedModel.data.listing, undefined)
+    assert.equal(removedModel.data.listing, missingId.substring(2))
 })
 
-void test('marketplace removal events use canonical listing relation IDs', () => {
+void test('marketplace removal events use canonical listing IDs with and without relations', () => {
     const account = new Account({ id: taker, address: taker })
     const collection = new Collection({ id: '10', collectionId: 10n })
     const token = new Token({ id: '10-20', tokenId: 20n, collection })
@@ -184,6 +184,14 @@ void test('marketplace removal events use canonical listing relation IDs', () =>
         `0x${fixedPrice.id}`,
         { listing: fixedPrice, account, collection, token }
     )[0]
+    const missingCancelledEvent = listingCancelledEventModel(
+        { id: '191-10', name: 'Marketplace.ListingCancelled' } as EventItem,
+        `0x${fixedPrice.id}`
+    )[0]
+    const missingUnderMinimumEvent = listingRemovedUnderMinimumEventModel(
+        { id: '191-11', name: 'Marketplace.ListingRemovedUnderMinimum' } as EventItem,
+        `0x${fixedPrice.id}`
+    )[0]
 
     assert(fixedPriceEvent.data instanceof MarketplaceListingCancelled)
     assert.equal(fixedPriceEvent.data.listing, fixedPrice.id)
@@ -191,6 +199,10 @@ void test('marketplace removal events use canonical listing relation IDs', () =>
     assert.equal(offerEvent.data.listing, offer.id)
     assert(underMinimumEvent.data instanceof MarketplaceListingRemovedUnderMinimum)
     assert.equal(underMinimumEvent.data.listing, fixedPrice.id)
+    assert(missingCancelledEvent.data instanceof MarketplaceListingCancelled)
+    assert.equal(missingCancelledEvent.data.listing, fixedPrice.id)
+    assert(missingUnderMinimumEvent.data instanceof MarketplaceListingRemovedUnderMinimum)
+    assert.equal(missingUnderMinimumEvent.data.listing, fixedPrice.id)
 })
 
 void test('cancellation listing ID backfill strips only prefixed cancellation relations', () => {
@@ -383,9 +395,9 @@ void test('fixed-price ListingFilled SNS identifies the creator as seller and fi
     assert.deepEqual(snsParties(snsEvent), { listingSeller: listing.seller.id, buyer: fill.buyer })
     assert.deepEqual(snsEvent.body.listing, {
         id: listing.id,
-        price: 1000,
-        amount: 0.2,
-        highestPrice: 1000,
+        price: '1000',
+        amount: '0.2',
+        highestPrice: '1000',
         seller: { id: listing.seller.id },
         type: listing.type.toString(),
         data: listing.data.toJSON(),
@@ -451,13 +463,54 @@ void test('offer ListingFilled SNS preserves creator and filler roles instead of
     assert.deepEqual(snsParties(snsEvent), { listingSeller: listing.seller.id, buyer: fill.buyer })
     assert.deepEqual(snsEvent.body.listing, {
         id: listing.id,
-        price: 1000,
-        amount: 0.2,
-        highestPrice: 1000,
+        price: '1000',
+        amount: '0.2',
+        highestPrice: '1000',
         seller: { id: listing.seller.id },
         type: listing.type.toString(),
         data: listing.data.toJSON(),
         state: listing.state.toJSON(),
     })
     assert.equal(snsEvent.body.decimalCount, 1)
+})
+
+void test('ListingFilled SNS preserves prices above the JavaScript safe integer range', () => {
+    const collection = new Collection({ id: '10', collectionId: 10n })
+    const token = new Token({ id: '10-20', tokenId: 20n, collection })
+    const currency = new Token({
+        id: '0-0',
+        tokenId: 0n,
+        collection: new Collection({ id: '0' }),
+        nativeMetadata: new NativeTokenMetadata({ decimalCount: 18 }),
+    })
+    const seller = new Account({ id: 'seller', address: 'seller' })
+    const listing = new Listing({
+        id: 'large-price',
+        seller,
+        amount: 1n,
+        price: 9_007_199_254_740_993n,
+        highestPrice: 9_007_199_254_740_995n,
+        type: ListingType.FixedPrice,
+        data: new FixedPriceData({ listingType: ListingType.FixedPrice }),
+        state: new FixedPriceState({ listingType: ListingType.FixedPrice, amountFilled: 0n, amountRemaining: 1n }),
+    })
+
+    const snsEvent = listingFilledSnsEvent(
+        { id: '193-3', name: 'Marketplace.ListingFilled' } as EventItem,
+        {
+            listingId: listing.id,
+            buyer: 'buyer',
+            amountFilled: 0n,
+            amountRemaining: 1n,
+            protocolFee: 0n,
+            royalty: 0n,
+        },
+        listing,
+        token,
+        currency
+    )
+    const snsListing = snsEvent.body.listing as { price: string; highestPrice: string }
+
+    assert.equal(snsListing.price, '9007199254740993000000000000000000')
+    assert.equal(snsListing.highestPrice, '9007199254740995000000000000000000')
 })

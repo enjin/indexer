@@ -199,6 +199,7 @@ async function tokenFromCall(
             collectionId: event.collectionId,
             tokenId: event.tokenId,
         })
+        token.isLendable = storedToken?.isLendable ?? token.isLendable
         token.mintRateLimit = toMintRateLimitStateModel(storedToken?.mintRateLimit)
     }
 

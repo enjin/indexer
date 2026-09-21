@@ -32,7 +32,6 @@ async function refreshPromotedListings(ctx: CommonContext, block: Block, data: O
     const pendingListings = await ctx.store.find<Listing>(Listing, {
         where: {
             bookState: MarketplaceListingBookState.PendingActivation,
-            isActive: true,
             type: pendingSide.__kind === 'Ask' ? ListingType.FixedPrice : ListingType.Offer,
             makeAssetId: { id: pendingSide.__kind === 'Ask' ? asset : currency },
             takeAssetId: { id: pendingSide.__kind === 'Ask' ? currency : asset },
