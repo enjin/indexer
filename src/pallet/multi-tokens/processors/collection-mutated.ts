@@ -7,6 +7,7 @@ import * as mappings from '~/pallet/index'
 import { DefaultRoyalty as DefaultRoyalty1020 } from '~/type/matrixV1020'
 import { DefaultRoyalty as DefaultRoyalty500 } from '~/type/matrixV500'
 import { EventHandlerResult } from '~/processor.handler'
+import { QueueUtils } from '~/queue'
 
 type DefaultRoyalty = DefaultRoyalty500 | DefaultRoyalty1020
 
@@ -104,6 +105,7 @@ export async function collectionMutated(
                     where: { makeAssetId: { collection: { id: collection.id } }, isActive: true },
                     relations: {
                         seller: true,
+                        makeAssetId: true,
                     },
                 })
 
@@ -125,6 +127,10 @@ export async function collectionMutated(
                 }
 
                 await ctx.store.save(mutatedListings)
+
+                for (const tokenId of new Set(listings.map((listing) => listing.makeAssetId.id))) {
+                    await QueueUtils.dispatchComputeTokenBestListing(tokenId)
+                }
             }
         }
     }
