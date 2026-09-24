@@ -167,6 +167,8 @@ export async function eventHandler(
                 balances.unreserved.name,
                 () => p.balances.processors.save(item)
             )
+            .with(balances.held.name, () => p.balances.processors.held(item))
+            .with(balances.released.name, () => p.balances.processors.released(item))
             .with(claims.claimRequested.name, () => p.claims.processors.claimRequested(ctx, block, item))
             .with(claims.claimRejected.name, () => p.claims.processors.claimRejected(ctx, block, item))
             .with(claims.claimMinted.name, () => p.claims.processors.claimMinted(ctx, block, item))

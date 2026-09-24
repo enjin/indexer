@@ -71,8 +71,6 @@ const ignoreEvents: string[] = [
     events.multiTokens.collectionDepositRecalculationInProgress.name,
     events.multiTokens.collectionDepositUpdateCompleted.name,
     events.multiTokens.attributeUpgraded.name,
-    events.balances.released.name,
-    events.balances.held.name,
     events.balances.mintedCredit.name,
 ]
 
