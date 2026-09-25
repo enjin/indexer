@@ -4,13 +4,14 @@ import { calls } from '~/type'
 import { match } from 'ts-pattern'
 import { ForceMint } from '~/pallet/multi-tokens/calls/types'
 import { withDispatchCheck } from '~/pallet/fuel-tanks/utils'
+import { normalizeFlexibleMintParams } from './mint-rate-limit'
 
-export const forceMint = withDispatchCheck((call: CallItem): ForceMint => {
+const decodeForceMint = withDispatchCheck((call: CallItem): ForceMint => {
     return match(call)
         .returnType<ForceMint>()
         .when(
             () => calls.multiTokens.forceMint.matrixV1040.is(call),
-            () => calls.multiTokens.forceMint.matrixV1040.decode(call)
+            () => calls.multiTokens.forceMint.matrixV1040.decode(call) as unknown as ForceMint
         )
         .when(
             () => calls.multiTokens.forceMint.matrixEnjinV1031.is(call),
@@ -80,3 +81,8 @@ export const forceMint = withDispatchCheck((call: CallItem): ForceMint => {
             throw new UnsupportedCallError(call)
         })
 })
+
+export function forceMint(call: CallItem): ForceMint {
+    const data = decodeForceMint(call)
+    return { ...data, params: normalizeFlexibleMintParams(data.params) }
+}

@@ -1,10 +1,11 @@
-import { AccountTokenEvent, CounterOffer, Event as EventModel, Listing, OfferState } from '~/model'
+import { AccountTokenEvent, CounterOffer, Event as EventModel, Listing } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { getOrCreateAccount, unwrapSigner } from '~/util/entities'
 import { calls } from '~/type'
 import Big from 'big.js'
+import { rebuildOfferState } from '~/pallet/marketplace/utils/listing-state'
 
 export async function counterOfferPlaced(
     ctx: CommonContext,
@@ -40,21 +41,18 @@ export async function counterOfferPlaced(
     const sellerPrice = event.counterOffer.sellerPrice != undefined ? event.counterOffer.sellerPrice : 1n
     const account = await getOrCreateAccount(ctx, accountId)
 
-    const offer = new CounterOffer({
-        id: `${listing.id}-${account.id}`,
-        listing,
-        buyerPrice,
-        amount: depositAmount,
-        sellerPrice,
-        account,
-        createdAt: new Date(block.timestamp ?? 0),
-        lastAction: account,
-    })
+    const offerId = `${listing.id}-${account.id}`
+    const existingOffer = await ctx.store.findOneBy<CounterOffer>(CounterOffer, { id: offerId })
+    const offer = existingOffer ?? new CounterOffer({ id: offerId, listing, account })
+    offer.buyerPrice = buyerPrice
+    offer.amount = depositAmount
+    offer.sellerPrice = sellerPrice
+    offer.createdAt = new Date(block.timestamp ?? 0)
+    offer.lastAction = account
 
     listing.updatedAt = new Date(block.timestamp ?? 0)
-    listing.state = new OfferState({
-        listingType: listing.state.listingType,
-        counterOfferCount: listing.state.counterOfferCount + 1,
+    listing.state = rebuildOfferState(listing.amount, listing.state, {
+        counterOfferDelta: existingOffer ? 0 : 1,
         isExpired: false,
     })
 

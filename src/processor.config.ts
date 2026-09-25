@@ -71,8 +71,6 @@ const ignoreEvents: string[] = [
     events.multiTokens.collectionDepositRecalculationInProgress.name,
     events.multiTokens.collectionDepositUpdateCompleted.name,
     events.multiTokens.attributeUpgraded.name,
-    events.balances.released.name,
-    events.balances.held.name,
     events.balances.mintedCredit.name,
 ]
 
@@ -112,6 +110,7 @@ const callItems: string[] = [...new Set([...commonCalls, ...(isRelay() ? relayCa
 export const processorConfig = new SubstrateBatchProcessor()
     .setRpcEndpoint(config.dataSource.chain)
     .setBlockRange({ from: config.dataSource.fromBlock })
+    .includeAllBlocks()
     .addEvent({
         name: eventItems,
         call: true,

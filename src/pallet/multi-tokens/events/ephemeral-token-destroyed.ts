@@ -12,11 +12,7 @@ export function ephemeralTokenDestroyed(event: EventItem): EphemeralTokenDestroy
     throw new UnsupportedEventError(event)
 }
 
-export function ephemeralTokenDestroyedEventModel(
-    item: EventItem,
-    blockHeight: number,
-    data: EphemeralTokenDestroyed
-): EventModel {
+export function ephemeralTokenDestroyedEventModel(item: EventItem, data: EphemeralTokenDestroyed): EventModel {
     return new EventModel({
         id: item.id,
         name: MultiTokensEphemeralTokenDestroyed.name,
@@ -27,7 +23,6 @@ export function ephemeralTokenDestroyedEventModel(
             collectionId: data.collectionId,
             tokenId: data.tokenId,
             expirationBlock: BigInt(data.expiration),
-            observedBlock: BigInt(blockHeight),
         }),
     })
 }

@@ -1,159 +1,152 @@
 import { connectionManager } from '~/contexts'
 import { Collection, Token, Trait, TraitToken } from '~/model'
-import { isPlainObject } from 'lodash'
 import { Job } from 'bullmq'
 import { hash } from '~/worker/utils'
 import { QueueUtils } from '~/queue'
+import { extractTokenTraits, tokenBatches } from './trait-utils'
 
 type TraitValueMap = Map<string, bigint>
+
+const WRITE_BATCH_SIZE = 1000
 
 export async function computeTraits(job: Job, id: string) {
     const em = await connectionManager()
 
     await job.updateProgress(5)
 
-    const traitTypeMap = new Map<string, TraitValueMap>()
-    const tokenTraitMap = new Map<string, Set<string>>()
-    const displayValueMap = new Map<string, string>()
-    const displayTypeMap = new Map<string, string>()
-    const BATCH_SIZE = 500
-    const tokens: Token[] = []
-    let offset = 0
+    const { traitTypeCount, savedTokenTraits } = await em.transaction('REPEATABLE READ', async (txEm) => {
+        const traitTypeMap = new Map<string, TraitValueMap>()
+        const displayValueMap = new Map<string, string>()
+        const displayTypeMap = new Map<string, string>()
+        let tokenCount = 0
 
-    while (true) {
-        const batch = await em
-            .getRepository(Token)
-            .createQueryBuilder('token')
-            .select('token.id')
-            .addSelect('token.metadata')
-            .addSelect('token.supply')
-            .where('token.collection = :id', { id })
-            .andWhere('token.supply > 0')
-            .orderBy('token.id')
-            .take(BATCH_SIZE)
-            .skip(offset)
-            .getMany()
+        for await (const tokens of tokenBatches(txEm, id)) {
+            tokenCount += tokens.length
 
-        tokens.push(...batch)
+            tokens.forEach((token) => {
+                extractTokenTraits(token, id).forEach(
+                    ({ id: traitId, traitType, value, displayType, displayValue }) => {
+                        if (displayType) displayTypeMap.set(traitType, displayType)
+                        if (displayValue) displayValueMap.set(traitId, displayValue)
 
-        if (batch.length < BATCH_SIZE) break
-        offset += BATCH_SIZE
-    }
+                        if (!traitTypeMap.has(traitType)) {
+                            traitTypeMap.set(traitType, new Map())
+                        }
 
-    await job.updateProgress(20)
+                        const traitValues = traitTypeMap.get(traitType) as TraitValueMap
+                        traitValues.set(value, (traitValues.get(value) ?? 0n) + token.supply)
+                    }
+                )
+            })
+        }
 
-    await em.transaction(async (txEm) => {
+        await job.log(`Scanned ${tokenCount} tokens for collection ${id}`)
+        await job.updateProgress(20)
+
         await txEm.query(
             `DELETE FROM trait_token USING trait WHERE trait.id = trait_token.trait_id AND trait.collection_id = $1`,
             [id]
         )
         await txEm.query(`DELETE FROM trait WHERE collection_id = $1`, [id])
-    })
+        await job.updateProgress(30)
 
-    await job.updateProgress(30)
+        if (traitTypeMap.size) await job.log(`Found ${traitTypeMap.size} trait types`)
+        const traitsToSave: Trait[] = []
 
-    tokens.forEach((token) => {
-        if (!token.metadata || !token.metadata.attributes || !isPlainObject(token.metadata.attributes)) return
-        const attributes = token.metadata.attributes as Record<
-            string,
-            { value: string; name?: string; display_name?: string; display_value?: string } | string
-        >
-        Object.entries(attributes).forEach(([traitType, data]) => {
-            let value = data as string
-            if (typeof data === 'object') {
-                value = data.value
-                if (data.name) {
-                    traitType = data.name
-                    if (data.display_name) {
-                        displayTypeMap.set(traitType, data.display_name)
-                    }
-                }
-                if (data.display_value) {
-                    displayValueMap.set(value, data.display_value)
-                }
-            }
-
-            if (!value) return
-
-            value = value.toString()
-
-            if (!traitTypeMap.has(traitType)) {
-                traitTypeMap.set(traitType, new Map())
-            }
-
-            const tType = traitTypeMap.get(traitType) as TraitValueMap
-            if (tType.has(value)) {
-                tType.set(value, (tType.get(value) as bigint) + token.supply)
-            } else {
-                tType.set(value, token.supply)
-            }
-
-            const traits = tokenTraitMap.get(token.id) ?? new Set<string>()
-            traits.add(hash(`${id}-${traitType}-${value}`))
-            tokenTraitMap.set(token.id, traits)
+        traitTypeMap.forEach((traitValueMap, traitType) => {
+            traitValueMap.forEach((count, value) => {
+                const traitId = hash(`${id}-${traitType}-${value}`)
+                traitsToSave.push(
+                    new Trait({
+                        id: traitId,
+                        collection: new Collection({ id: id }),
+                        traitType,
+                        value,
+                        displayType: displayTypeMap.get(traitType) ?? undefined,
+                        displayValue: displayValueMap.get(traitId) ?? undefined,
+                        count,
+                    })
+                )
+            })
         })
+        await job.updateProgress(60)
+
+        if (traitsToSave.length) {
+            await job.log(`Saving ${traitsToSave.length} traits`)
+            await txEm.save(Trait, traitsToSave, { chunk: 1000 })
+        }
+
+        await job.updateProgress(75)
+
+        const remainingTraitCounts = new Map(traitsToSave.map((trait) => [trait.id, trait.count]))
+        let processedTokens = 0
+        let savedTokenTraits = 0
+        let collectionChanged = false
+
+        for await (const tokens of tokenBatches(txEm, id)) {
+            const traitTokensToSave: TraitToken[] = []
+
+            tokens.forEach((token) => {
+                const traitIds = new Set<string>()
+
+                extractTokenTraits(token, id).forEach((trait) => {
+                    const remainingCount = remainingTraitCounts.get(trait.id)
+                    if (remainingCount === undefined) {
+                        collectionChanged = true
+                        return
+                    }
+
+                    remainingTraitCounts.set(trait.id, remainingCount - token.supply)
+                    traitIds.add(trait.id)
+                })
+
+                traitIds.forEach((traitId) => {
+                    traitTokensToSave.push(
+                        new TraitToken({
+                            id: hash(`${traitId}-${token.id}`),
+                            trait: new Trait({ id: traitId }),
+                            token: new Token({ id: token.id }),
+                        })
+                    )
+                })
+            })
+
+            for (let offset = 0; offset < traitTokensToSave.length; offset += WRITE_BATCH_SIZE) {
+                const insertBatch = traitTokensToSave.slice(offset, offset + WRITE_BATCH_SIZE).map((traitToken) => ({
+                    id: traitToken.id,
+                    trait: { id: traitToken.trait.id },
+                    token: { id: traitToken.token.id },
+                }))
+                await txEm.insert(TraitToken, insertBatch)
+            }
+
+            processedTokens += tokens.length
+            savedTokenTraits += traitTokensToSave.length
+            const relationProgress = tokenCount ? Math.floor((processedTokens / tokenCount) * 20) : 20
+            await job.updateProgress(Math.min(95, 75 + relationProgress))
+        }
+
+        for (const count of remainingTraitCounts.values()) {
+            if (count !== 0n) {
+                collectionChanged = true
+                break
+            }
+        }
+
+        if (collectionChanged) {
+            throw new Error(`Collection ${id} changed while computing traits; retrying from a fresh snapshot`)
+        }
+
+        return { traitTypeCount: traitTypeMap.size, savedTokenTraits }
     })
 
-    await job.updateProgress(50)
-
-    if (!traitTypeMap.size) {
+    if (!traitTypeCount) {
         await job.log(`No traits found for collection ${id}`)
         await job.updateProgress(100)
         return
     }
 
-    await job.log(`Found ${traitTypeMap.size} trait types`)
-    const traitsToSave: Trait[] = []
-
-    traitTypeMap.forEach((traitValueMap, traitType) => {
-        traitValueMap.forEach((count, value) => {
-            traitsToSave.push(
-                new Trait({
-                    id: hash(`${id}-${traitType}-${value}`),
-                    collection: new Collection({ id: id }),
-                    traitType,
-                    value,
-                    displayType: displayTypeMap.get(traitType) ?? undefined,
-                    displayValue: displayValueMap.get(value) ?? undefined,
-                    count,
-                })
-            )
-        })
-    })
-
-    await job.updateProgress(60)
-
-    await job.log(`Saving ${traitsToSave.length} traits`)
-    await em.save(Trait, traitsToSave, { chunk: 1000 })
-
-    await job.updateProgress(75)
-
-    const traitTokensToSave: TraitToken[] = []
-    const validTokenIds = new Set(tokens.map((t) => t.id))
-
-    tokenTraitMap.forEach((traits, tokenId) => {
-        if (!traits.size) return
-        // Only create trait_token records for tokens that were processed (have supply > 0)
-        if (!validTokenIds.has(tokenId)) return
-
-        traits.forEach((trait) => {
-            traitTokensToSave.push(
-                new TraitToken({
-                    id: hash(`${trait}-${tokenId}`),
-                    trait: new Trait({ id: trait }),
-                    token: new Token({ id: tokenId }),
-                })
-            )
-        })
-    })
-
-    await job.updateProgress(85)
-
-    if (traitTokensToSave.length) {
-        await job.log(`Saving ${traitTokensToSave.length} token traits`)
-        await em.save(TraitToken, traitTokensToSave, { chunk: 1000 })
-    }
-
+    await job.log(`Saved ${savedTokenTraits} token traits`)
     await job.updateProgress(95)
 
     // delay to avoid rollback issue on fork

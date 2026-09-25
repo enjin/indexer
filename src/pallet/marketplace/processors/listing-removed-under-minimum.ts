@@ -1,9 +1,18 @@
-import { AccountTokenEvent, Event as EventModel, Listing, ListingStatus, ListingStatusType, ListingType } from '~/model'
+import {
+    AccountTokenEvent,
+    Event as EventModel,
+    Listing,
+    ListingStatus,
+    ListingStatusType,
+    ListingType,
+    MarketplaceListingBookState,
+} from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
 import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
+import { normalizeListingId } from '~/pallet/marketplace/utils/listing-id'
 
 export async function listingRemovedUnderMinimum(
     ctx: CommonContext,
@@ -11,7 +20,7 @@ export async function listingRemovedUnderMinimum(
     item: EventItem
 ): Promise<[EventModel, AccountTokenEvent | undefined, SnsEvent | undefined] | undefined> {
     const event = mappings.marketplace.events.listingRemovedUnderMinimum(item)
-    const listingId = event.listingId.substring(2)
+    const listingId = normalizeListingId(event.listingId)
 
     const listing = await ctx.store.findOne<Listing>(Listing, {
         where: { id: listingId },
@@ -46,6 +55,7 @@ export async function listingRemovedUnderMinimum(
     })
 
     listing.isActive = false
+    listing.bookState = MarketplaceListingBookState.Removed
     listing.updatedAt = new Date(block.timestamp ?? 0)
 
     await ctx.store.insert(listingStatus)

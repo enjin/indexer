@@ -16,11 +16,13 @@ import {
     ListingSale,
     ListingStatus,
     ListingType,
+    MultiTokensTokenCreated,
     PoolMember,
     RoyaltyCurrency,
     Token,
     TokenAccount,
     TokenGroupToken,
+    TokenLoan,
     TokenRarity,
     TraitToken,
     UserInfusion,
@@ -94,7 +96,7 @@ function matrixV1040Runtime(call?: (method: string, params?: unknown[]) => Promi
     )
 }
 
-function tokenValue() {
+function tokenValue(isLendable = false) {
     return {
         supply: 1n,
         cap: { __kind: 'Supply', value: 1n },
@@ -112,22 +114,26 @@ function tokenValue() {
         anyoneCanInfuse: false,
         groups: [],
         ephemeralExpiration: 77,
-        isLendable: false,
+        isLendable,
         lending: { lender: `0x${'11'.repeat(32)}`, expiration: 88 },
-        mintRateLimit: undefined,
+        mintRateLimit: {
+            limit: { period: 120, max: 2n },
+            window: { lastSlot: 10, buckets: [1n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n] },
+            pending: undefined,
+        },
     }
 }
 
-function encodedTokens() {
+function encodedTokens(isLendable = false) {
     const runtime = matrixV1040Runtime()
     const type = runtime.description.storage.MultiTokens.items.Tokens.value
-    const current = runtime.scaleCodec.encodeToHex(type, tokenValue())
+    const current = runtime.scaleCodec.encodeToHex(type, tokenValue(isLendable))
     const definition = runtime.description.types[type]
     assert.equal(definition.kind, TypeKind.Composite)
 
     const types = runtime.description.types.slice() as Type[]
     types[type] = { ...definition, fields: definition.fields.slice(0, -4) }
-    const legacyValue = tokenValue() as Record<string, unknown>
+    const legacyValue = tokenValue(isLendable) as Record<string, unknown>
     delete legacyValue.ephemeralExpiration
     delete legacyValue.isLendable
     delete legacyValue.lending
@@ -143,6 +149,15 @@ function eventItem(runtime: Runtime, name: string, args: unknown, id = '10-2'): 
 
 function callItem(runtime: Runtime, name: string, args: unknown): CallItem {
     return { id: '10-1', name, args, success: true, block: { _runtime: runtime } } as CallItem
+}
+
+function dispatchCall(runtime: Runtime, account: string, call: unknown): CallItem {
+    return callItem(runtime, 'FuelTanks.dispatch', {
+        tankId: { __kind: 'Id', value: account },
+        ruleSetId: undefined,
+        call,
+        settings: undefined,
+    })
 }
 
 function createParams(tokenId = '9') {
@@ -176,8 +191,9 @@ void test('token storage decoder accepts strict current and pre-v6 layouts', () 
     assert.equal(currentToken.ephemeralExpiration, 77n)
     assert.equal(currentToken.isLendable, false)
     assert.equal(currentToken.lending?.expiration, 88n)
+    assert.equal(currentToken.mintRateLimit?.window.buckets[0], 1n)
     assert.equal(legacyToken.ephemeralExpiration, undefined)
-    assert.equal(legacyToken.isLendable, true)
+    assert.equal(legacyToken.isLendable, false)
     assert.equal(legacyToken.lending, undefined)
 })
 
@@ -201,7 +217,7 @@ void test('mixed token point reads preserve token zero and pin the block hash', 
     const token = await getMixedToken({ _runtime: runtime, hash: '0x01' } as Block, [0n, 0n])
     assert(token)
     assert.equal(token.supply, 1n)
-    assert.equal(token.isLendable, true)
+    assert.equal(token.isLendable, false)
 })
 
 void test('mixed token point reads treat null and empty storage values as missing', async () => {
@@ -235,6 +251,7 @@ void test('finalized token storage reader treats null and empty storage values a
         const reader = Reflect.construct(FinalizedTokenStorageReader, [
             api,
             '0x01',
+            1,
             runtime,
         ]) as FinalizedTokenStorageReader
 
@@ -276,8 +293,63 @@ void test('v1040 direct, batch and force mint wrappers retain ephemeral fields',
     assert.equal(force.params.__kind === 'CreateOrMint' && force.params.value.ephemeralExpiration, 77)
 })
 
-void test('token creation stores the event initial supply separately from live supply', async () => {
+void test('v1040 fuel tank mint wrappers normalize mint rate limits after unwrapping', () => {
     const runtime = matrixV1040Runtime()
+    const account = `0x${'22'.repeat(32)}`
+    const rateLimit = { period: 120, max: '2' }
+    const direct = mint(
+        dispatchCall(runtime, account, {
+            __kind: 'MultiTokens',
+            value: {
+                __kind: 'mint',
+                recipient: { __kind: 'Id', value: account },
+                collectionId: '7',
+                params: { ...createParams(), mintRateLimit: rateLimit },
+            },
+        })
+    )
+    const batch = batchMint(
+        dispatchCall(runtime, account, {
+            __kind: 'MultiTokens',
+            value: {
+                __kind: 'batch_mint',
+                collectionId: '7',
+                recipients: [{ accountId: account, params: { ...createParams('10'), mintRateLimit: rateLimit } }],
+            },
+        })
+    )
+    const force = forceMint(
+        dispatchCall(runtime, account, {
+            __kind: 'MultiTokens',
+            value: {
+                __kind: 'force_mint',
+                caller: undefined,
+                recipient: { __kind: 'Id', value: account },
+                collectionId: '7',
+                params: {
+                    __kind: 'CreateOrMint',
+                    value: { ...createParams('11'), amount: '1', __kind: undefined, mintRateLimit: rateLimit },
+                },
+                depositBacker: undefined,
+            },
+        })
+    )
+
+    assert.equal(direct.params.__kind === 'CreateToken' && direct.params.mintRateLimit?.period, 120n)
+    assert.equal(
+        batch.recipients[0].params.__kind === 'CreateToken' && batch.recipients[0].params.mintRateLimit?.max,
+        2n
+    )
+    assert.equal(force.params.__kind === 'CreateOrMint' && force.params.value.mintRateLimit?.period, 120n)
+})
+
+void test('token creation stores the event initial supply separately from live supply', async () => {
+    const { current } = encodedTokens(true)
+    const runtime = matrixV1040Runtime((method, params) => {
+        assert.equal(method, 'state_getStorageAt')
+        assert.equal(params?.[1], '0x01')
+        return Promise.resolve(current)
+    })
     const account = `0x${'22'.repeat(32)}`
     const collection = new Collection({ id: '7', attributes: [] })
     const saved: Token[] = []
@@ -290,7 +362,7 @@ void test('token creation stores the event initial supply separately from live s
     item.call = callItem(runtime, 'MultiTokens.mint', {
         recipient: { __kind: 'Id', value: account },
         collectionId: '7',
-        params: { ...createParams(), initialSupply: '3' },
+        params: { ...createParams(), initialSupply: '3', mintRateLimit: { period: 120, max: '2' } },
     })
     const ctx = {
         store: {
@@ -299,11 +371,32 @@ void test('token creation stores the event initial supply separately from live s
         },
     } as never
 
-    await tokenCreated(ctx, { _runtime: runtime, height: 10, timestamp: 0 } as Block, item, false)
+    const createdEvent = await tokenCreated(
+        ctx,
+        { _runtime: runtime, height: 10, hash: '0x01', timestamp: 0 } as Block,
+        item,
+        false
+    )
 
     assert.equal(saved.length, 1)
     assert.equal(saved[0].supply, 0n)
     assert.equal(saved[0].creationSupply, 3n)
+    assert.equal(saved[0].isLendable, true)
+    const mintRateLimit = saved[0].mintRateLimit
+    assert(mintRateLimit)
+    assert.equal(mintRateLimit.limit.max, 2n)
+    assert.equal(mintRateLimit.window.buckets[0], 1n)
+
+    assert(createdEvent && !Array.isArray(createdEvent))
+    assert(createdEvent.data instanceof MultiTokensTokenCreated)
+    assert.equal(createdEvent.data.isLendable, true)
+    assert.equal(createdEvent.data.ephemeralExpiration, 77n)
+    assert.equal(createdEvent.data.mintRateLimit?.max, 2n)
+
+    const persisted = JSON.parse(JSON.stringify(createdEvent.data))
+    assert.equal(persisted.isLendable, true)
+    assert.equal(persisted.ephemeralExpiration, '77')
+    assert.deepEqual(persisted.mintRateLimit, { period: '120', max: '2' })
 })
 
 void test('ephemeral events retain scalar identity and support hook events without extrinsics', () => {
@@ -321,7 +414,7 @@ void test('ephemeral events retain scalar identity and support hook events witho
     })
     const destroyed = ephemeralTokenDestroyed(destroyedItem)
     const failed = ephemeralCleanupFailed(failureItem)
-    const destroyedModel = ephemeralTokenDestroyedEventModel(destroyedItem, 80, destroyed)
+    const destroyedModel = ephemeralTokenDestroyedEventModel(destroyedItem, destroyed)
     const failedModel = ephemeralCleanupFailedEventModel(
         failureItem,
         { _runtime: runtime, height: 80 } as Block,
@@ -331,7 +424,6 @@ void test('ephemeral events retain scalar identity and support hook events witho
     assert.equal(destroyedModel.extrinsic, null)
     assert.equal(destroyedModel.tokenId, '7-9')
     assert.equal(destroyedModel.data.expirationBlock, 77n)
-    assert.equal(destroyedModel.data.observedBlock, 80n)
     assert.equal(failedModel.extrinsic, null)
     assert.equal(failedModel.data.error, 'BadOrigin')
 })
@@ -343,7 +435,7 @@ void test('missing marketplace cancellation preserves listing identity without g
     )
 
     assert.equal(event.data.isTypeOf, 'MarketplaceListingCancelled')
-    assert.equal(event.data.listing, '0xdeadbeef')
+    assert.equal(event.data.listing, 'deadbeef')
     assert.equal(event.listing, undefined)
 })
 
@@ -376,6 +468,7 @@ void test('token destruction removes fixed-price, auction and offer dependants b
         takeAssetId: destroyed,
     })
     const tokenAccount = new TokenAccount({ id: `${buyer.id}-7-9`, account: buyer })
+    const activeLoan = new TokenLoan({ id: destroyed.id, token: destroyed, lender: seller, borrower: buyer })
     const accountEvent = new AccountTokenEvent({ id: '9-1', token: destroyed })
     const bid = new Bid({ id: 'bid', bidder: buyer, listing: auction })
     const sale = new ListingSale({ id: 'sale', buyer, listing: fixed })
@@ -393,7 +486,11 @@ void test('token destruction removes fixed-price, auction and offer dependants b
     const ctx = {
         log: { warn: () => undefined },
         store: {
-            findOneBy: () => Promise.resolve(destroyed),
+            findOneBy: (entity: unknown) => {
+                if (entity === Token) return Promise.resolve(destroyed)
+                if (entity === TokenLoan) return Promise.resolve(activeLoan)
+                return Promise.resolve(undefined)
+            },
             find: (entity: unknown, options: { where?: Record<string, unknown> }) => {
                 if (entity === AccountTokenEvent) return Promise.resolve([accountEvent])
                 if (entity === TokenAccount) return Promise.resolve([tokenAccount])
@@ -450,9 +547,11 @@ void test('token destruction removes fixed-price, auction and offer dependants b
         rarity,
         attribute,
         infusion,
+        activeLoan,
         destroyed,
     ]) {
         assert(flattened.includes(expected), `${expected.constructor.name} was not removed`)
     }
+    assert(flattened.indexOf(activeLoan) < flattened.indexOf(destroyed))
     assert.equal(flattened.at(-1), destroyed)
 })

@@ -6,7 +6,6 @@ export class MultiTokensEphemeralTokenDestroyed {
     private _collectionId!: bigint
     private _tokenId!: bigint
     private _expirationBlock!: bigint
-    private _observedBlock!: bigint
 
     constructor(props?: Partial<Omit<MultiTokensEphemeralTokenDestroyed, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
@@ -14,7 +13,6 @@ export class MultiTokensEphemeralTokenDestroyed {
             this._collectionId = marshal.bigint.fromJSON(json.collectionId)
             this._tokenId = marshal.bigint.fromJSON(json.tokenId)
             this._expirationBlock = marshal.bigint.fromJSON(json.expirationBlock)
-            this._observedBlock = marshal.bigint.fromJSON(json.observedBlock)
         }
     }
 
@@ -45,22 +43,12 @@ export class MultiTokensEphemeralTokenDestroyed {
         this._expirationBlock = value
     }
 
-    get observedBlock(): bigint {
-        assert(this._observedBlock != null, 'uninitialized access')
-        return this._observedBlock
-    }
-
-    set observedBlock(value: bigint) {
-        this._observedBlock = value
-    }
-
     toJSON(): object {
         return {
             isTypeOf: this.isTypeOf,
             collectionId: marshal.bigint.toJSON(this.collectionId),
             tokenId: marshal.bigint.toJSON(this.tokenId),
             expirationBlock: marshal.bigint.toJSON(this.expirationBlock),
-            observedBlock: marshal.bigint.toJSON(this.observedBlock),
         }
     }
 }

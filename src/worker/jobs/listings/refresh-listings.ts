@@ -14,6 +14,7 @@ import { connectionManager } from '~/contexts'
 import { Job } from 'bullmq'
 import Rpc from '~/util/rpc'
 import { In } from 'typeorm'
+import { QueueUtils } from '~/queue'
 
 function listingIdToRpcKey(id: string): string {
     return id.startsWith('0x') ? id : `0x${id}`
@@ -89,6 +90,7 @@ export async function refreshListings(job: Job, ids: string[]) {
             if (listing.isActive) {
                 listing.hasRoyaltyIncreased = true
                 await em.save(listing)
+                await QueueUtils.dispatchComputeTokenBestListing(listing.makeAssetId.id)
             }
             processed++
             const progress = Math.min(90, 30 + Math.floor((processed / totalListings) * 60))

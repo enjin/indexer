@@ -1,4 +1,4 @@
-import type { CallParts } from './types'
+import type { CallParts, TextField, TransactionView } from './types'
 
 const isRecord = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v)
 
@@ -66,13 +66,69 @@ export function displayValue(value: unknown): string {
     return stringify(value)
 }
 
-const FUEL_TANK_CALLS = new Set(['FuelTanks::dispatch', 'FuelTanks::dispatch_and_touch'])
+const WRAPPER_CALLS = new Set([
+    'FuelTanks::dispatch',
+    'FuelTanks::dispatch_and_touch',
+    'Proxy::proxy',
+    'Proxy::proxy_announced',
+])
+const MAX_WRAPPER_DEPTH = 16
+
+export function unwrapDispatchCall(call: CallParts): { call: CallParts; wrappers: CallParts[] } {
+    let current = call
+    const wrappers: CallParts[] = []
+
+    for (let depth = 0; depth < MAX_WRAPPER_DEPTH; depth++) {
+        if (!WRAPPER_CALLS.has(getCallId(current))) return { call: current, wrappers }
+
+        const parsed = parseCallData(getArg(current.params, 'call'))
+        if (!parsed) return { call: current, wrappers }
+        wrappers.push(current)
+        current = parsed
+    }
+
+    return { call: current, wrappers }
+}
 
 export function getDispatchCall(call: CallParts): CallParts {
-    if (!FUEL_TANK_CALLS.has(getCallId(call))) return call
-    const inner = getArg(call.params, 'call')
-    const parsed = parseCallData(inner)
-    return parsed ?? call
+    return unwrapDispatchCall(call).call
+}
+
+function proxyAccount(value: unknown): unknown {
+    if (!isRecord(value)) return value
+    if ('Id' in value) return value.Id
+    if (value.__kind === 'Id' && 'value' in value) return value.value
+    return value
+}
+
+export function withWrapperContext(view: TransactionView, wrappers: CallParts[]): TransactionView {
+    const fields: TextField[] = []
+
+    for (const wrapper of wrappers) {
+        if (wrapper.pallet !== 'Proxy') continue
+
+        const real = getArg(wrapper.params, 'real')
+        const proxyType = getArg(wrapper.params, 'force_proxy_type')
+        const delegate = getArg(wrapper.params, 'delegate')
+        if (real !== undefined)
+            fields.push({ type: 'text', title: 'Proxy Real', value: displayValue(proxyAccount(real)) })
+        if (proxyType !== undefined) {
+            fields.push({ type: 'text', title: 'Proxy Type', value: displayValue(proxyType) })
+        }
+        if (delegate !== undefined) {
+            fields.push({ type: 'text', title: 'Proxy Delegate', value: displayValue(proxyAccount(delegate)) })
+        }
+    }
+
+    if (!fields.length) return view
+
+    const networkIndex = view.fields.findIndex((field) => field.type === 'text' && field.title === 'Network')
+    if (networkIndex === -1) return { ...view, fields: [...fields, ...view.fields] }
+
+    return {
+        ...view,
+        fields: [...view.fields.slice(0, networkIndex + 1), ...fields, ...view.fields.slice(networkIndex + 1)],
+    }
 }
 
 export function getBatchedCalls(call: CallParts): CallParts[] {

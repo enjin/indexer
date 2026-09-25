@@ -5,7 +5,7 @@ import {
     ListingStatus,
     ListingStatusType,
     ListingType,
-    OfferState,
+    MarketplaceListingBookState,
     TokenAccount,
 } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
@@ -14,6 +14,8 @@ import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
 import Big from 'big.js'
+import { rebuildOfferState } from '~/pallet/marketplace/utils/listing-state'
+import { normalizeListingId } from '~/pallet/marketplace/utils/listing-id'
 
 export async function listingCancelled(
     ctx: CommonContext,
@@ -21,7 +23,7 @@ export async function listingCancelled(
     item: EventItem
 ): Promise<[EventModel, AccountTokenEvent | undefined, SnsEvent | undefined] | undefined> {
     const event = mappings.marketplace.events.listingCancelled(item)
-    const listingId = event.listingId.substring(2)
+    const listingId = normalizeListingId(event.listingId)
 
     const listing = await ctx.store.findOne<Listing>(Listing, {
         where: { id: listingId },
@@ -53,14 +55,11 @@ export async function listingCancelled(
     })
 
     listing.isActive = false
+    listing.bookState = MarketplaceListingBookState.Removed
     listing.updatedAt = new Date(block.timestamp ?? 0)
 
     if (listing.type === ListingType.Offer) {
-        listing.state = new OfferState({
-            listingType: ListingType.Offer,
-            counterOfferCount: (listing.state as OfferState).counterOfferCount,
-            isExpired: true,
-        })
+        listing.state = rebuildOfferState(listing.amount, listing.state, { isExpired: true })
     }
 
     await ctx.store.save(listingStatus)

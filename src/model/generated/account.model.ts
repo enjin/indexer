@@ -12,6 +12,7 @@ import {StakeExchangeTokenFilter} from "./stakeExchangeTokenFilter.model"
 import {Identity} from "./identity.model"
 import {IdentityRegistrar} from "./identityRegistrar.model"
 import {UserInfusion} from "./userInfusion.model"
+import {TokenLoan} from "./tokenLoan.model"
 import {AccountStats} from "./_accountStats"
 
 @Entity_()
@@ -65,6 +66,12 @@ export class Account {
 
     @OneToMany_(() => UserInfusion, e => e.account)
     userInfusions!: Relation_<UserInfusion[]>
+
+    @OneToMany_(() => TokenLoan, e => e.lender)
+    loansLent!: Relation_<TokenLoan[]>
+
+    @OneToMany_(() => TokenLoan, e => e.borrower)
+    loansBorrowed!: Relation_<TokenLoan[]>
 
     @IntColumn_({nullable: true})
     lastUpdateBlock!: number | undefined | null

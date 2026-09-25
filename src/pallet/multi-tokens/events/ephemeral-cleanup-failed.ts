@@ -28,7 +28,6 @@ export function ephemeralCleanupFailedEventModel(
             collectionId: data.collectionId,
             tokenId: data.tokenId,
             expirationBlock: BigInt(data.expiration),
-            observedBlock: BigInt(block.height),
             error: readableDispatchError(data.error, block._runtime),
         }),
     })

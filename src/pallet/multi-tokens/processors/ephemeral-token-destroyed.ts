@@ -5,12 +5,12 @@ import { SnsEvent } from '~/util/sns'
 
 export function ephemeralTokenDestroyed(
     _ctx: CommonContext,
-    block: Block,
+    _block: Block,
     item: EventItem,
     skipSave: boolean
 ): EventHandlerResult {
     const data = mappings.multiTokens.events.ephemeralTokenDestroyed(item)
-    const event = mappings.multiTokens.events.ephemeralTokenDestroyedEventModel(item, block.height, data)
+    const event = mappings.multiTokens.events.ephemeralTokenDestroyedEventModel(item, data)
     if (skipSave) return event
 
     const snsEvent: SnsEvent = {
@@ -21,7 +21,6 @@ export function ephemeralTokenDestroyed(
             tokenId: data.tokenId,
             token: `${data.collectionId}-${data.tokenId}`,
             expiration: data.expiration,
-            observedBlock: block.height,
             extrinsic: item.extrinsic?.id,
         },
     }

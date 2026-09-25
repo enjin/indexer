@@ -40,6 +40,9 @@ export class NominationPool {
     @BigIntColumn_({nullable: false})
     deposit!: bigint
 
+    /**
+     * Bonus cycle, populated only for pools created while the bonus mechanism was live (pre-v1060). The mechanism was removed in v1060 (no bonus since era ~903), so pools created after the change have a null bonusCycle.
+     */
     @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new BonusCycle(undefined, obj)}, nullable: true})
     bonusCycle!: BonusCycle | undefined | null
 
