@@ -31,6 +31,7 @@ import { QueuesEnum } from '~/queue/constants'
 import { Logger } from '~/util/logger'
 import { getSnsEventHash, isRelay } from '~/util/tools'
 import { readableDispatchError } from '~/util/dispatch-error'
+import { getExtrinsicNonce } from '~/util/extrinsic-nonce'
 import { isSnsEvent, Sns, SnsEvent } from '~/util/sns'
 import { queueMissingBlocks } from '~/migration/queue-missing-blocks'
 import { initializeCrashReporting, reportCrash } from '~/util/crash-report'
@@ -348,7 +349,7 @@ async function processExtrinsics(
         method: call ? callName[1] : undefined,
         args: call?.args,
         signer,
-        nonce: signer.nonce,
+        nonce: getExtrinsicNonce(extrinsic),
         tip,
         error: readableDispatchError(error, block._runtime) ?? undefined,
         fee: new Fee({
