@@ -13,6 +13,7 @@ import { JobsEnum } from '~/queue/constants'
 import { xxhasher } from '~/util/hasher'
 import { match } from 'ts-pattern'
 import { type Queue, type Job } from 'bullmq'
+import { addRefreshJob } from '~/queue/refresh-job'
 import { QueueType } from '~/queue/types'
 import { Logger } from '~/util/logger'
 import type { BackfillEphemeralTokensData } from '~/worker/jobs/tokens/backfill-ephemeral-tokens'
@@ -137,7 +138,8 @@ function getQueueByType(queue: QueueType): Queue {
 }
 
 export function dispatchFetchAllBalances(): void {
-    BalancesQueue.add(
+    addRefreshJob(
+        BalancesQueue,
         JobsEnum.FETCH_BALANCES,
         { ids: null },
         {
@@ -153,7 +155,8 @@ export function dispatchFetchBalances(ids: string[]): void {
     xxhasher
         .createId(ids)
         .then((hashedIds) => {
-            BalancesQueue.add(
+            addRefreshJob(
+                BalancesQueue,
                 JobsEnum.FETCH_BALANCES,
                 { ids },
                 {
@@ -171,10 +174,8 @@ export function dispatchFetchBalances(ids: string[]): void {
 
 export async function dispatchFetchAccountBalance(id: string): Promise<void> {
     const jobId = `balances.fetch-balance.${id}`
-    const job = await BalancesQueue.getJob(jobId)
-    if (job?.id && (await hasExistingJob(job))) return
-    if (job?.id) await BalancesQueue.remove(job.id)
-    BalancesQueue.add(
+    await addRefreshJob(
+        BalancesQueue,
         JobsEnum.FETCH_BALANCE,
         { id },
         {
@@ -190,7 +191,8 @@ export function dispatchFetchAccounts(ids: string[]): void {
     xxhasher
         .createId(ids)
         .then((hashedIds) => {
-            AccountsQueue.add(
+            addRefreshJob(
+                AccountsQueue,
                 JobsEnum.FETCH_ACCOUNTS,
                 { ids },
                 {
@@ -209,7 +211,8 @@ export function dispatchFetchAccounts(ids: string[]): void {
 export function dispatchComputeCollections(): void {
     // This job syncs every single collection in our database
     // There is no point in running it more than once a block
-    CollectionsQueue.add(
+    addRefreshJob(
+        CollectionsQueue,
         JobsEnum.COMPUTE_COLLECTIONS,
         {},
         {
@@ -223,10 +226,8 @@ export function dispatchComputeCollections(): void {
 
 export async function dispatchComputeStats(id: string): Promise<void> {
     const jobId = `collections.stats.${id}`
-    const job = await CollectionsQueue.getJob(jobId)
-    if (job?.id && (await hasExistingJob(job))) return
-    if (job?.id) await CollectionsQueue.remove(job.id)
-    CollectionsQueue.add(
+    await addRefreshJob(
+        CollectionsQueue,
         JobsEnum.COMPUTE_STATS,
         { id },
         {
@@ -240,10 +241,8 @@ export async function dispatchComputeStats(id: string): Promise<void> {
 
 export async function dispatchComputeRarity({ id }: { id: string; delay?: number }): Promise<void> {
     const jobId = `tokens.rarity.${id}`
-    const job = await TokensQueue.getJob(jobId)
-    if (job?.id && (await hasExistingJob(job))) return
-    if (job?.id) await TokensQueue.remove(job.id)
-    TokensQueue.add(
+    await addRefreshJob(
+        TokensQueue,
         JobsEnum.COMPUTE_RARITY,
         { id },
         {
@@ -257,10 +256,8 @@ export async function dispatchComputeRarity({ id }: { id: string; delay?: number
 
 export async function dispatchComputeTraits(id: string): Promise<void> {
     const jobId = `traits.${id}`
-    const job = await TraitsQueue.getJob(jobId)
-    if (job?.id && (await hasExistingJob(job))) return
-    if (job?.id) await TraitsQueue.remove(job.id)
-    TraitsQueue.add(
+    await addRefreshJob(
+        TraitsQueue,
         JobsEnum.COMPUTE_TRAITS,
         { id },
         {
@@ -301,10 +298,8 @@ export async function dispatchComputeMetadata({
     delay?: number
 }) {
     const jobId = force ? `metadata.force.${id}` : `metadata.${id}`
-    const job = await MetadataQueue.getJob(jobId)
-    if (job?.id && (await hasExistingJob(job))) return
-    if (job?.id) await MetadataQueue.remove(job.id)
-    MetadataQueue.add(
+    await addRefreshJob(
+        MetadataQueue,
         JobsEnum.COMPUTE_METADATA,
         { id, type, force, allTokens, traits },
         {
@@ -318,10 +313,8 @@ export async function dispatchComputeMetadata({
 
 export async function dispatchComputeTokenGroupMetadata(id: string, delay?: number, force = false): Promise<void> {
     const jobId = force ? `metadata.tokenGroup.force.${id}` : `metadata.tokenGroup.${id}`
-    const job = await MetadataQueue.getJob(jobId)
-    if (job?.id && (await hasExistingJob(job))) return
-    if (job?.id) await MetadataQueue.remove(job.id)
-    MetadataQueue.add(
+    await addRefreshJob(
+        MetadataQueue,
         JobsEnum.COMPUTE_TOKEN_GROUP_METADATA,
         { id, force },
         {
@@ -334,7 +327,8 @@ export async function dispatchComputeTokenGroupMetadata(id: string, delay?: numb
 }
 
 export function dispatchSyncTokenGroupMetadata(): void {
-    MetadataQueue.add(
+    addRefreshJob(
+        MetadataQueue,
         JobsEnum.SYNC_TOKEN_GROUP_METADATA,
         {},
         {
@@ -347,7 +341,8 @@ export function dispatchSyncTokenGroupMetadata(): void {
 }
 
 export function dispatchSyncAllMetadata(): void {
-    MetadataQueue.add(
+    addRefreshJob(
+        MetadataQueue,
         JobsEnum.SYNC_METADATA,
         {},
         {
@@ -361,7 +356,8 @@ export function dispatchSyncAllMetadata(): void {
 
 export function dispatchSyncFuelTankRuleSets(tankId?: string): void {
     const jobId = `metadata.fuelTankRuleSets.sync.${tankId}`
-    MetadataQueue.add(
+    addRefreshJob(
+        MetadataQueue,
         JobsEnum.SYNC_FUEL_TANK_RULE_SETS,
         { tankId },
         {
@@ -374,7 +370,8 @@ export function dispatchSyncFuelTankRuleSets(tankId?: string): void {
 }
 
 export function dispatchSyncOffers(): void {
-    ListingsQueue.add(
+    addRefreshJob(
+        ListingsQueue,
         JobsEnum.FETCH_OFFERS,
         {},
         {
@@ -387,7 +384,8 @@ export function dispatchSyncOffers(): void {
 }
 
 export function dispatchSyncCollectionTransfer(id: string): void {
-    CollectionsQueue.add(
+    addRefreshJob(
+        CollectionsQueue,
         JobsEnum.SYNC_COLLECTION_TRANSFER,
         { id },
         {
@@ -401,10 +399,8 @@ export function dispatchSyncCollectionTransfer(id: string): void {
 
 export async function dispatchComputeValidators(): Promise<void> {
     const jobId = 'validators.all'
-    const job = await ValidatorsQueue.getJob(jobId)
-    if (job?.id && (await hasExistingJob(job))) return
-    if (job?.id) await ValidatorsQueue.remove(job.id)
-    ValidatorsQueue.add(
+    await addRefreshJob(
+        ValidatorsQueue,
         JobsEnum.COMPUTE_VALIDATORS,
         {},
         {
@@ -418,10 +414,8 @@ export async function dispatchComputeValidators(): Promise<void> {
 
 export async function dispatchSyncTokens(): Promise<void> {
     const jobId = 'tokens.supply.all'
-    const job = await TokensQueue.getJob(jobId)
-    if (job?.id && (await hasExistingJob(job))) return
-    if (job?.id) await TokensQueue.remove(job.id)
-    TokensQueue.add(
+    await addRefreshJob(
+        TokensQueue,
         JobsEnum.SYNC_TOKENS,
         {},
         {
@@ -434,7 +428,8 @@ export async function dispatchSyncTokens(): Promise<void> {
 }
 
 export function dispatchComputeTokenSupply(id: string): void {
-    TokensQueue.add(
+    addRefreshJob(
+        TokensQueue,
         JobsEnum.COMPUTE_TOKEN_SUPPLY,
         { id },
         {
@@ -447,7 +442,8 @@ export function dispatchComputeTokenSupply(id: string): void {
 }
 
 export function dispatchRefreshPool(id: string): void {
-    NominationPoolsQueue.add(
+    addRefreshJob(
+        NominationPoolsQueue,
         JobsEnum.REFRESH_POOL,
         { id },
         {
@@ -461,10 +457,8 @@ export function dispatchRefreshPool(id: string): void {
 
 export async function dispatchSyncValidators(): Promise<void> {
     const jobId = 'validators.sync.all'
-    const job = await ValidatorsQueue.getJob(jobId)
-    if (job?.id && (await hasExistingJob(job))) return
-    if (job?.id) await ValidatorsQueue.remove(job.id)
-    ValidatorsQueue.add(
+    await addRefreshJob(
+        ValidatorsQueue,
         JobsEnum.SYNC_VALIDATORS,
         {},
         {
@@ -477,10 +471,8 @@ export async function dispatchSyncValidators(): Promise<void> {
 }
 
 export async function dispatchSyncActiveValidators(): Promise<void> {
-    const job = await ValidatorsQueue.getJob('validators.sync.active.all')
-    if (job?.id && (await hasExistingJob(job))) return
-    if (job?.id) await ValidatorsQueue.remove(job.id)
-    ValidatorsQueue.add(
+    await addRefreshJob(
+        ValidatorsQueue,
         JobsEnum.SYNC_ACTIVE_VALIDATORS,
         {},
         {
@@ -556,7 +548,8 @@ export function dispatchBackfillExtrinsicBlockRelation(options?: {
 }
 
 export function dispatchSyncAccounts(): void {
-    AccountsQueue.add(
+    addRefreshJob(
+        AccountsQueue,
         JobsEnum.SYNC_ALL_ACCOUNTS,
         {},
         {
@@ -569,7 +562,8 @@ export function dispatchSyncAccounts(): void {
 }
 
 export function dispatchRefreshListings(ids: string[]): void {
-    ListingsQueue.add(
+    addRefreshJob(
+        ListingsQueue,
         JobsEnum.REFRESH_LISTINGS,
         { ids },
         {
@@ -595,10 +589,8 @@ export async function dispatchBackfillCancellationListingIds(
 
 export async function dispatchComputeTokenBestListing(id: string): Promise<void> {
     const jobId = `tokens.best-listing.${id}`
-    const job = await TokensQueue.getJob(jobId)
-    if (job?.id && (await hasExistingJob(job))) return
-    if (job?.id) await TokensQueue.remove(job.id)
-    TokensQueue.add(
+    await addRefreshJob(
+        TokensQueue,
         JobsEnum.COMPUTE_TOKEN_BEST_LISTING,
         { id },
         {
@@ -611,7 +603,8 @@ export async function dispatchComputeTokenBestListing(id: string): Promise<void>
 }
 
 export function dispatchComputeTokenInfusion(id: string): void {
-    TokensQueue.add(
+    addRefreshJob(
+        TokensQueue,
         JobsEnum.COMPUTE_TOKEN_INFUSION,
         { id },
         {
@@ -624,7 +617,8 @@ export function dispatchComputeTokenInfusion(id: string): void {
 }
 
 export function dispatchComputeTokenCreationSupply(id: string): void {
-    TokensQueue.add(
+    addRefreshJob(
+        TokensQueue,
         JobsEnum.COMPUTE_TOKEN_CREATION_SUPPLY,
         { id },
         {
@@ -637,7 +631,8 @@ export function dispatchComputeTokenCreationSupply(id: string): void {
 }
 
 export function dispatchSyncPools(): void {
-    NominationPoolsQueue.add(
+    addRefreshJob(
+        NominationPoolsQueue,
         JobsEnum.SYNC_POOLS,
         {},
         {
@@ -650,7 +645,8 @@ export function dispatchSyncPools(): void {
 }
 
 export function dispatchComputePoolRewards(id: string): void {
-    NominationPoolsQueue.add(
+    addRefreshJob(
+        NominationPoolsQueue,
         JobsEnum.COMPUTE_POOL_REWARDS,
         { id },
         {
@@ -663,7 +659,8 @@ export function dispatchComputePoolRewards(id: string): void {
 }
 
 export function dispatchComputePoolMemberRewards(id: string): void {
-    NominationPoolsQueue.add(
+    addRefreshJob(
+        NominationPoolsQueue,
         JobsEnum.COMPUTE_POOL_MEMBER_REWARDS,
         { id },
         {
@@ -676,7 +673,8 @@ export function dispatchComputePoolMemberRewards(id: string): void {
 }
 
 export function dispatchComputePoolOffers(id: string): void {
-    NominationPoolsQueue.add(
+    addRefreshJob(
+        NominationPoolsQueue,
         JobsEnum.COMPUTE_POOL_OFFERS,
         { id },
         {
@@ -689,7 +687,8 @@ export function dispatchComputePoolOffers(id: string): void {
 }
 
 export function dispatchSyncMembersBonded(): void {
-    NominationPoolsQueue.add(
+    addRefreshJob(
+        NominationPoolsQueue,
         JobsEnum.SYNC_MEMBERS_BONDED,
         {},
         {
@@ -726,10 +725,8 @@ export function dispatchBackfillPoolMemberRewards(fromBlock?: number): void {
 
 export async function dispatchComputeAccountStats(id: string): Promise<void> {
     const jobId = `accounts.compute-stats.${id}`
-    const job = await AccountsQueue.getJob(jobId)
-    if (job?.id && (await hasExistingJob(job))) return
-    if (job?.id) await AccountsQueue.remove(job.id)
-    AccountsQueue.add(
+    await addRefreshJob(
+        AccountsQueue,
         JobsEnum.COMPUTE_ACCOUNT_STATS,
         { id },
         {
@@ -742,7 +739,8 @@ export async function dispatchComputeAccountStats(id: string): Promise<void> {
 }
 
 export function dispatchSyncUserInfusions(): void {
-    AccountsQueue.add(
+    addRefreshJob(
+        AccountsQueue,
         JobsEnum.SYNC_USER_INFUSIONS,
         {},
         {
@@ -755,7 +753,8 @@ export function dispatchSyncUserInfusions(): void {
 }
 
 export function dispatchComputeTokenNativeMetadata(id: string): void {
-    TokensQueue.add(
+    addRefreshJob(
+        TokensQueue,
         JobsEnum.COMPUTE_TOKEN_NATIVE_METADATA,
         { id },
         {
