@@ -139,7 +139,7 @@ pnpm run build
 
 The processor dispatches asynchronous work for accounts, balances, collections, listings, metadata, nomination pools, tokens, traits, and validators. Queue definitions live under `src/queue/`; worker processors and jobs live under `src/worker/`.
 
-Queue code must be safe under retries and multiple replicas. BullMQ owns stalled-job recovery. Startup code intentionally does not clean all active jobs because another replica may still hold their locks. Prefer stable job IDs, idempotent writes, bounded batches, and explicit retry behavior.
+Queue code must be safe under retries and multiple replicas. BullMQ owns stalled-job recovery. Startup code intentionally does not clean all active jobs because another replica may still hold their locks. Repeatable refresh dispatchers use stable deduplication IDs with unique physical job IDs so retained terminal jobs do not block future work. Pending refreshes coalesce; updates during active work retain one latest-payload follow-up. Already-active legacy fixed-ID jobs finish under their original coalescing behavior. Keep writes idempotent, batches bounded, and retry behavior explicit.
 
 During initial synchronization, selected queues are paused and later resumed. Changes to synchronization or processor error handling must preserve queue recovery so queues are not left permanently paused.
 
