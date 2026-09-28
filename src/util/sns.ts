@@ -1,4 +1,5 @@
 import { MessageAttributeValue, PublishCommand, SNSClient } from '@aws-sdk/client-sns'
+import { createHash } from 'node:crypto'
 import config from '~/util/config'
 import { safeJsonString } from '~/util/tools'
 import { DataService } from '~/util/data'
@@ -89,7 +90,13 @@ export class Sns {
             Message: safeJsonString(message.body),
             MessageAttributes: attr,
             MessageGroupId: Sns.SNS_GROUP_ID,
-            MessageDeduplicationId: message.id,
+            // A previously orphaned event can become canonical again. Its
+            // correction must not collide with its original FIFO notification.
+            MessageDeduplicationId: message.body.isReorganized
+                ? createHash('sha256')
+                      .update(JSON.stringify([message.id, message.body.reorganizedId]))
+                      .digest('hex')
+                : message.id,
         })
 
         try {

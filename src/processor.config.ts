@@ -110,6 +110,7 @@ const callItems: string[] = [...new Set([...commonCalls, ...(isRelay() ? relayCa
 export const processorConfig = new SubstrateBatchProcessor()
     .setRpcEndpoint(config.dataSource.chain)
     .setBlockRange({ from: config.dataSource.fromBlock })
+    // Empty replacement blocks must still invalidate the old SNS branch.
     .includeAllBlocks()
     .addEvent({
         name: eventItems,
