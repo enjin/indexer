@@ -41,6 +41,10 @@ export const insertRuleSet = withDispatchCheck((call: CallItem): InsertRuleSet =
             () => calls.fuelTanks.insertRuleSet.matrixEnjinV603.decode(call)
         )
         .when(
+            () => calls.fuelTanks.insertRuleSet.matrixV1040.is(call),
+            () => calls.fuelTanks.insertRuleSet.matrixV1040.decode(call)
+        )
+        .when(
             () => calls.fuelTanks.insertRuleSet.matrixV1030.is(call),
             () => calls.fuelTanks.insertRuleSet.matrixV1030.decode(call)
         )
