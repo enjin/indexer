@@ -4,6 +4,7 @@ import {NominationPool} from "./nominationPool.model"
 import {Account} from "./account.model"
 import {TokenAccount} from "./tokenAccount.model"
 import {PoolMemberRewards} from "./poolMemberRewards.model"
+import {EarlyBirdMintEvent} from "./earlyBirdMintEvent.model"
 import {UnbondingEras} from "./_unbondingEras"
 import {Era} from "./era.model"
 
@@ -33,6 +34,9 @@ export class PoolMember {
 
     @OneToMany_(() => PoolMemberRewards, e => e.member)
     rewards!: Relation_<PoolMemberRewards[]>
+
+    @OneToMany_(() => EarlyBirdMintEvent, e => e.poolMember)
+    earlyBirdMintEvents!: Relation_<EarlyBirdMintEvent[]>
 
     @BigIntColumn_({nullable: true})
     accumulatedRewards!: bigint | undefined | null

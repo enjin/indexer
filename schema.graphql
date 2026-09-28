@@ -1639,6 +1639,7 @@ type PoolMember @entity {
   bonded: BigInt!
   tokenAccount: TokenAccount
   rewards: [PoolMemberRewards!] @derivedFrom(field: "member")
+  earlyBirdMintEvents: [EarlyBirdMintEvent!] @derivedFrom(field: "poolMember")
   accumulatedRewards: BigInt # TODO: make this required
   unbondingEras: [UnbondingEras!]
   isStash: Boolean
