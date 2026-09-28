@@ -16,6 +16,7 @@ import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
 import * as enjinV1070 from '../enjinV1070'
 import * as v1070 from '../v1070'
+import * as v1080 from '../v1080'
 
 export const incompleteSince = {
     matrixEnjinV603: new StorageType(
@@ -185,6 +186,15 @@ export const agenda = {
         [sts.number()],
         sts.array(() => sts.option(() => v1070.Scheduled))
     ) as AgendaV1070,
+    /**
+     *  Items to be executed, indexed by the block number that they should be executed on.
+     */
+    v1080: new StorageType(
+        'Scheduler.Agenda',
+        'Default',
+        [sts.number()],
+        sts.array(() => sts.option(() => v1080.Scheduled))
+    ) as AgendaV1080,
 }
 
 /**
@@ -619,6 +629,31 @@ export interface AgendaV1070 {
         block: Block,
         key: number
     ): AsyncIterable<[k: number, v: (v1070.Scheduled | undefined)[] | undefined][]>
+}
+
+/**
+ *  Items to be executed, indexed by the block number that they should be executed on.
+ */
+export interface AgendaV1080 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): (v1080.Scheduled | undefined)[]
+    get(block: Block, key: number): Promise<(v1080.Scheduled | undefined)[] | undefined>
+    getMany(block: Block, keys: number[]): Promise<((v1080.Scheduled | undefined)[] | undefined)[]>
+    getKeys(block: Block): Promise<number[]>
+    getKeys(block: Block, key: number): Promise<number[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<number[]>
+    getKeysPaged(pageSize: number, block: Block, key: number): AsyncIterable<number[]>
+    getPairs(block: Block): Promise<[k: number, v: (v1080.Scheduled | undefined)[] | undefined][]>
+    getPairs(block: Block, key: number): Promise<[k: number, v: (v1080.Scheduled | undefined)[] | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: number, v: (v1080.Scheduled | undefined)[] | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: number
+    ): AsyncIterable<[k: number, v: (v1080.Scheduled | undefined)[] | undefined][]>
 }
 
 export const lookup = {

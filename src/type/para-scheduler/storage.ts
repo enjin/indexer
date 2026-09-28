@@ -5,6 +5,7 @@ import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
+import * as v1080 from '../v1080'
 
 export const validatorGroups = {
     /**
@@ -361,4 +362,86 @@ export interface ClaimQueueV1060 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): [v1060.V8CoreIndex, v1060.Assignment[]][]
     get(block: Block): Promise<[v1060.V8CoreIndex, v1060.Assignment[]][] | undefined>
+}
+
+export const coreSchedules = {
+    /**
+     *  Scheduled assignment sets for coretime cores.
+     *
+     *  Assignments as of the given block number. They will go into state once the block number is
+     *  reached (and replace whatever was in there before).
+     *
+     *  Managed by the `assigner_coretime` submodule.
+     */
+    v1080: new StorageType(
+        'ParaScheduler.CoreSchedules',
+        'Optional',
+        [sts.tuple(() => [sts.number(), v1080.V9CoreIndex])],
+        v1080.Schedule
+    ) as CoreSchedulesV1080,
+}
+
+/**
+ *  Scheduled assignment sets for coretime cores.
+ *
+ *  Assignments as of the given block number. They will go into state once the block number is
+ *  reached (and replace whatever was in there before).
+ *
+ *  Managed by the `assigner_coretime` submodule.
+ */
+export interface CoreSchedulesV1080 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: [number, v1080.V9CoreIndex]): Promise<v1080.Schedule | undefined>
+    getMany(block: Block, keys: [number, v1080.V9CoreIndex][]): Promise<(v1080.Schedule | undefined)[]>
+    getKeys(block: Block): Promise<[number, v1080.V9CoreIndex][]>
+    getKeys(block: Block, key: [number, v1080.V9CoreIndex]): Promise<[number, v1080.V9CoreIndex][]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[number, v1080.V9CoreIndex][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key: [number, v1080.V9CoreIndex]
+    ): AsyncIterable<[number, v1080.V9CoreIndex][]>
+    getPairs(block: Block): Promise<[k: [number, v1080.V9CoreIndex], v: v1080.Schedule | undefined][]>
+    getPairs(
+        block: Block,
+        key: [number, v1080.V9CoreIndex]
+    ): Promise<[k: [number, v1080.V9CoreIndex], v: v1080.Schedule | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: [number, v1080.V9CoreIndex], v: v1080.Schedule | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: [number, v1080.V9CoreIndex]
+    ): AsyncIterable<[k: [number, v1080.V9CoreIndex], v: v1080.Schedule | undefined][]>
+}
+
+export const coreDescriptors = {
+    /**
+     *  Assignments which are currently active for each core.
+     *
+     *  They will be picked from `CoreSchedules` once we reach the scheduled block number.
+     *
+     *  Managed by the `assigner_coretime` submodule.
+     */
+    v1080: new StorageType(
+        'ParaScheduler.CoreDescriptors',
+        'Default',
+        [],
+        sts.array(() => sts.tuple(() => [v1080.V9CoreIndex, v1080.CoreDescriptor]))
+    ) as CoreDescriptorsV1080,
+}
+
+/**
+ *  Assignments which are currently active for each core.
+ *
+ *  They will be picked from `CoreSchedules` once we reach the scheduled block number.
+ *
+ *  Managed by the `assigner_coretime` submodule.
+ */
+export interface CoreDescriptorsV1080 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): [v1080.V9CoreIndex, v1080.CoreDescriptor][]
+    get(block: Block): Promise<[v1080.V9CoreIndex, v1080.CoreDescriptor][] | undefined>
 }

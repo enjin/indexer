@@ -12,8 +12,10 @@ const blockReads = new WeakMap<Block, Map<string, Promise<StorageAttribute | und
 export function readAttributeStorage(block: Block, target: AttributeTarget): Promise<StorageAttribute | undefined> {
     const supportsFrozenStorage =
         target.kind === 'attribute'
-            ? multiTokenStorageTypes.attributes.matrixV1040.is(block)
-            : multiTokenStorageTypes.tokenGroupAttributes.matrixV1040.is(block)
+            ? multiTokenStorageTypes.attributes.matrixV1040.is(block) ||
+              multiTokenStorageTypes.attributes.v1080.is(block)
+            : multiTokenStorageTypes.tokenGroupAttributes.matrixV1040.is(block) ||
+              multiTokenStorageTypes.tokenGroupAttributes.v1080.is(block)
 
     if (!supportsFrozenStorage) return Promise.resolve(undefined)
 

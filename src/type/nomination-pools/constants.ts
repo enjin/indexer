@@ -229,3 +229,20 @@ export const orphanedPoolAccountId = {
      */
     v101: new ConstantType('NominationPools.OrphanedPoolAccountId', v101.AccountId32),
 }
+
+export const maxPayoutPagesPerRun = {
+    /**
+     *  Maximum number of exposure pages the payout offchain worker examines in a single run.
+     *
+     *  This bounds one run, not one pass: the worker persists a cursor and the next run
+     *  resumes where this one stopped, so a `HistoryDepth`-sized window is walked across as
+     *  many runs as it takes instead of in every run. Lowering it lowers the node-side cost of
+     *  a run and raises the delay before a newly payable page is proposed.
+     *
+     *  The bound is exact, including inside a single validator's exposure: a run that reaches
+     *  the cap half way through an exposure entry stops there and records the page it stopped
+     *  at, rather than finishing the entry. A value of zero still advances one page per run,
+     *  so no setting of this can starve a page.
+     */
+    v1080: new ConstantType('NominationPools.MaxPayoutPagesPerRun', sts.number()),
+}

@@ -53,6 +53,7 @@ import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
 import * as enjinV1070 from '../enjinV1070'
 import * as v1070 from '../v1070'
+import * as v1080 from '../v1080'
 
 export const createFuelTank = {
     name: 'FuelTanks.create_fuel_tank',
@@ -831,6 +832,23 @@ export const createFuelTank = {
         'FuelTanks.create_fuel_tank',
         sts.struct({
             descriptor: v1070.FuelTankDescriptor,
+        })
+    ),
+    /**
+     * Creates a fuel tank, given a `descriptor`.
+     *
+     * Generates a discrete `AccountId` for the fuel tank based on passed in parameters, it
+     * takes a storage deposit and emits `FuelTankCreated` event in the success case.
+     *
+     * # Errors
+     *
+     * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
+     * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
+     */
+    v1080: new CallType(
+        'FuelTanks.create_fuel_tank',
+        sts.struct({
+            descriptor: v1080.FuelTankDescriptor,
         })
     ),
 }
@@ -2389,6 +2407,42 @@ export const dispatch = {
             ruleSetId: sts.number(),
             call: v1070.Call,
             settings: sts.option(() => v1070.DispatchSettings),
+        })
+    ),
+    /**
+     * Dispatch a call using the `tank_id` subject to the rules of a rule set.
+     *
+     * `rule_set_id` selects the rule set governing the dispatch:
+     * - `Some(id)`(Some) dispatches subject to that specific rule set.
+     * - [`None`] auto-selects: the tank's rule sets are evaluated in ascending `RuleSetId`
+     *   order and the first one that fully succeeds for the caller is used (frozen rule sets,
+     *   rule sets requiring an account the caller lacks, and rule sets with any failing rule
+     *   are skipped). If no rule set succeeds, dispatch fails with
+     *   [`Error::NoMatchingRuleSet`].
+     *
+     * The rule set is resolved (and all rules evaluated) in the `CheckFuelTank` transaction
+     * extension; for the [`None`] case the extension charges the worst-case selection weight
+     * up front and refunds the portion for rule sets it did not have to examine.
+     *
+     * # Errors
+     * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
+     * - [`Error::NoMatchingRuleSet`] if `rule_set_id` is [`None`] and no rule set succeeds.
+     * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
+     * - [`Error::CallerDoesNotHaveRuleSetTokenBalance`] if caller does not own the tokens to
+     *   use the ruleset for remaining_fee when `pays_remaining_fee` is true
+     * - [`Error::FuelTankOutOfFunds`] if the fuel tank account cannot pay fees
+     * If `settings.create_account` is set, an account is created for `origin` if it does not
+     * exist, is required, and is allowed by the fuel tank's `user_account_management`
+     * settings. The account creation is performed in the `CheckFuelTank` transaction
+     * extension, which also accounts for its weight (see its `weight` impl).
+     */
+    v1080: new CallType(
+        'FuelTanks.dispatch',
+        sts.struct({
+            tankId: v1080.MultiAddress,
+            ruleSetId: sts.option(() => sts.number()),
+            call: v1080.Call,
+            settings: sts.option(() => v1080.DispatchSettings),
         })
     ),
 }
@@ -4647,6 +4701,31 @@ export const insertRuleSet = {
             ruleSet: v1070.RuleSetDescriptor,
         })
     ),
+    /**
+     * Insert a new rule set for `tank_id` and `rule_set_id`. It can be a new rule set
+     * or it can replace an existing one. If it is replacing a rule set, a rule that is storing
+     * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
+     * the data first. If a rule is being replaced, it will be mutated with the new parameters,
+     * and it will maintain any persistent data it already has.
+     *
+     * This is only callable by the fuel tank's owner.
+     * ### Errors
+     * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
+     * - [`Error::NoPermission`] if caller is not the fuel tank owner
+     * - [`Error::CannotRemoveRuleThatIsStoringAccountData`] if removing a rule that is storing
+     *   account data
+     * - [`Error::MaxRuleSetsExceeded`] if max number of rule sets was exceeded
+     * - [`Error::DuplicateRuleKinds`] if adding a rule set with multiple rules of the same
+     *   kind
+     */
+    v1080: new CallType(
+        'FuelTanks.insert_rule_set',
+        sts.struct({
+            tankId: v1080.MultiAddress,
+            ruleSetId: sts.number(),
+            ruleSet: v1080.RuleSetDescriptor,
+        })
+    ),
 }
 
 export const removeRuleSet = {
@@ -5381,6 +5460,20 @@ export const forceCreateFuelTank = {
             descriptor: v1070.FuelTankDescriptor,
         })
     ),
+    /**
+     * Force creates a fuel tank
+     *
+     * # Errors
+     *
+     * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
+     */
+    v1080: new CallType(
+        'FuelTanks.force_create_fuel_tank',
+        sts.struct({
+            owner: v1080.MultiAddress,
+            descriptor: v1080.FuelTankDescriptor,
+        })
+    ),
 }
 
 export const forceBatchAddAccount = {
@@ -5526,6 +5619,17 @@ export const forceInsertRuleSet = {
             tankId: v1070.MultiAddress,
             ruleSetId: sts.number(),
             ruleSet: v1070.RuleSetDescriptor,
+        })
+    ),
+    /**
+     * Force inserting a ruleset using the force origin
+     */
+    v1080: new CallType(
+        'FuelTanks.force_insert_rule_set',
+        sts.struct({
+            tankId: v1080.MultiAddress,
+            ruleSetId: sts.number(),
+            ruleSet: v1080.RuleSetDescriptor,
         })
     ),
 }

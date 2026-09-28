@@ -9,6 +9,10 @@ export function frozen(event: EventItem): Freeze {
     return match(event)
         .returnType<Freeze>()
         .when(
+            () => multiTokens.frozen.v1080.is(event),
+            () => multiTokens.frozen.v1080.decode(event)
+        )
+        .when(
             () => multiTokens.frozen.matrixEnjinV603.is(event),
             () => multiTokens.frozen.matrixEnjinV603.decode(event)
         )

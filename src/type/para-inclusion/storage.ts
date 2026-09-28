@@ -4,6 +4,7 @@ import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
+import * as v1080 from '../v1080'
 
 export const availabilityBitfields = {
     /**
@@ -184,6 +185,19 @@ export const v1 = {
         [v1060.Id],
         sts.array(() => v1060.CandidatePendingAvailability)
     ) as V1V1060,
+    /**
+     *  Candidates pending availability by `ParaId`. They form a chain starting from the latest
+     *  included head of the para.
+     *  Use a different prefix post-migration to v1, since the v0 `PendingAvailability` storage
+     *  would otherwise have the exact same prefix which could cause undefined behaviour when doing
+     *  the migration.
+     */
+    v1080: new StorageType(
+        'ParaInclusion.V1',
+        'Optional',
+        [v1080.Id],
+        sts.array(() => v1080.CandidatePendingAvailability)
+    ) as V1V1080,
 }
 
 /**
@@ -302,4 +316,32 @@ export interface V1V1060 {
         block: Block,
         key: v1060.Id
     ): AsyncIterable<[k: v1060.Id, v: v1060.CandidatePendingAvailability[] | undefined][]>
+}
+
+/**
+ *  Candidates pending availability by `ParaId`. They form a chain starting from the latest
+ *  included head of the para.
+ *  Use a different prefix post-migration to v1, since the v0 `PendingAvailability` storage
+ *  would otherwise have the exact same prefix which could cause undefined behaviour when doing
+ *  the migration.
+ */
+export interface V1V1080 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: v1080.Id): Promise<v1080.CandidatePendingAvailability[] | undefined>
+    getMany(block: Block, keys: v1080.Id[]): Promise<(v1080.CandidatePendingAvailability[] | undefined)[]>
+    getKeys(block: Block): Promise<v1080.Id[]>
+    getKeys(block: Block, key: v1080.Id): Promise<v1080.Id[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v1080.Id[]>
+    getKeysPaged(pageSize: number, block: Block, key: v1080.Id): AsyncIterable<v1080.Id[]>
+    getPairs(block: Block): Promise<[k: v1080.Id, v: v1080.CandidatePendingAvailability[] | undefined][]>
+    getPairs(block: Block, key: v1080.Id): Promise<[k: v1080.Id, v: v1080.CandidatePendingAvailability[] | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: v1080.Id, v: v1080.CandidatePendingAvailability[] | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: v1080.Id
+    ): AsyncIterable<[k: v1080.Id, v: v1080.CandidatePendingAvailability[] | undefined][]>
 }

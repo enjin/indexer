@@ -89,7 +89,7 @@ export async function listingCreated(
     const explicitStartBlock = data.listing.startBlock
     const startBlock = data.listing.startBlock ?? block.height + 10
     const bookState = initialBookState(
-        marketplaceEvents.listingCreated.matrixV1040.is(item),
+        marketplaceEvents.listingCreated.matrixV1040.is(item) || marketplaceEvents.listingCreated.v1080.is(item),
         listingData.listingType,
         usesWhitelist,
         explicitStartBlock,

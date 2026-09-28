@@ -17,6 +17,7 @@ import * as enjinV1032 from '../enjinV1032'
 import * as v1032 from '../v1032'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
+import * as v1080 from '../v1080'
 
 export const tanks = {
     /**
@@ -156,6 +157,14 @@ export const tanks = {
      *  Mapping of Fuel Tanks accounts to their data
      */
     v1060: new StorageType('FuelTanks.Tanks', 'Optional', [v1060.AccountId32], v1060.FuelTank) as TanksV1060,
+    /**
+     *  Mapping of Fuel Tanks accounts to their data
+     *
+     *  Public so that runtimes can write migrations over tank data. Rule sets embed the identity
+     *  of the pallets and calls they permit, so a runtime that removes or reindexes a pallet has
+     *  to be able to iterate and rewrite them; there is no extrinsic that can do it in bulk.
+     */
+    v1080: new StorageType('FuelTanks.Tanks', 'Optional', [v1080.AccountId32], v1080.FuelTank) as TanksV1080,
 }
 
 /**
@@ -640,6 +649,34 @@ export interface TanksV1060 {
         block: Block,
         key: v1060.AccountId32
     ): AsyncIterable<[k: v1060.AccountId32, v: v1060.FuelTank | undefined][]>
+}
+
+/**
+ *  Mapping of Fuel Tanks accounts to their data
+ *
+ *  Public so that runtimes can write migrations over tank data. Rule sets embed the identity
+ *  of the pallets and calls they permit, so a runtime that removes or reindexes a pallet has
+ *  to be able to iterate and rewrite them; there is no extrinsic that can do it in bulk.
+ */
+export interface TanksV1080 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: v1080.AccountId32): Promise<v1080.FuelTank | undefined>
+    getMany(block: Block, keys: v1080.AccountId32[]): Promise<(v1080.FuelTank | undefined)[]>
+    getKeys(block: Block): Promise<v1080.AccountId32[]>
+    getKeys(block: Block, key: v1080.AccountId32): Promise<v1080.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v1080.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block, key: v1080.AccountId32): AsyncIterable<v1080.AccountId32[]>
+    getPairs(block: Block): Promise<[k: v1080.AccountId32, v: v1080.FuelTank | undefined][]>
+    getPairs(block: Block, key: v1080.AccountId32): Promise<[k: v1080.AccountId32, v: v1080.FuelTank | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: v1080.AccountId32, v: v1080.FuelTank | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: v1080.AccountId32
+    ): AsyncIterable<[k: v1080.AccountId32, v: v1080.FuelTank | undefined][]>
 }
 
 export const accounts = {

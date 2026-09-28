@@ -1,5 +1,6 @@
 import { sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx } from '../support'
 import * as enjinV1062 from '../enjinV1062'
+import * as v1080 from '../v1080'
 
 export const paraIdAffinity = {
     /**
@@ -179,4 +180,25 @@ export interface CreditsEnjinV1062 {
         block: Block,
         key: enjinV1062.AccountId32
     ): AsyncIterable<[k: enjinV1062.AccountId32, v: bigint | undefined][]>
+}
+
+export const orderStatus = {
+    /**
+     *  Priority queue for all orders which don't yet (or not any more) have any core affinity.
+     */
+    v1080: new StorageType(
+        'OnDemandAssignmentProvider.OrderStatus',
+        'Default',
+        [],
+        v1080.OrderStatus
+    ) as OrderStatusV1080,
+}
+
+/**
+ *  Priority queue for all orders which don't yet (or not any more) have any core affinity.
+ */
+export interface OrderStatusV1080 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): v1080.OrderStatus
+    get(block: Block): Promise<v1080.OrderStatus | undefined>
 }
