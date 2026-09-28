@@ -339,12 +339,12 @@ export class AccountsTokensConnectionResolver {
 
             const comparison = order === AccountsTokensOrderInput.ASC ? '>' : '<'
 
-            // Handle NULL values (encoded as empty string)
-            if (afterValue === '') {
+            // NULLS LAST applies in either direction; only the ID advances within the NULL tail.
+            if (afterValue === null) {
                 paginationQuery.andWhere(`(${orderBy} IS NULL AND token.id ${comparison} :afterId)`, { afterId })
             } else {
                 paginationQuery.andWhere(
-                    `(${orderBy} ${comparison} :afterValue OR (${orderBy} = :afterValue AND token.id ${comparison} :afterId))`,
+                    `(${orderBy} ${comparison} :afterValue OR (${orderBy} = :afterValue AND token.id ${comparison} :afterId) OR ${orderBy} IS NULL)`,
                     { afterValue, afterId }
                 )
             }
@@ -362,7 +362,7 @@ export class AccountsTokensConnectionResolver {
         const tokenData = rawRows.map((row) => ({
             id: String(row.token_id),
             orderValue:
-                row.order_value instanceof Date ? row.order_value.toISOString() : row.order_value?.toString() || '',
+                row.order_value instanceof Date ? row.order_value.toISOString() : (row.order_value?.toString() ?? null),
         }))
 
         // Check if we have more pages
@@ -526,7 +526,7 @@ export class AccountsTokensConnectionResolver {
                 }
             })
 
-            const cursor = encodeCursor(token.id, orderValueMap.get(token.id.toString()) || '')
+            const cursor = encodeCursor(token.id, orderValueMap.get(token.id.toString()) ?? null)
 
             return new AccountsTokensEdge({ cursor, node })
         })
