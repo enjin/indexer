@@ -99,6 +99,8 @@ Runtime upgrades are represented by version-aware definitions under `src/type/`.
 
 Adding a type definition alone does not index it. The subscription, handler route, processor, schema/model, and migration layers may all need coordinated updates.
 
+Canary Matrixchain 1041 uses new fuel-tank and nested-call codecs. Its marketplace no longer stores `PendingActivations`; listing refreshes read activation heights from `PriceLevelQueues` at the processed block hash, while 1040 retains its original reader. Phantom attribute-deposit migration events are explicitly excluded from indexing.
+
 ## Data model and schema workflow
 
 `schema.graphql` defines the persisted entity model. The generated classes in `src/model/generated/` should be considered disposable output.

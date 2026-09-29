@@ -28,6 +28,30 @@ export interface RuntimeVersion {
     stateVersion: number
 }
 
+export const BlockLength: sts.Type<BlockLength> = sts.struct(() => {
+    return {
+        max: Type_601,
+    }
+})
+
+export const Type_601: sts.Type<Type_601> = sts.struct(() => {
+    return {
+        normal: sts.number(),
+        operational: sts.number(),
+        mandatory: sts.number(),
+    }
+})
+
+export interface Type_601 {
+    normal: number
+    operational: number
+    mandatory: number
+}
+
+export interface BlockLength {
+    max: Type_601
+}
+
 export interface BeefyAuthoritySet {
     id: bigint
     len: number

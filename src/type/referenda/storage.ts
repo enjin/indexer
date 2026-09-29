@@ -6,6 +6,7 @@ import * as v105 from '../v105'
 import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
 import * as matrixV1040 from '../matrixV1040'
+import * as matrixV1041 from '../matrixV1041'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
 import * as enjinV1070 from '../enjinV1070'
@@ -43,6 +44,15 @@ export const referendumInfoFor = {
         [sts.number()],
         matrixV1040.ReferendumInfo
     ) as ReferendumInfoForMatrixV1040,
+    /**
+     *  Information concerning any given referendum.
+     */
+    matrixV1041: new StorageType(
+        'Referenda.ReferendumInfoFor',
+        'Optional',
+        [sts.number()],
+        matrixV1041.ReferendumInfo
+    ) as ReferendumInfoForMatrixV1041,
     /**
      *  Information concerning any given referendum.
      */
@@ -166,6 +176,30 @@ export interface ReferendumInfoForMatrixV1040 {
         block: Block,
         key: number
     ): AsyncIterable<[k: number, v: matrixV1040.ReferendumInfo | undefined][]>
+}
+
+/**
+ *  Information concerning any given referendum.
+ */
+export interface ReferendumInfoForMatrixV1041 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: number): Promise<matrixV1041.ReferendumInfo | undefined>
+    getMany(block: Block, keys: number[]): Promise<(matrixV1041.ReferendumInfo | undefined)[]>
+    getKeys(block: Block): Promise<number[]>
+    getKeys(block: Block, key: number): Promise<number[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<number[]>
+    getKeysPaged(pageSize: number, block: Block, key: number): AsyncIterable<number[]>
+    getPairs(block: Block): Promise<[k: number, v: matrixV1041.ReferendumInfo | undefined][]>
+    getPairs(block: Block, key: number): Promise<[k: number, v: matrixV1041.ReferendumInfo | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: number, v: matrixV1041.ReferendumInfo | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: number
+    ): AsyncIterable<[k: number, v: matrixV1041.ReferendumInfo | undefined][]>
 }
 
 /**

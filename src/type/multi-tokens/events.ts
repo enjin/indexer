@@ -23,6 +23,7 @@ import * as matrixV1030 from '../matrixV1030'
 import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 import * as enjinV1032 from '../enjinV1032'
 import * as matrixV1040 from '../matrixV1040'
+import * as matrixV1041 from '../matrixV1041'
 import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 import * as v1060 from '../v1060'
@@ -5431,7 +5432,7 @@ export const phantomAttributeDepositCleared = {
      * [`ClearPhantomAttributeDeposits`](migrations::ClearPhantomAttributeDeposits) removed the
      * part of an attribute's recorded deposit that no hold backed (audit finding MT-04)
      */
-    v1080: new EventType(
+    matrixV1041: new EventType(
         'MultiTokens.PhantomAttributeDepositCleared',
         sts.struct({
             /**
@@ -5449,7 +5450,7 @@ export const phantomAttributeDepositCleared = {
             /**
              * The attribute's depositor; `None` is the collection owner
              */
-            depositor: sts.option(() => v1080.AccountId32),
+            depositor: sts.option(() => matrixV1041.AccountId32),
             /**
              * The deposit the attribute records now
              */
@@ -5469,7 +5470,7 @@ export const phantomAttributeDepositSkipped = {
      * listed attribute unchanged because it no longer matched the list: it was removed, or
      * its depositor or deposit changed, after the list was generated
      */
-    v1080: new EventType(
+    matrixV1041: new EventType(
         'MultiTokens.PhantomAttributeDepositSkipped',
         sts.struct({
             /**

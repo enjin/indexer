@@ -71,6 +71,9 @@ const ignoreEvents: string[] = [
     events.multiTokens.collectionDepositRecalculationInProgress.name,
     events.multiTokens.collectionDepositUpdateCompleted.name,
     events.multiTokens.attributeUpgraded.name,
+    // Phantom-deposit migration bookkeeping is not indexed.
+    events.multiTokens.phantomAttributeDepositCleared.name,
+    events.multiTokens.phantomAttributeDepositSkipped.name,
     events.balances.mintedCredit.name,
 ]
 

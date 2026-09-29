@@ -9,6 +9,14 @@ export const insertRuleSet = withDispatchCheck((call: CallItem): InsertRuleSet =
     return match(call)
         .returnType<InsertRuleSet>()
         .when(
+            () => calls.fuelTanks.insertRuleSet.matrixV1041.is(call),
+            () => calls.fuelTanks.insertRuleSet.matrixV1041.decode(call)
+        )
+        .when(
+            () => calls.fuelTanks.forceInsertRuleSet.matrixV1041.is(call),
+            () => calls.fuelTanks.forceInsertRuleSet.matrixV1041.decode(call)
+        )
+        .when(
             () => calls.fuelTanks.insertRuleSet.v1080.is(call),
             () => calls.fuelTanks.insertRuleSet.v1080.decode(call)
         )

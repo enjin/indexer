@@ -15,6 +15,7 @@ import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 import * as v1031 from '../v1031'
 import * as enjinV1032 from '../enjinV1032'
 import * as matrixV1040 from '../matrixV1040'
+import * as matrixV1041 from '../matrixV1041'
 import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 import * as v1060 from '../v1060'
@@ -1208,12 +1209,12 @@ export const priceIndex = {
      *  fillable. Matching passes over a level whose start block is still ahead without reading its
      *  queue.
      */
-    v1080: new StorageType(
+    matrixV1041: new StorageType(
         'Marketplace.PriceIndex',
         'Default',
-        [v1080.AssetId, v1080.AssetId, v1080.OrderSide],
+        [matrixV1041.AssetId, matrixV1041.AssetId, matrixV1041.OrderSide],
         sts.array(() => sts.tuple(() => [sts.bigint(), sts.number()]))
-    ) as PriceIndexV1080,
+    ) as PriceIndexMatrixV1041,
 }
 
 /**
@@ -1319,91 +1320,113 @@ export interface PriceIndexMatrixV1040 {
  *  fillable. Matching passes over a level whose start block is still ahead without reading its
  *  queue.
  */
-export interface PriceIndexV1080 {
+export interface PriceIndexMatrixV1041 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): [bigint, number][]
     get(
         block: Block,
-        key1: v1080.AssetId,
-        key2: v1080.AssetId,
-        key3: v1080.OrderSide
+        key1: matrixV1041.AssetId,
+        key2: matrixV1041.AssetId,
+        key3: matrixV1041.OrderSide
     ): Promise<[bigint, number][] | undefined>
     getMany(
         block: Block,
-        keys: [v1080.AssetId, v1080.AssetId, v1080.OrderSide][]
+        keys: [matrixV1041.AssetId, matrixV1041.AssetId, matrixV1041.OrderSide][]
     ): Promise<([bigint, number][] | undefined)[]>
-    getKeys(block: Block): Promise<[v1080.AssetId, v1080.AssetId, v1080.OrderSide][]>
-    getKeys(block: Block, key1: v1080.AssetId): Promise<[v1080.AssetId, v1080.AssetId, v1080.OrderSide][]>
+    getKeys(block: Block): Promise<[matrixV1041.AssetId, matrixV1041.AssetId, matrixV1041.OrderSide][]>
     getKeys(
         block: Block,
-        key1: v1080.AssetId,
-        key2: v1080.AssetId
-    ): Promise<[v1080.AssetId, v1080.AssetId, v1080.OrderSide][]>
+        key1: matrixV1041.AssetId
+    ): Promise<[matrixV1041.AssetId, matrixV1041.AssetId, matrixV1041.OrderSide][]>
     getKeys(
         block: Block,
-        key1: v1080.AssetId,
-        key2: v1080.AssetId,
-        key3: v1080.OrderSide
-    ): Promise<[v1080.AssetId, v1080.AssetId, v1080.OrderSide][]>
-    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[v1080.AssetId, v1080.AssetId, v1080.OrderSide][]>
+        key1: matrixV1041.AssetId,
+        key2: matrixV1041.AssetId
+    ): Promise<[matrixV1041.AssetId, matrixV1041.AssetId, matrixV1041.OrderSide][]>
+    getKeys(
+        block: Block,
+        key1: matrixV1041.AssetId,
+        key2: matrixV1041.AssetId,
+        key3: matrixV1041.OrderSide
+    ): Promise<[matrixV1041.AssetId, matrixV1041.AssetId, matrixV1041.OrderSide][]>
     getKeysPaged(
-        pageSize: number,
-        block: Block,
-        key1: v1080.AssetId
-    ): AsyncIterable<[v1080.AssetId, v1080.AssetId, v1080.OrderSide][]>
-    getKeysPaged(
-        pageSize: number,
-        block: Block,
-        key1: v1080.AssetId,
-        key2: v1080.AssetId
-    ): AsyncIterable<[v1080.AssetId, v1080.AssetId, v1080.OrderSide][]>
-    getKeysPaged(
-        pageSize: number,
-        block: Block,
-        key1: v1080.AssetId,
-        key2: v1080.AssetId,
-        key3: v1080.OrderSide
-    ): AsyncIterable<[v1080.AssetId, v1080.AssetId, v1080.OrderSide][]>
-    getPairs(
-        block: Block
-    ): Promise<[k: [v1080.AssetId, v1080.AssetId, v1080.OrderSide], v: [bigint, number][] | undefined][]>
-    getPairs(
-        block: Block,
-        key1: v1080.AssetId
-    ): Promise<[k: [v1080.AssetId, v1080.AssetId, v1080.OrderSide], v: [bigint, number][] | undefined][]>
-    getPairs(
-        block: Block,
-        key1: v1080.AssetId,
-        key2: v1080.AssetId
-    ): Promise<[k: [v1080.AssetId, v1080.AssetId, v1080.OrderSide], v: [bigint, number][] | undefined][]>
-    getPairs(
-        block: Block,
-        key1: v1080.AssetId,
-        key2: v1080.AssetId,
-        key3: v1080.OrderSide
-    ): Promise<[k: [v1080.AssetId, v1080.AssetId, v1080.OrderSide], v: [bigint, number][] | undefined][]>
-    getPairsPaged(
         pageSize: number,
         block: Block
-    ): AsyncIterable<[k: [v1080.AssetId, v1080.AssetId, v1080.OrderSide], v: [bigint, number][] | undefined][]>
+    ): AsyncIterable<[matrixV1041.AssetId, matrixV1041.AssetId, matrixV1041.OrderSide][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: matrixV1041.AssetId
+    ): AsyncIterable<[matrixV1041.AssetId, matrixV1041.AssetId, matrixV1041.OrderSide][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: matrixV1041.AssetId,
+        key2: matrixV1041.AssetId
+    ): AsyncIterable<[matrixV1041.AssetId, matrixV1041.AssetId, matrixV1041.OrderSide][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: matrixV1041.AssetId,
+        key2: matrixV1041.AssetId,
+        key3: matrixV1041.OrderSide
+    ): AsyncIterable<[matrixV1041.AssetId, matrixV1041.AssetId, matrixV1041.OrderSide][]>
+    getPairs(
+        block: Block
+    ): Promise<
+        [k: [matrixV1041.AssetId, matrixV1041.AssetId, matrixV1041.OrderSide], v: [bigint, number][] | undefined][]
+    >
+    getPairs(
+        block: Block,
+        key1: matrixV1041.AssetId
+    ): Promise<
+        [k: [matrixV1041.AssetId, matrixV1041.AssetId, matrixV1041.OrderSide], v: [bigint, number][] | undefined][]
+    >
+    getPairs(
+        block: Block,
+        key1: matrixV1041.AssetId,
+        key2: matrixV1041.AssetId
+    ): Promise<
+        [k: [matrixV1041.AssetId, matrixV1041.AssetId, matrixV1041.OrderSide], v: [bigint, number][] | undefined][]
+    >
+    getPairs(
+        block: Block,
+        key1: matrixV1041.AssetId,
+        key2: matrixV1041.AssetId,
+        key3: matrixV1041.OrderSide
+    ): Promise<
+        [k: [matrixV1041.AssetId, matrixV1041.AssetId, matrixV1041.OrderSide], v: [bigint, number][] | undefined][]
+    >
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<
+        [k: [matrixV1041.AssetId, matrixV1041.AssetId, matrixV1041.OrderSide], v: [bigint, number][] | undefined][]
+    >
     getPairsPaged(
         pageSize: number,
         block: Block,
-        key1: v1080.AssetId
-    ): AsyncIterable<[k: [v1080.AssetId, v1080.AssetId, v1080.OrderSide], v: [bigint, number][] | undefined][]>
+        key1: matrixV1041.AssetId
+    ): AsyncIterable<
+        [k: [matrixV1041.AssetId, matrixV1041.AssetId, matrixV1041.OrderSide], v: [bigint, number][] | undefined][]
+    >
     getPairsPaged(
         pageSize: number,
         block: Block,
-        key1: v1080.AssetId,
-        key2: v1080.AssetId
-    ): AsyncIterable<[k: [v1080.AssetId, v1080.AssetId, v1080.OrderSide], v: [bigint, number][] | undefined][]>
+        key1: matrixV1041.AssetId,
+        key2: matrixV1041.AssetId
+    ): AsyncIterable<
+        [k: [matrixV1041.AssetId, matrixV1041.AssetId, matrixV1041.OrderSide], v: [bigint, number][] | undefined][]
+    >
     getPairsPaged(
         pageSize: number,
         block: Block,
-        key1: v1080.AssetId,
-        key2: v1080.AssetId,
-        key3: v1080.OrderSide
-    ): AsyncIterable<[k: [v1080.AssetId, v1080.AssetId, v1080.OrderSide], v: [bigint, number][] | undefined][]>
+        key1: matrixV1041.AssetId,
+        key2: matrixV1041.AssetId,
+        key3: matrixV1041.OrderSide
+    ): AsyncIterable<
+        [k: [matrixV1041.AssetId, matrixV1041.AssetId, matrixV1041.OrderSide], v: [bigint, number][] | undefined][]
+    >
 }
 
 export const priceLevelQueues = {
@@ -1423,12 +1446,12 @@ export const priceLevelQueues = {
      *  `ListingActiveDelay`. Sorted by that block, ties in insertion order, so the front has time
      *  priority and the listings not active yet rest behind the ones that are.
      */
-    v1080: new StorageType(
+    matrixV1041: new StorageType(
         'Marketplace.PriceLevelQueues',
         'Default',
-        [v1080.AssetId, v1080.AssetId, v1080.OrderSide, sts.bigint()],
-        sts.array(() => sts.tuple(() => [v1080.H256, sts.number()]))
-    ) as PriceLevelQueuesV1080,
+        [matrixV1041.AssetId, matrixV1041.AssetId, matrixV1041.OrderSide, sts.bigint()],
+        sts.array(() => sts.tuple(() => [matrixV1041.H256, sts.number()]))
+    ) as PriceLevelQueuesMatrixV1041,
 }
 
 /**
@@ -1615,134 +1638,177 @@ export interface PriceLevelQueuesMatrixV1040 {
  *  `ListingActiveDelay`. Sorted by that block, ties in insertion order, so the front has time
  *  priority and the listings not active yet rest behind the ones that are.
  */
-export interface PriceLevelQueuesV1080 {
+export interface PriceLevelQueuesMatrixV1041 {
     is(block: RuntimeCtx): boolean
-    getDefault(block: Block): [v1080.H256, number][]
+    getDefault(block: Block): [matrixV1041.H256, number][]
     get(
         block: Block,
-        key1: v1080.AssetId,
-        key2: v1080.AssetId,
-        key3: v1080.OrderSide,
+        key1: matrixV1041.AssetId,
+        key2: matrixV1041.AssetId,
+        key3: matrixV1041.OrderSide,
         key4: bigint
-    ): Promise<[v1080.H256, number][] | undefined>
+    ): Promise<[matrixV1041.H256, number][] | undefined>
     getMany(
         block: Block,
-        keys: [v1080.AssetId, v1080.AssetId, v1080.OrderSide, bigint][]
-    ): Promise<([v1080.H256, number][] | undefined)[]>
-    getKeys(block: Block): Promise<[v1080.AssetId, v1080.AssetId, v1080.OrderSide, bigint][]>
-    getKeys(block: Block, key1: v1080.AssetId): Promise<[v1080.AssetId, v1080.AssetId, v1080.OrderSide, bigint][]>
+        keys: [matrixV1041.AssetId, matrixV1041.AssetId, matrixV1041.OrderSide, bigint][]
+    ): Promise<([matrixV1041.H256, number][] | undefined)[]>
+    getKeys(block: Block): Promise<[matrixV1041.AssetId, matrixV1041.AssetId, matrixV1041.OrderSide, bigint][]>
     getKeys(
         block: Block,
-        key1: v1080.AssetId,
-        key2: v1080.AssetId
-    ): Promise<[v1080.AssetId, v1080.AssetId, v1080.OrderSide, bigint][]>
+        key1: matrixV1041.AssetId
+    ): Promise<[matrixV1041.AssetId, matrixV1041.AssetId, matrixV1041.OrderSide, bigint][]>
     getKeys(
         block: Block,
-        key1: v1080.AssetId,
-        key2: v1080.AssetId,
-        key3: v1080.OrderSide
-    ): Promise<[v1080.AssetId, v1080.AssetId, v1080.OrderSide, bigint][]>
+        key1: matrixV1041.AssetId,
+        key2: matrixV1041.AssetId
+    ): Promise<[matrixV1041.AssetId, matrixV1041.AssetId, matrixV1041.OrderSide, bigint][]>
     getKeys(
         block: Block,
-        key1: v1080.AssetId,
-        key2: v1080.AssetId,
-        key3: v1080.OrderSide,
+        key1: matrixV1041.AssetId,
+        key2: matrixV1041.AssetId,
+        key3: matrixV1041.OrderSide
+    ): Promise<[matrixV1041.AssetId, matrixV1041.AssetId, matrixV1041.OrderSide, bigint][]>
+    getKeys(
+        block: Block,
+        key1: matrixV1041.AssetId,
+        key2: matrixV1041.AssetId,
+        key3: matrixV1041.OrderSide,
         key4: bigint
-    ): Promise<[v1080.AssetId, v1080.AssetId, v1080.OrderSide, bigint][]>
+    ): Promise<[matrixV1041.AssetId, matrixV1041.AssetId, matrixV1041.OrderSide, bigint][]>
     getKeysPaged(
         pageSize: number,
         block: Block
-    ): AsyncIterable<[v1080.AssetId, v1080.AssetId, v1080.OrderSide, bigint][]>
+    ): AsyncIterable<[matrixV1041.AssetId, matrixV1041.AssetId, matrixV1041.OrderSide, bigint][]>
     getKeysPaged(
         pageSize: number,
         block: Block,
-        key1: v1080.AssetId
-    ): AsyncIterable<[v1080.AssetId, v1080.AssetId, v1080.OrderSide, bigint][]>
+        key1: matrixV1041.AssetId
+    ): AsyncIterable<[matrixV1041.AssetId, matrixV1041.AssetId, matrixV1041.OrderSide, bigint][]>
     getKeysPaged(
         pageSize: number,
         block: Block,
-        key1: v1080.AssetId,
-        key2: v1080.AssetId
-    ): AsyncIterable<[v1080.AssetId, v1080.AssetId, v1080.OrderSide, bigint][]>
+        key1: matrixV1041.AssetId,
+        key2: matrixV1041.AssetId
+    ): AsyncIterable<[matrixV1041.AssetId, matrixV1041.AssetId, matrixV1041.OrderSide, bigint][]>
     getKeysPaged(
         pageSize: number,
         block: Block,
-        key1: v1080.AssetId,
-        key2: v1080.AssetId,
-        key3: v1080.OrderSide
-    ): AsyncIterable<[v1080.AssetId, v1080.AssetId, v1080.OrderSide, bigint][]>
+        key1: matrixV1041.AssetId,
+        key2: matrixV1041.AssetId,
+        key3: matrixV1041.OrderSide
+    ): AsyncIterable<[matrixV1041.AssetId, matrixV1041.AssetId, matrixV1041.OrderSide, bigint][]>
     getKeysPaged(
         pageSize: number,
         block: Block,
-        key1: v1080.AssetId,
-        key2: v1080.AssetId,
-        key3: v1080.OrderSide,
+        key1: matrixV1041.AssetId,
+        key2: matrixV1041.AssetId,
+        key3: matrixV1041.OrderSide,
         key4: bigint
-    ): AsyncIterable<[v1080.AssetId, v1080.AssetId, v1080.OrderSide, bigint][]>
+    ): AsyncIterable<[matrixV1041.AssetId, matrixV1041.AssetId, matrixV1041.OrderSide, bigint][]>
     getPairs(
         block: Block
-    ): Promise<[k: [v1080.AssetId, v1080.AssetId, v1080.OrderSide, bigint], v: [v1080.H256, number][] | undefined][]>
+    ): Promise<
+        [
+            k: [matrixV1041.AssetId, matrixV1041.AssetId, matrixV1041.OrderSide, bigint],
+            v: [matrixV1041.H256, number][] | undefined,
+        ][]
+    >
     getPairs(
         block: Block,
-        key1: v1080.AssetId
-    ): Promise<[k: [v1080.AssetId, v1080.AssetId, v1080.OrderSide, bigint], v: [v1080.H256, number][] | undefined][]>
+        key1: matrixV1041.AssetId
+    ): Promise<
+        [
+            k: [matrixV1041.AssetId, matrixV1041.AssetId, matrixV1041.OrderSide, bigint],
+            v: [matrixV1041.H256, number][] | undefined,
+        ][]
+    >
     getPairs(
         block: Block,
-        key1: v1080.AssetId,
-        key2: v1080.AssetId
-    ): Promise<[k: [v1080.AssetId, v1080.AssetId, v1080.OrderSide, bigint], v: [v1080.H256, number][] | undefined][]>
+        key1: matrixV1041.AssetId,
+        key2: matrixV1041.AssetId
+    ): Promise<
+        [
+            k: [matrixV1041.AssetId, matrixV1041.AssetId, matrixV1041.OrderSide, bigint],
+            v: [matrixV1041.H256, number][] | undefined,
+        ][]
+    >
     getPairs(
         block: Block,
-        key1: v1080.AssetId,
-        key2: v1080.AssetId,
-        key3: v1080.OrderSide
-    ): Promise<[k: [v1080.AssetId, v1080.AssetId, v1080.OrderSide, bigint], v: [v1080.H256, number][] | undefined][]>
+        key1: matrixV1041.AssetId,
+        key2: matrixV1041.AssetId,
+        key3: matrixV1041.OrderSide
+    ): Promise<
+        [
+            k: [matrixV1041.AssetId, matrixV1041.AssetId, matrixV1041.OrderSide, bigint],
+            v: [matrixV1041.H256, number][] | undefined,
+        ][]
+    >
     getPairs(
         block: Block,
-        key1: v1080.AssetId,
-        key2: v1080.AssetId,
-        key3: v1080.OrderSide,
+        key1: matrixV1041.AssetId,
+        key2: matrixV1041.AssetId,
+        key3: matrixV1041.OrderSide,
         key4: bigint
-    ): Promise<[k: [v1080.AssetId, v1080.AssetId, v1080.OrderSide, bigint], v: [v1080.H256, number][] | undefined][]>
+    ): Promise<
+        [
+            k: [matrixV1041.AssetId, matrixV1041.AssetId, matrixV1041.OrderSide, bigint],
+            v: [matrixV1041.H256, number][] | undefined,
+        ][]
+    >
     getPairsPaged(
         pageSize: number,
         block: Block
     ): AsyncIterable<
-        [k: [v1080.AssetId, v1080.AssetId, v1080.OrderSide, bigint], v: [v1080.H256, number][] | undefined][]
+        [
+            k: [matrixV1041.AssetId, matrixV1041.AssetId, matrixV1041.OrderSide, bigint],
+            v: [matrixV1041.H256, number][] | undefined,
+        ][]
     >
     getPairsPaged(
         pageSize: number,
         block: Block,
-        key1: v1080.AssetId
+        key1: matrixV1041.AssetId
     ): AsyncIterable<
-        [k: [v1080.AssetId, v1080.AssetId, v1080.OrderSide, bigint], v: [v1080.H256, number][] | undefined][]
+        [
+            k: [matrixV1041.AssetId, matrixV1041.AssetId, matrixV1041.OrderSide, bigint],
+            v: [matrixV1041.H256, number][] | undefined,
+        ][]
     >
     getPairsPaged(
         pageSize: number,
         block: Block,
-        key1: v1080.AssetId,
-        key2: v1080.AssetId
+        key1: matrixV1041.AssetId,
+        key2: matrixV1041.AssetId
     ): AsyncIterable<
-        [k: [v1080.AssetId, v1080.AssetId, v1080.OrderSide, bigint], v: [v1080.H256, number][] | undefined][]
+        [
+            k: [matrixV1041.AssetId, matrixV1041.AssetId, matrixV1041.OrderSide, bigint],
+            v: [matrixV1041.H256, number][] | undefined,
+        ][]
     >
     getPairsPaged(
         pageSize: number,
         block: Block,
-        key1: v1080.AssetId,
-        key2: v1080.AssetId,
-        key3: v1080.OrderSide
+        key1: matrixV1041.AssetId,
+        key2: matrixV1041.AssetId,
+        key3: matrixV1041.OrderSide
     ): AsyncIterable<
-        [k: [v1080.AssetId, v1080.AssetId, v1080.OrderSide, bigint], v: [v1080.H256, number][] | undefined][]
+        [
+            k: [matrixV1041.AssetId, matrixV1041.AssetId, matrixV1041.OrderSide, bigint],
+            v: [matrixV1041.H256, number][] | undefined,
+        ][]
     >
     getPairsPaged(
         pageSize: number,
         block: Block,
-        key1: v1080.AssetId,
-        key2: v1080.AssetId,
-        key3: v1080.OrderSide,
+        key1: matrixV1041.AssetId,
+        key2: matrixV1041.AssetId,
+        key3: matrixV1041.OrderSide,
         key4: bigint
     ): AsyncIterable<
-        [k: [v1080.AssetId, v1080.AssetId, v1080.OrderSide, bigint], v: [v1080.H256, number][] | undefined][]
+        [
+            k: [matrixV1041.AssetId, matrixV1041.AssetId, matrixV1041.OrderSide, bigint],
+            v: [matrixV1041.H256, number][] | undefined,
+        ][]
     >
 }
 
@@ -2061,12 +2127,12 @@ export const migrationPausedExtrinsics = {
      *  Deprecated: only exists for the migration's pause bracket; remove it, with the `migrate`
      *  extrinsic, in the release after the migration has run.
      */
-    v1080: new StorageType(
+    matrixV1041: new StorageType(
         'Marketplace.MigrationPausedExtrinsics',
         'Optional',
         [],
         sts.array(() => sts.bytes())
-    ) as MigrationPausedExtrinsicsV1080,
+    ) as MigrationPausedExtrinsicsMatrixV1041,
 }
 
 /**
@@ -2080,7 +2146,7 @@ export const migrationPausedExtrinsics = {
  *  Deprecated: only exists for the migration's pause bracket; remove it, with the `migrate`
  *  extrinsic, in the release after the migration has run.
  */
-export interface MigrationPausedExtrinsicsV1080 {
+export interface MigrationPausedExtrinsicsMatrixV1041 {
     is(block: RuntimeCtx): boolean
     get(block: Block): Promise<Bytes[] | undefined>
 }
@@ -2095,7 +2161,12 @@ export const escrowedBids = {
      *  bid in another currency, or a native bid placed before bids were escrowed. See the
      *  `features/escrow` module.
      */
-    v1080: new StorageType('Marketplace.EscrowedBids', 'Optional', [v1080.H256], sts.bigint()) as EscrowedBidsV1080,
+    matrixV1041: new StorageType(
+        'Marketplace.EscrowedBids',
+        'Optional',
+        [matrixV1041.H256],
+        sts.bigint()
+    ) as EscrowedBidsMatrixV1041,
 }
 
 /**
@@ -2107,20 +2178,20 @@ export const escrowedBids = {
  *  bid in another currency, or a native bid placed before bids were escrowed. See the
  *  `features/escrow` module.
  */
-export interface EscrowedBidsV1080 {
+export interface EscrowedBidsMatrixV1041 {
     is(block: RuntimeCtx): boolean
-    get(block: Block, key: v1080.H256): Promise<bigint | undefined>
-    getMany(block: Block, keys: v1080.H256[]): Promise<(bigint | undefined)[]>
-    getKeys(block: Block): Promise<v1080.H256[]>
-    getKeys(block: Block, key: v1080.H256): Promise<v1080.H256[]>
-    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v1080.H256[]>
-    getKeysPaged(pageSize: number, block: Block, key: v1080.H256): AsyncIterable<v1080.H256[]>
-    getPairs(block: Block): Promise<[k: v1080.H256, v: bigint | undefined][]>
-    getPairs(block: Block, key: v1080.H256): Promise<[k: v1080.H256, v: bigint | undefined][]>
-    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: v1080.H256, v: bigint | undefined][]>
+    get(block: Block, key: matrixV1041.H256): Promise<bigint | undefined>
+    getMany(block: Block, keys: matrixV1041.H256[]): Promise<(bigint | undefined)[]>
+    getKeys(block: Block): Promise<matrixV1041.H256[]>
+    getKeys(block: Block, key: matrixV1041.H256): Promise<matrixV1041.H256[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<matrixV1041.H256[]>
+    getKeysPaged(pageSize: number, block: Block, key: matrixV1041.H256): AsyncIterable<matrixV1041.H256[]>
+    getPairs(block: Block): Promise<[k: matrixV1041.H256, v: bigint | undefined][]>
+    getPairs(block: Block, key: matrixV1041.H256): Promise<[k: matrixV1041.H256, v: bigint | undefined][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: matrixV1041.H256, v: bigint | undefined][]>
     getPairsPaged(
         pageSize: number,
         block: Block,
-        key: v1080.H256
-    ): AsyncIterable<[k: v1080.H256, v: bigint | undefined][]>
+        key: matrixV1041.H256
+    ): AsyncIterable<[k: matrixV1041.H256, v: bigint | undefined][]>
 }

@@ -6,6 +6,7 @@ import * as v105 from '../v105'
 import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
 import * as matrixV1040 from '../matrixV1040'
+import * as matrixV1041 from '../matrixV1041'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
 import * as enjinV1070 from '../enjinV1070'
@@ -31,6 +32,25 @@ export const submit = {
             proposalOrigin: matrixV1040.OriginCaller,
             proposal: matrixV1040.Bounded,
             enactmentMoment: matrixV1040.DispatchTime,
+        })
+    ),
+    /**
+     * Propose a referendum on a privileged action.
+     *
+     * - `origin`: must be `SubmitOrigin` and the account must have `SubmissionDeposit` funds
+     *   available.
+     * - `proposal_origin`: The origin from which the proposal should be executed.
+     * - `proposal`: The proposal.
+     * - `enactment_moment`: The moment that the proposal should be enacted.
+     *
+     * Emits `Submitted`.
+     */
+    matrixV1041: new CallType(
+        'Referenda.submit',
+        sts.struct({
+            proposalOrigin: matrixV1041.OriginCaller,
+            proposal: matrixV1041.Bounded,
+            enactmentMoment: matrixV1041.DispatchTime,
         })
     ),
     /**

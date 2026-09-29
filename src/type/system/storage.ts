@@ -51,6 +51,7 @@ import * as v1032 from '../v1032'
 import * as enjinV1033 from '../enjinV1033'
 import * as v1033 from '../v1033'
 import * as matrixV1040 from '../matrixV1040'
+import * as matrixV1041 from '../matrixV1041'
 import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 import * as v1060 from '../v1060'
@@ -789,6 +790,21 @@ export const events = {
         [],
         sts.array(() => matrixV1040.EventRecord)
     ) as EventsMatrixV1040,
+    /**
+     *  Events deposited for the current block.
+     *
+     *  NOTE: The item is unbound and should therefore never be read on chain.
+     *  It could otherwise inflate the PoV size of a block.
+     *
+     *  Events have a large in-memory size. Box the events to not go out-of-memory
+     *  just in case someone still reads them from within the runtime.
+     */
+    matrixV1041: new StorageType(
+        'System.Events',
+        'Default',
+        [],
+        sts.array(() => matrixV1041.EventRecord)
+    ) as EventsMatrixV1041,
     /**
      *  Events deposited for the current block.
      *
@@ -1685,6 +1701,21 @@ export interface EventsMatrixV1040 {
  *  Events have a large in-memory size. Box the events to not go out-of-memory
  *  just in case someone still reads them from within the runtime.
  */
+export interface EventsMatrixV1041 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): matrixV1041.EventRecord[]
+    get(block: Block): Promise<matrixV1041.EventRecord[] | undefined>
+}
+
+/**
+ *  Events deposited for the current block.
+ *
+ *  NOTE: The item is unbound and should therefore never be read on chain.
+ *  It could otherwise inflate the PoV size of a block.
+ *
+ *  Events have a large in-memory size. Box the events to not go out-of-memory
+ *  just in case someone still reads them from within the runtime.
+ */
 export interface EventsEnjinV100 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): enjinV100.EventRecord[]
@@ -2424,7 +2455,7 @@ export const blockSize = {
      *
      *  Tracks the size of the header and all extrinsics.
      */
-    v1080: new StorageType('System.BlockSize', 'Optional', [], sts.number()) as BlockSizeV1080,
+    matrixV1041: new StorageType('System.BlockSize', 'Optional', [], sts.number()) as BlockSizeMatrixV1041,
 }
 
 /**
@@ -2432,7 +2463,7 @@ export const blockSize = {
  *
  *  Tracks the size of the header and all extrinsics.
  */
-export interface BlockSizeV1080 {
+export interface BlockSizeMatrixV1041 {
     is(block: RuntimeCtx): boolean
     get(block: Block): Promise<number | undefined>
 }
@@ -2441,13 +2472,18 @@ export const blocksTillUpgrade = {
     /**
      *  Number of blocks till the pending code upgrade is applied.
      */
-    v1080: new StorageType('System.BlocksTillUpgrade', 'Optional', [], sts.number()) as BlocksTillUpgradeV1080,
+    matrixV1041: new StorageType(
+        'System.BlocksTillUpgrade',
+        'Optional',
+        [],
+        sts.number()
+    ) as BlocksTillUpgradeMatrixV1041,
 }
 
 /**
  *  Number of blocks till the pending code upgrade is applied.
  */
-export interface BlocksTillUpgradeV1080 {
+export interface BlocksTillUpgradeMatrixV1041 {
     is(block: RuntimeCtx): boolean
     get(block: Block): Promise<number | undefined>
 }

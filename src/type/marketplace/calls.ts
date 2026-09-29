@@ -16,6 +16,7 @@ import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 import * as v1031 from '../v1031'
 import * as enjinV1032 from '../enjinV1032'
 import * as matrixV1040 from '../matrixV1040'
+import * as matrixV1041 from '../matrixV1041'
 import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 import * as v1060 from '../v1060'
@@ -2148,10 +2149,10 @@ export const createListingAndMatch = {
      * - Same as [`Self::create_listing`] for the resting remainder, except the book-capacity
      *   errors, which drop the remainder instead of failing
      */
-    v1080: new CallType(
+    matrixV1041: new CallType(
         'Marketplace.create_listing_and_match',
         sts.struct({
-            descriptor: v1080.OrderDescriptor,
+            descriptor: matrixV1041.OrderDescriptor,
             matchLimit: sts.option(() => sts.number()),
         })
     ),

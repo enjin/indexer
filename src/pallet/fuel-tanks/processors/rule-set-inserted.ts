@@ -12,7 +12,10 @@ export async function ruleSetInserted(
 ): Promise<EventModel | undefined> {
     if (!item.call) throw new CallNotDefinedError()
 
-    if (item.call.name === calls.fuelTanks.createFuelTank.name) {
+    if (
+        item.call.name === calls.fuelTanks.createFuelTank.name ||
+        item.call.name === calls.fuelTanks.forceCreateFuelTank.name
+    ) {
         return undefined
     }
 

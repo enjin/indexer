@@ -1378,35 +1378,6 @@ export const Tally: sts.Type<Tally> = sts.struct(() => {
     }
 })
 
-export type OrderSide = OrderSide_Ask | OrderSide_Bid
-
-export interface OrderSide_Ask {
-    __kind: 'Ask'
-}
-
-export interface OrderSide_Bid {
-    __kind: 'Bid'
-}
-
-export interface AssetId {
-    collectionId: bigint
-    tokenId: bigint
-}
-
-export const OrderSide: sts.Type<OrderSide> = sts.closedEnum(() => {
-    return {
-        Ask: sts.unit(),
-        Bid: sts.unit(),
-    }
-})
-
-export const AssetId: sts.Type<AssetId> = sts.struct(() => {
-    return {
-        collectionId: sts.bigint(),
-        tokenId: sts.bigint(),
-    }
-})
-
 export type H256 = Bytes
 
 export interface Listing {
@@ -1498,6 +1469,11 @@ export interface FeeSide_NoFee {
 
 export interface FeeSide_Take {
     __kind: 'Take'
+}
+
+export interface AssetId {
+    collectionId: bigint
+    tokenId: bigint
 }
 
 export interface FuelTank {
@@ -8867,6 +8843,16 @@ export interface WhitelistAddAccount {
     allowance?: bigint | undefined
 }
 
+export type OrderSide = OrderSide_Ask | OrderSide_Bid
+
+export interface OrderSide_Ask {
+    __kind: 'Ask'
+}
+
+export interface OrderSide_Bid {
+    __kind: 'Bid'
+}
+
 /**
  * The `Event` enum of this pallet
  */
@@ -13142,6 +13128,13 @@ export const DefaultCollectionMutation: sts.Type<DefaultCollectionMutation> = st
     }
 })
 
+export const AssetId: sts.Type<AssetId> = sts.struct(() => {
+    return {
+        collectionId: sts.bigint(),
+        tokenId: sts.bigint(),
+    }
+})
+
 export const Type_599: sts.Type<Type_599> = sts.closedEnum(() => {
     return {
         NoMutation: sts.unit(),
@@ -13352,6 +13345,13 @@ export const WhitelistAddAccount: sts.Type<WhitelistAddAccount> = sts.struct(() 
     return {
         accountId: AccountId32,
         allowance: sts.option(() => sts.bigint()),
+    }
+})
+
+export const OrderSide: sts.Type<OrderSide> = sts.closedEnum(() => {
+    return {
+        Ask: sts.unit(),
+        Bid: sts.unit(),
     }
 })
 
@@ -14462,52 +14462,6 @@ export const ProxyType: sts.Type<ProxyType> = sts.closedEnum(() => {
         Tokens: sts.unit(),
     }
 })
-
-export const OrderDescriptor: sts.Type<OrderDescriptor> = sts.struct(() => {
-    return {
-        makeAssetId: AssetId,
-        takeAssetId: AssetId,
-        amount: sts.bigint(),
-        price: sts.bigint(),
-        startBlock: sts.option(() => sts.number()),
-        salt: sts.bytes(),
-        data: OrderData,
-    }
-})
-
-export const OrderData: sts.Type<OrderData> = sts.closedEnum(() => {
-    return {
-        Ask: sts.unit(),
-        Bid: OfferData,
-    }
-})
-
-export const OfferData: sts.Type<OfferData> = sts.struct(() => {
-    return {
-        expiration: sts.option(() => sts.number()),
-    }
-})
-
-export type OrderData = OrderData_Ask | OrderData_Bid
-
-export interface OrderData_Ask {
-    __kind: 'Ask'
-}
-
-export interface OrderData_Bid {
-    __kind: 'Bid'
-    value: OfferData
-}
-
-export interface OrderDescriptor {
-    makeAssetId: AssetId
-    takeAssetId: AssetId
-    amount: bigint
-    price: bigint
-    startBlock?: number | undefined
-    salt: Bytes
-    data: OrderData
-}
 
 export const RuleSetDescriptor: sts.Type<RuleSetDescriptor> = sts.struct(() => {
     return {
@@ -23008,6 +22962,27 @@ export interface MarketplaceCall_set_protocol_fee {
     protocolFee: Perbill
 }
 
+export interface OrderDescriptor {
+    makeAssetId: AssetId
+    takeAssetId: AssetId
+    amount: bigint
+    price: bigint
+    startBlock?: number | undefined
+    salt: Bytes
+    data: OrderData
+}
+
+export type OrderData = OrderData_Ask | OrderData_Bid
+
+export interface OrderData_Ask {
+    __kind: 'Ask'
+}
+
+export interface OrderData_Bid {
+    __kind: 'Bid'
+    value: OfferData
+}
+
 export interface ListingDescriptor {
     makeAssetId: AssetId
     takeAssetId: AssetId
@@ -28989,6 +28964,31 @@ export const MarketplaceCall: sts.Type<MarketplaceCall> = sts.closedEnum(() => {
     }
 })
 
+export const OrderDescriptor: sts.Type<OrderDescriptor> = sts.struct(() => {
+    return {
+        makeAssetId: AssetId,
+        takeAssetId: AssetId,
+        amount: sts.bigint(),
+        price: sts.bigint(),
+        startBlock: sts.option(() => sts.number()),
+        salt: sts.bytes(),
+        data: OrderData,
+    }
+})
+
+export const OrderData: sts.Type<OrderData> = sts.closedEnum(() => {
+    return {
+        Ask: sts.unit(),
+        Bid: OfferData,
+    }
+})
+
+export const OfferData: sts.Type<OfferData> = sts.struct(() => {
+    return {
+        expiration: sts.option(() => sts.number()),
+    }
+})
+
 export const ListingDescriptor: sts.Type<ListingDescriptor> = sts.struct(() => {
     return {
         makeAssetId: AssetId,
@@ -30243,6 +30243,8 @@ export const ArithmeticError: sts.Type<ArithmeticError> = sts.closedEnum(() => {
     }
 })
 
+export const AccountId32 = sts.bytes()
+
 export const Listing: sts.Type<Listing> = sts.struct(() => {
     return {
         creator: AccountId32,
@@ -30291,8 +30293,6 @@ export const FeeSide: sts.Type<FeeSide> = sts.closedEnum(() => {
         Take: sts.unit(),
     }
 })
-
-export const AccountId32 = sts.bytes()
 
 export const Token: sts.Type<Token> = sts.struct(() => {
     return {

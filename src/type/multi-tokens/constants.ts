@@ -293,13 +293,22 @@ export const mintRateLimitLooseningDelay = {
     matrixV1040: new ConstantType('MultiTokens.MintRateLimitLooseningDelay', sts.number()),
 }
 
+export const maxEphemeralLifetime = {
+    /**
+     *  The longest an ephemeral token may live, in blocks: its `ephemeral_expiration` may be
+     *  at most this many blocks after the block that creates it. Zero disables ephemeral
+     *  tokens.
+     */
+    matrixV1041: new ConstantType('MultiTokens.MaxEphemeralLifetime', sts.number()),
+}
+
 export const maxClaimTokensPerBlock = {
     /**
      *  The most `claim_tokens` calls one block may include. The call is unsigned and
      *  fee-free, so this bounds the block space a flood of signature-valid claims can take.
      *  Zero disables the call, for a chain that runs no Ethereum token migration.
      */
-    v1080: new ConstantType('MultiTokens.MaxClaimTokensPerBlock', sts.number()),
+    matrixV1041: new ConstantType('MultiTokens.MaxClaimTokensPerBlock', sts.number()),
 }
 
 export const preExistingTokensLendable = {

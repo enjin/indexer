@@ -6136,6 +6136,31 @@ export interface FailedLoanReturnsMatrixV1040 {
     ): AsyncIterable<[k: [bigint, bigint], v: number | undefined][]>
 }
 
+export const claimTokensInBlock = {
+    /**
+     *  The block that last included a `claim_tokens` call and how many it included, compared
+     *  against [`Config::MaxClaimTokensPerBlock`] when the next one is included. An entry for an
+     *  earlier block counts as zero.
+     */
+    matrixV1041: new StorageType(
+        'MultiTokens.ClaimTokensInBlock',
+        'Default',
+        [],
+        sts.tuple(() => [sts.number(), sts.number()])
+    ) as ClaimTokensInBlockMatrixV1041,
+}
+
+/**
+ *  The block that last included a `claim_tokens` call and how many it included, compared
+ *  against [`Config::MaxClaimTokensPerBlock`] when the next one is included. An entry for an
+ *  earlier block counts as zero.
+ */
+export interface ClaimTokensInBlockMatrixV1041 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): [number, number]
+    get(block: Block): Promise<[number, number] | undefined>
+}
+
 export const lastIteratedMigrationKey = {
     /**
      *  Stores last iterated key for migrations. Used by multi block migrations
@@ -6154,29 +6179,4 @@ export const lastIteratedMigrationKey = {
 export interface LastIteratedMigrationKeyV100 {
     is(block: RuntimeCtx): boolean
     get(block: Block): Promise<Bytes | undefined>
-}
-
-export const claimTokensInBlock = {
-    /**
-     *  The block that last included a `claim_tokens` call and how many it included, compared
-     *  against [`Config::MaxClaimTokensPerBlock`] when the next one is included. An entry for an
-     *  earlier block counts as zero.
-     */
-    v1080: new StorageType(
-        'MultiTokens.ClaimTokensInBlock',
-        'Default',
-        [],
-        sts.tuple(() => [sts.number(), sts.number()])
-    ) as ClaimTokensInBlockV1080,
-}
-
-/**
- *  The block that last included a `claim_tokens` call and how many it included, compared
- *  against [`Config::MaxClaimTokensPerBlock`] when the next one is included. An entry for an
- *  earlier block counts as zero.
- */
-export interface ClaimTokensInBlockV1080 {
-    is(block: RuntimeCtx): boolean
-    getDefault(block: Block): [number, number]
-    get(block: Block): Promise<[number, number] | undefined>
 }
