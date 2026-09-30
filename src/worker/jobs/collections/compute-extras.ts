@@ -1,6 +1,6 @@
 import { dataHandlerContext } from '~/contexts'
 import { fetchCollectionsExtra } from '~/util/marketplace'
-import { Collection, CollectionFlags, EntitySocials, Metadata } from '~/model'
+import { Collection, CollectionFlags } from '~/model'
 import { Job } from 'bullmq'
 import { isNotNullOrEmpty } from '~/worker/utils'
 
@@ -25,19 +25,6 @@ export async function computeExtras(_job: Job, ids: string[]): Promise<void> {
             })
 
             collection.verifiedAt = _c.verifiedAt ? new Date(_c.verifiedAt) : null
-            if (!collection.metadata) {
-                collection.metadata = new Metadata()
-            }
-            if (_c.website) {
-                collection.metadata.externalUrl = _c.website
-            }
-            collection.metadata.socials = new EntitySocials({
-                discord: _c.discord,
-                x: _c.twitter,
-                instagram: _c.instagram,
-                medium: _c.medium,
-                tiktok: _c.tiktok,
-            })
 
             return collection
         })

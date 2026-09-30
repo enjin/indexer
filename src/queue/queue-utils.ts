@@ -224,6 +224,27 @@ export function dispatchComputeCollections(): void {
     })
 }
 
+export function dispatchComputeCollectionExtra(ids: string[]): void {
+    xxhasher
+        .createId(ids)
+        .then((hashedIds) => {
+            addRefreshJob(
+                CollectionsQueue,
+                JobsEnum.FETCH_EXTRA,
+                { ids },
+                {
+                    delay: 6000,
+                    jobId: `collections.extra.${hashedIds}`,
+                }
+            ).catch(() => {
+                Logger.error('Failed to dispatch collection extra job', LOGGER_NAMESPACE)
+            })
+        })
+        .catch(() => {
+            Logger.error('Failed to hash collection ids', LOGGER_NAMESPACE)
+        })
+}
+
 export async function dispatchComputeStats(id: string): Promise<void> {
     const jobId = `collections.stats.${id}`
     await addRefreshJob(
