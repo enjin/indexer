@@ -46,6 +46,10 @@ export class MetadataService {
 
         this.inheritMetadata(metadata, tokenGroup?.metadata)
         this.inheritMetadata(metadata, this.getCollectionMetadata(token.collection))
+        // A recompute whose external fetch yielded nothing must not erase media
+        // resolved by an earlier run. Ranked last so a token group, a collection
+        // and a successful fetch all still take precedence.
+        this.inheritMetadata(metadata, token.metadata)
         this.applyAttributes(metadata, token.attributes)
 
         return this.updateResourceMetadata(token, metadata)
