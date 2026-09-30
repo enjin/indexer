@@ -158,14 +158,27 @@ export async function computeMetadata(job: Job) {
                         }
 
                         externalMetadata = externalResponse
-                    } else if (response.length > 0 && typeof response[0].metadata === 'object') {
+                    } else {
                         // The fetch came back empty (404 or an unusable body). Fall back to
                         // the last known good payload instead of computing from nothing,
-                        // which would drop media that a previous run resolved.
-                        await job.log(`Fetch returned no metadata for ${uriAttribute.value}, reusing stored payload`)
-                        externalMetadata = response[0].metadata
-                    } else {
-                        await job.log(`Fetch returned no metadata for ${uriAttribute.value} and no payload is stored`)
+                        // which would drop media that a previous run resolved. Re-read it
+                        // here rather than reusing the row loaded before the fetch, which a
+                        // concurrent job may have updated in the meantime.
+                        const stored = await em.connection.query<MetadataType[]>(
+                            'select metadata from metadata.metadata where id = $1 LIMIT 1',
+                            [jobData.id]
+                        )
+
+                        if (stored.length > 0 && typeof stored[0].metadata === 'object') {
+                            await job.log(
+                                `Fetch returned no metadata for ${uriAttribute.value}, reusing stored payload`
+                            )
+                            externalMetadata = stored[0].metadata
+                        } else {
+                            await job.log(
+                                `Fetch returned no metadata for ${uriAttribute.value} and no payload is stored`
+                            )
+                        }
                     }
                     await job.updateProgress(60)
                 }
