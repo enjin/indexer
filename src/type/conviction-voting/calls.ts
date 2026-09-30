@@ -3,6 +3,7 @@ import * as v100 from '../v100'
 import * as matrixV1040 from '../matrixV1040'
 import * as enjinV1070 from '../enjinV1070'
 import * as v1070 from '../v1070'
+import * as v1080 from '../v1080'
 
 export const vote = {
     name: 'ConvictionVoting.vote',
@@ -660,6 +661,31 @@ export const removeOtherVote = {
             class: sts.number(),
             index: sts.number(),
             currency: v1070.VoteCurrency,
+        })
+    ),
+}
+
+export const forcePurgePoolVoting = {
+    name: 'ConvictionVoting.force_purge_pool_voting',
+    /**
+     * Clear `who`'s voting state backed by the sENJ of a pool which is no longer `Open`,
+     * **discarding** the conviction lock.
+     *
+     * This is the escape hatch for a pool that cannot otherwise be wound down within a
+     * reasonable time, and it is deliberately gated on [`Config::ForceOrigin`]: discarding the
+     * lock frees the capital ahead of the conviction period, so a permissionless version would
+     * let anyone who can put a pool into a winding-down state buy `Locked6x` weight for the
+     * price of the unbonding period.
+     *
+     * Any delegated weight is returned to its target and any votes on ongoing polls are taken
+     * back out of their tallies. Weight that *other* accounts delegated to `who` is untouched.
+     */
+    v1080: new CallType(
+        'ConvictionVoting.force_purge_pool_voting',
+        sts.struct({
+            who: v1080.MultiAddress,
+            class: sts.number(),
+            tokenId: sts.bigint(),
         })
     ),
 }

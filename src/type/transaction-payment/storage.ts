@@ -1,6 +1,7 @@
 import { sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx } from '../support'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV1040 from '../matrixV1040'
+import * as v1080 from '../v1080'
 
 export const nextFeeMultiplier = {
     matrixEnjinV603: new StorageType(
@@ -55,6 +56,12 @@ export const txPaymentCredit = {
         [],
         sts.unit()
     ) as TxPaymentCreditEnjinV1070,
+    /**
+     *  The `OnChargeTransaction` stores the withdrawn tx fee here.
+     *
+     *  Use `withdraw_txfee` and `remaining_txfee` to access from outside the crate.
+     */
+    v1080: new StorageType('TransactionPayment.TxPaymentCredit', 'Optional', [], v1080.NoDrop) as TxPaymentCreditV1080,
 }
 
 /**
@@ -75,4 +82,14 @@ export interface TxPaymentCreditMatrixV1040 {
 export interface TxPaymentCreditEnjinV1070 {
     is(block: RuntimeCtx): boolean
     get(block: Block): Promise<null | undefined>
+}
+
+/**
+ *  The `OnChargeTransaction` stores the withdrawn tx fee here.
+ *
+ *  Use `withdraw_txfee` and `remaining_txfee` to access from outside the crate.
+ */
+export interface TxPaymentCreditV1080 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block): Promise<v1080.NoDrop | undefined>
 }

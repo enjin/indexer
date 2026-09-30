@@ -23,12 +23,14 @@ import * as matrixV1030 from '../matrixV1030'
 import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 import * as enjinV1032 from '../enjinV1032'
 import * as matrixV1040 from '../matrixV1040'
+import * as matrixV1041 from '../matrixV1041'
 import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
 import * as enjinV1070 from '../enjinV1070'
 import * as v1070 from '../v1070'
+import * as v1080 from '../v1080'
 
 export const collectionCreated = {
     name: 'MultiTokens.CollectionCreated',
@@ -540,6 +542,26 @@ export const tokenMutated = {
             mutation: v1050.DefaultTokenMutation,
         })
     ),
+    /**
+     * A token was mutated
+     */
+    v1080: new EventType(
+        'MultiTokens.TokenMutated',
+        sts.struct({
+            /**
+             * The collection id where the Token belongs
+             */
+            collectionId: sts.bigint(),
+            /**
+             * Id of the Token mutated
+             */
+            tokenId: sts.bigint(),
+            /**
+             * mutation that was applied to the Token
+             */
+            mutation: v1080.DefaultTokenMutation,
+        })
+    ),
 }
 
 export const burned = {
@@ -657,6 +679,10 @@ export const frozen = {
      * Collection, token or account was frozen
      */
     v1070: new EventType('MultiTokens.Frozen', v1070.Freeze),
+    /**
+     * Collection, token or account was frozen
+     */
+    v1080: new EventType('MultiTokens.Frozen', v1080.Freeze),
 }
 
 export const thawed = {
@@ -3189,6 +3215,22 @@ export const collectionUpdated = {
             value: sts.option(() => v1060.Collection),
         })
     ),
+    /**
+     * Collection storage was set to `value`
+     */
+    v1080: new EventType(
+        'MultiTokens.CollectionUpdated',
+        sts.struct({
+            /**
+             * The collection id for which the value is set
+             */
+            collectionId: sts.bigint(),
+            /**
+             * new value of Collection storage
+             */
+            value: sts.option(() => v1080.Collection),
+        })
+    ),
 }
 
 export const tokenUpdated = {
@@ -3571,6 +3613,26 @@ export const tokenUpdated = {
              * new value of Token storage
              */
             value: sts.option(() => v1060.Token),
+        })
+    ),
+    /**
+     * Token storage was set to `value`
+     */
+    v1080: new EventType(
+        'MultiTokens.TokenUpdated',
+        sts.struct({
+            /**
+             * The collection id for which the value is set
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token id for which the value is set
+             */
+            tokenId: sts.bigint(),
+            /**
+             * new value of Token storage
+             */
+            value: sts.option(() => v1080.Token),
         })
     ),
 }
@@ -5360,6 +5422,69 @@ export const mintRateLimitChangeCancelled = {
              * The token the cancelled change applied to, or `None` for the collection scope
              */
             tokenId: sts.option(() => sts.bigint()),
+        })
+    ),
+}
+
+export const phantomAttributeDepositCleared = {
+    name: 'MultiTokens.PhantomAttributeDepositCleared',
+    /**
+     * [`ClearPhantomAttributeDeposits`](migrations::ClearPhantomAttributeDeposits) removed the
+     * part of an attribute's recorded deposit that no hold backed (audit finding MT-04)
+     */
+    matrixV1041: new EventType(
+        'MultiTokens.PhantomAttributeDepositCleared',
+        sts.struct({
+            /**
+             * The collection the attribute belongs to
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token the attribute belongs to, or `None` for a collection attribute
+             */
+            tokenId: sts.option(() => sts.bigint()),
+            /**
+             * The attribute key
+             */
+            key: sts.bytes(),
+            /**
+             * The attribute's depositor; `None` is the collection owner
+             */
+            depositor: sts.option(() => matrixV1041.AccountId32),
+            /**
+             * The deposit the attribute records now
+             */
+            deposit: sts.bigint(),
+            /**
+             * The unbacked amount removed from the recorded deposit
+             */
+            cleared: sts.bigint(),
+        })
+    ),
+}
+
+export const phantomAttributeDepositSkipped = {
+    name: 'MultiTokens.PhantomAttributeDepositSkipped',
+    /**
+     * [`ClearPhantomAttributeDeposits`](migrations::ClearPhantomAttributeDeposits) left a
+     * listed attribute unchanged because it no longer matched the list: it was removed, or
+     * its depositor or deposit changed, after the list was generated
+     */
+    matrixV1041: new EventType(
+        'MultiTokens.PhantomAttributeDepositSkipped',
+        sts.struct({
+            /**
+             * The collection the attribute belongs to
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token the attribute belongs to, or `None` for a collection attribute
+             */
+            tokenId: sts.option(() => sts.bigint()),
+            /**
+             * The attribute key
+             */
+            key: sts.bytes(),
         })
     ),
 }

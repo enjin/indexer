@@ -12,6 +12,7 @@ import * as enjinV1023 from '../enjinV1023'
 import * as v1023 from '../v1023'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
+import * as v1080 from '../v1080'
 
 export const created = {
     name: 'NominationPools.Created',
@@ -926,6 +927,42 @@ export const rewardReinvested = {
         sts.struct({
             poolId: sts.number(),
             amount: sts.bigint(),
+        })
+    ),
+}
+
+export const rewardPayoutFailed = {
+    name: 'NominationPools.RewardPayoutFailed',
+    /**
+     * A pool's share of an era's reward could not be applied, so the pool was skipped.
+     *
+     * The reward stays in the pool's reward account and is swept by the next successful
+     * payout for that pool -- the sweep moves the whole reward account balance, not just the
+     * era's increment. The other pools nominating this validator were still paid.
+     */
+    v1080: new EventType(
+        'NominationPools.RewardPayoutFailed',
+        sts.struct({
+            /**
+             * The id of the pool that was skipped
+             */
+            poolId: sts.number(),
+            /**
+             * The era that was being processed.
+             */
+            era: sts.number(),
+            /**
+             * The validator that the payment was received from
+             */
+            validatorStash: v1080.AccountId32,
+            /**
+             * The amount credited to the pool's reward account and left unswept
+             */
+            reward: sts.bigint(),
+            /**
+             * The error that stopped the payout
+             */
+            error: v1080.DispatchError,
         })
     ),
 }

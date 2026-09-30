@@ -19,6 +19,7 @@ import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
 import * as enjinV1070 from '../enjinV1070'
 import * as v1070 from '../v1070'
+import * as v1080 from '../v1080'
 
 export const join = {
     name: 'NominationPools.join',
@@ -699,6 +700,25 @@ export const payoutRewards = {
             era: sts.number(),
         })
     ),
+    /**
+     * Pays rewards to `validator_stash` and also distributes rewards to the reward accounts of
+     * the pools nominating it.
+     *
+     * `page` selects which page of the validator's exposure to pay. Staking splits exposure
+     * into pages of at most `MaxExposurePageSize` nominators and each page is claimed
+     * independently, so this must be called once per page per era per validator. Use
+     * [`exposure_page_count`](Pallet::exposure_page_count) to find how many pages an era has.
+     *
+     * It is a permissionless call.
+     */
+    v1080: new CallType(
+        'NominationPools.payout_rewards',
+        sts.struct({
+            validatorStash: v1080.AccountId32,
+            era: sts.number(),
+            page: sts.number(),
+        })
+    ),
 }
 
 export const mutate = {
@@ -1224,6 +1244,16 @@ export const payoutRewardsUnsigned = {
         sts.struct({
             payload: v1070.PayoutRewardsPayload,
             signature: v1070.MultiSignature,
+        })
+    ),
+    /**
+     * Unsigned transaction to pay rewards to a validator and distribute to pools
+     */
+    v1080: new CallType(
+        'NominationPools.payout_rewards_unsigned',
+        sts.struct({
+            payload: v1080.PayoutRewardsPayload,
+            signature: v1080.MultiSignature,
         })
     ),
 }

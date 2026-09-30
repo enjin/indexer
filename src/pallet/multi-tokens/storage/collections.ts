@@ -32,6 +32,18 @@ export async function collections(
     return match(block)
         .returnType<Promise<Collection | AsyncIterable<[k: bigint, v: Collection | undefined][]> | undefined>>()
         .when(
+            () => multiTokens.collections.v1080.is(block),
+            () => {
+                if (params?.collectionId !== undefined) {
+                    return getMixedCollection(block, params.collectionId)
+                }
+
+                return Promise.resolve(
+                    getMixedCollectionPairs(block, multiTokens.collections.v1080, params?.batchSize ?? 1000)
+                )
+            }
+        )
+        .when(
             () => multiTokens.collections.matrixV1040.is(block),
             () => {
                 if (params?.collectionId !== undefined) {

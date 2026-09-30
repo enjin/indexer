@@ -10,6 +10,10 @@ const decodeBatchMint = withDispatchCheck((call: CallItem): BatchMint => {
     return match(call)
         .returnType<BatchMint>()
         .when(
+            () => calls.multiTokens.batchMint.v1080.is(call),
+            () => calls.multiTokens.batchMint.v1080.decode(call) as unknown as BatchMint
+        )
+        .when(
             () => calls.multiTokens.batchMint.matrixV1040.is(call),
             () => calls.multiTokens.batchMint.matrixV1040.decode(call) as unknown as BatchMint
         )

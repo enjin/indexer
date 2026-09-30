@@ -20,10 +20,6 @@ export function accountAdded(event: EventItem): AccountAdded {
             () => fuelTanks.accountAdded.matrixV1000.decode(event)
         )
         .when(
-            () => fuelTanks.accountAdded.matrixV500.is(event),
-            () => fuelTanks.accountAdded.matrixV500.decode(event)
-        )
-        .when(
             () => fuelTanks.accountAdded.enjinV1062.is(event),
             () => fuelTanks.accountAdded.enjinV1062.decode(event)
         )
@@ -32,16 +28,8 @@ export function accountAdded(event: EventItem): AccountAdded {
             () => fuelTanks.accountAdded.enjinV1021.decode(event)
         )
         .when(
-            () => fuelTanks.accountAdded.enjinV100.is(event),
-            () => fuelTanks.accountAdded.enjinV100.decode(event)
-        )
-        .when(
             () => fuelTanks.accountAdded.v1021.is(event),
             () => fuelTanks.accountAdded.v1021.decode(event)
-        )
-        .when(
-            () => fuelTanks.accountAdded.v102.is(event),
-            () => fuelTanks.accountAdded.v102.decode(event)
         )
         .otherwise(() => {
             throw new UnsupportedEventError(event)

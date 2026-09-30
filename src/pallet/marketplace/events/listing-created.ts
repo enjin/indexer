@@ -18,6 +18,10 @@ export function listingCreated(event: EventItem): ListingCreated {
     return match(event)
         .returnType<ListingCreated>()
         .when(
+            () => marketplace.listingCreated.v1080.is(event),
+            () => marketplace.listingCreated.v1080.decode(event)
+        )
+        .when(
             () => marketplace.listingCreated.matrixEnjinV1031.is(event),
             () => marketplace.listingCreated.matrixEnjinV1031.decode(event)
         )

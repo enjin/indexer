@@ -3,6 +3,7 @@ import * as enjinV100 from '../enjinV100'
 import * as v104 from '../v104'
 import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
+import * as v1080 from '../v1080'
 
 export const setValidationUpgradeCooldown = {
     name: 'Configuration.set_validation_upgrade_cooldown',
@@ -620,6 +621,15 @@ export const setExecutorParams = {
             new: sts.array(() => v1030.V6ExecutorParam),
         })
     ),
+    /**
+     * Set PVF executor parameters.
+     */
+    v1080: new CallType(
+        'Configuration.set_executor_params',
+        sts.struct({
+            new: sts.array(() => v1080.V9ExecutorParam),
+        })
+    ),
 }
 
 export const setCoretimeCores = {
@@ -780,6 +790,15 @@ export const setSchedulerParams = {
             new: enjinV1032.SchedulerParams,
         })
     ),
+    /**
+     * Set scheduler-params.
+     */
+    v1080: new CallType(
+        'Configuration.set_scheduler_params',
+        sts.struct({
+            new: v1080.SchedulerParams,
+        })
+    ),
 }
 
 export const setDisputeConclusionByTimeOutPeriod = {
@@ -789,6 +808,19 @@ export const setDisputeConclusionByTimeOutPeriod = {
      */
     v100: new CallType(
         'Configuration.set_dispute_conclusion_by_time_out_period',
+        sts.struct({
+            new: sts.number(),
+        })
+    ),
+}
+
+export const setMaxRelayParentSessionAge = {
+    name: 'Configuration.set_max_relay_parent_session_age',
+    /**
+     * Set the maximum relay parent session age.
+     */
+    v1080: new CallType(
+        'Configuration.set_max_relay_parent_session_age',
         sts.struct({
             new: sts.number(),
         })

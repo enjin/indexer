@@ -16,6 +16,7 @@ import {
 import { decodeCollectionStorageValue, getMixedCollection } from '~/pallet/multi-tokens/storage/collection-values'
 import { normalizeMintRateLimitState } from '~/pallet/multi-tokens/storage/mint-rate-limit'
 import { decodeTokenStorageValue } from '~/pallet/multi-tokens/storage/token-values'
+import { calls, events, storage } from '~/type'
 
 const testRequire = createRequire(__filename)
 const queueModulePath = testRequire.resolve('~/queue')
@@ -53,13 +54,17 @@ type MetadataLine = {
     metadata: string
 }
 
-function runtime1040(call?: (method: string, params?: unknown[]) => Promise<unknown>): Runtime {
+function runtimeFor(
+    network: 'canary-matrixchain' | 'canary-relaychain',
+    version: number,
+    call?: (method: string, params?: unknown[]) => Promise<unknown>
+): Runtime {
     const metadata = fs
-        .readFileSync('typegen/canary-matrixchain.jsonl', 'utf8')
+        .readFileSync(`typegen/${network}.jsonl`, 'utf8')
         .split('\n')
         .filter(Boolean)
         .map((line) => JSON.parse(line) as MetadataLine)
-        .find((line) => line.specVersion === 1040)
+        .find((line) => line.specVersion === version)
 
     assert(metadata)
     return new Runtime(
@@ -68,6 +73,10 @@ function runtime1040(call?: (method: string, params?: unknown[]) => Promise<unkn
         undefined,
         call ? { call } : undefined
     )
+}
+
+function runtime1040(call?: (method: string, params?: unknown[]) => Promise<unknown>): Runtime {
+    return runtimeFor('canary-matrixchain', 1040, call)
 }
 
 const owner = `0x${'11'.repeat(32)}`
@@ -124,8 +133,11 @@ function collectionValue(mintRateLimit: ReturnType<typeof rateState> | undefined
     }
 }
 
-function encodeCurrentAndLegacy(storageName: 'Tokens' | 'Collections', value: Record<string, unknown>) {
-    const runtime = runtime1040()
+function encodeCurrentAndLegacy(
+    storageName: 'Tokens' | 'Collections',
+    value: Record<string, unknown>,
+    runtime = runtime1040()
+) {
     const type = runtime.description.storage.MultiTokens.items[storageName].value
     const current = runtime.scaleCodec.encodeToHex(type, value)
     const definition = runtime.description.types[type]
@@ -144,6 +156,34 @@ function encodeCurrentAndLegacy(storageName: 'Tokens' | 'Collections', value: Re
 
     return { runtime, current, legacy: new Codec(types).encodeToHex(type, legacyValue) }
 }
+
+void test('Canary Relaychain 1080 decodes current and pre-v6 token and collection storage', () => {
+    const runtime = runtimeFor('canary-relaychain', 1080)
+    const token = encodeCurrentAndLegacy('Tokens', tokenValue(rateState(true)), runtime)
+    const collection = encodeCurrentAndLegacy('Collections', collectionValue(rateState()), runtime)
+
+    assert.equal(decodeTokenStorageValue(runtime, token.current).mintRateLimit?.limit.max, largeMaximum)
+    assert.equal(decodeTokenStorageValue(runtime, token.legacy).mintRateLimit, undefined)
+    assert.equal(decodeCollectionStorageValue(runtime, collection.current).mintRateLimit?.limit.max, largeMaximum)
+    assert.equal(decodeCollectionStorageValue(runtime, collection.legacy).mintRateLimit, undefined)
+})
+
+void test('Canary Relaychain 1080 metadata matches the indexed event, call, and storage codecs', () => {
+    const block = { _runtime: runtimeFor('canary-relaychain', 1080) } as Block
+
+    assert(events.marketplace.listingCreated.v1080.matches(block))
+    assert(events.multiTokens.tokenMutated.v1080.matches(block))
+    assert(events.multiTokens.frozen.v1080.matches(block))
+    assert(calls.fuelTanks.createFuelTank.v1080.matches(block))
+    assert(calls.fuelTanks.insertRuleSet.v1080.matches(block))
+    assert(calls.fuelTanks.dispatch.v1080.matches(block))
+    assert(calls.multiTokens.mint.v1080.matches(block))
+    assert(calls.utility.batchAll.v1080.matches(block))
+    assert(storage.multiTokens.collections.v1080.is(block))
+    assert(storage.multiTokens.tokens.v1080.is(block))
+    assert(storage.multiTokens.attributes.v1080.is(block))
+    assert(storage.multiTokens.tokenGroupAttributes.v1080.is(block))
+})
 
 function eventItem(runtime: Runtime, name: string, args: unknown): EventItem {
     return { id: '190-2', name, args, block: { _runtime: runtime } } as EventItem

@@ -334,30 +334,6 @@ export const accountAdded = {
         })
     ),
     /**
-     * An account was added to a [`FuelTank`]
-     */
-    matrixV500: new EventType(
-        'FuelTanks.AccountAdded',
-        sts.struct({
-            /**
-             * The [`AccountId`](frame_system::Config::AccountId) of the [`FuelTank`]
-             */
-            tankId: matrixV500.AccountId32,
-            /**
-             * The [`AccountId`](frame_system::Config::AccountId) that was added
-             */
-            userId: matrixV500.AccountId32,
-            /**
-             * The deposit reserved by the [`FuelTank`] for this account
-             */
-            tankDeposit: sts.bigint(),
-            /**
-             * The deposit reserved by the user for this account
-             */
-            userDeposit: sts.bigint(),
-        })
-    ),
-    /**
      * An account was added to a fuel tank
      */
     matrixEnjinV1031: new EventType(
@@ -407,30 +383,6 @@ export const accountAdded = {
              * The amount the fuel tank has transferred to this account
              */
             totalReceived: sts.bigint(),
-        })
-    ),
-    /**
-     * An account was added to a [`FuelTank`]
-     */
-    enjinV100: new EventType(
-        'FuelTanks.AccountAdded',
-        sts.struct({
-            /**
-             * The [`AccountId`](frame_system::Config::AccountId) of the [`FuelTank`]
-             */
-            tankId: enjinV100.AccountId32,
-            /**
-             * The [`AccountId`](frame_system::Config::AccountId) that was added
-             */
-            userId: enjinV100.AccountId32,
-            /**
-             * The deposit reserved by the [`FuelTank`] for this account
-             */
-            tankDeposit: sts.bigint(),
-            /**
-             * The deposit reserved by the user for this account
-             */
-            userDeposit: sts.bigint(),
         })
     ),
     /**
@@ -485,31 +437,6 @@ export const accountAdded = {
             totalReceived: sts.bigint(),
         })
     ),
-    /**
-     * An account was added to a [`FuelTank`]
-     */
-    v102: new EventType(
-        'FuelTanks.AccountAdded',
-        sts.struct({
-            /**
-             * The [`AccountId`](frame_system::Config::AccountId) of the [`FuelTank`]
-             */
-            tankId: v102.AccountId32,
-            /**
-             * The [`AccountId`](frame_system::Config::AccountId) that was added
-             */
-            userId: v102.AccountId32,
-            /**
-             * The deposit reserved by the [`FuelTank`] for this account
-             */
-            tankDeposit: sts.bigint(),
-            /**
-             * The deposit reserved by the user for this account
-             */
-            userDeposit: sts.bigint(),
-        })
-    ),
-
     /**
      * An account was added to a fuel tank
      */

@@ -26,17 +26,15 @@ export async function tokenGroupAttributes(
             ? { tokenGroupId: params.tokenGroupId, key: params.key }
             : undefined
 
-    if (multiTokens.tokenGroupAttributes.matrixV1040.is(block)) {
+    const current = [multiTokens.tokenGroupAttributes.v1080, multiTokens.tokenGroupAttributes.matrixV1040].find(
+        (version) => version.is(block)
+    )
+    if (current) {
         if (target) {
             return getMixedAttribute(block, 'TokenGroupAttributes', [target.tokenGroupId, target.key])
         }
 
-        return getMixedAttributePairs(
-            block,
-            'TokenGroupAttributes',
-            multiTokens.tokenGroupAttributes.matrixV1040,
-            params?.batchSize ?? 1000
-        )
+        return getMixedAttributePairs(block, 'TokenGroupAttributes', current, params?.batchSize ?? 1000)
     }
 
     const legacy = [

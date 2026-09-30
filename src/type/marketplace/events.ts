@@ -22,6 +22,7 @@ import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
 import * as enjinV1070 from '../enjinV1070'
 import * as v1070 from '../v1070'
+import * as v1080 from '../v1080'
 
 export const listingCreated = {
     name: 'Marketplace.ListingCreated',
@@ -359,6 +360,22 @@ export const listingCreated = {
              * The listing
              */
             listing: v1070.Listing,
+        })
+    ),
+    /**
+     * A listing was created
+     */
+    v1080: new EventType(
+        'Marketplace.ListingCreated',
+        sts.struct({
+            /**
+             * Id for the listing
+             */
+            listingId: v1080.H256,
+            /**
+             * The listing
+             */
+            listing: v1080.Listing,
         })
     ),
 }

@@ -10,6 +10,10 @@ const decodeMint = withDispatchCheck((call: CallItem): Mint => {
     return match(call)
         .returnType<Mint>()
         .when(
+            () => calls.multiTokens.mint.v1080.is(call),
+            () => calls.multiTokens.mint.v1080.decode(call) as unknown as Mint
+        )
+        .when(
             () => calls.multiTokens.mint.matrixV1040.is(call),
             () => calls.multiTokens.mint.matrixV1040.decode(call) as unknown as Mint
         )

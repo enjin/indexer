@@ -25,12 +25,14 @@ import * as v1031 from '../v1031'
 import * as enjinV1032 from '../enjinV1032'
 import * as v1032 from '../v1032'
 import * as matrixV1040 from '../matrixV1040'
+import * as matrixV1041 from '../matrixV1041'
 import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
 import * as enjinV1070 from '../enjinV1070'
 import * as v1070 from '../v1070'
+import * as v1080 from '../v1080'
 
 export const whitelistCall = {
     name: 'Whitelist.whitelist_call',
@@ -70,6 +72,12 @@ export const dispatchWhitelistedCallWithPreimage = {
         'Whitelist.dispatch_whitelisted_call_with_preimage',
         sts.struct({
             call: matrixV1040.Call,
+        })
+    ),
+    matrixV1041: new CallType(
+        'Whitelist.dispatch_whitelisted_call_with_preimage',
+        sts.struct({
+            call: matrixV1041.Call,
         })
     ),
     enjinV100: new CallType(
@@ -262,6 +270,12 @@ export const dispatchWhitelistedCallWithPreimage = {
         'Whitelist.dispatch_whitelisted_call_with_preimage',
         sts.struct({
             call: v1070.Call,
+        })
+    ),
+    v1080: new CallType(
+        'Whitelist.dispatch_whitelisted_call_with_preimage',
+        sts.struct({
+            call: v1080.Call,
         })
     ),
 }
