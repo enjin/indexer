@@ -29,6 +29,7 @@ export enum TokenListingFilterInput {
     ALL = 'ALL',
     LISTED = 'LISTED',
     NOT_LISTED = 'NOT_LISTED',
+    HAS_OFFER = 'HAS_OFFER',
 }
 
 registerEnumType(AccountsTokensOrderByInput, {
@@ -328,6 +329,10 @@ export class AccountsTokensConnectionResolver {
             baseQuery.andWhere('token.bestListingPrice IS NOT NULL')
         } else if (listingFilter === TokenListingFilterInput.NOT_LISTED) {
             baseQuery.andWhere('token.bestListingPrice IS NULL')
+        } else if (listingFilter === TokenListingFilterInput.HAS_OFFER) {
+            baseQuery.andWhere(
+                "EXISTS (SELECT 1 FROM listing offer WHERE offer.take_asset_id_id = token.id AND offer.type = 'Offer' AND offer.is_active = true)"
+            )
         }
 
         const totalCount = await baseQuery.clone().getCount()
