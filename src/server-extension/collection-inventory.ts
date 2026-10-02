@@ -148,6 +148,9 @@ class CollectionInventoryToken {
     @Field(() => BigInteger)
     reservedBalance!: typeof BigInteger
 
+    @Field(() => BigInteger, { nullable: true })
+    listedPrice?: typeof BigInteger | null
+
     @Field()
     createdAt!: Date
 
@@ -285,6 +288,9 @@ export class CollectionInventoryResolver {
             listingCondition = 'AND token.best_listing_price IS NOT NULL'
         } else if (listingFilter === TokenListingFilterInput.NOT_LISTED) {
             listingCondition = 'AND token.best_listing_price IS NULL'
+        } else if (listingFilter === TokenListingFilterInput.HAS_OFFER) {
+            listingCondition =
+                "AND EXISTS (SELECT 1 FROM listing offer WHERE offer.take_asset_id_id = token.id AND offer.type = 'Offer' AND offer.is_active = true)"
         }
 
         // Keyset pagination query: fetch groups and ungrouped tokens in one pass
@@ -462,7 +468,7 @@ export class CollectionInventoryResolver {
                 .getMany()
 
             // Get owned counts for each group
-            const groupOwnedCounts = await manager
+            const groupOwnedCountsQuery = manager
                 .getRepository(TokenAccount)
                 .createQueryBuilder('token_account')
                 .innerJoin('token_account.token', 'token')
@@ -476,7 +482,12 @@ export class CollectionInventoryResolver {
                 .andWhere('token_account.total_balance > 0')
                 .andWhere('collection.collection_id = :collectionId', { collectionId })
                 .groupBy('tg.id')
-                .getRawMany()
+
+            if (listingCondition) {
+                groupOwnedCountsQuery.andWhere(listingCondition.slice(4))
+            }
+
+            const groupOwnedCounts = await groupOwnedCountsQuery.getRawMany()
 
             const ownedCountMap = new Map(
                 groupOwnedCounts.map((row) => [String(row.group_id), parseInt(row.token_count, 10)])
@@ -532,6 +543,7 @@ export class CollectionInventoryResolver {
                     WHERE tg.id IN (${groupTokensPlaceholders})
                         AND token_account.account_id IN (${accountIdsPlaceholders})
                         AND token_account.total_balance > 0
+                        ${listingCondition}
                 )
                 SELECT group_id, token_id
                 FROM ranked_tokens
@@ -554,6 +566,29 @@ export class CollectionInventoryResolver {
         const allGroupTokenIds = Array.from(groupsMap.values()).flatMap((g) => g.tokenIds)
         const allTokenIds = [...new Set([...pageTokenIds, ...allGroupTokenIds])]
 
+        const listingPrices = new Map<string, bigint>()
+        if (allTokenIds.length > 0) {
+            const rows = await manager.query(
+                `
+                SELECT DISTINCT ON (make_asset_id_id)
+                    make_asset_id_id AS token_id,
+                    price
+                FROM listing
+                WHERE make_asset_id_id = ANY($1::text[])
+                    AND seller_id = ANY($2::text[])
+                    AND is_active = true
+                    AND type != 'Offer'
+                    AND take_asset_id_id = '0-0'
+                ORDER BY make_asset_id_id, price ASC, id ASC
+                `,
+                [allTokenIds, accountIds]
+            )
+
+            for (const row of rows) {
+                listingPrices.set(String(row.token_id), BigInt(row.price))
+            }
+        }
+
         // Fetch full token data
         const tokensMap = new Map<
             string,
@@ -568,6 +603,7 @@ export class CollectionInventoryResolver {
                 attributes: CollectionInventoryItemAttribute[]
                 balance: bigint
                 reservedBalance: bigint
+                listedPrice?: bigint
             }
         >()
         if (allTokenIds.length > 0) {
@@ -637,6 +673,7 @@ export class CollectionInventoryResolver {
 
                 const tokenId = String(token.id)
                 const balances = tokenBalanceMap.get(tokenId) || { balance: 0n, reservedBalance: 0n }
+                const ownListing = listingPrices.get(tokenId)
 
                 tokensMap.set(tokenId, {
                     tokenId: token.tokenId,
@@ -659,6 +696,7 @@ export class CollectionInventoryResolver {
                     })),
                     balance: balances.balance,
                     reservedBalance: balances.reservedBalance,
+                    listedPrice: ownListing,
                 })
             }
         }
@@ -679,6 +717,7 @@ export class CollectionInventoryResolver {
                         nonFungible: tokenData?.nonFungible ?? false,
                         balance: (tokenData?.balance ?? 0n) as any,
                         reservedBalance: (tokenData?.reservedBalance ?? 0n) as any,
+                        listedPrice: tokenData?.listedPrice as any,
                         createdAt: tokenData?.createdAt ?? new Date(),
                         collection:
                             tokenData?.collection ||
@@ -708,6 +747,7 @@ export class CollectionInventoryResolver {
                     nonFungible: tokenData?.nonFungible ?? false,
                     balance: (tokenData?.balance ?? 0n) as any,
                     reservedBalance: (tokenData?.reservedBalance ?? 0n) as any,
+                    listedPrice: tokenData?.listedPrice as any,
                     createdAt: tokenData?.createdAt ?? new Date(),
                     collection:
                         tokenData?.collection ||
