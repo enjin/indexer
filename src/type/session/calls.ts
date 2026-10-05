@@ -10,6 +10,7 @@ import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
 import * as enjinV1070 from '../enjinV1070'
 import * as v1070 from '../v1070'
+import * as v1080 from '../v1080'
 
 export const setKeys = {
     name: 'Session.set_keys',
@@ -218,6 +219,26 @@ export const setKeys = {
         'Session.set_keys',
         sts.struct({
             keys: v1070.SessionKeys,
+            proof: sts.bytes(),
+        })
+    ),
+    /**
+     * Sets the session key(s) of the function caller to `keys`.
+     *
+     * Allows an account to set its session key prior to becoming a validator.
+     * This doesn't take effect until the next session.
+     *
+     * - `origin`: The dispatch origin of this function must be signed.
+     * - `keys`: The new session keys to set. These are the public keys of all sessions keys
+     *   setup in the runtime.
+     * - `proof`: The proof that `origin` has access to the private keys of `keys`. See
+     *   [`impl_opaque_keys`](sp_runtime::impl_opaque_keys) for more information about the
+     *   proof format.
+     */
+    v1080: new CallType(
+        'Session.set_keys',
+        sts.struct({
+            keys: v1080.SessionKeys,
             proof: sts.bytes(),
         })
     ),

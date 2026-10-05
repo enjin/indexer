@@ -10,6 +10,10 @@ const decodeForceMint = withDispatchCheck((call: CallItem): ForceMint => {
     return match(call)
         .returnType<ForceMint>()
         .when(
+            () => calls.multiTokens.forceMint.v1080.is(call),
+            () => calls.multiTokens.forceMint.v1080.decode(call) as unknown as ForceMint
+        )
+        .when(
             () => calls.multiTokens.forceMint.matrixV1040.is(call),
             () => calls.multiTokens.forceMint.matrixV1040.decode(call) as unknown as ForceMint
         )

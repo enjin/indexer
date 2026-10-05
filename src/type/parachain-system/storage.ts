@@ -6,6 +6,7 @@ import * as matrixV604 from '../matrixV604'
 import * as matrixV1010 from '../matrixV1010'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 import * as matrixV1040 from '../matrixV1040'
+import * as matrixV1041 from '../matrixV1041'
 
 export const pendingValidationCode = {
     /**
@@ -950,4 +951,102 @@ export interface PendingUpwardSignalsMatrixV1040 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): Bytes[]
     get(block: Block): Promise<Bytes[] | undefined>
+}
+
+export const blockWeightMode = {
+    /**
+     *  The current block weight mode.
+     *
+     *  This is used to determine what is the maximum allowed block weight, for more information see
+     *  [`block_weight`].
+     *
+     *  Killed in [`Self::on_initialize`] and set by the [`block_weight`] logic.
+     */
+    matrixV1041: new StorageType(
+        'ParachainSystem.BlockWeightMode',
+        'Optional',
+        [],
+        matrixV1041.BlockWeightMode
+    ) as BlockWeightModeMatrixV1041,
+}
+
+/**
+ *  The current block weight mode.
+ *
+ *  This is used to determine what is the maximum allowed block weight, for more information see
+ *  [`block_weight`].
+ *
+ *  Killed in [`Self::on_initialize`] and set by the [`block_weight`] logic.
+ */
+export interface BlockWeightModeMatrixV1041 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block): Promise<matrixV1041.BlockWeightMode | undefined>
+}
+
+export const previousCoreCount = {
+    /**
+     *  The core count available to the parachain in the previous block.
+     *
+     *  This is mainly used for offchain functionality to calculate the correct target block weight.
+     */
+    matrixV1041: new StorageType(
+        'ParachainSystem.PreviousCoreCount',
+        'Optional',
+        [],
+        sts.number()
+    ) as PreviousCoreCountMatrixV1041,
+}
+
+/**
+ *  The core count available to the parachain in the previous block.
+ *
+ *  This is mainly used for offchain functionality to calculate the correct target block weight.
+ */
+export interface PreviousCoreCountMatrixV1041 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block): Promise<number | undefined>
+}
+
+export const pendingApprovedPeer = {
+    /**
+     *  The approved peer id to be sent as a UMP signal on the last block of the PoV.
+     */
+    matrixV1041: new StorageType(
+        'ParachainSystem.PendingApprovedPeer',
+        'Optional',
+        [],
+        sts.bytes()
+    ) as PendingApprovedPeerMatrixV1041,
+}
+
+/**
+ *  The approved peer id to be sent as a UMP signal on the last block of the PoV.
+ */
+export interface PendingApprovedPeerMatrixV1041 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block): Promise<Bytes | undefined>
+}
+
+export const poVMessagesTracker = {
+    /**
+     *  Tracks cumulative `UMP` and `HRMP` messages sent across blocks in the current `PoV`.
+     *
+     *  Across different candidates/PoVs the budgets are tracked by [`AggregatedUnincludedSegment`].
+     */
+    matrixV1041: new StorageType(
+        'ParachainSystem.PoVMessagesTracker',
+        'Optional',
+        [],
+        matrixV1041.PoVMessages
+    ) as PoVMessagesTrackerMatrixV1041,
+}
+
+/**
+ *  Tracks cumulative `UMP` and `HRMP` messages sent across blocks in the current `PoV`.
+ *
+ *  Across different candidates/PoVs the budgets are tracked by [`AggregatedUnincludedSegment`].
+ */
+export interface PoVMessagesTrackerMatrixV1041 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block): Promise<matrixV1041.PoVMessages | undefined>
 }

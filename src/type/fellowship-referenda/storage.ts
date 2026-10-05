@@ -6,10 +6,12 @@ import * as v105 from '../v105'
 import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
 import * as matrixV1040 from '../matrixV1040'
+import * as matrixV1041 from '../matrixV1041'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
 import * as enjinV1070 from '../enjinV1070'
 import * as v1070 from '../v1070'
+import * as v1080 from '../v1080'
 
 export const referendumCount = {
     /**
@@ -42,6 +44,15 @@ export const referendumInfoFor = {
         [sts.number()],
         matrixV1040.Type_934
     ) as ReferendumInfoForMatrixV1040,
+    /**
+     *  Information concerning any given referendum.
+     */
+    matrixV1041: new StorageType(
+        'FellowshipReferenda.ReferendumInfoFor',
+        'Optional',
+        [sts.number()],
+        matrixV1041.Type_943
+    ) as ReferendumInfoForMatrixV1041,
     /**
      *  Information concerning any given referendum.
      */
@@ -132,6 +143,15 @@ export const referendumInfoFor = {
         [sts.number()],
         v1070.Type_1109
     ) as ReferendumInfoForV1070,
+    /**
+     *  Information concerning any given referendum.
+     */
+    v1080: new StorageType(
+        'FellowshipReferenda.ReferendumInfoFor',
+        'Optional',
+        [sts.number()],
+        v1080.Type_1121
+    ) as ReferendumInfoForV1080,
 }
 
 /**
@@ -153,6 +173,27 @@ export interface ReferendumInfoForMatrixV1040 {
         block: Block,
         key: number
     ): AsyncIterable<[k: number, v: matrixV1040.Type_934 | undefined][]>
+}
+
+/**
+ *  Information concerning any given referendum.
+ */
+export interface ReferendumInfoForMatrixV1041 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: number): Promise<matrixV1041.Type_943 | undefined>
+    getMany(block: Block, keys: number[]): Promise<(matrixV1041.Type_943 | undefined)[]>
+    getKeys(block: Block): Promise<number[]>
+    getKeys(block: Block, key: number): Promise<number[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<number[]>
+    getKeysPaged(pageSize: number, block: Block, key: number): AsyncIterable<number[]>
+    getPairs(block: Block): Promise<[k: number, v: matrixV1041.Type_943 | undefined][]>
+    getPairs(block: Block, key: number): Promise<[k: number, v: matrixV1041.Type_943 | undefined][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: number, v: matrixV1041.Type_943 | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: number
+    ): AsyncIterable<[k: number, v: matrixV1041.Type_943 | undefined][]>
 }
 
 /**
@@ -363,6 +404,27 @@ export interface ReferendumInfoForV1070 {
         block: Block,
         key: number
     ): AsyncIterable<[k: number, v: v1070.Type_1109 | undefined][]>
+}
+
+/**
+ *  Information concerning any given referendum.
+ */
+export interface ReferendumInfoForV1080 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: number): Promise<v1080.Type_1121 | undefined>
+    getMany(block: Block, keys: number[]): Promise<(v1080.Type_1121 | undefined)[]>
+    getKeys(block: Block): Promise<number[]>
+    getKeys(block: Block, key: number): Promise<number[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<number[]>
+    getKeysPaged(pageSize: number, block: Block, key: number): AsyncIterable<number[]>
+    getPairs(block: Block): Promise<[k: number, v: v1080.Type_1121 | undefined][]>
+    getPairs(block: Block, key: number): Promise<[k: number, v: v1080.Type_1121 | undefined][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: number, v: v1080.Type_1121 | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: number
+    ): AsyncIterable<[k: number, v: v1080.Type_1121 | undefined][]>
 }
 
 export const trackQueue = {

@@ -13,20 +13,24 @@ import { SnsEvent } from '~/util/sns'
 import { storage } from '~/type'
 import { assetId, OrderMatched } from '~/pallet/marketplace/events'
 
-async function refreshPromotedListings(ctx: CommonContext, block: Block, data: OrderMatched): Promise<void> {
-    if (!storage.marketplace.pendingActivations.matrixV1040.is(block)) return
+export async function refreshPromotedListings(ctx: CommonContext, block: Block, data: OrderMatched): Promise<void> {
+    const usesPendingActivations = storage.marketplace.pendingActivations.matrixV1040.is(block)
+    const usesQueueActivations = storage.marketplace.priceLevelQueues.matrixV1041.is(block)
+    if (!usesPendingActivations && !usesQueueActivations) return
 
     const pendingSide = data.side.__kind === 'Bid' ? ({ __kind: 'Ask' } as const) : ({ __kind: 'Bid' } as const)
     const pendingIds = new Set(
-        (
-            (await storage.marketplace.pendingActivations.matrixV1040.get(
-                block,
-                data.assetId,
-                data.currencyId,
-                pendingSide
-            )) ?? []
+        (usesPendingActivations
+            ? ((await storage.marketplace.pendingActivations.matrixV1040.get(
+                  block,
+                  data.assetId,
+                  data.currencyId,
+                  pendingSide
+              )) ?? [])
+            : []
         ).map(([, id]) => id.replace(/^0x/, ''))
     )
+    const priceQueues = new Map<bigint, Map<string, number>>()
     const asset = assetId(data.assetId)
     const currency = assetId(data.currencyId)
     const pendingListings = await ctx.store.find<Listing>(Listing, {
@@ -40,6 +44,24 @@ async function refreshPromotedListings(ctx: CommonContext, block: Block, data: O
 
     for (const listing of pendingListings) {
         if (pendingIds.has(listing.id)) continue
+        let queued = true
+        if (usesQueueActivations) {
+            let queue = priceQueues.get(listing.price)
+            if (!queue) {
+                const entries = await storage.marketplace.priceLevelQueues.matrixV1041.get(
+                    block,
+                    data.assetId,
+                    data.currencyId,
+                    pendingSide,
+                    listing.price
+                )
+                queue = new Map((entries ?? []).map(([id, start]) => [id.replace(/^0x/, ''), start]))
+                priceQueues.set(listing.price, queue)
+            }
+            const start = queue.get(listing.id)
+            if (start !== undefined && start > block.height) continue
+            queued = start !== undefined
+        }
         const expired =
             listing.data.isTypeOf === 'OfferData' &&
             listing.data.expiration !== undefined &&
@@ -53,7 +75,7 @@ async function refreshPromotedListings(ctx: CommonContext, block: Block, data: O
         ) {
             listing.bookState = MarketplaceListingBookState.Removed
         } else {
-            listing.bookState = MarketplaceListingBookState.Indexed
+            listing.bookState = queued ? MarketplaceListingBookState.Indexed : MarketplaceListingBookState.Ineligible
         }
         listing.updatedAt = new Date(block.timestamp ?? 0)
         await ctx.store.save(listing)

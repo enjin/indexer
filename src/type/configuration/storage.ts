@@ -6,6 +6,7 @@ import * as v104 from '../v104'
 import * as v105 from '../v105'
 import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
+import * as v1080 from '../v1080'
 
 export const activeConfig = {
     /**
@@ -51,6 +52,10 @@ export const activeConfig = {
      *  The active configuration for the current session.
      */
     v1030: new StorageType('Configuration.ActiveConfig', 'Default', [], v1030.HostConfiguration) as ActiveConfigV1030,
+    /**
+     *  The active configuration for the current session.
+     */
+    v1080: new StorageType('Configuration.ActiveConfig', 'Default', [], v1080.HostConfiguration) as ActiveConfigV1080,
 }
 
 /**
@@ -114,6 +119,15 @@ export interface ActiveConfigV1030 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): v1030.HostConfiguration
     get(block: Block): Promise<v1030.HostConfiguration | undefined>
+}
+
+/**
+ *  The active configuration for the current session.
+ */
+export interface ActiveConfigV1080 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): v1080.HostConfiguration
+    get(block: Block): Promise<v1080.HostConfiguration | undefined>
 }
 
 export const pendingConfigs = {
@@ -222,6 +236,21 @@ export const pendingConfigs = {
         [],
         sts.array(() => sts.tuple(() => [sts.number(), v1030.HostConfiguration]))
     ) as PendingConfigsV1030,
+    /**
+     *  Pending configuration changes.
+     *
+     *  This is a list of configuration changes, each with a session index at which it should
+     *  be applied.
+     *
+     *  The list is sorted ascending by session index. Also, this list can only contain at most
+     *  2 items: for the next session and for the `scheduled_session`.
+     */
+    v1080: new StorageType(
+        'Configuration.PendingConfigs',
+        'Default',
+        [],
+        sts.array(() => sts.tuple(() => [sts.number(), v1080.HostConfiguration]))
+    ) as PendingConfigsV1080,
 }
 
 /**
@@ -327,6 +356,21 @@ export interface PendingConfigsV1030 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): [number, v1030.HostConfiguration][]
     get(block: Block): Promise<[number, v1030.HostConfiguration][] | undefined>
+}
+
+/**
+ *  Pending configuration changes.
+ *
+ *  This is a list of configuration changes, each with a session index at which it should
+ *  be applied.
+ *
+ *  The list is sorted ascending by session index. Also, this list can only contain at most
+ *  2 items: for the next session and for the `scheduled_session`.
+ */
+export interface PendingConfigsV1080 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): [number, v1080.HostConfiguration][]
+    get(block: Block): Promise<[number, v1080.HostConfiguration][] | undefined>
 }
 
 export const bypassConsistencyCheck = {

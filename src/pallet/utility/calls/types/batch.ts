@@ -31,6 +31,7 @@ import { Call as CallMatrixV1022 } from 'src/type/matrixV1022'
 import { Call as CallMatrixV1023 } from 'src/type/matrixV1023'
 import { Call as CallMatrixV1030 } from 'src/type/matrixV1030'
 import { Call as CallMatrixV1040 } from 'src/type/matrixV1040'
+import { Call as CallMatrixV1041 } from '~/type/matrixV1041'
 import { Call as CallV100 } from 'src/type/v100'
 import { Call as CallV101 } from 'src/type/v101'
 import { Call as CallV102 } from 'src/type/v102'
@@ -51,6 +52,7 @@ import { Call as CallV1050 } from 'src/type/v1050'
 import { Call as CallV1060 } from 'src/type/v1060'
 import { Call as CallMatrixEnjinV1031 } from 'src/type/matrixEnjinV1031'
 import { Call as CallEnjinV1070 } from 'src/type/enjinV1070'
+import { Call as CallV1080 } from '~/type/v1080'
 
 type Call =
     | CallEnjinV100
@@ -88,6 +90,7 @@ type Call =
     | CallMatrixV1023
     | CallMatrixV1030
     | CallMatrixV1040
+    | CallMatrixV1041
     | CallV100
     | CallV101
     | CallV102
@@ -106,6 +109,7 @@ type Call =
     | CallV1032
     | CallV1050
     | CallV1060
+    | CallV1080
 
 export type Batch = {
     calls: Call[]

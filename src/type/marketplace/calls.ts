@@ -16,12 +16,14 @@ import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 import * as v1031 from '../v1031'
 import * as enjinV1032 from '../enjinV1032'
 import * as matrixV1040 from '../matrixV1040'
+import * as matrixV1041 from '../matrixV1041'
 import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
 import * as enjinV1070 from '../enjinV1070'
 import * as v1070 from '../v1070'
+import * as v1080 from '../v1080'
 
 export const createListing = {
     name: 'Marketplace.create_listing',
@@ -894,6 +896,35 @@ export const fillListing = {
             royaltyBeneficiaryCount: sts.number(),
         })
     ),
+    /**
+     * Fills a fixed price listing. This will execute immediately.
+     * # Parameters
+     *
+     * - `listing_id`: The id for the listing to buy from
+     * - `amount`: The number of units purchased
+     *
+     * # Errors
+     *
+     * - [`Error::ListingNotFound`] if the listing under `listing_id` does not exist
+     * - [`Error::BuyerIsSeller`] if the buyer is the seller of the listing
+     * - [`Error::ListingIsWrongType`] if the listing is not under auction
+     * - [`Error::InvalidAmount`] if the amount that still needs to be filled is greater than
+     *   `amount`
+     * - [`Error::ListingNotActive`] if the listing has not passed the `ListingActiveDelay` yet
+     * - [`Error::ReceivedValueUnderMinimum`] if the listings `take` value is under the minimum
+     *   required
+     * - [`Error::LowTokenBalance`] if the buyer does not have enough tokens for reserve
+     *
+     * The weight is charged for the maximum royalty beneficiary count and refunded down to
+     * the listing's actual count.
+     */
+    v1080: new CallType(
+        'Marketplace.fill_listing',
+        sts.struct({
+            listingId: v1080.H256,
+            amount: sts.bigint(),
+        })
+    ),
 }
 
 export const placeBid = {
@@ -1105,6 +1136,32 @@ export const finalizeAuction = {
         sts.struct({
             listingId: v1050.H256,
             royaltyBeneficiaryCount: sts.number(),
+        })
+    ),
+    /**
+     * Finalize the auction with id: `listing_id`. This will end the auction and transfer
+     * funds. It fails if the auction is not over. It can be called by anyone.
+     *
+     * # Parameters
+     *
+     * - `listing_id`: The ID for the listing to finalize
+     *
+     * # Errors
+     *
+     * - [`Error::ListingNotFound`] if listing under `listing_id` does not exist
+     * - [`Error::ListingIsWrongType`] if listing is not an auction
+     * - [`Error::AuctionNotOver`] if the auction has not finished yet, or if it's in a bid
+     *   extension and the caller is not the seller
+     * - [`Error::ReceivedValueUnderMinimum`] if the take value is less than the minimum
+     *   required
+     *
+     * The weight is charged for the maximum royalty beneficiary count and refunded down to
+     * the listing's actual count.
+     */
+    v1080: new CallType(
+        'Marketplace.finalize_auction',
+        sts.struct({
+            listingId: v1080.H256,
         })
     ),
 }
@@ -2055,6 +2112,47 @@ export const createListingAndMatch = {
         'Marketplace.create_listing_and_match',
         sts.struct({
             descriptor: matrixV1040.ListingDescriptor,
+            matchLimit: sts.option(() => sts.number()),
+        })
+    ),
+    /**
+     * Places an ask or a bid: first fills it against the best resting listings on the
+     * opposite side of the (asset, currency) book, in price-time-priority order and at each
+     * resting listing's price, then rests any unfilled remainder as a listing exactly as
+     * [`Self::create_listing`] would. If the order fills completely, no listing is created.
+     *
+     * Resting listings that have not reached their start block are passed over: they are not
+     * examined and do not count against `match_limit`.
+     *
+     * The [`OrderDescriptor`] can express only what the book holds: a fixed price ask or an
+     * offer bid, never an auction or a whitelisted listing. Create those with
+     * [`Self::create_listing`]. A descriptor with an explicit future `start_block` rests
+     * without matching.
+     *
+     * If the book has no room for the remainder, the executed fills are kept and the
+     * remainder is discarded (immediate-or-cancel); the dropped amount is reported as
+     * `unrested_amount` on [`Event::OrderMatched`].
+     *
+     * # Parameters
+     *
+     * - `descriptor`: The order to place. Its fields are those of [`Self::create_listing`]'s
+     *   descriptor minus the whitelist flag, with `data` narrowed to an ask or a bid.
+     * - `match_limit`: Max number of resting listings to examine before the remainder rests.
+     *   Resting listings that are skipped (e.g. your own) or fail to fill also count; ones
+     *   that are not active yet do not. Zero skips matching, so the order simply rests. `None`
+     *   uses [`MaxMatchLimit`](Config::MaxMatchLimit). The weight is charged up front for the
+     *   worst case and refunded down to the work actually performed.
+     *
+     * # Errors
+     *
+     * - [`Error::MatchLimitTooHigh`] if `match_limit` exceeds `MaxMatchLimit`
+     * - Same as [`Self::create_listing`] for the resting remainder, except the book-capacity
+     *   errors, which drop the remainder instead of failing
+     */
+    matrixV1041: new CallType(
+        'Marketplace.create_listing_and_match',
+        sts.struct({
+            descriptor: matrixV1041.OrderDescriptor,
             matchLimit: sts.option(() => sts.number()),
         })
     ),

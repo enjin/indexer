@@ -5,6 +5,7 @@ import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
+import * as v1080 from '../v1080'
 
 export const included = {
     /**
@@ -76,6 +77,15 @@ export const onChainVotes = {
      *  Scraped on chain data for extracting resolved disputes as well as backing votes.
      */
     v1060: new StorageType('ParaInherent.OnChainVotes', 'Optional', [], v1060.ScrapedOnChainVotes) as OnChainVotesV1060,
+    /**
+     *  Scraped on chain data for extracting resolved disputes as well as backing votes.
+     */
+    v1080: new StorageType(
+        'ParaInherent.OnChainVotes',
+        'Optional',
+        [],
+        v1080.V9ScrapedOnChainVotes
+    ) as OnChainVotesV1080,
 }
 
 /**
@@ -124,4 +134,12 @@ export interface OnChainVotesV1030 {
 export interface OnChainVotesV1060 {
     is(block: RuntimeCtx): boolean
     get(block: Block): Promise<v1060.ScrapedOnChainVotes | undefined>
+}
+
+/**
+ *  Scraped on chain data for extracting resolved disputes as well as backing votes.
+ */
+export interface OnChainVotesV1080 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block): Promise<v1080.V9ScrapedOnChainVotes | undefined>
 }

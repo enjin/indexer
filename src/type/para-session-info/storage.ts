@@ -3,6 +3,7 @@ import * as enjinV100 from '../enjinV100'
 import * as v104 from '../v104'
 import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
+import * as v1080 from '../v1080'
 
 export const assignmentKeysUnsafe = {
     /**
@@ -157,6 +158,15 @@ export const sessionExecutorParams = {
         [sts.number()],
         sts.array(() => v1030.V6ExecutorParam)
     ) as SessionExecutorParamsV1030,
+    /**
+     *  Executor parameter set for a given session index
+     */
+    v1080: new StorageType(
+        'ParaSessionInfo.SessionExecutorParams',
+        'Optional',
+        [sts.number()],
+        sts.array(() => v1080.V9ExecutorParam)
+    ) as SessionExecutorParamsV1080,
 }
 
 /**
@@ -247,4 +257,25 @@ export interface SessionExecutorParamsV1030 {
         block: Block,
         key: number
     ): AsyncIterable<[k: number, v: v1030.V6ExecutorParam[] | undefined][]>
+}
+
+/**
+ *  Executor parameter set for a given session index
+ */
+export interface SessionExecutorParamsV1080 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: number): Promise<v1080.V9ExecutorParam[] | undefined>
+    getMany(block: Block, keys: number[]): Promise<(v1080.V9ExecutorParam[] | undefined)[]>
+    getKeys(block: Block): Promise<number[]>
+    getKeys(block: Block, key: number): Promise<number[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<number[]>
+    getKeysPaged(pageSize: number, block: Block, key: number): AsyncIterable<number[]>
+    getPairs(block: Block): Promise<[k: number, v: v1080.V9ExecutorParam[] | undefined][]>
+    getPairs(block: Block, key: number): Promise<[k: number, v: v1080.V9ExecutorParam[] | undefined][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: number, v: v1080.V9ExecutorParam[] | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: number
+    ): AsyncIterable<[k: number, v: v1080.V9ExecutorParam[] | undefined][]>
 }

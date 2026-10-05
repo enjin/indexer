@@ -15,8 +15,10 @@ import * as v1030 from '../v1030'
 import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 import * as enjinV1032 from '../enjinV1032'
 import * as v1032 from '../v1032'
+import * as matrixV1041 from '../matrixV1041'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
+import * as v1080 from '../v1080'
 
 export const tanks = {
     /**
@@ -102,6 +104,19 @@ export const tanks = {
     ) as TanksMatrixV1030,
     /**
      *  Mapping of Fuel Tanks accounts to their data
+     *
+     *  Public so that runtimes can write migrations over tank data. Rule sets embed the identity
+     *  of the pallets and calls they permit, so a runtime that removes or reindexes a pallet has
+     *  to be able to iterate and rewrite them; there is no extrinsic that can do it in bulk.
+     */
+    matrixV1041: new StorageType(
+        'FuelTanks.Tanks',
+        'Optional',
+        [matrixV1041.AccountId32],
+        matrixV1041.FuelTank
+    ) as TanksMatrixV1041,
+    /**
+     *  Mapping of Fuel Tanks accounts to their data
      */
     enjinV100: new StorageType(
         'FuelTanks.Tanks',
@@ -156,6 +171,14 @@ export const tanks = {
      *  Mapping of Fuel Tanks accounts to their data
      */
     v1060: new StorageType('FuelTanks.Tanks', 'Optional', [v1060.AccountId32], v1060.FuelTank) as TanksV1060,
+    /**
+     *  Mapping of Fuel Tanks accounts to their data
+     *
+     *  Public so that runtimes can write migrations over tank data. Rule sets embed the identity
+     *  of the pallets and calls they permit, so a runtime that removes or reindexes a pallet has
+     *  to be able to iterate and rewrite them; there is no extrinsic that can do it in bulk.
+     */
+    v1080: new StorageType('FuelTanks.Tanks', 'Optional', [v1080.AccountId32], v1080.FuelTank) as TanksV1080,
 }
 
 /**
@@ -419,6 +442,37 @@ export interface TanksMatrixV1030 {
 
 /**
  *  Mapping of Fuel Tanks accounts to their data
+ *
+ *  Public so that runtimes can write migrations over tank data. Rule sets embed the identity
+ *  of the pallets and calls they permit, so a runtime that removes or reindexes a pallet has
+ *  to be able to iterate and rewrite them; there is no extrinsic that can do it in bulk.
+ */
+export interface TanksMatrixV1041 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: matrixV1041.AccountId32): Promise<matrixV1041.FuelTank | undefined>
+    getMany(block: Block, keys: matrixV1041.AccountId32[]): Promise<(matrixV1041.FuelTank | undefined)[]>
+    getKeys(block: Block): Promise<matrixV1041.AccountId32[]>
+    getKeys(block: Block, key: matrixV1041.AccountId32): Promise<matrixV1041.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<matrixV1041.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block, key: matrixV1041.AccountId32): AsyncIterable<matrixV1041.AccountId32[]>
+    getPairs(block: Block): Promise<[k: matrixV1041.AccountId32, v: matrixV1041.FuelTank | undefined][]>
+    getPairs(
+        block: Block,
+        key: matrixV1041.AccountId32
+    ): Promise<[k: matrixV1041.AccountId32, v: matrixV1041.FuelTank | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: matrixV1041.AccountId32, v: matrixV1041.FuelTank | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: matrixV1041.AccountId32
+    ): AsyncIterable<[k: matrixV1041.AccountId32, v: matrixV1041.FuelTank | undefined][]>
+}
+
+/**
+ *  Mapping of Fuel Tanks accounts to their data
  */
 export interface TanksEnjinV100 {
     is(block: RuntimeCtx): boolean
@@ -640,6 +694,34 @@ export interface TanksV1060 {
         block: Block,
         key: v1060.AccountId32
     ): AsyncIterable<[k: v1060.AccountId32, v: v1060.FuelTank | undefined][]>
+}
+
+/**
+ *  Mapping of Fuel Tanks accounts to their data
+ *
+ *  Public so that runtimes can write migrations over tank data. Rule sets embed the identity
+ *  of the pallets and calls they permit, so a runtime that removes or reindexes a pallet has
+ *  to be able to iterate and rewrite them; there is no extrinsic that can do it in bulk.
+ */
+export interface TanksV1080 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: v1080.AccountId32): Promise<v1080.FuelTank | undefined>
+    getMany(block: Block, keys: v1080.AccountId32[]): Promise<(v1080.FuelTank | undefined)[]>
+    getKeys(block: Block): Promise<v1080.AccountId32[]>
+    getKeys(block: Block, key: v1080.AccountId32): Promise<v1080.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v1080.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block, key: v1080.AccountId32): AsyncIterable<v1080.AccountId32[]>
+    getPairs(block: Block): Promise<[k: v1080.AccountId32, v: v1080.FuelTank | undefined][]>
+    getPairs(block: Block, key: v1080.AccountId32): Promise<[k: v1080.AccountId32, v: v1080.FuelTank | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: v1080.AccountId32, v: v1080.FuelTank | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: v1080.AccountId32
+    ): AsyncIterable<[k: v1080.AccountId32, v: v1080.FuelTank | undefined][]>
 }
 
 export const accounts = {

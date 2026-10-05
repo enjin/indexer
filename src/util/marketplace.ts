@@ -20,12 +20,6 @@ const collectionsQuery = `query CollectionsQuery($ids: [String!]) {
       category
       featured
       verifiedAt
-      twitter
-      discord
-      instagram
-      website
-      medium
-      tiktok
     }
   }`
 
@@ -44,13 +38,6 @@ type CollectionExtra = {
     category: string | null
     featured: boolean
     verifiedAt: string | null
-    twitter: string | null
-    x: string | null
-    discord: string | null
-    instagram: string | null
-    website: string | null
-    medium: string | null
-    tiktok: string | null
 }
 
 export async function fetchAccountsDetail(ids: string[]) {

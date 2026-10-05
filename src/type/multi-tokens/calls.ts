@@ -35,6 +35,7 @@ import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
 import * as enjinV1070 from '../enjinV1070'
 import * as v1070 from '../v1070'
+import * as v1080 from '../v1080'
 
 export const createCollection = {
     name: 'MultiTokens.create_collection',
@@ -521,6 +522,43 @@ export const createCollection = {
         'MultiTokens.create_collection',
         sts.struct({
             descriptor: v1060.DefaultCollectionDescriptor,
+        })
+    ),
+    /**
+     * Creates a new [`Collection`](ep_multi_tokens::Collection) from `descriptor`
+     *
+     * See [`CollectionDescriptor`](ep_multi_tokens::DefaultCollectionDescriptor) and
+     * [`CollectionPolicyDescriptor`](ep_multi_tokens::DefaultCollectionPolicyDescriptor)
+     * for more info about specific parameters. The [Mint
+     * Policy](ep_multi_tokens::DefaultMintPolicyDescriptor) has the most parameters.
+     *
+     * **Minting Policy**
+     *
+     * - Max token count (optional)
+     * - Max token supply (optional)
+     * - Force Single Mint
+     *   - If Yes, each token minted in the collection MUST be an NFT with a cap of 1.
+     *
+     * **Royalty (optional)**
+     *
+     *   - Beneficiary address
+     *   - The percentage of marketplace sale royalty that will be sent to the beneficiary.
+     *
+     * **Explicit Royalty Currencies (optional)**
+     *
+     *   Optionally provide a list of tokens (must be currencies).
+     *   - If no currencies are provided here, then ALL currencies are allowed for royalties.
+     *   - If one or more currencies are provided here, they will be whitelisted for use as a
+     *     royalty currency and ONLY this list of currencies will be allowed for royalties.
+     *
+     * # Errors
+     *
+     * - [`Error::DepositReserveFailed`] if the deposit cannot be reserved
+     */
+    v1080: new CallType(
+        'MultiTokens.create_collection',
+        sts.struct({
+            descriptor: v1080.DefaultCollectionDescriptor,
         })
     ),
 }
@@ -1025,6 +1063,36 @@ export const mutateToken = {
             collectionId: sts.bigint(),
             tokenId: sts.bigint(),
             mutation: v1050.DefaultTokenMutation,
+        })
+    ),
+    /**
+     * Modify [`Token`](ep_multi_tokens::Token) with `token_id`  from
+     * [`Collection`](ep_multi_tokens::Collection) with `collection_id` by applying `mutation`
+     *
+     * The collection creator/owner can mutate the settings of a token.
+     * See [DefaultTokenMutation](ep_multi_tokens::DefaultTokenMutation) for specific fields
+     * and descriptions.
+     *
+     * Note that `behavior` is a nested option of type
+     * [TokenMarketBehavior](ep_multi_tokens::TokenMarketBehavior). This can either be set to
+     * `None`, a `Currency`, or a royalty.
+     *
+     * All fields are `Optional`, so only set the specific fields you want to change to `Some`.
+     *
+     * # Errors
+     *
+     * - [`Error::CurrencyIncompatibleWithCollectionRoyalty`] if token has already been
+     *   assigned a royalty
+     * - [`Error::NoPermission`] if not the collection owner
+     * - [`Error::TokenNotFound`] if Token does not exist
+     * - [`Error::ConflictingLocation`] if the new location is already occupied
+     */
+    v1080: new CallType(
+        'MultiTokens.mutate_token',
+        sts.struct({
+            collectionId: sts.bigint(),
+            tokenId: sts.bigint(),
+            mutation: v1080.DefaultTokenMutation,
         })
     ),
 }
@@ -1706,6 +1774,53 @@ export const mint = {
             params: v1060.DefaultMintParams,
         })
     ),
+    /**
+     * `origin` mints to `recipient` for `collection_id` with `params` using the pallet's
+     * [`MintPolicy`](traits::CollectionPolicy::Mint).
+     *
+     * Tokens are minted using [`MintParams`], and it may only be done by the collection's
+     * owner. There are two types of mint operations:
+     *
+     * **Create**
+     *
+     * This must be called the first time a token is being created. Any token id can be chosen
+     * when creating a token. They do not have to be sequential.
+     *
+     * You can specify additional parameters that can apply constraints to the token or give it
+     * a royalty. Some of these values can be changed later using the
+     * [`mutateToken`](Self::mutate_token) extrinsic.
+     *
+     * **Mint**
+     *
+     * After a token is created, you can mint additional balance using this variant.
+     *
+     * # Errors
+     *
+     * - [`Error::AmountZero`] if `amount == 0`.
+     * - [`Error::CollectionNotFound`] if `Collection` does not exist.
+     * - [`Error::TokenNotFound`] if `Token` does not exist.
+     * - [`Error::TokenAlreadyExists`] if attempting to create a token that already exists
+     * - [`Error::NoPermission`] if `caller` is not allowed to mint the `collection`.
+     * - [`Error::TokenMintCapExceeded`] if the mint policy TokenCap does not allow minting
+     * - `MaxTokenCountExceeded` if the mint policy max_token_count is exceeded
+     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficient balance for
+     *   token deposit
+     * - [`Error::ConflictingLocation`] if the token is foreign and the location is already
+     *   mapped to another asset in `AssetIdsByLocation`
+     * - `BadOrigin` if `privileged_params` sets any privileged field (a deposit-free token or
+     *   a foreign token) and `origin` is not [`Config::ForceOrigin`]
+     * - [`Error::NoPermission`] if `privileged_params` sets a privileged field *and*
+     *   `attributes` or `groups` is non-empty: that call runs as root, which has no account to
+     *   set them on behalf of. Set them in a follow-up call instead.
+     */
+    v1080: new CallType(
+        'MultiTokens.mint',
+        sts.struct({
+            recipient: v1080.MultiAddress,
+            collectionId: sts.bigint(),
+            params: v1080.DefaultMintParams,
+        })
+    ),
 }
 
 export const burn = {
@@ -2198,6 +2313,15 @@ export const freeze = {
             info: v1070.Freeze,
         })
     ),
+    /**
+     * Freeze collection, token or account
+     */
+    v1080: new CallType(
+        'MultiTokens.freeze',
+        sts.struct({
+            info: v1080.Freeze,
+        })
+    ),
 }
 
 export const thaw = {
@@ -2517,6 +2641,35 @@ export const setAttribute = {
             tokenId: sts.option(() => sts.bigint()),
             key: sts.bytes(),
             value: sts.bytes(),
+        })
+    ),
+    /**
+     * Sets the attribute `key` to `value` for `collection_id`.
+     * If `token_id` is [`None`], the attribute is added to the collection. If it is [`Some`],
+     * the attribute is added to the token.
+     * Only callable by the collection's owner.
+     *
+     * If `frozen` is true, the attribute is permanently frozen: it can never be modified
+     * or removed afterwards. An existing unfrozen attribute can be set-and-frozen in one
+     * call.
+     *
+     * # Errors
+     * - [`Error::InvalidAttributeKey`] if `key.len() == 0`
+     * - [`Error::CollectionNotFound`] if `collection_id` does not exist.
+     * - [`Error::TokenNotFound`] if `token_id` is `Some` and does not exist.
+     * - [`Error::NoPermission`] if `source` account is not the owner of the collection.
+     * - [`Error::AttributeFrozen`] if the attribute is frozen.
+     * - [`Error::DepositReserveFailed`] if unable to reserve the deposit for the attribute
+     *   storage.
+     */
+    v1080: new CallType(
+        'MultiTokens.set_attribute',
+        sts.struct({
+            collectionId: sts.bigint(),
+            tokenId: sts.option(() => sts.bigint()),
+            key: sts.bytes(),
+            value: sts.bytes(),
+            frozen: sts.boolean(),
         })
     ),
 }
@@ -3256,6 +3409,34 @@ export const batchMint = {
             recipients: sts.array(() => v1060.Type_619),
         })
     ),
+    /**
+     * Collection owner mints tokens of `collection_id` to `recipients` consisting of an
+     * [`AccountId`](frame_system::Config::AccountId) and [`MintParams`]. A single mint failure
+     * will fail all of them in the batch.
+     *
+     * Batch minting is slightly less expensive than performing the same number of mint calls
+     * sequentially.
+     *
+     * # Errors
+     * - [`Error::AmountZero`] if `amount == 0`.
+     * - [`Error::CollectionNotFound`] if `collection` does **not** exist.
+     * - [`Error::NoPermission`] if `caller` is not allowed to mint the `collection`.
+     * - [`Error::TokenMintCapExceeded`] if the mint policy TokenCap does not allow minting
+     * - [`Error::MaxTokenCountExceeded`] if the mint policy max_token_count is exceeded
+     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficient balance for
+     *   token deposit
+     * - `BadOrigin` if any recipient's `privileged_params` sets a privileged field (a
+     *   deposit-free token or a foreign token) and `origin` is not [`Config::ForceOrigin`]
+     * - [`Error::NoPermission`] if any recipient sets a privileged field: the whole batch then
+     *   runs as root, so no recipient in it may carry `attributes` or `groups`
+     */
+    v1080: new CallType(
+        'MultiTokens.batch_mint',
+        sts.struct({
+            collectionId: sts.bigint(),
+            recipients: sts.array(() => v1080.Type_637),
+        })
+    ),
 }
 
 export const batchSetAttribute = {
@@ -3515,6 +3696,29 @@ export const batchSetAttribute = {
             collectionId: sts.bigint(),
             tokenId: sts.option(() => sts.bigint()),
             attributes: sts.array(() => v1060.AttributeKeyValuePair),
+        })
+    ),
+    /**
+     * Collection owner sets `attributes` to `collection_id`
+     *
+     * If `token_id` is [`None`], the attribute is added to the collection. If it is [`Some`],
+     * the attribute is added to the token.
+     *
+     * # Errors
+     *
+     * - [`Error::InvalidAttributeKey`] if `key.len() == 0`
+     * - [`Error::CollectionNotFound`] if `collection_id` does not exist.
+     * - [`Error::TokenNotFound`] if `token_id` is `Some` and does not exist.
+     * - [`Error::NoPermission`] if `source` account is not the owner of the collection.
+     * - [`Error::DepositReserveFailed`] if unable to reserve the deposit for the attribute
+     *   storage.
+     */
+    v1080: new CallType(
+        'MultiTokens.batch_set_attribute',
+        sts.struct({
+            collectionId: sts.bigint(),
+            tokenId: sts.option(() => sts.bigint()),
+            attributes: sts.array(() => v1080.AttributeKeyValuePair),
         })
     ),
 }
@@ -4430,6 +4634,16 @@ export const forceSetCollection = {
             value: sts.option(() => v1060.Collection),
         })
     ),
+    /**
+     * Set the Collections storage to the given `value`, origin must be root
+     */
+    v1080: new CallType(
+        'MultiTokens.force_set_collection',
+        sts.struct({
+            collectionId: sts.bigint(),
+            value: sts.option(() => v1080.Collection),
+        })
+    ),
 }
 
 export const forceSetToken = {
@@ -4643,6 +4857,17 @@ export const forceSetToken = {
             value: sts.option(() => v1060.Token),
         })
     ),
+    /**
+     * Set the Tokens storage to the given `value`, origin must be root
+     */
+    v1080: new CallType(
+        'MultiTokens.force_set_token',
+        sts.struct({
+            collectionId: sts.bigint(),
+            tokenId: sts.bigint(),
+            value: sts.option(() => v1080.Token),
+        })
+    ),
 }
 
 export const forceSetAttribute = {
@@ -4753,6 +4978,18 @@ export const forceSetAttribute = {
             tokenId: sts.option(() => sts.bigint()),
             key: sts.bytes(),
             value: sts.option(() => v1030.Attribute),
+        })
+    ),
+    /**
+     * Set the Tokens storage to the given `value`, origin must be root
+     */
+    v1080: new CallType(
+        'MultiTokens.force_set_attribute',
+        sts.struct({
+            collectionId: sts.bigint(),
+            tokenId: sts.option(() => sts.bigint()),
+            key: sts.bytes(),
+            value: sts.option(() => v1080.Attribute),
         })
     ),
 }
@@ -5278,6 +5515,22 @@ export const forceCreateCollection = {
             depositor: sts.option(() => v1060.AccountId32),
         })
     ),
+    /**
+     * Creates a new collection from `descriptor` at `collection_id`, origin must be root
+     *
+     * # Errors
+     * - [`Error::DepositReserveFailed`] if the deposit cannot be reserved
+     * - [`Error::CollectionIdAlreadyInUse`] if the collection id is already in use
+     */
+    v1080: new CallType(
+        'MultiTokens.force_create_collection',
+        sts.struct({
+            owner: v1080.AccountId32,
+            collectionId: sts.bigint(),
+            descriptor: v1080.DefaultCollectionDescriptor,
+            depositor: sts.option(() => v1080.AccountId32),
+        })
+    ),
 }
 
 export const forceMint = {
@@ -5601,6 +5854,29 @@ export const forceMint = {
             depositor: sts.option(() => v1060.MultiAddress),
         })
     ),
+    /**
+     * Same as [`mint`](Self::mint), but it is callable by
+     * [`Config::EthereumMigrationOrigin`]. If `caller` is None, it will use the collection
+     * owner. If `depositor` is `Some`, they will pay the deposit for minting.
+     *
+     * Unlike [`mint`](Self::mint), this path deliberately permits deposit-free minting —
+     * migrated tokens legitimately skip the storage deposit.
+     *
+     * ## Errors
+     * - [`Error::NoPermission`] if `params` would create a foreign token. Registering an XCM
+     *   `Location` requires [`Config::ForceOrigin`], which is strictly stronger than
+     *   [`Config::EthereumMigrationOrigin`]; use [`mint`](Self::mint) for that.
+     */
+    v1080: new CallType(
+        'MultiTokens.force_mint',
+        sts.struct({
+            caller: sts.option(() => v1080.MultiAddress),
+            recipient: v1080.MultiAddress,
+            collectionId: sts.bigint(),
+            params: v1080.FlexibleMintParams,
+            depositor: sts.option(() => v1080.MultiAddress),
+        })
+    ),
 }
 
 export const forceBurn = {
@@ -5774,6 +6050,15 @@ export const forceFreeze = {
         'MultiTokens.force_freeze',
         sts.struct({
             info: v1070.Freeze,
+        })
+    ),
+    /**
+     * Same as [`freeze`](Self::freeze), but it is callable by [`Config::ForceOrigin`]
+     */
+    v1080: new CallType(
+        'MultiTokens.force_freeze',
+        sts.struct({
+            info: v1080.Freeze,
         })
     ),
 }
@@ -6326,6 +6611,31 @@ export const forceCreateEthereumCollection = {
             descriptor: v1060.DefaultCollectionDescriptor,
         })
     ),
+    /**
+     * Creates a new collection from `descriptor` at `collection_id`, origin must be
+     * [`Config::EthereumMigrationOrigin`]. It differs from `force_create_collection`
+     * since it writes to `NativeCollectionIds` and `ClaimableCollectionIds`.
+     *
+     * # Params
+     * - `owner` - the account that will own the new collection
+     * - `claimer` - the ethereum address that will be able to claim the collection
+     * - `ethereum_collection_id` - the collection id on ethereum
+     *
+     * # Errors
+     * - [`Error::DepositReserveFailed`] if the deposit cannot be reserved
+     * - [`Error::CollectionIdAlreadyInUse`] if the collection id is already in use
+     * - [`Error::EthereumCollectionAlreadyMapped`] if `ethereum_collection_id` already maps to
+     *   a native collection
+     */
+    v1080: new CallType(
+        'MultiTokens.force_create_ethereum_collection',
+        sts.struct({
+            owner: v1080.AccountId32,
+            claimer: v1080.H160,
+            ethereumCollectionId: sts.bigint(),
+            descriptor: v1080.DefaultCollectionDescriptor,
+        })
+    ),
 }
 
 export const forceSetEthereumUnmintableTokenIds = {
@@ -6689,6 +6999,31 @@ export const setTokenGroupAttribute = {
             tokenGroupId: sts.bigint(),
             key: sts.bytes(),
             value: sts.bytes(),
+        })
+    ),
+    /**
+     * Sets the attribute `key` to `value` for `token_group_id`.
+     * Only callable by the collection's owner.
+     *
+     * If `frozen` is true, the attribute is permanently frozen: it can never be modified
+     * or removed afterwards. An existing unfrozen attribute can be set-and-frozen in one
+     * call.
+     *
+     * # Errors
+     * - [`Error::InvalidAttributeKey`] if `key.len() == 0`
+     * - [`Error::TokenGroupNotFound`] if `token_group_id` does not exist.
+     * - [`Error::NoPermission`] if `source` account is not the owner of the collection.
+     * - [`Error::AttributeFrozen`] if the attribute is frozen.
+     * - [`Error::DepositReserveFailed`] if unable to reserve the deposit for the attribute
+     *   storage.
+     */
+    v1080: new CallType(
+        'MultiTokens.set_token_group_attribute',
+        sts.struct({
+            tokenGroupId: sts.bigint(),
+            key: sts.bytes(),
+            value: sts.bytes(),
+            frozen: sts.boolean(),
         })
     ),
 }

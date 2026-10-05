@@ -38,6 +38,22 @@ export async function attributes(
             Promise<Attribute | AsyncIterable<[k: [bigint, bigint?, string?], v: Attribute | undefined][]> | undefined>
         >()
         .when(
+            () => multiTokens.attributes.v1080.is(block),
+            () => {
+                if (params?.collectionId !== undefined && 'key' in params) {
+                    return getMixedAttribute(block, 'Attributes', [
+                        params.collectionId,
+                        params.tokenId,
+                        params.key ?? '',
+                    ])
+                }
+
+                return Promise.resolve(
+                    getMixedAttributePairs(block, 'Attributes', multiTokens.attributes.v1080, params?.batchSize ?? 1000)
+                )
+            }
+        )
+        .when(
             () => multiTokens.attributes.matrixV1040.is(block),
             () => {
                 if (params?.collectionId !== undefined && 'key' in params) {

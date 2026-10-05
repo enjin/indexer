@@ -28,6 +28,7 @@ import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
 import * as enjinV1070 from '../enjinV1070'
 import * as v1070 from '../v1070'
+import * as v1080 from '../v1080'
 
 export const tokenAccounts = {
     /**
@@ -2062,6 +2063,10 @@ export const collections = {
      *  The collections in existence and their ownership details.
      */
     v1060: new StorageType('MultiTokens.Collections', 'Optional', [sts.bigint()], v1060.Collection) as CollectionsV1060,
+    /**
+     *  The collections in existence and their ownership details.
+     */
+    v1080: new StorageType('MultiTokens.Collections', 'Optional', [sts.bigint()], v1080.Collection) as CollectionsV1080,
 }
 
 /**
@@ -2388,6 +2393,27 @@ export interface CollectionsV1060 {
     ): AsyncIterable<[k: bigint, v: v1060.Collection | undefined][]>
 }
 
+/**
+ *  The collections in existence and their ownership details.
+ */
+export interface CollectionsV1080 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: bigint): Promise<v1080.Collection | undefined>
+    getMany(block: Block, keys: bigint[]): Promise<(v1080.Collection | undefined)[]>
+    getKeys(block: Block): Promise<bigint[]>
+    getKeys(block: Block, key: bigint): Promise<bigint[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<bigint[]>
+    getKeysPaged(pageSize: number, block: Block, key: bigint): AsyncIterable<bigint[]>
+    getPairs(block: Block): Promise<[k: bigint, v: v1080.Collection | undefined][]>
+    getPairs(block: Block, key: bigint): Promise<[k: bigint, v: v1080.Collection | undefined][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: bigint, v: v1080.Collection | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: bigint
+    ): AsyncIterable<[k: bigint, v: v1080.Collection | undefined][]>
+}
+
 export const tokens = {
     /**
      *  Tokens storage
@@ -2536,6 +2562,11 @@ export const tokens = {
      *  Tokens storage
      */
     v1060: new StorageType('MultiTokens.Tokens', 'Optional', [sts.bigint(), sts.bigint()], v1060.Token) as TokensV1060,
+    /**
+     *  Tokens storage. Do not access directly while the v6 lazy migration is live — go through
+     *  the [`Tokens`] migrating wrapper instead so pre-v6 values decode correctly.
+     */
+    v1080: new StorageType('MultiTokens.Tokens', 'Optional', [sts.bigint(), sts.bigint()], v1080.Token) as TokensV1080,
 }
 
 /**
@@ -3203,6 +3234,37 @@ export interface TokensV1060 {
     ): AsyncIterable<[k: [bigint, bigint], v: v1060.Token | undefined][]>
 }
 
+/**
+ *  Tokens storage. Do not access directly while the v6 lazy migration is live — go through
+ *  the [`Tokens`] migrating wrapper instead so pre-v6 values decode correctly.
+ */
+export interface TokensV1080 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key1: bigint, key2: bigint): Promise<v1080.Token | undefined>
+    getMany(block: Block, keys: [bigint, bigint][]): Promise<(v1080.Token | undefined)[]>
+    getKeys(block: Block): Promise<[bigint, bigint][]>
+    getKeys(block: Block, key1: bigint): Promise<[bigint, bigint][]>
+    getKeys(block: Block, key1: bigint, key2: bigint): Promise<[bigint, bigint][]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[bigint, bigint][]>
+    getKeysPaged(pageSize: number, block: Block, key1: bigint): AsyncIterable<[bigint, bigint][]>
+    getKeysPaged(pageSize: number, block: Block, key1: bigint, key2: bigint): AsyncIterable<[bigint, bigint][]>
+    getPairs(block: Block): Promise<[k: [bigint, bigint], v: v1080.Token | undefined][]>
+    getPairs(block: Block, key1: bigint): Promise<[k: [bigint, bigint], v: v1080.Token | undefined][]>
+    getPairs(block: Block, key1: bigint, key2: bigint): Promise<[k: [bigint, bigint], v: v1080.Token | undefined][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: [bigint, bigint], v: v1080.Token | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint
+    ): AsyncIterable<[k: [bigint, bigint], v: v1080.Token | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint,
+        key2: bigint
+    ): AsyncIterable<[k: [bigint, bigint], v: v1080.Token | undefined][]>
+}
+
 export const nextCollectionId = {
     /**
      *  Sequencer for collectionID generators.
@@ -3379,6 +3441,18 @@ export const attributes = {
         [sts.bigint(), sts.option(() => sts.bigint()), sts.bytes()],
         v1030.Attribute
     ) as AttributesV1030,
+    /**
+     *  Metadata of collections and tokens. Contains the attribute's value and the storage
+     *  deposit. Do not access directly while the v6 lazy migration is live — go through the
+     *  [`Attributes`] migrating wrapper instead so pre-v6 values decode correctly. Key-only
+     *  iteration (`iter_key_prefix`) is safe on this type: only the value encoding changed.
+     */
+    v1080: new StorageType(
+        'MultiTokens.Attributes',
+        'Optional',
+        [sts.bigint(), sts.option(() => sts.bigint()), sts.bytes()],
+        v1080.Attribute
+    ) as AttributesV1080,
 }
 
 /**
@@ -4041,6 +4115,80 @@ export interface AttributesV1030 {
         key2: bigint | undefined,
         key3: Bytes
     ): AsyncIterable<[k: [bigint, bigint | undefined, Bytes], v: v1030.Attribute | undefined][]>
+}
+
+/**
+ *  Metadata of collections and tokens. Contains the attribute's value and the storage
+ *  deposit. Do not access directly while the v6 lazy migration is live — go through the
+ *  [`Attributes`] migrating wrapper instead so pre-v6 values decode correctly. Key-only
+ *  iteration (`iter_key_prefix`) is safe on this type: only the value encoding changed.
+ */
+export interface AttributesV1080 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key1: bigint, key2: bigint | undefined, key3: Bytes): Promise<v1080.Attribute | undefined>
+    getMany(block: Block, keys: [bigint, bigint | undefined, Bytes][]): Promise<(v1080.Attribute | undefined)[]>
+    getKeys(block: Block): Promise<[bigint, bigint | undefined, Bytes][]>
+    getKeys(block: Block, key1: bigint): Promise<[bigint, bigint | undefined, Bytes][]>
+    getKeys(block: Block, key1: bigint, key2: bigint | undefined): Promise<[bigint, bigint | undefined, Bytes][]>
+    getKeys(
+        block: Block,
+        key1: bigint,
+        key2: bigint | undefined,
+        key3: Bytes
+    ): Promise<[bigint, bigint | undefined, Bytes][]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[bigint, bigint | undefined, Bytes][]>
+    getKeysPaged(pageSize: number, block: Block, key1: bigint): AsyncIterable<[bigint, bigint | undefined, Bytes][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint,
+        key2: bigint | undefined
+    ): AsyncIterable<[bigint, bigint | undefined, Bytes][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint,
+        key2: bigint | undefined,
+        key3: Bytes
+    ): AsyncIterable<[bigint, bigint | undefined, Bytes][]>
+    getPairs(block: Block): Promise<[k: [bigint, bigint | undefined, Bytes], v: v1080.Attribute | undefined][]>
+    getPairs(
+        block: Block,
+        key1: bigint
+    ): Promise<[k: [bigint, bigint | undefined, Bytes], v: v1080.Attribute | undefined][]>
+    getPairs(
+        block: Block,
+        key1: bigint,
+        key2: bigint | undefined
+    ): Promise<[k: [bigint, bigint | undefined, Bytes], v: v1080.Attribute | undefined][]>
+    getPairs(
+        block: Block,
+        key1: bigint,
+        key2: bigint | undefined,
+        key3: Bytes
+    ): Promise<[k: [bigint, bigint | undefined, Bytes], v: v1080.Attribute | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: [bigint, bigint | undefined, Bytes], v: v1080.Attribute | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint
+    ): AsyncIterable<[k: [bigint, bigint | undefined, Bytes], v: v1080.Attribute | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint,
+        key2: bigint | undefined
+    ): AsyncIterable<[k: [bigint, bigint | undefined, Bytes], v: v1080.Attribute | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint,
+        key2: bigint | undefined,
+        key3: Bytes
+    ): AsyncIterable<[k: [bigint, bigint | undefined, Bytes], v: v1080.Attribute | undefined][]>
 }
 
 export const assetIdsByLocation = {
@@ -5210,6 +5358,19 @@ export const tokenGroupAttributes = {
         [sts.bigint(), sts.bytes()],
         enjinV1062.Attribute
     ) as TokenGroupAttributesEnjinV1062,
+    /**
+     *  Metadata of token groups. Contains the attribute's value and the storage deposit.
+     *  Values written before storage version 6 lack the `frozen` field and are rewritten by
+     *  the [`TokenGroupAttributesMigration`](migrations::TokenGroupAttributesMigration)
+     *  multi-block migration, which completes (transactions are suspended while it runs)
+     *  before any transaction can access this storage.
+     */
+    v1080: new StorageType(
+        'MultiTokens.TokenGroupAttributes',
+        'Optional',
+        [sts.bigint(), sts.bytes()],
+        v1080.Attribute
+    ) as TokenGroupAttributesV1080,
 }
 
 /**
@@ -5325,6 +5486,40 @@ export interface TokenGroupAttributesEnjinV1062 {
         key1: bigint,
         key2: Bytes
     ): AsyncIterable<[k: [bigint, Bytes], v: enjinV1062.Attribute | undefined][]>
+}
+
+/**
+ *  Metadata of token groups. Contains the attribute's value and the storage deposit.
+ *  Values written before storage version 6 lack the `frozen` field and are rewritten by
+ *  the [`TokenGroupAttributesMigration`](migrations::TokenGroupAttributesMigration)
+ *  multi-block migration, which completes (transactions are suspended while it runs)
+ *  before any transaction can access this storage.
+ */
+export interface TokenGroupAttributesV1080 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key1: bigint, key2: Bytes): Promise<v1080.Attribute | undefined>
+    getMany(block: Block, keys: [bigint, Bytes][]): Promise<(v1080.Attribute | undefined)[]>
+    getKeys(block: Block): Promise<[bigint, Bytes][]>
+    getKeys(block: Block, key1: bigint): Promise<[bigint, Bytes][]>
+    getKeys(block: Block, key1: bigint, key2: Bytes): Promise<[bigint, Bytes][]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[bigint, Bytes][]>
+    getKeysPaged(pageSize: number, block: Block, key1: bigint): AsyncIterable<[bigint, Bytes][]>
+    getKeysPaged(pageSize: number, block: Block, key1: bigint, key2: Bytes): AsyncIterable<[bigint, Bytes][]>
+    getPairs(block: Block): Promise<[k: [bigint, Bytes], v: v1080.Attribute | undefined][]>
+    getPairs(block: Block, key1: bigint): Promise<[k: [bigint, Bytes], v: v1080.Attribute | undefined][]>
+    getPairs(block: Block, key1: bigint, key2: Bytes): Promise<[k: [bigint, Bytes], v: v1080.Attribute | undefined][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: [bigint, Bytes], v: v1080.Attribute | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint
+    ): AsyncIterable<[k: [bigint, Bytes], v: v1080.Attribute | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint,
+        key2: Bytes
+    ): AsyncIterable<[k: [bigint, Bytes], v: v1080.Attribute | undefined][]>
 }
 
 export const collectionDepositRecalculationStatus = {
@@ -5939,6 +6134,31 @@ export interface FailedLoanReturnsMatrixV1040 {
         block: Block,
         key: [bigint, bigint]
     ): AsyncIterable<[k: [bigint, bigint], v: number | undefined][]>
+}
+
+export const claimTokensInBlock = {
+    /**
+     *  The block that last included a `claim_tokens` call and how many it included, compared
+     *  against [`Config::MaxClaimTokensPerBlock`] when the next one is included. An entry for an
+     *  earlier block counts as zero.
+     */
+    matrixV1041: new StorageType(
+        'MultiTokens.ClaimTokensInBlock',
+        'Default',
+        [],
+        sts.tuple(() => [sts.number(), sts.number()])
+    ) as ClaimTokensInBlockMatrixV1041,
+}
+
+/**
+ *  The block that last included a `claim_tokens` call and how many it included, compared
+ *  against [`Config::MaxClaimTokensPerBlock`] when the next one is included. An entry for an
+ *  earlier block counts as zero.
+ */
+export interface ClaimTokensInBlockMatrixV1041 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): [number, number]
+    get(block: Block): Promise<[number, number] | undefined>
 }
 
 export const lastIteratedMigrationKey = {
