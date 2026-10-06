@@ -29,9 +29,10 @@ import { calls, events } from '~/type'
 import { QueueUtils } from '~/queue'
 import { QueuesEnum } from '~/queue/constants'
 import { Logger } from '~/util/logger'
-import { getSnsEventHash, isRelay } from '~/util/tools'
+import { isRelay } from '~/util/tools'
 import { readableDispatchError } from '~/util/dispatch-error'
 import { isSnsEvent, Sns, SnsEvent } from '~/util/sns'
+import { SnsEventCache } from '~/util/sns-event-cache'
 import { queueMissingBlocks } from '~/migration/queue-missing-blocks'
 import { initializeCrashReporting, reportCrash } from '~/util/crash-report'
 
@@ -52,8 +53,7 @@ async function bootstrap() {
         })
     }
 
-    const snsEvents: SnsEvent[] = []
-    let snsEventsCache: Map<string, { eventId: string; blockHash: string; expiresAt: number }> = new Map()
+    const snsEventsCache = new SnsEventCache()
 
     processorConfig.run(
         new TypeormDatabase({
@@ -79,6 +79,8 @@ async function bootstrap() {
                         `Processing block ${block.header.height}, ${block.events.length} events, ${block.calls.length} calls to process`
                     )
 
+                    snsEventsCache.beginBlock(block.header)
+                    const snsEvents = []
                     const extrinsics: Extrinsic[] = []
                     const signers = new Set<string>()
                     const eventsCollection: Event[] = []
@@ -109,28 +111,7 @@ async function bootstrap() {
                             }
                         }
                         if (a) accountTokenEvents.push(a)
-                        if (s) {
-                            const eventCacheKey = getSnsEventHash(s.name, s.body)
-                            const cachedSnsEvent = snsEventsCache.get(eventCacheKey)
-
-                            if (!cachedSnsEvent) {
-                                snsEventsCache.set(eventCacheKey, {
-                                    eventId: s.id,
-                                    blockHash: block.header.hash,
-                                    expiresAt: Date.now() + 30_000,
-                                })
-                                snsEvents.push(s)
-                            } else if (cachedSnsEvent.blockHash !== block.header.hash) {
-                                snsEvents.push({
-                                    ...s,
-                                    body: {
-                                        ...s.body,
-                                        isReorganized: true,
-                                        reorganizedId: cachedSnsEvent.eventId,
-                                    },
-                                })
-                            }
-                        }
+                        if (s) snsEvents.push({ notification: s, item: eventItem })
                     }
 
                     if (block.header.height > dataService.lastBlockNumber) {
@@ -148,14 +129,14 @@ async function bootstrap() {
                         await ctx.store.save(chunk)
                     }
 
-                    if (snsEvents.length > 0) {
-                        for (const snsEvent of snsEvents) {
-                            if (await isValidEvent(ctx, snsEvent.id)) {
+                    for (const { notification, item } of snsEvents) {
+                        if (await isValidEvent(ctx, notification.id)) {
+                            const snsEvent = snsEventsCache.prepare(block.header, item, notification)
+                            if (snsEvent) {
                                 await Sns.getInstance().send(snsEvent, block.header.height)
+                                snsEventsCache.record(block.header, item, snsEvent)
                             }
                         }
-                        snsEventsCache = clearExpiredCache(snsEventsCache)
-                        snsEvents.length = 0
                     }
 
                     const blockEnd = Date.now()
@@ -235,16 +216,6 @@ async function isValidEvent(ctx: CommonContext, id: string): Promise<boolean> {
     })
 
     return event !== undefined
-}
-
-function clearExpiredCache(snsEventsCache: Map<string, { eventId: string; blockHash: string; expiresAt: number }>) {
-    snsEventsCache.forEach((value: { eventId: string; blockHash: string; expiresAt: number }, key: string) => {
-        if (value.expiresAt < Date.now()) {
-            snsEventsCache.delete(key)
-        }
-    })
-
-    return snsEventsCache
 }
 
 async function startWarpSync(ctx: CommonContext, block: Block) {
