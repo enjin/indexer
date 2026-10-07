@@ -25,3 +25,25 @@ void test('encode returns one result per call for a batch, matching single-call 
 void test('encode rejects a request with neither call nor calls', async () => {
     await assert.rejects(encode({}), { message: 'Invalid request: no call or calls provided' })
 })
+
+void test('encode uses the enjin-matrixchain 1041 metadata ahead of the enjin upgrade', async () => {
+    const tankId = `0x${'11'.repeat(32)}`
+    const call = {
+        pallet: 'FuelTanks',
+        name: 'dispatch',
+        args: {
+            tankId: { __kind: 'Id', value: tankId },
+            ruleSetId: undefined,
+            call: { __kind: 'System', value: { __kind: 'remark', remark: '0x6b6579' } },
+            settings: undefined,
+        },
+    }
+
+    // Since 1040 `rule_set_id` is an Option, so omitting it encodes None.
+    assert.deepEqual(await encode({ call, network: 'enjin-matrixchain', spec_version: 1041 }), {
+        encoded: `0x360500${'11'.repeat(32)}0000000c6b657900`,
+        network: 'enjin-matrixchain',
+        spec_version: 1041,
+    })
+    await assert.rejects(encode({ call, network: 'enjin-matrixchain', spec_version: 1031 }), /Invalid U32/)
+})
