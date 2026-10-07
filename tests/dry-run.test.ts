@@ -162,7 +162,14 @@ void test('formatDryRunResult reports a sponsored call that fails inside a succe
                     {
                         section: 'fuelTanks',
                         method: 'DispatchFailed',
-                        data: { error: { ...codec('0x032802000000'), type: 'Module', isModule: true, asModule: moduleError } },
+                        data: {
+                            error: {
+                                ...codec('0x032802000000'),
+                                type: 'Module',
+                                isModule: true,
+                                asModule: moduleError,
+                            },
+                        },
                     },
                 ],
             },
@@ -190,7 +197,9 @@ void test('formatDryRunResult reports a non-module error of a failed sponsored c
                 {
                     section: 'fuelTanks',
                     method: 'DispatchFailed',
-                    data: { error: { ...codec('0x02'), type: 'BadOrigin', isModule: false, asModule: undefined as never } },
+                    data: {
+                        error: { ...codec('0x02'), type: 'BadOrigin', isModule: false, asModule: undefined as never },
+                    },
                 },
             ],
         },
