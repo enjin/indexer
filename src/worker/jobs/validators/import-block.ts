@@ -32,6 +32,10 @@ async function withRpcRetry<T>(rpc: Rpc, fn: () => Promise<T>): Promise<T> {
 export async function importBlock(job: Job, blockNumber: number, toBlock?: number): Promise<void> {
     const em = await connectionManager()
     const rpc = await Rpc.getInstance()
+    const finalizedHeight = await withRpcRetry(rpc, async () => {
+        const head = await rpc.api.rpc.chain.getFinalizedHead()
+        return (await rpc.api.rpc.chain.getHeader(head)).number.toNumber()
+    })
     const fromBlock = blockNumber
     const endBlock = toBlock ?? blockNumber
 
@@ -133,6 +137,7 @@ export async function importBlock(job: Job, blockNumber: number, toBlock?: numbe
                     maxSaltLength: Number(maxSaltLength.toString()),
                     minimumBidIncreasePercentage: Number(minimumBidIncreasePercentage.toString()),
                 }),
+                finalized: height <= finalizedHeight,
             })
 
             states.push(state)
