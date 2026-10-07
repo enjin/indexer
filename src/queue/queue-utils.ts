@@ -568,6 +568,20 @@ export function dispatchBackfillExtrinsicBlockRelation(options?: {
     })
 }
 
+export function dispatchBackfillChainFinality(options?: {
+    fromBlock?: number
+    toBlock?: number
+    blockSpan?: number
+}): void {
+    const hasRange = typeof options?.fromBlock === 'number' && typeof options.toBlock === 'number'
+    const jobId = hasRange
+        ? `validators.backfill-chain-finality.${options.fromBlock}-${options.toBlock}`
+        : `validators.backfill-chain-finality.dispatch.${Date.now()}`
+    ValidatorsQueue.add(JobsEnum.BACKFILL_CHAIN_FINALITY, options ?? {}, { jobId }).catch(() => {
+        Logger.error('Failed to dispatch backfill chain finality', LOGGER_NAMESPACE)
+    })
+}
+
 export function dispatchSyncAccounts(): void {
     addRefreshJob(
         AccountsQueue,

@@ -1,4 +1,5 @@
 export * from './backfill-extrinsic-block-relation'
+export * from './backfill-chain-finality'
 export * from './sync-chain'
 export * from './sync-validators'
 export * from './compute-validators'

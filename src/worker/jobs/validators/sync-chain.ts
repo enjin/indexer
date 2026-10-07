@@ -13,7 +13,7 @@ type LocalBlock = {
     specVersion: number
 }
 
-const saveChainInfo = async (block: LocalBlock, blockData: any) => {
+const saveChainInfo = async (block: LocalBlock, blockData: any, finalizedHeight: number) => {
     try {
         const [
             { transactionVersion },
@@ -43,6 +43,7 @@ const saveChainInfo = async (block: LocalBlock, blockData: any) => {
                 maxSaltLength: Number(maxSaltLength.toString()),
                 minimumBidIncreasePercentage: Number(minimumBidIncreasePercentage.toString()),
             }),
+            finalized: block.height <= finalizedHeight,
         })
 
         return state
@@ -55,6 +56,8 @@ export async function syncChain(_job: Job, fromBlock?: number, toBlock?: number)
     const em = await connectionManager()
 
     const { api } = await Rpc.getInstance()
+    const finalizedHead = await api.rpc.chain.getFinalizedHead()
+    const finalizedHeight = (await api.rpc.chain.getHeader(finalizedHead)).number.toNumber()
     const blocksInDay = 10 * 60 * 24
     let currentBlock = 0
     let variableDate = 0
@@ -166,7 +169,7 @@ export async function syncChain(_job: Job, fromBlock?: number, toBlock?: number)
             specVersion: Number(1050),
         }
 
-        const state = await saveChainInfo(localBlock, blockData)
+        const state = await saveChainInfo(localBlock, blockData, finalizedHeight)
 
         if (state) {
             states.push(state)
