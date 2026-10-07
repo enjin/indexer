@@ -29,8 +29,19 @@ interface ExecutionResult {
     asErr: DispatchFailure
 }
 
+/**
+ * A runtime event as polkadot.js decodes the dry-run's `emittedEvents` (`Vec<Event>`): pallet
+ * and event name in camel/pascal case, fields by name.
+ */
+interface DryRunEvent {
+    section: string
+    method: string
+    data: { error?: DispatchError }
+}
+
 interface DryRunEffects {
     executionResult: ExecutionResult
+    emittedEvents?: DryRunEvent[]
 }
 
 interface DryRunResult {
@@ -114,14 +125,34 @@ export function formatDryRunResult(registry: DryRunRegistry, result: DryRunResul
     }
 
     const executionResult = result.asOk.executionResult
-    if (executionResult.isOk) {
-        return { success: true }
+    if (!executionResult.isOk) {
+        return {
+            success: false,
+            error: describeDispatchError(registry, executionResult.asErr.error),
+        }
     }
 
-    return {
-        success: false,
-        error: describeDispatchError(registry, executionResult.asErr.error),
+    // Since matrixchain 1.4.0 a fuel-tank dispatch whose wrapped call fails still succeeds:
+    // `FuelTanks.dispatch` returns Ok, the tank pays the fee, and the call's error is only in a
+    // `DispatchFailed` event. The simulation must report that call as failing, or it vouches
+    // for a sponsored transaction that does nothing on chain.
+    const dispatchFailed = result.asOk.emittedEvents?.find(
+        (event) => event.section === 'fuelTanks' && event.method === 'DispatchFailed'
+    )
+    const innerError = dispatchFailed?.data.error
+    if (innerError) {
+        const error = describeDispatchError(registry, innerError)
+
+        return {
+            success: false,
+            error: {
+                ...error,
+                message: `The sponsored call would fail inside the fuel-tank dispatch (the tank would still pay the fee): ${error.message}`,
+            },
+        }
     }
+
+    return { success: true }
 }
 
 export function buildDryRunOrigin(request: DryRunInput): DryRunOriginCaller {
