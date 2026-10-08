@@ -142,6 +142,96 @@ void test('formatDryRunResult describes nested non-module errors', () => {
     })
 })
 
+void test('formatDryRunResult reports a sponsored call that fails inside a successful fuel-tank dispatch', () => {
+    const moduleError = codec('0x2802000000')
+    const result = formatDryRunResult(
+        {
+            findMetaError: () => ({
+                section: 'multiTokens',
+                name: 'TokenNotFound',
+                docs: ['Token was not found'],
+            }),
+        },
+        {
+            isErr: false,
+            asErr: codec('0x00'),
+            asOk: {
+                // FuelTanks.dispatch itself succeeds; the wrapped call's error is only in the event.
+                executionResult: { isOk: true, asErr: undefined as never },
+                emittedEvents: [
+                    {
+                        section: 'fuelTanks',
+                        method: 'DispatchFailed',
+                        data: {
+                            error: {
+                                ...codec('0x032802000000'),
+                                type: 'Module',
+                                isModule: true,
+                                asModule: moduleError,
+                            },
+                        },
+                    },
+                ],
+            },
+        }
+    )
+
+    assert.deepEqual(result, {
+        success: false,
+        error: {
+            code: '0x2802000000',
+            name: 'multiTokens.TokenNotFound',
+            message:
+                'The sponsored call would fail inside the fuel-tank dispatch (the tank would still pay the fee): Token was not found',
+        },
+    })
+})
+
+void test('formatDryRunResult reports a non-module error of a failed sponsored call', () => {
+    const result = formatDryRunResult({} as never, {
+        isErr: false,
+        asErr: codec('0x00'),
+        asOk: {
+            executionResult: { isOk: true, asErr: undefined as never },
+            emittedEvents: [
+                {
+                    section: 'fuelTanks',
+                    method: 'DispatchFailed',
+                    data: {
+                        error: { ...codec('0x02'), type: 'BadOrigin', isModule: false, asModule: undefined as never },
+                    },
+                },
+            ],
+        },
+    })
+
+    assert.deepEqual(result, {
+        success: false,
+        error: {
+            code: '0x02',
+            name: 'BadOrigin',
+            message:
+                'The sponsored call would fail inside the fuel-tank dispatch (the tank would still pay the fee): The call returned BadOrigin.',
+        },
+    })
+})
+
+void test('formatDryRunResult keeps a sponsored call that dispatched successfully', () => {
+    const result = formatDryRunResult({} as never, {
+        isErr: false,
+        asErr: codec('0x00'),
+        asOk: {
+            executionResult: { isOk: true, asErr: undefined as never },
+            emittedEvents: [
+                { section: 'multiTokens', method: 'TokenMutated', data: {} },
+                { section: 'fuelTanks', method: 'CallDispatched', data: {} },
+            ],
+        },
+    })
+
+    assert.deepEqual(result, { success: true })
+})
+
 void test('dryRun invokes the configured runtime API with the expected arguments', async () => {
     const calls: unknown[][] = []
     const api = {
