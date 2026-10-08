@@ -488,7 +488,7 @@ type MultiTokensUnapproved {
 
 type MultiTokensInfused {
   collectionId: BigInt!
-  tokenId: BigInt
+  tokenId: BigInt!
   accountId: Account!
   amount: BigInt!
 }
