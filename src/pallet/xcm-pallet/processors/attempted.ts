@@ -4,6 +4,7 @@ import { getOrCreateAccount, unwrapSigner } from '~/util/entities'
 import processorConfig from '~/util/config'
 import * as mappings from '~/pallet/index'
 import { EventHandlerResult } from '~/processor.handler'
+import { nativeTeleportAmount, teleportBeneficiary } from '~/pallet/common/teleport'
 
 export async function attempted(ctx: CommonContext, block: Block, item: EventItem): Promise<EventHandlerResult> {
     if (item.call === undefined || !item.extrinsic) return undefined
@@ -14,33 +15,12 @@ export async function attempted(ctx: CommonContext, block: Block, item: EventIte
     }
 
     let destination: string | null = null
-    let beneficiary: Uint8Array | string | null = null
-    let amount: bigint | null = null
-
     const destInterior = call.dest.value.interior
-    const beneficiaryInterior = call.beneficiary.value.interior
-    const assetInterior = call.assets.value.at(0)
+    const beneficiary = teleportBeneficiary(call.beneficiary)
+    const amount = nativeTeleportAmount(call.assets)
 
     if (destInterior.__kind === 'X1') {
         destination = processorConfig.chainName.startsWith('canary') ? 'canary-matrixchain' : 'enjin-matrixchain'
-    }
-
-    if (
-        beneficiaryInterior.__kind === 'X1' &&
-        '__kind' in beneficiaryInterior.value &&
-        beneficiaryInterior.value.__kind === 'AccountId32'
-    ) {
-        beneficiary = beneficiaryInterior.value.id
-    }
-
-    if (
-        assetInterior &&
-        assetInterior.fun.__kind === 'Fungible' &&
-        '__kind' in assetInterior.id &&
-        assetInterior.id.__kind === 'Concrete' &&
-        assetInterior.id.value.interior.__kind === 'Here'
-    ) {
-        amount = assetInterior.fun.value
     }
 
     if (destination === null || beneficiary === null || amount === null) {
