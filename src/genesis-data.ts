@@ -61,6 +61,7 @@ async function createEnjinCollection(ctx: CommonContext, block: Block) {
         flags: new CollectionFlags({
             featured: false,
             hiddenForLegalReasons: false,
+            marketplaceDisabled: false,
         }),
         verifiedAt: null,
         hidden: false,
@@ -132,6 +133,7 @@ async function generateRelayData(ctx: CommonContext, block: Block) {
             flags: new CollectionFlags({
                 featured: false,
                 hiddenForLegalReasons: false,
+                marketplaceDisabled: false,
             }),
             verifiedAt: null,
             hidden: false,
@@ -176,6 +178,7 @@ async function generateRelayData(ctx: CommonContext, block: Block) {
             flags: new CollectionFlags({
                 featured: false,
                 hiddenForLegalReasons: false,
+                marketplaceDisabled: false,
             }),
             verifiedAt: null,
             hidden: false,

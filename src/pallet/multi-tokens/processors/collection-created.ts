@@ -113,6 +113,7 @@ export async function collectionCreated(
         flags: new CollectionFlags({
             featured: false,
             hiddenForLegalReasons: false,
+            marketplaceDisabled: false,
         }),
         verifiedAt: null,
         hidden: false,
