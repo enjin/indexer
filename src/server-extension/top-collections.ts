@@ -228,7 +228,7 @@ export class TopCollectionResolver {
             usersTimeWhere = `WHERE created_at >= NOW() - ${currentInterval}`
         }
 
-        const collectionWheres: string[] = [`c.id NOT IN ('0', '1')`]
+        const collectionWheres: string[] = [`c.id NOT IN ('0', '1')`, 'c.hidden = false']
         if (category.length > 0) {
             collectionWheres.push(`c.category IN (${category.map(() => `$${paramIdx++}`).join(', ')})`)
             params.push(...category)
