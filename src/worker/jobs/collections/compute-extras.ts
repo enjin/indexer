@@ -22,6 +22,7 @@ export async function computeExtras(_job: Job, ids: string[]): Promise<void> {
             collection.flags = new CollectionFlags({
                 featured: _c.featured,
                 hiddenForLegalReasons: _c.hiddenForLegalReasons,
+                marketplaceDisabled: _c.marketplaceDisabled,
             })
 
             collection.verifiedAt = _c.verifiedAt ? new Date(_c.verifiedAt) : null

@@ -83,6 +83,7 @@ export async function collections(ctx: CommonContext, block: Block) {
                 flags: new CollectionFlags({
                     featured: false,
                     hiddenForLegalReasons: false,
+                    marketplaceDisabled: false,
                     // verified: false,
                 }),
                 hidden: false,

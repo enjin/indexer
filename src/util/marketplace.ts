@@ -19,6 +19,7 @@ const collectionsQuery = `query CollectionsQuery($ids: [String!]) {
       hiddenForLegalReasons
       category
       featured
+      marketplaceDisabled
       verifiedAt
     }
   }`
@@ -37,6 +38,7 @@ type CollectionExtra = {
     hiddenForLegalReasons: boolean
     category: string | null
     featured: boolean
+    marketplaceDisabled: boolean
     verifiedAt: string | null
 }
 

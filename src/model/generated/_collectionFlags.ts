@@ -4,12 +4,14 @@ import * as marshal from "./marshal"
 export class CollectionFlags {
     private _hiddenForLegalReasons!: boolean
     private _featured!: boolean
+    private _marketplaceDisabled!: boolean
 
     constructor(props?: Partial<Omit<CollectionFlags, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
         if (json != null) {
             this._hiddenForLegalReasons = marshal.boolean.fromJSON(json.hiddenForLegalReasons)
             this._featured = marshal.boolean.fromJSON(json.featured)
+            this._marketplaceDisabled = marshal.boolean.fromJSON(json.marketplaceDisabled)
         }
     }
 
@@ -31,10 +33,20 @@ export class CollectionFlags {
         this._featured = value
     }
 
+    get marketplaceDisabled(): boolean {
+        assert(this._marketplaceDisabled != null, 'uninitialized access')
+        return this._marketplaceDisabled
+    }
+
+    set marketplaceDisabled(value: boolean) {
+        this._marketplaceDisabled = value
+    }
+
     toJSON(): object {
         return {
             hiddenForLegalReasons: this.hiddenForLegalReasons,
             featured: this.featured,
+            marketplaceDisabled: this.marketplaceDisabled,
         }
     }
 }
