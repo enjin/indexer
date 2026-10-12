@@ -14,6 +14,7 @@ import polkadotXcm from '~/pallet/polkadot-xcm'
 import matrixUtility from '~/pallet/matrix-utility'
 import utility from '~/pallet/utility'
 import migrations from '~/pallet/migrations'
+import governance from '~/pallet/governance'
 
 export {
     multiTokens,
@@ -32,4 +33,5 @@ export {
     matrixUtility,
     utility,
     migrations,
+    governance,
 }

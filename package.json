@@ -17,6 +17,7 @@
     "preinstall": "npx only-allow pnpm",
     "start": "pnpm run worker && pnpm run processor && pnpm run graphql && pnpm run metrics",
     "processor": "node -r dotenv/config lib/main.js",
+    "governance:backfill": "node -r dotenv/config lib/governance-backfill.js",
     "worker": "node -r dotenv/config lib/worker/index.js",
     "graphql": "squid-graphql-server --subscriptions",
     "metrics": "node -r dotenv/config lib/prom-metrics/index.js",
