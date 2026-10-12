@@ -13,7 +13,7 @@ export type BackfillGovernanceData = {
 
 export function validateBackfillGovernanceData(
     data: BackfillGovernanceData,
-    target: { chainName: string; genesisHash: string; archive: string | null }
+    target: { chainName: string; genesisHash: string }
 ): void {
     if (
         !Number.isSafeInteger(data.fromBlock) ||
@@ -31,7 +31,6 @@ export function validateBackfillGovernanceData(
     ) {
         throw new Error('Governance backfill target does not match this worker chain')
     }
-    if (!target.archive) throw new Error('Governance backfill requires an archive gateway')
 }
 
 /** Run the finite Subsquid replay in a child process; processor.run() exits its own process. */
@@ -39,7 +38,6 @@ export async function backfillGovernance(job: Job<BackfillGovernanceData>): Prom
     validateBackfillGovernanceData(job.data, {
         chainName: config.chainName,
         genesisHash: config.genesisHash,
-        archive: config.dataSource.archive,
     })
 
     const { api } = await Rpc.getInstance()
@@ -51,6 +49,17 @@ export async function backfillGovernance(job: Job<BackfillGovernanceData>): Prom
     const finalizedHeight = (await api.rpc.chain.getHeader(finalizedHash)).number.toNumber()
     if (job.data.toBlock > finalizedHeight) {
         throw new Error(`Governance backfill end ${job.data.toBlock} exceeds finalized block ${finalizedHeight}`)
+    }
+
+    const fromHash = await api.rpc.chain.getBlockHash(job.data.fromBlock)
+    try {
+        await api.rpc.state.getRuntimeVersion(fromHash)
+        const historicalApi = await api.at(fromHash)
+        await historicalApi.query.system.events()
+    } catch {
+        throw new Error(
+            `Governance backfill RPC cannot read historical state at block ${job.data.fromBlock}; use an archival RPC endpoint`
+        )
     }
 
     await job.log(`Backfilling ${job.data.chainName} governance blocks ${job.data.fromBlock}–${job.data.toBlock}`)

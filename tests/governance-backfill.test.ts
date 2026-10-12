@@ -5,10 +5,9 @@ import { validateBackfillGovernanceData } from '~/worker/jobs/validators/backfil
 const target = {
     chainName: 'canary-matrixchain',
     genesisHash: `0x${'ab'.repeat(32)}`,
-    archive: 'https://archive.example.test',
 }
 
-void test('governance worker accepts only a bounded range for its configured chain and archive', () => {
+void test('governance worker accepts only a bounded range for its configured chain', () => {
     const data = { chainName: target.chainName, genesisHash: target.genesisHash, fromBlock: 100, toBlock: 200 }
     assert.doesNotThrow(() => {
         validateBackfillGovernanceData(data, target)
@@ -20,6 +19,6 @@ void test('governance worker accepts only a bounded range for its configured cha
         validateBackfillGovernanceData({ ...data, chainName: 'enjin-relaychain' }, target)
     }, /target/)
     assert.throws(() => {
-        validateBackfillGovernanceData(data, { ...target, archive: null })
-    }, /archive/)
+        validateBackfillGovernanceData({ ...data, genesisHash: `0x${'cd'.repeat(32)}` }, target)
+    }, /target/)
 })

@@ -185,7 +185,7 @@ pnpm run dev:decoder
 pnpm run dev:metris
 ```
 
-Governance subscriptions add queryable referendum, voting, fellowship, treasury, and whitelist entities. Existing databases need a bounded historical replay after the schema migration; see [docs/governance-indexing.md](docs/governance-indexing.md). Dispatch the `BACKFILL_GOVERNANCE` validator job with an explicitly verified chain, genesis hash, finalized block range, archive gateway, and database target. It uses a range-specific processor cursor and should not run concurrently with the live processor against the same governance tables.
+Governance subscriptions add queryable referendum, voting, fellowship, treasury, and whitelist entities. Existing databases need a bounded historical replay after the schema migration; see [docs/governance-indexing.md](docs/governance-indexing.md). Dispatch the `BACKFILL_GOVERNANCE` validator job with an explicitly verified chain, genesis hash, finalized block range, historical-state-capable RPC endpoint, and database target. It uses a range-specific processor cursor and should not run concurrently with the live processor against the same governance tables.
 
 `dev:metris` is the existing script name despite the spelling. The quickest full environment remains:
 

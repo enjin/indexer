@@ -18,7 +18,6 @@ function main(): void {
     const chainName = process.argv[4]
     if (from > to) throw new Error('The from block must be at or before the to block')
     if (chainName !== config.chainName) throw new Error('Governance replay chain does not match this worker')
-    if (!config.dataSource.archive) throw new Error('A configured archive gateway is required for governance backfill')
 
     // BullMQ owns the replay process. A crashed or stopped worker must not leave
     // an orphan writing to the database while a retry starts on another replica.
@@ -26,7 +25,6 @@ function main(): void {
 
     const processor = new SubstrateBatchProcessor()
         .setRpcEndpoint(config.dataSource.chain)
-        .setGateway({ url: config.dataSource.archive, apiKey: config.dataSource.archiveApiKey })
         .setBlockRange({ from, to })
         .addEvent({ name: governanceEventItems, call: true, extrinsic: true })
         .setFields({ call: { args: true, name: true, success: true } })
