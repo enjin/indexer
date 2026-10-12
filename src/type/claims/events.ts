@@ -3,7 +3,7 @@ import * as enjinV100 from '../enjinV100'
 import * as v104 from '../v104'
 import * as matrixV500 from '../matrixV500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
-import * as matrixV1040 from '../matrixV1040'
+import * as matrixEnjinV1041 from '../matrixEnjinV1041'
 
 export const claimRequested = {
     name: 'Claims.ClaimRequested',
@@ -201,20 +201,6 @@ export const claimRejected = {
     ),
 }
 
-export const claimedEnj = {
-    name: 'Claims.ClaimedEnj',
-    /**
-     * A user burned EFI in order to begin a claim of ENJ.
-     */
-    matrixV500: new EventType(
-        'Claims.ClaimedEnj',
-        sts.struct({
-            who: matrixV500.AccountId32,
-            amount: sts.bigint(),
-        })
-    ),
-}
-
 export const claimRequestSkippedZeroAmount = {
     name: 'Claims.ClaimRequestSkippedZeroAmount',
     /**
@@ -226,13 +212,13 @@ export const claimRequestSkippedZeroAmount = {
      * source block, so nothing else in the extrinsic's output records that the burn was seen
      * at all.
      */
-    matrixV1040: new EventType(
+    matrixEnjinV1041: new EventType(
         'Claims.ClaimRequestSkippedZeroAmount',
         sts.struct({
             /**
              * The account whose burn was dropped
              */
-            who: matrixV1040.H160,
+            who: matrixEnjinV1041.H160,
             /**
              * The amount of burned tokens, as attested by the Relayer
              */
@@ -240,7 +226,7 @@ export const claimRequestSkippedZeroAmount = {
             /**
              * Hash of the transaction in which the tokens were burnt
              */
-            transactionHash: matrixV1040.H256,
+            transactionHash: matrixEnjinV1041.H256,
             /**
              * If the burnt token is EFI or not — an EFI burn is what usually reaches this event,
              * since the conversion to ENJ rounds down
@@ -264,13 +250,13 @@ export const claimRequestSkippedAtBound = {
      * Acting on that is the relayer's job — a successful `request_claims` does not mean every
      * burn in the batch was stored, and this event is the only record of which ones were not.
      */
-    matrixV1040: new EventType(
+    matrixEnjinV1041: new EventType(
         'Claims.ClaimRequestSkippedAtBound',
         sts.struct({
             /**
              * The account whose claim vector is full
              */
-            who: matrixV1040.H160,
+            who: matrixEnjinV1041.H160,
             /**
              * The amount of burned tokens, as attested by the Relayer
              */
@@ -278,7 +264,7 @@ export const claimRequestSkippedAtBound = {
             /**
              * Hash of the transaction in which the tokens were burnt. Still re-requestable
              */
-            transactionHash: matrixV1040.H256,
+            transactionHash: matrixEnjinV1041.H256,
             /**
              * If the burnt token is EFI or not
              */
@@ -287,6 +273,20 @@ export const claimRequestSkippedAtBound = {
              * ENJ amount that would have been claimable
              */
             amountClaimable: sts.bigint(),
+        })
+    ),
+}
+
+export const claimedEnj = {
+    name: 'Claims.ClaimedEnj',
+    /**
+     * A user burned EFI in order to begin a claim of ENJ.
+     */
+    matrixV500: new EventType(
+        'Claims.ClaimedEnj',
+        sts.struct({
+            who: matrixV500.AccountId32,
+            amount: sts.bigint(),
         })
     ),
 }

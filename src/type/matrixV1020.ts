@@ -111,6 +111,20 @@ export const CollectionDepositUpdateStatus: sts.Type<CollectionDepositUpdateStat
     }
 })
 
+export interface Attribute {
+    value: Bytes
+    deposit: bigint
+    depositor?: AccountId32 | undefined
+}
+
+export const Attribute: sts.Type<Attribute> = sts.struct(() => {
+    return {
+        value: sts.bytes(),
+        deposit: sts.bigint(),
+        depositor: sts.option(() => AccountId32),
+    }
+})
+
 export interface Token {
     supply: bigint
     cap?: TokenCap | undefined
@@ -7564,12 +7578,6 @@ export interface CollectionAccount {
     isFrozen: boolean
     approvals: [AccountId32, number | undefined][]
     accountCount: number
-}
-
-export interface Attribute {
-    value: Bytes
-    deposit: bigint
-    depositor?: AccountId32 | undefined
 }
 
 export interface DefaultCollectionMutation {
@@ -20054,14 +20062,6 @@ export const MultiTokensCall: sts.Type<MultiTokensCall> = sts.closedEnum(() => {
         upgrade_tokens: sts.enumStruct({
             tokenKeys: sts.array(() => sts.tuple(() => [sts.bigint(), sts.bigint()])),
         }),
-    }
-})
-
-export const Attribute: sts.Type<Attribute> = sts.struct(() => {
-    return {
-        value: sts.bytes(),
-        deposit: sts.bigint(),
-        depositor: sts.option(() => AccountId32),
     }
 })
 

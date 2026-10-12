@@ -1,6 +1,6 @@
 import { sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx } from '../support'
 import * as v100 from '../v100'
-import * as matrixV1040 from '../matrixV1040'
+import * as matrixEnjinV1041 from '../matrixEnjinV1041'
 import * as enjinV1070 from '../enjinV1070'
 import * as v1070 from '../v1070'
 
@@ -9,12 +9,12 @@ export const votingFor = {
      *  All voting for a particular voter in a particular voting class. We store the balance for the
      *  number of votes that we have recorded.
      */
-    matrixV1040: new StorageType(
+    matrixEnjinV1041: new StorageType(
         'ConvictionVoting.VotingFor',
         'Default',
-        [matrixV1040.AccountId32, sts.number()],
-        matrixV1040.Voting
-    ) as VotingForMatrixV1040,
+        [matrixEnjinV1041.AccountId32, sts.number()],
+        matrixEnjinV1041.Voting
+    ) as VotingForMatrixEnjinV1041,
     /**
      *  All voting for a particular voter in a particular voting class. We store the balance for the
      *  number of votes that we have recorded.
@@ -51,51 +51,60 @@ export const votingFor = {
  *  All voting for a particular voter in a particular voting class. We store the balance for the
  *  number of votes that we have recorded.
  */
-export interface VotingForMatrixV1040 {
+export interface VotingForMatrixEnjinV1041 {
     is(block: RuntimeCtx): boolean
-    getDefault(block: Block): matrixV1040.Voting
-    get(block: Block, key1: matrixV1040.AccountId32, key2: number): Promise<matrixV1040.Voting | undefined>
-    getMany(block: Block, keys: [matrixV1040.AccountId32, number][]): Promise<(matrixV1040.Voting | undefined)[]>
-    getKeys(block: Block): Promise<[matrixV1040.AccountId32, number][]>
-    getKeys(block: Block, key1: matrixV1040.AccountId32): Promise<[matrixV1040.AccountId32, number][]>
-    getKeys(block: Block, key1: matrixV1040.AccountId32, key2: number): Promise<[matrixV1040.AccountId32, number][]>
-    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[matrixV1040.AccountId32, number][]>
+    getDefault(block: Block): matrixEnjinV1041.Voting
+    get(block: Block, key1: matrixEnjinV1041.AccountId32, key2: number): Promise<matrixEnjinV1041.Voting | undefined>
+    getMany(
+        block: Block,
+        keys: [matrixEnjinV1041.AccountId32, number][]
+    ): Promise<(matrixEnjinV1041.Voting | undefined)[]>
+    getKeys(block: Block): Promise<[matrixEnjinV1041.AccountId32, number][]>
+    getKeys(block: Block, key1: matrixEnjinV1041.AccountId32): Promise<[matrixEnjinV1041.AccountId32, number][]>
+    getKeys(
+        block: Block,
+        key1: matrixEnjinV1041.AccountId32,
+        key2: number
+    ): Promise<[matrixEnjinV1041.AccountId32, number][]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[matrixEnjinV1041.AccountId32, number][]>
     getKeysPaged(
         pageSize: number,
         block: Block,
-        key1: matrixV1040.AccountId32
-    ): AsyncIterable<[matrixV1040.AccountId32, number][]>
+        key1: matrixEnjinV1041.AccountId32
+    ): AsyncIterable<[matrixEnjinV1041.AccountId32, number][]>
     getKeysPaged(
         pageSize: number,
         block: Block,
-        key1: matrixV1040.AccountId32,
+        key1: matrixEnjinV1041.AccountId32,
         key2: number
-    ): AsyncIterable<[matrixV1040.AccountId32, number][]>
-    getPairs(block: Block): Promise<[k: [matrixV1040.AccountId32, number], v: matrixV1040.Voting | undefined][]>
+    ): AsyncIterable<[matrixEnjinV1041.AccountId32, number][]>
+    getPairs(
+        block: Block
+    ): Promise<[k: [matrixEnjinV1041.AccountId32, number], v: matrixEnjinV1041.Voting | undefined][]>
     getPairs(
         block: Block,
-        key1: matrixV1040.AccountId32
-    ): Promise<[k: [matrixV1040.AccountId32, number], v: matrixV1040.Voting | undefined][]>
+        key1: matrixEnjinV1041.AccountId32
+    ): Promise<[k: [matrixEnjinV1041.AccountId32, number], v: matrixEnjinV1041.Voting | undefined][]>
     getPairs(
         block: Block,
-        key1: matrixV1040.AccountId32,
+        key1: matrixEnjinV1041.AccountId32,
         key2: number
-    ): Promise<[k: [matrixV1040.AccountId32, number], v: matrixV1040.Voting | undefined][]>
+    ): Promise<[k: [matrixEnjinV1041.AccountId32, number], v: matrixEnjinV1041.Voting | undefined][]>
     getPairsPaged(
         pageSize: number,
         block: Block
-    ): AsyncIterable<[k: [matrixV1040.AccountId32, number], v: matrixV1040.Voting | undefined][]>
+    ): AsyncIterable<[k: [matrixEnjinV1041.AccountId32, number], v: matrixEnjinV1041.Voting | undefined][]>
     getPairsPaged(
         pageSize: number,
         block: Block,
-        key1: matrixV1040.AccountId32
-    ): AsyncIterable<[k: [matrixV1040.AccountId32, number], v: matrixV1040.Voting | undefined][]>
+        key1: matrixEnjinV1041.AccountId32
+    ): AsyncIterable<[k: [matrixEnjinV1041.AccountId32, number], v: matrixEnjinV1041.Voting | undefined][]>
     getPairsPaged(
         pageSize: number,
         block: Block,
-        key1: matrixV1040.AccountId32,
+        key1: matrixEnjinV1041.AccountId32,
         key2: number
-    ): AsyncIterable<[k: [matrixV1040.AccountId32, number], v: matrixV1040.Voting | undefined][]>
+    ): AsyncIterable<[k: [matrixEnjinV1041.AccountId32, number], v: matrixEnjinV1041.Voting | undefined][]>
 }
 
 /**
@@ -337,12 +346,12 @@ export const classLocksFor = {
      *  require. The actual amount locked on behalf of this pallet should always be the maximum of
      *  this list.
      */
-    matrixV1040: new StorageType(
+    matrixEnjinV1041: new StorageType(
         'ConvictionVoting.ClassLocksFor',
         'Default',
-        [matrixV1040.AccountId32],
+        [matrixEnjinV1041.AccountId32],
         sts.array(() => sts.tuple(() => [sts.number(), sts.bigint()]))
-    ) as ClassLocksForMatrixV1040,
+    ) as ClassLocksForMatrixEnjinV1041,
     /**
      *  The voting classes which have a non-zero lock requirement and the lock amounts which they
      *  require. The actual amount locked on behalf of this pallet should always be the maximum of
@@ -383,29 +392,33 @@ export const classLocksFor = {
  *  require. The actual amount locked on behalf of this pallet should always be the maximum of
  *  this list.
  */
-export interface ClassLocksForMatrixV1040 {
+export interface ClassLocksForMatrixEnjinV1041 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): [number, bigint][]
-    get(block: Block, key: matrixV1040.AccountId32): Promise<[number, bigint][] | undefined>
-    getMany(block: Block, keys: matrixV1040.AccountId32[]): Promise<([number, bigint][] | undefined)[]>
-    getKeys(block: Block): Promise<matrixV1040.AccountId32[]>
-    getKeys(block: Block, key: matrixV1040.AccountId32): Promise<matrixV1040.AccountId32[]>
-    getKeysPaged(pageSize: number, block: Block): AsyncIterable<matrixV1040.AccountId32[]>
-    getKeysPaged(pageSize: number, block: Block, key: matrixV1040.AccountId32): AsyncIterable<matrixV1040.AccountId32[]>
-    getPairs(block: Block): Promise<[k: matrixV1040.AccountId32, v: [number, bigint][] | undefined][]>
+    get(block: Block, key: matrixEnjinV1041.AccountId32): Promise<[number, bigint][] | undefined>
+    getMany(block: Block, keys: matrixEnjinV1041.AccountId32[]): Promise<([number, bigint][] | undefined)[]>
+    getKeys(block: Block): Promise<matrixEnjinV1041.AccountId32[]>
+    getKeys(block: Block, key: matrixEnjinV1041.AccountId32): Promise<matrixEnjinV1041.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<matrixEnjinV1041.AccountId32[]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key: matrixEnjinV1041.AccountId32
+    ): AsyncIterable<matrixEnjinV1041.AccountId32[]>
+    getPairs(block: Block): Promise<[k: matrixEnjinV1041.AccountId32, v: [number, bigint][] | undefined][]>
     getPairs(
         block: Block,
-        key: matrixV1040.AccountId32
-    ): Promise<[k: matrixV1040.AccountId32, v: [number, bigint][] | undefined][]>
+        key: matrixEnjinV1041.AccountId32
+    ): Promise<[k: matrixEnjinV1041.AccountId32, v: [number, bigint][] | undefined][]>
     getPairsPaged(
         pageSize: number,
         block: Block
-    ): AsyncIterable<[k: matrixV1040.AccountId32, v: [number, bigint][] | undefined][]>
+    ): AsyncIterable<[k: matrixEnjinV1041.AccountId32, v: [number, bigint][] | undefined][]>
     getPairsPaged(
         pageSize: number,
         block: Block,
-        key: matrixV1040.AccountId32
-    ): AsyncIterable<[k: matrixV1040.AccountId32, v: [number, bigint][] | undefined][]>
+        key: matrixEnjinV1041.AccountId32
+    ): AsyncIterable<[k: matrixEnjinV1041.AccountId32, v: [number, bigint][] | undefined][]>
 }
 
 /**

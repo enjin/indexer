@@ -5,8 +5,8 @@ import { multiTokens } from '~/type/events'
 import { UnsupportedEventError } from '~/util/errors'
 
 export function ephemeralTokenDestroyed(event: EventItem): EphemeralTokenDestroyed {
-    if (multiTokens.ephemeralTokenDestroyed.matrixV1040.is(event)) {
-        return multiTokens.ephemeralTokenDestroyed.matrixV1040.decode(event)
+    if (multiTokens.ephemeralTokenDestroyed.matrixEnjinV1041.is(event)) {
+        return multiTokens.ephemeralTokenDestroyed.matrixEnjinV1041.decode(event)
     }
 
     throw new UnsupportedEventError(event)

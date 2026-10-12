@@ -1,7 +1,5 @@
 import { sts, Result, Option, Bytes, BitSequence } from './support'
 
-export const PalletId = sts.bytes()
-
 export const RuntimeVersion: sts.Type<RuntimeVersion> = sts.struct(() => {
     return {
         specName: Cow,
@@ -29,21 +27,6 @@ export interface RuntimeVersion {
 }
 
 export type Cow = string
-
-export interface LpTokenId {
-    collectionId: bigint
-    tokenId: bigint
-}
-
-export interface PoolInfo {
-    lpToken: LpTokenId
-}
-
-export const PoolInfo: sts.Type<PoolInfo> = sts.struct(() => {
-    return {
-        lpToken: LpTokenId,
-    }
-})
 
 export type VersionedHostParams = VersionedHostParams_V1
 
@@ -18625,6 +18608,11 @@ export interface AssetConversionEvent_Touched {
 
 export type Permill = number
 
+export interface LpTokenId {
+    collectionId: bigint
+    tokenId: bigint
+}
+
 export type Phase = Phase_ApplyExtrinsic | Phase_Finalization | Phase_Initialization
 
 export interface Phase_ApplyExtrinsic {
@@ -20780,6 +20768,15 @@ export const AssetConversionEvent: sts.Type<AssetConversionEvent> = sts.closedEn
     }
 })
 
+export const Permill = sts.number()
+
+export const LpTokenId: sts.Type<LpTokenId> = sts.struct(() => {
+    return {
+        collectionId: sts.bigint(),
+        tokenId: sts.bigint(),
+    }
+})
+
 export const Phase: sts.Type<Phase> = sts.closedEnum(() => {
     return {
         ApplyExtrinsic: sts.number(),
@@ -21017,14 +21014,6 @@ export const ConsensusMessage: sts.Type<ConsensusMessage> = sts.struct(() => {
     }
 })
 
-export const MultiSignature: sts.Type<MultiSignature> = sts.closedEnum(() => {
-    return {
-        Ecdsa: sts.bytes(),
-        Ed25519: sts.bytes(),
-        Sr25519: sts.bytes(),
-    }
-})
-
 export const ListingDescriptor: sts.Type<ListingDescriptor> = sts.struct(() => {
     return {
         makeAssetId: AssetId,
@@ -21055,6 +21044,32 @@ export const OfferData: sts.Type<OfferData> = sts.struct(() => {
 export const AuctionData: sts.Type<AuctionData> = sts.struct(() => {
     return {
         endBlock: sts.number(),
+    }
+})
+
+export const MultiSignature: sts.Type<MultiSignature> = sts.closedEnum(() => {
+    return {
+        Ecdsa: sts.bytes(),
+        Ed25519: sts.bytes(),
+        Sr25519: sts.bytes(),
+    }
+})
+
+export const RemoveExpiredAccountPayload: sts.Type<RemoveExpiredAccountPayload> = sts.struct(() => {
+    return {
+        tankId: AccountId32,
+        userId: AccountId32,
+        blockNumber: sts.number(),
+        caller: AccountId32,
+        public: MultiSigner,
+    }
+})
+
+export const MultiSigner: sts.Type<MultiSigner> = sts.closedEnum(() => {
+    return {
+        Ecdsa: sts.bytes(),
+        Ed25519: sts.bytes(),
+        Sr25519: sts.bytes(),
     }
 })
 
@@ -23502,14 +23517,6 @@ export const RemoveExpiredListingPayload: sts.Type<RemoveExpiredListingPayload> 
     }
 })
 
-export const MultiSigner: sts.Type<MultiSigner> = sts.closedEnum(() => {
-    return {
-        Ecdsa: sts.bytes(),
-        Ed25519: sts.bytes(),
-        Sr25519: sts.bytes(),
-    }
-})
-
 export const FinalizeAuctionPayload: sts.Type<FinalizeAuctionPayload> = sts.struct(() => {
     return {
         listingId: H256,
@@ -23736,16 +23743,6 @@ export const FuelTanksCall: sts.Type<FuelTanksCall> = sts.closedEnum(() => {
             tankId: MultiAddress,
             ruleSetId: sts.number(),
         }),
-    }
-})
-
-export const RemoveExpiredAccountPayload: sts.Type<RemoveExpiredAccountPayload> = sts.struct(() => {
-    return {
-        tankId: AccountId32,
-        userId: AccountId32,
-        blockNumber: sts.number(),
-        caller: AccountId32,
-        public: MultiSigner,
     }
 })
 
@@ -24224,15 +24221,6 @@ export const V8PersistedValidationData: sts.Type<V8PersistedValidationData> = st
 })
 
 export const HeadData = sts.bytes()
-
-export const Permill = sts.number()
-
-export const LpTokenId: sts.Type<LpTokenId> = sts.struct(() => {
-    return {
-        collectionId: sts.bigint(),
-        tokenId: sts.bigint(),
-    }
-})
 
 export const AssetId: sts.Type<AssetId> = sts.struct(() => {
     return {

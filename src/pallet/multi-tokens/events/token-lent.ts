@@ -13,8 +13,8 @@ import { multiTokens } from '~/type/events'
 import { UnsupportedEventError } from '~/util/errors'
 
 export function tokenLent(event: EventItem): TokenLent {
-    if (multiTokens.tokenLent.matrixV1040.is(event)) {
-        return multiTokens.tokenLent.matrixV1040.decode(event)
+    if (multiTokens.tokenLent.matrixEnjinV1041.is(event)) {
+        return multiTokens.tokenLent.matrixEnjinV1041.decode(event)
     }
 
     throw new UnsupportedEventError(event)

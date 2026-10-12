@@ -31,6 +31,7 @@ const reason = { __kind: 'Marketplace', value: { __kind: 'Marketplace' } }
 
 for (const [file, version] of [
     ['typegen/canary-matrixchain.jsonl', 1040],
+    ['typegen/enjin-matrixchain.jsonl', 1041],
     ['typegen/enjin-relaychain.jsonl', 1070],
 ] as const) {
     void test(`held and released events identify the account at ${file} v${version}`, () => {

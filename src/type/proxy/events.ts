@@ -6,6 +6,7 @@ import * as v1030 from '../v1030'
 import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 import * as enjinV1032 from '../enjinV1032'
 import * as matrixV1040 from '../matrixV1040'
+import * as matrixEnjinV1041 from '../matrixEnjinV1041'
 import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 import * as v1060 from '../v1060'
@@ -139,6 +140,21 @@ export const pureCreated = {
             who: matrixEnjinV1031.AccountId32,
             proxyType: matrixEnjinV1031.ProxyType,
             disambiguationIndex: sts.number(),
+        })
+    ),
+    /**
+     * A pure account has been created by new proxy with given
+     * disambiguation index and proxy type.
+     */
+    matrixEnjinV1041: new EventType(
+        'Proxy.PureCreated',
+        sts.struct({
+            pure: matrixEnjinV1041.AccountId32,
+            who: matrixEnjinV1041.AccountId32,
+            proxyType: matrixEnjinV1041.ProxyType,
+            disambiguationIndex: sts.number(),
+            at: sts.number(),
+            extrinsicIndex: sts.number(),
         })
     ),
     /**

@@ -1,51 +1,51 @@
 import { sts, Block, Bytes, Option, Result, ConstantType, RuntimeCtx } from '../support'
-import * as matrixV1030 from '../matrixV1030'
+import * as matrixEnjinV1041 from '../matrixEnjinV1041'
 
 export const lpFee = {
     /**
-     *  A % the liquidity providers will take of every swap. Represents 10ths of a percent.
+     *  The fraction of every swap that the liquidity providers take as a fee.
      */
-    matrixV1030: new ConstantType('AssetConversion.LPFee', sts.number()),
+    matrixEnjinV1041: new ConstantType('AssetConversion.LPFee', matrixEnjinV1041.Permill),
 }
 
 export const poolSetupFee = {
     /**
      *  A one-time fee to setup the pool.
      */
-    matrixV1030: new ConstantType('AssetConversion.PoolSetupFee', sts.bigint()),
+    matrixEnjinV1041: new ConstantType('AssetConversion.PoolSetupFee', sts.bigint()),
 }
 
 export const poolSetupFeeAsset = {
     /**
      *  Asset class from [`Config::Assets`] used to pay the [`Config::PoolSetupFee`].
      */
-    matrixV1030: new ConstantType('AssetConversion.PoolSetupFeeAsset', matrixV1030.AssetId),
+    matrixEnjinV1041: new ConstantType('AssetConversion.PoolSetupFeeAsset', matrixEnjinV1041.AssetId),
 }
 
 export const liquidityWithdrawalFee = {
     /**
      *  A fee to withdraw the liquidity.
      */
-    matrixV1030: new ConstantType('AssetConversion.LiquidityWithdrawalFee', matrixV1030.Permill),
+    matrixEnjinV1041: new ConstantType('AssetConversion.LiquidityWithdrawalFee', matrixEnjinV1041.Permill),
 }
 
 export const mintMinLiquidity = {
     /**
      *  The minimum LP token amount that could be minted. Ameliorates rounding errors.
      */
-    matrixV1030: new ConstantType('AssetConversion.MintMinLiquidity', sts.bigint()),
+    matrixEnjinV1041: new ConstantType('AssetConversion.MintMinLiquidity', sts.bigint()),
 }
 
 export const maxSwapPathLength = {
     /**
      *  The max number of hops in a swap.
      */
-    matrixV1030: new ConstantType('AssetConversion.MaxSwapPathLength', sts.number()),
+    matrixEnjinV1041: new ConstantType('AssetConversion.MaxSwapPathLength', sts.number()),
 }
 
 export const palletId = {
     /**
      *  The pallet's id, used for deriving its sovereign account ID.
      */
-    matrixV1030: new ConstantType('AssetConversion.PalletId', matrixV1030.PalletId),
+    matrixEnjinV1041: new ConstantType('AssetConversion.PalletId', matrixEnjinV1041.PalletId),
 }

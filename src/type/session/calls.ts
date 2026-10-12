@@ -6,6 +6,7 @@ import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV1030 from '../matrixV1030'
 import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 import * as matrixV1040 from '../matrixV1040'
+import * as matrixEnjinV1041 from '../matrixEnjinV1041'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
 import * as enjinV1070 from '../enjinV1070'
@@ -47,6 +48,26 @@ export const setKeys = {
         'Session.set_keys',
         sts.struct({
             keys: matrixEnjinV1031.SessionKeys,
+            proof: sts.bytes(),
+        })
+    ),
+    /**
+     * Sets the session key(s) of the function caller to `keys`.
+     *
+     * Allows an account to set its session key prior to becoming a validator.
+     * This doesn't take effect until the next session.
+     *
+     * - `origin`: The dispatch origin of this function must be signed.
+     * - `keys`: The new session keys to set. These are the public keys of all sessions keys
+     *   setup in the runtime.
+     * - `proof`: The proof that `origin` has access to the private keys of `keys`. See
+     *   [`impl_opaque_keys`](sp_runtime::impl_opaque_keys) for more information about the
+     *   proof format.
+     */
+    matrixEnjinV1041: new CallType(
+        'Session.set_keys',
+        sts.struct({
+            keys: matrixEnjinV1041.SessionKeys,
             proof: sts.bytes(),
         })
     ),

@@ -8,8 +8,8 @@ export function held(event: EventItem): HoldChange {
     return match(event)
         .returnType<HoldChange>()
         .when(
-            () => balances.held.matrixV1040.is(event),
-            () => balances.held.matrixV1040.decode(event)
+            () => balances.held.matrixEnjinV1041.is(event),
+            () => balances.held.matrixEnjinV1041.decode(event)
         )
         .when(
             () => balances.held.enjinV1070.is(event),

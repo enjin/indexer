@@ -6,6 +6,7 @@ import * as v105 from '../v105'
 import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
 import * as matrixV1040 from '../matrixV1040'
+import * as matrixEnjinV1041 from '../matrixEnjinV1041'
 import * as matrixV1041 from '../matrixV1041'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
@@ -15,6 +16,25 @@ import * as v1080 from '../v1080'
 
 export const submit = {
     name: 'Referenda.submit',
+    /**
+     * Propose a referendum on a privileged action.
+     *
+     * - `origin`: must be `SubmitOrigin` and the account must have `SubmissionDeposit` funds
+     *   available.
+     * - `proposal_origin`: The origin from which the proposal should be executed.
+     * - `proposal`: The proposal.
+     * - `enactment_moment`: The moment that the proposal should be enacted.
+     *
+     * Emits `Submitted`.
+     */
+    matrixEnjinV1041: new CallType(
+        'Referenda.submit',
+        sts.struct({
+            proposalOrigin: matrixEnjinV1041.OriginCaller,
+            proposal: matrixEnjinV1041.Bounded,
+            enactmentMoment: matrixEnjinV1041.DispatchTime,
+        })
+    ),
     /**
      * Propose a referendum on a privileged action.
      *
@@ -276,7 +296,7 @@ export const placeDecisionDeposit = {
      *
      * Emits `DecisionDepositPlaced`.
      */
-    matrixV1040: new CallType(
+    matrixEnjinV1041: new CallType(
         'Referenda.place_decision_deposit',
         sts.struct({
             index: sts.number(),
@@ -295,7 +315,7 @@ export const refundDecisionDeposit = {
      *
      * Emits `DecisionDepositRefunded`.
      */
-    matrixV1040: new CallType(
+    matrixEnjinV1041: new CallType(
         'Referenda.refund_decision_deposit',
         sts.struct({
             index: sts.number(),
@@ -313,7 +333,7 @@ export const cancel = {
      *
      * Emits `Cancelled`.
      */
-    matrixV1040: new CallType(
+    matrixEnjinV1041: new CallType(
         'Referenda.cancel',
         sts.struct({
             index: sts.number(),
@@ -331,7 +351,7 @@ export const kill = {
      *
      * Emits `Killed` and `DepositSlashed`.
      */
-    matrixV1040: new CallType(
+    matrixEnjinV1041: new CallType(
         'Referenda.kill',
         sts.struct({
             index: sts.number(),
@@ -347,7 +367,7 @@ export const nudgeReferendum = {
      * - `origin`: must be `Root`.
      * - `index`: the referendum to be advanced.
      */
-    matrixV1040: new CallType(
+    matrixEnjinV1041: new CallType(
         'Referenda.nudge_referendum',
         sts.struct({
             index: sts.number(),
@@ -368,7 +388,7 @@ export const oneFewerDeciding = {
      * - begin deciding another referendum (and leave `DecidingCount` alone); or
      * - decrement `DecidingCount`.
      */
-    matrixV1040: new CallType(
+    matrixEnjinV1041: new CallType(
         'Referenda.one_fewer_deciding',
         sts.struct({
             track: sts.number(),
@@ -387,7 +407,7 @@ export const refundSubmissionDeposit = {
      *
      * Emits `SubmissionDepositRefunded`.
      */
-    matrixV1040: new CallType(
+    matrixEnjinV1041: new CallType(
         'Referenda.refund_submission_deposit',
         sts.struct({
             index: sts.number(),
@@ -406,11 +426,11 @@ export const setMetadata = {
      * - `index`:  The index of a referendum to set or clear metadata for.
      * - `maybe_hash`: The hash of an on-chain stored preimage. `None` to clear a metadata.
      */
-    matrixV1040: new CallType(
+    matrixEnjinV1041: new CallType(
         'Referenda.set_metadata',
         sts.struct({
             index: sts.number(),
-            maybeHash: sts.option(() => matrixV1040.H256),
+            maybeHash: sts.option(() => matrixEnjinV1041.H256),
         })
     ),
 }

@@ -1,5 +1,5 @@
 import { sts, Block, Bytes, Option, Result, CallType, RuntimeCtx } from '../support'
-import * as matrixV1030 from '../matrixV1030'
+import * as matrixEnjinV1041 from '../matrixEnjinV1041'
 
 export const createPool = {
     name: 'AssetConversion.create_pool',
@@ -9,11 +9,11 @@ export const createPool = {
      *
      * Once a pool is created, someone may [`Pallet::add_liquidity`] to it.
      */
-    matrixV1030: new CallType(
+    matrixEnjinV1041: new CallType(
         'AssetConversion.create_pool',
         sts.struct({
-            asset1: matrixV1030.AssetId,
-            asset2: matrixV1030.AssetId,
+            asset1: matrixEnjinV1041.AssetId,
+            asset2: matrixEnjinV1041.AssetId,
         })
     ),
 }
@@ -36,16 +36,16 @@ export const addLiquidity = {
      * Once liquidity is added, someone may successfully call
      * [`Pallet::swap_exact_tokens_for_tokens`].
      */
-    matrixV1030: new CallType(
+    matrixEnjinV1041: new CallType(
         'AssetConversion.add_liquidity',
         sts.struct({
-            asset1: matrixV1030.AssetId,
-            asset2: matrixV1030.AssetId,
+            asset1: matrixEnjinV1041.AssetId,
+            asset2: matrixEnjinV1041.AssetId,
             amount1Desired: sts.bigint(),
             amount2Desired: sts.bigint(),
             amount1Min: sts.bigint(),
             amount2Min: sts.bigint(),
-            mintTo: matrixV1030.AccountId32,
+            mintTo: matrixEnjinV1041.AccountId32,
         })
     ),
 }
@@ -57,15 +57,15 @@ export const removeLiquidity = {
      * burned in the process. With the usage of `amount1_min_receive`/`amount2_min_receive`
      * it's possible to control the min amount of returned tokens you're happy with.
      */
-    matrixV1030: new CallType(
+    matrixEnjinV1041: new CallType(
         'AssetConversion.remove_liquidity',
         sts.struct({
-            asset1: matrixV1030.AssetId,
-            asset2: matrixV1030.AssetId,
+            asset1: matrixEnjinV1041.AssetId,
+            asset2: matrixEnjinV1041.AssetId,
             lpTokenBurn: sts.bigint(),
             amount1MinReceive: sts.bigint(),
             amount2MinReceive: sts.bigint(),
-            withdrawTo: matrixV1030.AccountId32,
+            withdrawTo: matrixEnjinV1041.AccountId32,
         })
     ),
 }
@@ -80,13 +80,13 @@ export const swapExactTokensForTokens = {
      * [`AssetConversionApi::quote_price_exact_tokens_for_tokens`] runtime call can be called
      * for a quote.
      */
-    matrixV1030: new CallType(
+    matrixEnjinV1041: new CallType(
         'AssetConversion.swap_exact_tokens_for_tokens',
         sts.struct({
-            path: sts.array(() => matrixV1030.AssetId),
+            path: sts.array(() => matrixEnjinV1041.AssetId),
             amountIn: sts.bigint(),
             amountOutMin: sts.bigint(),
-            sendTo: matrixV1030.AccountId32,
+            sendTo: matrixEnjinV1041.AccountId32,
             keepAlive: sts.boolean(),
         })
     ),
@@ -102,13 +102,13 @@ export const swapTokensForExactTokens = {
      * [`AssetConversionApi::quote_price_tokens_for_exact_tokens`] runtime call can be called
      * for a quote.
      */
-    matrixV1030: new CallType(
+    matrixEnjinV1041: new CallType(
         'AssetConversion.swap_tokens_for_exact_tokens',
         sts.struct({
-            path: sts.array(() => matrixV1030.AssetId),
+            path: sts.array(() => matrixEnjinV1041.AssetId),
             amountOut: sts.bigint(),
             amountInMax: sts.bigint(),
-            sendTo: matrixV1030.AccountId32,
+            sendTo: matrixEnjinV1041.AccountId32,
             keepAlive: sts.boolean(),
         })
     ),
@@ -129,11 +129,11 @@ export const touch = {
      *
      * Emits `Touched` event when successful.
      */
-    matrixV1030: new CallType(
+    matrixEnjinV1041: new CallType(
         'AssetConversion.touch',
         sts.struct({
-            asset1: matrixV1030.AssetId,
-            asset2: matrixV1030.AssetId,
+            asset1: matrixEnjinV1041.AssetId,
+            asset2: matrixEnjinV1041.AssetId,
         })
     ),
 }

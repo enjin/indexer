@@ -14,8 +14,8 @@ import { marketplace } from '~/type/events'
 import { UnsupportedEventError } from '~/util/errors'
 
 export function listingNotIndexed(event: EventItem): ListingNotIndexed {
-    if (!marketplace.listingNotIndexed.matrixV1040.is(event)) throw new UnsupportedEventError(event)
-    return marketplace.listingNotIndexed.matrixV1040.decode(event)
+    if (!marketplace.listingNotIndexed.matrixEnjinV1041.is(event)) throw new UnsupportedEventError(event)
+    return marketplace.listingNotIndexed.matrixEnjinV1041.decode(event)
 }
 
 export function listingNotIndexedEventModel(
