@@ -22,6 +22,7 @@ import * as v1030 from '../v1030'
 import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 import * as enjinV1032 from '../enjinV1032'
 import * as matrixV1040 from '../matrixV1040'
+import * as matrixEnjinV1041 from '../matrixEnjinV1041'
 import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 import * as v1060 from '../v1060'
@@ -67,6 +68,15 @@ export const tokenAccounts = {
         [sts.bigint(), sts.bigint(), matrixEnjinV1031.AccountId32],
         matrixEnjinV1031.TokenAccount
     ) as TokenAccountsMatrixEnjinV1031,
+    /**
+     *  Accounts per token (real storage)
+     */
+    matrixEnjinV1041: new StorageType(
+        'MultiTokens.TokenAccounts',
+        'Optional',
+        [sts.bigint(), sts.bigint(), matrixEnjinV1041.AccountId32],
+        matrixEnjinV1041.TokenAccount
+    ) as TokenAccountsMatrixEnjinV1041,
     /**
      *  Accounts per token
      */
@@ -583,6 +593,99 @@ export interface TokenAccountsMatrixEnjinV1031 {
         key3: matrixEnjinV1031.AccountId32
     ): AsyncIterable<
         [k: [bigint, bigint, matrixEnjinV1031.AccountId32], v: matrixEnjinV1031.TokenAccount | undefined][]
+    >
+}
+
+/**
+ *  Accounts per token (real storage)
+ */
+export interface TokenAccountsMatrixEnjinV1041 {
+    is(block: RuntimeCtx): boolean
+    get(
+        block: Block,
+        key1: bigint,
+        key2: bigint,
+        key3: matrixEnjinV1041.AccountId32
+    ): Promise<matrixEnjinV1041.TokenAccount | undefined>
+    getMany(
+        block: Block,
+        keys: [bigint, bigint, matrixEnjinV1041.AccountId32][]
+    ): Promise<(matrixEnjinV1041.TokenAccount | undefined)[]>
+    getKeys(block: Block): Promise<[bigint, bigint, matrixEnjinV1041.AccountId32][]>
+    getKeys(block: Block, key1: bigint): Promise<[bigint, bigint, matrixEnjinV1041.AccountId32][]>
+    getKeys(block: Block, key1: bigint, key2: bigint): Promise<[bigint, bigint, matrixEnjinV1041.AccountId32][]>
+    getKeys(
+        block: Block,
+        key1: bigint,
+        key2: bigint,
+        key3: matrixEnjinV1041.AccountId32
+    ): Promise<[bigint, bigint, matrixEnjinV1041.AccountId32][]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[bigint, bigint, matrixEnjinV1041.AccountId32][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint
+    ): AsyncIterable<[bigint, bigint, matrixEnjinV1041.AccountId32][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint,
+        key2: bigint
+    ): AsyncIterable<[bigint, bigint, matrixEnjinV1041.AccountId32][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint,
+        key2: bigint,
+        key3: matrixEnjinV1041.AccountId32
+    ): AsyncIterable<[bigint, bigint, matrixEnjinV1041.AccountId32][]>
+    getPairs(
+        block: Block
+    ): Promise<[k: [bigint, bigint, matrixEnjinV1041.AccountId32], v: matrixEnjinV1041.TokenAccount | undefined][]>
+    getPairs(
+        block: Block,
+        key1: bigint
+    ): Promise<[k: [bigint, bigint, matrixEnjinV1041.AccountId32], v: matrixEnjinV1041.TokenAccount | undefined][]>
+    getPairs(
+        block: Block,
+        key1: bigint,
+        key2: bigint
+    ): Promise<[k: [bigint, bigint, matrixEnjinV1041.AccountId32], v: matrixEnjinV1041.TokenAccount | undefined][]>
+    getPairs(
+        block: Block,
+        key1: bigint,
+        key2: bigint,
+        key3: matrixEnjinV1041.AccountId32
+    ): Promise<[k: [bigint, bigint, matrixEnjinV1041.AccountId32], v: matrixEnjinV1041.TokenAccount | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<
+        [k: [bigint, bigint, matrixEnjinV1041.AccountId32], v: matrixEnjinV1041.TokenAccount | undefined][]
+    >
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint
+    ): AsyncIterable<
+        [k: [bigint, bigint, matrixEnjinV1041.AccountId32], v: matrixEnjinV1041.TokenAccount | undefined][]
+    >
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint,
+        key2: bigint
+    ): AsyncIterable<
+        [k: [bigint, bigint, matrixEnjinV1041.AccountId32], v: matrixEnjinV1041.TokenAccount | undefined][]
+    >
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint,
+        key2: bigint,
+        key3: matrixEnjinV1041.AccountId32
+    ): AsyncIterable<
+        [k: [bigint, bigint, matrixEnjinV1041.AccountId32], v: matrixEnjinV1041.TokenAccount | undefined][]
     >
 }
 
@@ -1978,6 +2081,15 @@ export const collections = {
     /**
      *  The collections in existence and their ownership details.
      */
+    matrixEnjinV1041: new StorageType(
+        'MultiTokens.Collections',
+        'Optional',
+        [sts.bigint()],
+        matrixEnjinV1041.Collection
+    ) as CollectionsMatrixEnjinV1041,
+    /**
+     *  The collections in existence and their ownership details.
+     */
     matrixV500: new StorageType(
         'MultiTokens.Collections',
         'Optional',
@@ -2139,6 +2251,30 @@ export interface CollectionsMatrixEnjinV1022 {
         block: Block,
         key: bigint
     ): AsyncIterable<[k: bigint, v: matrixEnjinV1022.Collection | undefined][]>
+}
+
+/**
+ *  The collections in existence and their ownership details.
+ */
+export interface CollectionsMatrixEnjinV1041 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: bigint): Promise<matrixEnjinV1041.Collection | undefined>
+    getMany(block: Block, keys: bigint[]): Promise<(matrixEnjinV1041.Collection | undefined)[]>
+    getKeys(block: Block): Promise<bigint[]>
+    getKeys(block: Block, key: bigint): Promise<bigint[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<bigint[]>
+    getKeysPaged(pageSize: number, block: Block, key: bigint): AsyncIterable<bigint[]>
+    getPairs(block: Block): Promise<[k: bigint, v: matrixEnjinV1041.Collection | undefined][]>
+    getPairs(block: Block, key: bigint): Promise<[k: bigint, v: matrixEnjinV1041.Collection | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: bigint, v: matrixEnjinV1041.Collection | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: bigint
+    ): AsyncIterable<[k: bigint, v: matrixEnjinV1041.Collection | undefined][]>
 }
 
 /**
@@ -2452,6 +2588,16 @@ export const tokens = {
         matrixEnjinV1031.Token
     ) as TokensMatrixEnjinV1031,
     /**
+     *  Tokens storage. Do not access directly while the v6 lazy migration is live — go through
+     *  the [`Tokens`] migrating wrapper instead so pre-v6 values decode correctly.
+     */
+    matrixEnjinV1041: new StorageType(
+        'MultiTokens.Tokens',
+        'Optional',
+        [sts.bigint(), sts.bigint()],
+        matrixEnjinV1041.Token
+    ) as TokensMatrixEnjinV1041,
+    /**
      *  Tokens storage
      */
     matrixV500: new StorageType(
@@ -2715,6 +2861,44 @@ export interface TokensMatrixEnjinV1031 {
         key1: bigint,
         key2: bigint
     ): AsyncIterable<[k: [bigint, bigint], v: matrixEnjinV1031.Token | undefined][]>
+}
+
+/**
+ *  Tokens storage. Do not access directly while the v6 lazy migration is live — go through
+ *  the [`Tokens`] migrating wrapper instead so pre-v6 values decode correctly.
+ */
+export interface TokensMatrixEnjinV1041 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key1: bigint, key2: bigint): Promise<matrixEnjinV1041.Token | undefined>
+    getMany(block: Block, keys: [bigint, bigint][]): Promise<(matrixEnjinV1041.Token | undefined)[]>
+    getKeys(block: Block): Promise<[bigint, bigint][]>
+    getKeys(block: Block, key1: bigint): Promise<[bigint, bigint][]>
+    getKeys(block: Block, key1: bigint, key2: bigint): Promise<[bigint, bigint][]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[bigint, bigint][]>
+    getKeysPaged(pageSize: number, block: Block, key1: bigint): AsyncIterable<[bigint, bigint][]>
+    getKeysPaged(pageSize: number, block: Block, key1: bigint, key2: bigint): AsyncIterable<[bigint, bigint][]>
+    getPairs(block: Block): Promise<[k: [bigint, bigint], v: matrixEnjinV1041.Token | undefined][]>
+    getPairs(block: Block, key1: bigint): Promise<[k: [bigint, bigint], v: matrixEnjinV1041.Token | undefined][]>
+    getPairs(
+        block: Block,
+        key1: bigint,
+        key2: bigint
+    ): Promise<[k: [bigint, bigint], v: matrixEnjinV1041.Token | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: [bigint, bigint], v: matrixEnjinV1041.Token | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint
+    ): AsyncIterable<[k: [bigint, bigint], v: matrixEnjinV1041.Token | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint,
+        key2: bigint
+    ): AsyncIterable<[k: [bigint, bigint], v: matrixEnjinV1041.Token | undefined][]>
 }
 
 /**
@@ -3376,6 +3560,18 @@ export const attributes = {
         matrixEnjinV1012.Attribute
     ) as AttributesMatrixEnjinV1012,
     /**
+     *  Metadata of collections and tokens. Contains the attribute's value and the storage
+     *  deposit. Do not access directly while the v6 lazy migration is live — go through the
+     *  [`Attributes`] migrating wrapper instead so pre-v6 values decode correctly. Key-only
+     *  iteration (`iter_key_prefix`) is safe on this type: only the value encoding changed.
+     */
+    matrixEnjinV1041: new StorageType(
+        'MultiTokens.Attributes',
+        'Optional',
+        [sts.bigint(), sts.option(() => sts.bigint()), sts.bytes()],
+        matrixEnjinV1041.Attribute
+    ) as AttributesMatrixEnjinV1041,
+    /**
      *  Metadata of collections and tokens.
      */
     matrixV500: new StorageType(
@@ -3615,6 +3811,90 @@ export interface AttributesMatrixEnjinV1012 {
         key2: bigint | undefined,
         key3: Bytes
     ): AsyncIterable<[k: [bigint, bigint | undefined, Bytes], v: matrixEnjinV1012.Attribute | undefined][]>
+}
+
+/**
+ *  Metadata of collections and tokens. Contains the attribute's value and the storage
+ *  deposit. Do not access directly while the v6 lazy migration is live — go through the
+ *  [`Attributes`] migrating wrapper instead so pre-v6 values decode correctly. Key-only
+ *  iteration (`iter_key_prefix`) is safe on this type: only the value encoding changed.
+ */
+export interface AttributesMatrixEnjinV1041 {
+    is(block: RuntimeCtx): boolean
+    get(
+        block: Block,
+        key1: bigint,
+        key2: bigint | undefined,
+        key3: Bytes
+    ): Promise<matrixEnjinV1041.Attribute | undefined>
+    getMany(
+        block: Block,
+        keys: [bigint, bigint | undefined, Bytes][]
+    ): Promise<(matrixEnjinV1041.Attribute | undefined)[]>
+    getKeys(block: Block): Promise<[bigint, bigint | undefined, Bytes][]>
+    getKeys(block: Block, key1: bigint): Promise<[bigint, bigint | undefined, Bytes][]>
+    getKeys(block: Block, key1: bigint, key2: bigint | undefined): Promise<[bigint, bigint | undefined, Bytes][]>
+    getKeys(
+        block: Block,
+        key1: bigint,
+        key2: bigint | undefined,
+        key3: Bytes
+    ): Promise<[bigint, bigint | undefined, Bytes][]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[bigint, bigint | undefined, Bytes][]>
+    getKeysPaged(pageSize: number, block: Block, key1: bigint): AsyncIterable<[bigint, bigint | undefined, Bytes][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint,
+        key2: bigint | undefined
+    ): AsyncIterable<[bigint, bigint | undefined, Bytes][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint,
+        key2: bigint | undefined,
+        key3: Bytes
+    ): AsyncIterable<[bigint, bigint | undefined, Bytes][]>
+    getPairs(
+        block: Block
+    ): Promise<[k: [bigint, bigint | undefined, Bytes], v: matrixEnjinV1041.Attribute | undefined][]>
+    getPairs(
+        block: Block,
+        key1: bigint
+    ): Promise<[k: [bigint, bigint | undefined, Bytes], v: matrixEnjinV1041.Attribute | undefined][]>
+    getPairs(
+        block: Block,
+        key1: bigint,
+        key2: bigint | undefined
+    ): Promise<[k: [bigint, bigint | undefined, Bytes], v: matrixEnjinV1041.Attribute | undefined][]>
+    getPairs(
+        block: Block,
+        key1: bigint,
+        key2: bigint | undefined,
+        key3: Bytes
+    ): Promise<[k: [bigint, bigint | undefined, Bytes], v: matrixEnjinV1041.Attribute | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: [bigint, bigint | undefined, Bytes], v: matrixEnjinV1041.Attribute | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint
+    ): AsyncIterable<[k: [bigint, bigint | undefined, Bytes], v: matrixEnjinV1041.Attribute | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint,
+        key2: bigint | undefined
+    ): AsyncIterable<[k: [bigint, bigint | undefined, Bytes], v: matrixEnjinV1041.Attribute | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint,
+        key2: bigint | undefined,
+        key3: Bytes
+    ): AsyncIterable<[k: [bigint, bigint | undefined, Bytes], v: matrixEnjinV1041.Attribute | undefined][]>
 }
 
 /**
@@ -5343,6 +5623,28 @@ export const tokenGroupAttributes = {
      *  multi-block migration, which completes (transactions are suspended while it runs)
      *  before any transaction can access this storage.
      */
+    matrixEnjinV1041: new StorageType(
+        'MultiTokens.TokenGroupAttributes',
+        'Optional',
+        [sts.bigint(), sts.bytes()],
+        matrixEnjinV1041.Attribute
+    ) as TokenGroupAttributesMatrixEnjinV1041,
+    /**
+     *  Metadata of token groups. Contains the attribute's value and the storage deposit.
+     */
+    matrixV1020: new StorageType(
+        'MultiTokens.TokenGroupAttributes',
+        'Optional',
+        [sts.bigint(), sts.bytes()],
+        matrixV1020.Attribute
+    ) as TokenGroupAttributesMatrixV1020,
+    /**
+     *  Metadata of token groups. Contains the attribute's value and the storage deposit.
+     *  Values written before storage version 6 lack the `frozen` field and are rewritten by
+     *  the [`TokenGroupAttributesMigration`](migrations::TokenGroupAttributesMigration)
+     *  multi-block migration, which completes (transactions are suspended while it runs)
+     *  before any transaction can access this storage.
+     */
     matrixV1040: new StorageType(
         'MultiTokens.TokenGroupAttributes',
         'Optional',
@@ -5408,6 +5710,84 @@ export interface TokenGroupAttributesMatrixEnjinV1022 {
         key1: bigint,
         key2: Bytes
     ): AsyncIterable<[k: [bigint, Bytes], v: matrixEnjinV1022.Attribute | undefined][]>
+}
+
+/**
+ *  Metadata of token groups. Contains the attribute's value and the storage deposit.
+ *  Values written before storage version 6 lack the `frozen` field and are rewritten by
+ *  the [`TokenGroupAttributesMigration`](migrations::TokenGroupAttributesMigration)
+ *  multi-block migration, which completes (transactions are suspended while it runs)
+ *  before any transaction can access this storage.
+ */
+export interface TokenGroupAttributesMatrixEnjinV1041 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key1: bigint, key2: Bytes): Promise<matrixEnjinV1041.Attribute | undefined>
+    getMany(block: Block, keys: [bigint, Bytes][]): Promise<(matrixEnjinV1041.Attribute | undefined)[]>
+    getKeys(block: Block): Promise<[bigint, Bytes][]>
+    getKeys(block: Block, key1: bigint): Promise<[bigint, Bytes][]>
+    getKeys(block: Block, key1: bigint, key2: Bytes): Promise<[bigint, Bytes][]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[bigint, Bytes][]>
+    getKeysPaged(pageSize: number, block: Block, key1: bigint): AsyncIterable<[bigint, Bytes][]>
+    getKeysPaged(pageSize: number, block: Block, key1: bigint, key2: Bytes): AsyncIterable<[bigint, Bytes][]>
+    getPairs(block: Block): Promise<[k: [bigint, Bytes], v: matrixEnjinV1041.Attribute | undefined][]>
+    getPairs(block: Block, key1: bigint): Promise<[k: [bigint, Bytes], v: matrixEnjinV1041.Attribute | undefined][]>
+    getPairs(
+        block: Block,
+        key1: bigint,
+        key2: Bytes
+    ): Promise<[k: [bigint, Bytes], v: matrixEnjinV1041.Attribute | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: [bigint, Bytes], v: matrixEnjinV1041.Attribute | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint
+    ): AsyncIterable<[k: [bigint, Bytes], v: matrixEnjinV1041.Attribute | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint,
+        key2: Bytes
+    ): AsyncIterable<[k: [bigint, Bytes], v: matrixEnjinV1041.Attribute | undefined][]>
+}
+
+/**
+ *  Metadata of token groups. Contains the attribute's value and the storage deposit.
+ */
+export interface TokenGroupAttributesMatrixV1020 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key1: bigint, key2: Bytes): Promise<matrixV1020.Attribute | undefined>
+    getMany(block: Block, keys: [bigint, Bytes][]): Promise<(matrixV1020.Attribute | undefined)[]>
+    getKeys(block: Block): Promise<[bigint, Bytes][]>
+    getKeys(block: Block, key1: bigint): Promise<[bigint, Bytes][]>
+    getKeys(block: Block, key1: bigint, key2: Bytes): Promise<[bigint, Bytes][]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[bigint, Bytes][]>
+    getKeysPaged(pageSize: number, block: Block, key1: bigint): AsyncIterable<[bigint, Bytes][]>
+    getKeysPaged(pageSize: number, block: Block, key1: bigint, key2: Bytes): AsyncIterable<[bigint, Bytes][]>
+    getPairs(block: Block): Promise<[k: [bigint, Bytes], v: matrixV1020.Attribute | undefined][]>
+    getPairs(block: Block, key1: bigint): Promise<[k: [bigint, Bytes], v: matrixV1020.Attribute | undefined][]>
+    getPairs(
+        block: Block,
+        key1: bigint,
+        key2: Bytes
+    ): Promise<[k: [bigint, Bytes], v: matrixV1020.Attribute | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: [bigint, Bytes], v: matrixV1020.Attribute | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint
+    ): AsyncIterable<[k: [bigint, Bytes], v: matrixV1020.Attribute | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint,
+        key2: Bytes
+    ): AsyncIterable<[k: [bigint, Bytes], v: matrixV1020.Attribute | undefined][]>
 }
 
 /**
@@ -5589,27 +5969,6 @@ export interface UpgradeBlockNumberMatrixEnjinV1022 {
     get(block: Block): Promise<number | undefined>
 }
 
-export const idleOperations = {
-    /**
-     *  Pending operations to be executed on [`Hooks::on_idle`].
-     */
-    matrixV500: new StorageType(
-        'MultiTokens.IdleOperations',
-        'Default',
-        [],
-        sts.array(() => matrixV500.WeightedIdleOperation)
-    ) as IdleOperationsMatrixV500,
-}
-
-/**
- *  Pending operations to be executed on [`Hooks::on_idle`].
- */
-export interface IdleOperationsMatrixV500 {
-    is(block: RuntimeCtx): boolean
-    getDefault(block: Block): matrixV500.WeightedIdleOperation[]
-    get(block: Block): Promise<matrixV500.WeightedIdleOperation[] | undefined>
-}
-
 export const ephemeralSchedule = {
     /**
      *  Ephemeral tokens scheduled to expire on a given block.
@@ -5620,12 +5979,12 @@ export const ephemeralSchedule = {
      *  count lets the cleanup routine decide whether the cursor can be cleared without
      *  iterating the schedule.
      */
-    matrixV1040: new StorageType(
+    matrixEnjinV1041: new StorageType(
         'MultiTokens.EphemeralSchedule',
         'Optional',
         [sts.number(), sts.tuple(() => [sts.bigint(), sts.bigint()])],
         sts.unit()
-    ) as EphemeralScheduleMatrixV1040,
+    ) as EphemeralScheduleMatrixEnjinV1041,
 }
 
 /**
@@ -5637,7 +5996,7 @@ export const ephemeralSchedule = {
  *  count lets the cleanup routine decide whether the cursor can be cleared without
  *  iterating the schedule.
  */
-export interface EphemeralScheduleMatrixV1040 {
+export interface EphemeralScheduleMatrixEnjinV1041 {
     is(block: RuntimeCtx): boolean
     get(block: Block, key1: number, key2: [bigint, bigint]): Promise<null | undefined>
     getMany(block: Block, keys: [number, [bigint, bigint]][]): Promise<(null | undefined)[]>
@@ -5677,18 +6036,18 @@ export const counterForEphemeralSchedule = {
     /**
      * Counter for the related counted storage map
      */
-    matrixV1040: new StorageType(
+    matrixEnjinV1041: new StorageType(
         'MultiTokens.CounterForEphemeralSchedule',
         'Default',
         [],
         sts.number()
-    ) as CounterForEphemeralScheduleMatrixV1040,
+    ) as CounterForEphemeralScheduleMatrixEnjinV1041,
 }
 
 /**
  * Counter for the related counted storage map
  */
-export interface CounterForEphemeralScheduleMatrixV1040 {
+export interface CounterForEphemeralScheduleMatrixEnjinV1041 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): number
     get(block: Block): Promise<number | undefined>
@@ -5699,19 +6058,19 @@ export const ephemeralScheduleCount = {
      *  Per-block count of entries in [`EphemeralSchedule`]. Maintained manually to bound the
      *  number of ephemeral tokens that may expire on a single block.
      */
-    matrixV1040: new StorageType(
+    matrixEnjinV1041: new StorageType(
         'MultiTokens.EphemeralScheduleCount',
         'Default',
         [sts.number()],
         sts.number()
-    ) as EphemeralScheduleCountMatrixV1040,
+    ) as EphemeralScheduleCountMatrixEnjinV1041,
 }
 
 /**
  *  Per-block count of entries in [`EphemeralSchedule`]. Maintained manually to bound the
  *  number of ephemeral tokens that may expire on a single block.
  */
-export interface EphemeralScheduleCountMatrixV1040 {
+export interface EphemeralScheduleCountMatrixEnjinV1041 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): number
     get(block: Block, key: number): Promise<number | undefined>
@@ -5731,21 +6090,46 @@ export const nextEphemeralCleanupBlock = {
      *  Cursor used by `on_idle` cleanup of expired ephemeral tokens. Stores the next block
      *  height whose schedule prefix should be processed. `None` means there is no pending work.
      */
-    matrixV1040: new StorageType(
+    matrixEnjinV1041: new StorageType(
         'MultiTokens.NextEphemeralCleanupBlock',
         'Optional',
         [],
         sts.number()
-    ) as NextEphemeralCleanupBlockMatrixV1040,
+    ) as NextEphemeralCleanupBlockMatrixEnjinV1041,
 }
 
 /**
  *  Cursor used by `on_idle` cleanup of expired ephemeral tokens. Stores the next block
  *  height whose schedule prefix should be processed. `None` means there is no pending work.
  */
-export interface NextEphemeralCleanupBlockMatrixV1040 {
+export interface NextEphemeralCleanupBlockMatrixEnjinV1041 {
     is(block: RuntimeCtx): boolean
     get(block: Block): Promise<number | undefined>
+}
+
+export const claimTokensInBlock = {
+    /**
+     *  The block that last included a `claim_tokens` call and how many it included, compared
+     *  against [`Config::MaxClaimTokensPerBlock`] when the next one is included. An entry for an
+     *  earlier block counts as zero.
+     */
+    matrixEnjinV1041: new StorageType(
+        'MultiTokens.ClaimTokensInBlock',
+        'Default',
+        [],
+        sts.tuple(() => [sts.number(), sts.number()])
+    ) as ClaimTokensInBlockMatrixEnjinV1041,
+}
+
+/**
+ *  The block that last included a `claim_tokens` call and how many it included, compared
+ *  against [`Config::MaxClaimTokensPerBlock`] when the next one is included. An entry for an
+ *  earlier block counts as zero.
+ */
+export interface ClaimTokensInBlockMatrixEnjinV1041 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): [number, number]
+    get(block: Block): Promise<[number, number] | undefined>
 }
 
 export const failedEphemeralCleanups = {
@@ -5755,12 +6139,12 @@ export const failedEphemeralCleanups = {
      *  [`EphemeralSchedule`]; they are retried via
      *  [`Pallet::retry_failed_ephemeral_cleanup`].
      */
-    matrixV1040: new StorageType(
+    matrixEnjinV1041: new StorageType(
         'MultiTokens.FailedEphemeralCleanups',
         'Optional',
         [sts.tuple(() => [sts.bigint(), sts.bigint()])],
         sts.number()
-    ) as FailedEphemeralCleanupsMatrixV1040,
+    ) as FailedEphemeralCleanupsMatrixEnjinV1041,
 }
 
 /**
@@ -5769,7 +6153,7 @@ export const failedEphemeralCleanups = {
  *  [`EphemeralSchedule`]; they are retried via
  *  [`Pallet::retry_failed_ephemeral_cleanup`].
  */
-export interface FailedEphemeralCleanupsMatrixV1040 {
+export interface FailedEphemeralCleanupsMatrixEnjinV1041 {
     is(block: RuntimeCtx): boolean
     get(block: Block, key: [bigint, bigint]): Promise<number | undefined>
     getMany(block: Block, keys: [bigint, bigint][]): Promise<(number | undefined)[]>
@@ -5799,12 +6183,12 @@ export const pendingAttributeCleanups = {
      *  ([`Error::PendingAttributeCleanup`]) — otherwise the new collection/token would
      *  inherit the orphaned attribute storage.
      */
-    matrixV1040: new StorageType(
+    matrixEnjinV1041: new StorageType(
         'MultiTokens.PendingAttributeCleanups',
         'Optional',
         [sts.bigint(), sts.option(() => sts.bigint())],
         sts.unit()
-    ) as PendingAttributeCleanupsMatrixV1040,
+    ) as PendingAttributeCleanupsMatrixEnjinV1041,
 }
 
 /**
@@ -5818,7 +6202,7 @@ export const pendingAttributeCleanups = {
  *  ([`Error::PendingAttributeCleanup`]) — otherwise the new collection/token would
  *  inherit the orphaned attribute storage.
  */
-export interface PendingAttributeCleanupsMatrixV1040 {
+export interface PendingAttributeCleanupsMatrixEnjinV1041 {
     is(block: RuntimeCtx): boolean
     get(block: Block, key1: bigint, key2: bigint | undefined): Promise<null | undefined>
     getMany(block: Block, keys: [bigint, bigint | undefined][]): Promise<(null | undefined)[]>
@@ -5861,18 +6245,18 @@ export const counterForPendingAttributeCleanups = {
     /**
      * Counter for the related counted storage map
      */
-    matrixV1040: new StorageType(
+    matrixEnjinV1041: new StorageType(
         'MultiTokens.CounterForPendingAttributeCleanups',
         'Default',
         [],
         sts.number()
-    ) as CounterForPendingAttributeCleanupsMatrixV1040,
+    ) as CounterForPendingAttributeCleanupsMatrixEnjinV1041,
 }
 
 /**
  * Counter for the related counted storage map
  */
-export interface CounterForPendingAttributeCleanupsMatrixV1040 {
+export interface CounterForPendingAttributeCleanupsMatrixEnjinV1041 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): number
     get(block: Block): Promise<number | undefined>
@@ -5892,12 +6276,12 @@ export const pendingGroupAttributeCleanups = {
      *  settle the orphaned group's owner deposits against a different, live collection that
      *  happened to reuse the id. Group ids themselves are never reused.
      */
-    matrixV1040: new StorageType(
+    matrixEnjinV1041: new StorageType(
         'MultiTokens.PendingGroupAttributeCleanups',
         'Optional',
         [sts.bigint(), sts.bigint()],
         sts.unit()
-    ) as PendingGroupAttributeCleanupsMatrixV1040,
+    ) as PendingGroupAttributeCleanupsMatrixEnjinV1041,
 }
 
 /**
@@ -5913,7 +6297,7 @@ export const pendingGroupAttributeCleanups = {
  *  settle the orphaned group's owner deposits against a different, live collection that
  *  happened to reuse the id. Group ids themselves are never reused.
  */
-export interface PendingGroupAttributeCleanupsMatrixV1040 {
+export interface PendingGroupAttributeCleanupsMatrixEnjinV1041 {
     is(block: RuntimeCtx): boolean
     get(block: Block, key1: bigint, key2: bigint): Promise<null | undefined>
     getMany(block: Block, keys: [bigint, bigint][]): Promise<(null | undefined)[]>
@@ -5944,18 +6328,18 @@ export const counterForPendingGroupAttributeCleanups = {
     /**
      * Counter for the related counted storage map
      */
-    matrixV1040: new StorageType(
+    matrixEnjinV1041: new StorageType(
         'MultiTokens.CounterForPendingGroupAttributeCleanups',
         'Default',
         [],
         sts.number()
-    ) as CounterForPendingGroupAttributeCleanupsMatrixV1040,
+    ) as CounterForPendingGroupAttributeCleanupsMatrixEnjinV1041,
 }
 
 /**
  * Counter for the related counted storage map
  */
-export interface CounterForPendingGroupAttributeCleanupsMatrixV1040 {
+export interface CounterForPendingGroupAttributeCleanupsMatrixEnjinV1041 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): number
     get(block: Block): Promise<number | undefined>
@@ -5971,12 +6355,12 @@ export const loanReturnSchedule = {
      *  count lets the return routine decide whether the cursor can be cleared without
      *  iterating the schedule.
      */
-    matrixV1040: new StorageType(
+    matrixEnjinV1041: new StorageType(
         'MultiTokens.LoanReturnSchedule',
         'Optional',
         [sts.number(), sts.tuple(() => [sts.bigint(), sts.bigint()])],
         sts.unit()
-    ) as LoanReturnScheduleMatrixV1040,
+    ) as LoanReturnScheduleMatrixEnjinV1041,
 }
 
 /**
@@ -5988,7 +6372,7 @@ export const loanReturnSchedule = {
  *  count lets the return routine decide whether the cursor can be cleared without
  *  iterating the schedule.
  */
-export interface LoanReturnScheduleMatrixV1040 {
+export interface LoanReturnScheduleMatrixEnjinV1041 {
     is(block: RuntimeCtx): boolean
     get(block: Block, key1: number, key2: [bigint, bigint]): Promise<null | undefined>
     getMany(block: Block, keys: [number, [bigint, bigint]][]): Promise<(null | undefined)[]>
@@ -6028,18 +6412,18 @@ export const counterForLoanReturnSchedule = {
     /**
      * Counter for the related counted storage map
      */
-    matrixV1040: new StorageType(
+    matrixEnjinV1041: new StorageType(
         'MultiTokens.CounterForLoanReturnSchedule',
         'Default',
         [],
         sts.number()
-    ) as CounterForLoanReturnScheduleMatrixV1040,
+    ) as CounterForLoanReturnScheduleMatrixEnjinV1041,
 }
 
 /**
  * Counter for the related counted storage map
  */
-export interface CounterForLoanReturnScheduleMatrixV1040 {
+export interface CounterForLoanReturnScheduleMatrixEnjinV1041 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): number
     get(block: Block): Promise<number | undefined>
@@ -6050,19 +6434,19 @@ export const loanReturnScheduleCount = {
      *  Per-block count of entries in [`LoanReturnSchedule`]. Maintained manually to bound the
      *  number of loans that may come due on a single block.
      */
-    matrixV1040: new StorageType(
+    matrixEnjinV1041: new StorageType(
         'MultiTokens.LoanReturnScheduleCount',
         'Default',
         [sts.number()],
         sts.number()
-    ) as LoanReturnScheduleCountMatrixV1040,
+    ) as LoanReturnScheduleCountMatrixEnjinV1041,
 }
 
 /**
  *  Per-block count of entries in [`LoanReturnSchedule`]. Maintained manually to bound the
  *  number of loans that may come due on a single block.
  */
-export interface LoanReturnScheduleCountMatrixV1040 {
+export interface LoanReturnScheduleCountMatrixEnjinV1041 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): number
     get(block: Block, key: number): Promise<number | undefined>
@@ -6082,19 +6466,19 @@ export const nextLoanReturnBlock = {
      *  Cursor used by `on_idle` processing of expired loans. Stores the next block height
      *  whose schedule prefix should be processed. `None` means there is no pending work.
      */
-    matrixV1040: new StorageType(
+    matrixEnjinV1041: new StorageType(
         'MultiTokens.NextLoanReturnBlock',
         'Optional',
         [],
         sts.number()
-    ) as NextLoanReturnBlockMatrixV1040,
+    ) as NextLoanReturnBlockMatrixEnjinV1041,
 }
 
 /**
  *  Cursor used by `on_idle` processing of expired loans. Stores the next block height
  *  whose schedule prefix should be processed. `None` means there is no pending work.
  */
-export interface NextLoanReturnBlockMatrixV1040 {
+export interface NextLoanReturnBlockMatrixEnjinV1041 {
     is(block: RuntimeCtx): boolean
     get(block: Block): Promise<number | undefined>
 }
@@ -6105,12 +6489,12 @@ export const failedLoanReturns = {
      *  the loan expiration block as the value. Entries are no longer in
      *  [`LoanReturnSchedule`]; they are retried via [`Pallet::retry_failed_loan_return`].
      */
-    matrixV1040: new StorageType(
+    matrixEnjinV1041: new StorageType(
         'MultiTokens.FailedLoanReturns',
         'Optional',
         [sts.tuple(() => [sts.bigint(), sts.bigint()])],
         sts.number()
-    ) as FailedLoanReturnsMatrixV1040,
+    ) as FailedLoanReturnsMatrixEnjinV1041,
 }
 
 /**
@@ -6118,7 +6502,7 @@ export const failedLoanReturns = {
  *  the loan expiration block as the value. Entries are no longer in
  *  [`LoanReturnSchedule`]; they are retried via [`Pallet::retry_failed_loan_return`].
  */
-export interface FailedLoanReturnsMatrixV1040 {
+export interface FailedLoanReturnsMatrixEnjinV1041 {
     is(block: RuntimeCtx): boolean
     get(block: Block, key: [bigint, bigint]): Promise<number | undefined>
     getMany(block: Block, keys: [bigint, bigint][]): Promise<(number | undefined)[]>
@@ -6136,29 +6520,25 @@ export interface FailedLoanReturnsMatrixV1040 {
     ): AsyncIterable<[k: [bigint, bigint], v: number | undefined][]>
 }
 
-export const claimTokensInBlock = {
+export const idleOperations = {
     /**
-     *  The block that last included a `claim_tokens` call and how many it included, compared
-     *  against [`Config::MaxClaimTokensPerBlock`] when the next one is included. An entry for an
-     *  earlier block counts as zero.
+     *  Pending operations to be executed on [`Hooks::on_idle`].
      */
-    matrixV1041: new StorageType(
-        'MultiTokens.ClaimTokensInBlock',
+    matrixV500: new StorageType(
+        'MultiTokens.IdleOperations',
         'Default',
         [],
-        sts.tuple(() => [sts.number(), sts.number()])
-    ) as ClaimTokensInBlockMatrixV1041,
+        sts.array(() => matrixV500.WeightedIdleOperation)
+    ) as IdleOperationsMatrixV500,
 }
 
 /**
- *  The block that last included a `claim_tokens` call and how many it included, compared
- *  against [`Config::MaxClaimTokensPerBlock`] when the next one is included. An entry for an
- *  earlier block counts as zero.
+ *  Pending operations to be executed on [`Hooks::on_idle`].
  */
-export interface ClaimTokensInBlockMatrixV1041 {
+export interface IdleOperationsMatrixV500 {
     is(block: RuntimeCtx): boolean
-    getDefault(block: Block): [number, number]
-    get(block: Block): Promise<[number, number] | undefined>
+    getDefault(block: Block): matrixV500.WeightedIdleOperation[]
+    get(block: Block): Promise<matrixV500.WeightedIdleOperation[] | undefined>
 }
 
 export const lastIteratedMigrationKey = {

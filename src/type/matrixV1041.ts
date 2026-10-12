@@ -1223,69 +1223,6 @@ export const Scheduled: sts.Type<Scheduled> = sts.struct(() => {
     }
 })
 
-export interface PoVMessages {
-    relayStorageRootOrHash: H256
-    coreSelector: number
-    bundleIndex: number
-    umpMsgCount: number
-    hrmpOutboundCount: number
-    hrmpOutboundRecipients: Id[]
-}
-
-export const PoVMessages: sts.Type<PoVMessages> = sts.struct(() => {
-    return {
-        relayStorageRootOrHash: H256,
-        coreSelector: sts.number(),
-        bundleIndex: sts.number(),
-        umpMsgCount: sts.number(),
-        hrmpOutboundCount: sts.number(),
-        hrmpOutboundRecipients: sts.array(() => Id),
-    }
-})
-
-export type BlockWeightMode =
-    BlockWeightMode_FractionOfCore | BlockWeightMode_FullCore | BlockWeightMode_PotentialFullCore
-
-export interface BlockWeightMode_FractionOfCore {
-    __kind: 'FractionOfCore'
-    context: number
-    firstTransactionIndex?: number | undefined
-}
-
-export interface BlockWeightMode_FullCore {
-    __kind: 'FullCore'
-    context: number
-}
-
-export interface BlockWeightMode_PotentialFullCore {
-    __kind: 'PotentialFullCore'
-    context: number
-    firstTransactionIndex?: number | undefined
-    targetWeight: Weight
-}
-
-export interface Weight {
-    refTime: bigint
-    proofSize: bigint
-}
-
-export const BlockWeightMode: sts.Type<BlockWeightMode> = sts.closedEnum(() => {
-    return {
-        FractionOfCore: sts.enumStruct({
-            context: sts.number(),
-            firstTransactionIndex: sts.option(() => sts.number()),
-        }),
-        FullCore: sts.enumStruct({
-            context: sts.number(),
-        }),
-        PotentialFullCore: sts.enumStruct({
-            context: sts.number(),
-            firstTransactionIndex: sts.option(() => sts.number()),
-            targetWeight: Weight,
-        }),
-    }
-})
-
 export interface EventRecord {
     phase: Phase
     event: Event
@@ -1879,6 +1816,11 @@ export interface Pays_No {
 
 export interface Pays_Yes {
     __kind: 'Yes'
+}
+
+export interface Weight {
+    refTime: bigint
+    proofSize: bigint
 }
 
 /**
@@ -21980,6 +21922,8 @@ export const Timepoint: sts.Type<Timepoint> = sts.struct(() => {
     }
 })
 
+export const AccountId32 = sts.bytes()
+
 export const Weight: sts.Type<Weight> = sts.struct(() => {
     return {
         refTime: sts.bigint(),
@@ -25055,7 +24999,5 @@ export const AssetConversionCall: sts.Type<AssetConversionCall> = sts.closedEnum
         }),
     }
 })
-
-export const AccountId32 = sts.bytes()
 
 export const H256 = sts.bytes()

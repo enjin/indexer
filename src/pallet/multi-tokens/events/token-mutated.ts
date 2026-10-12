@@ -25,6 +25,10 @@ export function tokenMutated(event: EventItem): TokenMutated {
             () => multiTokens.tokenMutated.matrixEnjinV603.decode(event)
         )
         .when(
+            () => multiTokens.tokenMutated.matrixEnjinV1041.is(event),
+            () => multiTokens.tokenMutated.matrixEnjinV1041.decode(event)
+        )
+        .when(
             () => multiTokens.tokenMutated.matrixV1040.is(event),
             () => multiTokens.tokenMutated.matrixV1040.decode(event)
         )

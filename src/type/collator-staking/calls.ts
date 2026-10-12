@@ -1,4 +1,5 @@
 import { sts, Block, Bytes, Option, Result, CallType, RuntimeCtx } from '../support'
+import * as matrixV500 from '../matrixV500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 
 export const setInvulnerables = {
@@ -38,6 +39,45 @@ export const joinCandidates = {
         sts.struct({
             amount: sts.bigint(),
             rewardsCut: matrixEnjinV603.Perbill,
+        })
+    ),
+    /**
+     * Join the list of candidates for collation.
+     *
+     * Being added to the candidate set means the caller may be selected to be a collator from
+     * the next session onwards.
+     *
+     * # Errors
+     *
+     * - [`Error::BelowMinStakeAmount`] if `amount` is below the minimum required amount.
+     * - [`Error::NominationExists`] if nomination already exists.
+     * - [`Error::AccountIdNotRegistered`] if `AccountId` is not registered as a collator.
+     * - [`Error::NoAssociatedValidatorId`] if no associated validator ID for `AccountId`.
+     * - [`Error::TooManyCandidates`] if the number of candidates is already at the maximum.
+     * - [`Error::AlreadyInvulnerable`] if `AccountId` is already an invulnerable.
+     */
+    matrixEnjinV1041: new CallType(
+        'CollatorStaking.join_candidates',
+        sts.struct({
+            amount: sts.bigint(),
+        })
+    ),
+    /**
+     * Join the list of candidates for collation.
+     *
+     * # Errors
+     *
+     * - [`Error::BelowMinStakeAmount`] if `amount` is below the minimum required amount.
+     * - [`Error::NominationExists`] if nomination already exists.
+     * - [`Error::AccountIdNotRegistered`] if `AccountId` is not registered as a collator.
+     * - [`Error::NoAssociatedValidatorId`] if no associated validator ID for `AccountId`.
+     * - [`Error::TooManyCandidates`] if the number of candidates is already at the maximum.
+     */
+    matrixV500: new CallType(
+        'CollatorStaking.join_candidates',
+        sts.struct({
+            amount: sts.bigint(),
+            rewardsCut: matrixV500.Perbill,
         })
     ),
     /**

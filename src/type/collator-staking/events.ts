@@ -1,6 +1,8 @@
 import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import * as matrixV500 from '../matrixV500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV1040 from '../matrixV1040'
+import * as matrixEnjinV1041 from '../matrixEnjinV1041'
 
 export const newInvulnerables = {
     name: 'CollatorStaking.NewInvulnerables',
@@ -54,6 +56,42 @@ export const candidateJoined = {
              * The percentage cut on the rewards that goes to the nominators
              */
             rewardsCut: matrixEnjinV603.Perbill,
+        })
+    ),
+    /**
+     * A new candidate joined the list of candidates.
+     */
+    matrixEnjinV1041: new EventType(
+        'CollatorStaking.CandidateJoined',
+        sts.struct({
+            /**
+             * accountId of the new candidate
+             */
+            accountId: matrixEnjinV1041.AccountId32,
+            /**
+             * amount staked
+             */
+            amount: sts.bigint(),
+        })
+    ),
+    /**
+     * A new candidate joined the list of candidates.
+     */
+    matrixV500: new EventType(
+        'CollatorStaking.CandidateJoined',
+        sts.struct({
+            /**
+             * accountId of the new candidate
+             */
+            accountId: matrixV500.AccountId32,
+            /**
+             * amount staked
+             */
+            amount: sts.bigint(),
+            /**
+             * The percentage cut on the rewards that goes to the nominators
+             */
+            rewardsCut: matrixV500.Perbill,
         })
     ),
     /**
@@ -170,17 +208,17 @@ export const candidateExitFailed = {
      * renumbered `CollatorSelected` from 6 to 7. New variants are appended;
      * `test_event_indices_are_stable` pins the whole set so this cannot happen again.
      */
-    matrixV1040: new EventType(
+    matrixEnjinV1041: new EventType(
         'CollatorStaking.CandidateExitFailed',
         sts.struct({
             /**
              * AccountId of the candidate whose exit failed
              */
-            accountId: matrixV1040.AccountId32,
+            accountId: matrixEnjinV1041.AccountId32,
             /**
              * why the exit failed
              */
-            error: matrixV1040.DispatchError,
+            error: matrixEnjinV1041.DispatchError,
         })
     ),
 }

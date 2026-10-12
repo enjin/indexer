@@ -5,8 +5,8 @@ import { marketplace } from '~/type/events'
 import { UnsupportedEventError } from '~/util/errors'
 
 export function migrationCompleted(event: EventItem): MigrationCompleted {
-    if (!marketplace.migrationCompleted.matrixV1040.is(event)) throw new UnsupportedEventError(event)
-    return marketplace.migrationCompleted.matrixV1040.decode(event)
+    if (!marketplace.migrationCompleted.matrixEnjinV1041.is(event)) throw new UnsupportedEventError(event)
+    return marketplace.migrationCompleted.matrixEnjinV1041.decode(event)
 }
 
 export function migrationCompletedEventModel(item: EventItem, data: MigrationCompleted): EventModel {

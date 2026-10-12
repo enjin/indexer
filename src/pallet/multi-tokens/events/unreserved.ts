@@ -20,6 +20,10 @@ export function unreserved(event: EventItem): Unreserved {
             () => multiTokens.unreserved.matrixEnjinV603.decode(event)
         )
         .when(
+            () => multiTokens.unreserved.matrixEnjinV1041.is(event),
+            () => multiTokens.unreserved.matrixEnjinV1041.decode(event)
+        )
+        .when(
             () => multiTokens.unreserved.matrixV1040.is(event),
             () => multiTokens.unreserved.matrixV1040.decode(event)
         )

@@ -1,5 +1,5 @@
 import { sts, Block, Bytes, Option, Result, CallType, RuntimeCtx } from '../support'
-import * as matrixV1040 from '../matrixV1040'
+import * as matrixEnjinV1041 from '../matrixEnjinV1041'
 
 export const addMember = {
     name: 'FellowshipCollective.add_member',
@@ -11,10 +11,10 @@ export const addMember = {
      *
      * Weight: `O(1)`
      */
-    matrixV1040: new CallType(
+    matrixEnjinV1041: new CallType(
         'FellowshipCollective.add_member',
         sts.struct({
-            who: matrixV1040.MultiAddress,
+            who: matrixEnjinV1041.MultiAddress,
         })
     ),
 }
@@ -29,10 +29,10 @@ export const promoteMember = {
      *
      * Weight: `O(1)`
      */
-    matrixV1040: new CallType(
+    matrixEnjinV1041: new CallType(
         'FellowshipCollective.promote_member',
         sts.struct({
-            who: matrixV1040.MultiAddress,
+            who: matrixEnjinV1041.MultiAddress,
         })
     ),
 }
@@ -48,10 +48,10 @@ export const demoteMember = {
      *
      * Weight: `O(1)`, less if the member's index is highest in its rank.
      */
-    matrixV1040: new CallType(
+    matrixEnjinV1041: new CallType(
         'FellowshipCollective.demote_member',
         sts.struct({
-            who: matrixV1040.MultiAddress,
+            who: matrixEnjinV1041.MultiAddress,
         })
     ),
 }
@@ -67,10 +67,10 @@ export const removeMember = {
      *
      * Weight: `O(min_rank)`.
      */
-    matrixV1040: new CallType(
+    matrixEnjinV1041: new CallType(
         'FellowshipCollective.remove_member',
         sts.struct({
-            who: matrixV1040.MultiAddress,
+            who: matrixEnjinV1041.MultiAddress,
             minRank: sts.number(),
         })
     ),
@@ -91,7 +91,7 @@ export const vote = {
      *
      * Weight: `O(1)`, less if there was no previous vote on the poll by the member.
      */
-    matrixV1040: new CallType(
+    matrixEnjinV1041: new CallType(
         'FellowshipCollective.vote',
         sts.struct({
             poll: sts.number(),
@@ -114,7 +114,7 @@ export const cleanupPoll = {
      *
      * Weight `O(max)` (less if there are fewer items to remove than `max`).
      */
-    matrixV1040: new CallType(
+    matrixEnjinV1041: new CallType(
         'FellowshipCollective.cleanup_poll',
         sts.struct({
             pollIndex: sts.number(),
@@ -132,11 +132,11 @@ export const exchangeMember = {
      * - `who`: Account of existing member of rank greater than zero to be exchanged.
      * - `new_who`: New Account of existing member of rank greater than zero to exchanged to.
      */
-    matrixV1040: new CallType(
+    matrixEnjinV1041: new CallType(
         'FellowshipCollective.exchange_member',
         sts.struct({
-            who: matrixV1040.MultiAddress,
-            newWho: matrixV1040.MultiAddress,
+            who: matrixEnjinV1041.MultiAddress,
+            newWho: matrixEnjinV1041.MultiAddress,
         })
     ),
 }

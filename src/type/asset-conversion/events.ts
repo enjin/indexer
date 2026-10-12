@@ -1,32 +1,32 @@
 import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
-import * as matrixV1030 from '../matrixV1030'
+import * as matrixEnjinV1041 from '../matrixEnjinV1041'
 
 export const poolCreated = {
     name: 'AssetConversion.PoolCreated',
     /**
      * A successful call of the `CreatePool` extrinsic will create this event.
      */
-    matrixV1030: new EventType(
+    matrixEnjinV1041: new EventType(
         'AssetConversion.PoolCreated',
         sts.struct({
             /**
              * The account that created the pool.
              */
-            creator: matrixV1030.AccountId32,
+            creator: matrixEnjinV1041.AccountId32,
             /**
              * The pool id associated with the pool. Note that the order of the assets may not be
              * the same as the order specified in the create pool extrinsic.
              */
-            poolId: sts.tuple(() => [matrixV1030.AssetId, matrixV1030.AssetId]),
+            poolId: sts.tuple(() => [matrixEnjinV1041.AssetId, matrixEnjinV1041.AssetId]),
             /**
              * The account ID of the pool.
              */
-            poolAccount: matrixV1030.AccountId32,
+            poolAccount: matrixEnjinV1041.AccountId32,
             /**
              * The id of the liquidity tokens that will be minted when assets are added to this
              * pool.
              */
-            lpToken: matrixV1030.LpTokenId,
+            lpToken: matrixEnjinV1041.LpTokenId,
         })
     ),
 }
@@ -36,21 +36,21 @@ export const liquidityAdded = {
     /**
      * A successful call of the `AddLiquidity` extrinsic will create this event.
      */
-    matrixV1030: new EventType(
+    matrixEnjinV1041: new EventType(
         'AssetConversion.LiquidityAdded',
         sts.struct({
             /**
              * The account that the liquidity was taken from.
              */
-            who: matrixV1030.AccountId32,
+            who: matrixEnjinV1041.AccountId32,
             /**
              * The account that the liquidity tokens were minted to.
              */
-            mintTo: matrixV1030.AccountId32,
+            mintTo: matrixEnjinV1041.AccountId32,
             /**
              * The pool id of the pool that the liquidity was added to.
              */
-            poolId: sts.tuple(() => [matrixV1030.AssetId, matrixV1030.AssetId]),
+            poolId: sts.tuple(() => [matrixEnjinV1041.AssetId, matrixEnjinV1041.AssetId]),
             /**
              * The amount of the first asset that was added to the pool.
              */
@@ -62,7 +62,7 @@ export const liquidityAdded = {
             /**
              * The id of the lp token that was minted.
              */
-            lpToken: matrixV1030.LpTokenId,
+            lpToken: matrixEnjinV1041.LpTokenId,
             /**
              * The amount of lp tokens that were minted of that id.
              */
@@ -76,21 +76,21 @@ export const liquidityRemoved = {
     /**
      * A successful call of the `RemoveLiquidity` extrinsic will create this event.
      */
-    matrixV1030: new EventType(
+    matrixEnjinV1041: new EventType(
         'AssetConversion.LiquidityRemoved',
         sts.struct({
             /**
              * The account that the liquidity tokens were burned from.
              */
-            who: matrixV1030.AccountId32,
+            who: matrixEnjinV1041.AccountId32,
             /**
              * The account that the assets were transferred to.
              */
-            withdrawTo: matrixV1030.AccountId32,
+            withdrawTo: matrixEnjinV1041.AccountId32,
             /**
              * The pool id that the liquidity was removed from.
              */
-            poolId: sts.tuple(() => [matrixV1030.AssetId, matrixV1030.AssetId]),
+            poolId: sts.tuple(() => [matrixEnjinV1041.AssetId, matrixEnjinV1041.AssetId]),
             /**
              * The amount of the first asset that was removed from the pool.
              */
@@ -102,7 +102,7 @@ export const liquidityRemoved = {
             /**
              * The id of the lp token that was burned.
              */
-            lpToken: matrixV1030.LpTokenId,
+            lpToken: matrixEnjinV1041.LpTokenId,
             /**
              * The amount of lp tokens that were burned of that id.
              */
@@ -110,7 +110,7 @@ export const liquidityRemoved = {
             /**
              * Liquidity withdrawal fee (%).
              */
-            withdrawalFee: matrixV1030.Permill,
+            withdrawalFee: matrixEnjinV1041.Permill,
         })
     ),
 }
@@ -121,17 +121,17 @@ export const swapExecuted = {
      * Assets have been converted from one to another. Both `SwapExactTokenForToken`
      * and `SwapTokenForExactToken` will generate this event.
      */
-    matrixV1030: new EventType(
+    matrixEnjinV1041: new EventType(
         'AssetConversion.SwapExecuted',
         sts.struct({
             /**
              * Which account was the instigator of the swap.
              */
-            who: matrixV1030.AccountId32,
+            who: matrixEnjinV1041.AccountId32,
             /**
              * The account that the assets were transferred to.
              */
-            sendTo: matrixV1030.AccountId32,
+            sendTo: matrixEnjinV1041.AccountId32,
             /**
              * The amount of the first asset that was swapped.
              */
@@ -144,7 +144,7 @@ export const swapExecuted = {
              * The route of asset IDs with amounts that the swap went through.
              * E.g. (A, amount_in) -> (Dot, amount_out) -> (B, amount_out)
              */
-            path: sts.array(() => sts.tuple(() => [matrixV1030.AssetId, sts.bigint()])),
+            path: sts.array(() => sts.tuple(() => [matrixEnjinV1041.AssetId, sts.bigint()])),
         })
     ),
 }
@@ -154,7 +154,7 @@ export const swapCreditExecuted = {
     /**
      * Assets have been converted from one to another.
      */
-    matrixV1030: new EventType(
+    matrixEnjinV1041: new EventType(
         'AssetConversion.SwapCreditExecuted',
         sts.struct({
             /**
@@ -169,7 +169,7 @@ export const swapCreditExecuted = {
              * The route of asset IDs with amounts that the swap went through.
              * E.g. (A, amount_in) -> (Dot, amount_out) -> (B, amount_out)
              */
-            path: sts.array(() => sts.tuple(() => [matrixV1030.AssetId, sts.bigint()])),
+            path: sts.array(() => sts.tuple(() => [matrixEnjinV1041.AssetId, sts.bigint()])),
         })
     ),
 }
@@ -179,17 +179,17 @@ export const touched = {
     /**
      * Pool has been touched in order to fulfill operational requirements.
      */
-    matrixV1030: new EventType(
+    matrixEnjinV1041: new EventType(
         'AssetConversion.Touched',
         sts.struct({
             /**
              * The ID of the pool.
              */
-            poolId: sts.tuple(() => [matrixV1030.AssetId, matrixV1030.AssetId]),
+            poolId: sts.tuple(() => [matrixEnjinV1041.AssetId, matrixEnjinV1041.AssetId]),
             /**
              * The account initiating the touch.
              */
-            who: matrixV1030.AccountId32,
+            who: matrixEnjinV1041.AccountId32,
         })
     ),
 }

@@ -1,7 +1,7 @@
 import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
 import * as enjinV100 from '../enjinV100'
 import * as v100 from '../v100'
-import * as matrixV1040 from '../matrixV1040'
+import * as matrixEnjinV1041 from '../matrixEnjinV1041'
 import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 import * as v1060 from '../v1060'
@@ -14,9 +14,9 @@ export const delegated = {
     /**
      * An account has delegated their vote to another account. \[who, target\]
      */
-    matrixV1040: new EventType(
+    matrixEnjinV1041: new EventType(
         'ConvictionVoting.Delegated',
-        sts.tuple([matrixV1040.AccountId32, matrixV1040.AccountId32, sts.number()])
+        sts.tuple([matrixEnjinV1041.AccountId32, matrixEnjinV1041.AccountId32, sts.number()])
     ),
     /**
      * An account has delegated their vote to another account. \[who, target\]
@@ -57,7 +57,10 @@ export const undelegated = {
     /**
      * An \[account\] has cancelled a previous delegation operation.
      */
-    matrixV1040: new EventType('ConvictionVoting.Undelegated', sts.tuple([matrixV1040.AccountId32, sts.number()])),
+    matrixEnjinV1041: new EventType(
+        'ConvictionVoting.Undelegated',
+        sts.tuple([matrixEnjinV1041.AccountId32, sts.number()])
+    ),
     /**
      * An \[account\] has cancelled a previous delegation operation.
      */
@@ -95,11 +98,11 @@ export const voted = {
     /**
      * An account has voted
      */
-    matrixV1040: new EventType(
+    matrixEnjinV1041: new EventType(
         'ConvictionVoting.Voted',
         sts.struct({
-            who: matrixV1040.AccountId32,
-            vote: matrixV1040.AccountVote,
+            who: matrixEnjinV1041.AccountId32,
+            vote: matrixEnjinV1041.AccountVote,
             pollIndex: sts.number(),
         })
     ),
@@ -154,11 +157,11 @@ export const voteRemoved = {
     /**
      * A vote has been removed
      */
-    matrixV1040: new EventType(
+    matrixEnjinV1041: new EventType(
         'ConvictionVoting.VoteRemoved',
         sts.struct({
-            who: matrixV1040.AccountId32,
-            vote: matrixV1040.AccountVote,
+            who: matrixEnjinV1041.AccountId32,
+            vote: matrixEnjinV1041.AccountVote,
             pollIndex: sts.number(),
         })
     ),
@@ -213,10 +216,10 @@ export const voteUnlocked = {
     /**
      * The lockup period of a conviction vote expired, and the funds have been unlocked.
      */
-    matrixV1040: new EventType(
+    matrixEnjinV1041: new EventType(
         'ConvictionVoting.VoteUnlocked',
         sts.struct({
-            who: matrixV1040.AccountId32,
+            who: matrixEnjinV1041.AccountId32,
             class: sts.number(),
         })
     ),

@@ -1,6 +1,6 @@
 import { sts, Block, Bytes, Option, Result, CallType, RuntimeCtx } from '../support'
 import * as v100 from '../v100'
-import * as matrixV1040 from '../matrixV1040'
+import * as matrixEnjinV1041 from '../matrixEnjinV1041'
 import * as enjinV1070 from '../enjinV1070'
 import * as v1070 from '../v1070'
 import * as v1080 from '../v1080'
@@ -18,11 +18,11 @@ export const vote = {
      *
      * Weight: `O(R)` where R is the number of polls the voter has voted on.
      */
-    matrixV1040: new CallType(
+    matrixEnjinV1041: new CallType(
         'ConvictionVoting.vote',
         sts.struct({
             pollIndex: sts.number(),
-            vote: matrixV1040.AccountVote,
+            vote: matrixEnjinV1041.AccountVote,
         })
     ),
     /**
@@ -110,12 +110,12 @@ export const delegate = {
      * Weight: `O(R)` where R is the number of polls the voter delegating to has
      *   voted on. Weight is initially charged as if maximum votes, but is refunded later.
      */
-    matrixV1040: new CallType(
+    matrixEnjinV1041: new CallType(
         'ConvictionVoting.delegate',
         sts.struct({
             class: sts.number(),
-            to: matrixV1040.MultiAddress,
-            conviction: matrixV1040.Conviction,
+            to: matrixEnjinV1041.MultiAddress,
+            conviction: matrixEnjinV1041.Conviction,
             balance: sts.bigint(),
         })
     ),
@@ -243,7 +243,7 @@ export const undelegate = {
      * Weight: `O(R)` where R is the number of polls the voter delegating to has
      *   voted on. Weight is initially charged as if maximum votes, but is refunded later.
      */
-    matrixV1040: new CallType(
+    matrixEnjinV1041: new CallType(
         'ConvictionVoting.undelegate',
         sts.struct({
             class: sts.number(),
@@ -332,11 +332,11 @@ export const unlock = {
      *
      * Weight: `O(R)` with R number of vote of target.
      */
-    matrixV1040: new CallType(
+    matrixEnjinV1041: new CallType(
         'ConvictionVoting.unlock',
         sts.struct({
             class: sts.number(),
-            target: matrixV1040.MultiAddress,
+            target: matrixEnjinV1041.MultiAddress,
         })
     ),
     /**
@@ -430,7 +430,7 @@ export const removeVote = {
      * Weight: `O(R + log R)` where R is the number of polls that `target` has voted on.
      *   Weight is calculated for the maximum number of vote.
      */
-    matrixV1040: new CallType(
+    matrixEnjinV1041: new CallType(
         'ConvictionVoting.remove_vote',
         sts.struct({
             class: sts.option(() => sts.number()),
@@ -575,10 +575,10 @@ export const removeOtherVote = {
      * Weight: `O(R + log R)` where R is the number of polls that `target` has voted on.
      *   Weight is calculated for the maximum number of vote.
      */
-    matrixV1040: new CallType(
+    matrixEnjinV1041: new CallType(
         'ConvictionVoting.remove_other_vote',
         sts.struct({
-            target: matrixV1040.MultiAddress,
+            target: matrixEnjinV1041.MultiAddress,
             class: sts.number(),
             index: sts.number(),
         })

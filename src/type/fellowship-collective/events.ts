@@ -1,15 +1,15 @@
 import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
-import * as matrixV1040 from '../matrixV1040'
+import * as matrixEnjinV1041 from '../matrixEnjinV1041'
 
 export const memberAdded = {
     name: 'FellowshipCollective.MemberAdded',
     /**
      * A member `who` has been added.
      */
-    matrixV1040: new EventType(
+    matrixEnjinV1041: new EventType(
         'FellowshipCollective.MemberAdded',
         sts.struct({
-            who: matrixV1040.AccountId32,
+            who: matrixEnjinV1041.AccountId32,
         })
     ),
 }
@@ -19,10 +19,10 @@ export const rankChanged = {
     /**
      * The member `who`se rank has been changed to the given `rank`.
      */
-    matrixV1040: new EventType(
+    matrixEnjinV1041: new EventType(
         'FellowshipCollective.RankChanged',
         sts.struct({
-            who: matrixV1040.AccountId32,
+            who: matrixEnjinV1041.AccountId32,
             rank: sts.number(),
         })
     ),
@@ -33,10 +33,10 @@ export const memberRemoved = {
     /**
      * The member `who` of given `rank` has been removed from the collective.
      */
-    matrixV1040: new EventType(
+    matrixEnjinV1041: new EventType(
         'FellowshipCollective.MemberRemoved',
         sts.struct({
-            who: matrixV1040.AccountId32,
+            who: matrixEnjinV1041.AccountId32,
             rank: sts.number(),
         })
     ),
@@ -48,13 +48,13 @@ export const voted = {
      * The member `who` has voted for the `poll` with the given `vote` leading to an updated
      * `tally`.
      */
-    matrixV1040: new EventType(
+    matrixEnjinV1041: new EventType(
         'FellowshipCollective.Voted',
         sts.struct({
-            who: matrixV1040.AccountId32,
+            who: matrixEnjinV1041.AccountId32,
             poll: sts.number(),
-            vote: matrixV1040.VoteRecord,
-            tally: matrixV1040.Type_613,
+            vote: matrixEnjinV1041.VoteRecord,
+            tally: matrixEnjinV1041.Type_613,
         })
     ),
 }
@@ -64,11 +64,11 @@ export const memberExchanged = {
     /**
      * The member `who` had their `AccountId` changed to `new_who`.
      */
-    matrixV1040: new EventType(
+    matrixEnjinV1041: new EventType(
         'FellowshipCollective.MemberExchanged',
         sts.struct({
-            who: matrixV1040.AccountId32,
-            newWho: matrixV1040.AccountId32,
+            who: matrixEnjinV1041.AccountId32,
+            newWho: matrixEnjinV1041.AccountId32,
         })
     ),
 }

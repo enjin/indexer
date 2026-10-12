@@ -15,6 +15,7 @@ import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 import * as v1031 from '../v1031'
 import * as enjinV1032 from '../enjinV1032'
 import * as matrixV1040 from '../matrixV1040'
+import * as matrixEnjinV1041 from '../matrixEnjinV1041'
 import * as matrixV1041 from '../matrixV1041'
 import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
@@ -108,6 +109,15 @@ export const listings = {
         [matrixEnjinV1031.H256],
         matrixEnjinV1031.Listing
     ) as ListingsMatrixEnjinV1031,
+    /**
+     *  Listings by ID (real storage)
+     */
+    matrixEnjinV1041: new StorageType(
+        'Marketplace.Listings',
+        'Optional',
+        [matrixEnjinV1041.H256],
+        matrixEnjinV1041.Listing
+    ) as ListingsMatrixEnjinV1041,
     /**
      *  Listings by ID
      */
@@ -343,6 +353,33 @@ export interface ListingsMatrixEnjinV1031 {
         block: Block,
         key: matrixEnjinV1031.H256
     ): AsyncIterable<[k: matrixEnjinV1031.H256, v: matrixEnjinV1031.Listing | undefined][]>
+}
+
+/**
+ *  Listings by ID (real storage)
+ */
+export interface ListingsMatrixEnjinV1041 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: matrixEnjinV1041.H256): Promise<matrixEnjinV1041.Listing | undefined>
+    getMany(block: Block, keys: matrixEnjinV1041.H256[]): Promise<(matrixEnjinV1041.Listing | undefined)[]>
+    getKeys(block: Block): Promise<matrixEnjinV1041.H256[]>
+    getKeys(block: Block, key: matrixEnjinV1041.H256): Promise<matrixEnjinV1041.H256[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<matrixEnjinV1041.H256[]>
+    getKeysPaged(pageSize: number, block: Block, key: matrixEnjinV1041.H256): AsyncIterable<matrixEnjinV1041.H256[]>
+    getPairs(block: Block): Promise<[k: matrixEnjinV1041.H256, v: matrixEnjinV1041.Listing | undefined][]>
+    getPairs(
+        block: Block,
+        key: matrixEnjinV1041.H256
+    ): Promise<[k: matrixEnjinV1041.H256, v: matrixEnjinV1041.Listing | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: matrixEnjinV1041.H256, v: matrixEnjinV1041.Listing | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: matrixEnjinV1041.H256
+    ): AsyncIterable<[k: matrixEnjinV1041.H256, v: matrixEnjinV1041.Listing | undefined][]>
 }
 
 /**
@@ -1005,194 +1042,92 @@ export interface UpgradeBlockNumberMatrixEnjinV1022 {
     get(block: Block): Promise<number | undefined>
 }
 
-export const listingIdsByMakeAsset = {
-    /**
-     *  Listing Ids by make asset's collection id and token id
-     */
-    matrixV500: new StorageType(
-        'Marketplace.ListingIdsByMakeAsset',
-        'Optional',
-        [sts.bigint(), sts.bigint()],
-        matrixV500.H256
-    ) as ListingIdsByMakeAssetMatrixV500,
-}
-
-/**
- *  Listing Ids by make asset's collection id and token id
- */
-export interface ListingIdsByMakeAssetMatrixV500 {
-    is(block: RuntimeCtx): boolean
-    get(block: Block, key1: bigint, key2: bigint): Promise<matrixV500.H256 | undefined>
-    getMany(block: Block, keys: [bigint, bigint][]): Promise<(matrixV500.H256 | undefined)[]>
-    getKeys(block: Block): Promise<[bigint, bigint][]>
-    getKeys(block: Block, key1: bigint): Promise<[bigint, bigint][]>
-    getKeys(block: Block, key1: bigint, key2: bigint): Promise<[bigint, bigint][]>
-    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[bigint, bigint][]>
-    getKeysPaged(pageSize: number, block: Block, key1: bigint): AsyncIterable<[bigint, bigint][]>
-    getKeysPaged(pageSize: number, block: Block, key1: bigint, key2: bigint): AsyncIterable<[bigint, bigint][]>
-    getPairs(block: Block): Promise<[k: [bigint, bigint], v: matrixV500.H256 | undefined][]>
-    getPairs(block: Block, key1: bigint): Promise<[k: [bigint, bigint], v: matrixV500.H256 | undefined][]>
-    getPairs(block: Block, key1: bigint, key2: bigint): Promise<[k: [bigint, bigint], v: matrixV500.H256 | undefined][]>
-    getPairsPaged(
-        pageSize: number,
-        block: Block
-    ): AsyncIterable<[k: [bigint, bigint], v: matrixV500.H256 | undefined][]>
-    getPairsPaged(
-        pageSize: number,
-        block: Block,
-        key1: bigint
-    ): AsyncIterable<[k: [bigint, bigint], v: matrixV500.H256 | undefined][]>
-    getPairsPaged(
-        pageSize: number,
-        block: Block,
-        key1: bigint,
-        key2: bigint
-    ): AsyncIterable<[k: [bigint, bigint], v: matrixV500.H256 | undefined][]>
-}
-
-export const listingIdsByTakeAsset = {
-    /**
-     *  Listing Ids by take asset's collection id and token id
-     */
-    matrixV500: new StorageType(
-        'Marketplace.ListingIdsByTakeAsset',
-        'Optional',
-        [sts.bigint(), sts.bigint()],
-        matrixV500.H256
-    ) as ListingIdsByTakeAssetMatrixV500,
-}
-
-/**
- *  Listing Ids by take asset's collection id and token id
- */
-export interface ListingIdsByTakeAssetMatrixV500 {
-    is(block: RuntimeCtx): boolean
-    get(block: Block, key1: bigint, key2: bigint): Promise<matrixV500.H256 | undefined>
-    getMany(block: Block, keys: [bigint, bigint][]): Promise<(matrixV500.H256 | undefined)[]>
-    getKeys(block: Block): Promise<[bigint, bigint][]>
-    getKeys(block: Block, key1: bigint): Promise<[bigint, bigint][]>
-    getKeys(block: Block, key1: bigint, key2: bigint): Promise<[bigint, bigint][]>
-    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[bigint, bigint][]>
-    getKeysPaged(pageSize: number, block: Block, key1: bigint): AsyncIterable<[bigint, bigint][]>
-    getKeysPaged(pageSize: number, block: Block, key1: bigint, key2: bigint): AsyncIterable<[bigint, bigint][]>
-    getPairs(block: Block): Promise<[k: [bigint, bigint], v: matrixV500.H256 | undefined][]>
-    getPairs(block: Block, key1: bigint): Promise<[k: [bigint, bigint], v: matrixV500.H256 | undefined][]>
-    getPairs(block: Block, key1: bigint, key2: bigint): Promise<[k: [bigint, bigint], v: matrixV500.H256 | undefined][]>
-    getPairsPaged(
-        pageSize: number,
-        block: Block
-    ): AsyncIterable<[k: [bigint, bigint], v: matrixV500.H256 | undefined][]>
-    getPairsPaged(
-        pageSize: number,
-        block: Block,
-        key1: bigint
-    ): AsyncIterable<[k: [bigint, bigint], v: matrixV500.H256 | undefined][]>
-    getPairsPaged(
-        pageSize: number,
-        block: Block,
-        key1: bigint,
-        key2: bigint
-    ): AsyncIterable<[k: [bigint, bigint], v: matrixV500.H256 | undefined][]>
-}
-
-export const listingIdsByAccountId = {
-    /**
-     *  Listing Ids by [`AccountId`](frame_system::Config::AccountId)
-     */
-    matrixV500: new StorageType(
-        'Marketplace.ListingIdsByAccountId',
-        'Optional',
-        [matrixV500.AccountId32, matrixV500.H256],
-        sts.unit()
-    ) as ListingIdsByAccountIdMatrixV500,
-}
-
-/**
- *  Listing Ids by [`AccountId`](frame_system::Config::AccountId)
- */
-export interface ListingIdsByAccountIdMatrixV500 {
-    is(block: RuntimeCtx): boolean
-    get(block: Block, key1: matrixV500.AccountId32, key2: matrixV500.H256): Promise<null | undefined>
-    getMany(block: Block, keys: [matrixV500.AccountId32, matrixV500.H256][]): Promise<(null | undefined)[]>
-    getKeys(block: Block): Promise<[matrixV500.AccountId32, matrixV500.H256][]>
-    getKeys(block: Block, key1: matrixV500.AccountId32): Promise<[matrixV500.AccountId32, matrixV500.H256][]>
-    getKeys(
-        block: Block,
-        key1: matrixV500.AccountId32,
-        key2: matrixV500.H256
-    ): Promise<[matrixV500.AccountId32, matrixV500.H256][]>
-    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[matrixV500.AccountId32, matrixV500.H256][]>
-    getKeysPaged(
-        pageSize: number,
-        block: Block,
-        key1: matrixV500.AccountId32
-    ): AsyncIterable<[matrixV500.AccountId32, matrixV500.H256][]>
-    getKeysPaged(
-        pageSize: number,
-        block: Block,
-        key1: matrixV500.AccountId32,
-        key2: matrixV500.H256
-    ): AsyncIterable<[matrixV500.AccountId32, matrixV500.H256][]>
-    getPairs(block: Block): Promise<[k: [matrixV500.AccountId32, matrixV500.H256], v: null | undefined][]>
-    getPairs(
-        block: Block,
-        key1: matrixV500.AccountId32
-    ): Promise<[k: [matrixV500.AccountId32, matrixV500.H256], v: null | undefined][]>
-    getPairs(
-        block: Block,
-        key1: matrixV500.AccountId32,
-        key2: matrixV500.H256
-    ): Promise<[k: [matrixV500.AccountId32, matrixV500.H256], v: null | undefined][]>
-    getPairsPaged(
-        pageSize: number,
-        block: Block
-    ): AsyncIterable<[k: [matrixV500.AccountId32, matrixV500.H256], v: null | undefined][]>
-    getPairsPaged(
-        pageSize: number,
-        block: Block,
-        key1: matrixV500.AccountId32
-    ): AsyncIterable<[k: [matrixV500.AccountId32, matrixV500.H256], v: null | undefined][]>
-    getPairsPaged(
-        pageSize: number,
-        block: Block,
-        key1: matrixV500.AccountId32,
-        key2: matrixV500.H256
-    ): AsyncIterable<[k: [matrixV500.AccountId32, matrixV500.H256], v: null | undefined][]>
-}
-
 export const listingsMigrationCursor = {
     /**
-     *  Progress of the storage-version 8 `Listings` pass driven by [`Pallet::migrate`]: the id of
-     *  the last listing converted, resumed after. `None` both before the pass has started and
-     *  after the migration has completed (the completing call removes it); the storage version
-     *  distinguishes the two.
+     *  Progress of the migration's pass over `Listings` driven by [`Pallet::migrate`]: the id of
+     *  the last listing converted, or on a version 8 chain booked, resumed after. `None` both
+     *  before the pass has started and after the migration has completed (the completing call
+     *  removes it); the storage version distinguishes the two. On a version 8 chain it also tells
+     *  the rebuild that the version 8 book is gone, since the book is removed before the pass
+     *  starts.
      *
      *  Deprecated: only exists so the migration can resume across calls; remove it, with the
      *  `migrate` extrinsic, in the release after the migration has run.
      */
-    matrixV1040: new StorageType(
+    matrixEnjinV1041: new StorageType(
         'Marketplace.ListingsMigrationCursor',
         'Optional',
         [],
-        matrixV1040.H256
-    ) as ListingsMigrationCursorMatrixV1040,
+        matrixEnjinV1041.H256
+    ) as ListingsMigrationCursorMatrixEnjinV1041,
 }
 
 /**
- *  Progress of the storage-version 8 `Listings` pass driven by [`Pallet::migrate`]: the id of
- *  the last listing converted, resumed after. `None` both before the pass has started and
- *  after the migration has completed (the completing call removes it); the storage version
- *  distinguishes the two.
+ *  Progress of the migration's pass over `Listings` driven by [`Pallet::migrate`]: the id of
+ *  the last listing converted, or on a version 8 chain booked, resumed after. `None` both
+ *  before the pass has started and after the migration has completed (the completing call
+ *  removes it); the storage version distinguishes the two. On a version 8 chain it also tells
+ *  the rebuild that the version 8 book is gone, since the book is removed before the pass
+ *  starts.
  *
  *  Deprecated: only exists so the migration can resume across calls; remove it, with the
  *  `migrate` extrinsic, in the release after the migration has run.
  */
-export interface ListingsMigrationCursorMatrixV1040 {
+export interface ListingsMigrationCursorMatrixEnjinV1041 {
     is(block: RuntimeCtx): boolean
-    get(block: Block): Promise<matrixV1040.H256 | undefined>
+    get(block: Block): Promise<matrixEnjinV1041.H256 | undefined>
+}
+
+export const migrationPausedExtrinsics = {
+    /**
+     *  The calls the storage migration's `on_runtime_upgrade` hook paused — those that
+     *  were not already paused when it ran — so the completing `migrate` call resumes exactly
+     *  those and leaves any pause an operator set before the upgrade in place. `None` while no
+     *  hook that keeps this record has run, in which case the completing call resumes every
+     *  call, as the hook that predates the record paused every call. Removed by the completing
+     *  call.
+     *
+     *  Deprecated: only exists for the migration's pause bracket; remove it, with the `migrate`
+     *  extrinsic, in the release after the migration has run.
+     */
+    matrixEnjinV1041: new StorageType(
+        'Marketplace.MigrationPausedExtrinsics',
+        'Optional',
+        [],
+        sts.array(() => sts.bytes())
+    ) as MigrationPausedExtrinsicsMatrixEnjinV1041,
+}
+
+/**
+ *  The calls the storage migration's `on_runtime_upgrade` hook paused — those that
+ *  were not already paused when it ran — so the completing `migrate` call resumes exactly
+ *  those and leaves any pause an operator set before the upgrade in place. `None` while no
+ *  hook that keeps this record has run, in which case the completing call resumes every
+ *  call, as the hook that predates the record paused every call. Removed by the completing
+ *  call.
+ *
+ *  Deprecated: only exists for the migration's pause bracket; remove it, with the `migrate`
+ *  extrinsic, in the release after the migration has run.
+ */
+export interface MigrationPausedExtrinsicsMatrixEnjinV1041 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block): Promise<Bytes[] | undefined>
 }
 
 export const priceIndex = {
+    /**
+     *  The distinct prices that have resting listings, per (asset, currency, side), sorted
+     *  ascending by price. Each price carries its level's start block: that of the front entry of
+     *  its [`PriceLevelQueues`] queue, the earliest block from which any listing at the price is
+     *  fillable. Matching passes over a level whose start block is still ahead without reading its
+     *  queue.
+     */
+    matrixEnjinV1041: new StorageType(
+        'Marketplace.PriceIndex',
+        'Default',
+        [matrixEnjinV1041.AssetId, matrixEnjinV1041.AssetId, matrixEnjinV1041.OrderSide],
+        sts.array(() => sts.tuple(() => [sts.bigint(), sts.number()]))
+    ) as PriceIndexMatrixEnjinV1041,
     /**
      *  Sorted (ascending) distinct prices that have resting listings, per (asset, currency, side)
      */
@@ -1215,6 +1150,146 @@ export const priceIndex = {
         [matrixV1041.AssetId, matrixV1041.AssetId, matrixV1041.OrderSide],
         sts.array(() => sts.tuple(() => [sts.bigint(), sts.number()]))
     ) as PriceIndexMatrixV1041,
+}
+
+/**
+ *  The distinct prices that have resting listings, per (asset, currency, side), sorted
+ *  ascending by price. Each price carries its level's start block: that of the front entry of
+ *  its [`PriceLevelQueues`] queue, the earliest block from which any listing at the price is
+ *  fillable. Matching passes over a level whose start block is still ahead without reading its
+ *  queue.
+ */
+export interface PriceIndexMatrixEnjinV1041 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): [bigint, number][]
+    get(
+        block: Block,
+        key1: matrixEnjinV1041.AssetId,
+        key2: matrixEnjinV1041.AssetId,
+        key3: matrixEnjinV1041.OrderSide
+    ): Promise<[bigint, number][] | undefined>
+    getMany(
+        block: Block,
+        keys: [matrixEnjinV1041.AssetId, matrixEnjinV1041.AssetId, matrixEnjinV1041.OrderSide][]
+    ): Promise<([bigint, number][] | undefined)[]>
+    getKeys(block: Block): Promise<[matrixEnjinV1041.AssetId, matrixEnjinV1041.AssetId, matrixEnjinV1041.OrderSide][]>
+    getKeys(
+        block: Block,
+        key1: matrixEnjinV1041.AssetId
+    ): Promise<[matrixEnjinV1041.AssetId, matrixEnjinV1041.AssetId, matrixEnjinV1041.OrderSide][]>
+    getKeys(
+        block: Block,
+        key1: matrixEnjinV1041.AssetId,
+        key2: matrixEnjinV1041.AssetId
+    ): Promise<[matrixEnjinV1041.AssetId, matrixEnjinV1041.AssetId, matrixEnjinV1041.OrderSide][]>
+    getKeys(
+        block: Block,
+        key1: matrixEnjinV1041.AssetId,
+        key2: matrixEnjinV1041.AssetId,
+        key3: matrixEnjinV1041.OrderSide
+    ): Promise<[matrixEnjinV1041.AssetId, matrixEnjinV1041.AssetId, matrixEnjinV1041.OrderSide][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[matrixEnjinV1041.AssetId, matrixEnjinV1041.AssetId, matrixEnjinV1041.OrderSide][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: matrixEnjinV1041.AssetId
+    ): AsyncIterable<[matrixEnjinV1041.AssetId, matrixEnjinV1041.AssetId, matrixEnjinV1041.OrderSide][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: matrixEnjinV1041.AssetId,
+        key2: matrixEnjinV1041.AssetId
+    ): AsyncIterable<[matrixEnjinV1041.AssetId, matrixEnjinV1041.AssetId, matrixEnjinV1041.OrderSide][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: matrixEnjinV1041.AssetId,
+        key2: matrixEnjinV1041.AssetId,
+        key3: matrixEnjinV1041.OrderSide
+    ): AsyncIterable<[matrixEnjinV1041.AssetId, matrixEnjinV1041.AssetId, matrixEnjinV1041.OrderSide][]>
+    getPairs(
+        block: Block
+    ): Promise<
+        [
+            k: [matrixEnjinV1041.AssetId, matrixEnjinV1041.AssetId, matrixEnjinV1041.OrderSide],
+            v: [bigint, number][] | undefined,
+        ][]
+    >
+    getPairs(
+        block: Block,
+        key1: matrixEnjinV1041.AssetId
+    ): Promise<
+        [
+            k: [matrixEnjinV1041.AssetId, matrixEnjinV1041.AssetId, matrixEnjinV1041.OrderSide],
+            v: [bigint, number][] | undefined,
+        ][]
+    >
+    getPairs(
+        block: Block,
+        key1: matrixEnjinV1041.AssetId,
+        key2: matrixEnjinV1041.AssetId
+    ): Promise<
+        [
+            k: [matrixEnjinV1041.AssetId, matrixEnjinV1041.AssetId, matrixEnjinV1041.OrderSide],
+            v: [bigint, number][] | undefined,
+        ][]
+    >
+    getPairs(
+        block: Block,
+        key1: matrixEnjinV1041.AssetId,
+        key2: matrixEnjinV1041.AssetId,
+        key3: matrixEnjinV1041.OrderSide
+    ): Promise<
+        [
+            k: [matrixEnjinV1041.AssetId, matrixEnjinV1041.AssetId, matrixEnjinV1041.OrderSide],
+            v: [bigint, number][] | undefined,
+        ][]
+    >
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<
+        [
+            k: [matrixEnjinV1041.AssetId, matrixEnjinV1041.AssetId, matrixEnjinV1041.OrderSide],
+            v: [bigint, number][] | undefined,
+        ][]
+    >
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: matrixEnjinV1041.AssetId
+    ): AsyncIterable<
+        [
+            k: [matrixEnjinV1041.AssetId, matrixEnjinV1041.AssetId, matrixEnjinV1041.OrderSide],
+            v: [bigint, number][] | undefined,
+        ][]
+    >
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: matrixEnjinV1041.AssetId,
+        key2: matrixEnjinV1041.AssetId
+    ): AsyncIterable<
+        [
+            k: [matrixEnjinV1041.AssetId, matrixEnjinV1041.AssetId, matrixEnjinV1041.OrderSide],
+            v: [bigint, number][] | undefined,
+        ][]
+    >
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: matrixEnjinV1041.AssetId,
+        key2: matrixEnjinV1041.AssetId,
+        key3: matrixEnjinV1041.OrderSide
+    ): AsyncIterable<
+        [
+            k: [matrixEnjinV1041.AssetId, matrixEnjinV1041.AssetId, matrixEnjinV1041.OrderSide],
+            v: [bigint, number][] | undefined,
+        ][]
+    >
 }
 
 /**
@@ -1431,6 +1506,18 @@ export interface PriceIndexMatrixV1041 {
 
 export const priceLevelQueues = {
     /**
+     *  The listings resting at a price level, per (asset, currency, side, price), each with the
+     *  block from which it is fillable: its explicit `start_block`, or its creation block plus
+     *  `ListingActiveDelay`. Sorted by that block, ties in insertion order, so the front has time
+     *  priority and the listings not active yet rest behind the ones that are.
+     */
+    matrixEnjinV1041: new StorageType(
+        'Marketplace.PriceLevelQueues',
+        'Default',
+        [matrixEnjinV1041.AssetId, matrixEnjinV1041.AssetId, matrixEnjinV1041.OrderSide, sts.bigint()],
+        sts.array(() => sts.tuple(() => [matrixEnjinV1041.H256, sts.number()]))
+    ) as PriceLevelQueuesMatrixEnjinV1041,
+    /**
      *  FIFO queues of listing ids resting at a price level, per (asset, currency, side, price).
      *  The front of the queue has time priority.
      */
@@ -1452,6 +1539,188 @@ export const priceLevelQueues = {
         [matrixV1041.AssetId, matrixV1041.AssetId, matrixV1041.OrderSide, sts.bigint()],
         sts.array(() => sts.tuple(() => [matrixV1041.H256, sts.number()]))
     ) as PriceLevelQueuesMatrixV1041,
+}
+
+/**
+ *  The listings resting at a price level, per (asset, currency, side, price), each with the
+ *  block from which it is fillable: its explicit `start_block`, or its creation block plus
+ *  `ListingActiveDelay`. Sorted by that block, ties in insertion order, so the front has time
+ *  priority and the listings not active yet rest behind the ones that are.
+ */
+export interface PriceLevelQueuesMatrixEnjinV1041 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): [matrixEnjinV1041.H256, number][]
+    get(
+        block: Block,
+        key1: matrixEnjinV1041.AssetId,
+        key2: matrixEnjinV1041.AssetId,
+        key3: matrixEnjinV1041.OrderSide,
+        key4: bigint
+    ): Promise<[matrixEnjinV1041.H256, number][] | undefined>
+    getMany(
+        block: Block,
+        keys: [matrixEnjinV1041.AssetId, matrixEnjinV1041.AssetId, matrixEnjinV1041.OrderSide, bigint][]
+    ): Promise<([matrixEnjinV1041.H256, number][] | undefined)[]>
+    getKeys(
+        block: Block
+    ): Promise<[matrixEnjinV1041.AssetId, matrixEnjinV1041.AssetId, matrixEnjinV1041.OrderSide, bigint][]>
+    getKeys(
+        block: Block,
+        key1: matrixEnjinV1041.AssetId
+    ): Promise<[matrixEnjinV1041.AssetId, matrixEnjinV1041.AssetId, matrixEnjinV1041.OrderSide, bigint][]>
+    getKeys(
+        block: Block,
+        key1: matrixEnjinV1041.AssetId,
+        key2: matrixEnjinV1041.AssetId
+    ): Promise<[matrixEnjinV1041.AssetId, matrixEnjinV1041.AssetId, matrixEnjinV1041.OrderSide, bigint][]>
+    getKeys(
+        block: Block,
+        key1: matrixEnjinV1041.AssetId,
+        key2: matrixEnjinV1041.AssetId,
+        key3: matrixEnjinV1041.OrderSide
+    ): Promise<[matrixEnjinV1041.AssetId, matrixEnjinV1041.AssetId, matrixEnjinV1041.OrderSide, bigint][]>
+    getKeys(
+        block: Block,
+        key1: matrixEnjinV1041.AssetId,
+        key2: matrixEnjinV1041.AssetId,
+        key3: matrixEnjinV1041.OrderSide,
+        key4: bigint
+    ): Promise<[matrixEnjinV1041.AssetId, matrixEnjinV1041.AssetId, matrixEnjinV1041.OrderSide, bigint][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[matrixEnjinV1041.AssetId, matrixEnjinV1041.AssetId, matrixEnjinV1041.OrderSide, bigint][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: matrixEnjinV1041.AssetId
+    ): AsyncIterable<[matrixEnjinV1041.AssetId, matrixEnjinV1041.AssetId, matrixEnjinV1041.OrderSide, bigint][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: matrixEnjinV1041.AssetId,
+        key2: matrixEnjinV1041.AssetId
+    ): AsyncIterable<[matrixEnjinV1041.AssetId, matrixEnjinV1041.AssetId, matrixEnjinV1041.OrderSide, bigint][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: matrixEnjinV1041.AssetId,
+        key2: matrixEnjinV1041.AssetId,
+        key3: matrixEnjinV1041.OrderSide
+    ): AsyncIterable<[matrixEnjinV1041.AssetId, matrixEnjinV1041.AssetId, matrixEnjinV1041.OrderSide, bigint][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: matrixEnjinV1041.AssetId,
+        key2: matrixEnjinV1041.AssetId,
+        key3: matrixEnjinV1041.OrderSide,
+        key4: bigint
+    ): AsyncIterable<[matrixEnjinV1041.AssetId, matrixEnjinV1041.AssetId, matrixEnjinV1041.OrderSide, bigint][]>
+    getPairs(
+        block: Block
+    ): Promise<
+        [
+            k: [matrixEnjinV1041.AssetId, matrixEnjinV1041.AssetId, matrixEnjinV1041.OrderSide, bigint],
+            v: [matrixEnjinV1041.H256, number][] | undefined,
+        ][]
+    >
+    getPairs(
+        block: Block,
+        key1: matrixEnjinV1041.AssetId
+    ): Promise<
+        [
+            k: [matrixEnjinV1041.AssetId, matrixEnjinV1041.AssetId, matrixEnjinV1041.OrderSide, bigint],
+            v: [matrixEnjinV1041.H256, number][] | undefined,
+        ][]
+    >
+    getPairs(
+        block: Block,
+        key1: matrixEnjinV1041.AssetId,
+        key2: matrixEnjinV1041.AssetId
+    ): Promise<
+        [
+            k: [matrixEnjinV1041.AssetId, matrixEnjinV1041.AssetId, matrixEnjinV1041.OrderSide, bigint],
+            v: [matrixEnjinV1041.H256, number][] | undefined,
+        ][]
+    >
+    getPairs(
+        block: Block,
+        key1: matrixEnjinV1041.AssetId,
+        key2: matrixEnjinV1041.AssetId,
+        key3: matrixEnjinV1041.OrderSide
+    ): Promise<
+        [
+            k: [matrixEnjinV1041.AssetId, matrixEnjinV1041.AssetId, matrixEnjinV1041.OrderSide, bigint],
+            v: [matrixEnjinV1041.H256, number][] | undefined,
+        ][]
+    >
+    getPairs(
+        block: Block,
+        key1: matrixEnjinV1041.AssetId,
+        key2: matrixEnjinV1041.AssetId,
+        key3: matrixEnjinV1041.OrderSide,
+        key4: bigint
+    ): Promise<
+        [
+            k: [matrixEnjinV1041.AssetId, matrixEnjinV1041.AssetId, matrixEnjinV1041.OrderSide, bigint],
+            v: [matrixEnjinV1041.H256, number][] | undefined,
+        ][]
+    >
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<
+        [
+            k: [matrixEnjinV1041.AssetId, matrixEnjinV1041.AssetId, matrixEnjinV1041.OrderSide, bigint],
+            v: [matrixEnjinV1041.H256, number][] | undefined,
+        ][]
+    >
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: matrixEnjinV1041.AssetId
+    ): AsyncIterable<
+        [
+            k: [matrixEnjinV1041.AssetId, matrixEnjinV1041.AssetId, matrixEnjinV1041.OrderSide, bigint],
+            v: [matrixEnjinV1041.H256, number][] | undefined,
+        ][]
+    >
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: matrixEnjinV1041.AssetId,
+        key2: matrixEnjinV1041.AssetId
+    ): AsyncIterable<
+        [
+            k: [matrixEnjinV1041.AssetId, matrixEnjinV1041.AssetId, matrixEnjinV1041.OrderSide, bigint],
+            v: [matrixEnjinV1041.H256, number][] | undefined,
+        ][]
+    >
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: matrixEnjinV1041.AssetId,
+        key2: matrixEnjinV1041.AssetId,
+        key3: matrixEnjinV1041.OrderSide
+    ): AsyncIterable<
+        [
+            k: [matrixEnjinV1041.AssetId, matrixEnjinV1041.AssetId, matrixEnjinV1041.OrderSide, bigint],
+            v: [matrixEnjinV1041.H256, number][] | undefined,
+        ][]
+    >
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: matrixEnjinV1041.AssetId,
+        key2: matrixEnjinV1041.AssetId,
+        key3: matrixEnjinV1041.OrderSide,
+        key4: bigint
+    ): AsyncIterable<
+        [
+            k: [matrixEnjinV1041.AssetId, matrixEnjinV1041.AssetId, matrixEnjinV1041.OrderSide, bigint],
+            v: [matrixEnjinV1041.H256, number][] | undefined,
+        ][]
+    >
 }
 
 /**
@@ -1812,6 +2081,358 @@ export interface PriceLevelQueuesMatrixV1041 {
     >
 }
 
+export const expiringListings = {
+    /**
+     *  Listings due for automatic settlement (offer expiration or auction end), keyed by the
+     *  block they become due, swept by `on_idle`. Entries are hints: the live listing is
+     *  re-checked when an entry is processed, so stale entries are dropped harmlessly. See the
+     *  `features/expiration` module.
+     */
+    matrixEnjinV1041: new StorageType(
+        'Marketplace.ExpiringListings',
+        'Optional',
+        [sts.number(), matrixEnjinV1041.H256],
+        sts.unit()
+    ) as ExpiringListingsMatrixEnjinV1041,
+}
+
+/**
+ *  Listings due for automatic settlement (offer expiration or auction end), keyed by the
+ *  block they become due, swept by `on_idle`. Entries are hints: the live listing is
+ *  re-checked when an entry is processed, so stale entries are dropped harmlessly. See the
+ *  `features/expiration` module.
+ */
+export interface ExpiringListingsMatrixEnjinV1041 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key1: number, key2: matrixEnjinV1041.H256): Promise<null | undefined>
+    getMany(block: Block, keys: [number, matrixEnjinV1041.H256][]): Promise<(null | undefined)[]>
+    getKeys(block: Block): Promise<[number, matrixEnjinV1041.H256][]>
+    getKeys(block: Block, key1: number): Promise<[number, matrixEnjinV1041.H256][]>
+    getKeys(block: Block, key1: number, key2: matrixEnjinV1041.H256): Promise<[number, matrixEnjinV1041.H256][]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[number, matrixEnjinV1041.H256][]>
+    getKeysPaged(pageSize: number, block: Block, key1: number): AsyncIterable<[number, matrixEnjinV1041.H256][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: number,
+        key2: matrixEnjinV1041.H256
+    ): AsyncIterable<[number, matrixEnjinV1041.H256][]>
+    getPairs(block: Block): Promise<[k: [number, matrixEnjinV1041.H256], v: null | undefined][]>
+    getPairs(block: Block, key1: number): Promise<[k: [number, matrixEnjinV1041.H256], v: null | undefined][]>
+    getPairs(
+        block: Block,
+        key1: number,
+        key2: matrixEnjinV1041.H256
+    ): Promise<[k: [number, matrixEnjinV1041.H256], v: null | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: [number, matrixEnjinV1041.H256], v: null | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: number
+    ): AsyncIterable<[k: [number, matrixEnjinV1041.H256], v: null | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: number,
+        key2: matrixEnjinV1041.H256
+    ): AsyncIterable<[k: [number, matrixEnjinV1041.H256], v: null | undefined][]>
+}
+
+export const nextExpirationSweepBlock = {
+    /**
+     *  The next block the expiration sweep will examine in [`ExpiringListings`]. `None` until
+     *  the first entry is scheduled; the sweep never revisits blocks below this cursor.
+     */
+    matrixEnjinV1041: new StorageType(
+        'Marketplace.NextExpirationSweepBlock',
+        'Optional',
+        [],
+        sts.number()
+    ) as NextExpirationSweepBlockMatrixEnjinV1041,
+}
+
+/**
+ *  The next block the expiration sweep will examine in [`ExpiringListings`]. `None` until
+ *  the first entry is scheduled; the sweep never revisits blocks below this cursor.
+ */
+export interface NextExpirationSweepBlockMatrixEnjinV1041 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block): Promise<number | undefined>
+}
+
+export const settlementAttempts = {
+    /**
+     *  How many times the expiration sweep has already failed to settle a listing.
+     *
+     *  Only written for a listing that has actually failed at least once, and removed when the
+     *  listing is removed from storage by any path (`do_remove_listing`), so this map is empty in
+     *  normal operation. The counter
+     *  exists because a settlement can fail *permanently*, not just transiently: the take-side
+     *  funds of a held (not escrowed) winning bid can be locked or frozen after the bid was placed
+     *  — via `convictionVoting.delegate`, which validates against `total_balance_of` and so accepts
+     *  an amount that includes the reserved bid — or the seller can do the same to the make side,
+     *  and `finalize_auction` then reverts on every attempt
+     *  while `cancel_listing` is refused after the end block with a bid present. Without a bound,
+     *  such a listing is re-indexed for the next block forever and burns
+     *  `settle_due_listing_weight()` out of the idle budget every block, starving the sweep for
+     *  every other listing. See [`MAX_SETTLEMENT_ATTEMPTS`].
+     *
+     *  A counter that has reached [`MAX_SETTLEMENT_ATTEMPTS`] is left in place instead of being
+     *  deleted: it is the durable record that the sweep gave up, and it is what gates
+     *  [`Pallet::resolve_abandoned_listing`]. Such an entry lives until the listing itself is
+     *  removed.
+     */
+    matrixEnjinV1041: new StorageType(
+        'Marketplace.SettlementAttempts',
+        'Default',
+        [matrixEnjinV1041.H256],
+        sts.number()
+    ) as SettlementAttemptsMatrixEnjinV1041,
+}
+
+/**
+ *  How many times the expiration sweep has already failed to settle a listing.
+ *
+ *  Only written for a listing that has actually failed at least once, and removed when the
+ *  listing is removed from storage by any path (`do_remove_listing`), so this map is empty in
+ *  normal operation. The counter
+ *  exists because a settlement can fail *permanently*, not just transiently: the take-side
+ *  funds of a held (not escrowed) winning bid can be locked or frozen after the bid was placed
+ *  — via `convictionVoting.delegate`, which validates against `total_balance_of` and so accepts
+ *  an amount that includes the reserved bid — or the seller can do the same to the make side,
+ *  and `finalize_auction` then reverts on every attempt
+ *  while `cancel_listing` is refused after the end block with a bid present. Without a bound,
+ *  such a listing is re-indexed for the next block forever and burns
+ *  `settle_due_listing_weight()` out of the idle budget every block, starving the sweep for
+ *  every other listing. See [`MAX_SETTLEMENT_ATTEMPTS`].
+ *
+ *  A counter that has reached [`MAX_SETTLEMENT_ATTEMPTS`] is left in place instead of being
+ *  deleted: it is the durable record that the sweep gave up, and it is what gates
+ *  [`Pallet::resolve_abandoned_listing`]. Such an entry lives until the listing itself is
+ *  removed.
+ */
+export interface SettlementAttemptsMatrixEnjinV1041 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): number
+    get(block: Block, key: matrixEnjinV1041.H256): Promise<number | undefined>
+    getMany(block: Block, keys: matrixEnjinV1041.H256[]): Promise<(number | undefined)[]>
+    getKeys(block: Block): Promise<matrixEnjinV1041.H256[]>
+    getKeys(block: Block, key: matrixEnjinV1041.H256): Promise<matrixEnjinV1041.H256[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<matrixEnjinV1041.H256[]>
+    getKeysPaged(pageSize: number, block: Block, key: matrixEnjinV1041.H256): AsyncIterable<matrixEnjinV1041.H256[]>
+    getPairs(block: Block): Promise<[k: matrixEnjinV1041.H256, v: number | undefined][]>
+    getPairs(block: Block, key: matrixEnjinV1041.H256): Promise<[k: matrixEnjinV1041.H256, v: number | undefined][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: matrixEnjinV1041.H256, v: number | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: matrixEnjinV1041.H256
+    ): AsyncIterable<[k: matrixEnjinV1041.H256, v: number | undefined][]>
+}
+
+export const escrowedBids = {
+    /**
+     *  Auction bids in the native currency held in escrow, by listing: what
+     *  [`Pallet::bid_escrow_account`] owes the listing's high bidder until the auction settles or
+     *  the bid is refunded.
+     *
+     *  A high bid with no entry here is on hold on the bidder's account instead. That is either a
+     *  bid in another currency, or a native bid placed before bids were escrowed. See the
+     *  `features/escrow` module.
+     */
+    matrixEnjinV1041: new StorageType(
+        'Marketplace.EscrowedBids',
+        'Optional',
+        [matrixEnjinV1041.H256],
+        sts.bigint()
+    ) as EscrowedBidsMatrixEnjinV1041,
+}
+
+/**
+ *  Auction bids in the native currency held in escrow, by listing: what
+ *  [`Pallet::bid_escrow_account`] owes the listing's high bidder until the auction settles or
+ *  the bid is refunded.
+ *
+ *  A high bid with no entry here is on hold on the bidder's account instead. That is either a
+ *  bid in another currency, or a native bid placed before bids were escrowed. See the
+ *  `features/escrow` module.
+ */
+export interface EscrowedBidsMatrixEnjinV1041 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: matrixEnjinV1041.H256): Promise<bigint | undefined>
+    getMany(block: Block, keys: matrixEnjinV1041.H256[]): Promise<(bigint | undefined)[]>
+    getKeys(block: Block): Promise<matrixEnjinV1041.H256[]>
+    getKeys(block: Block, key: matrixEnjinV1041.H256): Promise<matrixEnjinV1041.H256[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<matrixEnjinV1041.H256[]>
+    getKeysPaged(pageSize: number, block: Block, key: matrixEnjinV1041.H256): AsyncIterable<matrixEnjinV1041.H256[]>
+    getPairs(block: Block): Promise<[k: matrixEnjinV1041.H256, v: bigint | undefined][]>
+    getPairs(block: Block, key: matrixEnjinV1041.H256): Promise<[k: matrixEnjinV1041.H256, v: bigint | undefined][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: matrixEnjinV1041.H256, v: bigint | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: matrixEnjinV1041.H256
+    ): AsyncIterable<[k: matrixEnjinV1041.H256, v: bigint | undefined][]>
+}
+
+export const listingIdsByMakeAsset = {
+    /**
+     *  Listing Ids by make asset's collection id and token id
+     */
+    matrixV500: new StorageType(
+        'Marketplace.ListingIdsByMakeAsset',
+        'Optional',
+        [sts.bigint(), sts.bigint()],
+        matrixV500.H256
+    ) as ListingIdsByMakeAssetMatrixV500,
+}
+
+/**
+ *  Listing Ids by make asset's collection id and token id
+ */
+export interface ListingIdsByMakeAssetMatrixV500 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key1: bigint, key2: bigint): Promise<matrixV500.H256 | undefined>
+    getMany(block: Block, keys: [bigint, bigint][]): Promise<(matrixV500.H256 | undefined)[]>
+    getKeys(block: Block): Promise<[bigint, bigint][]>
+    getKeys(block: Block, key1: bigint): Promise<[bigint, bigint][]>
+    getKeys(block: Block, key1: bigint, key2: bigint): Promise<[bigint, bigint][]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[bigint, bigint][]>
+    getKeysPaged(pageSize: number, block: Block, key1: bigint): AsyncIterable<[bigint, bigint][]>
+    getKeysPaged(pageSize: number, block: Block, key1: bigint, key2: bigint): AsyncIterable<[bigint, bigint][]>
+    getPairs(block: Block): Promise<[k: [bigint, bigint], v: matrixV500.H256 | undefined][]>
+    getPairs(block: Block, key1: bigint): Promise<[k: [bigint, bigint], v: matrixV500.H256 | undefined][]>
+    getPairs(block: Block, key1: bigint, key2: bigint): Promise<[k: [bigint, bigint], v: matrixV500.H256 | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: [bigint, bigint], v: matrixV500.H256 | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint
+    ): AsyncIterable<[k: [bigint, bigint], v: matrixV500.H256 | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint,
+        key2: bigint
+    ): AsyncIterable<[k: [bigint, bigint], v: matrixV500.H256 | undefined][]>
+}
+
+export const listingIdsByTakeAsset = {
+    /**
+     *  Listing Ids by take asset's collection id and token id
+     */
+    matrixV500: new StorageType(
+        'Marketplace.ListingIdsByTakeAsset',
+        'Optional',
+        [sts.bigint(), sts.bigint()],
+        matrixV500.H256
+    ) as ListingIdsByTakeAssetMatrixV500,
+}
+
+/**
+ *  Listing Ids by take asset's collection id and token id
+ */
+export interface ListingIdsByTakeAssetMatrixV500 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key1: bigint, key2: bigint): Promise<matrixV500.H256 | undefined>
+    getMany(block: Block, keys: [bigint, bigint][]): Promise<(matrixV500.H256 | undefined)[]>
+    getKeys(block: Block): Promise<[bigint, bigint][]>
+    getKeys(block: Block, key1: bigint): Promise<[bigint, bigint][]>
+    getKeys(block: Block, key1: bigint, key2: bigint): Promise<[bigint, bigint][]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[bigint, bigint][]>
+    getKeysPaged(pageSize: number, block: Block, key1: bigint): AsyncIterable<[bigint, bigint][]>
+    getKeysPaged(pageSize: number, block: Block, key1: bigint, key2: bigint): AsyncIterable<[bigint, bigint][]>
+    getPairs(block: Block): Promise<[k: [bigint, bigint], v: matrixV500.H256 | undefined][]>
+    getPairs(block: Block, key1: bigint): Promise<[k: [bigint, bigint], v: matrixV500.H256 | undefined][]>
+    getPairs(block: Block, key1: bigint, key2: bigint): Promise<[k: [bigint, bigint], v: matrixV500.H256 | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: [bigint, bigint], v: matrixV500.H256 | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint
+    ): AsyncIterable<[k: [bigint, bigint], v: matrixV500.H256 | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint,
+        key2: bigint
+    ): AsyncIterable<[k: [bigint, bigint], v: matrixV500.H256 | undefined][]>
+}
+
+export const listingIdsByAccountId = {
+    /**
+     *  Listing Ids by [`AccountId`](frame_system::Config::AccountId)
+     */
+    matrixV500: new StorageType(
+        'Marketplace.ListingIdsByAccountId',
+        'Optional',
+        [matrixV500.AccountId32, matrixV500.H256],
+        sts.unit()
+    ) as ListingIdsByAccountIdMatrixV500,
+}
+
+/**
+ *  Listing Ids by [`AccountId`](frame_system::Config::AccountId)
+ */
+export interface ListingIdsByAccountIdMatrixV500 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key1: matrixV500.AccountId32, key2: matrixV500.H256): Promise<null | undefined>
+    getMany(block: Block, keys: [matrixV500.AccountId32, matrixV500.H256][]): Promise<(null | undefined)[]>
+    getKeys(block: Block): Promise<[matrixV500.AccountId32, matrixV500.H256][]>
+    getKeys(block: Block, key1: matrixV500.AccountId32): Promise<[matrixV500.AccountId32, matrixV500.H256][]>
+    getKeys(
+        block: Block,
+        key1: matrixV500.AccountId32,
+        key2: matrixV500.H256
+    ): Promise<[matrixV500.AccountId32, matrixV500.H256][]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[matrixV500.AccountId32, matrixV500.H256][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: matrixV500.AccountId32
+    ): AsyncIterable<[matrixV500.AccountId32, matrixV500.H256][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: matrixV500.AccountId32,
+        key2: matrixV500.H256
+    ): AsyncIterable<[matrixV500.AccountId32, matrixV500.H256][]>
+    getPairs(block: Block): Promise<[k: [matrixV500.AccountId32, matrixV500.H256], v: null | undefined][]>
+    getPairs(
+        block: Block,
+        key1: matrixV500.AccountId32
+    ): Promise<[k: [matrixV500.AccountId32, matrixV500.H256], v: null | undefined][]>
+    getPairs(
+        block: Block,
+        key1: matrixV500.AccountId32,
+        key2: matrixV500.H256
+    ): Promise<[k: [matrixV500.AccountId32, matrixV500.H256], v: null | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: [matrixV500.AccountId32, matrixV500.H256], v: null | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: matrixV500.AccountId32
+    ): AsyncIterable<[k: [matrixV500.AccountId32, matrixV500.H256], v: null | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: matrixV500.AccountId32,
+        key2: matrixV500.H256
+    ): AsyncIterable<[k: [matrixV500.AccountId32, matrixV500.H256], v: null | undefined][]>
+}
+
 export const pendingActivations = {
     /**
      *  Scheduled listings (explicit future `start_block`) waiting to enter the book, per
@@ -1964,234 +2585,4 @@ export interface PendingActivationsMatrixV1040 {
             v: [number, matrixV1040.H256][] | undefined,
         ][]
     >
-}
-
-export const expiringListings = {
-    /**
-     *  Listings due for automatic settlement (offer expiration or auction end), keyed by the
-     *  block they become due, swept by `on_idle`. Entries are hints: the live listing is
-     *  re-checked when an entry is processed, so stale entries are dropped harmlessly. See the
-     *  `features/expiration` module.
-     */
-    matrixV1040: new StorageType(
-        'Marketplace.ExpiringListings',
-        'Optional',
-        [sts.number(), matrixV1040.H256],
-        sts.unit()
-    ) as ExpiringListingsMatrixV1040,
-}
-
-/**
- *  Listings due for automatic settlement (offer expiration or auction end), keyed by the
- *  block they become due, swept by `on_idle`. Entries are hints: the live listing is
- *  re-checked when an entry is processed, so stale entries are dropped harmlessly. See the
- *  `features/expiration` module.
- */
-export interface ExpiringListingsMatrixV1040 {
-    is(block: RuntimeCtx): boolean
-    get(block: Block, key1: number, key2: matrixV1040.H256): Promise<null | undefined>
-    getMany(block: Block, keys: [number, matrixV1040.H256][]): Promise<(null | undefined)[]>
-    getKeys(block: Block): Promise<[number, matrixV1040.H256][]>
-    getKeys(block: Block, key1: number): Promise<[number, matrixV1040.H256][]>
-    getKeys(block: Block, key1: number, key2: matrixV1040.H256): Promise<[number, matrixV1040.H256][]>
-    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[number, matrixV1040.H256][]>
-    getKeysPaged(pageSize: number, block: Block, key1: number): AsyncIterable<[number, matrixV1040.H256][]>
-    getKeysPaged(
-        pageSize: number,
-        block: Block,
-        key1: number,
-        key2: matrixV1040.H256
-    ): AsyncIterable<[number, matrixV1040.H256][]>
-    getPairs(block: Block): Promise<[k: [number, matrixV1040.H256], v: null | undefined][]>
-    getPairs(block: Block, key1: number): Promise<[k: [number, matrixV1040.H256], v: null | undefined][]>
-    getPairs(
-        block: Block,
-        key1: number,
-        key2: matrixV1040.H256
-    ): Promise<[k: [number, matrixV1040.H256], v: null | undefined][]>
-    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: [number, matrixV1040.H256], v: null | undefined][]>
-    getPairsPaged(
-        pageSize: number,
-        block: Block,
-        key1: number
-    ): AsyncIterable<[k: [number, matrixV1040.H256], v: null | undefined][]>
-    getPairsPaged(
-        pageSize: number,
-        block: Block,
-        key1: number,
-        key2: matrixV1040.H256
-    ): AsyncIterable<[k: [number, matrixV1040.H256], v: null | undefined][]>
-}
-
-export const nextExpirationSweepBlock = {
-    /**
-     *  The next block the expiration sweep will examine in [`ExpiringListings`]. `None` until
-     *  the first entry is scheduled; the sweep never revisits blocks below this cursor.
-     */
-    matrixV1040: new StorageType(
-        'Marketplace.NextExpirationSweepBlock',
-        'Optional',
-        [],
-        sts.number()
-    ) as NextExpirationSweepBlockMatrixV1040,
-}
-
-/**
- *  The next block the expiration sweep will examine in [`ExpiringListings`]. `None` until
- *  the first entry is scheduled; the sweep never revisits blocks below this cursor.
- */
-export interface NextExpirationSweepBlockMatrixV1040 {
-    is(block: RuntimeCtx): boolean
-    get(block: Block): Promise<number | undefined>
-}
-
-export const settlementAttempts = {
-    /**
-     *  How many times the expiration sweep has already failed to settle a listing.
-     *
-     *  Only written for a listing that has actually failed at least once, and removed when the
-     *  listing is removed from storage by any path (`do_remove_listing`), so this map is empty in
-     *  normal operation. The counter
-     *  exists because a settlement can fail *permanently*, not just transiently: the winning
-     *  bidder's take-side funds can be locked or frozen after the bid was placed — via
-     *  `convictionVoting.delegate`, which validates against `total_balance_of` and so accepts an
-     *  amount that includes the reserved bid — or the seller can do the same to the make side, and
-     *  `finalize_auction` then reverts on every attempt
-     *  while `cancel_listing` is refused after the end block with a bid present. Without a bound,
-     *  such a listing is re-indexed for the next block forever and burns
-     *  `settle_due_listing_weight()` out of the idle budget every block, starving the sweep for
-     *  every other listing. See [`MAX_SETTLEMENT_ATTEMPTS`].
-     *
-     *  A counter that has reached [`MAX_SETTLEMENT_ATTEMPTS`] is left in place instead of being
-     *  deleted: it is the durable record that the sweep gave up, and it is what gates
-     *  [`Pallet::resolve_abandoned_listing`]. Such an entry lives until the listing itself is
-     *  removed.
-     */
-    matrixV1040: new StorageType(
-        'Marketplace.SettlementAttempts',
-        'Default',
-        [matrixV1040.H256],
-        sts.number()
-    ) as SettlementAttemptsMatrixV1040,
-}
-
-/**
- *  How many times the expiration sweep has already failed to settle a listing.
- *
- *  Only written for a listing that has actually failed at least once, and removed when the
- *  listing is removed from storage by any path (`do_remove_listing`), so this map is empty in
- *  normal operation. The counter
- *  exists because a settlement can fail *permanently*, not just transiently: the winning
- *  bidder's take-side funds can be locked or frozen after the bid was placed — via
- *  `convictionVoting.delegate`, which validates against `total_balance_of` and so accepts an
- *  amount that includes the reserved bid — or the seller can do the same to the make side, and
- *  `finalize_auction` then reverts on every attempt
- *  while `cancel_listing` is refused after the end block with a bid present. Without a bound,
- *  such a listing is re-indexed for the next block forever and burns
- *  `settle_due_listing_weight()` out of the idle budget every block, starving the sweep for
- *  every other listing. See [`MAX_SETTLEMENT_ATTEMPTS`].
- *
- *  A counter that has reached [`MAX_SETTLEMENT_ATTEMPTS`] is left in place instead of being
- *  deleted: it is the durable record that the sweep gave up, and it is what gates
- *  [`Pallet::resolve_abandoned_listing`]. Such an entry lives until the listing itself is
- *  removed.
- */
-export interface SettlementAttemptsMatrixV1040 {
-    is(block: RuntimeCtx): boolean
-    getDefault(block: Block): number
-    get(block: Block, key: matrixV1040.H256): Promise<number | undefined>
-    getMany(block: Block, keys: matrixV1040.H256[]): Promise<(number | undefined)[]>
-    getKeys(block: Block): Promise<matrixV1040.H256[]>
-    getKeys(block: Block, key: matrixV1040.H256): Promise<matrixV1040.H256[]>
-    getKeysPaged(pageSize: number, block: Block): AsyncIterable<matrixV1040.H256[]>
-    getKeysPaged(pageSize: number, block: Block, key: matrixV1040.H256): AsyncIterable<matrixV1040.H256[]>
-    getPairs(block: Block): Promise<[k: matrixV1040.H256, v: number | undefined][]>
-    getPairs(block: Block, key: matrixV1040.H256): Promise<[k: matrixV1040.H256, v: number | undefined][]>
-    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: matrixV1040.H256, v: number | undefined][]>
-    getPairsPaged(
-        pageSize: number,
-        block: Block,
-        key: matrixV1040.H256
-    ): AsyncIterable<[k: matrixV1040.H256, v: number | undefined][]>
-}
-
-export const migrationPausedExtrinsics = {
-    /**
-     *  The calls the storage migration's `on_runtime_upgrade` hook paused — those that
-     *  were not already paused when it ran — so the completing `migrate` call resumes exactly
-     *  those and leaves any pause an operator set before the upgrade in place. `None` while no
-     *  hook that keeps this record has run, in which case the completing call resumes every
-     *  call, as the hook that predates the record paused every call. Removed by the completing
-     *  call.
-     *
-     *  Deprecated: only exists for the migration's pause bracket; remove it, with the `migrate`
-     *  extrinsic, in the release after the migration has run.
-     */
-    matrixV1041: new StorageType(
-        'Marketplace.MigrationPausedExtrinsics',
-        'Optional',
-        [],
-        sts.array(() => sts.bytes())
-    ) as MigrationPausedExtrinsicsMatrixV1041,
-}
-
-/**
- *  The calls the storage migration's `on_runtime_upgrade` hook paused — those that
- *  were not already paused when it ran — so the completing `migrate` call resumes exactly
- *  those and leaves any pause an operator set before the upgrade in place. `None` while no
- *  hook that keeps this record has run, in which case the completing call resumes every
- *  call, as the hook that predates the record paused every call. Removed by the completing
- *  call.
- *
- *  Deprecated: only exists for the migration's pause bracket; remove it, with the `migrate`
- *  extrinsic, in the release after the migration has run.
- */
-export interface MigrationPausedExtrinsicsMatrixV1041 {
-    is(block: RuntimeCtx): boolean
-    get(block: Block): Promise<Bytes[] | undefined>
-}
-
-export const escrowedBids = {
-    /**
-     *  Auction bids in the native currency held in escrow, by listing: what
-     *  [`Pallet::bid_escrow_account`] owes the listing's high bidder until the auction settles or
-     *  the bid is refunded.
-     *
-     *  A high bid with no entry here is on hold on the bidder's account instead. That is either a
-     *  bid in another currency, or a native bid placed before bids were escrowed. See the
-     *  `features/escrow` module.
-     */
-    matrixV1041: new StorageType(
-        'Marketplace.EscrowedBids',
-        'Optional',
-        [matrixV1041.H256],
-        sts.bigint()
-    ) as EscrowedBidsMatrixV1041,
-}
-
-/**
- *  Auction bids in the native currency held in escrow, by listing: what
- *  [`Pallet::bid_escrow_account`] owes the listing's high bidder until the auction settles or
- *  the bid is refunded.
- *
- *  A high bid with no entry here is on hold on the bidder's account instead. That is either a
- *  bid in another currency, or a native bid placed before bids were escrowed. See the
- *  `features/escrow` module.
- */
-export interface EscrowedBidsMatrixV1041 {
-    is(block: RuntimeCtx): boolean
-    get(block: Block, key: matrixV1041.H256): Promise<bigint | undefined>
-    getMany(block: Block, keys: matrixV1041.H256[]): Promise<(bigint | undefined)[]>
-    getKeys(block: Block): Promise<matrixV1041.H256[]>
-    getKeys(block: Block, key: matrixV1041.H256): Promise<matrixV1041.H256[]>
-    getKeysPaged(pageSize: number, block: Block): AsyncIterable<matrixV1041.H256[]>
-    getKeysPaged(pageSize: number, block: Block, key: matrixV1041.H256): AsyncIterable<matrixV1041.H256[]>
-    getPairs(block: Block): Promise<[k: matrixV1041.H256, v: bigint | undefined][]>
-    getPairs(block: Block, key: matrixV1041.H256): Promise<[k: matrixV1041.H256, v: bigint | undefined][]>
-    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: matrixV1041.H256, v: bigint | undefined][]>
-    getPairsPaged(
-        pageSize: number,
-        block: Block,
-        key: matrixV1041.H256
-    ): AsyncIterable<[k: matrixV1041.H256, v: bigint | undefined][]>
 }

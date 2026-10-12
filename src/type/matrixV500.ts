@@ -24,6 +24,30 @@ export interface RuntimeVersion {
     stateVersion: number
 }
 
+export const BlockLength: sts.Type<BlockLength> = sts.struct(() => {
+    return {
+        max: Type_253,
+    }
+})
+
+export const Type_253: sts.Type<Type_253> = sts.struct(() => {
+    return {
+        normal: sts.number(),
+        operational: sts.number(),
+        mandatory: sts.number(),
+    }
+})
+
+export interface Type_253 {
+    normal: number
+    operational: number
+    mandatory: number
+}
+
+export interface BlockLength {
+    max: Type_253
+}
+
 export type XcmOperation = XcmOperation_ParachainFee | XcmOperation_XTokensTransfer
 
 export interface XcmOperation_ParachainFee {
@@ -2061,12 +2085,97 @@ export const QueueConfigData: sts.Type<QueueConfigData> = sts.struct(() => {
     }
 })
 
+export interface OutboundChannelDetails {
+    recipient: Id
+    state: OutboundState
+    signalsExist: boolean
+    firstIndex: number
+    lastIndex: number
+}
+
+export type OutboundState = OutboundState_Ok | OutboundState_Suspended
+
+export interface OutboundState_Ok {
+    __kind: 'Ok'
+}
+
+export interface OutboundState_Suspended {
+    __kind: 'Suspended'
+}
+
+export type Id = number
+
+export const OutboundChannelDetails: sts.Type<OutboundChannelDetails> = sts.struct(() => {
+    return {
+        recipient: Id,
+        state: OutboundState,
+        signalsExist: sts.boolean(),
+        firstIndex: sts.number(),
+        lastIndex: sts.number(),
+    }
+})
+
+export const OutboundState: sts.Type<OutboundState> = sts.closedEnum(() => {
+    return {
+        Ok: sts.unit(),
+        Suspended: sts.unit(),
+    }
+})
+
+export const Id = sts.number()
+
 export interface SessionKeys {
     aura: Public
     pools: Public
 }
 
 export type Public = Bytes
+
+export interface Round {
+    number: number
+    startingBlock: number
+    collators: Collator[]
+}
+
+export const Round: sts.Type<Round> = sts.struct(() => {
+    return {
+        number: sts.number(),
+        startingBlock: sts.number(),
+        collators: sts.array(() => Collator),
+    }
+})
+
+export interface Nomination {
+    account: AccountId32
+    amount: bigint
+}
+
+export const Nomination: sts.Type<Nomination> = sts.struct(() => {
+    return {
+        account: AccountId32,
+        amount: sts.bigint(),
+    }
+})
+
+export interface Collator {
+    account: AccountId32
+    amount: bigint
+    totalStake: bigint
+    rewardsCut: Perbill
+    nominators: AccountId32[]
+}
+
+export type Perbill = number
+
+export const Collator: sts.Type<Collator> = sts.struct(() => {
+    return {
+        account: AccountId32,
+        amount: sts.bigint(),
+        totalStake: sts.bigint(),
+        rewardsCut: Perbill,
+        nominators: sts.array(() => AccountId32),
+    }
+})
 
 export type Call =
     | Call_Balances
@@ -2809,8 +2918,6 @@ export interface Type_302_SiblingParachain {
     __kind: 'SiblingParachain'
     value: Id
 }
-
-export type Id = number
 
 export type Type_299 = Type_299_Member | Type_299_Members | Type_299__Phantom
 
@@ -3599,8 +3706,6 @@ export interface PoolsMutation {
 export interface Pool {
     feeShare: Perbill
 }
-
-export type Perbill = number
 
 /**
  * Contains one variant per dispatchable that can be called by an extrinsic.
@@ -8122,8 +8227,6 @@ export const V2AbridgedHrmpChannel: sts.Type<V2AbridgedHrmpChannel> = sts.struct
     }
 })
 
-export const Id = sts.number()
-
 export interface EventRecord {
     phase: Phase
     event: Event
@@ -11933,8 +12036,6 @@ export const Pool: sts.Type<Pool> = sts.struct(() => {
     }
 })
 
-export const Perbill = sts.number()
-
 /**
  * 
 			The [event](https://docs.substrate.io/main-docs/build/events-errors/) emitted
@@ -12256,36 +12357,6 @@ export const MigrationStage: sts.Type<MigrationStage> = sts.closedEnum(() => {
         Failed: sts.unit(),
         InProgress: sts.unit(),
         NotStarted: sts.unit(),
-    }
-})
-
-export const Freeze: sts.Type<Freeze> = sts.struct(() => {
-    return {
-        collectionId: sts.bigint(),
-        freezeType: FreezeType,
-    }
-})
-
-export const FreezeType: sts.Type<FreezeType> = sts.closedEnum(() => {
-    return {
-        Collection: sts.unit(),
-        CollectionAccount: AccountId32,
-        Token: sts.enumStruct({
-            tokenId: sts.bigint(),
-            freezeState: sts.option(() => FreezeState),
-        }),
-        TokenAccount: sts.enumStruct({
-            tokenId: sts.bigint(),
-            accountId: AccountId32,
-        }),
-    }
-})
-
-export const FreezeState: sts.Type<FreezeState> = sts.closedEnum(() => {
-    return {
-        Never: sts.unit(),
-        Permanent: sts.unit(),
-        Temporary: sts.unit(),
     }
 })
 
@@ -12979,6 +13050,13 @@ export const Attribute: sts.Type<Attribute> = sts.struct(() => {
     }
 })
 
+export const AttributeKeyValuePair: sts.Type<AttributeKeyValuePair> = sts.struct(() => {
+    return {
+        key: sts.bytes(),
+        value: sts.bytes(),
+    }
+})
+
 export const Type_380: sts.Type<Type_380> = sts.struct(() => {
     return {
         accountId: AccountId32,
@@ -13051,10 +13129,11 @@ export const ForeignTokenCreationParams: sts.Type<ForeignTokenCreationParams> = 
 
 export const BoundedString = sts.bytes()
 
-export const AttributeKeyValuePair: sts.Type<AttributeKeyValuePair> = sts.struct(() => {
+export const FreezeState: sts.Type<FreezeState> = sts.closedEnum(() => {
     return {
-        key: sts.bytes(),
-        value: sts.bytes(),
+        Never: sts.unit(),
+        Permanent: sts.unit(),
+        Temporary: sts.unit(),
     }
 })
 
@@ -15085,6 +15164,28 @@ export const DefaultMintPolicy: sts.Type<DefaultMintPolicy> = sts.struct(() => {
     }
 })
 
+export const Freeze: sts.Type<Freeze> = sts.struct(() => {
+    return {
+        collectionId: sts.bigint(),
+        freezeType: FreezeType,
+    }
+})
+
+export const FreezeType: sts.Type<FreezeType> = sts.closedEnum(() => {
+    return {
+        Collection: sts.unit(),
+        CollectionAccount: AccountId32,
+        Token: sts.enumStruct({
+            tokenId: sts.bigint(),
+            freezeState: sts.option(() => FreezeState),
+        }),
+        TokenAccount: sts.enumStruct({
+            tokenId: sts.bigint(),
+            accountId: AccountId32,
+        }),
+    }
+})
+
 export const DefaultTokenMutation: sts.Type<DefaultTokenMutation> = sts.struct(() => {
     return {
         behavior: Type_142,
@@ -15396,6 +15497,8 @@ export const Weight: sts.Type<Weight> = sts.struct(() => {
         proofSize: sts.bigint(),
     }
 })
+
+export const Perbill = sts.number()
 
 export const Timepoint: sts.Type<Timepoint> = sts.struct(() => {
     return {

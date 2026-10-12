@@ -21,9 +21,9 @@ function mintRateLimitModel(limit: MintRateLimitUpdated['limit']): MintRateLimit
 }
 
 export function mintRateLimitUpdated(event: EventItem): MintRateLimitUpdated {
-    if (!multiTokens.mintRateLimitUpdated.matrixV1040.is(event)) throw new UnsupportedEventError(event)
+    if (!multiTokens.mintRateLimitUpdated.matrixEnjinV1041.is(event)) throw new UnsupportedEventError(event)
 
-    const data = multiTokens.mintRateLimitUpdated.matrixV1040.decode(event)
+    const data = multiTokens.mintRateLimitUpdated.matrixEnjinV1041.decode(event)
     return {
         ...data,
         limit: normalizeOptionalMintRateLimit(data.limit),
@@ -31,9 +31,9 @@ export function mintRateLimitUpdated(event: EventItem): MintRateLimitUpdated {
 }
 
 export function mintRateLimitChangeScheduled(event: EventItem): MintRateLimitChangeScheduled {
-    if (!multiTokens.mintRateLimitChangeScheduled.matrixV1040.is(event)) throw new UnsupportedEventError(event)
+    if (!multiTokens.mintRateLimitChangeScheduled.matrixEnjinV1041.is(event)) throw new UnsupportedEventError(event)
 
-    const data = multiTokens.mintRateLimitChangeScheduled.matrixV1040.decode(event)
+    const data = multiTokens.mintRateLimitChangeScheduled.matrixEnjinV1041.decode(event)
     return {
         ...data,
         newLimit: normalizeOptionalMintRateLimit(data.newLimit),
@@ -42,8 +42,8 @@ export function mintRateLimitChangeScheduled(event: EventItem): MintRateLimitCha
 }
 
 export function mintRateLimitChangeCancelled(event: EventItem): MintRateLimitChangeCancelled {
-    if (!multiTokens.mintRateLimitChangeCancelled.matrixV1040.is(event)) throw new UnsupportedEventError(event)
-    return multiTokens.mintRateLimitChangeCancelled.matrixV1040.decode(event)
+    if (!multiTokens.mintRateLimitChangeCancelled.matrixEnjinV1041.is(event)) throw new UnsupportedEventError(event)
+    return multiTokens.mintRateLimitChangeCancelled.matrixEnjinV1041.decode(event)
 }
 
 function eventRelations(item: EventItem, collectionId: bigint, tokenId?: bigint) {

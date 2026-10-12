@@ -1,6 +1,8 @@
 import { sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx } from '../support'
+import * as matrixV500 from '../matrixV500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV1040 from '../matrixV1040'
+import * as matrixEnjinV1041 from '../matrixEnjinV1041'
 
 export const collators = {
     /**
@@ -12,6 +14,24 @@ export const collators = {
         [],
         sts.array(() => matrixEnjinV603.Collator)
     ) as CollatorsMatrixEnjinV603,
+    /**
+     *  The current set of collators
+     */
+    matrixEnjinV1041: new StorageType(
+        'CollatorStaking.Collators',
+        'Default',
+        [],
+        sts.array(() => matrixEnjinV1041.Collator)
+    ) as CollatorsMatrixEnjinV1041,
+    /**
+     *  The current set of collators
+     */
+    matrixV500: new StorageType(
+        'CollatorStaking.Collators',
+        'Default',
+        [],
+        sts.array(() => matrixV500.Collator)
+    ) as CollatorsMatrixV500,
     /**
      *  The current set of collators
      */
@@ -30,6 +50,24 @@ export interface CollatorsMatrixEnjinV603 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): matrixEnjinV603.Collator[]
     get(block: Block): Promise<matrixEnjinV603.Collator[] | undefined>
+}
+
+/**
+ *  The current set of collators
+ */
+export interface CollatorsMatrixEnjinV1041 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): matrixEnjinV1041.Collator[]
+    get(block: Block): Promise<matrixEnjinV1041.Collator[] | undefined>
+}
+
+/**
+ *  The current set of collators
+ */
+export interface CollatorsMatrixV500 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): matrixV500.Collator[]
+    get(block: Block): Promise<matrixV500.Collator[] | undefined>
 }
 
 /**
@@ -54,6 +92,30 @@ export const invulnerables = {
         [],
         sts.array(() => matrixEnjinV603.Collator)
     ) as InvulnerablesMatrixEnjinV603,
+    /**
+     *  The invulnerable collators
+     *
+     *  This is the list of collators who are invulnerable to being ejected from collation
+     *  either by unbonding or by having less stake.
+     */
+    matrixEnjinV1041: new StorageType(
+        'CollatorStaking.Invulnerables',
+        'Default',
+        [],
+        sts.array(() => matrixEnjinV1041.Collator)
+    ) as InvulnerablesMatrixEnjinV1041,
+    /**
+     *  The invulnerable collators
+     *
+     *  This is the list of collators who are invulnerable to being ejected from collation
+     *  either by unbonding or by having less stake.
+     */
+    matrixV500: new StorageType(
+        'CollatorStaking.Invulnerables',
+        'Default',
+        [],
+        sts.array(() => matrixV500.Collator)
+    ) as InvulnerablesMatrixV500,
     /**
      *  The invulnerable collators
      *
@@ -86,6 +148,30 @@ export interface InvulnerablesMatrixEnjinV603 {
  *  This is the list of collators who are invulnerable to being ejected from collation
  *  either by unbonding or by having less stake.
  */
+export interface InvulnerablesMatrixEnjinV1041 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): matrixEnjinV1041.Collator[]
+    get(block: Block): Promise<matrixEnjinV1041.Collator[] | undefined>
+}
+
+/**
+ *  The invulnerable collators
+ *
+ *  This is the list of collators who are invulnerable to being ejected from collation
+ *  either by unbonding or by having less stake.
+ */
+export interface InvulnerablesMatrixV500 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): matrixV500.Collator[]
+    get(block: Block): Promise<matrixV500.Collator[] | undefined>
+}
+
+/**
+ *  The invulnerable collators
+ *
+ *  This is the list of collators who are invulnerable to being ejected from collation
+ *  either by unbonding or by having less stake.
+ */
 export interface InvulnerablesMatrixV1040 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): matrixV1040.Collator[]
@@ -105,6 +191,24 @@ export const candidates = {
     /**
      *  The current set of candidates for collation.
      */
+    matrixEnjinV1041: new StorageType(
+        'CollatorStaking.Candidates',
+        'Default',
+        [],
+        sts.array(() => matrixEnjinV1041.Collator)
+    ) as CandidatesMatrixEnjinV1041,
+    /**
+     *  The current set of candidates for collation.
+     */
+    matrixV500: new StorageType(
+        'CollatorStaking.Candidates',
+        'Default',
+        [],
+        sts.array(() => matrixV500.Collator)
+    ) as CandidatesMatrixV500,
+    /**
+     *  The current set of candidates for collation.
+     */
     matrixV1040: new StorageType(
         'CollatorStaking.Candidates',
         'Default',
@@ -120,6 +224,24 @@ export interface CandidatesMatrixEnjinV603 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): matrixEnjinV603.Collator[]
     get(block: Block): Promise<matrixEnjinV603.Collator[] | undefined>
+}
+
+/**
+ *  The current set of candidates for collation.
+ */
+export interface CandidatesMatrixEnjinV1041 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): matrixEnjinV1041.Collator[]
+    get(block: Block): Promise<matrixEnjinV1041.Collator[] | undefined>
+}
+
+/**
+ *  The current set of candidates for collation.
+ */
+export interface CandidatesMatrixV500 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): matrixV500.Collator[]
+    get(block: Block): Promise<matrixV500.Collator[] | undefined>
 }
 
 /**
@@ -164,6 +286,28 @@ export const nominators = {
         [matrixEnjinV603.AccountId32],
         matrixEnjinV603.Nomination
     ) as NominatorsMatrixEnjinV603,
+    /**
+     *  The current set of nominators.
+     *
+     *  Each nominator is allowed to nominate one collator.
+     */
+    matrixEnjinV1041: new StorageType(
+        'CollatorStaking.Nominators',
+        'Optional',
+        [matrixEnjinV1041.AccountId32],
+        matrixEnjinV1041.Nomination
+    ) as NominatorsMatrixEnjinV1041,
+    /**
+     *  The current set of nominators.
+     *
+     *  Each nominator is allowed to nominate one collator.
+     */
+    matrixV500: new StorageType(
+        'CollatorStaking.Nominators',
+        'Optional',
+        [matrixV500.AccountId32],
+        matrixV500.Nomination
+    ) as NominatorsMatrixV500,
     /**
      *  The current set of nominators.
      *
@@ -215,6 +359,68 @@ export interface NominatorsMatrixEnjinV603 {
  *
  *  Each nominator is allowed to nominate one collator.
  */
+export interface NominatorsMatrixEnjinV1041 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: matrixEnjinV1041.AccountId32): Promise<matrixEnjinV1041.Nomination | undefined>
+    getMany(block: Block, keys: matrixEnjinV1041.AccountId32[]): Promise<(matrixEnjinV1041.Nomination | undefined)[]>
+    getKeys(block: Block): Promise<matrixEnjinV1041.AccountId32[]>
+    getKeys(block: Block, key: matrixEnjinV1041.AccountId32): Promise<matrixEnjinV1041.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<matrixEnjinV1041.AccountId32[]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key: matrixEnjinV1041.AccountId32
+    ): AsyncIterable<matrixEnjinV1041.AccountId32[]>
+    getPairs(block: Block): Promise<[k: matrixEnjinV1041.AccountId32, v: matrixEnjinV1041.Nomination | undefined][]>
+    getPairs(
+        block: Block,
+        key: matrixEnjinV1041.AccountId32
+    ): Promise<[k: matrixEnjinV1041.AccountId32, v: matrixEnjinV1041.Nomination | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: matrixEnjinV1041.AccountId32, v: matrixEnjinV1041.Nomination | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: matrixEnjinV1041.AccountId32
+    ): AsyncIterable<[k: matrixEnjinV1041.AccountId32, v: matrixEnjinV1041.Nomination | undefined][]>
+}
+
+/**
+ *  The current set of nominators.
+ *
+ *  Each nominator is allowed to nominate one collator.
+ */
+export interface NominatorsMatrixV500 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: matrixV500.AccountId32): Promise<matrixV500.Nomination | undefined>
+    getMany(block: Block, keys: matrixV500.AccountId32[]): Promise<(matrixV500.Nomination | undefined)[]>
+    getKeys(block: Block): Promise<matrixV500.AccountId32[]>
+    getKeys(block: Block, key: matrixV500.AccountId32): Promise<matrixV500.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<matrixV500.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block, key: matrixV500.AccountId32): AsyncIterable<matrixV500.AccountId32[]>
+    getPairs(block: Block): Promise<[k: matrixV500.AccountId32, v: matrixV500.Nomination | undefined][]>
+    getPairs(
+        block: Block,
+        key: matrixV500.AccountId32
+    ): Promise<[k: matrixV500.AccountId32, v: matrixV500.Nomination | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: matrixV500.AccountId32, v: matrixV500.Nomination | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: matrixV500.AccountId32
+    ): AsyncIterable<[k: matrixV500.AccountId32, v: matrixV500.Nomination | undefined][]>
+}
+
+/**
+ *  The current set of nominators.
+ *
+ *  Each nominator is allowed to nominate one collator.
+ */
 export interface NominatorsMatrixV1040 {
     is(block: RuntimeCtx): boolean
     get(block: Block, key: matrixV1040.AccountId32): Promise<matrixV1040.Nomination | undefined>
@@ -252,6 +458,24 @@ export const currentRound = {
     /**
      *  The current round information.
      */
+    matrixEnjinV1041: new StorageType(
+        'CollatorStaking.CurrentRound',
+        'Default',
+        [],
+        matrixEnjinV1041.Round
+    ) as CurrentRoundMatrixEnjinV1041,
+    /**
+     *  The current round information.
+     */
+    matrixV500: new StorageType(
+        'CollatorStaking.CurrentRound',
+        'Default',
+        [],
+        matrixV500.Round
+    ) as CurrentRoundMatrixV500,
+    /**
+     *  The current round information.
+     */
     matrixV1040: new StorageType(
         'CollatorStaking.CurrentRound',
         'Default',
@@ -267,6 +491,24 @@ export interface CurrentRoundMatrixEnjinV603 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): matrixEnjinV603.Round
     get(block: Block): Promise<matrixEnjinV603.Round | undefined>
+}
+
+/**
+ *  The current round information.
+ */
+export interface CurrentRoundMatrixEnjinV1041 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): matrixEnjinV1041.Round
+    get(block: Block): Promise<matrixEnjinV1041.Round | undefined>
+}
+
+/**
+ *  The current round information.
+ */
+export interface CurrentRoundMatrixV500 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): matrixV500.Round
+    get(block: Block): Promise<matrixV500.Round | undefined>
 }
 
 /**
@@ -426,12 +668,12 @@ export const exitCursor = {
      *  because a cursor pointing at an entry that has since been removed is still a valid resume
      *  point — `iter_from` needs the key's position in hash order, not its presence.
      */
-    matrixV1040: new StorageType(
+    matrixEnjinV1041: new StorageType(
         'CollatorStaking.ExitCursor',
         'Optional',
         [],
-        matrixV1040.AccountId32
-    ) as ExitCursorMatrixV1040,
+        matrixEnjinV1041.AccountId32
+    ) as ExitCursorMatrixEnjinV1041,
 }
 
 /**
@@ -442,9 +684,9 @@ export const exitCursor = {
  *  because a cursor pointing at an entry that has since been removed is still a valid resume
  *  point — `iter_from` needs the key's position in hash order, not its presence.
  */
-export interface ExitCursorMatrixV1040 {
+export interface ExitCursorMatrixEnjinV1041 {
     is(block: RuntimeCtx): boolean
-    get(block: Block): Promise<matrixV1040.AccountId32 | undefined>
+    get(block: Block): Promise<matrixEnjinV1041.AccountId32 | undefined>
 }
 
 export const sessionInfoPruneCursor = {
@@ -454,12 +696,12 @@ export const sessionInfoPruneCursor = {
      *  `None` means the next sweep starts from the beginning of the map. The sweep wraps around
      *  continuously, so this is a position rather than a completion marker.
      */
-    matrixV1040: new StorageType(
+    matrixEnjinV1041: new StorageType(
         'CollatorStaking.SessionInfoPruneCursor',
         'Optional',
         [],
-        sts.tuple(() => [matrixV1040.AccountId32, sts.number()])
-    ) as SessionInfoPruneCursorMatrixV1040,
+        sts.tuple(() => [matrixEnjinV1041.AccountId32, sts.number()])
+    ) as SessionInfoPruneCursorMatrixEnjinV1041,
 }
 
 /**
@@ -468,7 +710,7 @@ export const sessionInfoPruneCursor = {
  *  `None` means the next sweep starts from the beginning of the map. The sweep wraps around
  *  continuously, so this is a position rather than a completion marker.
  */
-export interface SessionInfoPruneCursorMatrixV1040 {
+export interface SessionInfoPruneCursorMatrixEnjinV1041 {
     is(block: RuntimeCtx): boolean
-    get(block: Block): Promise<[matrixV1040.AccountId32, number] | undefined>
+    get(block: Block): Promise<[matrixEnjinV1041.AccountId32, number] | undefined>
 }

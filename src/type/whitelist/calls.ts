@@ -25,6 +25,7 @@ import * as v1031 from '../v1031'
 import * as enjinV1032 from '../enjinV1032'
 import * as v1032 from '../v1032'
 import * as matrixV1040 from '../matrixV1040'
+import * as matrixEnjinV1041 from '../matrixEnjinV1041'
 import * as matrixV1041 from '../matrixV1041'
 import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
@@ -36,38 +37,44 @@ import * as v1080 from '../v1080'
 
 export const whitelistCall = {
     name: 'Whitelist.whitelist_call',
-    matrixV1040: new CallType(
+    matrixEnjinV1041: new CallType(
         'Whitelist.whitelist_call',
         sts.struct({
-            callHash: matrixV1040.H256,
+            callHash: matrixEnjinV1041.H256,
         })
     ),
 }
 
 export const removeWhitelistedCall = {
     name: 'Whitelist.remove_whitelisted_call',
-    matrixV1040: new CallType(
+    matrixEnjinV1041: new CallType(
         'Whitelist.remove_whitelisted_call',
         sts.struct({
-            callHash: matrixV1040.H256,
+            callHash: matrixEnjinV1041.H256,
         })
     ),
 }
 
 export const dispatchWhitelistedCall = {
     name: 'Whitelist.dispatch_whitelisted_call',
-    matrixV1040: new CallType(
+    matrixEnjinV1041: new CallType(
         'Whitelist.dispatch_whitelisted_call',
         sts.struct({
-            callHash: matrixV1040.H256,
+            callHash: matrixEnjinV1041.H256,
             callEncodedLen: sts.number(),
-            callWeightWitness: matrixV1040.Weight,
+            callWeightWitness: matrixEnjinV1041.Weight,
         })
     ),
 }
 
 export const dispatchWhitelistedCallWithPreimage = {
     name: 'Whitelist.dispatch_whitelisted_call_with_preimage',
+    matrixEnjinV1041: new CallType(
+        'Whitelist.dispatch_whitelisted_call_with_preimage',
+        sts.struct({
+            call: matrixEnjinV1041.Call,
+        })
+    ),
     matrixV1040: new CallType(
         'Whitelist.dispatch_whitelisted_call_with_preimage',
         sts.struct({

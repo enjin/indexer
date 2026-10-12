@@ -5,8 +5,7 @@ import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV604 from '../matrixV604'
 import * as matrixV1010 from '../matrixV1010'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
-import * as matrixV1040 from '../matrixV1040'
-import * as matrixV1041 from '../matrixV1041'
+import * as matrixEnjinV1041 from '../matrixEnjinV1041'
 
 export const pendingValidationCode = {
     /**
@@ -880,79 +879,6 @@ export interface UpwardDeliveryFeeFactorMatrixEnjinV1012 {
     get(block: Block): Promise<matrixEnjinV1012.FixedU128 | undefined>
 }
 
-export const lastProcessedDownwardMessage = {
-    /**
-     *  The last processed downward message.
-     *
-     *  We need to keep track of this to filter the messages that have been already processed.
-     */
-    matrixV1040: new StorageType(
-        'ParachainSystem.LastProcessedDownwardMessage',
-        'Optional',
-        [],
-        matrixV1040.InboundMessageId
-    ) as LastProcessedDownwardMessageMatrixV1040,
-}
-
-/**
- *  The last processed downward message.
- *
- *  We need to keep track of this to filter the messages that have been already processed.
- */
-export interface LastProcessedDownwardMessageMatrixV1040 {
-    is(block: RuntimeCtx): boolean
-    get(block: Block): Promise<matrixV1040.InboundMessageId | undefined>
-}
-
-export const lastProcessedHrmpMessage = {
-    /**
-     *  The last processed HRMP message.
-     *
-     *  We need to keep track of this to filter the messages that have been already processed.
-     */
-    matrixV1040: new StorageType(
-        'ParachainSystem.LastProcessedHrmpMessage',
-        'Optional',
-        [],
-        matrixV1040.InboundMessageId
-    ) as LastProcessedHrmpMessageMatrixV1040,
-}
-
-/**
- *  The last processed HRMP message.
- *
- *  We need to keep track of this to filter the messages that have been already processed.
- */
-export interface LastProcessedHrmpMessageMatrixV1040 {
-    is(block: RuntimeCtx): boolean
-    get(block: Block): Promise<matrixV1040.InboundMessageId | undefined>
-}
-
-export const pendingUpwardSignals = {
-    /**
-     *  Upward signals that are still pending and not yet sent to the relay chain.
-     *
-     *  This will be cleared in `on_finalize` for each block.
-     */
-    matrixV1040: new StorageType(
-        'ParachainSystem.PendingUpwardSignals',
-        'Default',
-        [],
-        sts.array(() => sts.bytes())
-    ) as PendingUpwardSignalsMatrixV1040,
-}
-
-/**
- *  Upward signals that are still pending and not yet sent to the relay chain.
- *
- *  This will be cleared in `on_finalize` for each block.
- */
-export interface PendingUpwardSignalsMatrixV1040 {
-    is(block: RuntimeCtx): boolean
-    getDefault(block: Block): Bytes[]
-    get(block: Block): Promise<Bytes[] | undefined>
-}
-
 export const blockWeightMode = {
     /**
      *  The current block weight mode.
@@ -962,12 +888,12 @@ export const blockWeightMode = {
      *
      *  Killed in [`Self::on_initialize`] and set by the [`block_weight`] logic.
      */
-    matrixV1041: new StorageType(
+    matrixEnjinV1041: new StorageType(
         'ParachainSystem.BlockWeightMode',
         'Optional',
         [],
-        matrixV1041.BlockWeightMode
-    ) as BlockWeightModeMatrixV1041,
+        matrixEnjinV1041.BlockWeightMode
+    ) as BlockWeightModeMatrixEnjinV1041,
 }
 
 /**
@@ -978,9 +904,9 @@ export const blockWeightMode = {
  *
  *  Killed in [`Self::on_initialize`] and set by the [`block_weight`] logic.
  */
-export interface BlockWeightModeMatrixV1041 {
+export interface BlockWeightModeMatrixEnjinV1041 {
     is(block: RuntimeCtx): boolean
-    get(block: Block): Promise<matrixV1041.BlockWeightMode | undefined>
+    get(block: Block): Promise<matrixEnjinV1041.BlockWeightMode | undefined>
 }
 
 export const previousCoreCount = {
@@ -989,12 +915,12 @@ export const previousCoreCount = {
      *
      *  This is mainly used for offchain functionality to calculate the correct target block weight.
      */
-    matrixV1041: new StorageType(
+    matrixEnjinV1041: new StorageType(
         'ParachainSystem.PreviousCoreCount',
         'Optional',
         [],
         sts.number()
-    ) as PreviousCoreCountMatrixV1041,
+    ) as PreviousCoreCountMatrixEnjinV1041,
 }
 
 /**
@@ -1002,27 +928,100 @@ export const previousCoreCount = {
  *
  *  This is mainly used for offchain functionality to calculate the correct target block weight.
  */
-export interface PreviousCoreCountMatrixV1041 {
+export interface PreviousCoreCountMatrixEnjinV1041 {
     is(block: RuntimeCtx): boolean
     get(block: Block): Promise<number | undefined>
+}
+
+export const lastProcessedDownwardMessage = {
+    /**
+     *  The last processed downward message.
+     *
+     *  We need to keep track of this to filter the messages that have been already processed.
+     */
+    matrixEnjinV1041: new StorageType(
+        'ParachainSystem.LastProcessedDownwardMessage',
+        'Optional',
+        [],
+        matrixEnjinV1041.InboundMessageId
+    ) as LastProcessedDownwardMessageMatrixEnjinV1041,
+}
+
+/**
+ *  The last processed downward message.
+ *
+ *  We need to keep track of this to filter the messages that have been already processed.
+ */
+export interface LastProcessedDownwardMessageMatrixEnjinV1041 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block): Promise<matrixEnjinV1041.InboundMessageId | undefined>
+}
+
+export const lastProcessedHrmpMessage = {
+    /**
+     *  The last processed HRMP message.
+     *
+     *  We need to keep track of this to filter the messages that have been already processed.
+     */
+    matrixEnjinV1041: new StorageType(
+        'ParachainSystem.LastProcessedHrmpMessage',
+        'Optional',
+        [],
+        matrixEnjinV1041.InboundMessageId
+    ) as LastProcessedHrmpMessageMatrixEnjinV1041,
+}
+
+/**
+ *  The last processed HRMP message.
+ *
+ *  We need to keep track of this to filter the messages that have been already processed.
+ */
+export interface LastProcessedHrmpMessageMatrixEnjinV1041 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block): Promise<matrixEnjinV1041.InboundMessageId | undefined>
+}
+
+export const pendingUpwardSignals = {
+    /**
+     *  Upward signals that are still pending and not yet sent to the relay chain.
+     *
+     *  This will be cleared in `on_finalize` for each block.
+     */
+    matrixEnjinV1041: new StorageType(
+        'ParachainSystem.PendingUpwardSignals',
+        'Default',
+        [],
+        sts.array(() => sts.bytes())
+    ) as PendingUpwardSignalsMatrixEnjinV1041,
+}
+
+/**
+ *  Upward signals that are still pending and not yet sent to the relay chain.
+ *
+ *  This will be cleared in `on_finalize` for each block.
+ */
+export interface PendingUpwardSignalsMatrixEnjinV1041 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): Bytes[]
+    get(block: Block): Promise<Bytes[] | undefined>
 }
 
 export const pendingApprovedPeer = {
     /**
      *  The approved peer id to be sent as a UMP signal on the last block of the PoV.
      */
-    matrixV1041: new StorageType(
+    matrixEnjinV1041: new StorageType(
         'ParachainSystem.PendingApprovedPeer',
         'Optional',
         [],
         sts.bytes()
-    ) as PendingApprovedPeerMatrixV1041,
+    ) as PendingApprovedPeerMatrixEnjinV1041,
 }
 
 /**
  *  The approved peer id to be sent as a UMP signal on the last block of the PoV.
  */
-export interface PendingApprovedPeerMatrixV1041 {
+export interface PendingApprovedPeerMatrixEnjinV1041 {
     is(block: RuntimeCtx): boolean
     get(block: Block): Promise<Bytes | undefined>
 }
@@ -1033,12 +1032,12 @@ export const poVMessagesTracker = {
      *
      *  Across different candidates/PoVs the budgets are tracked by [`AggregatedUnincludedSegment`].
      */
-    matrixV1041: new StorageType(
+    matrixEnjinV1041: new StorageType(
         'ParachainSystem.PoVMessagesTracker',
         'Optional',
         [],
-        matrixV1041.PoVMessages
-    ) as PoVMessagesTrackerMatrixV1041,
+        matrixEnjinV1041.PoVMessages
+    ) as PoVMessagesTrackerMatrixEnjinV1041,
 }
 
 /**
@@ -1046,7 +1045,7 @@ export const poVMessagesTracker = {
  *
  *  Across different candidates/PoVs the budgets are tracked by [`AggregatedUnincludedSegment`].
  */
-export interface PoVMessagesTrackerMatrixV1041 {
+export interface PoVMessagesTrackerMatrixEnjinV1041 {
     is(block: RuntimeCtx): boolean
-    get(block: Block): Promise<matrixV1041.PoVMessages | undefined>
+    get(block: Block): Promise<matrixEnjinV1041.PoVMessages | undefined>
 }

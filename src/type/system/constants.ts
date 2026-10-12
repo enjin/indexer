@@ -5,6 +5,7 @@ import * as matrixV500 from '../matrixV500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV1030 from '../matrixV1030'
 import * as matrixEnjinV1031 from '../matrixEnjinV1031'
+import * as matrixEnjinV1041 from '../matrixEnjinV1041'
 import * as matrixV1041 from '../matrixV1041'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
@@ -22,6 +23,14 @@ export const blockLength = {
      *  The maximum length of a block (in bytes).
      */
     matrixEnjinV603: new ConstantType('System.BlockLength', matrixEnjinV603.BlockLength),
+    /**
+     *  The maximum length of a block (in bytes).
+     */
+    matrixEnjinV1041: new ConstantType('System.BlockLength', matrixEnjinV1041.BlockLength),
+    /**
+     *  The maximum length of a block (in bytes).
+     */
+    matrixV500: new ConstantType('System.BlockLength', matrixV500.BlockLength),
     /**
      *  The maximum length of a block (in bytes).
      */

@@ -4,5 +4,5 @@ export const keyDeposit = {
     /**
      *  The amount to be held when setting keys.
      */
-    matrixV1040: new ConstantType('Session.KeyDeposit', sts.bigint()),
+    matrixEnjinV1041: new ConstantType('Session.KeyDeposit', sts.bigint()),
 }
