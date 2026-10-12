@@ -9,6 +9,7 @@ import {
     backfillExtrinsicBlockRelation,
     backfillChainFinality,
     backfillGovernance,
+    importGovernanceState,
     syncChainInfosFromMatrix,
 } from '~/worker/jobs'
 import { logDebug, logError } from '~/worker/utils'
@@ -43,6 +44,9 @@ export class ValidatorsProcessor implements ProcessorDef {
                 break
             case JobsEnum.BACKFILL_GOVERNANCE:
                 await backfillGovernance(job)
+                break
+            case JobsEnum.IMPORT_GOVERNANCE_STATE:
+                await importGovernanceState(job)
                 break
             default:
                 throw new Error(`${job.name} is not a valid job for this processor`)

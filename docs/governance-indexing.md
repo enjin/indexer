@@ -4,6 +4,14 @@ The Indexer subscribes to Referenda, ConvictionVoting, Preimage, and Whitelist o
 
 Current referendum state and tally are read from `ReferendumInfoFor` at the processed block hash. Preimage lookups are stored up to 64 KiB. `proposalPreimageStatus` distinguishes `Inline`, `Resolved`, `AvailableTooLarge`, `Missing` (confirmed absent), and `Unresolved` (a reader is unavailable). Existing vote events without a poll index use the linked call's `pollIndex`; Relaychain's later `currency` field is part of each vote's identity.
 
+## Import current RPC state
+
+For an existing Indexer database, run the `IMPORT_GOVERNANCE_STATE` validator worker job after applying the governance schema migration. Dispatch it explicitly with `QueueUtils.dispatchImportGovernanceState({ chainName, genesisHash })` for the deployed worker's chain. Pause the live processor for that database until the job completes, then resume it. The job verifies the configured and RPC genesis hashes, pins a finalized block, and reads current governance storage through RPC at that block.
+
+The snapshot imports referenda, conviction votes and delegations, Matrixchain fellowship referenda, votes and members, Relaychain treasury proposals and spends, and whitelisted calls. It reads storage in pages and only updates rows whose indexed block is no newer than the snapshot block. It reports counts by category in the worker's child-process log. Its processor cursor uses a unique `squid_governance_snapshot_<id>` schema, so a retry can run again.
+
+The snapshot contains only records still present in RPC storage at that finalized block. It does not create `GovernanceActivity` or `Event` history, recover removed records, or identify historical gaps. Compare the imported current state against the pinned RPC block before planning a historical replay.
+
 ## Historical backfill
 
 Adding a subscription does not make the live processor revisit past blocks. Use the governance-only backfill after the schema migration, with a confirmed network, database, historical-state-capable RPC endpoint, and finalized block range. Start at the first block where the relevant governance pallet is active. Verify that activation height on the target chain; the `blockNumber: 0` entry for Enjin Matrixchain v1041 in `typegen/enjin-matrixchain.jsonl` is a metadata placeholder, not an activation height.

@@ -38,6 +38,7 @@ type ReferendumInfo = {
         submissionDeposit?: unknown
         decisionDeposit?: unknown
         submitted?: number
+        deciding?: { confirming?: number }
     }
 }
 
@@ -45,7 +46,7 @@ const referendumPallets = new Set(['Referenda', 'FellowshipReferenda'])
 const maxStoredPreimageBytes = 64 * 1024
 
 // Runtime JSON may contain bigints and byte arrays, neither of which JSONB accepts directly.
-function jsonValue(value: unknown): unknown {
+export function jsonValue(value: unknown): unknown {
     if (typeof value === 'bigint') return value.toString()
     if (value instanceof Uint8Array) return `0x${Buffer.from(value).toString('hex')}`
     if (Array.isArray(value)) return value.map(jsonValue)
@@ -167,7 +168,7 @@ async function referendumInfo(
     return (await reader.get(block, referendumIndex)) as ReferendumInfo | undefined
 }
 
-async function refreshReferendum(
+export async function refreshReferendum(
     ctx: GovernanceContext,
     block: Block,
     pallet: string,
@@ -184,6 +185,11 @@ async function refreshReferendum(
 
     const info = await referendumInfo(block, pallet, referendumIndex)
     if (info?.__kind === 'Ongoing' && info.value) {
+        referendum.status = info.value.deciding
+            ? info.value.deciding.confirming === undefined
+                ? 'Deciding'
+                : 'Confirming'
+            : 'Ongoing'
         referendum.track = info.value.track ?? referendum.track
         referendum.proposal = jsonValue(info.value.proposal) ?? referendum.proposal
         referendum.submissionDeposit = jsonValue(info.value.submissionDeposit) ?? null
@@ -196,6 +202,11 @@ async function refreshReferendum(
     } else if (info?.__kind) {
         referendum.status = info.__kind
     }
+
+    const metadata = pallet === 'Referenda' ? storage.referenda.metadataOf : storage.fellowshipReferenda.metadataOf
+    const metadataReader = Object.values(metadata).find((variant) => (variant as StorageReader).is(block)) as
+        StorageReader | undefined
+    if (metadataReader) referendum.metadataHash = account(await metadataReader.get(block, referendumIndex)) ?? null
 
     if (eventName === 'Submitted') {
         referendum.status = 'Ongoing'
