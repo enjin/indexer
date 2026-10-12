@@ -15,8 +15,14 @@ function blockNumber(value: string | undefined): number {
 function main(): void {
     const from = blockNumber(process.argv[2])
     const to = blockNumber(process.argv[3])
+    const chainName = process.argv[4]
     if (from > to) throw new Error('The from block must be at or before the to block')
+    if (chainName !== config.chainName) throw new Error('Governance replay chain does not match this worker')
     if (!config.dataSource.archive) throw new Error('A configured archive gateway is required for governance backfill')
+
+    // BullMQ owns the replay process. A crashed or stopped worker must not leave
+    // an orphan writing to the database while a retry starts on another replica.
+    process.on('disconnect', () => process.exit(1))
 
     const processor = new SubstrateBatchProcessor()
         .setRpcEndpoint(config.dataSource.chain)
@@ -29,7 +35,7 @@ function main(): void {
         new TypeormDatabase({
             isolationLevel: 'READ COMMITTED',
             supportHotBlocks: false,
-            stateSchema: 'squid_governance_backfill',
+            stateSchema: `squid_governance_${from}_${to}`,
         }),
         async (ctx) => {
             for (const block of ctx.blocks) {

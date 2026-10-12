@@ -69,7 +69,7 @@ Important semantics:
 | --- | --- |
 | `schema.graphql` | Source schema for TypeORM entities and relations |
 | `src/main.ts` | Processor bootstrap and block-level orchestration |
-| `src/governance-backfill.ts` | Bounded governance-only replay with a separate processor cursor |
+| `src/worker/jobs/validators/governance-replay.ts` | Bounded governance-only replay launched by the validator worker job |
 | `src/processor.config.ts` | Subscribed events/calls, chain source, and selected fields |
 | `src/processor.handler.ts` | Central call/event routing |
 | `src/pallet/` | Hand-written domain processors, decoders, and pallet utilities |
@@ -185,7 +185,7 @@ pnpm run dev:decoder
 pnpm run dev:metris
 ```
 
-Governance subscriptions add queryable referendum, voting, fellowship, treasury, and whitelist entities. Existing databases need a bounded historical replay after the schema migration; see [docs/governance-indexing.md](docs/governance-indexing.md). The replay command is `pnpm run governance:backfill -- <from-block> <finalized-to-block>` and requires an explicitly verified chain, archive gateway, and database target. It uses a separate processor cursor and should not run concurrently with the live processor against the same governance tables.
+Governance subscriptions add queryable referendum, voting, fellowship, treasury, and whitelist entities. Existing databases need a bounded historical replay after the schema migration; see [docs/governance-indexing.md](docs/governance-indexing.md). Dispatch the `BACKFILL_GOVERNANCE` validator job with an explicitly verified chain, genesis hash, finalized block range, archive gateway, and database target. It uses a range-specific processor cursor and should not run concurrently with the live processor against the same governance tables.
 
 `dev:metris` is the existing script name despite the spelling. The quickest full environment remains:
 
