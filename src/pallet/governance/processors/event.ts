@@ -317,8 +317,8 @@ async function updateDelegation(
 }
 
 async function updateFellowshipMember(ctx: GovernanceContext, block: Block, memberId: string): Promise<void> {
-    const reader = storage.fellowshipCollective.members.matrixV1040
-    if (!reader.is(block)) throw new Error(`Unsupported FellowshipCollective.Members runtime at block ${block.height}`)
+    const reader = Object.values(storage.fellowshipCollective.members).find((variant) => variant.is(block))
+    if (!reader) throw new Error(`Unsupported FellowshipCollective.Members runtime at block ${block.height}`)
     const state = await reader.get(block, memberId)
     const existing = await ctx.store.findOneBy(GovernanceFellowshipMember, { id: memberId })
     if (existing && existing.updatedAtBlock > block.height) return
@@ -368,8 +368,8 @@ async function updateWhitelistedCall(
     if (existing && existing.updatedAtBlock > block.height) return
     const call =
         existing ?? new GovernanceWhitelistedCall({ id: callHash, active: false, updatedAtBlock: block.height })
-    const reader = storage.whitelist.whitelistedCall.matrixV1040
-    if (reader.is(block)) {
+    const reader = Object.values(storage.whitelist.whitelistedCall).find((variant) => variant.is(block))
+    if (reader) {
         call.active = (await reader.get(block, callHash)) !== undefined
     } else if (eventName === 'CallWhitelisted') {
         call.active = true
