@@ -115,6 +115,16 @@ type GovernanceActivity @entity {
   data: JSON
 }
 
+# Shared Event rows use this payload so governance events appear in existing event queries.
+type GovernanceEventData {
+  pallet: String!
+  eventName: String!
+  referendumId: String
+  governanceAccountId: String
+  blockNumber: Int!
+  args: JSON
+}
+
 type GovernanceVote @entity {
   id: ID!
   referendumId: String! @index
@@ -1936,6 +1946,7 @@ type EarlyBirdMintEvent @entity {
 }
 
 union EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiTokensAttributeSet | MultiTokensBurned
+  | GovernanceEventData
   | MultiTokensCollectionAccountCreated | MultiTokensCollectionAccountDestroyed | MultiTokensCollectionCreated
   | MultiTokensCollectionDestroyed | MultiTokensCollectionMutated | MultiTokensFrozen | MultiTokensMinted
   | MultiTokensThawed | MultiTokensTokenAccountCreated | MultiTokensTokenAccountDestroyed | MultiTokensTokenCreated | MultiTokensTokenGroupCreated

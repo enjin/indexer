@@ -1,7 +1,10 @@
 import { CommonContext } from '~/contexts'
 import {
+    Event,
+    Extrinsic,
     GovernanceActivity,
     GovernanceDelegation,
+    GovernanceEventData,
     GovernanceFellowshipMember,
     GovernanceReferendum,
     GovernanceTreasuryItem,
@@ -367,30 +370,50 @@ async function updateWhitelistedCall(
     await ctx.store.save(call)
 }
 
-export async function processEvent(ctx: GovernanceContext, block: Block, item: GovernanceEvent): Promise<void> {
+export function indexedEvent(activity: GovernanceActivity, linkExtrinsic = true): Event {
+    const [pallet, eventName] = activity.name.split('.')
+    return new Event({
+        id: activity.id,
+        name: `${pallet}${eventName}`,
+        extrinsic: linkExtrinsic && activity.extrinsicId ? new Extrinsic({ id: activity.extrinsicId }) : null,
+        data: new GovernanceEventData({
+            pallet,
+            eventName,
+            referendumId: activity.referendumId,
+            governanceAccountId: activity.accountId,
+            blockNumber: activity.blockNumber,
+            args: activity.data,
+        }),
+    })
+}
+
+export async function processEvent(
+    ctx: GovernanceContext,
+    block: Block,
+    item: GovernanceEvent
+): Promise<GovernanceActivity> {
     const [pallet, eventName] = item.name.split('.')
     const args = record(item.args)
     const callArgs = record(item.call?.args)
     const referendumIndex = eventIndex(pallet, args, callArgs)
     const voter = eventAccount(item.args)
 
-    await ctx.store.save(
-        new GovernanceActivity({
-            id: item.id,
-            pallet,
-            name: item.name,
-            referendumId:
-                referendumIndex !== undefined && referendumPallets.has(pallet)
-                    ? `${pallet}:${referendumIndex}`
-                    : referendumIndex !== undefined && ['ConvictionVoting', 'FellowshipCollective'].includes(pallet)
-                      ? `${pallet === 'ConvictionVoting' ? 'Referenda' : 'FellowshipReferenda'}:${referendumIndex}`
-                      : null,
-            accountId: voter ?? null,
-            blockNumber: block.height,
-            extrinsicId: item.extrinsic?.id ?? null,
-            data: jsonValue(item.args),
-        })
-    )
+    const activity = new GovernanceActivity({
+        id: item.id,
+        pallet,
+        name: item.name,
+        referendumId:
+            referendumIndex !== undefined && referendumPallets.has(pallet)
+                ? `${pallet}:${referendumIndex}`
+                : referendumIndex !== undefined && ['ConvictionVoting', 'FellowshipCollective'].includes(pallet)
+                  ? `${pallet === 'ConvictionVoting' ? 'Referenda' : 'FellowshipReferenda'}:${referendumIndex}`
+                  : null,
+        accountId: voter ?? null,
+        blockNumber: block.height,
+        extrinsicId: item.extrinsic?.id ?? null,
+        data: jsonValue(item.args),
+    })
+    await ctx.store.save(activity)
 
     if (referendumPallets.has(pallet) && referendumIndex !== undefined) {
         await refreshReferendum(ctx, block, pallet, referendumIndex, eventName, args)
@@ -416,7 +439,7 @@ export async function processEvent(ctx: GovernanceContext, block: Block, item: G
         await updateWhitelistedCall(ctx, block, eventName, args)
     } else if (pallet === 'Preimage' && ['Noted', 'Cleared'].includes(eventName)) {
         const hash = account(args.hash)
-        if (!hash) return
+        if (!hash) return activity
         const referenda = await ctx.store.find(GovernanceReferendum, { where: { proposalPreimageHash: hash } })
         for (const referendum of referenda) {
             if (referendum.updatedAtBlock > block.height) continue
@@ -430,4 +453,5 @@ export async function processEvent(ctx: GovernanceContext, block: Block, item: G
             await ctx.store.save(referendum)
         }
     }
+    return activity
 }

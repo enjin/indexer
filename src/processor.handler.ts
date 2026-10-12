@@ -44,8 +44,8 @@ export async function eventHandler(
             'Treasury',
         ].includes(item.name.split('.')[0])
     ) {
-        await p.governance.processors.processEvent(ctx, block, item)
-        return undefined
+        const activity = await p.governance.processors.processEvent(ctx, block, item)
+        return p.governance.processors.indexedEvent(activity)
     }
 
     return (

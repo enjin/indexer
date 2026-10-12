@@ -4,13 +4,15 @@ import test from 'node:test'
 import { Runtime } from '@subsquid/substrate-runtime'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import {
+    Event,
     GovernanceActivity,
     GovernanceDelegation,
+    GovernanceEventData,
     GovernanceFellowshipMember,
     GovernanceReferendum,
     GovernanceVote,
 } from '~/model'
-import { processEvent } from '~/pallet/governance/processors'
+import { indexedEvent, processEvent } from '~/pallet/governance/processors'
 import { storage } from '~/type'
 
 type MetadataLine = { specName: string; specVersion: number; metadata: string }
@@ -95,6 +97,22 @@ void test('governance processor persists a storage-backed referendum and histori
     assert.equal(referendum.proposalPreimageStatus, 'Unresolved')
     assert.deepEqual(referendum.submissionDeposit, { who: `0x${'11'.repeat(32)}`, amount: '100' })
     assert.equal((get(GovernanceActivity, '100-1-1') as GovernanceActivity | undefined)?.referendumId, 'Referenda:7')
+})
+
+void test('governance events appear in the standard Event query with decoded payloads', async () => {
+    const { ctx, block, event, get } = fixture()
+    const activity = await processEvent(ctx, block, event('100-1-1', 'Referenda.Submitted', { index: 7, track: 1 }))
+    const indexed = indexedEvent(activity)
+
+    assert(indexed instanceof Event)
+    assert.equal(indexed.name, 'ReferendaSubmitted')
+    assert.equal(indexed.extrinsic?.id, '100-1')
+    assert(indexed.data instanceof GovernanceEventData)
+    assert.equal(indexed.data.referendumId, 'Referenda:7')
+    assert.deepEqual(indexed.data.args, { index: 7, track: 1 })
+
+    assert.equal(get(GovernanceActivity, '100-1-1'), activity)
+    assert.equal(indexedEvent(activity, false).extrinsic, null)
 })
 
 void test('proposal preimages and terminal referendum changes remain queryable', async () => {

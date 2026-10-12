@@ -1,6 +1,7 @@
 import { SubstrateBatchProcessor } from '@subsquid/substrate-processor'
 import { TypeormDatabase } from '@subsquid/typeorm-store'
-import { processEvent } from '~/pallet/governance/processors'
+import { Event } from '~/model'
+import { indexedEvent, processEvent } from '~/pallet/governance/processors'
 import { governanceEventItems } from '~/processor.config'
 import config from '~/util/config'
 
@@ -33,7 +34,10 @@ function main(): void {
         async (ctx) => {
             for (const block of ctx.blocks) {
                 for (const event of block.events) {
-                    await processEvent(ctx, block.header, event)
+                    const activity = await processEvent(ctx, block.header, event)
+                    if (!(await ctx.store.findOneBy(Event, { id: activity.id }))) {
+                        await ctx.store.save(indexedEvent(activity, false))
+                    }
                 }
             }
         }
