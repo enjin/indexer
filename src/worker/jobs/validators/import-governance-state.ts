@@ -48,12 +48,21 @@ export async function importGovernanceState(job: Job<ImportGovernanceStateData>)
     await new Promise<void>((resolve, reject) => {
         const child = fork(runnerPath, [String(blockNumber), blockHash, job.data.chainName, snapshotId], {
             execArgv,
-            stdio: ['ignore', 'inherit', 'inherit', 'ipc'],
+            stdio: ['ignore', 'inherit', 'pipe', 'ipc'],
+        })
+        let stderr = ''
+        child.stderr?.on('data', (chunk: Buffer) => {
+            process.stderr.write(chunk)
+            stderr = (stderr + chunk.toString()).slice(-8192)
         })
         child.once('error', reject)
-        child.once('exit', (code, signal) => {
+        child.once('close', (code, signal) => {
             if (code === 0) resolve()
-            else reject(new Error(`Governance state import exited with ${signal ?? `code ${code}`}`))
+            else {
+                const detail = stderr.trim()
+                const reason = `Governance state import exited with ${signal ?? `code ${code}`}`
+                reject(new Error(detail ? `${reason}\n${detail}` : reason))
+            }
         })
     })
 
