@@ -31,12 +31,9 @@ export async function fuelTankDestroyed(
         ctx.store.findOneByOrFail(FuelTank, { id: tankId }),
     ])
 
-    await Promise.all([
-        ctx.store.remove(permittedExtrinsics),
-        ctx.store.remove(ruleSet),
-        ctx.store.remove(accountRuleSet),
-        ctx.store.remove(userAccounts),
-    ])
+    // Permitted extrinsics reference rule sets without an on-delete cascade.
+    await ctx.store.remove(permittedExtrinsics)
+    await Promise.all([ctx.store.remove(ruleSet), ctx.store.remove(accountRuleSet), ctx.store.remove(userAccounts)])
 
     await ctx.store.remove(tank)
 
