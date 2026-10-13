@@ -3,18 +3,18 @@ import assert from 'node:assert'
 
 /**
  * Security Test Suite: Identity Sub-Account Removal Events
- * 
+ *
  * This test suite verifies the mitigation for the pentest finding:
  * "Identity sub-account removal events can permanently stall indexer progress"
- * 
+ *
  * The vulnerability occurred when:
  * 1. Identity.set_subs call processor removes pure sub-account Identity rows
  * 2. SubIdentityRemoved/SubIdentityRevoked event processors then call findOneOrFail
  * 3. The missing row causes an exception that stalls the indexer
- * 
+ *
  * The fix changes findOneOrFail to findOne and returns early if identity is null,
  * preventing the indexer from stalling when the row has already been removed.
- * 
+ *
  * These tests verify the security properties of the fix by testing the behavior
  * when identity rows are missing (already removed by setSubs).
  */
@@ -44,16 +44,16 @@ void describe('Identity Sub-Account Removal Security Tests', () => {
     }
     /**
      * Test 1: Processor handles missing identity gracefully (core security fix)
-     * 
+     *
      * This test verifies that when an Identity row has already been removed by
      * the setSubs call processor, the event processor does not throw an exception
      * and returns undefined, allowing the indexer to continue.
      */
-    void it('should handle missing identity without throwing exception', async () => {
+    void it('should handle missing identity without throwing exception', () => {
         const processor = createMockProcessor()
 
         // Simulate identity already removed (null from findOne)
-        const result = await processor(null)
+        const result = processor(null)
 
         // Verify security properties:
         // 1. Function returns undefined (no exception thrown)
@@ -62,11 +62,11 @@ void describe('Identity Sub-Account Removal Security Tests', () => {
 
     /**
      * Test 2: Processor handles non-sub identity correctly when present
-     * 
+     *
      * This test verifies that when an identity exists and is not a pure sub-identity,
      * the processor correctly updates it by clearing the super reference.
      */
-    void it('should process non-sub identity correctly when present', async () => {
+    void it('should process non-sub identity correctly when present', () => {
         const processor = createMockProcessor()
 
         // Create mock identity that is not a pure sub (isSub = false)
@@ -81,7 +81,7 @@ void describe('Identity Sub-Account Removal Security Tests', () => {
             super: { id: 'super-id' },
         }
 
-        const result = await processor(mockIdentity)
+        const result = processor(mockIdentity)
 
         // Verify correct processing:
         // 1. Function returns save action
@@ -99,11 +99,11 @@ void describe('Identity Sub-Account Removal Security Tests', () => {
 
     /**
      * Test 3: Processor removes pure sub-identity when present
-     * 
+     *
      * This test verifies that when an identity exists and is a pure sub-identity,
      * the processor correctly marks it for removal.
      */
-    void it('should process pure sub-identity for removal when present', async () => {
+    void it('should process pure sub-identity for removal when present', () => {
         const processor = createMockProcessor()
 
         // Create mock identity that is a pure sub (isSub = true)
@@ -118,7 +118,7 @@ void describe('Identity Sub-Account Removal Security Tests', () => {
             super: { id: 'super-id' },
         }
 
-        const result = await processor(mockIdentity)
+        const result = processor(mockIdentity)
 
         // Verify correct processing:
         // 1. Function returns remove action
@@ -127,29 +127,26 @@ void describe('Identity Sub-Account Removal Security Tests', () => {
 
     /**
      * Test 4: Verify no exception is thrown for null identity (critical security property)
-     * 
+     *
      * This test explicitly verifies that the processor does not throw exceptions
      * when the identity is null, which is the core security fix.
      */
-    void it('should not throw exception when identity is null', async () => {
+    void it('should not throw exception when identity is null', () => {
         const processor = createMockProcessor()
 
         // This should not throw
-        await assert.doesNotReject(
-            async () => {
-                await processor(null)
-            },
-            'Processor should not throw when identity is null'
-        )
+        assert.doesNotThrow(() => {
+            processor(null)
+        }, 'Processor should not throw when identity is null')
     })
 
     /**
      * Test 5: Verify findOne behavior vs findOneOrFail
-     * 
+     *
      * This test demonstrates the difference between findOne (returns null)
      * and findOneOrFail (throws exception) when a record is not found.
      */
-    void it('should demonstrate findOne returns null instead of throwing', async () => {
+    void it('should demonstrate findOne returns null instead of throwing', () => {
         // Simulate findOne behavior (returns null)
         const findOne = () => null
 
@@ -159,13 +156,13 @@ void describe('Identity Sub-Account Removal Security Tests', () => {
         }
 
         // findOne should not throw
-        const resultFindOne = await findOne()
+        const resultFindOne = findOne()
         assert.strictEqual(resultFindOne, null, 'findOne should return null')
 
         // findOneOrFail should throw
-        await assert.rejects(
-            async () => {
-                await findOneOrFail()
+        assert.throws(
+            () => {
+                findOneOrFail()
             },
             /EntityNotFoundError/,
             'findOneOrFail should throw when entity not found'
@@ -174,11 +171,11 @@ void describe('Identity Sub-Account Removal Security Tests', () => {
 
     /**
      * Test 6: Verify early return prevents further processing
-     * 
+     *
      * This test verifies that when identity is null, the processor returns
      * early and does not attempt any save or remove operations.
      */
-    void it('should return early and skip processing when identity is null', async () => {
+    void it('should return early and skip processing when identity is null', () => {
         let saveAttempted = false
         let removeAttempted = false
 
@@ -199,7 +196,7 @@ void describe('Identity Sub-Account Removal Security Tests', () => {
         }
 
         // Process null identity
-        const result = await processorWithTracking(null)
+        const result = processorWithTracking(null)
 
         // Verify early return behavior
         assert.strictEqual(result, undefined, 'Should return undefined')
@@ -209,11 +206,11 @@ void describe('Identity Sub-Account Removal Security Tests', () => {
 
     /**
      * Test 7: Verify processing continues for valid identities
-     * 
+     *
      * This test verifies that the fix does not break normal processing
      * when identities are present.
      */
-    void it('should continue normal processing when identity exists', async () => {
+    void it('should continue normal processing when identity exists', () => {
         const processor = createMockProcessor()
 
         // Test with non-sub identity
@@ -225,7 +222,7 @@ void describe('Identity Sub-Account Removal Security Tests', () => {
             super: { id: 'super' },
         }
 
-        const result1 = await processor(nonSubIdentity)
+        const result1 = processor(nonSubIdentity)
         assert.ok(result1, 'Should return result for non-sub identity')
         assert.strictEqual(result1.action, 'save', 'Should save non-sub identity')
 
@@ -238,21 +235,21 @@ void describe('Identity Sub-Account Removal Security Tests', () => {
             super: { id: 'super' },
         }
 
-        const result2 = await processor(pureSubIdentity)
+        const result2 = processor(pureSubIdentity)
         assert.ok(result2, 'Should return result for pure sub identity')
         assert.strictEqual(result2.action, 'remove', 'Should remove pure sub identity')
     })
 
     /**
      * Test 8: Verify the fix prevents indexer stall scenario
-     * 
+     *
      * This test simulates the exact scenario from the pentest finding:
      * 1. setSubs removes a pure sub-identity
      * 2. SubIdentityRemoved/Revoked event is processed
      * 3. Identity lookup returns null
      * 4. Processor should not throw and indexer should continue
      */
-    void it('should prevent indexer stall when setSubs removes identity before event processing', async () => {
+    void it('should prevent indexer stall when setSubs removes identity before event processing', () => {
         const processor = createMockProcessor()
 
         // Simulate the scenario:
@@ -265,7 +262,7 @@ void describe('Identity Sub-Account Removal Security Tests', () => {
         let result
 
         try {
-            result = await processor(identityAfterSetSubs)
+            result = processor(identityAfterSetSubs)
         } catch {
             exceptionThrown = true
         }
