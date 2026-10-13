@@ -3,6 +3,7 @@ import test from 'node:test'
 import { decode } from '~/decoder/core'
 import { TransactionViewBuilder } from '~/decoder/view/builder'
 import { buildTransactionView } from '~/decoder/view'
+import { UnsafeTransactionViewError } from '~/decoder/view/errors'
 
 const NETWORK = 'enjin-matrixchain'
 
@@ -1020,7 +1021,7 @@ void test('V5 teleport view includes amount', () => {
                 assets: {
                     V5: [
                         {
-                            id: { parents: 0, interior: { __kind: 'Here' } },
+                            id: { parents: 1, interior: { Here: null } },
                             fun: { Fungible: '10000000000000000000' },
                         },
                     ],
@@ -1035,14 +1036,14 @@ void test('V5 teleport view includes amount', () => {
     assert.ok(view.fields.some((f) => f.type === 'coin' && f.title === 'Amount' && f.value === '10000000000000000000'))
 })
 
-void test('teleport view without amount returns unsupported view', () => {
+void test('teleport view without amount rejects unsafe view', () => {
     const call = {
         XcmPallet: {
             limited_teleport_assets: {
                 assets: {
                     V5: [
                         {
-                            id: { parents: 0, interior: { __kind: 'Here' } },
+                            id: { parents: 1, interior: { Here: null } },
                             fun: { NonFungible: { Index: 1n } },
                         },
                     ],
@@ -1051,10 +1052,7 @@ void test('teleport view without amount returns unsupported view', () => {
         },
     }
 
-    const view = buildTransactionView(call, NETWORK)
-
-    assert.equal(view.title, 'Unsupported Teleport')
-    assert.ok(view.fields.some((f) => f.type === 'text' && f.title === 'Warning'))
+    assert.throws(() => buildTransactionView(call, NETWORK), UnsafeTransactionViewError)
 })
 
 void test('V4 teleport view includes amount', () => {
@@ -1064,7 +1062,7 @@ void test('V4 teleport view includes amount', () => {
                 assets: {
                     V4: [
                         {
-                            id: { parents: 0, interior: { __kind: 'Here' } },
+                            id: { parents: 1, interior: { Here: null } },
                             fun: { Fungible: '5000000000000000000' },
                         },
                     ],
@@ -1086,7 +1084,7 @@ void test('V3 teleport view includes amount', () => {
                 assets: {
                     V3: [
                         {
-                            id: { parents: 0, interior: { __kind: 'Here' } },
+                            id: { Concrete: { parents: 1, interior: { Here: null } } },
                             fun: { Fungible: '3000000000000000000' },
                         },
                     ],
@@ -1108,7 +1106,7 @@ void test('V2 teleport view includes amount', () => {
                 assets: {
                     V2: [
                         {
-                            id: { parents: 0, interior: { __kind: 'Here' } },
+                            id: { Concrete: { parents: 1, interior: { Here: null } } },
                             fun: { Fungible: '2000000000000000000' },
                         },
                     ],
@@ -1130,7 +1128,7 @@ void test('PolkadotXcm V5 teleport view includes amount', () => {
                 assets: {
                     V5: [
                         {
-                            id: { parents: 0, interior: { __kind: 'Here' } },
+                            id: { parents: 1, interior: { Here: null } },
                             fun: { Fungible: '7500000000000000000' },
                         },
                     ],
@@ -1145,7 +1143,7 @@ void test('PolkadotXcm V5 teleport view includes amount', () => {
     assert.ok(view.fields.some((f) => f.type === 'coin' && f.title === 'Amount' && f.value === '7500000000000000000'))
 })
 
-void test('teleport with missing assets returns unsupported view', () => {
+void test('teleport with missing assets rejects unsafe view', () => {
     const call = {
         XcmPallet: {
             limited_teleport_assets: {
@@ -1154,13 +1152,10 @@ void test('teleport with missing assets returns unsupported view', () => {
         },
     }
 
-    const view = buildTransactionView(call, NETWORK)
-
-    assert.equal(view.title, 'Unsupported Teleport')
-    assert.ok(view.fields.some((f) => f.type === 'text' && f.title === 'Warning'))
+    assert.throws(() => buildTransactionView(call, NETWORK), UnsafeTransactionViewError)
 })
 
-void test('teleport with empty V5 array returns unsupported view', () => {
+void test('teleport with empty V5 array rejects unsafe view', () => {
     const call = {
         XcmPallet: {
             limited_teleport_assets: {
@@ -1171,10 +1166,7 @@ void test('teleport with empty V5 array returns unsupported view', () => {
         },
     }
 
-    const view = buildTransactionView(call, NETWORK)
-
-    assert.equal(view.title, 'Unsupported Teleport')
-    assert.ok(view.fields.some((f) => f.type === 'text' && f.title === 'Warning'))
+    assert.throws(() => buildTransactionView(call, NETWORK), UnsafeTransactionViewError)
 })
 
 void test('V5 teleport with zero amount is displayed', () => {
@@ -1184,7 +1176,7 @@ void test('V5 teleport with zero amount is displayed', () => {
                 assets: {
                     V5: [
                         {
-                            id: { parents: 0, interior: { __kind: 'Here' } },
+                            id: { parents: 1, interior: { Here: null } },
                             fun: { Fungible: '0' },
                         },
                     ],
@@ -1206,7 +1198,7 @@ void test('V5 teleport with large amount is displayed correctly', () => {
                 assets: {
                     V5: [
                         {
-                            id: { parents: 0, interior: { __kind: 'Here' } },
+                            id: { parents: 1, interior: { Here: null } },
                             fun: { Fungible: '999999999999999999999999' },
                         },
                     ],
@@ -1230,7 +1222,7 @@ void test('V5 teleport with bigint amount is displayed correctly', () => {
                 assets: {
                     V5: [
                         {
-                            id: { parents: 0, interior: { __kind: 'Here' } },
+                            id: { parents: 1, interior: { Here: null } },
                             fun: { Fungible: 12345678901234567890n },
                         },
                     ],
@@ -1245,14 +1237,14 @@ void test('V5 teleport with bigint amount is displayed correctly', () => {
     assert.ok(view.fields.some((f) => f.type === 'coin' && f.title === 'Amount' && f.value === '12345678901234567890'))
 })
 
-void test('V5 teleport NonFungible variant returns unsupported view', () => {
+void test('V5 teleport NonFungible variant rejects unsafe view', () => {
     const call = {
         XcmPallet: {
             limited_teleport_assets: {
                 assets: {
                     V5: [
                         {
-                            id: { parents: 0, interior: { __kind: 'Here' } },
+                            id: { parents: 1, interior: { Here: null } },
                             fun: { NonFungible: { Index: 42n } },
                         },
                     ],
@@ -1261,9 +1253,52 @@ void test('V5 teleport NonFungible variant returns unsupported view', () => {
         },
     }
 
-    const view = buildTransactionView(call, NETWORK)
+    assert.throws(() => buildTransactionView(call, NETWORK), UnsafeTransactionViewError)
+})
 
-    assert.equal(view.title, 'Unsupported Teleport')
-    assert.ok(view.fields.some((f) => f.type === 'text' && f.title === 'Warning'))
-    assert.ok(view.fields.some((f) => f.type === 'text' && f.value === 'Unable to extract amount from teleport call'))
+void test('teleport views reject amounts or assets that cannot be represented safely', () => {
+    const asset = { id: { parents: 1, interior: { Here: null } }, fun: { Fungible: '42' } }
+    const invalidAssets = [
+        { V5: [asset, asset] },
+        { V6: [asset] },
+        { V5: [asset], V4: [asset] },
+        ...[undefined, null, '', '-1', '1.5', 'not-an-amount', 9007199254740992, {}].map((amount) => ({
+            V5: [{ ...asset, fun: { Fungible: amount } }],
+        })),
+        { V5: [{ ...asset, id: { parents: 0, interior: { Here: null } } }] },
+        { V5: [{ ...asset, id: { parents: 1, interior: { X1: [{ Parachain: 2000 }] } } }] },
+    ]
+    for (const assets of invalidAssets) {
+        assert.throws(
+            () => buildTransactionView({ PolkadotXcm: { limited_teleport_assets: { assets } } }, NETWORK),
+            UnsafeTransactionViewError
+        )
+    }
+})
+
+void test('relaychain teleport views recognize the local native asset', () => {
+    for (const version of ['V2', 'V3', 'V4', 'V5']) {
+        const location = { parents: 0, interior: { Here: null } }
+        const id = version === 'V2' || version === 'V3' ? { Concrete: location } : location
+        const view = buildTransactionView(
+            { XcmPallet: { limited_teleport_assets: { assets: { [version]: [{ id, fun: { Fungible: '42' } }] } } } },
+            'enjin-relaychain'
+        )
+        assert.ok(view.fields.some((f) => f.type === 'coin' && f.value === '42'))
+    }
+})
+
+void test('unsafe teleport rejection propagates through wrappers and batches', () => {
+    const call = { PolkadotXcm: { limited_teleport_assets: { assets: { V5: [] } } } }
+    const proxy = { Proxy: { proxy: { real: 'owner', call } } }
+    const fuelTank = { FuelTanks: { dispatch: { tank_id: 'tank', call } } }
+    for (const wrapped of [call, proxy, fuelTank]) {
+        assert.throws(() => buildTransactionView(wrapped, NETWORK), UnsafeTransactionViewError)
+        for (const method of ['batch', 'batch_all', 'force_batch']) {
+            assert.throws(
+                () => buildTransactionView({ Utility: { [method]: { calls: [wrapped] } } }, NETWORK),
+                UnsafeTransactionViewError
+            )
+        }
+    }
 })

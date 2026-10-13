@@ -23,6 +23,7 @@ import {
 import config from '~/util/config'
 import DecoderRpc from './rpc'
 import { dryRunBatch } from './dry-run'
+import { UnsafeTransactionViewError } from '~/decoder/view/errors'
 
 const log = createLogger('sqd:decoder')
 
@@ -66,6 +67,10 @@ async function handleDecode(req: Request, res: Response): Promise<void> {
         res.setHeader('Content-Type', 'application/json')
         res.end(JSON.stringify(result, bigIntReplacer))
     } catch (error) {
+        if (error instanceof UnsafeTransactionViewError) {
+            res.status(422).json({ error: error.message, code: 'UNSAFE_TRANSACTION_VIEW' })
+            return
+        }
         handleServerError(error, req, res, 'Decode')
     }
 }
