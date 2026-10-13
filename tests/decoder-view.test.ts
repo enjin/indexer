@@ -1012,3 +1012,260 @@ void test('decodes batch-all batch transfer with transfer amounts and their tota
         ],
     })
 })
+
+void test('V5 teleport view includes amount', () => {
+    const call = {
+        XcmPallet: {
+            limited_teleport_assets: {
+                assets: {
+                    V5: [
+                        {
+                            id: { parents: 0, interior: { __kind: 'Here' } },
+                            fun: { Fungible: '10000000000000000000' },
+                        },
+                    ],
+                },
+            },
+        },
+    }
+
+    const view = buildTransactionView(call, NETWORK)
+
+    assert.equal(view.title, 'Teleport ENJ')
+    assert.ok(view.fields.some((f) => f.type === 'coin' && f.title === 'Amount' && f.value === '10000000000000000000'))
+})
+
+void test('teleport view without amount returns unsupported view', () => {
+    const call = {
+        XcmPallet: {
+            limited_teleport_assets: {
+                assets: {
+                    V5: [
+                        {
+                            id: { parents: 0, interior: { __kind: 'Here' } },
+                            fun: { NonFungible: { Index: 1n } },
+                        },
+                    ],
+                },
+            },
+        },
+    }
+
+    const view = buildTransactionView(call, NETWORK)
+
+    assert.equal(view.title, 'Unsupported Teleport')
+    assert.ok(view.fields.some((f) => f.type === 'text' && f.title === 'Warning'))
+})
+
+void test('V4 teleport view includes amount', () => {
+    const call = {
+        XcmPallet: {
+            limited_teleport_assets: {
+                assets: {
+                    V4: [
+                        {
+                            id: { parents: 0, interior: { __kind: 'Here' } },
+                            fun: { Fungible: '5000000000000000000' },
+                        },
+                    ],
+                },
+            },
+        },
+    }
+
+    const view = buildTransactionView(call, NETWORK)
+
+    assert.equal(view.title, 'Teleport ENJ')
+    assert.ok(view.fields.some((f) => f.type === 'coin' && f.title === 'Amount' && f.value === '5000000000000000000'))
+})
+
+void test('V3 teleport view includes amount', () => {
+    const call = {
+        XcmPallet: {
+            limited_teleport_assets: {
+                assets: {
+                    V3: [
+                        {
+                            id: { parents: 0, interior: { __kind: 'Here' } },
+                            fun: { Fungible: '3000000000000000000' },
+                        },
+                    ],
+                },
+            },
+        },
+    }
+
+    const view = buildTransactionView(call, NETWORK)
+
+    assert.equal(view.title, 'Teleport ENJ')
+    assert.ok(view.fields.some((f) => f.type === 'coin' && f.title === 'Amount' && f.value === '3000000000000000000'))
+})
+
+void test('V2 teleport view includes amount', () => {
+    const call = {
+        XcmPallet: {
+            limited_teleport_assets: {
+                assets: {
+                    V2: [
+                        {
+                            id: { parents: 0, interior: { __kind: 'Here' } },
+                            fun: { Fungible: '2000000000000000000' },
+                        },
+                    ],
+                },
+            },
+        },
+    }
+
+    const view = buildTransactionView(call, NETWORK)
+
+    assert.equal(view.title, 'Teleport ENJ')
+    assert.ok(view.fields.some((f) => f.type === 'coin' && f.title === 'Amount' && f.value === '2000000000000000000'))
+})
+
+void test('PolkadotXcm V5 teleport view includes amount', () => {
+    const call = {
+        PolkadotXcm: {
+            limited_teleport_assets: {
+                assets: {
+                    V5: [
+                        {
+                            id: { parents: 0, interior: { __kind: 'Here' } },
+                            fun: { Fungible: '7500000000000000000' },
+                        },
+                    ],
+                },
+            },
+        },
+    }
+
+    const view = buildTransactionView(call, NETWORK)
+
+    assert.equal(view.title, 'Teleport ENJ')
+    assert.ok(view.fields.some((f) => f.type === 'coin' && f.title === 'Amount' && f.value === '7500000000000000000'))
+})
+
+void test('teleport with missing assets returns unsupported view', () => {
+    const call = {
+        XcmPallet: {
+            limited_teleport_assets: {
+                assets: {},
+            },
+        },
+    }
+
+    const view = buildTransactionView(call, NETWORK)
+
+    assert.equal(view.title, 'Unsupported Teleport')
+    assert.ok(view.fields.some((f) => f.type === 'text' && f.title === 'Warning'))
+})
+
+void test('teleport with empty V5 array returns unsupported view', () => {
+    const call = {
+        XcmPallet: {
+            limited_teleport_assets: {
+                assets: {
+                    V5: [],
+                },
+            },
+        },
+    }
+
+    const view = buildTransactionView(call, NETWORK)
+
+    assert.equal(view.title, 'Unsupported Teleport')
+    assert.ok(view.fields.some((f) => f.type === 'text' && f.title === 'Warning'))
+})
+
+void test('V5 teleport with zero amount is displayed', () => {
+    const call = {
+        XcmPallet: {
+            limited_teleport_assets: {
+                assets: {
+                    V5: [
+                        {
+                            id: { parents: 0, interior: { __kind: 'Here' } },
+                            fun: { Fungible: '0' },
+                        },
+                    ],
+                },
+            },
+        },
+    }
+
+    const view = buildTransactionView(call, NETWORK)
+
+    assert.equal(view.title, 'Teleport ENJ')
+    assert.ok(view.fields.some((f) => f.type === 'coin' && f.title === 'Amount' && f.value === '0'))
+})
+
+void test('V5 teleport with large amount is displayed correctly', () => {
+    const call = {
+        XcmPallet: {
+            limited_teleport_assets: {
+                assets: {
+                    V5: [
+                        {
+                            id: { parents: 0, interior: { __kind: 'Here' } },
+                            fun: { Fungible: '999999999999999999999999' },
+                        },
+                    ],
+                },
+            },
+        },
+    }
+
+    const view = buildTransactionView(call, NETWORK)
+
+    assert.equal(view.title, 'Teleport ENJ')
+    assert.ok(view.fields.some((f) => f.type === 'coin' && f.title === 'Amount' && f.value === '999999999999999999999999'))
+})
+
+void test('V5 teleport with bigint amount is displayed correctly', () => {
+    const call = {
+        XcmPallet: {
+            limited_teleport_assets: {
+                assets: {
+                    V5: [
+                        {
+                            id: { parents: 0, interior: { __kind: 'Here' } },
+                            fun: { Fungible: 12345678901234567890n },
+                        },
+                    ],
+                },
+            },
+        },
+    }
+
+    const view = buildTransactionView(call, NETWORK)
+
+    assert.equal(view.title, 'Teleport ENJ')
+    assert.ok(
+        view.fields.some((f) => f.type === 'coin' && f.title === 'Amount' && f.value === '12345678901234567890')
+    )
+})
+
+void test('V5 teleport NonFungible variant returns unsupported view', () => {
+    const call = {
+        XcmPallet: {
+            limited_teleport_assets: {
+                assets: {
+                    V5: [
+                        {
+                            id: { parents: 0, interior: { __kind: 'Here' } },
+                            fun: { NonFungible: { Index: 42n } },
+                        },
+                    ],
+                },
+            },
+        },
+    }
+
+    const view = buildTransactionView(call, NETWORK)
+
+    assert.equal(view.title, 'Unsupported Teleport')
+    assert.ok(view.fields.some((f) => f.type === 'text' && f.title === 'Warning'))
+    assert.ok(
+        view.fields.some((f) => f.type === 'text' && f.value === 'Unable to extract amount from teleport call')
+    )
+})
