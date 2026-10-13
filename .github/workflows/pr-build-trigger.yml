@@ -76,13 +76,15 @@ jobs:
       - name: Trigger ECR build workflow
         id: trigger
         uses: actions/github-script@v7
+        env:
+          PR_REF: ${{ steps.pr.outputs.ref }}
         with:
           script: |
             await github.rest.actions.createWorkflowDispatch({
               owner: context.repo.owner,
               repo: context.repo.repo,
               workflow_id: 'publish-ecr.yml',
-              ref: '${{ steps.pr.outputs.ref }}'
+              ref: process.env.PR_REF
             });
 
             const workflowUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/workflows/publish-ecr.yml`;
@@ -90,24 +92,32 @@ jobs:
 
       - name: Post build started comment
         uses: actions/github-script@v7
+        env:
+          WORKFLOW_URL: ${{ steps.trigger.outputs.workflow-url }}
+          PR_NUMBER: ${{ steps.pr.outputs.number }}
+          PR_SHA: ${{ steps.pr.outputs.sha }}
+          PR_REF: ${{ steps.pr.outputs.ref }}
         with:
           script: |
-            const workflowUrl = '${{ steps.trigger.outputs.workflow-url }}';
+            const workflowUrl = process.env.WORKFLOW_URL;
+            const prNumber = process.env.PR_NUMBER;
+            const prSha = process.env.PR_SHA;
+            const prRef = process.env.PR_REF;
 
             const comment = `🚀 **ECR Build Triggered**
 
-            Building image for PR #${{ steps.pr.outputs.number }} (commit: \`${{ steps.pr.outputs.sha }}\`)
+            Building image for PR #${prNumber} (commit: \`${prSha}\`)
 
             **For Kubernetes deployment:**
             \`\`\`
-            ${{ steps.pr.outputs.sha }}
+            ${prSha}
             \`\`\`
 
-            [View build progress](${workflowUrl}) • Branch: \`${{ steps.pr.outputs.ref }}\``;
+            [View build progress](${workflowUrl}) • Branch: \`${prRef}\``;
 
             github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: ${{ steps.pr.outputs.number }},
+              issue_number: prNumber,
               body: comment
             });
