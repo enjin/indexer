@@ -1,0 +1,24 @@
+# Governance indexing
+
+The Indexer subscribes to Referenda, ConvictionVoting, Preimage, and Whitelist on both chain profiles. Matrixchain also indexes FellowshipReferenda and FellowshipCollective; Relaychain also indexes Treasury. The new GraphQL entities expose current referendum, vote, delegation, fellowship member, treasury item, and whitelist state. Governance events appear in the existing `Event` entity with names such as `ReferendaSubmitted` and a `GovernanceEventData` payload. `GovernanceActivity` also retains searchable event history, including terminal referendum events after runtime storage is pruned.
+
+Current referendum state and tally are read from `ReferendumInfoFor` at the processed block hash. Preimage lookups are stored up to 64 KiB. `proposalPreimageStatus` distinguishes `Inline`, `Resolved`, `AvailableTooLarge`, `Missing` (confirmed absent), and `Unresolved` (a reader is unavailable). Existing vote events without a poll index use the linked call's `pollIndex`; Relaychain's later `currency` field is part of each vote's identity.
+
+## Import current RPC state
+
+For an existing Indexer database, run the `IMPORT_GOVERNANCE_STATE` validator worker job after applying the governance schema migration. Dispatch it explicitly with `QueueUtils.dispatchImportGovernanceState({ chainName, genesisHash })` for the deployed worker's chain. Pause the live processor for that database until the job completes, then resume it. The job verifies the configured and RPC genesis hashes, pins a finalized block, and reads current governance storage through RPC at that block.
+
+The snapshot imports referenda, conviction votes and delegations, Matrixchain fellowship referenda, votes and members, Relaychain treasury proposals and spends, and whitelisted calls. It reads storage in pages and only updates rows whose indexed block is no newer than the snapshot block. It reports counts by category in the worker's child-process log. Its processor cursor uses a unique `squid_governance_snapshot_<id>` schema, so a retry can run again.
+
+The snapshot contains only records still present in RPC storage at that finalized block. It does not create `GovernanceActivity` or `Event` history, recover removed records, or identify historical gaps. Compare the imported current state against the pinned RPC block before planning a historical replay.
+
+## Historical backfill
+
+Adding a subscription does not make the live processor revisit past blocks. Use the governance-only backfill after the schema migration, with a confirmed network, database, historical-state-capable RPC endpoint, and finalized block range. Start at the first block where the relevant governance pallet is active. Verify that activation height on the target chain; the `blockNumber: 0` entry for Enjin Matrixchain v1041 in `typegen/enjin-matrixchain.jsonl` is a metadata placeholder, not an activation height.
+
+1. Verify the database is the intended target and apply the governance migration through the normal deployment process. Do not run against a shared database while another process is writing the same governance tables.
+2. Pause the live processor for that database, then dispatch `BACKFILL_GOVERNANCE` on the target's validator queue with `QueueUtils.dispatchBackfillGovernance({ chainName, genesisHash, fromBlock, toBlock })`. Pass the confirmed chain name, genesis hash, and inclusive finalized range. The worker checks these against its configuration and RPC finalized head, then checks historical runtime and event storage at the starting block. The replay reads blocks from the configured RPC endpoint; use an archival RPC endpoint if an ordinary node has pruned historical state.
+3. The worker runs the bounded replay in a child process and waits for its exit before completing the job. Each range has a separate `squid_governance_<from>_<to>` cursor schema, so retries resume without sharing a cursor with another range. It writes governance entities and missing `Event` rows. Historical `Event` rows have a null extrinsic relation; `GovernanceActivity.extrinsicId` retains the on-chain ID. Existing `Event` rows are preserved. IDs are deterministic; current-state updates from an older block do not replace newer rows. Keep the cursor schema until the range is complete.
+4. Compare a sample of referendum statuses, tallies, votes, deposits, and treasury items against block-hash-pinned chain storage and event history. Check counts by pallet and block range, then resume the live processor. A current snapshot alone cannot recover vote and lifecycle history.
+
+For a newly provisioned database, the ordinary processor can index governance from its configured start block and this separate backfill is unnecessary. Matrixchain history before v1040 uses legacy Democracy/Council pallets and is outside this implementation's event subscriptions.

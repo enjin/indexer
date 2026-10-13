@@ -81,6 +81,95 @@ type Event @entity {
   tokenId: String @index
 }
 
+# Current referendum state is refreshed from runtime storage at the event's block hash.
+# IDs include the pallet because Referenda and FellowshipReferenda have separate counters.
+type GovernanceReferendum @entity {
+  id: ID!
+  pallet: String! @index
+  referendumIndex: Int! @index
+  track: Int
+  status: String! @index
+  proposal: JSON
+  proposalPreimageHash: String @index
+  proposalPreimageStatus: String
+  proposalPreimage: String
+  metadataHash: String
+  tallyAyes: BigInt
+  tallyNays: BigInt
+  tallySupport: BigInt
+  submissionDeposit: JSON
+  decisionDeposit: JSON
+  submittedAtBlock: Int
+  updatedAtBlock: Int! @index
+}
+
+# Historical governance events remain queryable even after runtime storage is pruned.
+type GovernanceActivity @entity {
+  id: ID!
+  pallet: String! @index
+  name: String! @index
+  referendumId: String @index
+  accountId: String @index
+  blockNumber: Int! @index
+  extrinsicId: String
+  data: JSON
+}
+
+# Shared Event rows use this payload so governance events appear in existing event queries.
+type GovernanceEventData {
+  pallet: String!
+  eventName: String!
+  referendumId: String
+  governanceAccountId: String
+  blockNumber: Int!
+  args: JSON
+}
+
+type GovernanceVote @entity {
+  id: ID!
+  referendumId: String! @index
+  accountId: String! @index
+  currency: String
+  vote: JSON
+  active: Boolean!
+  updatedAtBlock: Int! @index
+}
+
+type GovernanceDelegation @entity {
+  id: ID!
+  accountId: String! @index
+  track: Int
+  currency: String
+  target: String
+  conviction: String
+  balance: BigInt
+  active: Boolean!
+  updatedAtBlock: Int! @index
+}
+
+type GovernanceFellowshipMember @entity {
+  id: ID!
+  rank: Int
+  active: Boolean!
+  updatedAtBlock: Int! @index
+}
+
+type GovernanceTreasuryItem @entity {
+  id: ID!
+  kind: String! @index
+  itemIndex: Int! @index
+  status: String! @index
+  details: JSON
+  updatedAtBlock: Int! @index
+}
+
+type GovernanceWhitelistedCall @entity {
+  id: ID!
+  active: Boolean!
+  lastDispatchedBlock: Int
+  updatedAtBlock: Int! @index
+}
+
 type AccountTokenEvent @entity {
   id: ID!
   from: Account! @index
@@ -1857,6 +1946,7 @@ type EarlyBirdMintEvent @entity {
 }
 
 union EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiTokensAttributeSet | MultiTokensBurned
+  | GovernanceEventData
   | MultiTokensCollectionAccountCreated | MultiTokensCollectionAccountDestroyed | MultiTokensCollectionCreated
   | MultiTokensCollectionDestroyed | MultiTokensCollectionMutated | MultiTokensFrozen | MultiTokensMinted
   | MultiTokensThawed | MultiTokensTokenAccountCreated | MultiTokensTokenAccountDestroyed | MultiTokensTokenCreated | MultiTokensTokenGroupCreated

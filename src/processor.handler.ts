@@ -33,6 +33,21 @@ export async function eventHandler(
     item: EventItem,
     skipSave = false
 ): Promise<EventHandlerResult> {
+    if (
+        [
+            'Referenda',
+            'ConvictionVoting',
+            'FellowshipReferenda',
+            'FellowshipCollective',
+            'Preimage',
+            'Whitelist',
+            'Treasury',
+        ].includes(item.name.split('.')[0])
+    ) {
+        const activity = await p.governance.processors.processEvent(ctx, block, item)
+        return p.governance.processors.indexedEvent(activity)
+    }
+
     return (
         match(item.name)
             .with(multiTokens.approved.name, () => p.multiTokens.processors.approved(ctx, item, skipSave))

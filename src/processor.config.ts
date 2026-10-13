@@ -7,13 +7,36 @@ const getEventNames = (pallet: object): string[] => Object.values(pallet).map((e
 
 const getCallNames = (pallet: object): string[] => Object.values(pallet).map((call) => call.name)
 
-const matrixEvents: string[] = [...getEventNames(events.claims), ...getEventNames(events.polkadotXcm)]
+const matrixGovernanceEvents = [
+    ...getEventNames(events.fellowshipReferenda),
+    ...getEventNames(events.fellowshipCollective),
+]
+
+const relayGovernanceEvents = getEventNames(events.treasury)
+
+const commonGovernanceEvents = [
+    ...getEventNames(events.referenda),
+    ...getEventNames(events.convictionVoting),
+    ...getEventNames(events.preimage),
+    ...getEventNames(events.whitelist),
+]
+
+export const governanceEventItems = [
+    ...new Set([...commonGovernanceEvents, ...(isRelay() ? relayGovernanceEvents : matrixGovernanceEvents)]),
+]
+
+const matrixEvents: string[] = [
+    ...getEventNames(events.claims),
+    ...getEventNames(events.polkadotXcm),
+    ...matrixGovernanceEvents,
+]
 
 const relayEvents: string[] = [
     ...getEventNames(events.imOnline),
     ...getEventNames(events.nominationPools),
     ...getEventNames(events.stakeExchange),
     ...getEventNames(events.staking),
+    ...relayGovernanceEvents,
     ...getEventNames(events.xcmPallet),
 ]
 
@@ -24,6 +47,7 @@ const commonEvents: string[] = [
     ...getEventNames(events.marketplace),
     ...getEventNames(events.multiTokens),
     ...getEventNames(events.utility),
+    ...commonGovernanceEvents,
     events.migrations.upgradeCompleted.name,
 ]
 
@@ -75,6 +99,7 @@ const ignoreEvents: string[] = [
     events.multiTokens.phantomAttributeDepositCleared.name,
     events.multiTokens.phantomAttributeDepositSkipped.name,
     events.balances.mintedCredit.name,
+    events.convictionVoting.migrationStep.name,
 ]
 
 const eventItems: string[] = [
@@ -90,12 +115,15 @@ const matrixCalls: string[] = [
     ...getCallNames(calls.claims),
     ...getCallNames(calls.matrixUtility),
     ...getCallNames(calls.polkadotXcm),
+    ...getCallNames(calls.fellowshipReferenda),
+    ...getCallNames(calls.fellowshipCollective),
 ]
 
 const relayCalls: string[] = [
     ...getCallNames(calls.nominationPools),
     ...getCallNames(calls.stakeExchange),
     ...getCallNames(calls.staking),
+    ...getCallNames(calls.treasury),
     ...getCallNames(calls.xcmPallet),
 ]
 
@@ -106,6 +134,10 @@ const commonCalls: string[] = [
     ...getCallNames(calls.marketplace),
     ...getCallNames(calls.multiTokens),
     ...getCallNames(calls.utility),
+    ...getCallNames(calls.referenda),
+    ...getCallNames(calls.convictionVoting),
+    ...getCallNames(calls.preimage),
+    ...getCallNames(calls.whitelist),
 ]
 
 const callItems: string[] = [...new Set([...commonCalls, ...(isRelay() ? relayCalls : matrixCalls)])]

@@ -71,6 +71,8 @@ Important semantics:
 | --- | --- |
 | `schema.graphql` | Source schema for TypeORM entities and relations |
 | `src/main.ts` | Processor bootstrap and block-level orchestration |
+| `src/worker/jobs/validators/governance-replay.ts` | Bounded governance-only replay launched by the validator worker job |
+| `src/worker/jobs/validators/governance-snapshot.ts` | One-block finalized governance state import launched by the validator worker job |
 | `src/processor.config.ts` | Subscribed events/calls, chain source, and selected fields |
 | `src/processor.handler.ts` | Central call/event routing |
 | `src/pallet/` | Hand-written domain processors, decoders, and pallet utilities |
@@ -185,6 +187,8 @@ pnpm run dev:worker
 pnpm run dev:decoder
 pnpm run dev:metris
 ```
+
+Governance subscriptions add queryable referendum, voting, fellowship, treasury, and whitelist entities. For an existing database, import current finalized RPC storage first with the explicitly dispatched `IMPORT_GOVERNANCE_STATE` validator job; see [docs/governance-indexing.md](docs/governance-indexing.md). Historical activity and records removed from storage require a later bounded replay. Dispatch `BACKFILL_GOVERNANCE` with an explicitly verified chain, genesis hash, finalized block range, historical-state-capable RPC endpoint, and database target. Both jobs use their own processor cursor schema and should not run concurrently with the live processor against the same governance tables.
 
 `dev:metris` is the existing script name despite the spelling. The quickest full environment remains:
 

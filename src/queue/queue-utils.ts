@@ -18,6 +18,9 @@ import { QueueType } from '~/queue/types'
 import { Logger } from '~/util/logger'
 import type { BackfillEphemeralTokensData } from '~/worker/jobs/tokens/backfill-ephemeral-tokens'
 import type { BackfillCancellationListingIdsData } from '~/worker/jobs/listings/backfill-cancellation-listing-ids'
+import type { BackfillGovernanceData } from '~/worker/jobs/validators/backfill-governance'
+import type { ImportGovernanceStateData } from '~/worker/jobs/validators/import-governance-state'
+import { randomUUID } from 'node:crypto'
 
 const LOGGER_NAMESPACE = 'sqd:queue'
 
@@ -579,6 +582,35 @@ export function dispatchBackfillChainFinality(options?: {
         : `validators.backfill-chain-finality.dispatch.${Date.now()}`
     ValidatorsQueue.add(JobsEnum.BACKFILL_CHAIN_FINALITY, options ?? {}, { jobId }).catch(() => {
         Logger.error('Failed to dispatch backfill chain finality', LOGGER_NAMESPACE)
+    })
+}
+
+export async function dispatchBackfillGovernance(data: BackfillGovernanceData): Promise<void> {
+    if (
+        !Number.isSafeInteger(data.fromBlock) ||
+        !Number.isSafeInteger(data.toBlock) ||
+        data.fromBlock < 0 ||
+        data.fromBlock > data.toBlock ||
+        typeof data.genesisHash !== 'string' ||
+        !/^0x[0-9a-f]{64}$/i.test(data.genesisHash)
+    ) {
+        throw new Error('Governance backfill requires a valid chain genesis hash and inclusive block range')
+    }
+    const logicalId = `validators.backfill-governance.${data.genesisHash.slice(2, 10)}.${data.fromBlock}-${data.toBlock}`
+    await ValidatorsQueue.add(JobsEnum.BACKFILL_GOVERNANCE, data, {
+        jobId: `${logicalId}.${randomUUID()}`,
+        deduplication: { id: logicalId },
+    })
+}
+
+export async function dispatchImportGovernanceState(data: ImportGovernanceStateData): Promise<void> {
+    if (typeof data.genesisHash !== 'string' || !/^0x[0-9a-f]{64}$/i.test(data.genesisHash)) {
+        throw new Error('Governance state import requires a valid chain genesis hash')
+    }
+    const logicalId = `validators.import-governance-state.${data.genesisHash.slice(2, 10)}`
+    await ValidatorsQueue.add(JobsEnum.IMPORT_GOVERNANCE_STATE, data, {
+        jobId: `${logicalId}.${randomUUID()}`,
+        deduplication: { id: logicalId },
     })
 }
 
