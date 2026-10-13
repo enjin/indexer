@@ -1218,7 +1218,9 @@ void test('V5 teleport with large amount is displayed correctly', () => {
     const view = buildTransactionView(call, NETWORK)
 
     assert.equal(view.title, 'Teleport ENJ')
-    assert.ok(view.fields.some((f) => f.type === 'coin' && f.title === 'Amount' && f.value === '999999999999999999999999'))
+    assert.ok(
+        view.fields.some((f) => f.type === 'coin' && f.title === 'Amount' && f.value === '999999999999999999999999')
+    )
 })
 
 void test('V5 teleport with bigint amount is displayed correctly', () => {
@@ -1240,9 +1242,7 @@ void test('V5 teleport with bigint amount is displayed correctly', () => {
     const view = buildTransactionView(call, NETWORK)
 
     assert.equal(view.title, 'Teleport ENJ')
-    assert.ok(
-        view.fields.some((f) => f.type === 'coin' && f.title === 'Amount' && f.value === '12345678901234567890')
-    )
+    assert.ok(view.fields.some((f) => f.type === 'coin' && f.title === 'Amount' && f.value === '12345678901234567890'))
 })
 
 void test('V5 teleport NonFungible variant returns unsupported view', () => {
@@ -1265,7 +1265,5 @@ void test('V5 teleport NonFungible variant returns unsupported view', () => {
 
     assert.equal(view.title, 'Unsupported Teleport')
     assert.ok(view.fields.some((f) => f.type === 'text' && f.title === 'Warning'))
-    assert.ok(
-        view.fields.some((f) => f.type === 'text' && f.value === 'Unable to extract amount from teleport call')
-    )
+    assert.ok(view.fields.some((f) => f.type === 'text' && f.value === 'Unable to extract amount from teleport call'))
 })
