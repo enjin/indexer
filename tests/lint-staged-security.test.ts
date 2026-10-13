@@ -26,7 +26,7 @@ void test('escapes filenames with single quotes to prevent quote breakout', () =
     const prettierCommand = commands[1]
     // Single quotes should be escaped as '\''
     assert.ok(prettierCommand.includes("'src'\\''"))
-    assert.ok(prettierCommand.includes("--config=evil.mjs"))
+    assert.ok(prettierCommand.includes('--config=evil.mjs'))
     assert.ok(prettierCommand.includes("'\\'''"))
 })
 
