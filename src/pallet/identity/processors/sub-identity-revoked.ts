@@ -11,12 +11,18 @@ export async function subIdentityRevoked(
     const event = mappings.identity.events.subIdentityRevoked(item)
 
     const sub = await getOrCreateAccount(ctx, event.sub)
-    const identity = await ctx.store.findOneOrFail<Identity>(Identity, {
+    const identity = await ctx.store.findOne<Identity>(Identity, {
         where: { id: sub.id },
         relations: {
             info: true,
         },
     })
+
+    // Identity may have already been removed by the setSubs call processor,
+    // which runs before events. Return early to avoid indexer stall.
+    if (!identity) {
+        return undefined
+    }
 
     if (!identity.isSub) {
         identity.super = null

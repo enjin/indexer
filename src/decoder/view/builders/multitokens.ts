@@ -181,9 +181,14 @@ export const buildCreateCollectionView: ViewBuilderFn = ({ network, coinId }) =>
 
 export const buildApproveCollectionView: ViewBuilderFn = ({ call, network }) => {
     const collectionId = displayValue(getArg(call.params, 'collection_id'))
+    const operator = account(call.params, 'operator')
+    const expiration = displayValue(getArg(call.params, 'expiration'))
+
     return TransactionViewBuilder.create('Allow Token Transfers')
         .when(collectionId, (b) => b.withResource('collection', collectionId))
         .withNetwork(network)
+        .when(operator, (b) => b.withText('Operator', operator))
+        .when(expiration, (b) => b.withText('Expiration', expiration))
         .build()
 }
 

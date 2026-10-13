@@ -1302,3 +1302,178 @@ void test('unsafe teleport rejection propagates through wrappers and batches', (
         }
     }
 })
+
+// Security tests for approve_collection vulnerability mitigation
+void test('approve_collection view exposes operator account to prevent hidden authorization', () => {
+    // This test verifies the fix for the pentest finding where operator was hidden
+    const maliciousOperator = { Id: [0xde, 0xad, 0xbe, 0xef] }
+    const view = buildTransactionView(
+        {
+            MultiTokens: {
+                approve_collection: {
+                    collection_id: '12345',
+                    operator: maliciousOperator,
+                },
+            },
+        },
+        NETWORK
+    )
+
+    assert.equal(view.title, 'Allow Token Transfers')
+
+    // Critical security assertion: operator MUST be visible in the transaction view
+    const operatorField = view.fields.find((field) => field.type === 'text' && field.title === 'Operator')
+    assert.ok(operatorField, 'Operator field must be present in transaction view')
+    assert.equal(operatorField.value, '0xdeadbeef', 'Operator address must be correctly displayed')
+
+    // Verify collection is also shown
+    const collectionField = view.fields.find((field) => field.type === 'collection')
+    assert.ok(collectionField, 'Collection field must be present')
+    assert.equal(collectionField.value, '12345')
+})
+
+void test('approve_collection view exposes expiration block to prevent indefinite authorization', () => {
+    // This test verifies that expiration is shown when provided
+    const view = buildTransactionView(
+        {
+            MultiTokens: {
+                approve_collection: {
+                    collection_id: '67890',
+                    operator: { Id: [0x11, 0x22, 0x33, 0x44] },
+                    expiration: 1000000,
+                },
+            },
+        },
+        NETWORK
+    )
+
+    assert.equal(view.title, 'Allow Token Transfers')
+
+    // Critical security assertion: expiration MUST be visible when provided
+    const expirationField = view.fields.find((field) => field.type === 'text' && field.title === 'Expiration')
+    assert.ok(expirationField, 'Expiration field must be present when expiration is provided')
+    assert.equal(expirationField.value, '1000000', 'Expiration block must be correctly displayed')
+
+    // Verify operator is also shown
+    const operatorField = view.fields.find((field) => field.type === 'text' && field.title === 'Operator')
+    assert.ok(operatorField, 'Operator field must be present')
+    assert.equal(operatorField.value, '0x11223344')
+})
+
+void test('approve_collection view handles missing expiration gracefully', () => {
+    // Expiration is optional, so the view should work without it
+    const view = buildTransactionView(
+        {
+            MultiTokens: {
+                approve_collection: {
+                    collection_id: '99999',
+                    operator: { Id: [0xaa, 0xbb, 0xcc, 0xdd] },
+                    // expiration is intentionally omitted
+                },
+            },
+        },
+        NETWORK
+    )
+
+    assert.equal(view.title, 'Allow Token Transfers')
+
+    // Operator must still be shown even without expiration
+    const operatorField = view.fields.find((field) => field.type === 'text' && field.title === 'Operator')
+    assert.ok(operatorField, 'Operator field must be present even without expiration')
+    assert.equal(operatorField.value, '0xaabbccdd')
+
+    // Expiration should not be present when not provided
+    const expirationField = view.fields.find((field) => field.type === 'text' && field.title === 'Expiration')
+    assert.equal(expirationField, undefined, 'Expiration field should not be present when not provided')
+})
+
+void test('approve_collection view prevents malicious dApp from hiding operator in full transaction flow', () => {
+    // Simulates a malicious dApp attempting to get collection-wide approval
+    // The user should see ALL authorization-critical parameters
+    const attackerAccount = { Id: [0x13, 0x37, 0xac, 0xce] }
+    const view = buildTransactionView(
+        {
+            MultiTokens: {
+                approve_collection: {
+                    collection_id: '54321',
+                    operator: attackerAccount,
+                    expiration: 9999999,
+                },
+            },
+        },
+        NETWORK
+    )
+
+    // Verify all critical authorization parameters are exposed
+    const fields = view.fields
+
+    // 1. Collection must be visible
+    const hasCollection = fields.some((f) => f.type === 'collection' && f.value === '54321')
+    assert.ok(hasCollection, 'Collection ID must be visible to user')
+
+    // 2. Operator (the account receiving authority) must be visible
+    const operatorField = fields.find((f) => f.type === 'text' && f.title === 'Operator')
+    assert.ok(operatorField, 'Operator must be visible - this is the account receiving transfer authority')
+    assert.ok(operatorField.value.startsWith('0x'), 'Operator must be displayed as readable address')
+
+    // 3. Expiration must be visible when provided
+    const expirationField = fields.find((f) => f.type === 'text' && f.title === 'Expiration')
+    assert.ok(expirationField, 'Expiration must be visible to show approval lifetime')
+    assert.equal(expirationField.value, '9999999')
+
+    // 4. Network must be visible
+    const hasNetwork = fields.some((f) => f.type === 'text' && f.title === 'Network')
+    assert.ok(hasNetwork, 'Network must be visible')
+
+    // The view must NOT be generic - it should have the specific title
+    assert.notEqual(view.title, 'Transaction Request', 'Must not fall back to generic view')
+    assert.equal(view.title, 'Allow Token Transfers', 'Must have specific approval title')
+})
+
+void test('approve_collection view matches approve_token pattern for consistency', () => {
+    // Both approve_collection and approve_token should expose operator and expiration
+    // This ensures consistent security properties across similar operations
+    const operator = { Id: [0x01, 0x02, 0x03, 0x04] }
+
+    const collectionView = buildTransactionView(
+        {
+            MultiTokens: {
+                approve_collection: {
+                    collection_id: '100',
+                    operator: operator,
+                    expiration: 5000,
+                },
+            },
+        },
+        NETWORK
+    )
+
+    const tokenView = buildTransactionView(
+        {
+            MultiTokens: {
+                approve_token: {
+                    collection_id: '100',
+                    token_id: '200',
+                    operator: operator,
+                    amount: '10',
+                    expiration: 5000,
+                },
+            },
+        },
+        NETWORK
+    )
+
+    // Both views must expose operator
+    const collectionOperator = collectionView.fields.find((f) => f.type === 'text' && f.title === 'Operator')
+    const tokenOperator = tokenView.fields.find((f) => f.type === 'text' && f.title === 'Operator')
+    assert.ok(collectionOperator, 'Collection approval must show operator')
+    assert.ok(tokenOperator, 'Token approval must show operator')
+    assert.equal(collectionOperator.value, tokenOperator.value, 'Operator format must be consistent')
+
+    // Both views must expose expiration
+    const collectionExpiration = collectionView.fields.find((f) => f.type === 'text' && f.title === 'Expiration')
+    const tokenExpiration = tokenView.fields.find((f) => f.type === 'text' && f.title === 'Expiration')
+    assert.ok(collectionExpiration, 'Collection approval must show expiration')
+    assert.ok(tokenExpiration, 'Token approval must show expiration')
+    assert.equal(collectionExpiration.value, tokenExpiration.value, 'Expiration format must be consistent')
+})
