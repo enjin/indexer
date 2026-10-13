@@ -11,13 +11,13 @@ import {
 
 /**
  * Test suite for fuel-tank-destroyed processor
- * 
+ *
  * This test verifies the security fix for the pentest finding:
  * "Fuel tank destruction can permanently stall indexer processing"
- * 
+ *
  * The vulnerability was that destroying a FuelTank with FuelTankUserAccounts
  * would cause a foreign key violation, which would halt the indexer.
- * 
+ *
  * The fix ensures that FuelTankUserAccounts are deleted before the parent FuelTank.
  */
 
@@ -85,14 +85,14 @@ class MockStore {
 
     remove<T extends { id: string }>(entities: T | T[]): void {
         const entitiesToRemove = Array.isArray(entities) ? entities : [entities]
-        
+
         for (const entity of entitiesToRemove) {
             const entityName = entity.constructor.name
             const entityMap = this.entities.get(entityName)
-            
+
             // Track removal order
             this.removalOrder.push(`${entityName}:${entity.id}`)
-            
+
             // Simulate foreign key constraint check
             if (entityName === 'FuelTank') {
                 const userAccountsMap = this.entities.get('FuelTankUserAccounts')
@@ -104,7 +104,7 @@ class MockStore {
                         }
                         return false
                     })
-                    
+
                     if (remainingUserAccounts.length > 0) {
                         throw new Error(
                             `Foreign key constraint violation: Cannot delete FuelTank ${entity.id} because FuelTankUserAccounts still reference it`
@@ -112,7 +112,7 @@ class MockStore {
                     }
                 }
             }
-            
+
             if (entityMap) {
                 entityMap.delete(entity.id)
             }
@@ -147,7 +147,7 @@ class MockStore {
  * Simulates the fuel tank destruction logic from the processor
  * This is the core logic that was fixed to prevent the vulnerability
  */
-async function simulateFuelTankDestruction(store: MockStore, tankId: string): Promise<void> {
+function simulateFuelTankDestruction(store: MockStore, tankId: string): void {
     // This simulates the fixed code from fuel-tank-destroyed.ts
     const permittedExtrinsics = store.find(PermittedExtrinsics, {
         relations: { ruleSet: true },
@@ -168,7 +168,7 @@ async function simulateFuelTankDestruction(store: MockStore, tankId: string): Pr
     store.remove(tank)
 }
 
-void test('fuelTankDestroyed removes all dependent entities including FuelTankUserAccounts', async () => {
+void test('fuelTankDestroyed removes all dependent entities including FuelTankUserAccounts', () => {
     const store = new MockStore()
     const tankId = 'tank-1'
 
@@ -176,7 +176,7 @@ void test('fuelTankDestroyed removes all dependent entities including FuelTankUs
     const tank = new FuelTank({ id: tankId, name: 'Test Tank', accountCount: 2 })
     const account1 = new Account({ id: 'account-1' })
     const account2 = new Account({ id: 'account-2' })
-    
+
     const userAccount1 = new FuelTankUserAccounts({
         id: `${tankId}-account-1`,
         tank,
@@ -184,7 +184,7 @@ void test('fuelTankDestroyed removes all dependent entities including FuelTankUs
         tankDeposit: 1000n,
         userDeposit: 500n,
     })
-    
+
     const userAccount2 = new FuelTankUserAccounts({
         id: `${tankId}-account-2`,
         tank,
@@ -222,7 +222,7 @@ void test('fuelTankDestroyed removes all dependent entities including FuelTankUs
     assert.equal(store.getEntityCount('PermittedExtrinsics'), 1, 'Should have 1 permitted extrinsic before destruction')
 
     // Execute: Simulate the fuel tank destroyed processor logic
-    await simulateFuelTankDestruction(store, tankId)
+    simulateFuelTankDestruction(store, tankId)
 
     // Verify: All entities should be removed
     assert.equal(store.hasEntity('FuelTank', tankId), false, 'FuelTank should be removed after destruction')
@@ -232,7 +232,7 @@ void test('fuelTankDestroyed removes all dependent entities including FuelTankUs
     assert.equal(store.getEntityCount('PermittedExtrinsics'), 0, 'All permitted extrinsics should be removed')
 })
 
-void test('fuelTankDestroyed does not throw foreign key violation when user accounts exist', async () => {
+void test('fuelTankDestroyed does not throw foreign key violation when user accounts exist', () => {
     const store = new MockStore()
     const tankId = 'tank-2'
 
@@ -241,7 +241,7 @@ void test('fuelTankDestroyed does not throw foreign key violation when user acco
     const account1 = new Account({ id: 'user-1' })
     const account2 = new Account({ id: 'user-2' })
     const account3 = new Account({ id: 'user-3' })
-    
+
     const userAccount1 = new FuelTankUserAccounts({
         id: `${tankId}-user-1`,
         tank,
@@ -249,7 +249,7 @@ void test('fuelTankDestroyed does not throw foreign key violation when user acco
         tankDeposit: 1000n,
         userDeposit: 500n,
     })
-    
+
     const userAccount2 = new FuelTankUserAccounts({
         id: `${tankId}-user-2`,
         tank,
@@ -257,7 +257,7 @@ void test('fuelTankDestroyed does not throw foreign key violation when user acco
         tankDeposit: 2000n,
         userDeposit: 1000n,
     })
-    
+
     const userAccount3 = new FuelTankUserAccounts({
         id: `${tankId}-user-3`,
         tank,
@@ -272,19 +272,16 @@ void test('fuelTankDestroyed does not throw foreign key violation when user acco
     assert.equal(store.getEntityCount('FuelTankUserAccounts'), 3, 'Should have 3 user accounts (vulnerable state)')
 
     // Execute: This should NOT throw an error (the fix prevents the foreign key violation)
-    await assert.doesNotReject(
-        async () => {
-            await simulateFuelTankDestruction(store, tankId)
-        },
-        'fuelTankDestroyed should not throw when user accounts exist'
-    )
+    assert.doesNotThrow(() => {
+        simulateFuelTankDestruction(store, tankId)
+    }, 'fuelTankDestroyed should not throw when user accounts exist')
 
     // Verify: Tank and all user accounts are removed
     assert.equal(store.hasEntity('FuelTank', tankId), false, 'FuelTank should be removed')
     assert.equal(store.getEntityCount('FuelTankUserAccounts'), 0, 'All user accounts should be removed')
 })
 
-void test('fuelTankDestroyed removes user accounts before removing the tank', async () => {
+void test('fuelTankDestroyed removes user accounts before removing the tank', () => {
     const store = new MockStore()
     const tankId = 'tank-3'
 
@@ -302,24 +299,24 @@ void test('fuelTankDestroyed removes user accounts before removing the tank', as
     store.save([tank, account, userAccount])
 
     // Execute
-    await simulateFuelTankDestruction(store, tankId)
+    simulateFuelTankDestruction(store, tankId)
 
     // Verify: The order of deletion prevents foreign key violations
     // If user accounts were not deleted first, the mock store would have thrown an error
     assert.equal(store.hasEntity('FuelTank', tankId), false, 'FuelTank should be removed')
     assert.equal(store.getEntityCount('FuelTankUserAccounts'), 0, 'User accounts should be removed')
-    
+
     // Verify removal order: user accounts should be removed before the tank
     const removalOrder = store.getRemovalOrder()
-    const userAccountRemovalIndex = removalOrder.findIndex(item => item.startsWith('FuelTankUserAccounts:'))
-    const tankRemovalIndex = removalOrder.findIndex(item => item.startsWith('FuelTank:'))
-    
+    const userAccountRemovalIndex = removalOrder.findIndex((item) => item.startsWith('FuelTankUserAccounts:'))
+    const tankRemovalIndex = removalOrder.findIndex((item) => item.startsWith('FuelTank:'))
+
     assert.ok(userAccountRemovalIndex >= 0, 'User account should be in removal order')
     assert.ok(tankRemovalIndex >= 0, 'Tank should be in removal order')
     assert.ok(userAccountRemovalIndex < tankRemovalIndex, 'User accounts should be removed before the tank')
 })
 
-void test('fuelTankDestroyed handles empty tank without user accounts', async () => {
+void test('fuelTankDestroyed handles empty tank without user accounts', () => {
     const store = new MockStore()
     const tankId = 'tank-4'
 
@@ -328,13 +325,13 @@ void test('fuelTankDestroyed handles empty tank without user accounts', async ()
     store.save(tank)
 
     // Execute
-    await simulateFuelTankDestruction(store, tankId)
+    simulateFuelTankDestruction(store, tankId)
 
     // Verify: Tank is removed successfully even without user accounts
     assert.equal(store.hasEntity('FuelTank', tankId), false, 'Empty FuelTank should be removed')
 })
 
-void test('fuelTankDestroyed removes only entities related to the specific tank', async () => {
+void test('fuelTankDestroyed removes only entities related to the specific tank', () => {
     const store = new MockStore()
     const tankId1 = 'tank-5'
     const tankId2 = 'tank-6'
@@ -344,7 +341,7 @@ void test('fuelTankDestroyed removes only entities related to the specific tank'
     const tank2 = new FuelTank({ id: tankId2, name: 'Tank 2', accountCount: 1 })
     const account1 = new Account({ id: 'account-1' })
     const account2 = new Account({ id: 'account-2' })
-    
+
     const userAccount1 = new FuelTankUserAccounts({
         id: `${tankId1}-account-1`,
         tank: tank1,
@@ -352,7 +349,7 @@ void test('fuelTankDestroyed removes only entities related to the specific tank'
         tankDeposit: 1000n,
         userDeposit: 500n,
     })
-    
+
     const userAccount2 = new FuelTankUserAccounts({
         id: `${tankId2}-account-2`,
         tank: tank2,
@@ -368,29 +365,33 @@ void test('fuelTankDestroyed removes only entities related to the specific tank'
     assert.equal(store.getEntityCount('FuelTankUserAccounts'), 2, 'Should have 2 user accounts initially')
 
     // Execute: Destroy only tank1
-    await simulateFuelTankDestruction(store, tankId1)
+    simulateFuelTankDestruction(store, tankId1)
 
     // Verify: Only tank1 and its user accounts are removed
     assert.equal(store.hasEntity('FuelTank', tankId1), false, 'Tank 1 should be removed')
     assert.equal(store.hasEntity('FuelTank', tankId2), true, 'Tank 2 should still exist')
     assert.equal(store.getEntityCount('FuelTankUserAccounts'), 1, 'Only tank1 user accounts should be removed')
-    assert.equal(store.hasEntity('FuelTankUserAccounts', `${tankId2}-account-2`), true, 'Tank 2 user account should still exist')
+    assert.equal(
+        store.hasEntity('FuelTankUserAccounts', `${tankId2}-account-2`),
+        true,
+        'Tank 2 user account should still exist'
+    )
 })
 
-void test('fuelTankDestroyed prevents indexer stall by handling all dependent entities', async () => {
+void test('fuelTankDestroyed prevents indexer stall by handling all dependent entities', () => {
     const store = new MockStore()
     const tankId = 'tank-7'
 
     // Setup: Create a fully populated tank (worst case scenario for the vulnerability)
     const tank = new FuelTank({ id: tankId, name: 'Fully Populated Tank', accountCount: 5 })
-    
+
     // Create multiple user accounts
     const accounts = []
     const userAccounts = []
     for (let i = 1; i <= 5; i++) {
         const account = new Account({ id: `account-${i}` })
         accounts.push(account)
-        
+
         const userAccount = new FuelTankUserAccounts({
             id: `${tankId}-account-${i}`,
             tank,
@@ -434,14 +435,7 @@ void test('fuelTankDestroyed prevents indexer stall by handling all dependent en
         permittedExtrinsics.push(permittedExtrinsic)
     }
 
-    store.save([
-        tank,
-        ...accounts,
-        ...userAccounts,
-        ...ruleSets,
-        ...accountRules,
-        ...permittedExtrinsics,
-    ])
+    store.save([tank, ...accounts, ...userAccounts, ...ruleSets, ...accountRules, ...permittedExtrinsics])
 
     // Verify the complex state exists
     assert.equal(store.getEntityCount('FuelTankUserAccounts'), 5, 'Should have 5 user accounts')
@@ -450,12 +444,9 @@ void test('fuelTankDestroyed prevents indexer stall by handling all dependent en
     assert.equal(store.getEntityCount('PermittedExtrinsics'), 3, 'Should have 3 permitted extrinsics')
 
     // Execute: This represents the scenario that would have stalled the indexer
-    await assert.doesNotReject(
-        async () => {
-            await simulateFuelTankDestruction(store, tankId)
-        },
-        'fuelTankDestroyed should not throw even with complex dependent entities'
-    )
+    assert.doesNotThrow(() => {
+        simulateFuelTankDestruction(store, tankId)
+    }, 'fuelTankDestroyed should not throw even with complex dependent entities')
 
     // Verify: All entities are properly cleaned up
     assert.equal(store.hasEntity('FuelTank', tankId), false, 'FuelTank should be removed')
@@ -465,7 +456,7 @@ void test('fuelTankDestroyed prevents indexer stall by handling all dependent en
     assert.equal(store.getEntityCount('PermittedExtrinsics'), 0, 'All permitted extrinsics should be removed')
 })
 
-void test('WITHOUT FIX: fuelTankDestroyed would throw foreign key violation', async () => {
+void test('WITHOUT FIX: fuelTankDestroyed would throw foreign key violation', () => {
     const store = new MockStore()
     const tankId = 'tank-vulnerable'
 
@@ -484,7 +475,7 @@ void test('WITHOUT FIX: fuelTankDestroyed would throw foreign key violation', as
 
     // Simulate the VULNERABLE code (without the fix)
     // This is what the code looked like BEFORE the fix
-    async function vulnerableFuelTankDestruction(store: MockStore, tankId: string): Promise<void> {
+    function vulnerableFuelTankDestruction(store: MockStore, tankId: string): void {
         const permittedExtrinsics = store.find(PermittedExtrinsics, {
             relations: { ruleSet: true },
             where: { ruleSet: { tank: { id: tankId } } },
@@ -504,9 +495,9 @@ void test('WITHOUT FIX: fuelTankDestroyed would throw foreign key violation', as
     }
 
     // Execute: The vulnerable code should throw a foreign key violation error
-    await assert.rejects(
-        async () => {
-            await vulnerableFuelTankDestruction(store, tankId)
+    assert.throws(
+        () => {
+            vulnerableFuelTankDestruction(store, tankId)
         },
         {
             message: /Foreign key constraint violation/,
@@ -516,5 +507,9 @@ void test('WITHOUT FIX: fuelTankDestroyed would throw foreign key violation', as
 
     // Verify: The tank should still exist because the deletion failed
     assert.equal(store.hasEntity('FuelTank', tankId), true, 'FuelTank should still exist after failed deletion')
-    assert.equal(store.getEntityCount('FuelTankUserAccounts'), 1, 'User account should still exist after failed deletion')
+    assert.equal(
+        store.getEntityCount('FuelTankUserAccounts'),
+        1,
+        'User account should still exist after failed deletion'
+    )
 })
