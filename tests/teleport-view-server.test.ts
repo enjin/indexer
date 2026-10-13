@@ -2,10 +2,11 @@ import assert from 'node:assert/strict'
 import { once } from 'node:events'
 import type { AddressInfo } from 'node:net'
 import test from 'node:test'
-import { decode } from '~/decoder/core'
-import { server } from '~/decoder/server'
-import { UnsafeTransactionViewError } from '~/decoder/view/errors'
-import { encodeCall } from '~/encoder/core'
+import { decode } from '~/codec/decoder/core'
+import { server } from '~/codec/server'
+import { UnsafeTransactionViewError } from '~/codec/decoder/view/errors'
+import { encodeCall } from '~/codec/encoder/core'
+import DecoderRpc from '~/codec/rpc'
 
 async function teleportCall(amount?: string): Promise<string> {
     return encodeCall(
@@ -45,12 +46,18 @@ async function teleportCall(amount?: string): Promise<string> {
     )
 }
 
-void test('readable decoding rejects unsafe teleports without preventing raw decoding', async () => {
+void test('readable decoding rejects unsafe teleports without preventing raw decoding', async (t) => {
+    const rpc = t.mock.method(DecoderRpc, 'getInstance', () => {
+        throw new Error('View rejection must not contact RPC')
+    })
     const call = await teleportCall()
     const request = { call, network: 'canary-matrixchain', spec_version: 1041 }
     const raw = await decode(request)
     assert.ok(raw && typeof raw === 'object' && 'calls' in raw && !('view' in raw))
     await assert.rejects(decode({ ...request, readable: true }), UnsafeTransactionViewError)
+    assert.deepEqual(await decode({ call, network: request.network }), raw)
+    await assert.rejects(decode({ call, network: request.network, readable: true }), UnsafeTransactionViewError)
+    assert.equal(rpc.mock.callCount(), 0)
     await assert.rejects(
         decode({
             calls: [await teleportCall('42'), call],

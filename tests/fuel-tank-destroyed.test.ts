@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { createRequire, Module } from 'node:module'
 import test, { after } from 'node:test'
 import type { Block, CommonContext, EventItem } from '~/contexts'
-import { getRuntimeCached } from '~/decoder/metadata'
+import { getRuntimeCached } from '~/codec/metadata'
 import {
     Account,
     FuelTank,

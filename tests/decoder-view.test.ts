@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { decode } from '~/decoder/core'
-import { TransactionViewBuilder } from '~/decoder/view/builder'
-import { buildTransactionView } from '~/decoder/view'
-import { UnsafeTransactionViewError } from '~/decoder/view/errors'
+import { decode } from '~/codec/decoder/core'
+import { TransactionViewBuilder } from '~/codec/decoder/view/builder'
+import { buildTransactionView } from '~/codec/decoder/view'
+import { UnsafeTransactionViewError } from '~/codec/decoder/view/errors'
 
 const NETWORK = 'enjin-matrixchain'
 
@@ -19,8 +19,8 @@ const BATCH_ALL_MINT_CALL =
 const BATCH_ALL_TRANSFER_CALL =
     '0x090204280c95240c3c5058b4984860f4a2ff5624eb688dbdb9d4ba28712b2bfcb8a1f7a73a8288090004143c5058b4984860f4a2ff5624eb688dbdb9d4ba28712b2bfcb8a1f7a73a828809001c0c3c5058b4984860f4a2ff5624eb688dbdb9d4ba28712b2bfcb8a1f7a73a828809001404'
 
-async function decodeView(call: string): Promise<{ title: string; fields: unknown[] }> {
-    const decoded = await decode({ call, network: NETWORK, readable: true })
+async function decodeView(call: string, specVersion = 1031): Promise<{ title: string; fields: unknown[] }> {
+    const decoded = await decode({ call, network: NETWORK, readable: true, spec_version: specVersion })
     assert.ok(decoded && typeof decoded === 'object' && 'view' in decoded)
     return (decoded as { view: { title: string; fields: unknown[] } }).view
 }
@@ -75,7 +75,8 @@ void test('decodes a transfer-all call into a specific transaction view', async 
 })
 
 void test('includes the per-token infusion in a create-token transaction view', async () => {
-    const view = await decodeView(CREATE_TOKEN_WITH_INFUSION_CALL)
+    // This fixture includes token fields introduced after 1031.
+    const view = await decodeView(CREATE_TOKEN_WITH_INFUSION_CALL, 1041)
 
     assert.deepEqual(view, {
         title: 'Create NFT',

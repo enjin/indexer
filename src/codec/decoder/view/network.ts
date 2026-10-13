@@ -1,4 +1,4 @@
-import type { Network } from '../types'
+import type { Network } from '~/codec/types'
 
 const NETWORK_LABELS: Record<Network, string> = {
     'enjin-matrixchain': 'Enjin Matrixchain',

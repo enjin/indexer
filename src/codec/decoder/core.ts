@@ -1,7 +1,8 @@
 import { hexToU8a } from '@polkadot/util'
 import { blake2AsHex } from '@polkadot/util-crypto'
 import { Src } from '@subsquid/scale-codec'
-import { getRuntimeCached } from './metadata'
+import { getRuntimeCached, withRuntime, getRpcRuntime, rememberRuntime } from '~/codec/metadata'
+import type { Runtime, Extrinsic } from '@subsquid/substrate-runtime'
 import type {
     DecodeRequest,
     DecodeResponse,
@@ -9,8 +10,8 @@ import type {
     DecodedEventRecord,
     DecodedSignedExtrinsicInput,
     DecodedSignedExtrinsicResult,
-} from './types'
-import { NETWORK_ALIASES } from './types'
+} from '~/codec/types'
+import { NETWORK_ALIASES } from '~/codec/types'
 import { transformCall, transformExtrinsic, transformEvent } from './compatibility'
 import { buildTransactionView } from './view'
 
@@ -23,17 +24,6 @@ export function bigIntReplacer(_key: string, value: unknown): unknown {
 
 export const DEFAULT_NETWORK: Network = 'enjin-matrixchain'
 
-export const LATEST_SPEC_VERSIONS: Record<Network, number> = {
-    'enjin-relaychain': 1070,
-    'enjin-matrixchain': 1031,
-    'canary-relaychain': 1080,
-    'canary-matrixchain': 1041,
-}
-
-export function getLatestSpecVersion(network: Network): number {
-    return LATEST_SPEC_VERSIONS[network]
-}
-
 export function resolveNetwork(networkInput: string): Network | null {
     if (networkInput in NETWORK_ALIASES) {
         return NETWORK_ALIASES[networkInput]
@@ -41,13 +31,30 @@ export function resolveNetwork(networkInput: string): Network | null {
     return null
 }
 
-export async function decodeExtrinsic(extrinsic: string, network: Network, specVersion: number): Promise<unknown> {
-    const runtime = await getRuntimeCached(network, specVersion)
-    const decoded = runtime.decodeExtrinsic(extrinsic)
+function decodeExtrinsicWithRuntime(extrinsic: string, runtime: Runtime): Extrinsic {
+    const envelope = new Src(extrinsic)
+    const length = envelope.compactLength()
+    const src = new Src(envelope.bytes(length))
+    envelope.assertEOF()
+    const meta = src.u8()
+    const version = meta & 0b01111111
+    if (version !== 4 && version !== 5) throw new Error('Unsupported extrinsic version')
+    const preamble = meta & 0b11000000
+    let signature: Extrinsic['signature']
+    if (preamble === 128 && version === 4) {
+        signature = runtime.scaleCodec.decode(runtime.description.signature, src)
+    } else if (preamble !== 0) {
+        throw new Error('Unsupported extrinsic preamble')
+    }
+    const call = runtime.scaleCodec.decode(runtime.description.call, src)
+    src.assertEOF()
+    return { version, signature, call }
+}
 
+function transformDecodedExtrinsic(extrinsic: string, runtime: Runtime): unknown {
+    const decoded = decodeExtrinsicWithRuntime(extrinsic, runtime)
     const hash = blake2AsHex(extrinsic, 256)
     const extrinsicLength = (extrinsic.startsWith('0x') ? extrinsic.length - 2 : extrinsic.length) / 2
-
     const response: DecodeResponse = {
         version: decoded.version,
         signature: decoded.signature,
@@ -55,41 +62,32 @@ export async function decodeExtrinsic(extrinsic: string, network: Network, specV
         hash,
         extrinsic_hash: hash,
     }
-
     return transformExtrinsic(response, extrinsicLength)
+}
+
+export async function decodeExtrinsic(extrinsic: string, network: Network, specVersion?: number): Promise<unknown> {
+    return withRuntime(network, specVersion, (runtime) => transformDecodedExtrinsic(extrinsic, runtime))
 }
 
 export async function decodeExtrinsics(
     extrinsics: string[],
     network: Network,
-    specVersion: number
+    specVersion?: number
 ): Promise<unknown[]> {
-    const runtime = await getRuntimeCached(network, specVersion)
-
-    return extrinsics.map((ext) => {
-        const decoded = runtime.decodeExtrinsic(ext)
-        const hash = blake2AsHex(ext, 256)
-        const extrinsicLength = (ext.startsWith('0x') ? ext.length - 2 : ext.length) / 2
-
-        const response = {
-            version: decoded.version,
-            signature: decoded.signature,
-            call: decoded.call,
-            hash,
-            extrinsic_hash: hash,
-        }
-
-        return transformExtrinsic(response, extrinsicLength)
-    })
+    return withRuntime(network, specVersion, (runtime) =>
+        extrinsics.map((extrinsic) => transformDecodedExtrinsic(extrinsic, runtime))
+    )
 }
 
 export async function decodeEvents(
     events: string,
     network: Network,
-    specVersion: number
+    specVersion?: number
 ): Promise<DecodedEventRecord[]> {
-    const runtime = await getRuntimeCached(network, specVersion)
+    return withRuntime(network, specVersion, (runtime) => decodeEventsWithRuntime(events, runtime))
+}
 
+function decodeEventsWithRuntime(events: string, runtime: Runtime): DecodedEventRecord[] {
     const hexString = events.startsWith('0x') ? events.slice(2) : events
     const bytes = new Uint8Array(Buffer.from(hexString, 'hex'))
     const src = new Src(bytes)
@@ -107,6 +105,8 @@ export async function decodeEvents(
             phase.Finalization = null
         } else if (phaseVariant === 2) {
             phase.Initialization = null
+        } else {
+            throw new Error('Invalid event phase')
         }
 
         const decodedEvent = runtime.scaleCodec.decode(runtime.description.event, src)
@@ -125,13 +125,12 @@ export async function decodeEvents(
         })
     }
 
+    src.assertEOF()
     return results
 }
 
-export async function decodeCall(call: string, network: Network, specVersion: number): Promise<unknown> {
-    const runtime = await getRuntimeCached(network, specVersion)
-
-    return decodeCallWithRuntime(call, runtime)
+export async function decodeCall(call: string, network: Network, specVersion?: number): Promise<unknown> {
+    return withRuntime(network, specVersion, (runtime) => decodeCallWithRuntime(call, runtime))
 }
 
 function decodeCallWithRuntime(call: string, runtime: Awaited<ReturnType<typeof getRuntimeCached>>): unknown {
@@ -140,22 +139,53 @@ function decodeCallWithRuntime(call: string, runtime: Awaited<ReturnType<typeof 
     const src = new Src(bytes)
 
     const decodedCall = runtime.scaleCodec.decode(runtime.description.call, src)
+    src.assertEOF()
     return { calls: transformCall(decodedCall, runtime) }
 }
 
-export async function decodeCalls(calls: string[], network: Network, specVersion: number): Promise<unknown[]> {
-    const runtime = await getRuntimeCached(network, specVersion)
-
-    return calls.map((call) => decodeCallWithRuntime(call, runtime))
+export async function decodeCalls(calls: string[], network: Network, specVersion?: number): Promise<unknown[]> {
+    return withRuntime(network, specVersion, (runtime) => calls.map((call) => decodeCallWithRuntime(call, runtime)))
 }
 
 export async function decodeSignedExtrinsicsRaw(
     items: DecodedSignedExtrinsicInput[],
     network: Network,
-    specVersion: number
+    specVersion?: number
 ): Promise<DecodedSignedExtrinsicResult[]> {
-    const runtime = await getRuntimeCached(network, specVersion)
+    let runtime: Runtime
+    try {
+        runtime = await getRuntimeCached(network, specVersion)
+    } catch (error) {
+        if (specVersion !== undefined) throw error
+        runtime = await getRpcRuntime(network)
+        const results = decodeSignedItems(items, runtime)
+        if (results.some((item) => item.encodedData !== null)) rememberRuntime(network, runtime)
+        return results
+    }
+    const results = decodeSignedItems(items, runtime)
+    const failed = results.flatMap((item, index) => (item.encodedData === null ? [index] : []))
+    if (specVersion !== undefined || failed.length === 0) return results
+    try {
+        const current = await getRpcRuntime(network)
+        const retries = decodeSignedItems(
+            failed.map((index) => items[index]),
+            current
+        )
+        let recovered = false
+        for (const [offset, retry] of retries.entries()) {
+            if (retry.encodedData !== null) {
+                results[failed[offset]] = retry
+                recovered = true
+            }
+        }
+        if (recovered) rememberRuntime(network, current)
+    } catch {
+        // Preserve the tolerant batch response when RPC or the replacement codec is unavailable.
+    }
+    return results
+}
 
+function decodeSignedItems(items: DecodedSignedExtrinsicInput[], runtime: Runtime): DecodedSignedExtrinsicResult[] {
     const normalizeHex = (value: string): string => {
         const prefixed = value.startsWith('0x') ? value : `0x${value}`
         return prefixed.toLowerCase()
@@ -169,7 +199,7 @@ export async function decodeSignedExtrinsicsRaw(
     return items.map((item) => {
         const hash = extrinsicHash(item.signedExtrinsic)
         try {
-            const decoded = runtime.decodeExtrinsic(item.signedExtrinsic)
+            const decoded = decodeExtrinsicWithRuntime(item.signedExtrinsic, runtime)
 
             let signer: string | null = null
             let nonce: number | null = null
@@ -228,7 +258,7 @@ export async function decode(requestData: DecodeRequest): Promise<unknown> {
         throw new Error(`Invalid network: ${networkInput}`)
     }
     const network = resolved || DEFAULT_NETWORK
-    const specVersion = spec_version ?? getLatestSpecVersion(network)
+    const specVersion = spec_version
 
     if (call) {
         const result = await decodeCall(call, network, specVersion)

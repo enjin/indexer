@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { encode } from '~/encoder/core'
+import { encode } from '~/codec/encoder/core'
 
 const calls = [
     { pallet: 'System', name: 'remark', args: { remark: '0x6b6579' } },
@@ -8,13 +8,13 @@ const calls = [
 ]
 
 void test('encode returns one result per call for a batch, matching single-call encoding', async () => {
-    const batch = await encode({ calls })
+    const batch = await encode({ calls, spec_version: 1031 })
 
     assert.ok(Array.isArray(batch))
     assert.equal(batch.length, calls.length)
 
     for (const [index, call] of calls.entries()) {
-        const single = await encode({ call })
+        const single = await encode({ call, spec_version: 1031 })
 
         assert.ok(!Array.isArray(single))
         assert.deepEqual(batch[index], single)

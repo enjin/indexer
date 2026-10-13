@@ -9,8 +9,8 @@ import type {
     DryRunRequestBody,
 } from './types'
 import { MAX_DRY_RUN_INPUTS, NETWORKS } from './types'
-import { DEFAULT_NETWORK, resolveNetwork } from './core'
-import type { EncodeCallInput, EncodeRequest } from '../encoder/types'
+import { DEFAULT_NETWORK, resolveNetwork } from '~/codec/decoder/core'
+import type { EncodeCallInput, EncodeRequest } from '~/codec/encoder/types'
 
 export function validateDecodeRequest(
     body: unknown
@@ -44,6 +44,9 @@ export function validateDecodeRequest(
         if (!Array.isArray(req.calls)) {
             return { valid: false, error: '"calls" must be an array' }
         }
+        if (req.calls.length === 0) {
+            return { valid: false, error: '"calls" must not be empty' }
+        }
         if (req.calls.some((call: unknown) => typeof call !== 'string' || !isHex(call))) {
             return { valid: false, error: 'All calls must be valid hex strings' }
         }
@@ -61,6 +64,9 @@ export function validateDecodeRequest(
     if (hasExtrinsics) {
         if (!Array.isArray(req.extrinsics)) {
             return { valid: false, error: '"extrinsics" must be an array' }
+        }
+        if (req.extrinsics.length === 0) {
+            return { valid: false, error: '"extrinsics" must not be empty' }
         }
         if (req.extrinsics.some((e: unknown) => typeof e !== 'string' || !isHex(e))) {
             return { valid: false, error: 'All extrinsics must be valid hex strings' }
@@ -88,8 +94,11 @@ export function validateDecodeRequest(
         }
     }
 
-    if (req.spec_version !== undefined && typeof req.spec_version !== 'number') {
-        return { valid: false, error: 'Invalid "spec_version" field (must be number)' }
+    if (
+        req.spec_version !== undefined &&
+        (typeof req.spec_version !== 'number' || !Number.isSafeInteger(req.spec_version) || req.spec_version < 0)
+    ) {
+        return { valid: false, error: 'Invalid "spec_version" field (must be a non-negative safe integer)' }
     }
 
     if (req.readable !== undefined && typeof req.readable !== 'boolean') {
@@ -129,7 +138,7 @@ function validateEncodeCallInput(
         return { valid: false, error: `"${label}.name" must be a non-empty string` }
     }
 
-    if (call.args !== undefined && (typeof call.args !== 'object' || Array.isArray(call.args))) {
+    if (call.args !== undefined && (call.args === null || typeof call.args !== 'object' || Array.isArray(call.args))) {
         return { valid: false, error: `"${label}.args" must be an object` }
     }
 
@@ -199,8 +208,11 @@ export function validateEncodeRequest(
         }
     }
 
-    if (req.spec_version !== undefined && typeof req.spec_version !== 'number') {
-        return { valid: false, error: 'Invalid "spec_version" field (must be number)' }
+    if (
+        req.spec_version !== undefined &&
+        (typeof req.spec_version !== 'number' || !Number.isSafeInteger(req.spec_version) || req.spec_version < 0)
+    ) {
+        return { valid: false, error: 'Invalid "spec_version" field (must be a non-negative safe integer)' }
     }
 
     return {
@@ -295,8 +307,11 @@ export function validateDecodeSignedExtrinsicsRequest(
         }
     }
 
-    if (req.spec_version !== undefined && typeof req.spec_version !== 'number') {
-        return { valid: false, error: 'Invalid "spec_version" field (must be number)' }
+    if (
+        req.spec_version !== undefined &&
+        (typeof req.spec_version !== 'number' || !Number.isSafeInteger(req.spec_version) || req.spec_version < 0)
+    ) {
+        return { valid: false, error: 'Invalid "spec_version" field (must be a non-negative safe integer)' }
     }
 
     return { valid: true, data: req }

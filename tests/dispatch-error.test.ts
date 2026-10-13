@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { getRuntimeCached } from '~/decoder/metadata'
+import { getRuntimeCached } from '~/codec/metadata'
 import { readableDispatchError } from '~/util/dispatch-error'
 import { deriveItemIndex } from '~/pallet/utility/processors/item-failed'
 import { EventItem } from '~/contexts'

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { validateDecodeRequest } from '~/decoder/validation'
+import { validateDecodeRequest } from '~/codec/validation'
 
 void test('validateDecodeRequest accepts a call', () => {
     const result = validateDecodeRequest({ call: '0x0102' })

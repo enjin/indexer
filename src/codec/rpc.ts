@@ -14,6 +14,22 @@ export function getRpcEndpoint(network: Network): string {
     return NETWORK_ALIASES[config.chainName] === network ? config.dataSource.chain : NETWORK_RPC_ENDPOINTS[network]
 }
 
+export async function withRpcTimeout<T>(operation: Promise<T>, timeoutMs = 30_000): Promise<T> {
+    let timer: ReturnType<typeof setTimeout> | undefined
+    try {
+        return await Promise.race([
+            operation,
+            new Promise<never>((_resolve, reject) => {
+                timer = setTimeout(() => {
+                    reject(new Error('Codec RPC request timed out'))
+                }, timeoutMs)
+            }),
+        ])
+    } finally {
+        clearTimeout(timer)
+    }
+}
+
 class DecoderRpc {
     private static readonly instances = new Map<Network, Promise<DecoderRpc>>()
 
@@ -23,10 +39,12 @@ class DecoderRpc {
         const existing = this.instances.get(network)
         if (existing) return existing
 
-        const instance = ApiPromise.create({ provider: new WsProvider(getRpcEndpoint(network), 5000) })
+        const api = new ApiPromise({ provider: new WsProvider(getRpcEndpoint(network), 5000, {}, 30_000) })
+        const instance = withRpcTimeout(api.isReadyOrError)
             .then((api) => new DecoderRpc(api))
-            .catch((error: unknown) => {
+            .catch(async (error: unknown) => {
                 this.instances.delete(network)
+                await api.disconnect().catch(() => undefined)
                 throw error
             })
 

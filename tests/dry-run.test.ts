@@ -9,7 +9,7 @@ import {
     dryRun,
     dryRunBatch,
     formatDryRunResult,
-} from '~/decoder/dry-run'
+} from '~/codec/dry-run'
 
 function codec(code: string, type?: string) {
     return {

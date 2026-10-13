@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { validateEncodeRequest } from '~/decoder/validation'
+import { validateEncodeRequest } from '~/codec/validation'
 
 const call = { pallet: 'MultiTokens', name: 'transfer', args: { amount: '1' } }
 

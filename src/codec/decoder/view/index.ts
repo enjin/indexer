@@ -1,4 +1,4 @@
-import type { Network } from '../types'
+import type { Network } from '~/codec/types'
 import { parseCallData, unwrapDispatchCall, withWrapperContext } from './call'
 import { getBuilderForCall } from './factory'
 import { getNativeCoinId, getNetworkLabel } from './network'

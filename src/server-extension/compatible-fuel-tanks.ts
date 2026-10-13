@@ -16,7 +16,7 @@ import {
     WhitelistedCallers,
 } from '~/model'
 import { ApiPromise } from '@polkadot/api'
-import { decodeCall, decodeExtrinsic, resolveNetwork } from '~/decoder/core'
+import { decodeCall, decodeExtrinsic, resolveNetwork } from '~/codec/decoder/core'
 import { IsPublicKey } from './helpers'
 
 registerEnumType(CoveragePolicy, {

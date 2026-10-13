@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { MAX_DRY_RUN_INPUTS } from '~/decoder/types'
-import { validateDryRunRequest } from '~/decoder/validation'
+import { MAX_DRY_RUN_INPUTS } from '~/codec/types'
+import { validateDryRunRequest } from '~/codec/validation'
 
 const publicKey = `0x${'12'.repeat(32)}`
 

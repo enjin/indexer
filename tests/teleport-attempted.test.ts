@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import type { VersionedAssets, VersionedLocation } from '~/pallet/common/xcm'
-import { getRuntimeCached } from '~/decoder/metadata'
+import { getRuntimeCached } from '~/codec/metadata'
 import { nativeTeleportAmount, teleportBeneficiary } from '~/pallet/common/teleport'
 
 const beneficiary = `0x${'22'.repeat(32)}`

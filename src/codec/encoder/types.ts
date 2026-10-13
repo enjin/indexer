@@ -1,5 +1,5 @@
-export type { Network } from '../decoder/types'
-export { NETWORKS, NETWORK_ALIASES } from '../decoder/types'
+export type { Network } from '~/codec/types'
+export { NETWORKS, NETWORK_ALIASES } from '~/codec/types'
 
 export interface EncodeCallInput {
     pallet: string

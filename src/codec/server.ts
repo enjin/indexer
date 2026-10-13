@@ -8,10 +8,9 @@ import {
     bigIntReplacer,
     resolveNetwork,
     decodeSignedExtrinsicsRaw,
-    getLatestSpecVersion,
     DEFAULT_NETWORK,
-} from './core'
-import { encode } from '../encoder/core'
+} from '~/codec/decoder/core'
+import { encode } from '~/codec/encoder/core'
 import {
     validateDecodeRequest,
     validateEncodeRequest,
@@ -23,9 +22,9 @@ import {
 import config from '~/util/config'
 import DecoderRpc from './rpc'
 import { dryRunBatch } from './dry-run'
-import { UnsafeTransactionViewError } from '~/decoder/view/errors'
+import { UnsafeTransactionViewError } from '~/codec/decoder/view/errors'
 
-const log = createLogger('sqd:decoder')
+const log = createLogger('sqd:codec')
 
 Sentry.init({
     dsn: config.sentryDsn,
@@ -43,9 +42,9 @@ function handleServerError(error: unknown, req: Request, res: Response, operatio
     log.error(`${operation} error: ${errorMessage}`)
 
     Sentry.withScope((scope) => {
-        scope.setTag('decoder.operation', operation)
+        scope.setTag('codec.operation', operation)
         scope.setContext('request', request)
-        scope.setExtra('decoder.request', request)
+        scope.setExtra('codec.request', request)
         Sentry.captureException(error)
     })
 
@@ -149,7 +148,7 @@ async function handleDecodeSignedExtrinsics(req: Request, res: Response): Promis
         }
 
         const network = resolved ?? DEFAULT_NETWORK
-        const specVersion = spec_version ?? getLatestSpecVersion(network)
+        const specVersion = spec_version
 
         const items = inputs.map((signedExtrinsic) => ({ signedExtrinsic }))
         const results = await decodeSignedExtrinsicsRaw(items, network, specVersion)
@@ -218,7 +217,7 @@ server.post('/dry-run', handleDryRun)
 
 export function startServer(port: string | number = process.env.DECODER_PORT || 8090): void {
     server.listen(port, () => {
-        log.info(`Decoder/Encoder server started on port ${port}`)
+        log.info(`Codec server started on port ${port}`)
     })
 }
 

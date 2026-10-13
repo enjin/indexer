@@ -1,6 +1,6 @@
 import { TransactionViewBuilder } from '../builder'
 import { displayValue, getArg } from '../call'
-import { UnsafeTransactionViewError } from '~/decoder/view/errors'
+import { UnsafeTransactionViewError } from '~/codec/decoder/view/errors'
 import type { ViewBuilderFn } from '../types'
 
 export const buildTeleportView: ViewBuilderFn = ({ call, network, coinId }) => {

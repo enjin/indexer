@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { once } from 'node:events'
 import type { AddressInfo } from 'node:net'
 import test from 'node:test'
-import { server } from '~/decoder/server'
+import { server } from '~/codec/server'
 
 void test('dry-run route only accepts valid POST requests', async (t) => {
     const listener = server.listen(0, '127.0.0.1')
