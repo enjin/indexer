@@ -1,20 +1,41 @@
 import assert from 'node:assert/strict'
-import test from 'node:test'
-import { attempted as xcmPalletAttempted } from '~/pallet/xcm-pallet/processors/attempted'
-import { attempted as polkadotXcmAttempted } from '~/pallet/polkadot-xcm/processors/attempted'
+import { createRequire, Module } from 'node:module'
+import test, { after } from 'node:test'
 import { calls } from '~/type'
 import type { EventItem, Block, CommonContext } from '~/contexts'
 
+// Loading the pallet registry must not start real queue connections in these handler tests.
+const testRequire = createRequire(__filename)
+const queueModulePath = testRequire.resolve('~/queue')
+const originalQueueModule = testRequire.cache[queueModulePath]
+assert.equal(originalQueueModule, undefined, 'queue module loaded before the test stub was installed')
+const queueModule = new Module(queueModulePath)
+queueModule.loaded = true
+queueModule.exports = { QueueUtils: {} }
+testRequire.cache[queueModulePath] = queueModule
+
+const { attempted: xcmPalletAttempted } = testRequire(
+    '~/pallet/xcm-pallet/processors/attempted'
+) as typeof import('~/pallet/xcm-pallet/processors/attempted')
+const { attempted: polkadotXcmAttempted } = testRequire(
+    '~/pallet/polkadot-xcm/processors/attempted'
+) as typeof import('~/pallet/polkadot-xcm/processors/attempted')
+assert.equal(testRequire.cache[testRequire.resolve('bullmq')], undefined, 'handler tests loaded real BullMQ queues')
+
+after(() => {
+    testRequire.cache[queueModulePath] = originalQueueModule
+})
+
 /**
  * Security test suite for XCM Attempted event handlers
- * 
+ *
  * Vulnerability: Unsupported XCM call associations can halt indexer ingestion
- * 
- * The issue was that the Attempted handlers would pass every associated call to 
+ *
+ * The issue was that the Attempted handlers would pass every associated call to
  * teleport-only dispatchers. Valid signed calls like execute() can emit Attempted events,
  * but the dispatcher did not recognize execute and would throw UnsupportedCallError.
  * This exception would escape event processing and halt the indexer.
- * 
+ *
  * Fix: Added allowlist validation before calling anyTeleportAssets() to ensure only
  * teleport/transfer calls are processed. Other XCM calls (execute, send, etc.) are
  * now safely ignored by returning undefined.
@@ -76,11 +97,11 @@ function createMockEventItem(callName: string): EventItem {
  */
 void test('XcmPallet.Attempted handler ignores execute calls without throwing', async () => {
     const eventItem = createMockEventItem(calls.xcmPallet.execute.name)
-    
+
     // Before the fix, this would throw UnsupportedCallError
     // After the fix, it should return undefined (safely ignore)
     const result = await xcmPalletAttempted(mockContext, mockBlock, eventItem)
-    
+
     assert.equal(result, undefined, 'execute call should be ignored and return undefined')
 })
 
@@ -90,11 +111,11 @@ void test('XcmPallet.Attempted handler ignores execute calls without throwing', 
  */
 void test('PolkadotXcm.Attempted handler ignores execute calls without throwing', async () => {
     const eventItem = createMockEventItem(calls.polkadotXcm.execute.name)
-    
+
     // Before the fix, this would throw UnsupportedCallError
     // After the fix, it should return undefined (safely ignore)
     const result = await polkadotXcmAttempted(mockContext, mockBlock, eventItem)
-    
+
     assert.equal(result, undefined, 'execute call should be ignored and return undefined')
 })
 
@@ -104,9 +125,9 @@ void test('PolkadotXcm.Attempted handler ignores execute calls without throwing'
  */
 void test('XcmPallet.Attempted handler ignores send calls without throwing', async () => {
     const eventItem = createMockEventItem(calls.xcmPallet.send.name)
-    
+
     const result = await xcmPalletAttempted(mockContext, mockBlock, eventItem)
-    
+
     assert.equal(result, undefined, 'send call should be ignored and return undefined')
 })
 
@@ -115,9 +136,9 @@ void test('XcmPallet.Attempted handler ignores send calls without throwing', asy
  */
 void test('PolkadotXcm.Attempted handler ignores send calls without throwing', async () => {
     const eventItem = createMockEventItem(calls.polkadotXcm.send.name)
-    
+
     const result = await polkadotXcmAttempted(mockContext, mockBlock, eventItem)
-    
+
     assert.equal(result, undefined, 'send call should be ignored and return undefined')
 })
 
@@ -131,13 +152,13 @@ void test('XcmPallet allowlist includes all teleport and transfer variants', () 
         calls.xcmPallet.teleportAssets.name,
         calls.xcmPallet.transferAssets.name,
     ]
-    
+
     // Verify the expected call names are defined
     assert.ok(supportedCalls.includes('XcmPallet.limited_reserve_transfer_assets'))
     assert.ok(supportedCalls.includes('XcmPallet.limited_teleport_assets'))
     assert.ok(supportedCalls.includes('XcmPallet.teleport_assets'))
     assert.ok(supportedCalls.includes('XcmPallet.transfer_assets'))
-    
+
     // Verify execute is NOT in the allowlist
     assert.ok(!supportedCalls.includes(calls.xcmPallet.execute.name))
     assert.ok(!supportedCalls.includes(calls.xcmPallet.send.name))
@@ -153,14 +174,14 @@ void test('PolkadotXcm allowlist includes all teleport and transfer variants', (
         calls.polkadotXcm.teleportAssets.name,
         calls.polkadotXcm.transferAssets.name,
     ]
-    
+
     // Verify the expected call names are defined
     assert.ok(supportedCalls.includes('PolkadotXcm.limited_reserve_transfer_assets'))
     assert.ok(supportedCalls.includes('PolkadotXcm.limited_teleport_assets'))
     assert.ok(supportedCalls.includes('PolkadotXcm.teleport_assets'))
-    
+
     // Note: PolkadotXcm may not have transferAssets in all versions, but if it does, it should be included
-    
+
     // Verify execute is NOT in the allowlist
     assert.ok(!supportedCalls.includes(calls.polkadotXcm.execute.name))
     assert.ok(!supportedCalls.includes(calls.polkadotXcm.send.name))
@@ -173,9 +194,9 @@ void test('PolkadotXcm allowlist includes all teleport and transfer variants', (
 void test('XcmPallet.Attempted handler returns undefined when call is undefined', async () => {
     const eventItem = createMockEventItem('XcmPallet.limited_teleport_assets')
     eventItem.call = undefined
-    
+
     const result = await xcmPalletAttempted(mockContext, mockBlock, eventItem)
-    
+
     assert.equal(result, undefined, 'should return undefined when call is undefined')
 })
 
@@ -186,9 +207,9 @@ void test('XcmPallet.Attempted handler returns undefined when call is undefined'
 void test('PolkadotXcm.Attempted handler returns undefined when extrinsic is missing', async () => {
     const eventItem = createMockEventItem('PolkadotXcm.limited_teleport_assets')
     eventItem.extrinsic = undefined
-    
+
     const result = await polkadotXcmAttempted(mockContext, mockBlock, eventItem)
-    
+
     assert.equal(result, undefined, 'should return undefined when extrinsic is missing')
 })
 
@@ -198,22 +219,15 @@ void test('PolkadotXcm.Attempted handler returns undefined when extrinsic is mis
  */
 void test('XcmPallet allowlist validation prevents dispatcher invocation for unsupported calls', async () => {
     // Create event items for various unsupported calls
-    const unsupportedCalls = [
-        calls.xcmPallet.execute.name,
-        calls.xcmPallet.send.name,
-    ]
-    
+    const unsupportedCalls = [calls.xcmPallet.execute.name, calls.xcmPallet.send.name]
+
     for (const callName of unsupportedCalls) {
         const eventItem = createMockEventItem(callName)
-        
+
         // This should not throw because the allowlist check happens first
         const result = await xcmPalletAttempted(mockContext, mockBlock, eventItem)
-        
-        assert.equal(
-            result,
-            undefined,
-            `${callName} should be rejected by allowlist before reaching dispatcher`
-        )
+
+        assert.equal(result, undefined, `${callName} should be rejected by allowlist before reaching dispatcher`)
     }
 })
 
@@ -222,22 +236,15 @@ void test('XcmPallet allowlist validation prevents dispatcher invocation for uns
  */
 void test('PolkadotXcm allowlist validation prevents dispatcher invocation for unsupported calls', async () => {
     // Create event items for various unsupported calls
-    const unsupportedCalls = [
-        calls.polkadotXcm.execute.name,
-        calls.polkadotXcm.send.name,
-    ]
-    
+    const unsupportedCalls = [calls.polkadotXcm.execute.name, calls.polkadotXcm.send.name]
+
     for (const callName of unsupportedCalls) {
         const eventItem = createMockEventItem(callName)
-        
+
         // This should not throw because the allowlist check happens first
         const result = await polkadotXcmAttempted(mockContext, mockBlock, eventItem)
-        
-        assert.equal(
-            result,
-            undefined,
-            `${callName} should be rejected by allowlist before reaching dispatcher`
-        )
+
+        assert.equal(result, undefined, `${callName} should be rejected by allowlist before reaching dispatcher`)
     }
 })
 
@@ -247,9 +254,9 @@ void test('PolkadotXcm allowlist validation prevents dispatcher invocation for u
  */
 void test('XcmPallet.Attempted handler safely ignores unknown XCM calls', async () => {
     const eventItem = createMockEventItem('XcmPallet.hypothetical_unknown_call')
-    
+
     const result = await xcmPalletAttempted(mockContext, mockBlock, eventItem)
-    
+
     assert.equal(result, undefined, 'unknown calls should be safely ignored')
 })
 
@@ -258,8 +265,8 @@ void test('XcmPallet.Attempted handler safely ignores unknown XCM calls', async 
  */
 void test('PolkadotXcm.Attempted handler safely ignores unknown XCM calls', async () => {
     const eventItem = createMockEventItem('PolkadotXcm.hypothetical_unknown_call')
-    
+
     const result = await polkadotXcmAttempted(mockContext, mockBlock, eventItem)
-    
+
     assert.equal(result, undefined, 'unknown calls should be safely ignored')
 })
