@@ -1,272 +1,172 @@
 import assert from 'node:assert/strict'
 import { createRequire, Module } from 'node:module'
 import test, { after } from 'node:test'
-import { calls } from '~/type'
-import type { EventItem, Block, CommonContext } from '~/contexts'
+import { getRuntimeCached } from '~/decoder/metadata'
+import type { Network } from '~/decoder/types'
+import type { Block, CommonContext, EventItem } from '~/contexts'
+import { Account, TeleportBalanceWithdrawn } from '~/model'
+import config from '~/util/config'
 
-// Loading the pallet registry must not start real queue connections in these handler tests.
+// Exercise the real handler and runtime decoders without opening queue connections.
 const testRequire = createRequire(__filename)
 const queueModulePath = testRequire.resolve('~/queue')
 const originalQueueModule = testRequire.cache[queueModulePath]
-assert.equal(originalQueueModule, undefined, 'queue module loaded before the test stub was installed')
+assert.equal(originalQueueModule, undefined)
 const queueModule = new Module(queueModulePath)
 queueModule.loaded = true
 queueModule.exports = { QueueUtils: {} }
 testRequire.cache[queueModulePath] = queueModule
-
-const { attempted: xcmPalletAttempted } = testRequire(
-    '~/pallet/xcm-pallet/processors/attempted'
-) as typeof import('~/pallet/xcm-pallet/processors/attempted')
-const { attempted: polkadotXcmAttempted } = testRequire(
+const { attempted: matrixAttempted } = testRequire(
     '~/pallet/polkadot-xcm/processors/attempted'
 ) as typeof import('~/pallet/polkadot-xcm/processors/attempted')
-assert.equal(testRequire.cache[testRequire.resolve('bullmq')], undefined, 'handler tests loaded real BullMQ queues')
-
+const { attempted: relayAttempted } = testRequire(
+    '~/pallet/xcm-pallet/processors/attempted'
+) as typeof import('~/pallet/xcm-pallet/processors/attempted')
+assert.equal(testRequire.cache[testRequire.resolve('bullmq')], undefined)
 after(() => {
     testRequire.cache[queueModulePath] = originalQueueModule
 })
 
-/**
- * Security test suite for XCM Attempted event handlers
- *
- * Vulnerability: Unsupported XCM call associations can halt indexer ingestion
- *
- * The issue was that the Attempted handlers would pass every associated call to
- * teleport-only dispatchers. Valid signed calls like execute() can emit Attempted events,
- * but the dispatcher did not recognize execute and would throw UnsupportedCallError.
- * This exception would escape event processing and halt the indexer.
- *
- * Fix: Added allowlist validation before calling anyTeleportAssets() to ensure only
- * teleport/transfer calls are processed. Other XCM calls (execute, send, etc.) are
- * now safely ignored by returning undefined.
- */
+const originalChainName = config.chainName
+after(() => {
+    config.chainName = originalChainName
+})
 
-// Mock context and block for testing
-const mockContext = {} as CommonContext
-const mockBlock = {
-    height: 12345,
-    specName: 'test-chain',
-    specVersion: 1000,
-} as Block
+const sender = `0x${'11'.repeat(32)}`
+const beneficiary = `0x${'22'.repeat(32)}`
+const amount = '123456789012345678901234567890'
 
-// Mock extrinsic
-const mockExtrinsic = {
-    id: '0001234567-000000-abcdef',
-    indexInBlock: 0,
-    version: 4,
-    signature: null,
-    success: true,
-    error: null,
-    call: null,
-    fee: null,
-    tip: null,
-    hash: '0xabcdef',
-}
-
-/**
- * Helper to create a mock EventItem with a specific call
- */
-function createMockEventItem(callName: string): EventItem {
-    return {
-        id: '0001234567-000001-test',
-        name: 'XcmPallet.Attempted',
-        block: mockBlock,
-        indexInBlock: 1,
-        phase: 'ApplyExtrinsic',
-        extrinsic: mockExtrinsic,
-        call: {
-            name: callName,
-            args: {},
-            origin: null,
-            error: null,
-            success: true,
-            block: mockBlock,
-            extrinsic: mockExtrinsic,
-            address: '0x1234',
-            id: '0001234567-000000-call',
-            indexInBlock: 0,
-            parentId: null,
+async function fixture(network: Network, spec: number) {
+    config.chainName = network
+    const runtime = await getRuntimeCached(network, spec)
+    const matrix = network.endsWith('matrixchain')
+    const pallet = matrix ? 'PolkadotXcm' : 'XcmPallet'
+    const handler = matrix ? matrixAttempted : relayAttempted
+    const block = { _runtime: runtime, height: 42, specName: network, specVersion: spec } as Block
+    const ctx = {
+        store: { findOneBy: (_entity: unknown, where: { id: string }) => Promise.resolve(new Account(where)) },
+    } as unknown as CommonContext
+    const event = (name: string, args: unknown = {}): EventItem =>
+        ({
+            id: '42-1',
+            name: `${pallet}.Attempted`,
+            block,
+            extrinsic: { id: '42-0', signature: { address: { __kind: 'Id', value: sender } } },
+            call: { name, args, block },
+        }) as unknown as EventItem
+    const version = spec === 1041 || spec === 1080 ? 'V4' : 'V3'
+    const destination = matrix
+        ? { __kind: 'Here' }
+        : {
+              __kind: 'X1',
+              value: version === 'V3' ? { __kind: 'Parachain', value: 1000 } : [{ __kind: 'Parachain', value: 1000 }],
+          }
+    const location = { parents: matrix ? 1 : 0, interior: { __kind: 'Here' } }
+    const args = {
+        dest: { __kind: version, value: { parents: matrix ? 1 : 0, interior: destination } },
+        beneficiary: {
+            __kind: version,
+            value: {
+                parents: 0,
+                interior: {
+                    __kind: 'X1',
+                    value:
+                        version === 'V3'
+                            ? { __kind: 'AccountId32', id: beneficiary }
+                            : [{ __kind: 'AccountId32', id: beneficiary }],
+                },
+            },
         },
-        args: {},
-    } as unknown as EventItem
+        assets: {
+            __kind: version,
+            value: [
+                {
+                    id: version === 'V3' ? { __kind: 'Concrete', value: location } : location,
+                    fun: { __kind: 'Fungible', value: amount },
+                },
+            ],
+        },
+        feeAssetItem: 0,
+        weightLimit: { __kind: 'Unlimited' },
+    }
+    const wrapped = (method: string, wrapper = 'dispatch', innerPallet = pallet) =>
+        event(`FuelTanks.${wrapper}`, {
+            tankId: { __kind: 'Id', value: `0x${'33'.repeat(32)}` },
+            ruleSetId: 0,
+            settings: undefined,
+            call: {
+                __kind: innerPallet,
+                value:
+                    innerPallet === 'System'
+                        ? { __kind: method, remark: '0x1234' }
+                        : method === 'send'
+                          ? { __kind: method, dest: args.dest, message: { __kind: version, value: [] } }
+                          : { __kind: method, ...args },
+            },
+        })
+    return { handler, ctx, block, event, args, wrapped, pallet }
 }
 
-/**
- * Test 1: XcmPallet.execute call should be safely ignored (not throw)
- * This is the primary exploit scenario from the pentest
- */
-void test('XcmPallet.Attempted handler ignores execute calls without throwing', async () => {
-    const eventItem = createMockEventItem(calls.xcmPallet.execute.name)
+for (const [network, spec] of [
+    ['canary-matrixchain', 1040],
+    ['canary-matrixchain', 1041],
+    ['canary-relaychain', 1070],
+    ['canary-relaychain', 1080],
+] as const) {
+    void test(`${network} ${spec}: supported teleports retain account and amount`, async () => {
+        const f = await fixture(network, spec)
+        for (const item of [
+            f.event(`${f.pallet}.limited_teleport_assets`, f.args),
+            f.wrapped('limited_teleport_assets'),
+        ]) {
+            const result = await f.handler(f.ctx, f.block, item)
+            assert.ok(result && !Array.isArray(result))
+            assert.equal(result.name, TeleportBalanceWithdrawn.name)
+            const data = result.data as TeleportBalanceWithdrawn
+            assert.equal(data.account, sender)
+            assert.equal(data.beneficiary, beneficiary)
+            assert.equal(data.amount, BigInt(amount))
+            assert.equal(
+                data.destination,
+                network.endsWith('matrixchain')
+                    ? network.replace('matrixchain', 'relaychain')
+                    : network.replace('relaychain', 'matrixchain')
+            )
+        }
+    })
 
-    // Before the fix, this would throw UnsupportedCallError
-    // After the fix, it should return undefined (safely ignore)
-    const result = await xcmPalletAttempted(mockContext, mockBlock, eventItem)
+    void test(`${network} ${spec}: unrelated calls and missing associations are skipped`, async () => {
+        const f = await fixture(network, spec)
+        for (const method of ['execute', 'send', 'hypothetical_unknown_call']) {
+            assert.equal(await f.handler(f.ctx, f.block, f.event(`${f.pallet}.${method}`)), undefined)
+        }
+        // These nested calls exist in recorded metadata; only the outer wrapper needs decoding.
+        assert.equal(await f.handler(f.ctx, f.block, f.wrapped('send')), undefined)
+        assert.equal(await f.handler(f.ctx, f.block, f.wrapped('remark', 'dispatch', 'System')), undefined)
+        for (const property of ['call', 'extrinsic'] as const) {
+            const item = f.event(`${f.pallet}.limited_teleport_assets`, f.args)
+            item[property] = undefined
+            assert.equal(await f.handler(f.ctx, f.block, item), undefined)
+        }
+        await assert.rejects(f.handler(f.ctx, f.block, f.event(`${f.pallet}.limited_teleport_assets`)))
+    })
+}
 
-    assert.equal(result, undefined, 'execute call should be ignored and return undefined')
-})
-
-/**
- * Test 2: PolkadotXcm.execute call should be safely ignored (not throw)
- * This is the mirrored exploit scenario for the other pallet
- */
-void test('PolkadotXcm.Attempted handler ignores execute calls without throwing', async () => {
-    const eventItem = createMockEventItem(calls.polkadotXcm.execute.name)
-
-    // Before the fix, this would throw UnsupportedCallError
-    // After the fix, it should return undefined (safely ignore)
-    const result = await polkadotXcmAttempted(mockContext, mockBlock, eventItem)
-
-    assert.equal(result, undefined, 'execute call should be ignored and return undefined')
-})
-
-/**
- * Test 3: XcmPallet.send call should be safely ignored
- * Another valid XCM call that can emit Attempted but isn't a transfer
- */
-void test('XcmPallet.Attempted handler ignores send calls without throwing', async () => {
-    const eventItem = createMockEventItem(calls.xcmPallet.send.name)
-
-    const result = await xcmPalletAttempted(mockContext, mockBlock, eventItem)
-
-    assert.equal(result, undefined, 'send call should be ignored and return undefined')
-})
-
-/**
- * Test 4: PolkadotXcm.send call should be safely ignored
- */
-void test('PolkadotXcm.Attempted handler ignores send calls without throwing', async () => {
-    const eventItem = createMockEventItem(calls.polkadotXcm.send.name)
-
-    const result = await polkadotXcmAttempted(mockContext, mockBlock, eventItem)
-
-    assert.equal(result, undefined, 'send call should be ignored and return undefined')
-})
-
-/**
- * Test 5: Verify allowlist includes all expected teleport/transfer calls for XcmPallet
- */
-void test('XcmPallet allowlist includes all teleport and transfer variants', () => {
-    const supportedCalls = [
-        calls.xcmPallet.limitedReserveTransferAssets.name,
-        calls.xcmPallet.limitedTeleportAssets.name,
-        calls.xcmPallet.teleportAssets.name,
-        calls.xcmPallet.transferAssets.name,
-    ]
-
-    // Verify the expected call names are defined
-    assert.ok(supportedCalls.includes('XcmPallet.limited_reserve_transfer_assets'))
-    assert.ok(supportedCalls.includes('XcmPallet.limited_teleport_assets'))
-    assert.ok(supportedCalls.includes('XcmPallet.teleport_assets'))
-    assert.ok(supportedCalls.includes('XcmPallet.transfer_assets'))
-
-    // Verify execute is NOT in the allowlist
-    assert.ok(!supportedCalls.includes(calls.xcmPallet.execute.name))
-    assert.ok(!supportedCalls.includes(calls.xcmPallet.send.name))
-})
-
-/**
- * Test 6: Verify allowlist includes all expected teleport/transfer calls for PolkadotXcm
- */
-void test('PolkadotXcm allowlist includes all teleport and transfer variants', () => {
-    const supportedCalls = [
-        calls.polkadotXcm.limitedReserveTransferAssets.name,
-        calls.polkadotXcm.limitedTeleportAssets.name,
-        calls.polkadotXcm.teleportAssets.name,
-        calls.polkadotXcm.transferAssets.name,
-    ]
-
-    // Verify the expected call names are defined
-    assert.ok(supportedCalls.includes('PolkadotXcm.limited_reserve_transfer_assets'))
-    assert.ok(supportedCalls.includes('PolkadotXcm.limited_teleport_assets'))
-    assert.ok(supportedCalls.includes('PolkadotXcm.teleport_assets'))
-
-    // Note: PolkadotXcm may not have transferAssets in all versions, but if it does, it should be included
-
-    // Verify execute is NOT in the allowlist
-    assert.ok(!supportedCalls.includes(calls.polkadotXcm.execute.name))
-    assert.ok(!supportedCalls.includes(calls.polkadotXcm.send.name))
-})
-
-/**
- * Test 7: Handler returns undefined when call is undefined
- * This is an existing guard that should still work
- */
-void test('XcmPallet.Attempted handler returns undefined when call is undefined', async () => {
-    const eventItem = createMockEventItem('XcmPallet.limited_teleport_assets')
-    eventItem.call = undefined
-
-    const result = await xcmPalletAttempted(mockContext, mockBlock, eventItem)
-
-    assert.equal(result, undefined, 'should return undefined when call is undefined')
-})
-
-/**
- * Test 8: Handler returns undefined when extrinsic is missing
- * This is an existing guard that should still work
- */
-void test('PolkadotXcm.Attempted handler returns undefined when extrinsic is missing', async () => {
-    const eventItem = createMockEventItem('PolkadotXcm.limited_teleport_assets')
-    eventItem.extrinsic = undefined
-
-    const result = await polkadotXcmAttempted(mockContext, mockBlock, eventItem)
-
-    assert.equal(result, undefined, 'should return undefined when extrinsic is missing')
-})
-
-/**
- * Test 9: Verify the security property - unsupported calls are rejected before dispatcher
- * This test ensures the allowlist check happens BEFORE anyTeleportAssets is called
- */
-void test('XcmPallet allowlist validation prevents dispatcher invocation for unsupported calls', async () => {
-    // Create event items for various unsupported calls
-    const unsupportedCalls = [calls.xcmPallet.execute.name, calls.xcmPallet.send.name]
-
-    for (const callName of unsupportedCalls) {
-        const eventItem = createMockEventItem(callName)
-
-        // This should not throw because the allowlist check happens first
-        const result = await xcmPalletAttempted(mockContext, mockBlock, eventItem)
-
-        assert.equal(result, undefined, `${callName} should be rejected by allowlist before reaching dispatcher`)
+void test('Matrixchain transfer_assets is skipped; Relaychain transfer_assets remains supported', async () => {
+    const matrix = await fixture('canary-matrixchain', 1041)
+    assert.equal(await matrix.handler(matrix.ctx, matrix.block, matrix.event('PolkadotXcm.transfer_assets')), undefined)
+    assert.equal(await matrix.handler(matrix.ctx, matrix.block, matrix.wrapped('transfer_assets')), undefined)
+    const relay = await fixture('canary-relaychain', 1080)
+    for (const item of [relay.event('XcmPallet.transfer_assets', relay.args), relay.wrapped('transfer_assets')]) {
+        const result = await relay.handler(relay.ctx, relay.block, item)
+        assert.ok(result && !Array.isArray(result))
+        assert.equal((result.data as TeleportBalanceWithdrawn).amount, BigInt(amount))
     }
 })
 
-/**
- * Test 10: Verify the security property for PolkadotXcm pallet
- */
-void test('PolkadotXcm allowlist validation prevents dispatcher invocation for unsupported calls', async () => {
-    // Create event items for various unsupported calls
-    const unsupportedCalls = [calls.polkadotXcm.execute.name, calls.polkadotXcm.send.name]
-
-    for (const callName of unsupportedCalls) {
-        const eventItem = createMockEventItem(callName)
-
-        // This should not throw because the allowlist check happens first
-        const result = await polkadotXcmAttempted(mockContext, mockBlock, eventItem)
-
-        assert.equal(result, undefined, `${callName} should be rejected by allowlist before reaching dispatcher`)
-    }
-})
-
-/**
- * Test 11: Verify that a hypothetical unknown XCM call is also safely ignored
- * This tests the defense-in-depth property of the fix
- */
-void test('XcmPallet.Attempted handler safely ignores unknown XCM calls', async () => {
-    const eventItem = createMockEventItem('XcmPallet.hypothetical_unknown_call')
-
-    const result = await xcmPalletAttempted(mockContext, mockBlock, eventItem)
-
-    assert.equal(result, undefined, 'unknown calls should be safely ignored')
-})
-
-/**
- * Test 12: Verify that a hypothetical unknown XCM call is also safely ignored for PolkadotXcm
- */
-void test('PolkadotXcm.Attempted handler safely ignores unknown XCM calls', async () => {
-    const eventItem = createMockEventItem('PolkadotXcm.hypothetical_unknown_call')
-
-    const result = await polkadotXcmAttempted(mockContext, mockBlock, eventItem)
-
-    assert.equal(result, undefined, 'unknown calls should be safely ignored')
+void test('historical dispatch_and_touch teleports still produce their withdrawal event', async () => {
+    const f = await fixture('canary-relaychain', 1070)
+    const result = await f.handler(f.ctx, f.block, f.wrapped('limited_teleport_assets', 'dispatch_and_touch'))
+    assert.ok(result && !Array.isArray(result))
+    assert.equal((result.data as TeleportBalanceWithdrawn).amount, BigInt(amount))
 })
