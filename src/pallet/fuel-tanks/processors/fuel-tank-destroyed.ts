@@ -5,6 +5,7 @@ import {
     FuelTankAccountRules,
     FuelTankDestroyed,
     FuelTankRuleSet,
+    FuelTankUserAccounts,
     PermittedExtrinsics,
 } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
@@ -19,21 +20,20 @@ export async function fuelTankDestroyed(
 
     const { tankId } = eventData
 
-    const [permittedExtrinsics, ruleSet, accountRuleSet, tank] = await Promise.all([
+    const [permittedExtrinsics, ruleSet, accountRuleSet, userAccounts, tank] = await Promise.all([
         ctx.store.find(PermittedExtrinsics, {
             relations: { ruleSet: true },
             where: { ruleSet: { tank: { id: tankId } } },
         }),
         ctx.store.find(FuelTankRuleSet, { where: { tank: { id: tankId } } }),
         ctx.store.find(FuelTankAccountRules, { where: { tank: { id: tankId } } }),
+        ctx.store.find(FuelTankUserAccounts, { where: { tank: { id: tankId } } }),
         ctx.store.findOneByOrFail(FuelTank, { id: tankId }),
     ])
 
-    await Promise.all([
-        ctx.store.remove(permittedExtrinsics),
-        ctx.store.remove(ruleSet),
-        ctx.store.remove(accountRuleSet),
-    ])
+    // Permitted extrinsics reference rule sets without an on-delete cascade.
+    await ctx.store.remove(permittedExtrinsics)
+    await Promise.all([ctx.store.remove(ruleSet), ctx.store.remove(accountRuleSet), ctx.store.remove(userAccounts)])
 
     await ctx.store.remove(tank)
 
