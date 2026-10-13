@@ -10,7 +10,7 @@ export async function attempted(ctx: CommonContext, block: Block, item: EventIte
     if (item.call === undefined || !item.extrinsic) return undefined
 
     const call = mappings.polkadotXcm.utils.anyTeleportAssets(item.call)
-    if (!('dest' in call) || !('beneficiary' in call) || !('assets' in call)) {
+    if (!call || !('dest' in call) || !('beneficiary' in call) || !('assets' in call)) {
         return undefined
     }
 
