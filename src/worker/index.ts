@@ -79,13 +79,14 @@ const bullBoardAuth = (req: Request, res: Response, next: NextFunction) => {
     const [providedUsername, providedPassword] = credentials.split(':', 2)
 
     // Use constant-time comparison to prevent timing attacks
-    const usernameMatch = username.length === providedUsername.length && 
-        Buffer.from(username).equals(Buffer.from(providedUsername))
-    const passwordMatch = password.length === providedPassword.length && 
-        Buffer.from(password).equals(Buffer.from(providedPassword))
+    const usernameMatch =
+        username.length === providedUsername.length && Buffer.from(username).equals(Buffer.from(providedUsername))
+    const passwordMatch =
+        password.length === providedPassword.length && Buffer.from(password).equals(Buffer.from(providedPassword))
 
     if (usernameMatch && passwordMatch) {
-        next(); return;
+        next()
+        return
     }
 
     res.setHeader('WWW-Authenticate', 'Basic realm="Bull Board"')

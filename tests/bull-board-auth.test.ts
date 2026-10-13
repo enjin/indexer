@@ -69,14 +69,13 @@ void test('Bull Board authentication - denies access when credentials are not co
         const [providedUsername, providedPassword] = credentials.split(':', 2)
 
         const usernameMatch =
-            username.length === providedUsername.length &&
-            Buffer.from(username).equals(Buffer.from(providedUsername))
+            username.length === providedUsername.length && Buffer.from(username).equals(Buffer.from(providedUsername))
         const passwordMatch =
-            password.length === providedPassword.length &&
-            Buffer.from(password).equals(Buffer.from(providedPassword))
+            password.length === providedPassword.length && Buffer.from(password).equals(Buffer.from(providedPassword))
 
         if (usernameMatch && passwordMatch) {
-            next(); return;
+            next()
+            return
         }
 
         res.setHeader('WWW-Authenticate', 'Basic realm="Bull Board"')
@@ -152,14 +151,13 @@ void test('Bull Board authentication - denies access without Authorization heade
         const [providedUsername, providedPassword] = credentials.split(':', 2)
 
         const usernameMatch =
-            username.length === providedUsername.length &&
-            Buffer.from(username).equals(Buffer.from(providedUsername))
+            username.length === providedUsername.length && Buffer.from(username).equals(Buffer.from(providedUsername))
         const passwordMatch =
-            password.length === providedPassword.length &&
-            Buffer.from(password).equals(Buffer.from(providedPassword))
+            password.length === providedPassword.length && Buffer.from(password).equals(Buffer.from(providedPassword))
 
         if (usernameMatch && passwordMatch) {
-            next(); return;
+            next()
+            return
         }
 
         res.setHeader('WWW-Authenticate', 'Basic realm="Bull Board"')
@@ -232,14 +230,13 @@ void test('Bull Board authentication - denies access with invalid credentials', 
         const [providedUsername, providedPassword] = credentials.split(':', 2)
 
         const usernameMatch =
-            username.length === providedUsername.length &&
-            Buffer.from(username).equals(Buffer.from(providedUsername))
+            username.length === providedUsername.length && Buffer.from(username).equals(Buffer.from(providedUsername))
         const passwordMatch =
-            password.length === providedPassword.length &&
-            Buffer.from(password).equals(Buffer.from(providedPassword))
+            password.length === providedPassword.length && Buffer.from(password).equals(Buffer.from(providedPassword))
 
         if (usernameMatch && passwordMatch) {
-            next(); return;
+            next()
+            return
         }
 
         res.setHeader('WWW-Authenticate', 'Basic realm="Bull Board"')
@@ -312,14 +309,13 @@ void test('Bull Board authentication - grants access with valid credentials', ()
         const [providedUsername, providedPassword] = credentials.split(':', 2)
 
         const usernameMatch =
-            username.length === providedUsername.length &&
-            Buffer.from(username).equals(Buffer.from(providedUsername))
+            username.length === providedUsername.length && Buffer.from(username).equals(Buffer.from(providedUsername))
         const passwordMatch =
-            password.length === providedPassword.length &&
-            Buffer.from(password).equals(Buffer.from(providedPassword))
+            password.length === providedPassword.length && Buffer.from(password).equals(Buffer.from(providedPassword))
 
         if (usernameMatch && passwordMatch) {
-            next(); return;
+            next()
+            return
         }
 
         res.setHeader('WWW-Authenticate', 'Basic realm="Bull Board"')
@@ -384,14 +380,13 @@ void test('Bull Board authentication - rejects credentials with wrong username',
         const [providedUsername, providedPassword] = credentials.split(':', 2)
 
         const usernameMatch =
-            username.length === providedUsername.length &&
-            Buffer.from(username).equals(Buffer.from(providedUsername))
+            username.length === providedUsername.length && Buffer.from(username).equals(Buffer.from(providedUsername))
         const passwordMatch =
-            password.length === providedPassword.length &&
-            Buffer.from(password).equals(Buffer.from(providedPassword))
+            password.length === providedPassword.length && Buffer.from(password).equals(Buffer.from(providedPassword))
 
         if (usernameMatch && passwordMatch) {
-            next(); return;
+            next()
+            return
         }
 
         res.setHeader('WWW-Authenticate', 'Basic realm="Bull Board"')
@@ -455,14 +450,13 @@ void test('Bull Board authentication - rejects credentials with wrong password',
         const [providedUsername, providedPassword] = credentials.split(':', 2)
 
         const usernameMatch =
-            username.length === providedUsername.length &&
-            Buffer.from(username).equals(Buffer.from(providedUsername))
+            username.length === providedUsername.length && Buffer.from(username).equals(Buffer.from(providedUsername))
         const passwordMatch =
-            password.length === providedPassword.length &&
-            Buffer.from(password).equals(Buffer.from(providedPassword))
+            password.length === providedPassword.length && Buffer.from(password).equals(Buffer.from(providedPassword))
 
         if (usernameMatch && passwordMatch) {
-            next(); return;
+            next()
+            return
         }
 
         res.setHeader('WWW-Authenticate', 'Basic realm="Bull Board"')
@@ -528,14 +522,13 @@ void test('Bull Board authentication - uses constant-time comparison to prevent 
 
         // This is the key security feature: constant-time comparison using Buffer.equals
         const usernameMatch =
-            username.length === providedUsername.length &&
-            Buffer.from(username).equals(Buffer.from(providedUsername))
+            username.length === providedUsername.length && Buffer.from(username).equals(Buffer.from(providedUsername))
         const passwordMatch =
-            password.length === providedPassword.length &&
-            Buffer.from(password).equals(Buffer.from(providedPassword))
+            password.length === providedPassword.length && Buffer.from(password).equals(Buffer.from(providedPassword))
 
         if (usernameMatch && passwordMatch) {
-            next(); return;
+            next()
+            return
         }
 
         res.setHeader('WWW-Authenticate', 'Basic realm="Bull Board"')
@@ -603,14 +596,13 @@ void test('Bull Board authentication - rejects non-Basic authentication schemes'
         const [providedUsername, providedPassword] = credentials.split(':', 2)
 
         const usernameMatch =
-            username.length === providedUsername.length &&
-            Buffer.from(username).equals(Buffer.from(providedUsername))
+            username.length === providedUsername.length && Buffer.from(username).equals(Buffer.from(providedUsername))
         const passwordMatch =
-            password.length === providedPassword.length &&
-            Buffer.from(password).equals(Buffer.from(providedPassword))
+            password.length === providedPassword.length && Buffer.from(password).equals(Buffer.from(providedPassword))
 
         if (usernameMatch && passwordMatch) {
-            next(); return;
+            next()
+            return
         }
 
         res.setHeader('WWW-Authenticate', 'Basic realm="Bull Board"')
