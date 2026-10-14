@@ -29,7 +29,7 @@ type StorageReader = {
     get(block: Block, index: number): Promise<unknown>
 }
 
-type ReferendumInfo = {
+export type ReferendumInfo = {
     __kind: string
     value?: {
         track?: number
@@ -174,7 +174,8 @@ export async function refreshReferendum(
     pallet: string,
     referendumIndex: number,
     eventName: string,
-    args: Record<string, unknown>
+    args: Record<string, unknown>,
+    historicalInfo?: ReferendumInfo
 ): Promise<void> {
     const id = `${pallet}:${referendumIndex}`
     const existing = await ctx.store.findOneBy(GovernanceReferendum, { id })
@@ -184,23 +185,40 @@ export async function refreshReferendum(
         new GovernanceReferendum({ id, pallet, referendumIndex, status: 'Ongoing', updatedAtBlock: block.height })
 
     const info = await referendumInfo(block, pallet, referendumIndex)
-    if (info?.__kind === 'Ongoing' && info.value) {
-        referendum.status = info.value.deciding
-            ? info.value.deciding.confirming === undefined
-                ? 'Deciding'
-                : 'Confirming'
-            : 'Ongoing'
-        referendum.track = info.value.track ?? referendum.track
-        referendum.proposal = jsonValue(info.value.proposal) ?? referendum.proposal
-        referendum.submissionDeposit = jsonValue(info.value.submissionDeposit) ?? null
-        referendum.decisionDeposit = jsonValue(info.value.decisionDeposit) ?? null
-        referendum.tallyAyes = info.value.tally?.ayes ?? null
-        referendum.tallyNays = info.value.tally?.nays ?? null
-        referendum.tallySupport = info.value.tally?.support ?? null
-        referendum.submittedAtBlock = info.value.submitted ?? referendum.submittedAtBlock
-        await updatePreimage(block, referendum, info.value.proposal)
-    } else if (info?.__kind) {
+    const ongoing =
+        info?.__kind === 'Ongoing'
+            ? info.value
+            : historicalInfo?.__kind === 'Ongoing'
+              ? historicalInfo.value
+              : undefined
+    if (ongoing) {
+        if (info?.__kind === 'Ongoing') {
+            referendum.status = ongoing.deciding
+                ? ongoing.deciding.confirming === undefined
+                    ? 'Deciding'
+                    : 'Confirming'
+                : 'Ongoing'
+        }
+        referendum.track = ongoing.track ?? referendum.track
+        referendum.proposal = jsonValue(ongoing.proposal) ?? referendum.proposal
+        referendum.submissionDeposit = jsonValue(ongoing.submissionDeposit) ?? null
+        referendum.decisionDeposit = jsonValue(ongoing.decisionDeposit) ?? null
+        referendum.tallyAyes = ongoing.tally?.ayes ?? null
+        referendum.tallyNays = ongoing.tally?.nays ?? null
+        referendum.tallySupport = ongoing.tally?.support ?? null
+        referendum.submittedAtBlock = ongoing.submitted ?? referendum.submittedAtBlock
+        await updatePreimage(block, referendum, ongoing.proposal)
+    }
+    if (info?.__kind && info.__kind !== 'Ongoing') {
         referendum.status = info.__kind
+        const terminalValue: unknown = info.value
+        if (Array.isArray(terminalValue) && terminalValue.length >= 3) {
+            referendum.submissionDeposit = jsonValue(terminalValue[1]) ?? null
+            referendum.decisionDeposit = jsonValue(terminalValue[2]) ?? null
+        } else if (info.__kind === 'Killed') {
+            referendum.submissionDeposit = null
+            referendum.decisionDeposit = null
+        }
     }
 
     const metadata = pallet === 'Referenda' ? storage.referenda.metadataOf : storage.fellowshipReferenda.metadataOf

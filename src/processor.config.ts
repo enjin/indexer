@@ -7,29 +7,22 @@ const getEventNames = (pallet: object): string[] => Object.values(pallet).map((e
 
 const getCallNames = (pallet: object): string[] => Object.values(pallet).map((call) => call.name)
 
-const matrixGovernanceEvents = [
-    ...getEventNames(events.fellowshipReferenda),
-    ...getEventNames(events.fellowshipCollective),
-]
-
 const relayGovernanceEvents = getEventNames(events.treasury)
 
 const commonGovernanceEvents = [
     ...getEventNames(events.referenda),
     ...getEventNames(events.convictionVoting),
+    ...getEventNames(events.fellowshipReferenda),
+    ...getEventNames(events.fellowshipCollective),
     ...getEventNames(events.preimage),
     ...getEventNames(events.whitelist),
 ]
 
 export const governanceEventItems = [
-    ...new Set([...commonGovernanceEvents, ...(isRelay() ? relayGovernanceEvents : matrixGovernanceEvents)]),
+    ...new Set([...commonGovernanceEvents, ...(isRelay() ? relayGovernanceEvents : [])]),
 ]
 
-const matrixEvents: string[] = [
-    ...getEventNames(events.claims),
-    ...getEventNames(events.polkadotXcm),
-    ...matrixGovernanceEvents,
-]
+const matrixEvents: string[] = [...getEventNames(events.claims), ...getEventNames(events.polkadotXcm)]
 
 const relayEvents: string[] = [
     ...getEventNames(events.imOnline),
@@ -115,8 +108,6 @@ const matrixCalls: string[] = [
     ...getCallNames(calls.claims),
     ...getCallNames(calls.matrixUtility),
     ...getCallNames(calls.polkadotXcm),
-    ...getCallNames(calls.fellowshipReferenda),
-    ...getCallNames(calls.fellowshipCollective),
 ]
 
 const relayCalls: string[] = [
@@ -136,6 +127,8 @@ const commonCalls: string[] = [
     ...getCallNames(calls.utility),
     ...getCallNames(calls.referenda),
     ...getCallNames(calls.convictionVoting),
+    ...getCallNames(calls.fellowshipReferenda),
+    ...getCallNames(calls.fellowshipCollective),
     ...getCallNames(calls.preimage),
     ...getCallNames(calls.whitelist),
 ]

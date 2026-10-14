@@ -10,6 +10,7 @@ import { storage } from '~/type'
 import { isRelay } from '~/util/tools'
 import { FindOptionsWhere } from 'typeorm'
 import { jsonValue, refreshReferendum } from './event'
+import { HistoricalGovernanceStorage } from './historical'
 
 type GovernanceContext = Pick<CommonContext, 'store'>
 type PagedStorage = {
@@ -57,7 +58,13 @@ async function saveIfNotNewer<T extends { id: string; updatedAtBlock: number }>(
     if (!existing || existing.updatedAtBlock <= row.updatedAtBlock) await ctx.store.save(row)
 }
 
-async function snapshotReferenda(ctx: GovernanceContext, block: Block, pallet: 'Referenda' | 'FellowshipReferenda') {
+async function snapshotReferenda(
+    ctx: GovernanceContext,
+    block: Block,
+    pallet: 'Referenda' | 'FellowshipReferenda',
+    history: HistoricalGovernanceStorage,
+    terminalHistory: { recovered: number; unavailable: number }
+) {
     const variants =
         pallet === 'Referenda' ? storage.referenda.referendumInfoFor : storage.fellowshipReferenda.referendumInfoFor
     const reader = compatibleStorage(variants, block, `${pallet}.ReferendumInfoFor`)
@@ -65,7 +72,14 @@ async function snapshotReferenda(ctx: GovernanceContext, block: Block, pallet: '
     for await (const page of reader.getPairsPaged(pageSize, block)) {
         for (const [key, info] of page) {
             if (info === undefined) continue
-            await refreshReferendum(ctx, block, pallet, index(key), '', {})
+            const referendumIndex = index(key)
+            const terminal = storedRecord(info).__kind !== 'Ongoing'
+            const ongoing = terminal ? await history.ongoingBeforeTerminal(pallet, referendumIndex, info) : undefined
+            if (terminal) {
+                if (ongoing) terminalHistory.recovered++
+                else terminalHistory.unavailable++
+            }
+            await refreshReferendum(ctx, block, pallet, referendumIndex, '', {}, ongoing)
             count++
         }
     }
@@ -228,11 +242,13 @@ async function snapshotWhitelist(ctx: GovernanceContext, block: Block) {
 
 /** Import current storage at one finalized block. Historical events require a separate replay. */
 export async function snapshotGovernance(ctx: GovernanceContext, block: Block, relay = isRelay()) {
-    const referenda = await snapshotReferenda(ctx, block, 'Referenda')
+    const history = new HistoricalGovernanceStorage(block)
+    const terminalHistory = { recovered: 0, unavailable: 0 }
+    const referenda = await snapshotReferenda(ctx, block, 'Referenda', history, terminalHistory)
     const conviction = await snapshotConvictionVoting(ctx, block)
-    const fellowshipReferenda = relay ? 0 : await snapshotReferenda(ctx, block, 'FellowshipReferenda')
-    const fellowship = relay ? { members: 0, votes: 0 } : await snapshotFellowship(ctx, block)
+    const fellowshipReferenda = await snapshotReferenda(ctx, block, 'FellowshipReferenda', history, terminalHistory)
+    const fellowship = await snapshotFellowship(ctx, block)
     const treasury = relay ? await snapshotTreasury(ctx, block) : 0
     const whitelist = await snapshotWhitelist(ctx, block)
-    return { referenda, conviction, fellowshipReferenda, fellowship, treasury, whitelist }
+    return { referenda, conviction, fellowshipReferenda, fellowship, treasury, whitelist, terminalHistory }
 }

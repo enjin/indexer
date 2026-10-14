@@ -53,7 +53,10 @@ function fixture(relay: boolean) {
                 ],
             ],
         ],
-        ['FellowshipReferenda.ReferendumInfoFor', [[2, { __kind: 'Approved' }]]],
+        [
+            'FellowshipReferenda.ReferendumInfoFor',
+            [[2, { __kind: 'Ongoing', value: { track: 1, proposal: { __kind: 'Inline' }, tally: {} } }]],
+        ],
         ['FellowshipCollective.Members', [[member, { rank: 3 }]]],
         ['FellowshipCollective.Voting', [[[2, member], { __kind: 'Aye', value: 3 }]]],
         ['Treasury.Proposals', [[4, { proposer: voter, value: 50n }]]],
@@ -120,14 +123,12 @@ void test('current governance storage readers match the latest metadata for ever
             storage.referenda.referendumInfoFor,
             storage.convictionVoting.votingFor,
             storage.whitelist.whitelistedCall,
-        ]
-        const matrix = [
             storage.fellowshipReferenda.referendumInfoFor,
             storage.fellowshipCollective.members,
             storage.fellowshipCollective.voting,
         ]
         const relay = [storage.treasury.proposals, storage.treasury.spends]
-        for (const variants of [...common, ...(chainName.includes('relaychain') ? relay : matrix)]) {
+        for (const variants of [...common, ...(chainName.includes('relaychain') ? relay : [])]) {
             assert(
                 Object.values(variants).some((reader) => reader.is(block)),
                 `${chainName} has an unsupported storage reader`
@@ -147,6 +148,7 @@ void test('Matrixchain snapshot imports current RPC governance storage without c
         fellowship: { members: 1, votes: 1 },
         treasury: 0,
         whitelist: 1,
+        terminalHistory: { recovered: 0, unavailable: 0 },
     })
     assert.equal(get(GovernanceReferendum, 'Referenda:7')?.tallyAyes, 10n)
     assert.equal(get(GovernanceReferendum, 'Referenda:7')?.status, 'Confirming')
@@ -169,9 +171,12 @@ void test('snapshot preserves state indexed from a newer block', async () => {
         updatedAtBlock: 200,
     })
     await ctx.store.save(newer)
-    await snapshotGovernance(ctx, block, true)
+    const counts = await snapshotGovernance(ctx, block, true)
 
     assert.equal(get(GovernanceVote, id), newer)
+    assert.equal(counts.fellowshipReferenda, 1)
+    assert.deepEqual(counts.fellowship, { members: 1, votes: 1 })
+    assert.equal(get(GovernanceFellowshipMember, member)?.rank, 3)
     assert.equal(get(GovernanceTreasuryItem, 'Proposal:4')?.status, 'Open')
     assert.equal(get(GovernanceTreasuryItem, 'Spend:5')?.status, 'Pending')
 })
