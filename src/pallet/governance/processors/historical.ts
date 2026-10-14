@@ -98,15 +98,27 @@ export class HistoricalGovernanceStorage {
             if (!NETWORKS.some((network) => network === this.network)) {
                 throw new Error(`Unsupported governance metadata network: ${this.network}`)
             }
-            const metadataRuntime = await getRuntimeCached(this.network, number)
+            let metadata: ConstructorParameters<typeof Runtime>[1]
+            try {
+                metadata = (await getRuntimeCached(this.network, number)).metadata
+            } catch (error) {
+                if (!(error instanceof Error) || !error.message.startsWith('No metadata found for network ')) {
+                    throw error
+                }
+                const archivedMetadata = await rpc.call('state_getMetadata', [hash])
+                if (typeof archivedMetadata !== 'string' || !/^0x6d657461[0-9a-f]+$/i.test(archivedMetadata)) {
+                    throw new Error(`Historical governance metadata is unavailable at block ${height}`)
+                }
+                metadata = archivedMetadata
+            }
             runtime = new Runtime(
                 {
-                    specName: metadataRuntime.specName,
+                    specName: this.network,
                     specVersion: number,
-                    implName: metadataRuntime.implName,
-                    implVersion: metadataRuntime.implVersion,
+                    implName: this.network,
+                    implVersion: number,
                 },
-                metadataRuntime.metadata,
+                metadata,
                 undefined,
                 rpc
             )

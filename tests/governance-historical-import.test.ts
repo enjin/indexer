@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
 import test from 'node:test'
 import { Block, CommonContext } from '~/contexts'
 import { GovernanceReferendum } from '~/model'
@@ -94,4 +95,44 @@ void test('terminal import reports an RPC without archived state', async () => {
     } as unknown as Block
     const history = new HistoricalGovernanceStorage(block, 'enjin-relaychain')
     await assert.rejects(history.ongoingBeforeTerminal('Referenda', 13, terminal), /archival CHAIN_ENDPOINT/)
+})
+
+void test('historical import loads metadata from archival RPC when a runtime version is absent locally', async () => {
+    const metadata = readFileSync('typegen/enjin-relaychain.jsonl', 'utf8')
+        .split('\n')
+        .filter(Boolean)
+        .map((line) => JSON.parse(line) as { specVersion: number; metadata: string })
+        .find(({ specVersion }) => specVersion === 1070)?.metadata
+    assert(metadata)
+    const calls: string[] = []
+    const rpc = {
+        call: (method: string, params: unknown[]) => {
+            calls.push(method)
+            if (method === 'chain_getBlockHash') return Promise.resolve(historicalHash)
+            if (method === 'state_getRuntimeVersion') return Promise.resolve({ specVersion: 1063 })
+            if (method === 'state_getMetadata') {
+                assert.deepEqual(params, [historicalHash])
+                return Promise.resolve(metadata)
+            }
+            if (method === 'state_getStorageAt') return Promise.resolve(historicalValue)
+            throw new Error(`Unexpected RPC method: ${method}`)
+        },
+    }
+    const block = {
+        height: 17681210,
+        _runtime: { rpc },
+    } as unknown as Block
+    const ongoing = await new HistoricalGovernanceStorage(block, 'enjin-relaychain').ongoingBeforeTerminal(
+        'Referenda',
+        13,
+        terminal
+    )
+
+    assert.equal(ongoing?.value?.track, 200)
+    assert.deepEqual(calls, [
+        'chain_getBlockHash',
+        'state_getRuntimeVersion',
+        'state_getMetadata',
+        'state_getStorageAt',
+    ])
 })
