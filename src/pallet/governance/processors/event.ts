@@ -278,7 +278,7 @@ async function updateVote(
         })
     vote.active = eventName === 'Voted'
     vote.vote = eventName === 'Voted' ? (jsonValue(args.vote) ?? null) : null
-    vote.referendumRecord = new GovernanceReferendum({ id: referendumId })
+    vote.referendum = new GovernanceReferendum({ id: referendumId })
     vote.updatedAtBlock = block.height
     await ctx.store.save(vote)
 }

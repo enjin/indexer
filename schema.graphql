@@ -85,7 +85,7 @@ type Event @entity {
 # IDs include the pallet because Referenda and FellowshipReferenda have separate counters.
 type GovernanceReferendum @entity {
   id: ID!
-  voters: [GovernanceVote!] @derivedFrom(field: "referendumRecord")
+  voters: [GovernanceVote!] @derivedFrom(field: "referendum")
   pallet: String! @index
   referendumIndex: Int! @index
   track: Int
@@ -128,8 +128,8 @@ type GovernanceEventData {
 
 type GovernanceVote @entity {
   id: ID!
-  referendumId: String! @index
-  referendumRecord: GovernanceReferendum @index
+  referendumId: String!
+  referendum: GovernanceReferendum
   accountId: String! @index
   currency: String
   vote: JSON

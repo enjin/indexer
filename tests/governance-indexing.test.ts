@@ -159,7 +159,7 @@ void test('Relaychain vote events without a poll index use the linked call and r
     assert(vote)
     assert.equal(vote.active, true)
     assert.equal(vote.currency, 'SEnj:42')
-    assert.equal(vote.referendumRecord?.id, 'Referenda:7')
+    assert.equal(vote.referendum?.id, 'Referenda:7')
     assert.equal((get(GovernanceReferendum, 'Referenda:7') as GovernanceReferendum | undefined)?.tallyAyes, 20n)
 })
 

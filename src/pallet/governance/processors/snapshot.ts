@@ -119,7 +119,7 @@ async function snapshotConvictionVoting(ctx: GovernanceContext, block: Block) {
                     const row = new GovernanceVote({
                         id: `${referendumId}:${voter}:${voteCurrency}`,
                         referendumId,
-                        referendumRecord: await linkedReferendum(ctx, referendumId, referenda),
+                        referendum: (await linkedReferendum(ctx, referendumId, referenda)) ?? undefined,
                         accountId: voter,
                         currency: voteCurrency,
                         vote: jsonValue(entry[1]),
@@ -187,7 +187,7 @@ async function snapshotFellowship(ctx: GovernanceContext, block: Block) {
                 new GovernanceVote({
                     id: `${referendumId}:${voter}:Fellowship`,
                     referendumId,
-                    referendumRecord: await linkedReferendum(ctx, referendumId, referenda),
+                    referendum: (await linkedReferendum(ctx, referendumId, referenda)) ?? undefined,
                     accountId: voter,
                     currency: null,
                     vote: jsonValue(vote),

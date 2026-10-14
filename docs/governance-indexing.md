@@ -4,14 +4,20 @@ The Indexer subscribes to Referenda, ConvictionVoting, FellowshipReferenda, Fell
 
 Current referendum state and tally are read from `ReferendumInfoFor` at the processed block hash. Preimage lookups are stored up to 64 KiB. `proposalPreimageStatus` distinguishes `Inline`, `Resolved`, `AvailableTooLarge`, `Missing` (confirmed absent), and `Unresolved` (a reader is unavailable). Existing vote events without a poll index use the linked call's `pollIndex`; Relaychain's later `currency` field is part of each vote's identity.
 
-`GovernanceReferendum.voters` links to `GovernanceVote` rows, which expose each voter's `accountId`, currency, vote, and `active` state. A voter can have more than one row when currencies differ. The relation includes inactive vote rows retained after a removal; use the root `governanceVotes` query with `referendumId` and `active` filters when paging through large referenda. The voter-reference migration links existing vote rows to referenda already in the database; a missing referendum leaves the optional link null while preserving the vote's `referendumId`. A relation can only expose votes already indexed: votes removed from current RPC storage before the initial import still require the historical governance backfill.
+`GovernanceReferendum.voters` links to `GovernanceVote` rows, which expose each voter's `accountId`, currency, vote, and `active` state. Each vote also exposes its parent as `referendum`. A voter can have more than one row when currencies differ. The relation includes inactive vote rows retained after a removal; use the root `governanceVotes` query with `referendumId` and `active` filters when paging through large referenda. Both fields use the existing `referendum_id` column, so existing votes are linked automatically when their referendum exists; a missing referendum leaves the optional relation null. A relation can only expose votes already indexed: votes removed from current RPC storage before the initial import still require the historical governance backfill.
+
+`GovernanceReferendum.id` stays pallet-qualified because `Referenda` and `FellowshipReferenda` have independent counters. Query `referendumIndex` for the numeric referendum number.
 
 ```graphql
 {
   governanceReferendumById(id: "Referenda:13") {
     id
+    referendumIndex
     voters {
       accountId
+      referendum {
+        referendumIndex
+      }
       currency
       vote
       active

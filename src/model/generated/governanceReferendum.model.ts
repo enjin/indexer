@@ -10,7 +10,7 @@ export class GovernanceReferendum {
     @PrimaryColumn_()
     id!: string
 
-    @OneToMany_(() => GovernanceVote, e => e.referendumRecord)
+    @OneToMany_(() => GovernanceVote, e => e.referendum)
     voters!: Relation_<GovernanceVote[]>
 
     @Index_("idx_governance_referendum_pallet_b6b95dfb")
