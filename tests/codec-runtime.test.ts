@@ -3,7 +3,13 @@ import { readFileSync } from 'node:fs'
 import test, { afterEach, beforeEach, type TestContext } from 'node:test'
 import { decode, decodeSignedExtrinsicsRaw } from '~/codec/decoder/core'
 import { encode, encodeCall } from '~/codec/encoder/core'
-import { clearRuntimeCache, DEFAULT_SPEC_VERSIONS, getRuntimeCached, withRuntime } from '~/codec/metadata'
+import {
+    clearRuntimeCache,
+    DEFAULT_SPEC_VERSIONS,
+    getRuntimeCached,
+    RPC_LOOKUP_COOLDOWN_MS,
+    withRuntime,
+} from '~/codec/metadata'
 import DecoderRpc, { withRpcTimeout } from '~/codec/rpc'
 import type { Network } from '~/codec/types'
 import { validateDecodeRequest, validateDecodeSignedExtrinsicsRequest, validateEncodeRequest } from '~/codec/validation'
@@ -194,9 +200,14 @@ void test('missing default metadata triggers RPC, while invalid replacement meta
     t.after(() => {
         DEFAULT_SPEC_VERSIONS[network] = initial
     })
+    let now = Date.now()
+    t.mock.method(Date, 'now', () => now)
     const rpc = mockRpc(t, network, 9701, '0xdeadbeef')
     await assert.rejects(encode({ call: remark, network }))
     rpc.state.metadata = metadata(network, 1070)
+    await assert.rejects(encode({ call: remark, network }))
+    assert.equal(rpc.reads.metadata.length, 1)
+    now += RPC_LOOKUP_COOLDOWN_MS + 1
     const encoded = await encode({ call: remark, network })
     assert.ok(!Array.isArray(encoded))
     assert.equal(encoded.spec_version, 9701)

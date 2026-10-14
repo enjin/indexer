@@ -1,5 +1,6 @@
 import type { ApiPromise } from '@polkadot/api'
 import type { DryRunBatchResponse, DryRunError, DryRunInput, DryRunResponse } from './types'
+import { withRpcTimeout } from './rpc'
 
 export const DRY_RUN_XCM_VERSION = 5
 export const DRY_RUN_CONCURRENCY = 5
@@ -183,7 +184,9 @@ export async function dryRun(api: ApiPromise, request: DryRunInput): Promise<Dry
         throw new Error('dryRunApi.dryRunCall is not available on the configured chain')
     }
 
-    const result = await runtimeApi.dryRunCall(buildDryRunOrigin(request), request.encodedData, DRY_RUN_XCM_VERSION)
+    const result = await withRpcTimeout(
+        runtimeApi.dryRunCall(buildDryRunOrigin(request), request.encodedData, DRY_RUN_XCM_VERSION)
+    )
 
     return formatDryRunResult(api.registry as unknown as DryRunRegistry, result)
 }

@@ -1,4 +1,4 @@
-import express, { Application, Request, Response } from 'express'
+import express, { Application, Request, Response, type ErrorRequestHandler } from 'express'
 import { createLogger } from '@subsquid/logger'
 import * as Sentry from '@sentry/node'
 import { hexToU8a, isHex, stringToU8a } from '@polkadot/util'
@@ -23,6 +23,9 @@ import config from '~/util/config'
 import DecoderRpc from './rpc'
 import { dryRunBatch } from './dry-run'
 import { UnsafeTransactionViewError } from '~/codec/decoder/view/errors'
+import { CodecLimitError } from './limits'
+import { EncoderInputError } from './encoder/input-validation'
+import { createRequestGate } from './request-gate'
 
 const log = createLogger('sqd:codec')
 
@@ -33,6 +36,10 @@ Sentry.init({
 })
 
 function handleServerError(error: unknown, req: Request, res: Response, operation: string): void {
+    if (error instanceof EncoderInputError || error instanceof CodecLimitError) {
+        res.status(400).json({ error: error.message })
+        return
+    }
     const errorMessage = error instanceof Error ? error.message : String(error)
     const request = {
         method: req.method,
@@ -178,6 +185,8 @@ async function handleDryRun(req: Request, res: Response): Promise<void> {
 
 export const server: Application = express()
 
+server.disable('x-powered-by')
+server.use(createRequestGate())
 server.use(express.json({ limit: '1mb' }))
 
 server.get('/decoder', (_req, res) => {
@@ -208,12 +217,39 @@ server.get('/health', (_req, res) => {
     res.json({ status: 'healthy' })
 })
 
-server.post('/decoder', handleDecode)
-server.post('/encoder', handleEncode)
-server.post('/hash', handleHash)
-server.post('/verify/messages', handleVerifyMessage)
-server.post('/decode/extrinsics', handleDecodeSignedExtrinsics)
-server.post('/dry-run', handleDryRun)
+function withCodecWork(handler: (req: Request, res: Response) => void | Promise<void>) {
+    return async (req: Request, res: Response): Promise<void> => {
+        res.locals.codecWorking = true
+        try {
+            await handler(req, res)
+        } finally {
+            res.locals.codecRelease?.()
+        }
+    }
+}
+
+server.post('/decoder', withCodecWork(handleDecode))
+server.post('/encoder', withCodecWork(handleEncode))
+server.post('/hash', withCodecWork(handleHash))
+server.post('/verify/messages', withCodecWork(handleVerifyMessage))
+server.post('/decode/extrinsics', withCodecWork(handleDecodeSignedExtrinsics))
+server.post('/dry-run', withCodecWork(handleDryRun))
+
+const handleBodyError: ErrorRequestHandler = (error: unknown, req, res, next) => {
+    if (res.headersSent) {
+        next(error)
+        return
+    }
+    const status = (error as { status?: number }).status
+    if (status === 400 || status === 413) {
+        res.status(status).json({
+            error: status === 413 ? 'Request body exceeds 1mb limit' : 'Invalid JSON request body',
+        })
+        return
+    }
+    handleServerError(error, req, res, 'Request')
+}
+server.use(handleBodyError)
 
 export function startServer(port: string | number = process.env.DECODER_PORT || 8090): void {
     server.listen(port, () => {

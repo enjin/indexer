@@ -2,14 +2,22 @@ import { Bytes, Runtime } from '@subsquid/substrate-runtime'
 import * as fs from 'fs'
 import * as readline from 'readline'
 import * as path from 'path'
-import type { Network } from './types'
+import { NETWORKS, type Network } from './types'
 import DecoderRpc, { withRpcTimeout } from './rpc'
+import { CodecLimitError } from './limits'
 
 const runtimeCache = new Map<string, Runtime>()
 const pendingLoads = new Map<string, Promise<Runtime>>()
 const liveRuntimeCache = new Map<string, Runtime>()
 const pendingLiveLoads = new Map<Network, Promise<Runtime>>()
 const preferredVersions = new Map<Network, number>()
+const bundledMetadata = new Map<Network, Promise<Map<number, Bytes>>>()
+const rpcSnapshots = new Map<Network, { expiresAt: number; runtime?: Runtime; error?: unknown }>()
+export const RPC_LOOKUP_COOLDOWN_MS = 30_000
+
+function assertNetwork(network: Network): void {
+    if (!NETWORKS.includes(network)) throw new Error('Invalid codec network')
+}
 
 export const DEFAULT_SPEC_VERSIONS: Record<Network, number> = {
     'enjin-relaychain': 1070,
@@ -40,17 +48,28 @@ async function loadCurrentRuntime(network: Network): Promise<Runtime> {
         },
         metadata.toHex()
     )
-    liveRuntimeCache.set(cacheKey, runtime)
     return runtime
 }
 
 export async function getRpcRuntime(network: Network): Promise<Runtime> {
+    assertNetwork(network)
     const pending = pendingLiveLoads.get(network)
     if (pending) return pending
+    const snapshot = rpcSnapshots.get(network)
+    if (snapshot && snapshot.expiresAt > Date.now()) {
+        if (snapshot.runtime) return snapshot.runtime
+        throw snapshot.error
+    }
     const load = withRpcTimeout(loadCurrentRuntime(network))
     pendingLiveLoads.set(network, load)
     try {
-        return await load
+        const runtime = await load
+        liveRuntimeCache.set(`${network}:${runtime.specVersion}`, runtime)
+        rpcSnapshots.set(network, { expiresAt: Date.now() + RPC_LOOKUP_COOLDOWN_MS, runtime })
+        return runtime
+    } catch (error) {
+        rpcSnapshots.set(network, { expiresAt: Date.now() + RPC_LOOKUP_COOLDOWN_MS, error })
+        throw error
     } finally {
         pendingLiveLoads.delete(network)
     }
@@ -64,6 +83,8 @@ export function clearRuntimeCache(): void {
     runtimeCache.clear()
     liveRuntimeCache.clear()
     preferredVersions.clear()
+    bundledMetadata.clear()
+    rpcSnapshots.clear()
 }
 
 export async function withRuntime<T>(
@@ -75,7 +96,7 @@ export async function withRuntime<T>(
         const runtime = await getRuntimeCached(network, specVersion)
         return await operation(runtime)
     } catch (error) {
-        if (specVersion !== undefined) throw error
+        if (specVersion !== undefined || error instanceof CodecLimitError) throw error
         let runtime: Runtime
         try {
             runtime = await getRpcRuntime(network)
@@ -100,7 +121,7 @@ function getProjectRoot(): string {
     return process.cwd()
 }
 
-async function getSpecMetadata(network: Network, specVersion: number): Promise<Bytes> {
+async function readBundledMetadata(network: Network): Promise<Map<number, Bytes>> {
     const projectRoot = getProjectRoot()
     const filePath = `${projectRoot}/typegen/${network}.jsonl`
 
@@ -114,6 +135,7 @@ async function getSpecMetadata(network: Network, specVersion: number): Promise<B
         crlfDelay: Infinity,
     })
 
+    const versions = new Map<number, Bytes>()
     try {
         let lineNumber = 0
         for await (const line of rl) {
@@ -121,22 +143,35 @@ async function getSpecMetadata(network: Network, specVersion: number): Promise<B
             if (!line.trim()) continue
             try {
                 const jsonObject = JSON.parse(line)
-                if (jsonObject.specVersion === specVersion) {
-                    return jsonObject.metadata
-                }
+                versions.set(jsonObject.specVersion, jsonObject.metadata)
             } catch (error) {
                 throw new Error(`Error parsing JSON at ${filePath}:${lineNumber}: ${error}`)
             }
         }
 
-        throw new Error(`No metadata found for network ${network} with specVersion ${specVersion}`)
+        return versions
     } finally {
         rl.close()
         fileStream.destroy()
     }
 }
 
+async function getSpecMetadata(network: Network, specVersion: number): Promise<Bytes> {
+    let loaded = bundledMetadata.get(network)
+    if (!loaded) {
+        // Index once per network. Unknown versions do not create unbounded negative-cache entries.
+        loaded = readBundledMetadata(network)
+        bundledMetadata.set(network, loaded)
+    }
+    const metadata = (await loaded).get(specVersion)
+    if (metadata === undefined) {
+        throw new Error(`No metadata found for network ${network} with specVersion ${specVersion}`)
+    }
+    return metadata
+}
+
 export async function getRuntimeCached(network: Network, specVersion?: number): Promise<Runtime> {
+    assertNetwork(network)
     specVersion ??= preferredVersions.get(network) ?? DEFAULT_SPEC_VERSIONS[network]
     if (!Number.isSafeInteger(specVersion) || specVersion < 0) {
         throw new Error('Invalid spec_version: expected a non-negative safe integer')

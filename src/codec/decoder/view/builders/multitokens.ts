@@ -23,12 +23,20 @@ function variantName(value: unknown): string {
 
 export const buildTransferTokenView: ViewBuilderFn = ({ call, network }) => {
     const collectionId = displayValue(getArg(call.params, 'collection_id'))
-    const tokenId = displayValue(getArg(call.params, 'params.Simple.token_id'))
-    const amount = displayValue(getArg(call.params, 'params.Simple.amount'))
+    const tokenId = displayValue(firstArg(call.params, ['params.Simple.token_id', 'params.Operator.token_id']))
+    const amount = displayValue(firstArg(call.params, ['params.Simple.amount', 'params.Operator.amount']))
+    const recipient = account(call.params, 'recipient')
+    const source = account(call.params, 'params.Operator.source')
+    const operatorPaysDeposit = getArg(call.params, 'params.Operator.operator_pays_deposit')
 
     return TransactionViewBuilder.create('Transfer NFT')
         .when(collectionId, (b) => b.withResource('asset', assetId(collectionId, tokenId)))
         .withNetwork(network)
+        .when(source, (b) => b.withText('Source', source))
+        .when(typeof operatorPaysDeposit === 'boolean', (b) =>
+            b.withText('Operator Pays Deposit', operatorPaysDeposit ? 'Yes' : 'No')
+        )
+        .when(recipient, (b) => b.withText('Recipient', recipient))
         .when(amount, (b) => b.withText('Amount', amount))
         .build()
 }
@@ -41,9 +49,21 @@ export const buildBatchTransferTokenView: ViewBuilderFn = ({ call, network }) =>
     if (!collectionId || !Array.isArray(recipients)) return builder.build()
 
     for (const [index] of recipients.entries()) {
-        const tokenId = displayValue(getArg(call.params, `recipients.${index}.params.Simple.token_id`))
-        const amount = displayValue(getArg(call.params, `recipients.${index}.params.Simple.amount`))
+        const prefix = `recipients.${index}`
+        const tokenId = displayValue(
+            firstArg(call.params, [`${prefix}.params.Simple.token_id`, `${prefix}.params.Operator.token_id`])
+        )
+        const amount = displayValue(
+            firstArg(call.params, [`${prefix}.params.Simple.amount`, `${prefix}.params.Operator.amount`])
+        )
+        const recipient = account(call.params, `recipients.${index}.account_id`)
+        const source = account(call.params, `${prefix}.params.Operator.source`)
+        const operatorPaysDeposit = getArg(call.params, `${prefix}.params.Operator.operator_pays_deposit`)
         if (tokenId) builder.withResource('asset', assetId(collectionId, tokenId))
+        if (source) builder.withText('Source', source)
+        if (typeof operatorPaysDeposit === 'boolean')
+            builder.withText('Operator Pays Deposit', operatorPaysDeposit ? 'Yes' : 'No')
+        if (recipient) builder.withText('Recipient', recipient)
         if (amount) builder.withText('Amount', amount)
     }
 
@@ -66,7 +86,9 @@ export const buildBatchMintTokenView: ViewBuilderFn = ({ call, network }) => {
             getArg(call.params, `recipients.${index}.params.CreateToken.initial_supply`) ??
                 getArg(call.params, `recipients.${index}.params.Mint.amount`)
         )
+        const recipient = account(call.params, `recipients.${index}.account_id`)
         if (tokenId) builder.withResource('asset', assetId(collectionId, tokenId))
+        if (recipient) builder.withText('Recipient', recipient)
         if (amount) builder.withText('Amount', amount)
     }
 
@@ -117,10 +139,12 @@ export const buildMintTokenView: ViewBuilderFn = ({ call, network, coinId }) => 
         getArg(call.params, 'params.CreateToken.initial_supply') ?? getArg(call.params, 'params.Mint.amount')
     )
     const infusion = displayValue(getArg(call.params, 'params.CreateToken.infusion'))
+    const recipient = account(call.params, 'recipient')
 
     return TransactionViewBuilder.create(title)
         .when(collectionId, (b) => b.withResource('asset', assetId(collectionId, tokenId)))
         .withNetwork(network)
+        .when(recipient, (b) => b.withText('Recipient', recipient))
         .when(amount, (b) => b.withText('Amount', amount))
         .when(infusion, (b) => b.withCoin('Infusion per token', infusion, coinId))
         .build()
@@ -182,7 +206,8 @@ export const buildCreateCollectionView: ViewBuilderFn = ({ network, coinId }) =>
 export const buildApproveCollectionView: ViewBuilderFn = ({ call, network }) => {
     const collectionId = displayValue(getArg(call.params, 'collection_id'))
     const operator = account(call.params, 'operator')
-    const expiration = displayValue(getArg(call.params, 'expiration'))
+    const expirationValue = getArg(call.params, 'expiration')
+    const expiration = expirationValue === null ? 'No expiration' : displayValue(expirationValue)
 
     return TransactionViewBuilder.create('Allow Token Transfers')
         .when(collectionId, (b) => b.withResource('collection', collectionId))
@@ -290,13 +315,16 @@ export const buildApproveTokenView: ViewBuilderFn = ({ call, network }) => {
     const tokenId = displayValue(getArg(call.params, 'token_id'))
     const operator = account(call.params, 'operator')
     const amount = displayValue(getArg(call.params, 'amount'))
-    const expiration = displayValue(getArg(call.params, 'expiration'))
+    const expirationValue = getArg(call.params, 'expiration')
+    const expiration = expirationValue === null ? 'No expiration' : displayValue(expirationValue)
+    const previousAmount = displayValue(getArg(call.params, 'current_amount'))
 
     return TransactionViewBuilder.create('Approve Token')
         .when(collectionId, (b) => b.withResource('asset', assetId(collectionId, tokenId)))
         .withNetwork(network)
         .when(operator, (b) => b.withText('Operator', operator))
         .when(amount, (b) => b.withText('Amount', amount))
+        .when(previousAmount, (b) => b.withText('Previous Allowance', previousAmount))
         .when(expiration, (b) => b.withText('Expiration', expiration))
         .build()
 }

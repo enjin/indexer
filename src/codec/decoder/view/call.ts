@@ -1,4 +1,5 @@
 import type { CallParts, TextField, TransactionView } from './types'
+import { UnsafeTransactionViewError } from './errors'
 
 const isRecord = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v)
 
@@ -74,6 +75,24 @@ const WRAPPER_CALLS = new Set([
 ])
 const MAX_WRAPPER_DEPTH = 16
 
+export function assertViewBudget(value: unknown): void {
+    const pending = [{ value, depth: 0 }]
+    let visited = 0
+    while (pending.length) {
+        const item = pending.pop()
+        if (!item) break
+        if (++visited > 10_000 || item.depth > 128) {
+            throw new UnsafeTransactionViewError('Transaction is too complex to safely display')
+        }
+        if (!item.value || typeof item.value !== 'object') continue
+        const children = Array.isArray(item.value) ? item.value : Object.values(item.value)
+        if (visited + pending.length + children.length > 10_000) {
+            throw new UnsafeTransactionViewError('Transaction is too complex to safely display')
+        }
+        for (const child of children) pending.push({ value: child, depth: item.depth + 1 })
+    }
+}
+
 export function unwrapDispatchCall(call: CallParts): { call: CallParts; wrappers: CallParts[] } {
     let current = call
     const wrappers: CallParts[] = []
@@ -87,6 +106,9 @@ export function unwrapDispatchCall(call: CallParts): { call: CallParts; wrappers
         current = parsed
     }
 
+    if (WRAPPER_CALLS.has(getCallId(current))) {
+        throw new UnsafeTransactionViewError('Too many transaction wrappers to safely display')
+    }
     return { call: current, wrappers }
 }
 
@@ -105,6 +127,25 @@ export function withWrapperContext(view: TransactionView, wrappers: CallParts[])
     const fields: TextField[] = []
 
     for (const wrapper of wrappers) {
+        if (wrapper.pallet === 'FuelTanks') {
+            const tank = getArg(wrapper.params, 'tank_id')
+            const rule = getArg(wrapper.params, 'rule_set_id')
+            const settings = getArg(wrapper.params, 'settings')
+            if (tank !== undefined)
+                fields.push({ type: 'text', title: 'Fuel Tank', value: displayValue(proxyAccount(tank)) })
+            if (rule !== undefined)
+                fields.push({
+                    type: 'text',
+                    title: 'Fuel Tank Rule Set',
+                    value: rule === null ? 'Automatic' : displayValue(rule),
+                })
+            if (settings !== undefined)
+                fields.push({
+                    type: 'text',
+                    title: 'Fuel Tank Settings',
+                    value: settings === null ? 'Default' : displayValue(settings),
+                })
+        }
         if (wrapper.pallet !== 'Proxy') continue
 
         const real = getArg(wrapper.params, 'real')

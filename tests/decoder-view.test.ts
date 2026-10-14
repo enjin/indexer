@@ -83,6 +83,11 @@ void test('includes the per-token infusion in a create-token transaction view', 
         fields: [
             { type: 'asset', value: '41550-6' },
             { type: 'text', title: 'Network', value: 'Enjin Matrixchain' },
+            {
+                type: 'text',
+                title: 'Recipient',
+                value: '0xd4a2a84e8e512c405cfdc37204aa7cbf7aece6abb938e2dbf45cf72e367b0b18',
+            },
             { type: 'text', title: 'Amount', value: '100' },
             { type: 'coin', title: 'Infusion per token', coinId: 'enjin', value: '1000000000000000000' },
         ],
@@ -428,6 +433,7 @@ void test('unwraps Platform proxy and fuel tank wrappers recursively', () => {
         fields: [
             { type: 'collection', value: '10' },
             { type: 'text', title: 'Network', value: 'Enjin Matrixchain' },
+            { type: 'text', title: 'Fuel Tank', value: '0x09090909' },
             { type: 'text', title: 'Proxy Real', value: '0x01020304' },
         ],
     })
@@ -497,7 +503,11 @@ void test('force batch has a readable continue-on-error view and unwraps proxied
             type: 'item',
             title: 'Transfer ENJ',
             subtitle: 'x 1',
-            fields: [{ type: 'coin', title: 'Amount', coinId: 'enjin', value: '100' }],
+            fields: [
+                { type: 'text', title: 'Destination', value: '0x05060708' },
+                { type: 'coin', title: 'Amount', coinId: 'enjin', value: '100' },
+                { type: 'text', title: 'Keep Alive', value: 'Yes' },
+            ],
         },
     ])
 })
@@ -971,10 +981,25 @@ void test('decodes batch mint amounts and their total', async () => {
 
     assert.deepEqual(view.fields.slice(1), [
         { type: 'asset', value: '2341-1' },
+        {
+            type: 'text',
+            title: 'Recipient',
+            value: '0x3c5058b4984860f4a2ff5624eb688dbdb9d4ba28712b2bfcb8a1f7a73a828809',
+        },
         { type: 'text', title: 'Amount', value: '5' },
         { type: 'asset', value: '2341-7' },
+        {
+            type: 'text',
+            title: 'Recipient',
+            value: '0x3c5058b4984860f4a2ff5624eb688dbdb9d4ba28712b2bfcb8a1f7a73a828809',
+        },
         { type: 'text', title: 'Amount', value: '3' },
         { type: 'asset', value: '2341-5' },
+        {
+            type: 'text',
+            title: 'Recipient',
+            value: '0x3c5058b4984860f4a2ff5624eb688dbdb9d4ba28712b2bfcb8a1f7a73a828809',
+        },
         { type: 'text', title: 'Amount', value: '1' },
     ])
 })
@@ -988,10 +1013,25 @@ void test('decodes batch-all batch mint with the total minted amount', async () 
         subtitle: 'x 9',
         fields: [
             { type: 'asset', value: '2341-1' },
+            {
+                type: 'text',
+                title: 'Recipient',
+                value: '0x3c5058b4984860f4a2ff5624eb688dbdb9d4ba28712b2bfcb8a1f7a73a828809',
+            },
             { type: 'text', title: 'Amount', value: '5' },
             { type: 'asset', value: '2341-7' },
+            {
+                type: 'text',
+                title: 'Recipient',
+                value: '0x3c5058b4984860f4a2ff5624eb688dbdb9d4ba28712b2bfcb8a1f7a73a828809',
+            },
             { type: 'text', title: 'Amount', value: '3' },
             { type: 'asset', value: '2341-5' },
+            {
+                type: 'text',
+                title: 'Recipient',
+                value: '0x3c5058b4984860f4a2ff5624eb688dbdb9d4ba28712b2bfcb8a1f7a73a828809',
+            },
             { type: 'text', title: 'Amount', value: '1' },
         ],
     })
@@ -1006,10 +1046,25 @@ void test('decodes batch-all batch transfer with transfer amounts and their tota
         subtitle: 'x 9',
         fields: [
             { type: 'asset', value: '2341-1' },
+            {
+                type: 'text',
+                title: 'Recipient',
+                value: '0x3c5058b4984860f4a2ff5624eb688dbdb9d4ba28712b2bfcb8a1f7a73a828809',
+            },
             { type: 'text', title: 'Amount', value: '5' },
             { type: 'asset', value: '2341-7' },
+            {
+                type: 'text',
+                title: 'Recipient',
+                value: '0x3c5058b4984860f4a2ff5624eb688dbdb9d4ba28712b2bfcb8a1f7a73a828809',
+            },
             { type: 'text', title: 'Amount', value: '3' },
             { type: 'asset', value: '2341-5' },
+            {
+                type: 'text',
+                title: 'Recipient',
+                value: '0x3c5058b4984860f4a2ff5624eb688dbdb9d4ba28712b2bfcb8a1f7a73a828809',
+            },
             { type: 'text', title: 'Amount', value: '1' },
         ],
     })

@@ -2,7 +2,6 @@ import { isHex } from '@polkadot/util'
 import type {
     DecodeRequest,
     VerifyMessageItem,
-    VerifyMessageRequestBody,
     DecodeSignedExtrinsicRequestBody,
     DryRunInput,
     DryRunOrigin,
@@ -11,11 +10,13 @@ import type {
 import { MAX_DRY_RUN_INPUTS, NETWORKS } from './types'
 import { DEFAULT_NETWORK, resolveNetwork } from '~/codec/decoder/core'
 import type { EncodeCallInput, EncodeRequest } from '~/codec/encoder/types'
+import { assertEncodeCallInput, assertEncodeCallInputs } from '~/codec/encoder/input-validation'
+import { MAX_CODEC_BATCH_ITEMS } from './limits'
 
 export function validateDecodeRequest(
     body: unknown
 ): { valid: true; data: DecodeRequest } | { valid: false; error: string } {
-    if (!body || typeof body !== 'object') {
+    if (!body || typeof body !== 'object' || Array.isArray(body)) {
         return { valid: false, error: 'Request body must be an object' }
     }
 
@@ -47,6 +48,9 @@ export function validateDecodeRequest(
         if (req.calls.length === 0) {
             return { valid: false, error: '"calls" must not be empty' }
         }
+        if (req.calls.length > MAX_CODEC_BATCH_ITEMS) {
+            return { valid: false, error: `"calls" must contain at most ${MAX_CODEC_BATCH_ITEMS} items` }
+        }
         if (req.calls.some((call: unknown) => typeof call !== 'string' || !isHex(call))) {
             return { valid: false, error: 'All calls must be valid hex strings' }
         }
@@ -67,6 +71,9 @@ export function validateDecodeRequest(
         }
         if (req.extrinsics.length === 0) {
             return { valid: false, error: '"extrinsics" must not be empty' }
+        }
+        if (req.extrinsics.length > MAX_CODEC_BATCH_ITEMS) {
+            return { valid: false, error: `"extrinsics" must contain at most ${MAX_CODEC_BATCH_ITEMS} items` }
         }
         if (req.extrinsics.some((e: unknown) => typeof e !== 'string' || !isHex(e))) {
             return { valid: false, error: 'All extrinsics must be valid hex strings' }
@@ -142,20 +149,23 @@ function validateEncodeCallInput(
         return { valid: false, error: `"${label}.args" must be an object` }
     }
 
-    return {
-        valid: true,
-        data: {
-            pallet: call.pallet,
-            name: call.name,
-            args: call.args as Record<string, unknown> | undefined,
-        },
+    const data: EncodeCallInput = {
+        pallet: call.pallet,
+        name: call.name,
+        args: call.args as Record<string, unknown> | undefined,
     }
+    try {
+        assertEncodeCallInput(data, label)
+    } catch (error) {
+        return { valid: false, error: (error as Error).message }
+    }
+    return { valid: true, data }
 }
 
 export function validateEncodeRequest(
     body: unknown
 ): { valid: true; data: EncodeRequest } | { valid: false; error: string } {
-    if (!body || typeof body !== 'object') {
+    if (!body || typeof body !== 'object' || Array.isArray(body)) {
         return { valid: false, error: 'Request body must be an object' }
     }
 
@@ -185,6 +195,9 @@ export function validateEncodeRequest(
         if (req.calls.length === 0) {
             return { valid: false, error: '"calls" must not be empty' }
         }
+        if (req.calls.length > MAX_CODEC_BATCH_ITEMS) {
+            return { valid: false, error: `"calls" must contain at most ${MAX_CODEC_BATCH_ITEMS} items` }
+        }
 
         calls = []
         for (const [index, item] of req.calls.entries()) {
@@ -193,6 +206,11 @@ export function validateEncodeRequest(
                 return result
             }
             calls.push(result.data)
+        }
+        try {
+            assertEncodeCallInputs(calls)
+        } catch (error) {
+            return { valid: false, error: (error as Error).message }
         }
     }
 
@@ -227,7 +245,7 @@ export function validateEncodeRequest(
 }
 
 export function validateHashRequest(body: unknown): { valid: true; data: string } | { valid: false; error: string } {
-    if (!body || typeof body !== 'object') {
+    if (!body || typeof body !== 'object' || Array.isArray(body)) {
         return { valid: false, error: 'Request body must be an object' }
     }
 
@@ -244,18 +262,24 @@ export function validateHashRequest(body: unknown): { valid: true; data: string 
 export function validateVerifyMessageRequest(
     body: unknown
 ): { valid: true; data: VerifyMessageItem[] } | { valid: false; error: string } {
-    if (!body || typeof body !== 'object') {
+    if (!body || typeof body !== 'object' || Array.isArray(body)) {
         return { valid: false, error: 'Request body must be an object' }
     }
 
-    const req = body as Partial<VerifyMessageRequestBody>
+    const req = body as { inputs?: unknown }
 
     if (!Array.isArray(req.inputs) || req.inputs.length === 0) {
         return { valid: false, error: '"inputs" must be a non-empty array' }
     }
+    if (req.inputs.length > MAX_CODEC_BATCH_ITEMS) {
+        return { valid: false, error: `"inputs" must contain at most ${MAX_CODEC_BATCH_ITEMS} items` }
+    }
 
     for (const [index, item] of req.inputs.entries()) {
-        const { message, signature, publicKey } = item
+        if (!item || typeof item !== 'object' || Array.isArray(item)) {
+            return { valid: false, error: `"inputs[${index}]" must be an object` }
+        }
+        const { message, signature, publicKey } = item as Partial<VerifyMessageItem>
 
         if (typeof message !== 'string' || !message) {
             return { valid: false, error: `"inputs[${index}].message" must be a non-empty string` }
@@ -276,7 +300,7 @@ export function validateVerifyMessageRequest(
 export function validateDecodeSignedExtrinsicsRequest(
     body: unknown
 ): { valid: true; data: DecodeSignedExtrinsicRequestBody } | { valid: false; error: string } {
-    if (!body || typeof body !== 'object') {
+    if (!body || typeof body !== 'object' || Array.isArray(body)) {
         return { valid: false, error: 'Request body must be an object' }
     }
 
@@ -284,6 +308,9 @@ export function validateDecodeSignedExtrinsicsRequest(
 
     if (!Array.isArray(req.inputs) || req.inputs.length === 0) {
         return { valid: false, error: '"inputs" must be a non-empty array' }
+    }
+    if (req.inputs.length > MAX_CODEC_BATCH_ITEMS) {
+        return { valid: false, error: `"inputs" must contain at most ${MAX_CODEC_BATCH_ITEMS} items` }
     }
 
     for (const [index, hex] of req.inputs.entries()) {
@@ -366,7 +393,12 @@ function validateDryRunOrigin(
 
     let ruleSetId: number | null = null
     if (tank.ruleSetId !== undefined && tank.ruleSetId !== null) {
-        if (typeof tank.ruleSetId !== 'number' || !Number.isInteger(tank.ruleSetId) || tank.ruleSetId < 0) {
+        if (
+            typeof tank.ruleSetId !== 'number' ||
+            !Number.isSafeInteger(tank.ruleSetId) ||
+            tank.ruleSetId < 0 ||
+            tank.ruleSetId > 0xffff_ffff
+        ) {
             return { valid: false, error: `"${label}.fuelTank.ruleSetId" must be a non-negative integer` }
         }
         ruleSetId = tank.ruleSetId

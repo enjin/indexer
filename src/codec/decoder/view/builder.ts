@@ -22,7 +22,7 @@ const CALL_ITEM_PATHS: Record<string, string> = {
 }
 
 const CALL_AMOUNT_PATHS: Record<string, string[]> = {
-    'MultiTokens::transfer': ['params.Simple.amount'],
+    'MultiTokens::transfer': ['params.Simple.amount', 'params.Operator.amount'],
     'MultiTokens::burn': ['params.amount', 'amount'],
     'MultiTokens::mint': ['params.CreateToken.initial_supply', 'params.Mint.amount'],
 }
@@ -85,7 +85,7 @@ function getCallSubtitle(call: CallParts, fields: ViewField[]): string {
         if (amount !== undefined) return `x ${amount}`
     }
     if (callId === 'MultiTokens::batch_transfer' && Array.isArray(items)) {
-        const amount = getBatchAmount(items, ['Simple.amount'])
+        const amount = getBatchAmount(items, ['Simple.amount', 'Operator.amount'])
         if (amount !== undefined) return `x ${amount}`
     }
     // A nested call represents one operation unless the call explicitly contains a batch of items.

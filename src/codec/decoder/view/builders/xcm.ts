@@ -42,6 +42,10 @@ export const buildTeleportView: ViewBuilderFn = ({ call, network, coinId }) => {
     }
     return TransactionViewBuilder.create('Teleport ENJ')
         .withNetwork(network)
+        .when(getArg(call.params, 'dest'), (b) => b.withText('Destination', displayValue(getArg(call.params, 'dest'))))
+        .when(getArg(call.params, 'beneficiary'), (b) =>
+            b.withText('Beneficiary', displayValue(getArg(call.params, 'beneficiary')))
+        )
         .withCoin('Amount', displayValue(amount), coinId)
         .build()
 }

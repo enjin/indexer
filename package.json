@@ -63,7 +63,6 @@
     "@polkadot/util": "^14.0.1",
     "@polkadot/util-crypto": "^14.0.1",
     "@sentry/node": "^10.74.0",
-    "@subsquid/cli": "^3.3.5",
     "@subsquid/graphql-server": "^4.12.0",
     "@subsquid/hasura-configuration": "^2.0.0",
     "@subsquid/logger": "^1.6.0",
@@ -117,7 +116,8 @@
     "tsconfig-paths": "^4.2.0",
     "tsc-alias": "^1.8.16",
     "typescript": "^5.8.3",
-    "typescript-eslint": "^8.33.1"
+    "typescript-eslint": "^8.33.1",
+    "@subsquid/cli": "^3.3.5"
   },
   "peerDependencies": {
     "@subsquid/typeorm-config": "4.1.1",
@@ -142,7 +142,8 @@
       "simple-git@<4.0.2": "4.0.2",
       "tmp@<0.2.6": "0.2.7",
       "uuid@<11.1.1": "11.1.1",
-      "xml2js@<0.5.0": "0.5.0"
+      "xml2js@<0.5.0": "0.5.0",
+      "@graphql-tools/utils@<12.0.1": "12.0.1"
     }
   }
 }

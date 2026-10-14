@@ -11,7 +11,15 @@ export const NETWORK_RPC_ENDPOINTS: Record<Network, string> = {
 }
 
 export function getRpcEndpoint(network: Network): string {
-    return NETWORK_ALIASES[config.chainName] === network ? config.dataSource.chain : NETWORK_RPC_ENDPOINTS[network]
+    if (!Object.prototype.hasOwnProperty.call(NETWORK_RPC_ENDPOINTS, network)) throw new Error('Invalid codec network')
+    const ownNetwork = Object.prototype.hasOwnProperty.call(NETWORK_ALIASES, config.chainName)
+        ? NETWORK_ALIASES[config.chainName]
+        : undefined
+    const endpoint = ownNetwork === network ? config.dataSource.chain : NETWORK_RPC_ENDPOINTS[network]
+    if (typeof endpoint !== 'string' || !/^wss?:\/\//u.test(endpoint)) {
+        throw new Error('Invalid codec RPC endpoint')
+    }
+    return endpoint
 }
 
 export async function withRpcTimeout<T>(operation: Promise<T>, timeoutMs = 30_000): Promise<T> {

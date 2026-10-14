@@ -14,6 +14,8 @@ import type {
 import { NETWORK_ALIASES } from '~/codec/types'
 import { transformCall, transformExtrinsic, transformEvent } from './compatibility'
 import { buildTransactionView } from './view'
+import { getBoundedScaleCodec } from './scale'
+import { CodecLimitError, MAX_SCALE_SEQUENCE_ITEMS } from '~/codec/limits'
 
 export function bigIntReplacer(_key: string, value: unknown): unknown {
     if (typeof value === 'bigint') {
@@ -25,7 +27,7 @@ export function bigIntReplacer(_key: string, value: unknown): unknown {
 export const DEFAULT_NETWORK: Network = 'enjin-matrixchain'
 
 export function resolveNetwork(networkInput: string): Network | null {
-    if (networkInput in NETWORK_ALIASES) {
+    if (Object.prototype.hasOwnProperty.call(NETWORK_ALIASES, networkInput)) {
         return NETWORK_ALIASES[networkInput]
     }
     return null
@@ -42,11 +44,11 @@ function decodeExtrinsicWithRuntime(extrinsic: string, runtime: Runtime): Extrin
     const preamble = meta & 0b11000000
     let signature: Extrinsic['signature']
     if (preamble === 128 && version === 4) {
-        signature = runtime.scaleCodec.decode(runtime.description.signature, src)
+        signature = getBoundedScaleCodec(runtime).decode(runtime.description.signature, src)
     } else if (preamble !== 0) {
         throw new Error('Unsupported extrinsic preamble')
     }
-    const call = runtime.scaleCodec.decode(runtime.description.call, src)
+    const call = getBoundedScaleCodec(runtime).decode(runtime.description.call, src)
     src.assertEOF()
     return { version, signature, call }
 }
@@ -91,7 +93,8 @@ function decodeEventsWithRuntime(events: string, runtime: Runtime): DecodedEvent
     const hexString = events.startsWith('0x') ? events.slice(2) : events
     const bytes = new Uint8Array(Buffer.from(hexString, 'hex'))
     const src = new Src(bytes)
-    const length = src.compact()
+    const length = src.compactLength()
+    if (length > MAX_SCALE_SEQUENCE_ITEMS) throw new CodecLimitError('Event sequence exceeds the item limit')
 
     const results: DecodedEventRecord[] = []
 
@@ -109,9 +112,10 @@ function decodeEventsWithRuntime(events: string, runtime: Runtime): DecodedEvent
             throw new Error('Invalid event phase')
         }
 
-        const decodedEvent = runtime.scaleCodec.decode(runtime.description.event, src)
+        const decodedEvent = getBoundedScaleCodec(runtime).decode(runtime.description.event, src)
 
-        const topicsLength = src.compact()
+        const topicsLength = src.compactLength()
+        if (topicsLength > MAX_SCALE_SEQUENCE_ITEMS) throw new CodecLimitError('Event topics exceed the item limit')
         const topics: string[] = []
         for (let j = 0; j < topicsLength; j++) {
             const hash = src.bytes(32)
@@ -138,7 +142,7 @@ function decodeCallWithRuntime(call: string, runtime: Awaited<ReturnType<typeof 
     const bytes = new Uint8Array(Buffer.from(hexString, 'hex'))
     const src = new Src(bytes)
 
-    const decodedCall = runtime.scaleCodec.decode(runtime.description.call, src)
+    const decodedCall = getBoundedScaleCodec(runtime).decode(runtime.description.call, src)
     src.assertEOF()
     return { calls: transformCall(decodedCall, runtime) }
 }

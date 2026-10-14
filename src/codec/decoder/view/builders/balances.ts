@@ -4,7 +4,13 @@ import type { ViewBuilderFn } from '../types'
 
 export const buildTransferBalanceView: ViewBuilderFn = ({ call, network, coinId }) => {
     const value = displayValue(getArg(call.params, 'value', '0'))
-    return TransactionViewBuilder.create('Transfer ENJ').withNetwork(network).withCoin('Amount', value, coinId).build()
+    const destination = displayValue(getArg(call.params, 'dest.Id') ?? getArg(call.params, 'dest'))
+    return TransactionViewBuilder.create('Transfer ENJ')
+        .withNetwork(network)
+        .when(destination, (b) => b.withText('Destination', destination))
+        .withCoin('Amount', value, coinId)
+        .withText('Keep Alive', call.method === 'transfer_keep_alive' ? 'Yes' : 'No')
+        .build()
 }
 
 export const buildTransferAllBalanceView: ViewBuilderFn = ({ call, network }) => {

@@ -1,5 +1,5 @@
 import type { Network } from '~/codec/types'
-import { parseCallData, unwrapDispatchCall, withWrapperContext } from './call'
+import { assertViewBudget, parseCallData, unwrapDispatchCall, withWrapperContext } from './call'
 import { getBuilderForCall } from './factory'
 import { getNativeCoinId, getNetworkLabel } from './network'
 import { buildGenericView } from './builders/generic'
@@ -12,6 +12,7 @@ import type { TransactionView } from './types'
  * object containing a `calls` field.
  */
 export function buildTransactionView(calls: unknown, network: Network): TransactionView {
+    assertViewBudget(calls)
     const networkLabel = getNetworkLabel(network)
     const coinId = getNativeCoinId()
 
