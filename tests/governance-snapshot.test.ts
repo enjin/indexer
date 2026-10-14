@@ -154,6 +154,11 @@ void test('Matrixchain snapshot imports current RPC governance storage without c
     assert.equal(get(GovernanceReferendum, 'Referenda:7')?.status, 'Confirming')
     assert.equal(get(GovernanceReferendum, 'Referenda:7')?.metadataHash, whitelisted)
     assert.equal(get(GovernanceVote, `Referenda:7:${voter}:SEnj:42`)?.active, true)
+    assert.equal(get(GovernanceVote, `Referenda:7:${voter}:SEnj:42`)?.referendumRecord?.id, 'Referenda:7')
+    assert.equal(
+        get(GovernanceVote, `FellowshipReferenda:2:${member}:Fellowship`)?.referendumRecord?.id,
+        'FellowshipReferenda:2'
+    )
     assert.equal(get(GovernanceDelegation, `${member}:1:Enj`)?.balance, 100n)
     assert.equal(get(GovernanceFellowshipMember, member)?.rank, 3)
     assert.equal(get(GovernanceWhitelistedCall, whitelisted)?.active, true)

@@ -265,6 +265,7 @@ async function updateVote(
     const id = `${referendumId}:${voter}:${currency ?? 'Fellowship'}`
     const existing = await ctx.store.findOneBy(GovernanceVote, { id })
     if (existing && existing.updatedAtBlock > block.height) return
+    await refreshReferendum(ctx, block, referendumId.split(':')[0], referendumIndex, '', {})
     const vote =
         existing ??
         new GovernanceVote({
@@ -277,9 +278,9 @@ async function updateVote(
         })
     vote.active = eventName === 'Voted'
     vote.vote = eventName === 'Voted' ? (jsonValue(args.vote) ?? null) : null
+    vote.referendumRecord = new GovernanceReferendum({ id: referendumId })
     vote.updatedAtBlock = block.height
     await ctx.store.save(vote)
-    await refreshReferendum(ctx, block, referendumId.split(':')[0], referendumIndex, '', {})
 }
 
 async function updateDelegation(

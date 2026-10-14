@@ -1,4 +1,5 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, StringColumn as StringColumn_, Index as Index_, IntColumn as IntColumn_, JSONColumn as JSONColumn_, BigIntColumn as BigIntColumn_} from "@subsquid/typeorm-store"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, OneToMany as OneToMany_, Relation as Relation_, StringColumn as StringColumn_, Index as Index_, IntColumn as IntColumn_, JSONColumn as JSONColumn_, BigIntColumn as BigIntColumn_} from "@subsquid/typeorm-store"
+import {GovernanceVote} from "./governanceVote.model"
 
 @Entity_()
 export class GovernanceReferendum {
@@ -8,6 +9,9 @@ export class GovernanceReferendum {
 
     @PrimaryColumn_()
     id!: string
+
+    @OneToMany_(() => GovernanceVote, e => e.referendumRecord)
+    voters!: Relation_<GovernanceVote[]>
 
     @Index_("idx_governance_referendum_pallet_b6b95dfb")
     @StringColumn_({nullable: false})

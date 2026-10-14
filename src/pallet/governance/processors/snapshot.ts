@@ -2,6 +2,7 @@ import { Block, CommonContext } from '~/contexts'
 import {
     GovernanceDelegation,
     GovernanceFellowshipMember,
+    GovernanceReferendum,
     GovernanceTreasuryItem,
     GovernanceVote,
     GovernanceWhitelistedCall,
@@ -58,6 +59,15 @@ async function saveIfNotNewer<T extends { id: string; updatedAtBlock: number }>(
     if (!existing || existing.updatedAtBlock <= row.updatedAtBlock) await ctx.store.save(row)
 }
 
+async function linkedReferendum(
+    ctx: GovernanceContext,
+    id: string,
+    cache: Map<string, GovernanceReferendum | null>
+): Promise<GovernanceReferendum | null> {
+    if (!cache.has(id)) cache.set(id, (await ctx.store.findOneBy(GovernanceReferendum, { id })) ?? null)
+    return cache.get(id) ?? null
+}
+
 async function snapshotReferenda(
     ctx: GovernanceContext,
     block: Block,
@@ -88,6 +98,7 @@ async function snapshotReferenda(
 
 async function snapshotConvictionVoting(ctx: GovernanceContext, block: Block) {
     const reader = compatibleStorage(storage.convictionVoting.votingFor, block, 'ConvictionVoting.VotingFor')
+    const referenda = new Map<string, GovernanceReferendum | null>()
     let votes = 0
     let delegations = 0
     for await (const page of reader.getPairsPaged(pageSize, block)) {
@@ -108,6 +119,7 @@ async function snapshotConvictionVoting(ctx: GovernanceContext, block: Block) {
                     const row = new GovernanceVote({
                         id: `${referendumId}:${voter}:${voteCurrency}`,
                         referendumId,
+                        referendumRecord: await linkedReferendum(ctx, referendumId, referenda),
                         accountId: voter,
                         currency: voteCurrency,
                         vote: jsonValue(entry[1]),
@@ -143,6 +155,7 @@ async function snapshotConvictionVoting(ctx: GovernanceContext, block: Block) {
 async function snapshotFellowship(ctx: GovernanceContext, block: Block) {
     const members = compatibleStorage(storage.fellowshipCollective.members, block, 'FellowshipCollective.Members')
     const voting = compatibleStorage(storage.fellowshipCollective.voting, block, 'FellowshipCollective.Voting')
+    const referenda = new Map<string, GovernanceReferendum | null>()
     let memberCount = 0
     let voteCount = 0
     for await (const page of members.getPairsPaged(pageSize, block)) {
@@ -174,6 +187,7 @@ async function snapshotFellowship(ctx: GovernanceContext, block: Block) {
                 new GovernanceVote({
                     id: `${referendumId}:${voter}:Fellowship`,
                     referendumId,
+                    referendumRecord: await linkedReferendum(ctx, referendumId, referenda),
                     accountId: voter,
                     currency: null,
                     vote: jsonValue(vote),
