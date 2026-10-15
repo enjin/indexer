@@ -187,9 +187,10 @@ void test('Matrixchain snapshot imports current RPC governance storage without c
     assert.equal(get(GovernanceReferendum, '7')?.metadataHash, whitelisted)
     assert.equal(get(GovernanceReferendum, '7')?.governanceTrack?.id, '1-rnd')
     assert.equal(get(GovernanceTrack, '1-rnd')?.name, 'Root')
-    assert.equal(get(GovernanceVote, `7-${voter}-SEnj:42`)?.active, true)
-    assert.equal(get(GovernanceVote, `7-${voter}-SEnj:42`)?.referendum?.id, '7')
-    assert.equal(get(GovernanceVote, `7-${voter}-SEnj:42`)?.voteModifier, 1)
+    assert.equal(get(GovernanceVote, `7-${voter}-SEnj-42`)?.active, true)
+    assert.equal(get(GovernanceVote, `7-${voter}-SEnj-42`)?.currency, 'SEnj-42')
+    assert.equal(get(GovernanceVote, `7-${voter}-SEnj-42`)?.referendum?.id, '7')
+    assert.equal(get(GovernanceVote, `7-${voter}-SEnj-42`)?.voteModifier, 1)
     assert.equal(
         get(GovernanceVote, `FellowshipReferenda:2:${member}:Fellowship`)?.referendum?.id,
         'FellowshipReferenda:2'
@@ -201,12 +202,12 @@ void test('Matrixchain snapshot imports current RPC governance storage without c
 
 void test('snapshot preserves state indexed from a newer block', async () => {
     const { ctx, block, get } = fixture(true)
-    const id = `7-${voter}-SEnj:42`
+    const id = `7-${voter}-SEnj-42`
     const newer = new GovernanceVote({
         id,
         referendumId: '7',
         accountId: voter,
-        currency: 'SEnj:42',
+        currency: 'SEnj-42',
         active: false,
         updatedAtBlock: 200,
     })

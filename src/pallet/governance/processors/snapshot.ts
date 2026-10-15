@@ -12,6 +12,7 @@ import { isRelay } from '~/util/tools'
 import { FindOptionsWhere } from 'typeorm'
 import { refreshReferendum } from './event'
 import { HistoricalGovernanceStorage } from './historical'
+import { sEnjCurrency } from './currency'
 import { referendumId, voteId } from './ids'
 import { jsonValue } from './json'
 import { snapshotTracks } from './tracks'
@@ -49,7 +50,7 @@ function index(value: unknown): number {
 function currency(value: unknown): string {
     if (value === undefined) return 'Enj'
     const kind = storedRecord(value)
-    if (kind.__kind === 'SEnj') return `SEnj:${String(kind.tokenId)}`
+    if (kind.__kind === 'SEnj') return sEnjCurrency(kind)
     if (kind.__kind === 'Enj') return 'Enj'
     throw new Error('Governance storage contains an invalid vote currency')
 }

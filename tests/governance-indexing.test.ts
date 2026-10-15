@@ -192,14 +192,26 @@ void test('Relaychain vote events without a poll index use the linked call and r
         )
     )
 
-    const vote = get(GovernanceVote, `7-${voter}-SEnj:42`) as GovernanceVote | undefined
+    const vote = get(GovernanceVote, `7-${voter}-SEnj-42`) as GovernanceVote | undefined
     assert(vote)
     assert.equal(vote.active, true)
-    assert.equal(vote.currency, 'SEnj:42')
+    assert.equal(vote.currency, 'SEnj-42')
     assert.equal(vote.referendum?.id, '7')
     assert.equal(vote.voteModifier, 1)
     assert.equal(vote.unlockableAtBlock, null)
     assert.equal((get(GovernanceReferendum, '7') as GovernanceReferendum | undefined)?.tallyAyes, 20n)
+
+    await processEvent(
+        ctx,
+        block,
+        event(
+            '100-1-3',
+            'ConvictionVoting.Voted',
+            { who: voter },
+            { pollIndex: 7, currency: { __kind: 'SEnj', value: 43n } }
+        )
+    )
+    assert.equal((get(GovernanceVote, `7-${voter}-SEnj-43`) as GovernanceVote | undefined)?.currency, 'SEnj-43')
 })
 
 void test('governance IDs retain their pallet and currency identity', () => {

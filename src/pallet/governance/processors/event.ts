@@ -15,6 +15,7 @@ import {
 import { storage } from '~/type'
 import { Block } from '~/type/support'
 import { In } from 'typeorm'
+import { sEnjCurrency } from './currency'
 import { ReferendumPallet, referendumId, trackId, voteId } from './ids'
 import { jsonValue } from './json'
 import { ensureTrack } from './tracks'
@@ -68,7 +69,7 @@ function account(value: unknown): string | undefined {
 
 function currencyKey(value: unknown): string {
     const currency = record(value)
-    if (currency.__kind === 'SEnj') return `SEnj:${String(currency.tokenId)}`
+    if (currency.__kind === 'SEnj') return sEnjCurrency(currency)
     return typeof currency.__kind === 'string' ? currency.__kind : 'Enj'
 }
 
