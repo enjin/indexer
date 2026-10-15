@@ -105,7 +105,6 @@ type GovernanceReferendum @entity {
   id: ID!
   voters: [GovernanceVote!] @derivedFrom(field: "referendum")
   pallet: String! @index
-  referendumIndex: Int! @index
   track: Int
   governanceTrack: GovernanceTrack
   status: String! @index

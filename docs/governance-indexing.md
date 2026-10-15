@@ -6,7 +6,7 @@ Current referendum state and tally are read from `ReferendumInfoFor` at the proc
 
 `GovernanceReferendum.voters` links to `GovernanceVote` rows, which expose each voter's `accountId`, currency, vote, and `active` state. Each vote also exposes its parent as `referendum`. A voter can have more than one row when currencies differ. The relation includes inactive vote rows retained after a removal; use the root `governanceVotes` query with `referendumId` and `active` filters when paging through large referenda. A relation can only expose votes already indexed: votes removed from current RPC storage before the initial import still require the historical governance backfill.
 
-`GovernanceReferendum.id` is the referendum index as a string for `Referenda` (for example, `"13"`). `FellowshipReferenda` retains a `FellowshipReferenda:` prefix because its independent counter can have the same number. `referendumIndex` remains an integer on both. The migration updates existing Referenda IDs and their vote, activity, and standard Event references; vote row IDs remain stable.
+`GovernanceReferendum.id` is the referendum index as a string for `Referenda` (for example, `"13"`). `FellowshipReferenda` retains a `FellowshipReferenda:` prefix because its independent counter can have the same number. The migration updates existing Referenda IDs and their vote, activity, and standard Event references; vote row IDs remain stable. The redundant `referendumIndex` field is removed; the index is available from the ID.
 
 `governanceTracks` exposes the runtime's track definitions for both pallets. Track IDs include the pallet, such as `Referenda:200`, to keep overlapping track indices distinct. A referendum retains its numeric `track` and links to the matching definition through `governanceTrack`. The current-state import reads all track constants at its pinned block; live referendum updates refresh their referenced track.
 
@@ -16,15 +16,12 @@ For standard conviction votes, `voteModifier` is an integer from 0 to 6: 0 means
 {
   governanceReferendumById(id: "13") {
     id
-    referendumIndex
     track
     governanceTrack { id name decisionPeriod }
     endedAtBlock
     voters {
       accountId
-      referendum {
-        referendumIndex
-      }
+      referendum { id }
       currency
       vote
       voteModifier

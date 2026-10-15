@@ -91,7 +91,6 @@ void test('current-state import recovers terminal referendum fields from the pre
     assert(saved)
     assert.equal(saved.status, 'Approved')
     assert.equal(saved.track, 200)
-    assert.equal(saved.referendumIndex, 13)
     assert.equal(saved.id, '13')
     assert.equal(saved.governanceTrack?.name, 'SmallTipper')
     assert.equal(saved.endedAtBlock, 17500011)

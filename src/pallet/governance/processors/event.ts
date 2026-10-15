@@ -177,8 +177,7 @@ export async function refreshReferendum(
     const previousStatus = existing?.status
     const previousEnd = existing?.endedAtBlock
     const referendum =
-        existing ??
-        new GovernanceReferendum({ id, pallet, referendumIndex, status: 'Ongoing', updatedAtBlock: block.height })
+        existing ?? new GovernanceReferendum({ id, pallet, status: 'Ongoing', updatedAtBlock: block.height })
 
     const info = await referendumInfo(block, pallet, referendumIndex)
     const ongoing =
@@ -367,7 +366,11 @@ async function updateDelegation(
         },
     })
     for (const referendum of referenda) {
-        await refreshReferendum(ctx, block, 'Referenda', referendum.referendumIndex, '', {})
+        const referendumIndex = index(Number(referendum.id))
+        if (referendumIndex === undefined || String(referendumIndex) !== referendum.id) {
+            throw new Error(`Invalid Referenda referendum ID: ${referendum.id}`)
+        }
+        await refreshReferendum(ctx, block, 'Referenda', referendumIndex, '', {})
     }
 }
 
