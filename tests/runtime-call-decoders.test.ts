@@ -136,5 +136,15 @@ for (const [network, version] of [
         )
         assert.equal(inserted.ruleSetId, 3)
         assert.equal(inserted.ruleSet.requireAccount, true)
+
+        const forceInserted = insertRuleSet(
+            callItem(runtime, 'FuelTanks.force_insert_rule_set', {
+                tankId: { __kind: 'Id', value: tankId },
+                ruleSetId: 4,
+                ruleSet,
+            })
+        )
+        assert.equal(forceInserted.ruleSetId, 4)
+        assert.equal(forceInserted.ruleSet.requireAccount, true)
     })
 }
