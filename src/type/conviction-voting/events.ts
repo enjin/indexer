@@ -7,7 +7,7 @@ import * as v1050 from '../v1050'
 import * as v1060 from '../v1060'
 import * as enjinV1070 from '../enjinV1070'
 import * as v1070 from '../v1070'
-import * as v1080 from '../v1080'
+import * as enjinV1080 from '../enjinV1080'
 
 export const delegated = {
     name: 'ConvictionVoting.Delegated',
@@ -277,10 +277,10 @@ export const poolVotingPurged = {
      * Voting state backed by the sENJ of a pool that is winding down was cleared by
      * governance, discarding its conviction lock.
      */
-    v1080: new EventType(
+    enjinV1080: new EventType(
         'ConvictionVoting.PoolVotingPurged',
         sts.struct({
-            who: v1080.AccountId32,
+            who: enjinV1080.AccountId32,
             class: sts.number(),
             tokenId: sts.bigint(),
         })

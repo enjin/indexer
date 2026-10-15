@@ -24,6 +24,7 @@ import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
 import * as enjinV1070 from '../enjinV1070'
 import * as v1070 from '../v1070'
+import * as enjinV1080 from '../enjinV1080'
 import * as v1080 from '../v1080'
 
 export const createListing = {
@@ -862,14 +863,17 @@ export const fillListing = {
      * - [`Error::InvalidAmount`] if the amount that still needs to be filled is greater than
      *   `amount`
      * - [`Error::ListingNotActive`] if the listing has not passed the `ListingActiveDelay` yet
-     * - [`Error::TakeValueUnderMinimum`] if the listings `take` value is under the minimum
+     * - [`Error::ReceivedValueUnderMinimum`] if the listings `take` value is under the minimum
      *   required
      * - [`Error::LowTokenBalance`] if the buyer does not have enough tokens for reserve
+     *
+     * The weight is charged for the maximum royalty beneficiary count and refunded down to
+     * the listing's actual count.
      */
-    v110: new CallType(
+    enjinV1080: new CallType(
         'Marketplace.fill_listing',
         sts.struct({
-            listingId: v110.H256,
+            listingId: enjinV1080.H256,
             amount: sts.bigint(),
         })
     ),
@@ -1105,7 +1109,7 @@ export const finalizeAuction = {
     ),
     /**
      * Finalize the auction with id: `listing_id`. This will end the auction and transfer
-     * funds. It fails if the auction is not over.
+     * funds. It fails if the auction is not over. It can be called by anyone.
      *
      * # Parameters
      *
@@ -1115,13 +1119,18 @@ export const finalizeAuction = {
      *
      * - [`Error::ListingNotFound`] if listing under `listing_id` does not exist
      * - [`Error::ListingIsWrongType`] if listing is not an auction
-     * - [`Error::AuctionNotOver`] if the auction has not finished yet
-     * - [`Error::TakeValueUnderMinimum`] if the take value is less than the minimum required
+     * - [`Error::AuctionNotOver`] if the auction has not finished yet, or if it's in a bid
+     *   extension and the caller is not the seller
+     * - [`Error::ReceivedValueUnderMinimum`] if the take value is less than the minimum
+     *   required
+     *
+     * The weight is charged for the maximum royalty beneficiary count and refunded down to
+     * the listing's actual count.
      */
-    v110: new CallType(
+    enjinV1080: new CallType(
         'Marketplace.finalize_auction',
         sts.struct({
-            listingId: v110.H256,
+            listingId: enjinV1080.H256,
         })
     ),
     /**

@@ -1,6 +1,7 @@
 import { sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx } from '../support'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixEnjinV1041 from '../matrixEnjinV1041'
+import * as enjinV1080 from '../enjinV1080'
 import * as v1080 from '../v1080'
 
 export const nextFeeMultiplier = {
@@ -61,6 +62,23 @@ export const txPaymentCredit = {
      *
      *  Use `withdraw_txfee` and `remaining_txfee` to access from outside the crate.
      */
+    enjinV1080: new StorageType(
+        'TransactionPayment.TxPaymentCredit',
+        'Optional',
+        [],
+        enjinV1080.NoDrop
+    ) as TxPaymentCreditEnjinV1080,
+    /**
+     *  The `OnChargeTransaction` stores the withdrawn tx fee here.
+     *
+     *  Use `withdraw_txfee` and `remaining_txfee` to access from outside the crate.
+     */
+    v1070: new StorageType('TransactionPayment.TxPaymentCredit', 'Optional', [], sts.unit()) as TxPaymentCreditV1070,
+    /**
+     *  The `OnChargeTransaction` stores the withdrawn tx fee here.
+     *
+     *  Use `withdraw_txfee` and `remaining_txfee` to access from outside the crate.
+     */
     v1080: new StorageType('TransactionPayment.TxPaymentCredit', 'Optional', [], v1080.NoDrop) as TxPaymentCreditV1080,
 }
 
@@ -80,6 +98,26 @@ export interface TxPaymentCreditMatrixEnjinV1041 {
  *  Use `withdraw_txfee` and `remaining_txfee` to access from outside the crate.
  */
 export interface TxPaymentCreditEnjinV1070 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block): Promise<null | undefined>
+}
+
+/**
+ *  The `OnChargeTransaction` stores the withdrawn tx fee here.
+ *
+ *  Use `withdraw_txfee` and `remaining_txfee` to access from outside the crate.
+ */
+export interface TxPaymentCreditEnjinV1080 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block): Promise<enjinV1080.NoDrop | undefined>
+}
+
+/**
+ *  The `OnChargeTransaction` stores the withdrawn tx fee here.
+ *
+ *  Use `withdraw_txfee` and `remaining_txfee` to access from outside the crate.
+ */
+export interface TxPaymentCreditV1070 {
     is(block: RuntimeCtx): boolean
     get(block: Block): Promise<null | undefined>
 }

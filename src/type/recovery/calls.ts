@@ -1,6 +1,6 @@
 import { sts, Block, Bytes, Option, Result, CallType, RuntimeCtx } from '../support'
 import * as enjinV1070 from '../enjinV1070'
-import * as v1080 from '../v1080'
+import * as enjinV1080 from '../enjinV1080'
 
 export const setCurrentHead = {
     name: 'Recovery.set_current_head',
@@ -285,10 +285,10 @@ export const scheduleCodeUpgrade = {
      * ## Events
      * - `CodeUpgradeScheduled`: Emitted when the upgrade is successfully scheduled
      */
-    v1080: new CallType(
+    enjinV1080: new CallType(
         'Recovery.schedule_code_upgrade',
         sts.struct({
-            paraId: v1080.Id,
+            paraId: enjinV1080.Id,
             newCode: sts.bytes(),
         })
     ),
@@ -347,10 +347,10 @@ export const cancelCodeUpgrade = {
      * ## Events
      * - `CodeUpgradeCancelled`: Emitted when the pending upgrade state is cleared
      */
-    v1080: new CallType(
+    enjinV1080: new CallType(
         'Recovery.cancel_code_upgrade',
         sts.struct({
-            paraId: v1080.Id,
+            paraId: enjinV1080.Id,
         })
     ),
 }

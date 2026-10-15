@@ -16,8 +16,16 @@ export function dispatch(call: CallItem): Dispatch {
             () => calls.fuelTanks.dispatch.matrixV1041.decode(call)
         )
         .when(
+            () => calls.fuelTanks.dispatch.matrixEnjinV1041.is(call),
+            () => calls.fuelTanks.dispatch.matrixEnjinV1041.decode(call)
+        )
+        .when(
             () => calls.fuelTanks.dispatch.v1080.is(call),
             () => calls.fuelTanks.dispatch.v1080.decode(call)
+        )
+        .when(
+            () => calls.fuelTanks.dispatch.enjinV1080.is(call),
+            () => calls.fuelTanks.dispatch.enjinV1080.decode(call)
         )
         .when(
             () => calls.fuelTanks.dispatch.matrixEnjinV1031.is(call),

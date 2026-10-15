@@ -4088,6 +4088,20 @@ export const MinimumInfusionRule = sts.bigint()
 
 export const MaxFuelBurnPerTransactionRule = sts.bigint()
 
+export interface Attribute {
+    value: Bytes
+    deposit: bigint
+    depositor?: AccountId32 | undefined
+}
+
+export const Attribute: sts.Type<Attribute> = sts.struct(() => {
+    return {
+        value: sts.bytes(),
+        deposit: sts.bigint(),
+        depositor: sts.option(() => AccountId32),
+    }
+})
+
 export interface V5Location {
     parents: number
     interior: V5Junctions
@@ -21847,12 +21861,6 @@ export interface DefaultTransferParams_Simple {
     amount: bigint
 }
 
-export interface Attribute {
-    value: Bytes
-    deposit: bigint
-    depositor?: AccountId32 | undefined
-}
-
 export type FlexibleMintParams = FlexibleMintParams_CreateOrMint | FlexibleMintParams_Mint
 
 export interface FlexibleMintParams_CreateOrMint {
@@ -26892,14 +26900,6 @@ export const MultiTokensCall: sts.Type<MultiTokensCall> = sts.closedEnum(() => {
             tokenId: sts.bigint(),
             deltaAccountCount: sts.number(),
         }),
-    }
-})
-
-export const Attribute: sts.Type<Attribute> = sts.struct(() => {
-    return {
-        value: sts.bytes(),
-        deposit: sts.bigint(),
-        depositor: sts.option(() => AccountId32),
     }
 })
 

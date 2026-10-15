@@ -18,6 +18,7 @@ import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
 import * as enjinV1070 from '../enjinV1070'
 import * as v1070 from '../v1070'
+import * as enjinV1080 from '../enjinV1080'
 import * as v1080 from '../v1080'
 
 export const incompleteSince = {
@@ -161,6 +162,15 @@ export const agenda = {
         [sts.number()],
         sts.array(() => sts.option(() => enjinV1070.Scheduled))
     ) as AgendaEnjinV1070,
+    /**
+     *  Items to be executed, indexed by the block number that they should be executed on.
+     */
+    enjinV1080: new StorageType(
+        'Scheduler.Agenda',
+        'Default',
+        [sts.number()],
+        sts.array(() => sts.option(() => enjinV1080.Scheduled))
+    ) as AgendaEnjinV1080,
     /**
      *  Items to be executed, indexed by the block number that they should be executed on.
      */
@@ -577,6 +587,31 @@ export interface AgendaEnjinV1070 {
         block: Block,
         key: number
     ): AsyncIterable<[k: number, v: (enjinV1070.Scheduled | undefined)[] | undefined][]>
+}
+
+/**
+ *  Items to be executed, indexed by the block number that they should be executed on.
+ */
+export interface AgendaEnjinV1080 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): (enjinV1080.Scheduled | undefined)[]
+    get(block: Block, key: number): Promise<(enjinV1080.Scheduled | undefined)[] | undefined>
+    getMany(block: Block, keys: number[]): Promise<((enjinV1080.Scheduled | undefined)[] | undefined)[]>
+    getKeys(block: Block): Promise<number[]>
+    getKeys(block: Block, key: number): Promise<number[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<number[]>
+    getKeysPaged(pageSize: number, block: Block, key: number): AsyncIterable<number[]>
+    getPairs(block: Block): Promise<[k: number, v: (enjinV1080.Scheduled | undefined)[] | undefined][]>
+    getPairs(block: Block, key: number): Promise<[k: number, v: (enjinV1080.Scheduled | undefined)[] | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: number, v: (enjinV1080.Scheduled | undefined)[] | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: number
+    ): AsyncIterable<[k: number, v: (enjinV1080.Scheduled | undefined)[] | undefined][]>
 }
 
 /**

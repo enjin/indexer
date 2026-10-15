@@ -4,6 +4,7 @@ import * as v100 from '../v100'
 import * as enjinV101 from '../enjinV101'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
+import * as enjinV1080 from '../enjinV1080'
 import * as v1080 from '../v1080'
 
 export const candidateBacked = {
@@ -21,6 +22,18 @@ export const candidateBacked = {
     enjinV1062: new EventType(
         'ParaInclusion.CandidateBacked',
         sts.tuple([enjinV1062.CandidateReceiptV2, enjinV1062.HeadData, enjinV1062.V8CoreIndex, enjinV1062.V8GroupIndex])
+    ),
+    /**
+     * A candidate was backed. `[candidate, head_data]`
+     */
+    enjinV1080: new EventType(
+        'ParaInclusion.CandidateBacked',
+        sts.tuple([
+            enjinV1080.V9CandidateReceiptV2,
+            enjinV1080.HeadData,
+            enjinV1080.V9CoreIndex,
+            enjinV1080.V9GroupIndex,
+        ])
     ),
     /**
      * A candidate was backed. `[candidate, head_data]`
@@ -64,6 +77,18 @@ export const candidateIncluded = {
     /**
      * A candidate was included. `[candidate, head_data]`
      */
+    enjinV1080: new EventType(
+        'ParaInclusion.CandidateIncluded',
+        sts.tuple([
+            enjinV1080.V9CandidateReceiptV2,
+            enjinV1080.HeadData,
+            enjinV1080.V9CoreIndex,
+            enjinV1080.V9GroupIndex,
+        ])
+    ),
+    /**
+     * A candidate was included. `[candidate, head_data]`
+     */
     v100: new EventType(
         'ParaInclusion.CandidateIncluded',
         sts.tuple([v100.V2CandidateReceipt, v100.HeadData, v100.V2CoreIndex, v100.V2GroupIndex])
@@ -99,6 +124,13 @@ export const candidateTimedOut = {
     enjinV1062: new EventType(
         'ParaInclusion.CandidateTimedOut',
         sts.tuple([enjinV1062.CandidateReceiptV2, enjinV1062.HeadData, enjinV1062.V8CoreIndex])
+    ),
+    /**
+     * A candidate timed out. `[candidate, head_data]`
+     */
+    enjinV1080: new EventType(
+        'ParaInclusion.CandidateTimedOut',
+        sts.tuple([enjinV1080.V9CandidateReceiptV2, enjinV1080.HeadData, enjinV1080.V9CoreIndex])
     ),
     /**
      * A candidate timed out. `[candidate, head_data]`

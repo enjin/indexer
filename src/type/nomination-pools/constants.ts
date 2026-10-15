@@ -223,13 +223,6 @@ export const maxValidatorBonusAmounts = {
     enjinV1062: new ConstantType('NominationPools.MaxValidatorBonusAmounts', sts.number()),
 }
 
-export const orphanedPoolAccountId = {
-    /**
-     *  The account that will receive the deposit and commission if the pool's token is burned
-     */
-    v101: new ConstantType('NominationPools.OrphanedPoolAccountId', v101.AccountId32),
-}
-
 export const maxPayoutPagesPerRun = {
     /**
      *  Maximum number of exposure pages the payout offchain worker examines in a single run.
@@ -244,5 +237,12 @@ export const maxPayoutPagesPerRun = {
      *  at, rather than finishing the entry. A value of zero still advances one page per run,
      *  so no setting of this can starve a page.
      */
-    v1080: new ConstantType('NominationPools.MaxPayoutPagesPerRun', sts.number()),
+    enjinV1080: new ConstantType('NominationPools.MaxPayoutPagesPerRun', sts.number()),
+}
+
+export const orphanedPoolAccountId = {
+    /**
+     *  The account that will receive the deposit and commission if the pool's token is burned
+     */
+    v101: new ConstantType('NominationPools.OrphanedPoolAccountId', v101.AccountId32),
 }

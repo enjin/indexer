@@ -4,6 +4,7 @@ import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
+import * as enjinV1080 from '../enjinV1080'
 import * as v1080 from '../v1080'
 
 export const currentSessionIndex = {
@@ -93,6 +94,15 @@ export const allowedRelayParents = {
         enjinV1062.AllowedRelayParentsTracker
     ) as AllowedRelayParentsEnjinV1062,
     /**
+     *  All allowed relay parents, keyed by (session_index, relay_parent_hash).
+     */
+    enjinV1080: new StorageType(
+        'ParasShared.AllowedRelayParents',
+        'Optional',
+        [sts.number(), enjinV1080.H256],
+        enjinV1080.RelayParentInfo
+    ) as AllowedRelayParentsEnjinV1080,
+    /**
      *  All allowed relay-parents.
      */
     v1030: new StorageType(
@@ -137,6 +147,51 @@ export interface AllowedRelayParentsEnjinV1062 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): enjinV1062.AllowedRelayParentsTracker
     get(block: Block): Promise<enjinV1062.AllowedRelayParentsTracker | undefined>
+}
+
+/**
+ *  All allowed relay parents, keyed by (session_index, relay_parent_hash).
+ */
+export interface AllowedRelayParentsEnjinV1080 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key1: number, key2: enjinV1080.H256): Promise<enjinV1080.RelayParentInfo | undefined>
+    getMany(block: Block, keys: [number, enjinV1080.H256][]): Promise<(enjinV1080.RelayParentInfo | undefined)[]>
+    getKeys(block: Block): Promise<[number, enjinV1080.H256][]>
+    getKeys(block: Block, key1: number): Promise<[number, enjinV1080.H256][]>
+    getKeys(block: Block, key1: number, key2: enjinV1080.H256): Promise<[number, enjinV1080.H256][]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[number, enjinV1080.H256][]>
+    getKeysPaged(pageSize: number, block: Block, key1: number): AsyncIterable<[number, enjinV1080.H256][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: number,
+        key2: enjinV1080.H256
+    ): AsyncIterable<[number, enjinV1080.H256][]>
+    getPairs(block: Block): Promise<[k: [number, enjinV1080.H256], v: enjinV1080.RelayParentInfo | undefined][]>
+    getPairs(
+        block: Block,
+        key1: number
+    ): Promise<[k: [number, enjinV1080.H256], v: enjinV1080.RelayParentInfo | undefined][]>
+    getPairs(
+        block: Block,
+        key1: number,
+        key2: enjinV1080.H256
+    ): Promise<[k: [number, enjinV1080.H256], v: enjinV1080.RelayParentInfo | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: [number, enjinV1080.H256], v: enjinV1080.RelayParentInfo | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: number
+    ): AsyncIterable<[k: [number, enjinV1080.H256], v: enjinV1080.RelayParentInfo | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: number,
+        key2: enjinV1080.H256
+    ): AsyncIterable<[k: [number, enjinV1080.H256], v: enjinV1080.RelayParentInfo | undefined][]>
 }
 
 /**
@@ -198,21 +253,21 @@ export const allowedSchedulingParents = {
     /**
      *  All allowed scheduling parents.
      */
-    v1080: new StorageType(
+    enjinV1080: new StorageType(
         'ParasShared.AllowedSchedulingParents',
         'Default',
         [],
-        v1080.AllowedSchedulingParentsTracker
-    ) as AllowedSchedulingParentsV1080,
+        enjinV1080.AllowedSchedulingParentsTracker
+    ) as AllowedSchedulingParentsEnjinV1080,
 }
 
 /**
  *  All allowed scheduling parents.
  */
-export interface AllowedSchedulingParentsV1080 {
+export interface AllowedSchedulingParentsEnjinV1080 {
     is(block: RuntimeCtx): boolean
-    getDefault(block: Block): v1080.AllowedSchedulingParentsTracker
-    get(block: Block): Promise<v1080.AllowedSchedulingParentsTracker | undefined>
+    getDefault(block: Block): enjinV1080.AllowedSchedulingParentsTracker
+    get(block: Block): Promise<enjinV1080.AllowedSchedulingParentsTracker | undefined>
 }
 
 export const oldestRelayParentSession = {
@@ -221,12 +276,12 @@ export const oldestRelayParentSession = {
      *  `AllowedRelayParents`. Used to efficiently prune all expired sessions
      *  when `max_relay_parent_session_age` decreases.
      */
-    v1080: new StorageType(
+    enjinV1080: new StorageType(
         'ParasShared.OldestRelayParentSession',
         'Default',
         [],
         sts.number()
-    ) as OldestRelayParentSessionV1080,
+    ) as OldestRelayParentSessionEnjinV1080,
 }
 
 /**
@@ -234,7 +289,7 @@ export const oldestRelayParentSession = {
  *  `AllowedRelayParents`. Used to efficiently prune all expired sessions
  *  when `max_relay_parent_session_age` decreases.
  */
-export interface OldestRelayParentSessionV1080 {
+export interface OldestRelayParentSessionEnjinV1080 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): number
     get(block: Block): Promise<number | undefined>
@@ -246,12 +301,12 @@ export const minimumRelayParentNumber = {
      *  `AllowedRelayParents`. This is the block number of the first relay parent
      *  added to each session.
      */
-    v1080: new StorageType(
+    enjinV1080: new StorageType(
         'ParasShared.MinimumRelayParentNumber',
         'Optional',
         [sts.number()],
         sts.number()
-    ) as MinimumRelayParentNumberV1080,
+    ) as MinimumRelayParentNumberEnjinV1080,
 }
 
 /**
@@ -259,7 +314,7 @@ export const minimumRelayParentNumber = {
  *  `AllowedRelayParents`. This is the block number of the first relay parent
  *  added to each session.
  */
-export interface MinimumRelayParentNumberV1080 {
+export interface MinimumRelayParentNumberEnjinV1080 {
     is(block: RuntimeCtx): boolean
     get(block: Block, key: number): Promise<number | undefined>
     getMany(block: Block, keys: number[]): Promise<(number | undefined)[]>

@@ -30,6 +30,7 @@ import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
 import * as enjinV1070 from '../enjinV1070'
 import * as v1070 from '../v1070'
+import * as enjinV1080 from '../enjinV1080'
 import * as v1080 from '../v1080'
 
 export const collectionCreated = {
@@ -500,6 +501,26 @@ export const tokenMutated = {
         })
     ),
     /**
+     * A token was mutated
+     */
+    enjinV1080: new EventType(
+        'MultiTokens.TokenMutated',
+        sts.struct({
+            /**
+             * The collection id where the Token belongs
+             */
+            collectionId: sts.bigint(),
+            /**
+             * Id of the Token mutated
+             */
+            tokenId: sts.bigint(),
+            /**
+             * mutation that was applied to the Token
+             */
+            mutation: enjinV1080.DefaultTokenMutation,
+        })
+    ),
+    /**
      * A [`Token`](ep_multi_tokens::Token) was mutated
      */
     v100: new EventType(
@@ -699,6 +720,10 @@ export const frozen = {
      * Collection, token or account was frozen
      */
     enjinV1070: new EventType('MultiTokens.Frozen', enjinV1070.Freeze),
+    /**
+     * Collection, token or account was frozen
+     */
+    enjinV1080: new EventType('MultiTokens.Frozen', enjinV1080.Freeze),
     /**
      * Collection, token or account was frozen
      */
@@ -3326,6 +3351,22 @@ export const collectionUpdated = {
     /**
      * Collection storage was set to `value`
      */
+    enjinV1080: new EventType(
+        'MultiTokens.CollectionUpdated',
+        sts.struct({
+            /**
+             * The collection id for which the value is set
+             */
+            collectionId: sts.bigint(),
+            /**
+             * new value of Collection storage
+             */
+            value: sts.option(() => enjinV1080.Collection),
+        })
+    ),
+    /**
+     * Collection storage was set to `value`
+     */
     v100: new EventType(
         'MultiTokens.CollectionUpdated',
         sts.struct({
@@ -3705,6 +3746,26 @@ export const tokenUpdated = {
              * new value of Token storage
              */
             value: sts.option(() => enjinV1062.Token),
+        })
+    ),
+    /**
+     * Token storage was set to `value`
+     */
+    enjinV1080: new EventType(
+        'MultiTokens.TokenUpdated',
+        sts.struct({
+            /**
+             * The collection id for which the value is set
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token id for which the value is set
+             */
+            tokenId: sts.bigint(),
+            /**
+             * new value of Token storage
+             */
+            value: sts.option(() => enjinV1080.Token),
         })
     ),
     /**

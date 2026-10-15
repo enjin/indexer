@@ -24,6 +24,30 @@ export interface RuntimeVersion {
     stateVersion: number
 }
 
+export const BlockLength: sts.Type<BlockLength> = sts.struct(() => {
+    return {
+        max: Type_506,
+    }
+})
+
+export const Type_506: sts.Type<Type_506> = sts.struct(() => {
+    return {
+        normal: sts.number(),
+        operational: sts.number(),
+        mandatory: sts.number(),
+    }
+})
+
+export interface Type_506 {
+    normal: number
+    operational: number
+    mandatory: number
+}
+
+export interface BlockLength {
+    max: Type_506
+}
+
 export interface BeefyAuthoritySet {
     id: bigint
     len: number
@@ -10578,6 +10602,18 @@ export const Attribute: sts.Type<Attribute> = sts.struct(() => {
     }
 })
 
+export const AttributeKeyValuePair: sts.Type<AttributeKeyValuePair> = sts.struct(() => {
+    return {
+        key: sts.bytes(),
+        value: sts.bytes(),
+    }
+})
+
+export interface AttributeKeyValuePair {
+    key: Bytes
+    value: Bytes
+}
+
 export const Type_469: sts.Type<Type_469> = sts.struct(() => {
     return {
         accountId: AccountId32,
@@ -10618,11 +10654,6 @@ export interface ForeignTokenCreationParams {
     symbol: Bytes
     location?: V3MultiLocation | undefined
     unitsPerSecond?: bigint | undefined
-}
-
-export interface AttributeKeyValuePair {
-    key: Bytes
-    value: Bytes
 }
 
 export type SufficiencyParam = SufficiencyParam_Insufficient | SufficiencyParam_Sufficient
@@ -10730,13 +10761,6 @@ export const ForeignTokenCreationParams: sts.Type<ForeignTokenCreationParams> = 
 })
 
 export const BoundedString = sts.bytes()
-
-export const AttributeKeyValuePair: sts.Type<AttributeKeyValuePair> = sts.struct(() => {
-    return {
-        key: sts.bytes(),
-        value: sts.bytes(),
-    }
-})
 
 export const FreezeState: sts.Type<FreezeState> = sts.closedEnum(() => {
     return {

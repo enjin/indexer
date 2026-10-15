@@ -3,6 +3,7 @@ import * as enjinV100 from '../enjinV100'
 import * as v104 from '../v104'
 import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
+import * as enjinV1080 from '../enjinV1080'
 import * as v1080 from '../v1080'
 
 export const assignmentKeysUnsafe = {
@@ -143,6 +144,15 @@ export const sessionExecutorParams = {
     /**
      *  Executor parameter set for a given session index
      */
+    enjinV1080: new StorageType(
+        'ParaSessionInfo.SessionExecutorParams',
+        'Optional',
+        [sts.number()],
+        sts.array(() => enjinV1080.V9ExecutorParam)
+    ) as SessionExecutorParamsEnjinV1080,
+    /**
+     *  Executor parameter set for a given session index
+     */
     v104: new StorageType(
         'ParaSessionInfo.SessionExecutorParams',
         'Optional',
@@ -215,6 +225,30 @@ export interface SessionExecutorParamsEnjinV1032 {
         block: Block,
         key: number
     ): AsyncIterable<[k: number, v: enjinV1032.V6ExecutorParam[] | undefined][]>
+}
+
+/**
+ *  Executor parameter set for a given session index
+ */
+export interface SessionExecutorParamsEnjinV1080 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: number): Promise<enjinV1080.V9ExecutorParam[] | undefined>
+    getMany(block: Block, keys: number[]): Promise<(enjinV1080.V9ExecutorParam[] | undefined)[]>
+    getKeys(block: Block): Promise<number[]>
+    getKeys(block: Block, key: number): Promise<number[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<number[]>
+    getKeysPaged(pageSize: number, block: Block, key: number): AsyncIterable<number[]>
+    getPairs(block: Block): Promise<[k: number, v: enjinV1080.V9ExecutorParam[] | undefined][]>
+    getPairs(block: Block, key: number): Promise<[k: number, v: enjinV1080.V9ExecutorParam[] | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: number, v: enjinV1080.V9ExecutorParam[] | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: number
+    ): AsyncIterable<[k: number, v: enjinV1080.V9ExecutorParam[] | undefined][]>
 }
 
 /**

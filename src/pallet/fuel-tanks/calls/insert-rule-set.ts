@@ -13,12 +13,20 @@ export const insertRuleSet = withDispatchCheck((call: CallItem): InsertRuleSet =
             () => calls.fuelTanks.insertRuleSet.matrixV1041.decode(call)
         )
         .when(
+            () => calls.fuelTanks.insertRuleSet.matrixEnjinV1041.is(call),
+            () => calls.fuelTanks.insertRuleSet.matrixEnjinV1041.decode(call)
+        )
+        .when(
             () => calls.fuelTanks.forceInsertRuleSet.matrixV1041.is(call),
             () => calls.fuelTanks.forceInsertRuleSet.matrixV1041.decode(call)
         )
         .when(
             () => calls.fuelTanks.insertRuleSet.v1080.is(call),
             () => calls.fuelTanks.insertRuleSet.v1080.decode(call)
+        )
+        .when(
+            () => calls.fuelTanks.insertRuleSet.enjinV1080.is(call),
+            () => calls.fuelTanks.insertRuleSet.enjinV1080.decode(call)
         )
         .when(
             () => calls.fuelTanks.insertRuleSet.matrixEnjinV1031.is(call),
