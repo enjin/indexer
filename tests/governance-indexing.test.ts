@@ -14,7 +14,7 @@ import {
     GovernanceVote,
 } from '~/model'
 import { indexedEvent, processEvent } from '~/pallet/governance/processors'
-import { referendumId } from '~/pallet/governance/processors/ids'
+import { referendumId, trackId } from '~/pallet/governance/processors/ids'
 import { unlockableAtBlock, voteModifier } from '~/pallet/governance/processors/vote'
 import { constants, storage } from '~/type'
 
@@ -131,8 +131,8 @@ void test('governance processor persists a storage-backed referendum and histori
     assert.equal(referendum.proposalPreimageStatus, 'Unresolved')
     assert.deepEqual(referendum.submissionDeposit, { who: `0x${'11'.repeat(32)}`, amount: '100' })
     assert.equal((get(GovernanceActivity, '100-1-1') as GovernanceActivity | undefined)?.referendumId, '7')
-    assert.equal(referendum.governanceTrack?.id, 'Referenda:1')
-    assert.equal((get(GovernanceTrack, 'Referenda:1') as GovernanceTrack | undefined)?.name, 'Root')
+    assert.equal(referendum.governanceTrack?.id, '1-rnd')
+    assert.equal((get(GovernanceTrack, '1-rnd') as GovernanceTrack | undefined)?.name, 'Root')
 })
 
 void test('governance events appear in the standard Event query with decoded payloads', async () => {
@@ -205,6 +205,8 @@ void test('Relaychain vote events without a poll index use the linked call and r
 void test('referendum IDs stay unique when both pallets use the same index', () => {
     assert.equal(referendumId('Referenda', 13), '13')
     assert.equal(referendumId('FellowshipReferenda', 13), 'FellowshipReferenda:13')
+    assert.equal(trackId('Referenda', 200), '200-rnd')
+    assert.equal(trackId('FellowshipReferenda', 200), '200-frnd')
 })
 
 void test('terminal referendum events set vote unlock eligibility from conviction and result', async () => {

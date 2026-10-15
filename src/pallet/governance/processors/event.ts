@@ -15,7 +15,7 @@ import {
 import { storage } from '~/type'
 import { Block } from '~/type/support'
 import { In } from 'typeorm'
-import { ReferendumPallet, referendumId } from './ids'
+import { ReferendumPallet, referendumId, trackId } from './ids'
 import { jsonValue } from './json'
 import { ensureTrack } from './tracks'
 import { unlockableAtBlock, voteLockingPeriod, voteModifier } from './vote'
@@ -245,7 +245,7 @@ export async function refreshReferendum(
     if (referendum.track !== null && referendum.track !== undefined) {
         referendum.governanceTrack =
             (await ensureTrack(ctx, block, pallet, referendum.track)) ??
-            (await ctx.store.findOneBy(GovernanceTrack, { id: `${pallet}:${referendum.track}` })) ??
+            (await ctx.store.findOneBy(GovernanceTrack, { id: trackId(pallet, referendum.track) })) ??
             null
     }
     referendum.updatedAtBlock = block.height

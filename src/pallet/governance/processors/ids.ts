@@ -5,5 +5,5 @@ export function referendumId(pallet: ReferendumPallet, index: number): string {
 }
 
 export function trackId(pallet: ReferendumPallet, index: number): string {
-    return `${pallet}:${index}`
+    return `${index}-${pallet === 'Referenda' ? 'rnd' : 'frnd'}`
 }
