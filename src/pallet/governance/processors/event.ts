@@ -7,6 +7,7 @@ import {
     GovernanceEventData,
     GovernanceFellowshipMember,
     GovernanceReferendum,
+    GovernanceTrack,
     GovernanceTreasuryItem,
     GovernanceVote,
     GovernanceWhitelistedCall,
@@ -14,6 +15,10 @@ import {
 import { storage } from '~/type'
 import { Block } from '~/type/support'
 import { In } from 'typeorm'
+import { ReferendumPallet, referendumId } from './ids'
+import { jsonValue } from './json'
+import { ensureTrack } from './tracks'
+import { unlockableAtBlock, voteLockingPeriod, voteModifier } from './vote'
 
 type GovernanceContext = Pick<CommonContext, 'store'>
 type GovernanceEvent = {
@@ -44,17 +49,6 @@ export type ReferendumInfo = {
 
 const referendumPallets = new Set(['Referenda', 'FellowshipReferenda'])
 const maxStoredPreimageBytes = 64 * 1024
-
-// Runtime JSON may contain bigints and byte arrays, neither of which JSONB accepts directly.
-export function jsonValue(value: unknown): unknown {
-    if (typeof value === 'bigint') return value.toString()
-    if (value instanceof Uint8Array) return `0x${Buffer.from(value).toString('hex')}`
-    if (Array.isArray(value)) return value.map(jsonValue)
-    if (value && typeof value === 'object') {
-        return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, jsonValue(item)]))
-    }
-    return value
-}
 
 function record(value: unknown): Record<string, unknown> {
     return value && typeof value === 'object' && !Array.isArray(value) ? (value as Record<string, unknown>) : {}
@@ -171,15 +165,17 @@ async function referendumInfo(
 export async function refreshReferendum(
     ctx: GovernanceContext,
     block: Block,
-    pallet: string,
+    pallet: ReferendumPallet,
     referendumIndex: number,
     eventName: string,
     args: Record<string, unknown>,
     historicalInfo?: ReferendumInfo
 ): Promise<void> {
-    const id = `${pallet}:${referendumIndex}`
+    const id = referendumId(pallet, referendumIndex)
     const existing = await ctx.store.findOneBy(GovernanceReferendum, { id })
     if (existing && existing.updatedAtBlock > block.height) return
+    const previousStatus = existing?.status
+    const previousEnd = existing?.endedAtBlock
     const referendum =
         existing ??
         new GovernanceReferendum({ id, pallet, referendumIndex, status: 'Ongoing', updatedAtBlock: block.height })
@@ -212,6 +208,8 @@ export async function refreshReferendum(
     if (info?.__kind && info.__kind !== 'Ongoing') {
         referendum.status = info.__kind
         const terminalValue: unknown = info.value
+        referendum.endedAtBlock =
+            index(Array.isArray(terminalValue) ? terminalValue[0] : terminalValue) ?? referendum.endedAtBlock
         if (Array.isArray(terminalValue) && terminalValue.length >= 3) {
             referendum.submissionDeposit = jsonValue(terminalValue[1]) ?? null
             referendum.decisionDeposit = jsonValue(terminalValue[2]) ?? null
@@ -238,14 +236,41 @@ export async function refreshReferendum(
         referendum.status = 'Deciding'
     } else if (['Approved', 'Rejected', 'TimedOut', 'Cancelled', 'Killed'].includes(eventName)) {
         referendum.status = eventName
+        referendum.endedAtBlock = block.height
     }
 
     if (eventName === 'MetadataSet') referendum.metadataHash = account(args.hash) ?? null
     if (eventName === 'MetadataCleared') referendum.metadataHash = null
     if (eventName === 'DecisionDepositRefunded') referendum.decisionDeposit = null
     if (eventName === 'SubmissionDepositRefunded') referendum.submissionDeposit = null
+    if (referendum.track !== null && referendum.track !== undefined) {
+        referendum.governanceTrack =
+            (await ensureTrack(ctx, block, pallet, referendum.track)) ??
+            (await ctx.store.findOneBy(GovernanceTrack, { id: `${pallet}:${referendum.track}` })) ??
+            null
+    }
     referendum.updatedAtBlock = block.height
     await ctx.store.save(referendum)
+
+    if (
+        pallet === 'Referenda' &&
+        referendum.endedAtBlock != null &&
+        (previousStatus !== referendum.status || previousEnd !== referendum.endedAtBlock)
+    ) {
+        const lockingPeriod = voteLockingPeriod(block)
+        const votes = await ctx.store.find(GovernanceVote, { where: { referendumId: id, active: true } })
+        for (const vote of votes) {
+            if (vote.updatedAtBlock > block.height) continue
+            vote.unlockableAtBlock = unlockableAtBlock(
+                vote.vote,
+                referendum.status,
+                referendum.endedAtBlock,
+                lockingPeriod
+            )
+            vote.updatedAtBlock = block.height
+            await ctx.store.save(vote)
+        }
+    }
 }
 
 async function updateVote(
@@ -259,26 +284,37 @@ async function updateVote(
     callArgs: Record<string, unknown>
 ): Promise<void> {
     if (referendumIndex === undefined || !voter) return
-    const referendumId =
-        pallet === 'FellowshipCollective' ? `FellowshipReferenda:${referendumIndex}` : `Referenda:${referendumIndex}`
+    const referendumPallet: ReferendumPallet = pallet === 'FellowshipCollective' ? 'FellowshipReferenda' : 'Referenda'
+    const parentId = referendumId(referendumPallet, referendumIndex)
     const currency = pallet === 'ConvictionVoting' ? currencyKey(args.currency ?? callArgs.currency) : null
-    const id = `${referendumId}:${voter}:${currency ?? 'Fellowship'}`
+    const id = `${referendumPallet}:${referendumIndex}:${voter}:${currency ?? 'Fellowship'}`
     const existing = await ctx.store.findOneBy(GovernanceVote, { id })
     if (existing && existing.updatedAtBlock > block.height) return
-    await refreshReferendum(ctx, block, referendumId.split(':')[0], referendumIndex, '', {})
+    await refreshReferendum(ctx, block, referendumPallet, referendumIndex, '', {})
     const vote =
         existing ??
         new GovernanceVote({
             id,
-            referendumId,
+            referendumId: parentId,
             accountId: voter,
             currency,
             active: false,
             updatedAtBlock: block.height,
         })
     vote.active = eventName === 'Voted'
-    vote.vote = eventName === 'Voted' ? (jsonValue(args.vote) ?? null) : null
-    vote.referendum = new GovernanceReferendum({ id: referendumId })
+    vote.vote = jsonValue(args.vote) ?? vote.vote ?? null
+    vote.voteModifier =
+        pallet === 'ConvictionVoting'
+            ? args.vote === undefined
+                ? (vote.voteModifier ?? null)
+                : voteModifier(args.vote)
+            : null
+    const referendum = await ctx.store.findOneBy(GovernanceReferendum, { id: parentId })
+    vote.unlockableAtBlock =
+        pallet === 'ConvictionVoting' && referendum
+            ? unlockableAtBlock(vote.vote, referendum.status, referendum.endedAtBlock, voteLockingPeriod(block))
+            : null
+    vote.referendum = new GovernanceReferendum({ id: parentId })
     vote.updatedAtBlock = block.height
     await ctx.store.save(vote)
 }
@@ -434,9 +470,9 @@ export async function processEvent(
         name: item.name,
         referendumId:
             referendumIndex !== undefined && referendumPallets.has(pallet)
-                ? `${pallet}:${referendumIndex}`
+                ? referendumId(pallet as ReferendumPallet, referendumIndex)
                 : referendumIndex !== undefined && ['ConvictionVoting', 'FellowshipCollective'].includes(pallet)
-                  ? `${pallet === 'ConvictionVoting' ? 'Referenda' : 'FellowshipReferenda'}:${referendumIndex}`
+                  ? referendumId(pallet === 'ConvictionVoting' ? 'Referenda' : 'FellowshipReferenda', referendumIndex)
                   : null,
         accountId: voter ?? null,
         blockNumber: block.height,
@@ -446,7 +482,7 @@ export async function processEvent(
     await ctx.store.save(activity)
 
     if (referendumPallets.has(pallet) && referendumIndex !== undefined) {
-        await refreshReferendum(ctx, block, pallet, referendumIndex, eventName, args)
+        await refreshReferendum(ctx, block, pallet as ReferendumPallet, referendumIndex, eventName, args)
     } else if (
         (pallet === 'ConvictionVoting' && ['Voted', 'VoteRemoved'].includes(eventName)) ||
         (pallet === 'FellowshipCollective' && eventName === 'Voted')

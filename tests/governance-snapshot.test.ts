@@ -7,12 +7,13 @@ import {
     GovernanceDelegation,
     GovernanceFellowshipMember,
     GovernanceReferendum,
+    GovernanceTrack,
     GovernanceTreasuryItem,
     GovernanceVote,
     GovernanceWhitelistedCall,
 } from '~/model'
 import { snapshotGovernance } from '~/pallet/governance/processors/snapshot'
-import { storage } from '~/type'
+import { constants, storage } from '~/type'
 import { validateImportGovernanceStateData } from '~/worker/jobs/validators/import-governance-state'
 
 const voter = `0x${'11'.repeat(32)}`
@@ -45,7 +46,7 @@ function fixture(relay: boolean) {
             [
                 [
                     [voter, 1, { __kind: 'SEnj', tokenId: 42n }],
-                    { __kind: 'Casting', value: { votes: [[7, { __kind: 'Standard', vote: 10n }]] } },
+                    { __kind: 'Casting', value: { votes: [[7, { __kind: 'Standard', vote: 0x81 }]] } },
                 ],
                 [
                     [member, 1],
@@ -64,6 +65,26 @@ function fixture(relay: boolean) {
         ['Whitelist.WhitelistedCall', [[whitelisted, null]]],
     ])
     const runtime = {
+        checkConstantType: () => true,
+        getConstant: (name: string) =>
+            name === 'ConvictionVoting.VoteLockingPeriod'
+                ? 100800
+                : [
+                      [
+                          1,
+                          {
+                              name: name === 'Referenda.Tracks' ? 'Root' : 'Fellowship',
+                              maxDeciding: 1,
+                              decisionDeposit: 10n,
+                              preparePeriod: 1,
+                              decisionPeriod: 2,
+                              confirmPeriod: 3,
+                              minEnactmentPeriod: 4,
+                              minApproval: { __kind: 'LinearDecreasing', floor: 1n },
+                              minSupport: { __kind: 'LinearDecreasing', floor: 2n },
+                          },
+                      ],
+                  ],
         checkStorageType: (name: string) => state.has(name) || name.endsWith('.MetadataOf'),
         getStorage: (_hash: string, name: string, key: number) =>
             Promise.resolve(
@@ -134,6 +155,16 @@ void test('current governance storage readers match the latest metadata for ever
                 `${chainName} has an unsupported storage reader`
             )
         }
+        for (const variants of [
+            constants.referenda.tracks,
+            constants.fellowshipReferenda.tracks,
+            constants.convictionVoting.voteLockingPeriod,
+        ]) {
+            assert(
+                Object.values(variants).some((reader) => reader.is(block)),
+                `${chainName} has an unsupported constant`
+            )
+        }
     }
 })
 
@@ -142,6 +173,7 @@ void test('Matrixchain snapshot imports current RPC governance storage without c
     const counts = await snapshotGovernance(ctx, block, false)
 
     assert.deepEqual(counts, {
+        tracks: 2,
         referenda: 1,
         conviction: { votes: 1, delegations: 1 },
         fellowshipReferenda: 1,
@@ -150,11 +182,14 @@ void test('Matrixchain snapshot imports current RPC governance storage without c
         whitelist: 1,
         terminalHistory: { recovered: 0, unavailable: 0 },
     })
-    assert.equal(get(GovernanceReferendum, 'Referenda:7')?.tallyAyes, 10n)
-    assert.equal(get(GovernanceReferendum, 'Referenda:7')?.status, 'Confirming')
-    assert.equal(get(GovernanceReferendum, 'Referenda:7')?.metadataHash, whitelisted)
+    assert.equal(get(GovernanceReferendum, '7')?.tallyAyes, 10n)
+    assert.equal(get(GovernanceReferendum, '7')?.status, 'Confirming')
+    assert.equal(get(GovernanceReferendum, '7')?.metadataHash, whitelisted)
+    assert.equal(get(GovernanceReferendum, '7')?.governanceTrack?.id, 'Referenda:1')
+    assert.equal(get(GovernanceTrack, 'Referenda:1')?.name, 'Root')
     assert.equal(get(GovernanceVote, `Referenda:7:${voter}:SEnj:42`)?.active, true)
-    assert.equal(get(GovernanceVote, `Referenda:7:${voter}:SEnj:42`)?.referendum?.id, 'Referenda:7')
+    assert.equal(get(GovernanceVote, `Referenda:7:${voter}:SEnj:42`)?.referendum?.id, '7')
+    assert.equal(get(GovernanceVote, `Referenda:7:${voter}:SEnj:42`)?.voteModifier, 1)
     assert.equal(
         get(GovernanceVote, `FellowshipReferenda:2:${member}:Fellowship`)?.referendum?.id,
         'FellowshipReferenda:2'
@@ -169,7 +204,7 @@ void test('snapshot preserves state indexed from a newer block', async () => {
     const id = `Referenda:7:${voter}:SEnj:42`
     const newer = new GovernanceVote({
         id,
-        referendumId: 'Referenda:7',
+        referendumId: '7',
         accountId: voter,
         currency: 'SEnj:42',
         active: false,

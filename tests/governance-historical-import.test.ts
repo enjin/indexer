@@ -47,6 +47,23 @@ void test('current-state import recovers terminal referendum fields from the pre
         hash: `0x${'ab'.repeat(32)}`,
         _runtime: {
             rpc,
+            checkConstantType: () => true,
+            getConstant: () => [
+                [
+                    200,
+                    {
+                        name: 'SmallTipper',
+                        maxDeciding: 1,
+                        decisionDeposit: 10n,
+                        preparePeriod: 1,
+                        decisionPeriod: 2,
+                        confirmPeriod: 3,
+                        minEnactmentPeriod: 4,
+                        minApproval: { __kind: 'LinearDecreasing' },
+                        minSupport: { __kind: 'LinearDecreasing' },
+                    },
+                ],
+            ],
             checkStorageType: () => true,
             getStorage: (_hash: string, name: string) =>
                 Promise.resolve(name === 'Referenda.ReferendumInfoFor' ? terminal : undefined),
@@ -62,8 +79,9 @@ void test('current-state import recovers terminal referendum fields from the pre
     const ctx = {
         store: {
             findOneBy: () => Promise.resolve(undefined),
+            find: () => Promise.resolve([]),
             save: (row: GovernanceReferendum) => {
-                saved = row
+                if (row instanceof GovernanceReferendum) saved = row
                 return Promise.resolve(row)
             },
         },
@@ -74,6 +92,9 @@ void test('current-state import recovers terminal referendum fields from the pre
     assert.equal(saved.status, 'Approved')
     assert.equal(saved.track, 200)
     assert.equal(saved.referendumIndex, 13)
+    assert.equal(saved.id, '13')
+    assert.equal(saved.governanceTrack?.name, 'SmallTipper')
+    assert.equal(saved.endedAtBlock, 17500011)
     assert.equal(saved.tallyAyes, 0n)
     assert.equal(saved.tallyNays, 0n)
     assert.equal(saved.tallySupport, 0n)

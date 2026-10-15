@@ -10,8 +10,12 @@ import {
 import { storage } from '~/type'
 import { isRelay } from '~/util/tools'
 import { FindOptionsWhere } from 'typeorm'
-import { jsonValue, refreshReferendum } from './event'
+import { refreshReferendum } from './event'
 import { HistoricalGovernanceStorage } from './historical'
+import { referendumId } from './ids'
+import { jsonValue } from './json'
+import { snapshotTracks } from './tracks'
+import { unlockableAtBlock, voteLockingPeriod, voteModifier } from './vote'
 
 type GovernanceContext = Pick<CommonContext, 'store'>
 type PagedStorage = {
@@ -99,6 +103,7 @@ async function snapshotReferenda(
 async function snapshotConvictionVoting(ctx: GovernanceContext, block: Block) {
     const reader = compatibleStorage(storage.convictionVoting.votingFor, block, 'ConvictionVoting.VotingFor')
     const referenda = new Map<string, GovernanceReferendum | null>()
+    const lockingPeriod = voteLockingPeriod(block)
     let votes = 0
     let delegations = 0
     for await (const page of reader.getPairsPaged(pageSize, block)) {
@@ -115,14 +120,19 @@ async function snapshotConvictionVoting(ctx: GovernanceContext, block: Block) {
                 for (const entry of value.votes) {
                     if (!Array.isArray(entry)) throw new Error('Invalid ConvictionVoting casting vote')
                     const referendumIndex = index(entry[0])
-                    const referendumId = `Referenda:${referendumIndex}`
+                    const parentId = referendumId('Referenda', referendumIndex)
+                    const referendum = await linkedReferendum(ctx, parentId, referenda)
                     const row = new GovernanceVote({
-                        id: `${referendumId}:${voter}:${voteCurrency}`,
-                        referendumId,
-                        referendum: (await linkedReferendum(ctx, referendumId, referenda)) ?? undefined,
+                        id: `Referenda:${referendumIndex}:${voter}:${voteCurrency}`,
+                        referendumId: parentId,
+                        referendum: referendum ?? undefined,
                         accountId: voter,
                         currency: voteCurrency,
                         vote: jsonValue(entry[1]),
+                        voteModifier: voteModifier(entry[1]),
+                        unlockableAtBlock: referendum
+                            ? unlockableAtBlock(entry[1], referendum.status, referendum.endedAtBlock, lockingPeriod)
+                            : null,
                         active: true,
                         updatedAtBlock: block.height,
                     })
@@ -179,18 +189,20 @@ async function snapshotFellowship(ctx: GovernanceContext, block: Block) {
         for (const [rawKey, vote] of page) {
             if (vote === undefined) continue
             if (!Array.isArray(rawKey)) throw new Error('Invalid FellowshipCollective.Voting key')
-            const referendumId = `FellowshipReferenda:${index(rawKey[0])}`
+            const parentId = referendumId('FellowshipReferenda', index(rawKey[0]))
             const voter = account(rawKey[1])
             await saveIfNotNewer(
                 ctx,
                 GovernanceVote,
                 new GovernanceVote({
-                    id: `${referendumId}:${voter}:Fellowship`,
-                    referendumId,
-                    referendum: (await linkedReferendum(ctx, referendumId, referenda)) ?? undefined,
+                    id: `${parentId}:${voter}:Fellowship`,
+                    referendumId: parentId,
+                    referendum: (await linkedReferendum(ctx, parentId, referenda)) ?? undefined,
                     accountId: voter,
                     currency: null,
                     vote: jsonValue(vote),
+                    voteModifier: null,
+                    unlockableAtBlock: null,
                     active: true,
                     updatedAtBlock: block.height,
                 })
@@ -258,11 +270,12 @@ async function snapshotWhitelist(ctx: GovernanceContext, block: Block) {
 export async function snapshotGovernance(ctx: GovernanceContext, block: Block, relay = isRelay()) {
     const history = new HistoricalGovernanceStorage(block)
     const terminalHistory = { recovered: 0, unavailable: 0 }
+    const tracks = await snapshotTracks(ctx, block)
     const referenda = await snapshotReferenda(ctx, block, 'Referenda', history, terminalHistory)
     const conviction = await snapshotConvictionVoting(ctx, block)
     const fellowshipReferenda = await snapshotReferenda(ctx, block, 'FellowshipReferenda', history, terminalHistory)
     const fellowship = await snapshotFellowship(ctx, block)
     const treasury = relay ? await snapshotTreasury(ctx, block) : 0
     const whitelist = await snapshotWhitelist(ctx, block)
-    return { referenda, conviction, fellowshipReferenda, fellowship, treasury, whitelist, terminalHistory }
+    return { tracks, referenda, conviction, fellowshipReferenda, fellowship, treasury, whitelist, terminalHistory }
 }

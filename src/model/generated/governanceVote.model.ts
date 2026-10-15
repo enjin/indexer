@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, StringColumn as StringColumn_, ManyToOne as ManyToOne_, Index as Index_, Relation as Relation_, JSONColumn as JSONColumn_, BooleanColumn as BooleanColumn_, IntColumn as IntColumn_} from "@subsquid/typeorm-store"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, StringColumn as StringColumn_, ManyToOne as ManyToOne_, Index as Index_, Relation as Relation_, JSONColumn as JSONColumn_, IntColumn as IntColumn_, BooleanColumn as BooleanColumn_} from "@subsquid/typeorm-store"
 import {GovernanceReferendum} from "./governanceReferendum.model"
 
 @Entity_()
@@ -26,6 +26,12 @@ export class GovernanceVote {
 
     @JSONColumn_({nullable: true})
     vote!: unknown | undefined | null
+
+    @IntColumn_({nullable: true})
+    voteModifier!: number | undefined | null
+
+    @IntColumn_({nullable: true})
+    unlockableAtBlock!: number | undefined | null
 
     @BooleanColumn_({nullable: false})
     active!: boolean

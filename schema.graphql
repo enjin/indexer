@@ -81,14 +81,33 @@ type Event @entity {
   tokenId: String @index
 }
 
+# Track definitions come from the runtime constants for each referendum pallet.
+type GovernanceTrack @entity {
+  id: ID!
+  pallet: String! @index
+  trackIndex: Int! @index
+  name: String!
+  maxDeciding: Int!
+  decisionDeposit: BigInt!
+  preparePeriod: Int!
+  decisionPeriod: Int!
+  confirmPeriod: Int!
+  minEnactmentPeriod: Int!
+  minApproval: JSON!
+  minSupport: JSON!
+  updatedAtBlock: Int! @index
+  referendums: [GovernanceReferendum!] @derivedFrom(field: "governanceTrack")
+}
+
 # Current referendum state is refreshed from runtime storage at the event's block hash.
-# IDs include the pallet because Referenda and FellowshipReferenda have separate counters.
+# Referenda IDs are their numeric index as a string; FellowshipReferenda keeps a distinct prefix.
 type GovernanceReferendum @entity {
   id: ID!
   voters: [GovernanceVote!] @derivedFrom(field: "referendum")
   pallet: String! @index
   referendumIndex: Int! @index
   track: Int
+  governanceTrack: GovernanceTrack
   status: String! @index
   proposal: JSON
   proposalPreimageHash: String @index
@@ -101,6 +120,7 @@ type GovernanceReferendum @entity {
   submissionDeposit: JSON
   decisionDeposit: JSON
   submittedAtBlock: Int
+  endedAtBlock: Int
   updatedAtBlock: Int! @index
 }
 
@@ -133,6 +153,8 @@ type GovernanceVote @entity {
   accountId: String! @index
   currency: String
   vote: JSON
+  voteModifier: Int
+  unlockableAtBlock: Int
   active: Boolean!
   updatedAtBlock: Int! @index
 }
