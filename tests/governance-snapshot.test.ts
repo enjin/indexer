@@ -73,7 +73,7 @@ function fixture(relay: boolean) {
                       [
                           1,
                           {
-                              name: name === 'Referenda.Tracks' ? 'Root' : 'Fellowship',
+                              name: name === 'Referenda.Tracks' ? 'Root\0\0' : 'Fellowship\0',
                               maxDeciding: 1,
                               decisionDeposit: 10n,
                               preparePeriod: 1,

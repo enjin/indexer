@@ -35,9 +35,10 @@ async function saveTrack(
     const id = trackId(pallet, trackIndex)
     const existing = await ctx.store.findOneBy(GovernanceTrack, { id })
     if (existing && existing.updatedAtBlock > block.height) return existing
-    const row =
-        existing ?? new GovernanceTrack({ id, pallet, trackIndex, name: details.name, updatedAtBlock: block.height })
-    row.name = details.name
+    // Runtime track names may contain NUL padding, which PostgreSQL text cannot store.
+    const name = details.name.replace(/\0/g, '')
+    const row = existing ?? new GovernanceTrack({ id, pallet, trackIndex, name, updatedAtBlock: block.height })
+    row.name = name
     row.maxDeciding = details.maxDeciding
     row.decisionDeposit = details.decisionDeposit
     row.preparePeriod = details.preparePeriod
