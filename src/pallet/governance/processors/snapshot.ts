@@ -12,7 +12,7 @@ import { isRelay } from '~/util/tools'
 import { FindOptionsWhere } from 'typeorm'
 import { refreshReferendum } from './event'
 import { HistoricalGovernanceStorage } from './historical'
-import { referendumId } from './ids'
+import { referendumId, voteId } from './ids'
 import { jsonValue } from './json'
 import { snapshotTracks } from './tracks'
 import { unlockableAtBlock, voteLockingPeriod, voteModifier } from './vote'
@@ -123,7 +123,7 @@ async function snapshotConvictionVoting(ctx: GovernanceContext, block: Block) {
                     const parentId = referendumId('Referenda', referendumIndex)
                     const referendum = await linkedReferendum(ctx, parentId, referenda)
                     const row = new GovernanceVote({
-                        id: `Referenda:${referendumIndex}:${voter}:${voteCurrency}`,
+                        id: voteId('Referenda', referendumIndex, voter, voteCurrency),
                         referendumId: parentId,
                         referendum: referendum ?? undefined,
                         accountId: voter,
@@ -189,13 +189,14 @@ async function snapshotFellowship(ctx: GovernanceContext, block: Block) {
         for (const [rawKey, vote] of page) {
             if (vote === undefined) continue
             if (!Array.isArray(rawKey)) throw new Error('Invalid FellowshipCollective.Voting key')
-            const parentId = referendumId('FellowshipReferenda', index(rawKey[0]))
+            const referendumIndex = index(rawKey[0])
+            const parentId = referendumId('FellowshipReferenda', referendumIndex)
             const voter = account(rawKey[1])
             await saveIfNotNewer(
                 ctx,
                 GovernanceVote,
                 new GovernanceVote({
-                    id: `${parentId}:${voter}:Fellowship`,
+                    id: voteId('FellowshipReferenda', referendumIndex, voter, 'Fellowship'),
                     referendumId: parentId,
                     referendum: (await linkedReferendum(ctx, parentId, referenda)) ?? undefined,
                     accountId: voter,

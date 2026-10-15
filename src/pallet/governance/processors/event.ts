@@ -15,7 +15,7 @@ import {
 import { storage } from '~/type'
 import { Block } from '~/type/support'
 import { In } from 'typeorm'
-import { ReferendumPallet, referendumId, trackId } from './ids'
+import { ReferendumPallet, referendumId, trackId, voteId } from './ids'
 import { jsonValue } from './json'
 import { ensureTrack } from './tracks'
 import { unlockableAtBlock, voteLockingPeriod, voteModifier } from './vote'
@@ -286,7 +286,7 @@ async function updateVote(
     const referendumPallet: ReferendumPallet = pallet === 'FellowshipCollective' ? 'FellowshipReferenda' : 'Referenda'
     const parentId = referendumId(referendumPallet, referendumIndex)
     const currency = pallet === 'ConvictionVoting' ? currencyKey(args.currency ?? callArgs.currency) : null
-    const id = `${referendumPallet}:${referendumIndex}:${voter}:${currency ?? 'Fellowship'}`
+    const id = voteId(referendumPallet, referendumIndex, voter, currency ?? 'Fellowship')
     const existing = await ctx.store.findOneBy(GovernanceVote, { id })
     if (existing && existing.updatedAtBlock > block.height) return
     await refreshReferendum(ctx, block, referendumPallet, referendumIndex, '', {})

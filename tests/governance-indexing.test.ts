@@ -14,7 +14,7 @@ import {
     GovernanceVote,
 } from '~/model'
 import { indexedEvent, processEvent } from '~/pallet/governance/processors'
-import { referendumId, trackId } from '~/pallet/governance/processors/ids'
+import { referendumId, trackId, voteId } from '~/pallet/governance/processors/ids'
 import { unlockableAtBlock, voteModifier } from '~/pallet/governance/processors/vote'
 import { constants, storage } from '~/type'
 
@@ -192,7 +192,7 @@ void test('Relaychain vote events without a poll index use the linked call and r
         )
     )
 
-    const vote = get(GovernanceVote, `Referenda:7:${voter}:SEnj:42`) as GovernanceVote | undefined
+    const vote = get(GovernanceVote, `7-${voter}-SEnj:42`) as GovernanceVote | undefined
     assert(vote)
     assert.equal(vote.active, true)
     assert.equal(vote.currency, 'SEnj:42')
@@ -202,11 +202,17 @@ void test('Relaychain vote events without a poll index use the linked call and r
     assert.equal((get(GovernanceReferendum, '7') as GovernanceReferendum | undefined)?.tallyAyes, 20n)
 })
 
-void test('referendum IDs stay unique when both pallets use the same index', () => {
+void test('governance IDs retain their pallet and currency identity', () => {
     assert.equal(referendumId('Referenda', 13), '13')
     assert.equal(referendumId('FellowshipReferenda', 13), 'FellowshipReferenda:13')
     assert.equal(trackId('Referenda', 200), '200-rnd')
     assert.equal(trackId('FellowshipReferenda', 200), '200-frnd')
+    const accountId = '0x7051c8281a3502b26bc9d0bf1b62d309ea36bf838362034a96d42031b73d1324'
+    assert.equal(voteId('Referenda', 10, accountId, 'Enj'), `10-${accountId}-Enj`)
+    assert.equal(
+        voteId('FellowshipReferenda', 10, accountId, 'Fellowship'),
+        `FellowshipReferenda:10:${accountId}:Fellowship`
+    )
 })
 
 void test('terminal referendum events set vote unlock eligibility from conviction and result', async () => {
@@ -237,10 +243,10 @@ void test('terminal referendum events set vote unlock eligibility from convictio
     state.__kind = 'Approved'
     await processEvent(ctx, block, event('100-1-4', 'Referenda.Approved', { index: 7 }))
 
-    assert.equal(get(GovernanceVote, `Referenda:7:${aye}:Enj`)?.voteModifier, 2)
-    assert.equal(get(GovernanceVote, `Referenda:7:${aye}:Enj`)?.unlockableAtBlock, 100 + 2 * 100800)
-    assert.equal(get(GovernanceVote, `Referenda:7:${nay}:Enj`)?.voteModifier, 6)
-    assert.equal(get(GovernanceVote, `Referenda:7:${nay}:Enj`)?.unlockableAtBlock, 100)
+    assert.equal(get(GovernanceVote, `7-${aye}-Enj`)?.voteModifier, 2)
+    assert.equal(get(GovernanceVote, `7-${aye}-Enj`)?.unlockableAtBlock, 100 + 2 * 100800)
+    assert.equal(get(GovernanceVote, `7-${nay}-Enj`)?.voteModifier, 6)
+    assert.equal(get(GovernanceVote, `7-${nay}-Enj`)?.unlockableAtBlock, 100)
 })
 
 void test('zero conviction is 0.1x and split votes have no modifier', () => {
