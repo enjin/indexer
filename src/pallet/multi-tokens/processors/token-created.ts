@@ -1,7 +1,6 @@
 import { throwFatalError } from '~/util/errors'
 import {
     Collection,
-    NativeTokenMetadata,
     RoyaltyBeneficiary,
     Token,
     TokenBehaviorHasRoyalty,
@@ -18,14 +17,13 @@ import { getCapType, getFreezeState, isTokenFrozen } from '~/synchronize/common'
 import { EventHandlerResult } from '~/processor.handler'
 import { isDispatchCall, unwrapFuelTankCall } from '~/pallet/fuel-tanks/utils'
 import { DefaultMintParams, FlexibleMintParams, TokenMarketBehavior } from '~/pallet/common/types'
-import { hexToString } from '@polkadot/util'
-import { safeString } from '~/util/tools'
 import { Token as StoredToken } from '~/pallet/multi-tokens/storage/types'
 import { calls } from '~/type'
 import { selectTokenCreationCall, unwrapFlexibleMintParams } from '~/pallet/multi-tokens/processors/token-created-call'
 import { QueueUtils } from '~/queue'
 import { toMintRateLimitStateModel } from '~/pallet/multi-tokens/processors/mint-rate-limit-state'
 import { hasV6TokenLayout } from '~/pallet/multi-tokens/storage/token-values'
+import { toNativeTokenMetadata } from '~/pallet/multi-tokens/processors/native-token-metadata'
 
 type TokenParams = DefaultMintParams | FlexibleMintParams | StoredToken
 
@@ -163,14 +161,7 @@ async function tokenFromCall(
         }
 
         if ('metadata' in tokenParams) {
-            token.nativeMetadata =
-                tokenParams.metadata !== undefined && !('__kind' in tokenParams.metadata)
-                    ? new NativeTokenMetadata({
-                          decimalCount: tokenParams.metadata.decimalCount,
-                          symbol: safeString(hexToString(tokenParams.metadata.symbol)),
-                          name: safeString(hexToString(tokenParams.metadata.name)),
-                      })
-                    : null
+            token.nativeMetadata = toNativeTokenMetadata(tokenParams.metadata)
         }
 
         const behavior =

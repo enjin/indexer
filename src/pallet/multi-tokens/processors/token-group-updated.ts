@@ -1,7 +1,7 @@
-import { In } from 'typeorm'
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { Token, TokenGroup, TokenGroupToken } from '~/model'
+import { Token } from '~/model'
 import * as mappings from '~/pallet/index'
+import { replaceTokenGroupTokens } from '~/pallet/multi-tokens/processors/token-group-memberships'
 import { EventHandlerResult } from '~/processor.handler'
 import { QueueUtils } from '~/queue'
 
@@ -14,44 +14,21 @@ export async function tokenGroupUpdated(
     const data = mappings.multiTokens.events.tokenGroupUpdated(item)
     if (skipSave) return mappings.multiTokens.events.tokenGroupUpdatedEventModel(item, data)
 
-    const tokenGroupIds = data.tokenGroups.map((tokenGroupId) => tokenGroupId.toString())
-
-    const [tokenGroups, token] = await Promise.all([
-        ctx.store.find(TokenGroup, {
-            where: {
-                id: In(tokenGroupIds),
-            },
-        }),
-        ctx.store.findOne(Token, {
-            where: {
-                id: `${data.collectionId.toString()}-${data.tokenId.toString()}`,
-            },
-            relations: {
-                tokenGroupTokens: true,
-            },
-        }),
-    ])
+    const token = await ctx.store.findOne(Token, {
+        where: {
+            id: `${data.collectionId.toString()}-${data.tokenId.toString()}`,
+        },
+    })
 
     if (!token) {
         return [mappings.multiTokens.events.tokenGroupUpdatedEventModel(item, data), undefined]
     }
 
-    const promises = []
-    for (const tokenGroupToken of token.tokenGroupTokens) {
-        promises.push(ctx.store.remove(tokenGroupToken))
-    }
-    await Promise.all(promises)
-
-    const tokenGroupTokens = tokenGroupIds.map((tokenGroupId, index) => {
-        return new TokenGroupToken({
-            id: `${data.tokenId.toString()}-${tokenGroupId}`,
-            token,
-            tokenGroup: tokenGroups.find((tokenGroup) => tokenGroup.id === tokenGroupId),
-            position: index,
-        })
-    })
-
-    await ctx.store.save(tokenGroupTokens)
+    await replaceTokenGroupTokens(
+        ctx,
+        token,
+        data.tokenGroups.map((tokenGroupId) => tokenGroupId.toString())
+    )
 
     await QueueUtils.dispatchComputeMetadata({ id: token.id, type: 'token', force: false })
 
