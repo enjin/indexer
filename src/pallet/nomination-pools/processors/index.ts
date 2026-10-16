@@ -13,3 +13,7 @@ export * from '~/pallet/nomination-pools/processors/early-bird-bonus-payment-unl
 export * from '~/pallet/nomination-pools/processors/early-bird-bonus-calculated'
 export * from '~/pallet/nomination-pools/processors/early-bird-shares-captured'
 export * from '~/pallet/nomination-pools/processors/early-bird-bonus-paid'
+export * from '~/pallet/nomination-pools/processors/unbonding-pool-slashed'
+export * from '~/pallet/nomination-pools/processors/commission-updated'
+export * from '~/pallet/nomination-pools/processors/reward-payout-failed'
+export * from '~/pallet/nomination-pools/processors/unbonding-member-removed'

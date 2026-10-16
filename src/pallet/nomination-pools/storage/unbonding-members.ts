@@ -1,11 +1,11 @@
 import { UnsupportedStorageError } from '~/util/errors'
-import { BlockHeader } from '@subsquid/substrate-processor'
+import { BlockHeader, ParentBlockHeader } from '@subsquid/substrate-processor'
 import { storage } from '~/type'
 import { match } from 'ts-pattern'
 import { UnbondingMember } from '~/pallet/nomination-pools/storage/types'
 
 export async function unbondingMembers(
-    block: BlockHeader,
+    block: BlockHeader | ParentBlockHeader,
     poolId: number,
     member: string
 ): Promise<UnbondingMember | undefined> {

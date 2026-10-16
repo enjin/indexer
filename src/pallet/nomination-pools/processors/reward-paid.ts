@@ -248,7 +248,15 @@ export async function rewardPaid(ctx: CommonContext, block: Block, item: EventIt
     let pool = await updatePool(ctx, block, eventData.poolId.toString())
 
     if (pool.isDestroying()) {
-        return undefined
+        // A destroying pool does not compound the reward (it stays in the reward account and is shared out on
+        // withdrawal), so there is no era reward or member reward to record. Commission is still claimed for the
+        // pool token owner (`do_payout_rewards`).
+        if (eventData.commission) {
+            pool.accumulatedCommission = (pool.accumulatedCommission ?? 0n) + eventData.commission.amount
+            await ctx.store.save(pool)
+        }
+
+        return rewardPaidEventModel(item, eventData, stashValidator.id)
     }
 
     reward = await getReward(ctx, existReward, eventData, pool, eraIndex)

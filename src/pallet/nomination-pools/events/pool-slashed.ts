@@ -17,7 +17,7 @@ export function poolSlashed(event: EventItem): PoolSlashed {
         })
 }
 
-export function poolSlashedEventModel(item: EventItem, data: PoolSlashed): EventModel {
+export function poolSlashedEventModel(item: EventItem, data: PoolSlashed, amount?: bigint): EventModel {
     return new EventModel({
         id: item.id,
         name: NominationPoolsPoolSlashed.name,
@@ -26,6 +26,7 @@ export function poolSlashedEventModel(item: EventItem, data: PoolSlashed): Event
             pool: data.poolId.toString(),
             poolId: data.poolId.toString(),
             balance: data.balance,
+            amount,
         }),
     })
 }
