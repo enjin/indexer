@@ -25,7 +25,8 @@ export async function unbondingMemberRemoved(
     if (member) {
         member.unbondingEras = null
 
-        if (member.isActive && (!member.tokenAccount || member.tokenAccount.balance <= 0n)) {
+        // `totalBalance`: sENJ that is reserved (e.g. listed) still makes the account a member.
+        if (member.isActive && (member.tokenAccount?.totalBalance ?? 0n) <= 0n) {
             const pool = await ctx.store.findOneBy(NominationPool, { id: data.poolId.toString() })
             member.bonded = 0n
             member.isActive = false

@@ -24,16 +24,35 @@ export function unbondPointsToBalance(pool: UnbondPool, points: bigint): bigint 
 }
 
 /**
+ * A member's unbonding chunks (`[era, points]` from `NominationPools.UnbondingMembers`) priced against the pool's
+ * `SubPoolsStorage` read at the same block, so a slash of the unbonding pool (`UnbondingPoolSlashed`) lowers the
+ * reported balance. Without a slash points and balance are equal. Shared by the processors and the refresh workers
+ * so both store the same values.
+ */
+export function unbondingErasFromPoints(
+    eras: [number, bigint][],
+    subPools: SubPools | undefined
+): UnbondingEras[] | null {
+    if (eras.length === 0) {
+        return null
+    }
+
+    return eras.map(
+        ([era, points]) =>
+            new UnbondingEras({
+                era,
+                balance: subPools ? unbondPointsToBalance(unbondPoolFor(subPools, era), points) : points,
+            })
+    )
+}
+
+/**
  * A member's unbonding chunks as `NominationPools.UnbondingMembers` holds them after `block`.
  *
  * `Unbonded` and `Withdrawn` do not say which chunks they touched: the chain merges unbonds that land on the
  * same era into one chunk and `withdraw_unbonded` releases every chunk with `era <= CurrentEra`, where
  * `CurrentEra` is the planned era and runs ahead of the indexer's `Era` rows (created on `EraPaid`). Rebuilding
  * the list from events drifted on both counts (WAPI-2101), so read it from storage instead.
- *
- * Storage holds unbond-pool *points* per era. They are converted to the balance the member would withdraw using
- * `SubPoolsStorage`, so a slash of the unbonding pool (`UnbondingPoolSlashed`) lowers the reported balance. Without
- * a slash points and balance are equal.
  */
 export async function unbondingErasAt(block: Block, poolId: number, member: string): Promise<UnbondingEras[] | null> {
     const [unbonding, subPools] = await Promise.all([
@@ -41,15 +60,5 @@ export async function unbondingErasAt(block: Block, poolId: number, member: stri
         mappings.nominationPools.storage.subPools(block, poolId),
     ])
 
-    if (!unbonding || unbonding.unbondingEras.length === 0) {
-        return null
-    }
-
-    return unbonding.unbondingEras.map(
-        ([era, points]) =>
-            new UnbondingEras({
-                era,
-                balance: subPools ? unbondPointsToBalance(unbondPoolFor(subPools, era), points) : points,
-            })
-    )
+    return unbondingErasFromPoints(unbonding?.unbondingEras ?? [], subPools)
 }
