@@ -9,7 +9,8 @@ import {
     MarketPolicy,
     RoyaltyBeneficiary,
 } from '~/model'
-import { Block, CommonContext, EventItem } from '~/contexts'
+import { Block, CallItem, CommonContext, EventItem } from '~/contexts'
+import { UnsupportedCallError } from '~/util/errors'
 import { getOrCreateAccount } from '~/util/entities'
 import * as mappings from '~/pallet/index'
 import { SnsEvent } from '~/util/sns'
@@ -46,13 +47,22 @@ async function getMarket(ctx: CommonContext, royalty: DefaultRoyalty): Promise<M
     })
 }
 
+/** `undefined` for a caller other than a multi-tokens create call; the collection is then read from storage. */
+function directCreateCollectionCall(call: CallItem) {
+    try {
+        return mappings.multiTokens.utils.anyCreateCollection(call)
+    } catch (error) {
+        if (error instanceof UnsupportedCallError) return undefined
+        throw error
+    }
+}
+
 export async function collectionCreated(
     ctx: CommonContext,
     block: Block,
     item: EventItem,
     skipSave: boolean
 ): Promise<EventHandlerResult> {
-    if (!item.call) return undefined
     const eventData = mappings.multiTokens.events.collectionCreated(item)
 
     if (skipSave) {
@@ -70,11 +80,20 @@ export async function collectionCreated(
 
     // TODO: Refactor this later
     let callData = undefined
-    if (item.call.name !== matrixUtility.batch.name) {
-        callData = mappings.multiTokens.utils.anyCreateCollection(item.call)
-    }
-    if (callData === undefined || !('descriptor' in callData)) {
-        callData = await mappings.multiTokens.utils.getCollectionAsCall(item.call, eventData.collectionId)
+    if (item.call) {
+        if (item.call.name !== matrixUtility.batch.name) {
+            callData = directCreateCollectionCall(item.call)
+        }
+        if (callData === undefined || !('descriptor' in callData)) {
+            callData = await mappings.multiTokens.utils.getCollectionAsCall(item.call, eventData.collectionId)
+        }
+    } else {
+        // Created without a call, e.g. the AssetConversion LP collection made by a runtime-upgrade migration
+        callData = await mappings.multiTokens.utils.collectionFromStorageAsCall(block, eventData.collectionId)
+        if (callData === undefined) {
+            ctx.log.warn(`[CollectionCreated] Collection ${eventData.collectionId} is absent from storage`)
+            return [mappings.multiTokens.events.collectionCreatedEventModel(item, eventData), undefined]
+        }
     }
 
     const forceCollapsingSupply =

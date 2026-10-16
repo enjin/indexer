@@ -26,6 +26,8 @@ export const governanceEventItems = [
 ]
 
 const matrixEvents: string[] = [
+    // Balance and supply changes are re-read from storage once per block (see main.ts)
+    ...getEventNames(events.assetConversion),
     ...getEventNames(events.claims),
     ...getEventNames(events.polkadotXcm),
     ...matrixGovernanceEvents,

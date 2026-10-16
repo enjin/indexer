@@ -1,4 +1,4 @@
-import { throwFatalError } from '~/util/errors'
+import { throwFatalError, UnsupportedCallError } from '~/util/errors'
 import {
     Collection,
     RoyaltyBeneficiary,
@@ -208,6 +208,21 @@ function unwrapComplexMintCall(item: EventItem): { call: unknown } | undefined {
     return undefined
 }
 
+/**
+ * The token's creating call when it is a multi-tokens mint (direct, batched or via `nominationPools.create`). Any
+ * other caller, such as `AssetConversion.create_pool` through `fungibles::Create`, yields `undefined` so that the token
+ * is read from storage at the block instead.
+ */
+function directMintCall(item: EventItem, event: TokenCreated): Mint | ForceMint | CreatePool | undefined {
+    if (!item.call) return undefined
+    try {
+        return mappings.multiTokens.utils.anyMint(item.call, event.collectionId, event.tokenId)
+    } catch (error) {
+        if (error instanceof UnsupportedCallError) return undefined
+        throw error
+    }
+}
+
 async function checkMetadataInheritance(token: Token): Promise<void> {
     const uriAttribute = token.collection.attributes.find((attribute) => attribute.key === 'uri')
 
@@ -238,10 +253,8 @@ export async function tokenCreated(
         // Encoded children include failed and unexecuted calls. Trust call parameters only when one recipient matches
         // the finalized event; otherwise hydrate that event's token from canonical storage.
         const call =
-            complexCall === undefined
-                ? mappings.multiTokens.utils.anyMint(item.call, event.collectionId, event.tokenId)
-                : selectTokenCreationCall(complexCall.call, event)
-        token = await tokenFromCall(ctx, block, event, call, complexCall !== undefined && call === undefined)
+            complexCall === undefined ? directMintCall(item, event) : selectTokenCreationCall(complexCall.call, event)
+        token = await tokenFromCall(ctx, block, event, call, call === undefined)
     } else {
         token = await tokenFromCall(ctx, block, event, undefined, true)
     }

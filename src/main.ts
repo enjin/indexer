@@ -137,6 +137,13 @@ async function bootstrap() {
                     }
 
                     if (block.header.height > dataService.lastBlockNumber) {
+                        const assetConversionTargets = p.assetConversion.processors.assetConversionTargets(block.events)
+                        await p.assetConversion.processors.refreshAssetConversionBalances(
+                            ctx,
+                            block.header,
+                            assetConversionTargets
+                        )
+
                         p.balances.processors.addAccountsToSet(Array.from(signers))
                         await p.balances.processors.saveAccounts(ctx, block.header)
                     }
