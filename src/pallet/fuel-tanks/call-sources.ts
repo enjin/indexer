@@ -1,4 +1,4 @@
-import { CallItem } from '~/contexts'
+import { CallItem, EventItem } from '~/contexts'
 import { calls } from '~/type'
 import { DispatchRuleDescriptor, FuelTankDescriptor, MultiAddress, RuleSetDescriptor } from '~/pallet/common/types'
 import * as mappings from '~/pallet/index'
@@ -35,6 +35,8 @@ type InnerFuelTankCall = {
 // Arguments through which wrapper calls carry their inner RuntimeCalls: Utility batches, as_derivative,
 // dispatch_as, with_weight and if_else, MatrixUtility.batch, Proxy, Multisig and Sudo.
 const NESTED_CALL_ARGS = ['call', 'calls', 'main', 'fallback']
+// Pallets whose `call` argument is stored for later execution rather than dispatched now.
+const DEFERRED_CALL_PALLETS = new Set(['Scheduler'])
 const MAX_DEPTH = 8
 
 function insertSource(
@@ -92,6 +94,7 @@ function walkRuntimeCall(node: unknown, out: FuelTankCallSource[], depth: number
         fromInnerFuelTankCall(method as InnerFuelTankCall, out, depth)
         return
     }
+    if (DEFERRED_CALL_PALLETS.has(pallet)) return
 
     for (const arg of NESTED_CALL_ARGS) {
         const nested = method[arg]
@@ -149,7 +152,51 @@ export function fuelTankCallSources(call: CallItem): FuelTankCallSource[] {
     return out
 }
 
-/** Whether a call-level tank id refers to the given account id (non-`Id` lookups cannot be resolved offline). */
+/**
+ * Whether a call-level tank id refers to the given account id. `Id` and `Address32` carry the account id itself;
+ * `Index`, `Raw` and `Address20` cannot be resolved offline and never match, so they cannot select another tank's call.
+ */
 export function multiAddressMatches(address: MultiAddress, accountId: string): boolean {
-    return address.__kind !== 'Id' || address.value === accountId
+    switch (address.__kind) {
+        case 'Id':
+        case 'Address32':
+            return typeof address.value === 'string' && address.value.toLowerCase() === accountId.toLowerCase()
+        default:
+            return false
+    }
+}
+
+function fingerprint(value: unknown): string {
+    return JSON.stringify(value, (_key, inner: unknown) => (typeof inner === 'bigint' ? inner.toString() : inner))
+}
+
+function sameCallAddress(a: EventItem, b: EventItem): boolean {
+    return (a.callAddress ?? []).join(',') === (b.callAddress ?? []).join(',')
+}
+
+/**
+ * Picks the call behind `item` among the candidate sources that match its key. A single candidate, or candidates with
+ * identical payloads, are unambiguous. Otherwise, when `byEventOrder` is set, the n-th matching event emitted by the
+ * call maps to the n-th candidate, but only if the call emitted exactly one matching event per candidate: that proves
+ * every candidate executed, so no unexecuted if_else branch or interrupted batch item can be selected. Anything else
+ * returns undefined so the caller skips instead of guessing.
+ */
+export function resolveCallSource<T>(
+    item: EventItem,
+    candidates: T[],
+    isSameEvent: (event: EventItem) => boolean,
+    byEventOrder = true
+): T | undefined {
+    if (candidates.length <= 1) return candidates[0]
+
+    const first = fingerprint(candidates[0])
+    if (candidates.every((candidate) => fingerprint(candidate) === first)) return candidates[0]
+    if (!byEventOrder) return undefined
+
+    const siblings = item.extrinsic?.events.filter((event) => sameCallAddress(event, item) && isSameEvent(event))
+    if (siblings === undefined || siblings.length !== candidates.length) return undefined
+
+    siblings.sort((a, b) => a.index - b.index)
+    const position = siblings.findIndex((event) => event.index === item.index)
+    return position === -1 ? undefined : candidates[position]
 }

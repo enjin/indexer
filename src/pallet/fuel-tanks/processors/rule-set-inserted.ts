@@ -1,12 +1,14 @@
 import { Event as EventModel, FuelTank, FuelTankRuleSet, PermittedExtrinsics } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import * as mappings from '~/pallet/index'
+import { events } from '~/type'
 import { rulesToMap } from '~/pallet/fuel-tanks/utils'
 import {
     FuelTankCallSource,
     FuelTankInsertRuleSetSource,
     fuelTankCallSources,
     multiAddressMatches,
+    resolveCallSource,
 } from '~/pallet/fuel-tanks/call-sources'
 
 export async function ruleSetInserted(
@@ -18,15 +20,21 @@ export async function ruleSetInserted(
     const ruleSetId = `${event.tankId}-${event.ruleSetId}`
 
     const sources: FuelTankCallSource[] = item.call ? fuelTankCallSources(item.call) : []
-    // The last matching insert wins: if one call inserts the same rule set twice, both events persist the final rules.
-    const source = sources
-        .filter(
-            (s): s is FuelTankInsertRuleSetSource =>
-                s.kind === 'insertRuleSet' &&
-                s.ruleSetId === event.ruleSetId &&
-                multiAddressMatches(s.tankId, event.tankId)
+    const candidates = sources.filter(
+        (s): s is FuelTankInsertRuleSetSource =>
+            s.kind === 'insertRuleSet' && s.ruleSetId === event.ruleSetId && multiAddressMatches(s.tankId, event.tankId)
+    )
+    // Create calls also emit RuleSetInserted, which would shift the event order, so only order-match without them.
+    const hasCreate = sources.some((s) => s.kind === 'create')
+    const source = resolveCallSource(item, candidates, (e) => isSameRuleSetInserted(e, event), !hasCreate)
+
+    if (source === undefined && candidates.length > 1) {
+        ctx.log.warn(
+            `RuleSetInserted ${ruleSetId} at block ${block.height}: ${candidates.length} differing insert_rule_set ` +
+                `calls in ${item.call?.name ?? 'missing call'} cannot be matched to this event; rule set left unchanged`
         )
-        .at(-1)
+        return undefined
+    }
 
     if (source === undefined) {
         // create_fuel_tank emits RuleSetInserted for each descriptor rule set; FuelTankCreated already persisted them.
@@ -89,4 +97,14 @@ export async function ruleSetInserted(
     }
 
     return undefined
+}
+
+function isSameRuleSetInserted(item: EventItem, target: { tankId: string; ruleSetId: number }): boolean {
+    if (item.name !== events.fuelTanks.ruleSetInserted.name) return false
+    try {
+        const event = mappings.fuelTanks.events.ruleSetInserted(item)
+        return event.tankId === target.tankId && event.ruleSetId === target.ruleSetId
+    } catch {
+        return false
+    }
 }
