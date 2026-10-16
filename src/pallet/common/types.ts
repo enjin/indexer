@@ -1075,6 +1075,7 @@ export type FuelTankDescriptor = {
     providesDeposit?: boolean // Removed on v1030
     coveragePolicy?: CoveragePolicy // Added on v1030
     accountRules: AccountRuleDescriptor[]
+    accountExpiration?: number // Added on matrixV1030/v1060
 }
 
 export type CommissionPayment = {

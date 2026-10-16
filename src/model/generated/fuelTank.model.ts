@@ -42,6 +42,9 @@ export class FuelTank {
     @IntColumn_({nullable: true})
     accountExpiration!: number | undefined | null
 
+    @IntColumn_({nullable: true})
+    destroyScheduledAt!: number | undefined | null
+
     @OneToMany_(() => FuelTankUserAccounts, e => e.tank)
     userAccounts!: Relation_<FuelTankUserAccounts[]>
 
