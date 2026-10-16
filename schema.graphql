@@ -30,6 +30,9 @@ type Marketplace {
   minimumBidIncreasePercentage: Float!
 }
 
+# amount is the whole fee of the extrinsic: the transaction-payment fee (tip) plus, for a fuel-tank
+# dispatch, the tank's share and the caller's pays_remaining_fee share. who is the tank whenever the tank
+# paid part of it (its share is fuelTank.feePaid), otherwise the signer.
 type Fee {
   amount: BigInt
   who: Account
@@ -59,6 +62,9 @@ type Extrinsic @entity {
   tip: BigInt
   fee: Fee
   error: String
+  # Error of the call wrapped by a fuel-tank dispatch (FuelTanks.DispatchFailed). The outer extrinsic
+  # still succeeds (success = true, error = null) and the tank pays its fee; null when nothing failed.
+  dispatchError: String
   createdAt: DateTime!
 
   # Relationship

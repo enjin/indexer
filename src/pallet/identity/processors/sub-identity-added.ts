@@ -24,6 +24,7 @@ export async function subIdentityAdded(
     if (existing) {
         existing.super = new Identity({ id: main })
         existing.name = call.data.__kind !== 'None' ? safeString(hexToString(call.data.value)) : null
+        if (existing.isSub) existing.info = new Registration({ id: main })
         await ctx.store.save(existing)
 
         return undefined

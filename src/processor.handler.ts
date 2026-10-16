@@ -189,6 +189,7 @@ export async function eventHandler(
             .with(
                 balances.balanceSet.name,
                 balances.burned.name,
+                balances.burnedHeld.name,
                 balances.deposit.name,
                 balances.dustLost.name,
                 balances.endowed.name,
@@ -203,6 +204,8 @@ export async function eventHandler(
                 balances.suspended.name,
                 balances.withdraw.name,
                 balances.thawed.name,
+                balances.transferAndHold.name,
+                balances.transferOnHold.name,
                 balances.unlocked.name,
                 balances.unreserved.name,
                 () => p.balances.processors.save(item)
@@ -282,7 +285,9 @@ export async function eventHandler(
                 p.identity.processors.judgementUnrequested(ctx, block, item)
             )
             .with(identity.registrarAdded.name, () => p.identity.processors.registrarAdded(ctx, block, item))
+            .with(identity.subIdentitiesSet.name, () => p.identity.processors.subIdentitiesSet(ctx, block, item))
             .with(identity.subIdentityAdded.name, () => p.identity.processors.subIdentityAdded(ctx, block, item))
+            .with(identity.subIdentityRenamed.name, () => p.identity.processors.subIdentityRenamed(ctx, block, item))
             .with(identity.subIdentityRemoved.name, () => p.identity.processors.subIdentityRemoved(ctx, block, item))
             .with(identity.subIdentityRevoked.name, () => p.identity.processors.subIdentityRevoked(ctx, block, item))
             .with(nominationPools.created.name, () => p.nominationPools.processors.created(ctx, block, item))
