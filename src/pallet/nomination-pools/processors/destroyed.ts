@@ -1,20 +1,11 @@
-import { NominationPool, PoolState, StakeExchangeOffer, StakeExchangeOfferState, Token } from '~/model'
+import { NominationPool, PoolState, Token } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { connectionManager } from '~/contexts'
 import * as mappings from '~/pallet/index'
 import { SnsEvent } from '~/util/sns'
 import { EventHandlerResult } from '~/processor.handler'
 
 export async function destroyed(ctx: CommonContext, block: Block, item: EventItem): Promise<EventHandlerResult> {
     const eventData = mappings.nominationPools.events.destroyed(item)
-    const em = await connectionManager()
-
-    const stakeExchangeOffers = await em
-        .createQueryBuilder(StakeExchangeOffer, 'offer')
-        .leftJoinAndSelect('offer.tokenFilter', 'tokenFilter')
-        .where(':poolId = ANY(tokenFilter.value)', { poolId: eventData.poolId.toString() })
-        .getMany()
-
     const nominationPool = await ctx.store.findOne(NominationPool, {
         where: {
             id: eventData.poolId.toString(),
@@ -33,16 +24,8 @@ export async function destroyed(ctx: CommonContext, block: Block, item: EventIte
 
     const owner = nominationPool.degenToken.tokenAccounts[0].account.id
 
-    if (stakeExchangeOffers.length) {
-        for (const stakeExchangeOffer of stakeExchangeOffers) {
-            if (stakeExchangeOffer.tokenFilter?.value) {
-                if (stakeExchangeOffer.tokenFilter.value.length === 1) {
-                    stakeExchangeOffer.state = StakeExchangeOfferState.Cancelled
-                    await ctx.store.save(stakeExchangeOffer)
-                }
-            }
-        }
-    }
+    // Stake-exchange offers whitelisting only this pool stay live on chain (only `cancel_offer` cancels them), so
+    // they are left to their own OfferCancelled/OfferCompleted events.
 
     if (nominationPool.members.length) {
         for (const member of nominationPool.members) {
