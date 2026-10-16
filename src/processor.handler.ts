@@ -48,6 +48,10 @@ export async function eventHandler(
         return p.governance.processors.indexedEvent(activity)
     }
 
+    // AssetConversion moves multi-tokens balances without multi-tokens events; main.ts re-reads them from storage once
+    // all of the block's events are processed.
+    if (p.assetConversion.processors.isAssetConversionEvent(item)) return undefined
+
     return (
         match(item.name)
             .with(multiTokens.approved.name, () => p.multiTokens.processors.approved(ctx, item, skipSave))

@@ -37,4 +37,5 @@ export type Token = {
     isLendable: boolean // Added on matrixV1040; false for pre-v6 values
     lending?: LendingInfo // Added on matrixV1040; undefined for pre-v6 values
     mintRateLimit?: MintRateLimitState // Added on matrixV1040; undefined for pre-v6 values
+    creationBlock?: bigint // Added on storage v7; undefined for pre-v7 values, 0 for tokens migrated to v7
 }

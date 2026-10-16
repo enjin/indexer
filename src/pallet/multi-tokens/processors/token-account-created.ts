@@ -48,7 +48,10 @@ export async function tokenAccountCreated(
 
     const tokenAccount = new TokenAccount({
         id: `${data.accountId}-${data.collectionId}-${data.tokenId}`,
-        balance: 0n, // The balance is updated on Mint event
+        // The event's `balance` is not applied: mints and transfers announce the same amount again in the
+        // `Minted`/`Transferred` that follows. `fungibles` writes (AssetConversion) emit neither; their balances are
+        // re-read from storage at the end of the block.
+        balance: 0n,
         reservedBalance: 0n,
         totalBalance: 0n,
         lockedBalance: 0n,

@@ -15,6 +15,7 @@ import matrixUtility from '~/pallet/matrix-utility'
 import utility from '~/pallet/utility'
 import migrations from '~/pallet/migrations'
 import governance from '~/pallet/governance'
+import assetConversion from '~/pallet/asset-conversion'
 
 export {
     multiTokens,
@@ -34,4 +35,5 @@ export {
     utility,
     migrations,
     governance,
+    assetConversion,
 }
