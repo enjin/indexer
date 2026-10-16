@@ -35,6 +35,7 @@ export async function eraPaid(ctx: CommonContext, block: Block, item: EventItem)
 
     await ctx.store.save(newEra)
     await QueueUtils.dispatchComputeValidators()
+    QueueUtils.dispatchSyncUnbondingEras()
     await dispatchStakePoolsEvents(ctx, block.height, newEra.index, item)
 
     return mappings.staking.events.eraPaidEventModel(item, event)

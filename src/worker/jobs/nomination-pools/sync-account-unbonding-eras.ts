@@ -7,7 +7,7 @@ type UnbondingMembersJson = {
     unbondingEras?: [number, string | number][]
 }
 
-function unbondingErasFromChain(raw: unknown): UnbondingEras[] | null {
+export function unbondingErasFromChain(raw: unknown): UnbondingEras[] | null {
     const opt = raw as {
         isSome?: boolean
         isNone?: boolean
