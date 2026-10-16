@@ -359,7 +359,13 @@ async function processExtrinsics(
             const withdrawals = eventItems
                 .filter((e) => e.name === events.balances.withdraw.name && e.extrinsic?.id === id)
                 .map((e) => p.balances.events.withdraw(e))
-            const shares = dispatchFeeShares(withdrawals, tank.id, unwrapSigner(extrinsic), fuelTank.paysRemainingFee)
+            const shares = dispatchFeeShares(
+                withdrawals,
+                tank.id,
+                unwrapSigner(extrinsic),
+                fuelTank.paysRemainingFee,
+                tip
+            )
             fuelTank.feePaid = shares.tank
             callerFeeShare = shares.caller
         }

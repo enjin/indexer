@@ -29,7 +29,7 @@ export function signedOrigin(origin: unknown): string | null {
 /**
  * Makes `subs` (account, name) the complete list of sub-identities of `main`: subs no longer listed are
  * detached (a plain sub is removed, an account with its own identity just loses its `super`), listed ones
- * are created or re-pointed at `main` with the given name.
+ * are created or re-pointed at `main` with the given name (a plain sub also takes `main`'s registration).
  */
 export async function applySubIdentities(
     ctx: CommonContext,
@@ -66,6 +66,8 @@ export async function applySubIdentities(
             if (existing) {
                 existing.super = new Identity({ id: main })
                 existing.name = name
+                // A plain sub inherits its registration from its super; one with its own identity keeps it.
+                if (existing.isSub) existing.info = new Registration({ id: main })
                 return existing
             }
 

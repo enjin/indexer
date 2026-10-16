@@ -17,6 +17,9 @@ testRequire.cache[queueModulePath] = queueModule
 const { setSubs, signedOrigin, subIdentitiesSet } = testRequire(
     '~/pallet/identity/processors/set-subs'
 ) as typeof import('~/pallet/identity/processors/set-subs')
+const { identityCleared } = testRequire(
+    '~/pallet/identity/processors/identity-cleared'
+) as typeof import('~/pallet/identity/processors/identity-cleared')
 const { renameSub, subIdentityRenamed } = testRequire(
     '~/pallet/identity/processors/rename-sub'
 ) as typeof import('~/pallet/identity/processors/rename-sub')
@@ -45,6 +48,15 @@ class MemoryStore {
 
     findOneBy(entity: RowClass, where: unknown): Promise<Row | undefined> {
         return Promise.resolve(this.rows.find((row) => row instanceof entity && matches(row, where)))
+    }
+
+    findOneOrFail(entity: RowClass, options: { where: unknown }): Promise<Row> {
+        const row = this.rows.find((item) => item instanceof entity && matches(item, options.where))
+        if (!row) throw new Error('not found')
+        // `relations: { sub: true }`: the reverse side of `super`.
+        if (row instanceof Identity)
+            row.sub = this.rows.filter((item): item is Identity => matches(item, { super: { id: row.id } }))
+        return Promise.resolve(row)
     }
 
     findOneByOrFail(): Promise<Row> {
@@ -219,4 +231,36 @@ void test('rename_sub on older runtimes skips an unindexed sub instead of crashi
         call('Identity.rename_sub', { sub: { __kind: 'Id', value: subA }, data: raw('x') }, origin)
     )
     assert.equal(store.identity(subA)?.name, 'x')
+})
+
+void test('a plain sub moved to another main takes its registration, so clearing the old main cannot orphan it', async () => {
+    const { block, store, ctx, set, event } = await fixture(1041)
+    const other = `0x${'cc'.repeat(32)}`
+    const otherInfo = new Registration({ id: other })
+    const ownInfo = new Registration({ id: subB })
+    // subA is a plain sub of `other`; subB has its own identity and is also a sub of `other`.
+    store.rows.push(
+        new Identity({ id: main, isSub: false, name: 'Main', info: new Registration({ id: main }) }),
+        new Identity({ id: other, isSub: false, name: 'Other', super: null, info: otherInfo }),
+        sub(subA, 'a', { super: new Identity({ id: other }), info: otherInfo }),
+        sub(subB, 'b', { isSub: false, super: new Identity({ id: other }), info: ownInfo })
+    )
+    // Same block: main.set_subs([]), other.clear_identity(), main.add_sub(subA), main.add_sub(subB). The
+    // SubIdentitiesSet of main already reads the end-of-block SubsOf(main).
+    set('Identity.SubsOf', [main], [10n, [subA, subB]])
+    set('Identity.SuperOf', [subA], [main, raw('a')])
+    set('Identity.SuperOf', [subB], [main, raw('b')])
+
+    await subIdentitiesSet(ctx, block, event('Identity.SubIdentitiesSet', { main, numberOfSubs: 2, newDeposit: '10' }))
+
+    assert.equal(store.identity(subA)?.super?.id, main)
+    assert.equal(store.identity(subA)?.info.id, main, 'a plain sub inherits the new main registration')
+    assert.equal(store.identity(subB)?.info.id, subB, 'an independent registration is kept')
+
+    await identityCleared(ctx, block, event('Identity.IdentityCleared', { who: other, deposit: '0' }))
+
+    assert.equal(store.identity(other), undefined)
+    const dangling = store.rows.filter((row) => row instanceof Identity && row.info.id === other)
+    assert.deepEqual(dangling, [], 'no identity still references the cleared registration')
+    assert.equal(store.identity(subA)?.super?.id, main)
 })
