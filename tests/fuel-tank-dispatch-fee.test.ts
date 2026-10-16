@@ -16,7 +16,8 @@ void test('the tank share sums every withdrawal from the tank instead of keeping
         ],
         tank,
         caller,
-        false
+        false,
+        0n
     )
 
     assert.deepEqual(shares, { tank: 12n, caller: 0n })
@@ -30,10 +31,10 @@ void test('pays_remaining_fee counts the caller withdrawal CheckFuelTank makes b
         { who: caller, amount: 1n },
     ]
 
-    assert.deepEqual(dispatchFeeShares(withdrawals, tank, caller, true), { tank: 9n, caller: 3n })
+    assert.deepEqual(dispatchFeeShares(withdrawals, tank, caller, true, 1n), { tank: 9n, caller: 3n })
     // Without pays_remaining_fee the caller is never charged by the tank extension.
-    assert.deepEqual(dispatchFeeShares(withdrawals, tank, caller, false), { tank: 9n, caller: 0n })
-    assert.deepEqual(dispatchFeeShares(withdrawals, tank, caller, null), { tank: 9n, caller: 0n })
+    assert.deepEqual(dispatchFeeShares(withdrawals, tank, caller, false, 1n), { tank: 9n, caller: 0n })
+    assert.deepEqual(dispatchFeeShares(withdrawals, tank, caller, null, 1n), { tank: 9n, caller: 0n })
 })
 
 void test('a caller withdrawal after the tank paid is the tip, not a fee share', () => {
@@ -44,15 +45,52 @@ void test('a caller withdrawal after the tank paid is the tip, not a fee share',
         ],
         tank,
         caller,
-        true
+        true,
+        1n
     )
 
     assert.deepEqual(shares, { tank: 9n, caller: 0n })
 })
 
 void test('a caller covering the whole fee leaves the tank share at zero', () => {
-    assert.deepEqual(dispatchFeeShares([{ who: caller, amount: 12n }], tank, caller, true), { tank: 0n, caller: 12n })
-    assert.deepEqual(dispatchFeeShares([], tank, caller, true), { tank: 0n, caller: 0n })
+    assert.deepEqual(dispatchFeeShares([{ who: caller, amount: 12n }], tank, caller, true, 0n), {
+        tank: 0n,
+        caller: 12n,
+    })
+    assert.deepEqual(dispatchFeeShares([], tank, caller, true, 0n), { tank: 0n, caller: 0n })
+})
+
+void test('the tip of a zero-fee pays_remaining_fee dispatch is not counted again as the caller share', () => {
+    // Only ChargeTransactionPayment withdrew (the tip), which the extrinsic fee already includes.
+    assert.deepEqual(dispatchFeeShares([{ who: caller, amount: 1n }], tank, caller, true, 1n), { tank: 0n, caller: 0n })
+    // The caller covered the whole fee, then paid the tip.
+    assert.deepEqual(
+        dispatchFeeShares(
+            [
+                { who: caller, amount: 12n },
+                { who: caller, amount: 1n },
+            ],
+            tank,
+            caller,
+            true,
+            1n
+        ),
+        { tank: 0n, caller: 12n }
+    )
+    // Tip only, followed by a caller withdrawal of the inner call that is not the tip.
+    assert.deepEqual(
+        dispatchFeeShares(
+            [
+                { who: caller, amount: 1n },
+                { who: caller, amount: 50n },
+            ],
+            tank,
+            caller,
+            true,
+            1n
+        ),
+        { tank: 0n, caller: 0n }
+    )
 })
 
 void test('the inner error of a fuel-tank dispatch comes from DispatchFailed of the same extrinsic', () => {
