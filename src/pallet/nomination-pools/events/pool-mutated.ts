@@ -56,13 +56,10 @@ export function poolMutated(event: EventItem): PoolMutated {
 }
 
 export function poolMutatedEventModel(item: EventItem, data: PoolMutated, owner: string | undefined): EventModel {
-    const mutation: Record<string, string | number | undefined> = {}
-    if (
-        data.mutation.newCommission !== undefined &&
-        data.mutation.newCommission.__kind === 'SomeMutation' &&
-        data.mutation.newCommission.value !== undefined
-    ) {
-        mutation.newCommission = data.mutation.newCommission.value
+    const mutation: Record<string, string | number | null | undefined> = {}
+    if (data.mutation.newCommission !== undefined && data.mutation.newCommission.__kind === 'SomeMutation') {
+        // `null` records a commission removal.
+        mutation.newCommission = data.mutation.newCommission.value ?? null
     } else {
         mutation.newCommission = undefined
     }

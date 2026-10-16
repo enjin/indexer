@@ -1,7 +1,7 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { PoolMember, TokenAccount } from '~/model'
 import { getOrCreateAccount } from '~/util/entities'
-import { updatePool } from '~/pallet/nomination-pools/processors/pool'
+import { createAccount, updatePool } from '~/pallet/nomination-pools/processors/pool'
 import { Sns, SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { IsNull, Not } from 'typeorm'
@@ -9,12 +9,27 @@ import { EventHandlerResult } from '~/processor.handler'
 import { CustomStakingEvent } from '~/pallet/common/types'
 import { unbondingErasAt } from '~/pallet/nomination-pools/processors/unbonding-eras'
 
+/**
+ * `do_withdraw_unbonded` pays a regular member's withdrawal to the member, who must hold an `UnbondingMembers`
+ * entry. The deposit is paid to the pool token owner, and is only withdrawable once the deposit account is the
+ * pool's sole unbonding member, so the recipient has no entry right before the withdrawal.
+ */
+async function isDepositWithdrawal(block: Block, poolId: number, recipient: string): Promise<boolean> {
+    const entry = await mappings.nominationPools.storage.unbondingMembers(block.getParent(), poolId, recipient)
+    return entry === undefined
+}
+
 export async function withdrawn(ctx: CommonContext, block: Block, item: EventItem): Promise<EventHandlerResult> {
     if (!item.extrinsic || !item.extrinsic.call) return undefined
 
     const data = mappings.nominationPools.events.withdrawn(item)
     const pool = await updatePool(ctx, block, data.poolId.toString())
-    const account = await getOrCreateAccount(ctx, data.member)
+    const recipient = await getOrCreateAccount(ctx, data.member)
+
+    // `Withdrawn.member` is the recipient. For the deposit that is the pool token owner (or the unclaimed-balance
+    // receiver), while the withdrawn position belongs to the pool's deposit account.
+    const isStashWithdrawing = await isDepositWithdrawal(block, data.poolId, recipient.id)
+    const account = isStashWithdrawing ? await getOrCreateAccount(ctx, createAccount(block, pool.id, 1)) : recipient
 
     const poolMember = await ctx.store.findOne<PoolMember>(PoolMember, {
         where: { id: `${data.poolId}-${account.id}` },
@@ -24,19 +39,7 @@ export async function withdrawn(ctx: CommonContext, block: Block, item: EventIte
         return undefined
     }
 
-    const isStashWithdrawing = await (async () => {
-        const unbondingMembers = await ctx.store.find(PoolMember, {
-            where: { pool: { id: pool.id }, unbondingEras: Not(IsNull()), isStash: false },
-        })
-
-        const unbondingStash = await ctx.store.findOne(PoolMember, {
-            where: { pool: { id: pool.id }, unbondingEras: Not(IsNull()), isStash: true },
-        })
-
-        return unbondingMembers.length === 0 && unbondingStash
-    })()
-
-    poolMember.unbondingEras = await unbondingErasAt(block, data.poolId, data.member)
+    poolMember.unbondingEras = await unbondingErasAt(block, data.poolId, account.id)
 
     await ctx.store.save(poolMember)
 
@@ -62,7 +65,7 @@ export async function withdrawn(ctx: CommonContext, block: Block, item: EventIte
         name: isStashWithdrawing ? CustomStakingEvent.DepositWithdrawn : item.name,
         body: {
             pool: data.poolId.toString(),
-            account: account.id,
+            account: recipient.id,
             balance: data.balance,
             points: data.points,
             extrinsic: item.extrinsic.id,
