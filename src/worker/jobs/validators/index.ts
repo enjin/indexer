@@ -1,4 +1,5 @@
 export * from './backfill-extrinsic-block-relation'
+export * from './backfill-event-position'
 export * from './backfill-chain-finality'
 export * from './backfill-governance'
 export * from './import-governance-state'

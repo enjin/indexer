@@ -273,11 +273,15 @@ async function processEvents(
 
     if (event) {
         if (Array.isArray(event)) {
+            event[0].index = eventItem.index
+            event[0].blockNumber = block.height
             const tokenAccountEvent = event[1] instanceof AccountTokenEvent ? event[1] : undefined
             const snsEvent = event[2] ? event[2] : isSnsEvent(event[1]) ? event[1] : undefined
 
             return [event[0], tokenAccountEvent, snsEvent]
         } else {
+            event.index = eventItem.index
+            event.blockNumber = block.height
             return [event, undefined, undefined]
         }
     }
