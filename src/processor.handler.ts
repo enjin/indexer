@@ -224,6 +224,13 @@ export async function eventHandler(
             .with(marketplace.migrationCompleted.name, () =>
                 p.marketplace.processors.migrationCompleted(ctx, block, item)
             )
+            .with(marketplace.listingSettlementAbandoned.name, () =>
+                p.marketplace.processors.listingSettlementAbandoned(ctx, block, item)
+            )
+            .with(marketplace.abandonedListingReleased.name, () =>
+                p.marketplace.processors.abandonedListingReleased(ctx, item)
+            )
+            .with(marketplace.protocolFeeSet.name, () => p.marketplace.processors.protocolFeeSet(item))
             .with(polkadotXcm.attempted.name, () => p.polkadotXcm.processors.attempted(ctx, block, item))
             .with(fuelTanks.dispatchFailed.name, () => p.fuelTanks.processors.dispatchFailed(block, item))
             .with(fuelTanks.accountAdded.name, () => p.fuelTanks.processors.accountAdded(ctx, block, item))

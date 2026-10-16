@@ -104,7 +104,7 @@ Runtime upgrades are represented by version-aware definitions under `src/type/`.
 
 Adding a type definition alone does not index it. The subscription, handler route, processor, schema/model, and migration layers may all need coordinated updates.
 
-Canary Matrixchain 1041 uses new fuel-tank and nested-call codecs. Its marketplace no longer stores `PendingActivations`; listing refreshes read activation heights from `PriceLevelQueues` at the processed block hash, while 1040 retains its original reader. Phantom attribute-deposit migration events are explicitly excluded from indexing.
+Canary Matrixchain 1041 uses new fuel-tank and nested-call codecs. Its marketplace no longer stores `PendingActivations`; listing refreshes read activation heights from `PriceLevelQueues` at the processed block hash, while 1040 retains its original reader. Because storage v9 emits nothing when a start block passes, the processor also promotes `PendingActivation` listings whose `startBlock` is at or below the last height of each batch to `Indexed`. The `INVALIDATE_LISTINGS` job only flags lapsed auctions/offers as expired; terminal listing statuses come from the chain's own `AuctionFinalized`, `ExpiredListingRemoved`, and `ListingCancelled` events. Phantom attribute-deposit migration events are explicitly excluded from indexing.
 
 ## Data model and schema workflow
 

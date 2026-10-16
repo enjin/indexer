@@ -11,6 +11,7 @@ import {
     ListingStatus,
     ListingStatusType,
     ListingType,
+    MarketplaceListingBookState,
     OfferData,
     Token,
     TokenAccount,
@@ -22,8 +23,13 @@ import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
 import { match } from 'ts-pattern'
 import Big from 'big.js'
-import { marketplace as marketplaceEvents } from '~/type/events'
-import { initialBookState, rebuildFixedPriceState, rebuildOfferState } from '~/pallet/marketplace/utils/listing-state'
+import {
+    initialBookState,
+    listingCreatedSupportsOrderBook,
+    rebuildFixedPriceState,
+    rebuildOfferState,
+} from '~/pallet/marketplace/utils/listing-state'
+import { takeUnindexedListing } from '~/pallet/marketplace/processors/listing-not-indexed'
 
 export async function listingCreated(
     ctx: CommonContext,
@@ -88,13 +94,16 @@ export async function listingCreated(
     const usesWhitelist = typeof data.listing.whitelistedAccountCount === 'number'
     const explicitStartBlock = data.listing.startBlock
     const startBlock = data.listing.startBlock ?? block.height + 10
-    const bookState = initialBookState(
-        marketplaceEvents.listingCreated.matrixV1040.is(item) || marketplaceEvents.listingCreated.v1080.is(item),
-        listingData.listingType,
-        usesWhitelist,
-        explicitStartBlock,
-        block.height
-    )
+    const unindexedEvent = takeUnindexedListing(listingId, block.hash)
+    const bookState = unindexedEvent
+        ? MarketplaceListingBookState.NotIndexed
+        : initialBookState(
+              listingCreatedSupportsOrderBook(item),
+              listingData.listingType,
+              usesWhitelist,
+              explicitStartBlock,
+              block.height
+          )
 
     const listing = new Listing({
         id: listingId,
@@ -132,6 +141,14 @@ export async function listingCreated(
 
     await ctx.store.save(listing)
     await ctx.store.save(listingStatus)
+
+    if (unindexedEvent && unindexedEvent.data?.isTypeOf === 'MarketplaceListingNotIndexed') {
+        // The event row is persisted at the end of the block, so it can still pick up the listing relations.
+        const token = listingData.listingType === ListingType.Offer ? takeAssetId : makeAssetId
+        unindexedEvent.data.listing = listingId
+        unindexedEvent.collectionId = token.collection.id
+        unindexedEvent.tokenId = token.id
+    }
 
     const isOffer = listing.type === ListingType.Offer
     if (!isOffer) {

@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, IntColumn as IntColumn_, BigIntColumn as BigIntColumn_, ManyToOne as ManyToOne_, Index as Index_, Relation as Relation_, DateTimeColumn as DateTimeColumn_} from "@subsquid/typeorm-store"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, BigIntColumn as BigIntColumn_, ManyToOne as ManyToOne_, Index as Index_, Relation as Relation_, DateTimeColumn as DateTimeColumn_} from "@subsquid/typeorm-store"
 import {Account} from "./account.model"
 import {Listing} from "./listing.model"
 
@@ -11,11 +11,11 @@ export class WhitelistedAccount {
     @PrimaryColumn_()
     id!: string
 
-    @IntColumn_({nullable: false})
-    allowance!: number
+    @BigIntColumn_({nullable: false})
+    allowance!: bigint
 
-    @IntColumn_({nullable: false})
-    amountUsed!: number
+    @BigIntColumn_({nullable: false})
+    amountUsed!: bigint
 
     @BigIntColumn_({nullable: false})
     deposit!: bigint

@@ -252,6 +252,23 @@ type MarketplaceMigrationCompleted {
   storageVersion: Int!
 }
 
+type MarketplaceListingSettlementAbandoned {
+  listingId: String!
+  listing: Listing
+  attempts: Int!
+}
+
+type MarketplaceAbandonedListingReleased {
+  listingId: String!
+  listing: Listing
+  returnedBidder: String
+  returnedBidPrice: BigInt
+}
+
+type MarketplaceProtocolFeeSet {
+  protocolFeePerbill: Int!
+}
+
 type MarketplaceCounterOfferPlaced {
   listing: Listing
   accountId: Account!
@@ -1310,6 +1327,7 @@ type Listing @entity {
   type: ListingType! @index
   bookState: MarketplaceListingBookState! @index
   hasRoyaltyIncreased: Boolean @index
+  settlementAbandoned: Boolean
 
   createdAt: DateTime! @index
   updatedAt: DateTime!
@@ -1324,8 +1342,8 @@ type WhitelistedAccount @entity {
   id: ID!
 
   # Storage defaults
-  allowance: Int!
-  amountUsed: Int!
+  allowance: BigInt!
+  amountUsed: BigInt!
   deposit: BigInt!
 
   # Relations
@@ -2006,6 +2024,7 @@ union EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiToken
   | MarketplaceAuctionFinalized | MarketplaceBidPlaced | MarketplaceListingCancelled | MarketplaceListingCreated
   | MarketplaceListingFilled | MarketplaceCounterOfferPlaced | MarketplaceCounterOfferAnswered | MarketplaceCounterOfferRemoved
   | MarketplaceOrderMatched | MarketplaceListingNotIndexed | MarketplaceMigrationCompleted
+  | MarketplaceListingSettlementAbandoned | MarketplaceAbandonedListingReleased | MarketplaceProtocolFeeSet
   | MarketplaceOfferCreated | MarketplaceOfferSettled | MarketplaceOfferCancelled | MarketplaceListingRemovedUnderMinimum
   | BalancesTransfer | TeleportBalanceWithdrawn | ClaimsClaimRequested | ClaimsClaimed | MarketplaceWhitelistedAccountsAdded
   | MarketplaceWhitelistedAccountsRemoved
