@@ -1,4 +1,5 @@
 export * from '~/pallet/claims/processors/claim-minted'
+export * from '~/pallet/claims/processors/claim-moved'
 export * from '~/pallet/claims/processors/claim-rejected'
 export * from '~/pallet/claims/processors/claim-requested'
 export * from '~/pallet/claims/processors/claimed'

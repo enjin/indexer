@@ -7,7 +7,9 @@ export async function claimMinted(ctx: CommonContext, block: Block, item: EventI
     const event = mappings.claims.events.claimMinted(item)
     const who = unwrapAccount(event.who)
     const claim = new ClaimRequest({
-        id: `${event.who}-${block.height}-minted`,
+        // The event id keeps two `mint_claim` calls for the same address in one block distinct; the chain pushes a
+        // separate claim entry for each.
+        id: `${who}-${item.id}-minted`,
         who,
         acountType: AccountClaimType.EVM,
         amountClaimable: event.amount,

@@ -1,9 +1,16 @@
-import { LessThan } from 'typeorm'
+import { LessThanOrEqual } from 'typeorm'
 import { Claim, ClaimDetails, ClaimRequest, ClaimsClaimed, Event as EventModel, Extrinsic } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
 import * as mappings from '~/pallet/index'
-import { BN } from '@polkadot/util'
+
+/**
+ * The newest `createdBlock` a claim request may have to be paid by a `claim` in `height`. `process_claim` pays an
+ * entry when `start_block_number <= current_block - delay`, so the cutoff is inclusive.
+ */
+export function claimMaturityCutoff(height: number, delay: number | bigint): number {
+    return height - Number(delay)
+}
 
 export async function claimed(ctx: CommonContext, block: Block, item: EventItem): Promise<EventModel | undefined> {
     if (!item.extrinsic) return undefined
@@ -12,14 +19,17 @@ export async function claimed(ctx: CommonContext, block: Block, item: EventItem)
     const account = await getOrCreateAccount(ctx, event.who)
     const claimAccount = event.ethereumAddress?.toLowerCase()
 
-    const claimDetails = await ctx.store.findOneByOrFail<ClaimDetails>(ClaimDetails, { id: '0' })
+    // ClaimDetails is only seeded during warp sync on Enjin Matrixchain; elsewhere it may not exist yet.
+    const claimDetails =
+        (await ctx.store.findOneBy<ClaimDetails>(ClaimDetails, { id: '0' })) ??
+        new ClaimDetails({ id: '0', totalUnclaimedAmount: 0n })
     const period = claimDetails.delayClaimsPeriod || (await mappings.claims.storage.delayClaimsPeriod(block))
 
-    if (!period) {
+    if (period === undefined) {
         throw new Error('Delay period is not set')
     }
 
-    const blockDiff = new BN(block.height).sub(new BN(period.toString())).toNumber()
+    const blockDiff = claimMaturityCutoff(block.height, period)
 
     const [totalUnclaimedAmount, claimRequests, claim] = await Promise.all([
         mappings.claims.storage.totalUnclaimedAmount(block),
@@ -27,7 +37,9 @@ export async function claimed(ctx: CommonContext, block: Block, item: EventItem)
             where: {
                 who: claimAccount,
                 isClaimed: false,
-                createdBlock: LessThan(blockDiff),
+                // `reject_claims` removes the entry from chain storage, so it is never paid.
+                isRejected: false,
+                createdBlock: LessThanOrEqual(blockDiff),
             },
         }),
         ctx.store.findOneBy<Claim>(Claim, { account: { id: account.id } }),
@@ -35,8 +47,10 @@ export async function claimed(ctx: CommonContext, block: Block, item: EventItem)
 
     claimDetails.totalUnclaimedAmount = totalUnclaimedAmount ?? 0n
 
+    // The chain paid `event.amount` regardless, so record the claim even if the indexer holds no matching request
+    // (e.g. claims seeded through the Claims genesis config, which emit no request event).
     if (claimRequests.length === 0) {
-        throw new Error(`No claim requests found for ${claimAccount}`)
+        ctx.log.warn(`No claim requests found for ${claimAccount} in block ${block.height}`)
     }
 
     const efiSum = claimRequests

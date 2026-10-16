@@ -187,6 +187,7 @@ export async function eventHandler(
             .with(claims.claimRequested.name, () => p.claims.processors.claimRequested(ctx, block, item))
             .with(claims.claimRejected.name, () => p.claims.processors.claimRejected(ctx, block, item))
             .with(claims.claimMinted.name, () => p.claims.processors.claimMinted(ctx, block, item))
+            .with(claims.claimMoved.name, () => p.claims.processors.claimMoved(ctx, item))
             .with(claims.claimed.name, () => p.claims.processors.claimed(ctx, block, item))
             .with(claims.exchangeRateSet.name, () => p.claims.processors.exchangeRateSet(ctx, block, item))
             .with(claims.delayTimeForClaimSet.name, () => p.claims.processors.delayTimeForClaimSet(ctx, block, item))
