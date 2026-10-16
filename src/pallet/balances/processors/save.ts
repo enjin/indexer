@@ -5,6 +5,7 @@ import { balances } from '~/type/events'
 import { CommonContext, EventItem } from '~/contexts'
 import * as mappings from '~/pallet/index'
 import { encodeAddress } from '~/util/tools'
+import { legacyTransferableBalance, transferableBalance } from '~/pallet/balances/transferable'
 
 function processBalancesEventItem(event: EventItem) {
     const ids: string[] = []
@@ -100,6 +101,22 @@ function processBalancesEventItem(event: EventItem) {
             break
         }
 
+        case balances.burnedHeld.name: {
+            const data = mappings.balances.events.burnedHeld(event)
+            ids.push(data.who)
+            break
+        }
+        case balances.transferOnHold.name: {
+            const data = mappings.balances.events.transferOnHold(event)
+            ids.push(...[data.source, data.dest])
+            break
+        }
+        case balances.transferAndHold.name: {
+            const data = mappings.balances.events.transferAndHold(event)
+            ids.push(...[data.source, data.dest])
+            break
+        }
+
         default: {
             break
         }
@@ -161,7 +178,11 @@ export async function saveAccounts(ctx: CommonContext, block: BlockHeader) {
                         nonce: accountInfo.nonce,
                         verified: false,
                         balance: new Balance({
-                            transferable: accountData.free - accountData.frozen,
+                            transferable: transferableBalance(
+                                accountData.free,
+                                accountData.reserved,
+                                accountData.frozen
+                            ),
                             free: accountData.free,
                             reserved: accountData.reserved,
                             frozen: accountData.frozen,
@@ -178,7 +199,7 @@ export async function saveAccounts(ctx: CommonContext, block: BlockHeader) {
                         nonce: accountInfo.nonce,
                         verified: false,
                         balance: new Balance({
-                            transferable: accountData.free - accountData.miscFrozen,
+                            transferable: legacyTransferableBalance(accountData.free, accountData.miscFrozen),
                             free: accountData.free,
                             reserved: accountData.reserved,
                             frozen: accountData.miscFrozen,

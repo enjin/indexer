@@ -31,6 +31,7 @@ import { QueuesEnum } from '~/queue/constants'
 import { Logger } from '~/util/logger'
 import { getSnsEventHash, isRelay } from '~/util/tools'
 import { readableDispatchError } from '~/util/dispatch-error'
+import { dispatchFeeShares, fuelTankDispatchError } from '~/pallet/fuel-tanks/dispatch-fee'
 import { isSnsEvent, Sns, SnsEvent } from '~/util/sns'
 import { queueMissingBlocks } from '~/migration/queue-missing-blocks'
 import { initializeCrashReporting, reportCrash } from '~/util/crash-report'
@@ -323,6 +324,7 @@ async function processExtrinsics(
     const { id, fee, hash, success, tip, call, error } = extrinsic
 
     let fuelTank = null
+    let callerFeeShare = 0n
 
     if (call && [calls.parachainSystem.setValidationData.name, calls.timestamp.set.name].includes(call.name)) {
         return [undefined, undefined]
@@ -349,23 +351,25 @@ async function processExtrinsics(
                     'settings' in tankData && tankData.settings !== undefined ? tankData.settings.useNoneOrigin : null,
             })
 
-            for (const eventItem of eventItems) {
-                if (eventItem.name !== events.balances.withdraw.name || eventItem.extrinsic?.id !== id) {
-                    continue
-                }
-
-                const transfer = p.balances.events.withdraw(eventItem)
-
-                if (transfer.who === tank.id) {
-                    fuelTank.feePaid = transfer.amount
-                }
-            }
+            const withdrawals = eventItems
+                .filter((e) => e.name === events.balances.withdraw.name && e.extrinsic?.id === id)
+                .map((e) => p.balances.events.withdraw(e))
+            const shares = dispatchFeeShares(withdrawals, tank.id, unwrapSigner(extrinsic), fuelTank.paysRemainingFee)
+            fuelTank.feePaid = shares.tank
+            callerFeeShare = shares.caller
         }
     }
 
+    // A fuel-tank dispatch succeeds even when its inner call fails; the inner error is only in an event.
+    const dispatchError = fuelTankDispatchError(eventItems, id, block._runtime)
+
     const signer = await getOrCreateAccount(ctx, unwrapSigner(extrinsic))
     const callName = call ? call.name.split('.') : []
-    const txFee = (fee ?? 0n) + (fuelTank?.feePaid ?? 0n)
+    // `fee` (TransactionFeePaid) is only the tip for a fuel-tank dispatch; the inner call's fee is withdrawn
+    // by CheckFuelTank. Fee keeps one payer: the tank whenever it paid a share (see FuelTankData.feePaid).
+    const tankFeeShare = fuelTank?.feePaid ?? 0n
+    const txFee = (fee ?? 0n) + tankFeeShare + callerFeeShare
+    const feePayer = fuelTank && tankFeeShare > 0n ? fuelTank.id : signer.id
 
     const extrinsicM = new Extrinsic({
         id,
@@ -380,9 +384,10 @@ async function processExtrinsics(
         nonce: signer.nonce,
         tip,
         error: readableDispatchError(error, block._runtime) ?? undefined,
+        dispatchError,
         fee: new Fee({
             amount: txFee,
-            who: signer.id,
+            who: feePayer,
         }),
         fuelTank,
         createdAt: new Date(block.timestamp ?? 0),
