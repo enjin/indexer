@@ -28,6 +28,10 @@ export const limitedReserveTransferAssets = withDispatchCheck((call: CallItem): 
             () => calls.polkadotXcm.limitedReserveTransferAssets.matrixV500.is(call),
             () => calls.polkadotXcm.limitedReserveTransferAssets.matrixV500.decode(call)
         )
+        .when(
+            () => calls.polkadotXcm.limitedReserveTransferAssets.matrixEnjinV1031.is(call),
+            () => calls.polkadotXcm.limitedReserveTransferAssets.matrixEnjinV1031.decode(call)
+        )
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })

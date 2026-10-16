@@ -31,6 +31,18 @@ export function accountAdded(event: EventItem): AccountAdded {
             () => fuelTanks.accountAdded.v1021.is(event),
             () => fuelTanks.accountAdded.v1021.decode(event)
         )
+        .when(
+            () => fuelTanks.accountAdded.matrixEnjinV1031.is(event),
+            () => fuelTanks.accountAdded.matrixEnjinV1031.decode(event)
+        )
+        .when(
+            () => fuelTanks.accountAdded.matrixV1030.is(event),
+            () => fuelTanks.accountAdded.matrixV1030.decode(event)
+        )
+        .when(
+            () => fuelTanks.accountAdded.v1060.is(event),
+            () => fuelTanks.accountAdded.v1060.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

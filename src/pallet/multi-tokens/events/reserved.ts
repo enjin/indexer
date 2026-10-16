@@ -59,6 +59,22 @@ export function reserved(event: EventItem): Reserved {
             () => multiTokens.reserved.enjinV1070.is(event),
             () => multiTokens.reserved.enjinV1070.decode(event)
         )
+        .when(
+            () => multiTokens.reserved.enjinV100.is(event),
+            () => multiTokens.reserved.enjinV100.decode(event)
+        )
+        .when(
+            () => multiTokens.reserved.enjinV1050.is(event),
+            () => multiTokens.reserved.enjinV1050.decode(event)
+        )
+        .when(
+            () => multiTokens.reserved.enjinV1062.is(event),
+            () => multiTokens.reserved.enjinV1062.decode(event)
+        )
+        .when(
+            () => multiTokens.reserved.v100.is(event),
+            () => multiTokens.reserved.v100.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

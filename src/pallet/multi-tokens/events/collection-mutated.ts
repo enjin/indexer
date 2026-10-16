@@ -24,6 +24,22 @@ export function collectionMutated(event: EventItem): CollectionMutated {
             () => multiTokens.collectionMutated.v1050.is(event),
             () => multiTokens.collectionMutated.v1050.decode(event)
         )
+        .when(
+            () => multiTokens.collectionMutated.matrixV500.is(event),
+            () => multiTokens.collectionMutated.matrixV500.decode(event)
+        )
+        .when(
+            () => multiTokens.collectionMutated.enjinV100.is(event),
+            () => multiTokens.collectionMutated.enjinV100.decode(event)
+        )
+        .when(
+            () => multiTokens.collectionMutated.enjinV1050.is(event),
+            () => multiTokens.collectionMutated.enjinV1050.decode(event)
+        )
+        .when(
+            () => multiTokens.collectionMutated.v100.is(event),
+            () => multiTokens.collectionMutated.v100.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

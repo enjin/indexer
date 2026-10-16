@@ -21,6 +21,34 @@ export function auctionFinalized(event: EventItem): AuctionFinalized {
             () => marketplace.auctionFinalized.matrixEnjinV603.is(event),
             () => marketplace.auctionFinalized.matrixEnjinV603.decode(event)
         )
+        .when(
+            () => marketplace.auctionFinalized.matrixEnjinV1031.is(event),
+            () => marketplace.auctionFinalized.matrixEnjinV1031.decode(event)
+        )
+        .when(
+            () => marketplace.auctionFinalized.matrixV500.is(event),
+            () => marketplace.auctionFinalized.matrixV500.decode(event)
+        )
+        .when(
+            () => marketplace.auctionFinalized.matrixV1030.is(event),
+            () => marketplace.auctionFinalized.matrixV1030.decode(event)
+        )
+        .when(
+            () => marketplace.auctionFinalized.enjinV110.is(event),
+            () => marketplace.auctionFinalized.enjinV110.decode(event)
+        )
+        .when(
+            () => marketplace.auctionFinalized.enjinV1062.is(event),
+            () => marketplace.auctionFinalized.enjinV1062.decode(event)
+        )
+        .when(
+            () => marketplace.auctionFinalized.v110.is(event),
+            () => marketplace.auctionFinalized.v110.decode(event)
+        )
+        .when(
+            () => marketplace.auctionFinalized.v1060.is(event),
+            () => marketplace.auctionFinalized.v1060.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

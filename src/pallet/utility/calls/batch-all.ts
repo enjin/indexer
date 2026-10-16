@@ -228,6 +228,30 @@ export const batchAll = withDispatchCheck((call: CallItem): Batch => {
             () => calls.utility.batchAll.v100.is(call),
             () => calls.utility.batchAll.v100.decode(call)
         )
+        .when(
+            () => calls.utility.batchAll.enjinV110.is(call),
+            () => calls.utility.batchAll.enjinV110.decode(call)
+        )
+        .when(
+            () => calls.utility.batchAll.enjinV120.is(call),
+            () => calls.utility.batchAll.enjinV120.decode(call)
+        )
+        .when(
+            () => calls.utility.batchAll.enjinV1062.is(call),
+            () => calls.utility.batchAll.enjinV1062.decode(call)
+        )
+        .when(
+            () => calls.utility.batchAll.v110.is(call),
+            () => calls.utility.batchAll.v110.decode(call)
+        )
+        .when(
+            () => calls.utility.batchAll.v120.is(call),
+            () => calls.utility.batchAll.v120.decode(call)
+        )
+        .when(
+            () => calls.utility.batchAll.v1070.is(call),
+            () => calls.utility.batchAll.v1070.decode(call) as unknown as Batch
+        )
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })

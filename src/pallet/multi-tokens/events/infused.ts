@@ -40,6 +40,30 @@ export function infused(event: EventItem): Infused {
             () => multiTokens.infused.matrixV1010.is(event),
             () => multiTokens.infused.matrixV1010.decode(event)
         )
+        .when(
+            () => multiTokens.infused.enjinV1032.is(event),
+            () => multiTokens.infused.enjinV1032.decode(event)
+        )
+        .when(
+            () => multiTokens.infused.enjinV1050.is(event),
+            () => multiTokens.infused.enjinV1050.decode(event)
+        )
+        .when(
+            () => multiTokens.infused.enjinV1062.is(event),
+            () => multiTokens.infused.enjinV1062.decode(event)
+        )
+        .when(
+            () => multiTokens.infused.v1030.is(event),
+            () => multiTokens.infused.v1030.decode(event)
+        )
+        .when(
+            () => multiTokens.infused.v1050.is(event),
+            () => multiTokens.infused.v1050.decode(event)
+        )
+        .when(
+            () => multiTokens.infused.v1060.is(event),
+            () => multiTokens.infused.v1060.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

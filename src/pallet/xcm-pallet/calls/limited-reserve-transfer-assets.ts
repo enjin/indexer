@@ -9,24 +9,28 @@ export const limitedReserveTransferAssets = withDispatchCheck((call: CallItem): 
     return match(call)
         .returnType<LimitedReserveTransferAssets>()
         .when(
-            () => calls.xcmPallet.limitedTeleportAssets.enjinV1032.is(call),
-            () => calls.xcmPallet.limitedTeleportAssets.enjinV1032.decode(call)
+            () => calls.xcmPallet.limitedReserveTransferAssets.enjinV1032.is(call),
+            () => calls.xcmPallet.limitedReserveTransferAssets.enjinV1032.decode(call)
         )
         .when(
-            () => calls.xcmPallet.limitedTeleportAssets.enjinV100.is(call),
-            () => calls.xcmPallet.limitedTeleportAssets.enjinV100.decode(call)
+            () => calls.xcmPallet.limitedReserveTransferAssets.enjinV100.is(call),
+            () => calls.xcmPallet.limitedReserveTransferAssets.enjinV100.decode(call)
         )
         .when(
-            () => calls.xcmPallet.limitedTeleportAssets.v1060.is(call),
-            () => calls.xcmPallet.limitedTeleportAssets.v1060.decode(call)
+            () => calls.xcmPallet.limitedReserveTransferAssets.v1060.is(call),
+            () => calls.xcmPallet.limitedReserveTransferAssets.v1060.decode(call)
         )
         .when(
-            () => calls.xcmPallet.limitedTeleportAssets.v1030.is(call),
-            () => calls.xcmPallet.limitedTeleportAssets.v1030.decode(call)
+            () => calls.xcmPallet.limitedReserveTransferAssets.v1030.is(call),
+            () => calls.xcmPallet.limitedReserveTransferAssets.v1030.decode(call)
         )
         .when(
-            () => calls.xcmPallet.limitedTeleportAssets.v100.is(call),
-            () => calls.xcmPallet.limitedTeleportAssets.v100.decode(call)
+            () => calls.xcmPallet.limitedReserveTransferAssets.v100.is(call),
+            () => calls.xcmPallet.limitedReserveTransferAssets.v100.decode(call)
+        )
+        .when(
+            () => calls.xcmPallet.limitedReserveTransferAssets.enjinV1062.is(call),
+            () => calls.xcmPallet.limitedReserveTransferAssets.enjinV1062.decode(call)
         )
         .otherwise(() => {
             throw new UnsupportedCallError(call)

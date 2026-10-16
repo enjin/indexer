@@ -105,6 +105,14 @@ export function listingCreated(event: EventItem): ListingCreated {
             () => marketplace.listingCreated.v110.is(event),
             () => marketplace.listingCreated.v110.decode(event)
         )
+        .when(
+            () => marketplace.listingCreated.enjinV1062.is(event),
+            () => marketplace.listingCreated.enjinV1062.decode(event)
+        )
+        .when(
+            () => marketplace.listingCreated.enjinV1080.is(event),
+            () => marketplace.listingCreated.enjinV1080.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

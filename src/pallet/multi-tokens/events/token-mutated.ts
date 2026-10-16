@@ -64,6 +64,14 @@ export function tokenMutated(event: EventItem): TokenMutated {
             () => multiTokens.tokenMutated.v100.is(event),
             () => multiTokens.tokenMutated.v100.decode(event)
         )
+        .when(
+            () => multiTokens.tokenMutated.enjinV1050.is(event),
+            () => multiTokens.tokenMutated.enjinV1050.decode(event)
+        )
+        .when(
+            () => multiTokens.tokenMutated.enjinV1080.is(event),
+            () => multiTokens.tokenMutated.enjinV1080.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })
