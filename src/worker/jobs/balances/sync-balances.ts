@@ -5,6 +5,7 @@ import { getOrCreateAccount } from '~/util/entities'
 import { decode } from '@subsquid/ss58'
 import { fetchAllBalances } from '~/util/balance'
 import { Job } from 'bullmq'
+import { transferableBalance } from '~/pallet/balances/transferable'
 
 export async function syncBalances(_job: Job, ids: string[] | null) {
     const ctx = await dataHandlerContext()
@@ -27,7 +28,12 @@ export async function syncBalances(_job: Job, ids: string[] | null) {
             account.balance.free = BigInt(systemAccount.balance.free)
             account.balance.reserved = BigInt(systemAccount.balance.reserved)
             account.balance.miscFrozen = BigInt(systemAccount.balance.frozen)
-            account.balance.transferable = account.balance.free - account.balance.miscFrozen
+            account.balance.frozen = account.balance.miscFrozen
+            account.balance.transferable = transferableBalance(
+                account.balance.free,
+                account.balance.reserved,
+                account.balance.frozen
+            )
             account.balance.feeFrozen = 0n
 
             promises.push(ctx.store.save<Account>(account))
