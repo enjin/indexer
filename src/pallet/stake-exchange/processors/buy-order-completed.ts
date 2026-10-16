@@ -27,12 +27,19 @@ export async function buyOrderCompleted(
     let offerId: bigint | null = 'offerId' in event ? (event.offerId as bigint) : null
 
     if (offerId === null) {
-        const callData: Buy = mappings.stakeExchange.utils.anyBuy(item.extrinsic.call, event.tokenId, event.amount)
+        // pre-v1033 events carry no offer id; take it from the buy call that emitted the event
+        const callData: Buy = mappings.stakeExchange.utils.anyBuy(
+            item.call ?? item.extrinsic.call,
+            event.tokenId,
+            event.amount
+        )
         offerId = callData.offerId
     }
 
-    // change in rate from bigint to number (perBill) in v120
-    const rate: bigint = typeof event.rate === 'bigint' ? event.rate : BigInt(event.rate * 10 ** 9)
+    // change in rate from bigint (FixedU128) to number (Perbill) in v120; both scaled to 1e18 here
+    const rate: bigint = typeof event.rate === 'bigint' ? event.rate : BigInt(event.rate) * 10n ** 9n
+    // `amount` is the ENJ paid out by the offer creator; the buyer (`who`) sends `tokens_required =
+    // rate.mul_floor(amount)` sENJ (pool points) to the offer creator in exchange (`do_buy`)
     const points: bigint = (event.amount * rate) / 10n ** 18n
     const account: Account = await getOrCreateAccount(ctx, event.who)
 
@@ -62,8 +69,16 @@ export async function buyOrderCompleted(
         throw new Error(`Pool not found for token ${event.tokenId}`)
     }
 
+    // `bonded` is the ENJ value of a member's points, so both sides move by the value of the sENJ transferred,
+    // not by the ENJ the offer paid out
+    const bonded: bigint = (points * pool.rate) / 10n ** 18n
+
     if (existingMember?.tokenAccount) {
-        existingMember.bonded -= event.amount
+        // the dust rule in `do_buy` may transfer the whole balance; nothing is left bonded then
+        existingMember.bonded =
+            existingMember.tokenAccount.balance <= 0n || existingMember.bonded <= bonded
+                ? 0n
+                : existingMember.bonded - bonded
         await ctx.store.save(existingMember)
     }
 
@@ -81,8 +96,6 @@ export async function buyOrderCompleted(
     let newMember: PoolMember | undefined = await ctx.store.findOneBy<PoolMember>(PoolMember, {
         id: `${event.tokenId}-${offer.account.id}`,
     })
-
-    const bonded: bigint = event.amount
 
     if (!newMember) {
         const tokenAccount: TokenAccount | undefined = await ctx.store.findOneBy<TokenAccount>(TokenAccount, {
