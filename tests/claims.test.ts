@@ -89,15 +89,25 @@ const newAddress = `0x${'bb'.repeat(20)}`
 const dest = `0x${'11'.repeat(32)}`
 const delay = 100
 
-async function fixture(height: number, rows: Row[] = []) {
+const parentHash = '0x01'
+
+/** `parentClaims` lists the addresses holding a `Claims` entry in the parent block's state. */
+async function fixture(height: number, rows: Row[] = [], parentClaims: string[] = []) {
     const base = await getRuntimeCached('enjin-matrixchain', 1041)
     const storage: Record<string, unknown> = {
         'Claims.DelayClaimsPeriod': delay,
         'Claims.TotalUnclaimedAmount': 0n,
     }
     const runtime = Object.create(base) as Runtime
-    runtime.getStorage = (_hash: string, name: string) => Promise.resolve(storage[name])
-    const block = { _runtime: runtime, height, hash: '0x00', timestamp: 0 } as unknown as Block
+    runtime.getStorage = (hash: string, name: string, ...key: unknown[]) => {
+        if (name === 'Claims.Claims') {
+            assert.equal(hash, parentHash, 'Claims must be read at the parent block')
+            return Promise.resolve(parentClaims.includes(key[0] as string) ? [] : undefined)
+        }
+        return Promise.resolve(storage[name])
+    }
+    const parent = { _runtime: runtime, height: height - 1, hash: parentHash }
+    const block = { _runtime: runtime, height, hash: '0x00', timestamp: 0, getParent: () => parent } as unknown as Block
     const store = new MemoryStore(rows)
     const warnings: string[] = []
     const ctx = { store, log: { warn: (message: string) => warnings.push(message) } } as unknown as CommonContext
@@ -183,6 +193,19 @@ void test('ClaimMoved from an address without pending claims leaves the new addr
     await claimMoved(ctx, event('Claims.ClaimMoved', { old: oldAddress, new: newAddress }))
 
     assert.equal(store.of(ClaimRequest)[0].isRejected, false)
+})
+
+void test('ClaimMoved of unindexed (genesis) claims drops the requests it overwrites at the new address', async () => {
+    const { ctx, store, block, event } = await fixture(1_000, [request('3', newAddress, 30, 30n)], [oldAddress])
+
+    await claimMoved(ctx, event('Claims.ClaimMoved', { old: oldAddress, new: newAddress }))
+    await claimed(ctx, block, event('Claims.Claimed', { who: dest, ethereumAddress: newAddress, amount: '50' }))
+
+    const [overwritten] = store.of(ClaimRequest)
+    assert.equal(overwritten.isRejected, true)
+    assert.equal(overwritten.isClaimed, false)
+    assert.equal(store.of(Claim)[0].enjSum, 0n)
+    assert.equal(store.of(Claim)[0].amount, 50n)
 })
 
 void test('a later Claimed by the new address pays the moved requests', async () => {

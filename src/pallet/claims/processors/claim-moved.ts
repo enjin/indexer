@@ -10,6 +10,9 @@ function pendingRequests(ctx: CommonContext, who: string) {
  * Mirrors `move_claim`: `Claims::take(old)` followed by `Claims::insert(new, ..)`. When `old` has no stored claims
  * the chain changes nothing. Otherwise every pending entry of `old` now belongs to `new`, and `insert` replaces
  * whatever `new` had pending, so those entries can never be paid and are marked rejected.
+ *
+ * Claims seeded through the genesis config have no `ClaimRequest` rows, so an empty indexed result for `old` is
+ * confirmed against `Claims` storage at the parent block before treating the move as a no-op.
  */
 export async function claimMoved(ctx: CommonContext, item: EventItem): Promise<EventModel | undefined> {
     const event = mappings.claims.events.claimMoved(item)
@@ -19,7 +22,9 @@ export async function claimMoved(ctx: CommonContext, item: EventItem): Promise<E
     if (oldAddress === newAddress) return undefined
 
     const moved = await pendingRequests(ctx, oldAddress)
-    if (moved.length === 0) return undefined
+    if (moved.length === 0 && !(await mappings.claims.storage.hasClaims(item.block.getParent(), oldAddress))) {
+        return undefined
+    }
 
     const replaced = await pendingRequests(ctx, newAddress)
 
