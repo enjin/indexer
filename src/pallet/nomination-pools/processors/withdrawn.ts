@@ -8,15 +8,53 @@ import { IsNull, Not } from 'typeorm'
 import { EventHandlerResult } from '~/processor.handler'
 import { CustomStakingEvent } from '~/pallet/common/types'
 import { unbondingErasAt } from '~/pallet/nomination-pools/processors/unbonding-eras'
+import { calls } from '~/type'
 
 /**
- * `do_withdraw_unbonded` pays a regular member's withdrawal to the member, who must hold an `UnbondingMembers`
- * entry. The deposit is paid to the pool token owner, and is only withdrawable once the deposit account is the
- * pool's sole unbonding member, so the recipient has no entry right before the withdrawal.
+ * Whether the originating call withdraws the deposit: `withdraw_deposit`, or `withdraw_unbonded` targeting the
+ * deposit account (`do_withdraw_unbonded` keys `is_withdrawing_deposit` on the target). `item.call` is the innermost
+ * call that emitted the event; the processor resolves batch, proxy, multisig, sudo and `dispatch_as` wrappers.
+ * `undefined` when the call does not say (an unresolved wrapper or a non-`Id` address).
  */
-async function isDepositWithdrawal(block: Block, poolId: number, recipient: string): Promise<boolean> {
-    const entry = await mappings.nominationPools.storage.unbondingMembers(block.getParent(), poolId, recipient)
-    return entry === undefined
+function isDepositWithdrawalCall(item: EventItem, depositAccount: string): boolean | undefined {
+    const call = item.call
+    if (!call) return undefined
+
+    if (call.name === calls.nominationPools.withdrawDeposit.name) return true
+    if (call.name !== calls.nominationPools.withdrawUnbonded.name) return undefined
+
+    const { memberAccount } = mappings.nominationPools.calls.withdrawUnbonded(call)
+    if (memberAccount.__kind !== 'Id') return undefined
+
+    return memberAccount.value.toLowerCase() === depositAccount.toLowerCase()
+}
+
+/**
+ * Fallback when the call is not conclusive. A regular member's withdrawal is paid to the member, who must hold an
+ * `UnbondingMembers` entry. The deposit is paid to the pool token owner and is only withdrawable once the deposit
+ * account is the sole unbonding member, so the recipient normally has no entry at the parent block. That fails when
+ * the owner withdrew their own position earlier in the same block, so when both entries existed it is ambiguous; it
+ * is then attributed to the recipient with a warning.
+ */
+async function isDepositWithdrawalByStorage(
+    ctx: CommonContext,
+    block: Block,
+    item: EventItem,
+    poolId: number,
+    recipient: string,
+    depositAccount: string
+): Promise<boolean> {
+    const parent = block.getParent()
+    const [recipientEntry, depositEntry] = await Promise.all([
+        mappings.nominationPools.storage.unbondingMembers(parent, poolId, recipient),
+        mappings.nominationPools.storage.unbondingMembers(parent, poolId, depositAccount),
+    ])
+
+    if (recipientEntry === undefined) return true
+    if (depositEntry !== undefined) {
+        ctx.log.warn(`Withdrawn ${item.id}: cannot tell a deposit withdrawal from ${recipient}'s own; using the latter`)
+    }
+    return false
 }
 
 export async function withdrawn(ctx: CommonContext, block: Block, item: EventItem): Promise<EventHandlerResult> {
@@ -28,8 +66,11 @@ export async function withdrawn(ctx: CommonContext, block: Block, item: EventIte
 
     // `Withdrawn.member` is the recipient. For the deposit that is the pool token owner (or the unclaimed-balance
     // receiver), while the withdrawn position belongs to the pool's deposit account.
-    const isStashWithdrawing = await isDepositWithdrawal(block, data.poolId, recipient.id)
-    const account = isStashWithdrawing ? await getOrCreateAccount(ctx, createAccount(block, pool.id, 1)) : recipient
+    const depositAccount = createAccount(block, pool.id, 1)
+    const isStashWithdrawing =
+        isDepositWithdrawalCall(item, depositAccount) ??
+        (await isDepositWithdrawalByStorage(ctx, block, item, data.poolId, recipient.id, depositAccount))
+    const account = isStashWithdrawing ? await getOrCreateAccount(ctx, depositAccount) : recipient
 
     const poolMember = await ctx.store.findOne<PoolMember>(PoolMember, {
         where: { id: `${data.poolId}-${account.id}` },
@@ -43,7 +84,7 @@ export async function withdrawn(ctx: CommonContext, block: Block, item: EventIte
 
     await ctx.store.save(poolMember)
 
-    if (poolMember.unbondingEras === null && (!poolMember.tokenAccount || poolMember.tokenAccount.balance <= 0n)) {
+    if (poolMember.unbondingEras === null && (poolMember.tokenAccount?.totalBalance ?? 0n) <= 0n) {
         poolMember.bonded = 0n
         poolMember.isActive = false
         pool.totalMembers -= 1

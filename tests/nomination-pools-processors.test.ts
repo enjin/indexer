@@ -42,6 +42,9 @@ const processors = testRequire(
 const { unbondPointsToBalance, unbondPoolFor } = testRequire(
     '~/pallet/nomination-pools/processors/unbonding-eras'
 ) as typeof import('~/pallet/nomination-pools/processors/unbonding-eras')
+const { unbondingErasFromChain } = testRequire(
+    '~/worker/jobs/nomination-pools/sync-account-unbonding-eras'
+) as typeof import('~/worker/jobs/nomination-pools/sync-account-unbonding-eras')
 const { createAccount } = testRequire(
     '~/pallet/nomination-pools/processors/pool'
 ) as typeof import('~/pallet/nomination-pools/processors/pool')
@@ -163,13 +166,14 @@ async function fixture(rows: Row[] = []) {
 
     const store = new MemoryStore(rows)
     const ctx = { store, log: { warn: () => undefined } } as unknown as CommonContext
-    const event = (name: string, args: unknown, extrinsic = true): EventItem =>
+    const event = (name: string, args: unknown, extrinsic = true, call?: { name: string; args: unknown }): EventItem =>
         ({
             id: '500-1',
             name,
             args,
             block,
             extrinsic: extrinsic ? { id: '500-0', index: 0, hash: '0x00', call: {} } : undefined,
+            call: call ? { ...call, block } : undefined,
         }) as unknown as EventItem
     return { block, store, ctx, event, set }
 }
@@ -320,7 +324,7 @@ void test('Withdrawn of the pool deposit updates the deposit member, not the tok
     const { block, ctx, store, event } = await fixture()
     const deposit = createAccount(block, '1', 1)
     const stash = memberRow(deposit, { isStash: true, unbondingEras: [new UnbondingEras({ era: 5, balance: 10n })] })
-    const owner = memberRow(ownerId, { tokenAccount: new TokenAccount({ id: 'ta', balance: 0n }) })
+    const owner = memberRow(ownerId, { tokenAccount: new TokenAccount({ id: 'ta', balance: 0n, totalBalance: 0n }) })
     await store.save([poolRow({ state: PoolState.Destroying, totalMembers: 2 }), stash, owner])
 
     const result = await processors.withdrawn(
@@ -340,7 +344,7 @@ void test('Withdrawn of the pool deposit updates the deposit member, not the tok
 void test('Withdrawn by a member with an unbonding entry stays attributed to that member', async () => {
     const member = memberRow(memberId, {
         unbondingEras: [new UnbondingEras({ era: 5, balance: 10n }), new UnbondingEras({ era: 9, balance: 4n })],
-        tokenAccount: new TokenAccount({ id: 'ta', balance: 1n }),
+        tokenAccount: new TokenAccount({ id: 'ta', balance: 1n, totalBalance: 1n }),
     })
     const { block, ctx, store, event, set } = await fixture([poolRow(), member])
     set(PARENT, 'NominationPools.UnbondingMembers', [1, memberId], {
@@ -460,10 +464,24 @@ void test('RewardPayoutFailed records the event with a readable error', async ()
 void test('UnbondingMemberRemoved clears the chunks and drops a member without sENJ', async () => {
     const holder = memberRow(memberId, {
         unbondingEras: [new UnbondingEras({ era: 5, balance: 10n })],
-        tokenAccount: new TokenAccount({ id: 'ta', balance: 5n }),
+        tokenAccount: new TokenAccount({ id: 'ta', balance: 5n, totalBalance: 5n }),
     })
-    const empty = memberRow(otherId, { unbondingEras: [], tokenAccount: new TokenAccount({ id: 'tb', balance: 0n }) })
-    const { block, ctx, store, event } = await fixture([poolRow(), holder, empty])
+    const empty = memberRow(otherId, {
+        unbondingEras: [],
+        tokenAccount: new TokenAccount({ id: 'tb', balance: 0n, totalBalance: 0n }),
+    })
+    // All of its sENJ is reserved: `balance` is zero, but it still holds pool tokens.
+    const reserved = memberRow(ownerId, {
+        unbondingEras: [new UnbondingEras({ era: 5, balance: 10n })],
+        tokenAccount: new TokenAccount({ id: 'tc', balance: 0n, reservedBalance: 7n, totalBalance: 7n }),
+    })
+    const { block, ctx, store, event } = await fixture([poolRow(), holder, empty, reserved])
+
+    await processors.unbondingMemberRemoved(
+        ctx,
+        block,
+        event('NominationPools.UnbondingMemberRemoved', { poolId: 1, member: ownerId })
+    )
 
     await processors.unbondingMemberRemoved(
         ctx,
@@ -480,7 +498,114 @@ void test('UnbondingMemberRemoved clears the chunks and drops a member without s
     assert.equal(byId.get(`1-${memberId}`)?.unbondingEras, null)
     assert.equal(byId.get(`1-${memberId}`)?.isActive, true)
     assert.equal(byId.get(`1-${otherId}`)?.isActive, false)
+    assert.equal(byId.get(`1-${ownerId}`)?.unbondingEras, null)
+    assert.equal(byId.get(`1-${ownerId}`)?.isActive, true, 'reserved sENJ keeps the membership')
     assert.equal(store.of(NominationPool)[0].totalMembers, 2)
     assert.ok(result instanceof EventModel)
     assert.ok(result.data instanceof NominationPoolsUnbondingMemberRemoved)
+})
+
+void test('Withdrawn attributes the owner withdrawal and the deposit in one block by their calls', async () => {
+    const { block, ctx, store, event, set } = await fixture()
+    const deposit = createAccount(block, '1', 1)
+    const stash = memberRow(deposit, { isStash: true, unbondingEras: [new UnbondingEras({ era: 5, balance: 10n })] })
+    const owner = memberRow(ownerId, {
+        unbondingEras: [new UnbondingEras({ era: 5, balance: 4n })],
+        tokenAccount: new TokenAccount({ id: 'ta', balance: 0n, totalBalance: 0n }),
+    })
+    await store.save([poolRow({ state: PoolState.Destroying, totalMembers: 2 }), stash, owner])
+    // Both positions are unbonding at the parent block; the parent snapshot alone cannot tell the events apart.
+    set(PARENT, 'NominationPools.UnbondingMembers', [1, ownerId], { unbondingEras: [[5, 4n]] })
+    set(PARENT, 'NominationPools.UnbondingMembers', [1, deposit], { unbondingEras: [[5, 10n]] })
+
+    const own = await processors.withdrawn(
+        ctx,
+        block,
+        event('NominationPools.Withdrawn', { member: ownerId, poolId: 1, balance: '4', points: '4' }, true, {
+            name: 'NominationPools.withdraw_unbonded',
+            args: { poolId: 1, memberAccount: { __kind: 'Id', value: ownerId }, numSlashingSpans: 0 },
+        })
+    )
+    const byOwner = new Map(store.of(PoolMember).map((row) => [row.id, row]))
+    assert.equal(byOwner.get(`1-${ownerId}`)?.unbondingEras, null)
+    assert.equal(byOwner.get(`1-${ownerId}`)?.isActive, false)
+    assert.deepEqual(
+        byOwner.get(`1-${deposit}`)?.unbondingEras?.map((chunk) => [chunk.era, chunk.balance]),
+        [[5, 10n]]
+    )
+    assert.equal(sns(own).name, 'NominationPools.Withdrawn')
+
+    const depositResult = await processors.withdrawn(
+        ctx,
+        block,
+        event('NominationPools.Withdrawn', { member: ownerId, poolId: 1, balance: '10', points: '10' }, true, {
+            name: 'NominationPools.withdraw_deposit',
+            args: { poolId: 1 },
+        })
+    )
+    const byId = new Map(store.of(PoolMember).map((row) => [row.id, row]))
+    assert.equal(byId.get(`1-${deposit}`)?.unbondingEras, null)
+    assert.equal(byId.get(`1-${deposit}`)?.isActive, false)
+    assert.equal(store.of(NominationPool)[0].totalMembers, 0)
+    assert.equal(sns(depositResult).name, 'NominationPools.DepositWithdrawn')
+})
+
+void test('Withdrawn via withdraw_unbonded targeting the deposit account is a deposit withdrawal', async () => {
+    const { block, ctx, store, event, set } = await fixture()
+    const deposit = createAccount(block, '1', 1)
+    const stash = memberRow(deposit, { isStash: true, unbondingEras: [new UnbondingEras({ era: 5, balance: 10n })] })
+    const owner = memberRow(ownerId, { unbondingEras: [new UnbondingEras({ era: 5, balance: 4n })] })
+    await store.save([poolRow({ state: PoolState.Destroying, totalMembers: 2 }), stash, owner])
+    set(PARENT, 'NominationPools.UnbondingMembers', [1, ownerId], { unbondingEras: [[5, 4n]] })
+
+    const result = await processors.withdrawn(
+        ctx,
+        block,
+        event('NominationPools.Withdrawn', { member: ownerId, poolId: 1, balance: '10', points: '10' }, true, {
+            name: 'NominationPools.withdraw_unbonded',
+            args: { poolId: 1, memberAccount: { __kind: 'Id', value: deposit }, numSlashingSpans: 0 },
+        })
+    )
+
+    const byId = new Map(store.of(PoolMember).map((row) => [row.id, row]))
+    assert.equal(byId.get(`1-${deposit}`)?.unbondingEras, null)
+    assert.equal(byId.get(`1-${ownerId}`)?.unbondingEras?.length, 1, 'the owner keeps its own chunk')
+    assert.equal(sns(result).name, 'NominationPools.DepositWithdrawn')
+})
+
+void test('refresh workers price RPC unbonding points against the sub-pools like the processors', () => {
+    const codecOption = (value: unknown) => ({ isSome: true, isNone: false, unwrap: () => value })
+    const num = (value: bigint | number) => ({ toString: () => value.toString() })
+    const unbonding = codecOption({
+        unbondingEras: new Map([
+            [num(10), num(100n)],
+            [num(11), num(80n)],
+        ]),
+    })
+    const subPools = codecOption({
+        noEra: { points: num(0n), balance: num(0n) },
+        withEra: new Map([
+            [num(10), { points: num(200n), balance: num(150n) }],
+            [num(11), { points: num(80n), balance: num(80n) }],
+        ]),
+    })
+
+    assert.deepEqual(
+        unbondingErasFromChain(unbonding, subPools)?.map((chunk) => [chunk.era, chunk.balance]),
+        [
+            [10, 75n],
+            [11, 80n],
+        ]
+    )
+
+    // `toJSON` shape: BTreeMaps become objects and a large u128 a hex string.
+    const json = (value: unknown) => ({ toJSON: () => value })
+    assert.deepEqual(
+        unbondingErasFromChain(
+            json({ unbondingEras: { '10': '0x56bc75e2d63100000' } }),
+            json({ noEra: { points: 0, balance: 0 }, withEra: { '10': { points: 400, balance: 300 } } })
+        )?.map((chunk) => [chunk.era, chunk.balance]),
+        [[10, 75n * 10n ** 18n]]
+    )
+    assert.equal(unbondingErasFromChain({ isSome: false, isNone: true }, subPools), null)
 })
