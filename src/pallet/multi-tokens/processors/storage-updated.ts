@@ -20,6 +20,9 @@ import { Block, CommonContext, EventItem } from '~/contexts'
 import * as mappings from '~/pallet/index'
 import { DefaultRoyalty, DefaultRoyaltyInfo, TokenMarketBehavior } from '~/pallet/common/types'
 import { toMintRateLimitStateModel } from '~/pallet/multi-tokens/processors/mint-rate-limit-state'
+import { toNativeTokenMetadata } from '~/pallet/multi-tokens/processors/native-token-metadata'
+import { replaceRoyaltyCurrencies } from '~/pallet/multi-tokens/processors/royalty-currencies'
+import { replaceTokenGroupTokens } from '~/pallet/multi-tokens/processors/token-group-memberships'
 import { EventHandlerResult } from '~/processor.handler'
 import { QueueUtils } from '~/queue'
 import { multiTokens as multiTokensConstants } from '~/type/constants'
@@ -96,6 +99,15 @@ export async function collectionUpdated(
     collection.mintRateLimit = toMintRateLimitStateModel(stored.mintRateLimit)
     await ctx.store.save(collection)
 
+    const missing = await replaceRoyaltyCurrencies(
+        ctx,
+        collection,
+        stored.explicitRoyaltyCurrencies.map(([currency]) => currency)
+    )
+    if (missing.length > 0) {
+        ctx.log.warn(`[CollectionUpdated] Royalty currencies ${missing.join(', ')} of collection ${id} are not indexed`)
+    }
+
     await QueueUtils.dispatchComputeStats(id)
     return undefined
 }
@@ -111,7 +123,7 @@ export async function tokenUpdated(
 
     const id = `${data.collectionId}-${data.tokenId}`
     const [token, stored] = await Promise.all([
-        ctx.store.findOne<Token>(Token, { where: { id } }),
+        ctx.store.findOne<Token>(Token, { where: { id }, relations: { collection: true } }),
         mappings.multiTokens.storage.tokens(block, { collectionId: data.collectionId, tokenId: data.tokenId }),
     ])
 
@@ -133,8 +145,24 @@ export async function tokenUpdated(
     token.isLendable = stored.isLendable
     token.ephemeralExpiration = stored.ephemeralExpiration ?? null
     token.mintRateLimit = toMintRateLimitStateModel(stored.mintRateLimit)
+    token.nativeMetadata = toNativeTokenMetadata(stored.metadata)
+    if (stored.requiresDeposit === false) {
+        // The pallet rejects an account deposit count on tokens that do not require deposits.
+        token.accountDepositCount = 0
+    } else {
+        token.accountDepositCount = ownerFundedAccountCount(block, stored) ?? token.accountDepositCount
+    }
     token.nonFungible = isNonFungible(token)
     await ctx.store.save(token)
+
+    const groupsChanged =
+        stored.groups !== undefined &&
+        (await replaceTokenGroupTokens(
+            ctx,
+            token,
+            stored.groups.map((group) => group.toString())
+        ))
+    if (groupsChanged) await QueueUtils.dispatchComputeMetadata({ id, type: 'token', force: false })
 
     await QueueUtils.dispatchComputeStats(data.collectionId.toString())
     return undefined

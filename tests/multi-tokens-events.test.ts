@@ -10,17 +10,24 @@ import {
     Collection,
     CollectionAccount,
     CollectionApproval,
+    MintPolicy,
+    RoyaltyCurrency,
     Token,
     TokenAccount,
     TokenApproval,
+    TokenBehaviorIsCurrency,
+    TokenBehaviorType,
+    TokenGroup,
+    TokenGroupToken,
     TokenNamedReserve,
 } from '~/model'
+import { FindOperator } from 'typeorm'
 import { encodeAddress } from '~/util/tools'
 
 // The processors pull in the queue helpers, which open BullMQ connections; stub them so the run exits.
 const testRequire = createRequire(__filename)
 const noop = () => Promise.resolve()
-const queueStubs = { dispatchComputeStats: noop, dispatchComputeAccountStats: noop }
+const queueStubs = { dispatchComputeStats: noop, dispatchComputeAccountStats: noop, dispatchComputeMetadata: noop }
 const stubbed: [string, NodeJS.Module | undefined][] = []
 for (const [path, exports] of [
     ['~/queue', { QueueUtils: queueStubs }],
@@ -64,6 +71,37 @@ class MemoryStore {
         return Promise.resolve(this.rows.find((row) => row instanceof entity && row.id === where.id))
     }
 
+    find(entity: RowClass, options: { where: Record<string, unknown> }): Promise<Row[]> {
+        const matches = (row: Row) =>
+            Object.entries(options.where).every(([key, expected]) => {
+                const actual = (row as unknown as Record<string, unknown>)[key]
+                if (expected instanceof FindOperator) return (expected.value as unknown[]).includes(actual)
+                if (expected && typeof expected === 'object' && 'id' in expected) {
+                    return (actual as Row | undefined)?.id === expected.id
+                }
+                return actual === expected
+            })
+        return Promise.resolve(this.rows.filter((row) => row instanceof entity && matches(row)))
+    }
+
+    insert(value: Row | Row[]): Promise<void> {
+        for (const row of Array.isArray(value) ? value : [value]) {
+            assert.ok(!this.rows.some((r) => r.constructor === row.constructor && r.id === row.id), `dup ${row.id}`)
+            this.rows.push(row)
+        }
+        return Promise.resolve()
+    }
+
+    remove(value: Row | Row[]): Promise<void> {
+        const removed = Array.isArray(value) ? value : [value]
+        this.rows = this.rows.filter((row) => !removed.includes(row))
+        return Promise.resolve()
+    }
+
+    all<T extends Row>(entity: new (...args: never[]) => T): T[] {
+        return this.rows.filter((row): row is T => row instanceof entity)
+    }
+
     save(value: Row | Row[]): Promise<void> {
         for (const row of Array.isArray(value) ? value : [value]) {
             this.rows = this.rows.filter((item) => !(item.constructor === row.constructor && item.id === row.id))
@@ -86,13 +124,28 @@ async function fixture(rows: Row[]) {
     const runtime = Object.create(real) as typeof real & Record<string, unknown>
     runtime.getStorage = (_hash: string, name: string, ...key: unknown[]) =>
         Promise.resolve(chain.get(`${name}|${json(key)}`))
+    const raw = new Map<string, string>()
+    Object.defineProperty(runtime, 'rpc', {
+        value: {
+            call: (method: string, params: [string, string]) => {
+                assert.equal(method, 'state_getStorageAt')
+                return Promise.resolve(raw.get(params[0]) ?? null)
+            },
+        },
+    })
+    // Tokens and Collections are read as raw SCALE bytes; encode the decoded value with this runtime's codec.
+    const setEncodedStorage = (name: 'Tokens' | 'Collections', key: bigint[], value: unknown) =>
+        raw.set(
+            runtime.encodeStorageKey(`MultiTokens.${name}`, ...key),
+            runtime.scaleCodec.encodeToHex(runtime.description.storage.MultiTokens.items[name].value, value)
+        )
     const block = { _runtime: runtime, height: HEIGHT, hash: '0x02', timestamp: 0 } as unknown as Block
     const store = new MemoryStore(rows)
     const ctx = { store, log: { warn: () => undefined } } as unknown as CommonContext
     const event = (name: string, args: unknown): EventItem =>
         ({ id: '500-1', name, args, block, extrinsic: { id: '500-0', index: 0, hash: '0x00' } }) as unknown as EventItem
     const setStorage = (name: string, key: unknown[], value: unknown) => chain.set(`${name}|${json(key)}`, value)
-    return { block, ctx, store, event, setStorage }
+    return { block, ctx, store, event, setStorage, setEncodedStorage }
 }
 
 function tokenAccountRow(account: string, extra: Partial<TokenAccount> = {}) {
@@ -290,4 +343,155 @@ void test('TokenUpdated and TokenAccountDepositUpdated are no longer ignored', (
     for (const name of ['tokenUpdated', 'tokenAccountDepositUpdated']) {
         assert.ok(!ignored.includes(`multiTokens.${name}.name`), `${name} is still ignored`)
     }
+})
+
+function storedToken(overrides: Record<string, unknown> = {}) {
+    return {
+        supply: 1n,
+        cap: undefined,
+        freezeState: undefined,
+        requiresDeposit: true,
+        creationDeposit: { depositor: undefined, amount: 0n },
+        ownerDeposit: 0n,
+        totalTokenAccountDeposit: 0n,
+        attributeCount: 0,
+        accountCount: 1,
+        marketBehavior: undefined,
+        listingForbidden: false,
+        metadata: { decimalCount: 6, name: '0x746f6b656e', symbol: '0x544b4e', foreign: undefined },
+        infusion: 0n,
+        anyoneCanInfuse: false,
+        groups: [],
+        ephemeralExpiration: undefined,
+        isLendable: false,
+        lending: undefined,
+        mintRateLimit: undefined,
+        ...overrides,
+    }
+}
+
+function updatedTokenRows() {
+    const collection = new Collection({ id: '7', mintPolicy: new MintPolicy({ maxTokenSupply: 1n }) })
+    const token = new Token({ id: '7-1', tokenId: 1n, collection, accountDepositCount: 3, nativeMetadata: null })
+    const [g1, g2, g3] = ['11', '12', '13'].map((id) => new TokenGroup({ id }))
+    return {
+        token,
+        rows: [token, g1, g2, g3, new TokenGroupToken({ id: '1-11', token, tokenGroup: g1, position: 0 })],
+    }
+}
+
+const tokenUpdatedEvent = { collectionId: 7, tokenId: 1, value: undefined }
+
+void test('TokenUpdated loads the collection and refreshes metadata, deposit count and group memberships', async () => {
+    const { token, rows } = updatedTokenRows()
+    const { block, ctx, store, event, setEncodedStorage } = await fixture(rows)
+    const loaded: unknown[] = []
+    const findOne = store.findOne.bind(store)
+    store.findOne = (entity, options) => {
+        loaded.push((options as { relations?: unknown }).relations)
+        return findOne(entity, options)
+    }
+    setEncodedStorage('Tokens', [7n, 1n], storedToken({ groups: [13n, 12n] }))
+
+    await processors.tokenUpdated(ctx, block, event('MultiTokens.TokenUpdated', tokenUpdatedEvent), false)
+
+    assert.deepEqual(loaded[0], { collection: true })
+    const saved = store.get(Token, '7-1')
+    assert.equal(saved, token)
+    assert.deepEqual(
+        [saved.nativeMetadata?.name, saved.nativeMetadata?.symbol, saved.nativeMetadata?.decimalCount],
+        ['token', 'TKN', 6]
+    )
+    assert.equal(saved.accountDepositCount, 1)
+    assert.equal(saved.nonFungible, true)
+    const memberships = store.all(TokenGroupToken).map((m) => [m.id, m.tokenGroup.id, m.position])
+    assert.deepEqual(memberships, [
+        ['1-13', '13', 0],
+        ['1-12', '12', 1],
+    ])
+})
+
+void test('TokenUpdated clears deposits and memberships when the replacement drops them', async () => {
+    const { rows } = updatedTokenRows()
+    const { block, ctx, store, event, setEncodedStorage } = await fixture(rows)
+    setEncodedStorage(
+        'Tokens',
+        [7n, 1n],
+        storedToken({
+            requiresDeposit: false,
+            supply: 5n,
+            marketBehavior: { __kind: 'IsCurrency' },
+        })
+    )
+
+    await processors.tokenUpdated(ctx, block, event('MultiTokens.TokenUpdated', tokenUpdatedEvent), false)
+
+    const saved = store.get(Token, '7-1')
+    assert.equal(saved.accountDepositCount, 0)
+    assert.ok(saved.behavior instanceof TokenBehaviorIsCurrency)
+    assert.equal(saved.behavior.type, TokenBehaviorType.IsCurrency)
+    assert.equal(saved.nonFungible, false)
+    assert.deepEqual(store.all(TokenGroupToken), [])
+})
+
+function storedCollection(currencies: [number, number][]) {
+    return {
+        owner,
+        policy: {
+            mint: { maxTokenCount: undefined, maxTokenSupply: undefined, forceCollapsingSupply: false },
+            transfer: { isFrozen: false },
+            market: { royalty: undefined },
+        },
+        tokenCount: 0n,
+        attributeCount: 0,
+        creationDeposit: { depositor: owner, amount: 0n },
+        totalDeposit: 0n,
+        explicitRoyaltyCurrencies: currencies.map(([c, t]) => [{ collectionId: BigInt(c), tokenId: BigInt(t) }, null]),
+        totalInfusion: 0n,
+        tokenGroupCount: 0,
+        mintRateLimit: undefined,
+    }
+}
+
+void test('CollectionUpdated reconciles royalty currencies with the stored list', async () => {
+    const collection = new Collection({ id: '7' })
+    const [kept, dropped, added] = ['0-0', '0-1', '0-2'].map((id) => new Token({ id }))
+    const { block, ctx, store, event, setEncodedStorage } = await fixture([
+        collection,
+        kept,
+        dropped,
+        added,
+        new RoyaltyCurrency({ id: '7-0-0', collection, token: kept }),
+        new RoyaltyCurrency({ id: '7-0-1', collection, token: dropped }),
+    ])
+    const collectionUpdated = (currencies: [number, number][]) => {
+        setEncodedStorage('Collections', [7n], storedCollection(currencies))
+        return processors.collectionUpdated(
+            ctx,
+            block,
+            event('MultiTokens.CollectionUpdated', { collectionId: 7, value: undefined }),
+            false
+        )
+    }
+
+    await collectionUpdated([
+        [0, 0],
+        [0, 2],
+        [0, 9],
+    ])
+    assert.deepEqual(
+        store
+            .all(RoyaltyCurrency)
+            .map((rc) => rc.id)
+            .sort(),
+        ['7-0-0', '7-0-2']
+    )
+
+    await collectionUpdated([])
+    assert.deepEqual(store.all(RoyaltyCurrency), [])
+})
+
+void test('legacy Native and Foreign token metadata kinds clear the native metadata', () => {
+    assert.equal(processors.toNativeTokenMetadata({ __kind: 'Native' }), null)
+    assert.equal(processors.toNativeTokenMetadata(undefined), null)
 })

@@ -1,5 +1,5 @@
 import { throwFatalError } from '~/util/errors'
-import { Collection, Listing, MarketPolicy, RoyaltyBeneficiary, RoyaltyCurrency, Token } from '~/model'
+import { Collection, Listing, MarketPolicy, RoyaltyBeneficiary } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
 import { SnsEvent } from '~/util/sns'
@@ -8,6 +8,7 @@ import { DefaultRoyalty as DefaultRoyalty1020 } from '~/type/matrixV1020'
 import { DefaultRoyalty as DefaultRoyalty500 } from '~/type/matrixV500'
 import { EventHandlerResult } from '~/processor.handler'
 import { QueueUtils } from '~/queue'
+import { replaceRoyaltyCurrencies } from '~/pallet/multi-tokens/processors/royalty-currencies'
 
 type DefaultRoyalty = DefaultRoyalty500 | DefaultRoyalty1020
 
@@ -136,43 +137,8 @@ export async function collectionMutated(
     }
 
     if (data.mutation.explicitRoyaltyCurrencies !== undefined) {
-        const royaltyCurrencies = await ctx.store.find<RoyaltyCurrency>(RoyaltyCurrency, {
-            where: { collection: { id: collection.id } },
-        })
-
-        if (data.mutation.explicitRoyaltyCurrencies.length === 0) {
-            await ctx.store.remove(royaltyCurrencies)
-        } else {
-            for (const currency of data.mutation.explicitRoyaltyCurrencies) {
-                const rc = royaltyCurrencies.find(
-                    (_rc) => _rc.id === `${collection.id}-${currency.collectionId}-${currency.tokenId}`
-                )
-                if (rc) {
-                    royaltyCurrencies.splice(royaltyCurrencies.indexOf(rc), 1)
-
-                    continue
-                }
-
-                const token = await ctx.store.findOne<Token>(Token, {
-                    where: { id: `${currency.collectionId}-${currency.tokenId}` },
-                })
-
-                if (!token) {
-                    throwFatalError(
-                        `[CollectionMutated] We have not found token ${currency.collectionId}-${currency.tokenId}`
-                    )
-                } else {
-                    const royaltyCurrency = new RoyaltyCurrency({
-                        id: `${collection.id}-${token.id}`,
-                        collection,
-                        token,
-                    })
-
-                    await ctx.store.insert(royaltyCurrency)
-                }
-            }
-            await ctx.store.remove(royaltyCurrencies)
-        }
+        const missing = await replaceRoyaltyCurrencies(ctx, collection, data.mutation.explicitRoyaltyCurrencies)
+        if (missing.length > 0) throwFatalError(`[CollectionMutated] We have not found token ${missing.join(', ')}`)
     }
 
     await ctx.store.save(collection)
