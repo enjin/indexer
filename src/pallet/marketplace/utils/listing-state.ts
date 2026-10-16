@@ -1,3 +1,5 @@
+import { EventItem } from '~/contexts'
+import { marketplace as marketplaceEvents } from '~/type/events'
 import { Account, FixedPriceState, Listing, ListingType, MarketplaceListingBookState, OfferState } from '~/model'
 
 type OfferStateSource = {
@@ -53,6 +55,16 @@ export function listingFillParties(
     return listingType === ListingType.Offer
         ? { buyer: listingCreator, seller: filler }
         : { buyer: filler, seller: listingCreator }
+}
+
+/** ListingCreated shapes emitted by runtimes with the storage v9 matching book (canary and enjin, both chains). */
+export function listingCreatedSupportsOrderBook(item: EventItem): boolean {
+    return (
+        marketplaceEvents.listingCreated.matrixV1040.is(item) ||
+        marketplaceEvents.listingCreated.matrixEnjinV1041.is(item) ||
+        marketplaceEvents.listingCreated.v1080.is(item) ||
+        marketplaceEvents.listingCreated.enjinV1080.is(item)
+    )
 }
 
 export function initialBookState(

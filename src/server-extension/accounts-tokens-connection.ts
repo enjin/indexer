@@ -6,6 +6,7 @@ import { Validate } from 'class-validator'
 import { Listing, Token, TokenAccount } from '~/model'
 import { IsPublicKeyArray, encodeCursor, decodeCursor } from './helpers'
 import { PageInfo } from './types'
+import { notExpiredListingSql } from '~/util/listing-availability'
 
 export enum AccountsTokensOrderByInput {
     COLLECTION_NAME = 'collection.name',
@@ -331,7 +332,7 @@ export class AccountsTokensConnectionResolver {
             baseQuery.andWhere('token.bestListingPrice IS NULL')
         } else if (listingFilter === TokenListingFilterInput.HAS_OFFER) {
             baseQuery.andWhere(
-                "EXISTS (SELECT 1 FROM listing offer WHERE offer.take_asset_id_id = token.id AND offer.type = 'Offer' AND offer.is_active = true)"
+                `EXISTS (SELECT 1 FROM listing offer WHERE offer.take_asset_id_id = token.id AND offer.type = 'Offer' AND offer.is_active = true AND ${notExpiredListingSql('offer.state')})`
             )
         }
 

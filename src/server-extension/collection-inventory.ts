@@ -17,6 +17,7 @@ import { Validate } from 'class-validator'
 import { TokenAccount, Token, TokenGroup } from '~/model'
 import { decodeCursor, encodeCursor, IsPublicKeyArray } from './helpers'
 import { PageInfo } from './types'
+import { notExpiredListingSql } from '~/util/listing-availability'
 import { TokenListingFilterInput } from './accounts-tokens-connection'
 
 export enum CollectionInventoryOrderByInput {
@@ -289,8 +290,7 @@ export class CollectionInventoryResolver {
         } else if (listingFilter === TokenListingFilterInput.NOT_LISTED) {
             listingCondition = 'AND token.best_listing_price IS NULL'
         } else if (listingFilter === TokenListingFilterInput.HAS_OFFER) {
-            listingCondition =
-                "AND EXISTS (SELECT 1 FROM listing offer WHERE offer.take_asset_id_id = token.id AND offer.type = 'Offer' AND offer.is_active = true)"
+            listingCondition = `AND EXISTS (SELECT 1 FROM listing offer WHERE offer.take_asset_id_id = token.id AND offer.type = 'Offer' AND offer.is_active = true AND ${notExpiredListingSql('offer.state')})`
         }
 
         // Keyset pagination query: fetch groups and ungrouped tokens in one pass
