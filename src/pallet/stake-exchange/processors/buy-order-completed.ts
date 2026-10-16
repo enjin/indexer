@@ -73,12 +73,11 @@ export async function buyOrderCompleted(
     // not by the ENJ the offer paid out
     const bonded: bigint = (points * pool.rate) / 10n ** 18n
 
-    if (existingMember?.tokenAccount) {
-        // the dust rule in `do_buy` may transfer the whole balance; nothing is left bonded then
-        existingMember.bonded =
-            existingMember.tokenAccount.balance <= 0n || existingMember.bonded <= bonded
-                ? 0n
-                : existingMember.bonded - bonded
+    if (existingMember) {
+        // the dust rule in `do_buy` may transfer the whole balance; nothing is left bonded then. A reaped token
+        // account (cleared by TokenAccountDestroyed) counts as a zero balance.
+        const balance: bigint = existingMember.tokenAccount?.balance ?? 0n
+        existingMember.bonded = balance <= 0n || existingMember.bonded <= bonded ? 0n : existingMember.bonded - bonded
         await ctx.store.save(existingMember)
     }
 
