@@ -780,6 +780,20 @@ export function dispatchSyncUnbondingEras(): void {
     })
 }
 
+export function dispatchSyncAccountUnbondingEras(id: string): void {
+    addRefreshJob(
+        NominationPoolsQueue,
+        JobsEnum.SYNC_ACCOUNT_UNBONDING_ERAS,
+        { id },
+        {
+            delay: 6000,
+            jobId: `nomination-pools.sync-account-unbonding-eras.${id}`,
+        }
+    ).catch(() => {
+        Logger.error('Failed to dispatch sync account unbonding eras', LOGGER_NAMESPACE)
+    })
+}
+
 export function dispatchBackfillPoolMemberRewardsEraIndex(): void {
     NominationPoolsQueue.add(
         JobsEnum.BACKFILL_POOL_MEMBER_REWARDS_ERA_INDEX,
