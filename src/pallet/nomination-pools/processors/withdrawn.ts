@@ -1,5 +1,5 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { Era, PoolMember, TokenAccount } from '~/model'
+import { PoolMember, TokenAccount } from '~/model'
 import { getOrCreateAccount } from '~/util/entities'
 import { updatePool } from '~/pallet/nomination-pools/processors/pool'
 import { Sns, SnsEvent } from '~/util/sns'
@@ -7,15 +7,7 @@ import * as mappings from '~/pallet/index'
 import { IsNull, Not } from 'typeorm'
 import { EventHandlerResult } from '~/processor.handler'
 import { CustomStakingEvent } from '~/pallet/common/types'
-
-function getActiveEra(ctx: CommonContext) {
-    return ctx.store.find(Era, {
-        order: {
-            index: 'DESC',
-        },
-        take: 1,
-    })
-}
+import { unbondingErasAt } from '~/pallet/nomination-pools/processors/unbonding-eras'
 
 export async function withdrawn(ctx: CommonContext, block: Block, item: EventItem): Promise<EventHandlerResult> {
     if (!item.extrinsic || !item.extrinsic.call) return undefined
@@ -32,8 +24,6 @@ export async function withdrawn(ctx: CommonContext, block: Block, item: EventIte
         return undefined
     }
 
-    const activeEra = await getActiveEra(ctx)
-
     const isStashWithdrawing = await (async () => {
         const unbondingMembers = await ctx.store.find(PoolMember, {
             where: { pool: { id: pool.id }, unbondingEras: Not(IsNull()), isStash: false },
@@ -46,16 +36,7 @@ export async function withdrawn(ctx: CommonContext, block: Block, item: EventIte
         return unbondingMembers.length === 0 && unbondingStash
     })()
 
-    if (poolMember.unbondingEras && poolMember.unbondingEras.length > 1) {
-        poolMember.unbondingEras = poolMember.unbondingEras.filter((era) => {
-            return era.era > activeEra[0].index
-        })
-        if (poolMember.unbondingEras.length === 0) {
-            poolMember.unbondingEras = null
-        }
-    } else {
-        poolMember.unbondingEras = null
-    }
+    poolMember.unbondingEras = await unbondingErasAt(block, data.poolId, data.member)
 
     await ctx.store.save(poolMember)
 

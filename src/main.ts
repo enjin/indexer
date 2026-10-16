@@ -17,7 +17,7 @@ import { genesisData } from '~/genesis-data'
 import { chainState } from '~/chain-state'
 import * as p from '~/pallet'
 import { getOrCreateAccount, unwrapAccount, unwrapSigner } from '~/util/entities'
-import { Block, CommonContext, EventItem, ExtrinsicItem } from '~/contexts'
+import { Block, CallItem, CommonContext, EventItem, ExtrinsicItem } from '~/contexts'
 import { updateClaimDetails } from '~/pallet/claims/processors/common'
 import { processorConfig } from '~/processor.config'
 import { Json } from '@subsquid/substrate-processor'
@@ -94,6 +94,9 @@ async function bootstrap() {
                         // Calls of failed extrinsics are fetched (for pallet/method indexing)
                         // but must not be processed as if they took effect.
                         if (!call.success) {
+                            if (block.header.height > dataService.lastBlockNumber) {
+                                resyncUnbondingErasOnFailedWithdraw(call)
+                            }
                             continue
                         }
 
@@ -283,6 +286,22 @@ async function processEvents(
     }
 
     return [undefined, undefined, undefined]
+}
+
+/**
+ * A failed `NominationPools.withdraw_unbonded` (`CannotWithdrawAny`, `UnbondingMemberNotFound`) usually means the
+ * wallet offered a claim from `unbondingEras` the chain no longer has, so re-read the member's chunks from chain
+ * now instead of waiting for the next `EraPaid` sync (WAPI-2101).
+ */
+function resyncUnbondingErasOnFailedWithdraw(call: CallItem): void {
+    if (call.name !== calls.nominationPools.withdrawUnbonded.name) return
+
+    try {
+        const { memberAccount } = p.nominationPools.calls.withdrawUnbonded(call)
+        QueueUtils.dispatchSyncAccountUnbondingEras(unwrapAccount(memberAccount))
+    } catch (error) {
+        logger.warn(`Failed to resync unbonding eras for call ${call.id}: ${String(error)}`)
+    }
 }
 
 async function processExtrinsics(

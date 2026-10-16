@@ -1,5 +1,5 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { PoolMember, TokenAccount, UnbondingEras } from '~/model'
+import { PoolMember, TokenAccount } from '~/model'
 import { getOrCreateAccount } from '~/util/entities'
 import { updatePool } from '~/pallet/nomination-pools/processors/pool'
 import { Sns, SnsEvent } from '~/util/sns'
@@ -8,6 +8,7 @@ import { MoreThan } from 'typeorm'
 import { Unbonded } from '~/pallet/nomination-pools/events'
 import { EventHandlerResult } from '~/processor.handler'
 import { CustomStakingEvent } from '~/pallet/common/types'
+import { unbondingErasAt } from '~/pallet/nomination-pools/processors/unbonding-eras'
 
 export async function unbonded(ctx: CommonContext, block: Block, item: EventItem): Promise<EventHandlerResult> {
     if (!item.extrinsic || !item.extrinsic.call) return undefined
@@ -31,9 +32,7 @@ export async function unbonded(ctx: CommonContext, block: Block, item: EventItem
         poolMember.bonded = 0n
     }
 
-    poolMember.unbondingEras = (poolMember.unbondingEras || []).concat([
-        new UnbondingEras({ era: data.era, balance: data.balance }),
-    ])
+    poolMember.unbondingEras = await unbondingErasAt(block, data.poolId, data.member)
 
     const owner = await ctx.store.findOne(TokenAccount, {
         where: { token: { id: `2-${pool.tokenId}` } },
