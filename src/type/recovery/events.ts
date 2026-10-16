@@ -1,6 +1,6 @@
 import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
 import * as enjinV1070 from '../enjinV1070'
-import * as v1080 from '../v1080'
+import * as enjinV1080 from '../enjinV1080'
 
 export const currentHeadForced = {
     name: 'Recovery.CurrentHeadForced',
@@ -115,13 +115,13 @@ export const codeUpgradeScheduled = {
     /**
      * A code upgrade was scheduled for a parachain.
      */
-    v1080: new EventType(
+    enjinV1080: new EventType(
         'Recovery.CodeUpgradeScheduled',
         sts.struct({
             /**
              * The parachain ID the upgrade was scheduled for.
              */
-            paraId: v1080.Id,
+            paraId: enjinV1080.Id,
         })
     ),
 }
@@ -131,13 +131,13 @@ export const codeUpgradeCancelled = {
     /**
      * A stuck pending code upgrade was cleared for a parachain.
      */
-    v1080: new EventType(
+    enjinV1080: new EventType(
         'Recovery.CodeUpgradeCancelled',
         sts.struct({
             /**
              * The parachain ID whose pending upgrade was cleared.
              */
-            paraId: v1080.Id,
+            paraId: enjinV1080.Id,
         })
     ),
 }

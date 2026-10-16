@@ -9,6 +9,7 @@ import * as matrixEnjinV1041 from '../matrixEnjinV1041'
 import * as matrixV1041 from '../matrixV1041'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
+import * as enjinV1080 from '../enjinV1080'
 import * as v1080 from '../v1080'
 
 export const blockWeights = {
@@ -39,6 +40,14 @@ export const blockLength = {
      *  The maximum length of a block (in bytes).
      */
     enjinV100: new ConstantType('System.BlockLength', enjinV100.BlockLength),
+    /**
+     *  The maximum length of a block (in bytes).
+     */
+    enjinV1080: new ConstantType('System.BlockLength', enjinV1080.BlockLength),
+    /**
+     *  The maximum length of a block (in bytes).
+     */
+    v100: new ConstantType('System.BlockLength', v100.BlockLength),
     /**
      *  The maximum length of a block (in bytes).
      */

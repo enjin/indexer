@@ -3,6 +3,7 @@ import * as enjinV100 from '../enjinV100'
 import * as v104 from '../v104'
 import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
+import * as enjinV1080 from '../enjinV1080'
 import * as v1080 from '../v1080'
 
 export const setValidationUpgradeCooldown = {
@@ -606,6 +607,15 @@ export const setExecutorParams = {
     /**
      * Set PVF executor parameters.
      */
+    enjinV1080: new CallType(
+        'Configuration.set_executor_params',
+        sts.struct({
+            new: sts.array(() => enjinV1080.V9ExecutorParam),
+        })
+    ),
+    /**
+     * Set PVF executor parameters.
+     */
     v104: new CallType(
         'Configuration.set_executor_params',
         sts.struct({
@@ -793,10 +803,41 @@ export const setSchedulerParams = {
     /**
      * Set scheduler-params.
      */
+    enjinV1080: new CallType(
+        'Configuration.set_scheduler_params',
+        sts.struct({
+            new: enjinV1080.SchedulerParams,
+        })
+    ),
+    /**
+     * Set scheduler-params.
+     */
+    v1030: new CallType(
+        'Configuration.set_scheduler_params',
+        sts.struct({
+            new: v1030.SchedulerParams,
+        })
+    ),
+    /**
+     * Set scheduler-params.
+     */
     v1080: new CallType(
         'Configuration.set_scheduler_params',
         sts.struct({
             new: v1080.SchedulerParams,
+        })
+    ),
+}
+
+export const setMaxRelayParentSessionAge = {
+    name: 'Configuration.set_max_relay_parent_session_age',
+    /**
+     * Set the maximum relay parent session age.
+     */
+    enjinV1080: new CallType(
+        'Configuration.set_max_relay_parent_session_age',
+        sts.struct({
+            new: sts.number(),
         })
     ),
 }
@@ -808,19 +849,6 @@ export const setDisputeConclusionByTimeOutPeriod = {
      */
     v100: new CallType(
         'Configuration.set_dispute_conclusion_by_time_out_period',
-        sts.struct({
-            new: sts.number(),
-        })
-    ),
-}
-
-export const setMaxRelayParentSessionAge = {
-    name: 'Configuration.set_max_relay_parent_session_age',
-    /**
-     * Set the maximum relay parent session age.
-     */
-    v1080: new CallType(
-        'Configuration.set_max_relay_parent_session_age',
         sts.struct({
             new: sts.number(),
         })

@@ -2407,24 +2407,6 @@ export const HostConfiguration: sts.Type<HostConfiguration> = sts.struct(() => {
     }
 })
 
-export const SchedulerParams: sts.Type<SchedulerParams> = sts.struct(() => {
-    return {
-        groupRotationFrequency: sts.number(),
-        parasAvailabilityPeriod: sts.number(),
-        maxValidatorsPerCore: sts.option(() => sts.number()),
-        lookahead: sts.number(),
-        numCores: sts.number(),
-        maxAvailabilityTimeouts: sts.number(),
-        onDemandQueueMaxSize: sts.number(),
-        onDemandTargetQueueUtilization: Perbill,
-        onDemandFeeVariability: Perbill,
-        onDemandBaseFee: sts.bigint(),
-        ttl: sts.number(),
-    }
-})
-
-export const Perbill = sts.number()
-
 export const ApprovalVotingParams: sts.Type<ApprovalVotingParams> = sts.struct(() => {
     return {
         maxApprovalCoalesceCount: sts.number(),
@@ -10860,6 +10842,8 @@ export const ValidatorPrefs: sts.Type<ValidatorPrefs> = sts.struct(() => {
     }
 })
 
+export const Perbill = sts.number()
+
 export const Forcing: sts.Type<Forcing> = sts.closedEnum(() => {
     return {
         ForceAlways: sts.unit(),
@@ -14948,6 +14932,22 @@ export interface V6InherentData {
     disputes: V6DisputeStatementSet[]
     parentHeader: Header
 }
+
+export const SchedulerParams: sts.Type<SchedulerParams> = sts.struct(() => {
+    return {
+        groupRotationFrequency: sts.number(),
+        parasAvailabilityPeriod: sts.number(),
+        maxValidatorsPerCore: sts.option(() => sts.number()),
+        lookahead: sts.number(),
+        numCores: sts.number(),
+        maxAvailabilityTimeouts: sts.number(),
+        onDemandQueueMaxSize: sts.number(),
+        onDemandTargetQueueUtilization: Perbill,
+        onDemandFeeVariability: Perbill,
+        onDemandBaseFee: sts.bigint(),
+        ttl: sts.number(),
+    }
+})
 
 export const V6ExecutorParam: sts.Type<V6ExecutorParam> = sts.closedEnum(() => {
     return {

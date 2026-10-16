@@ -15,6 +15,7 @@ import * as matrixEnjinV1041 from '../matrixEnjinV1041'
 import * as matrixV1041 from '../matrixV1041'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
+import * as enjinV1080 from '../enjinV1080'
 import * as v1080 from '../v1080'
 
 export const extrinsicSuccess = {
@@ -196,6 +197,19 @@ export const codeUpdated = {
      * `:code` was updated.
      */
     enjinV100: new EventType('System.CodeUpdated', sts.unit()),
+    /**
+     * `:code` was updated to the code with the given hash.
+     */
+    enjinV1080: new EventType(
+        'System.CodeUpdated',
+        sts.struct({
+            hash: enjinV1080.H256,
+        })
+    ),
+    /**
+     * `:code` was updated.
+     */
+    v100: new EventType('System.CodeUpdated', sts.unit()),
     /**
      * `:code` was updated to the code with the given hash.
      */

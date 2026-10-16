@@ -21,7 +21,7 @@ import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
-import * as v1080 from '../v1080'
+import * as enjinV1080 from '../enjinV1080'
 
 export const minJoinBond = {
     /**
@@ -1285,6 +1285,30 @@ export interface ValidatorBonusInfoEnjinV1062 {
     get(block: Block): Promise<enjinV1062.ValidatorBonusInformation | undefined>
 }
 
+export const unbondingMembersCleanupCursor = {
+    /**
+     *  Where the next [`Pallet::remove_empty_unbonding_members`] call resumes its walk of
+     *  [`UnbondingMembers`]: the last key the previous call examined, or `None` once a call has
+     *  reached the end of the map and the next one starts over.
+     */
+    enjinV1080: new StorageType(
+        'NominationPools.UnbondingMembersCleanupCursor',
+        'Optional',
+        [],
+        sts.tuple(() => [sts.number(), enjinV1080.AccountId32])
+    ) as UnbondingMembersCleanupCursorEnjinV1080,
+}
+
+/**
+ *  Where the next [`Pallet::remove_empty_unbonding_members`] call resumes its walk of
+ *  [`UnbondingMembers`]: the last key the previous call examined, or `None` once a call has
+ *  reached the end of the map and the next one starts over.
+ */
+export interface UnbondingMembersCleanupCursorEnjinV1080 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block): Promise<[number, enjinV1080.AccountId32] | undefined>
+}
+
 export const lastPoolId = {
     /**
      *  Ever increasing number of all pools created so far.
@@ -1299,28 +1323,4 @@ export interface LastPoolIdV100 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): number
     get(block: Block): Promise<number | undefined>
-}
-
-export const unbondingMembersCleanupCursor = {
-    /**
-     *  Where the next [`Pallet::remove_empty_unbonding_members`] call resumes its walk of
-     *  [`UnbondingMembers`]: the last key the previous call examined, or `None` once a call has
-     *  reached the end of the map and the next one starts over.
-     */
-    v1080: new StorageType(
-        'NominationPools.UnbondingMembersCleanupCursor',
-        'Optional',
-        [],
-        sts.tuple(() => [sts.number(), v1080.AccountId32])
-    ) as UnbondingMembersCleanupCursorV1080,
-}
-
-/**
- *  Where the next [`Pallet::remove_empty_unbonding_members`] call resumes its walk of
- *  [`UnbondingMembers`]: the last key the previous call examined, or `None` once a call has
- *  reached the end of the map and the next one starts over.
- */
-export interface UnbondingMembersCleanupCursorV1080 {
-    is(block: RuntimeCtx): boolean
-    get(block: Block): Promise<[number, v1080.AccountId32] | undefined>
 }

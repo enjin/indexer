@@ -5,7 +5,7 @@ import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
-import * as v1080 from '../v1080'
+import * as enjinV1080 from '../enjinV1080'
 
 export const validatorGroups = {
     /**
@@ -373,12 +373,12 @@ export const coreSchedules = {
      *
      *  Managed by the `assigner_coretime` submodule.
      */
-    v1080: new StorageType(
+    enjinV1080: new StorageType(
         'ParaScheduler.CoreSchedules',
         'Optional',
-        [sts.tuple(() => [sts.number(), v1080.V9CoreIndex])],
-        v1080.Schedule
-    ) as CoreSchedulesV1080,
+        [sts.tuple(() => [sts.number(), enjinV1080.V9CoreIndex])],
+        enjinV1080.Schedule
+    ) as CoreSchedulesEnjinV1080,
 }
 
 /**
@@ -389,32 +389,32 @@ export const coreSchedules = {
  *
  *  Managed by the `assigner_coretime` submodule.
  */
-export interface CoreSchedulesV1080 {
+export interface CoreSchedulesEnjinV1080 {
     is(block: RuntimeCtx): boolean
-    get(block: Block, key: [number, v1080.V9CoreIndex]): Promise<v1080.Schedule | undefined>
-    getMany(block: Block, keys: [number, v1080.V9CoreIndex][]): Promise<(v1080.Schedule | undefined)[]>
-    getKeys(block: Block): Promise<[number, v1080.V9CoreIndex][]>
-    getKeys(block: Block, key: [number, v1080.V9CoreIndex]): Promise<[number, v1080.V9CoreIndex][]>
-    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[number, v1080.V9CoreIndex][]>
+    get(block: Block, key: [number, enjinV1080.V9CoreIndex]): Promise<enjinV1080.Schedule | undefined>
+    getMany(block: Block, keys: [number, enjinV1080.V9CoreIndex][]): Promise<(enjinV1080.Schedule | undefined)[]>
+    getKeys(block: Block): Promise<[number, enjinV1080.V9CoreIndex][]>
+    getKeys(block: Block, key: [number, enjinV1080.V9CoreIndex]): Promise<[number, enjinV1080.V9CoreIndex][]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[number, enjinV1080.V9CoreIndex][]>
     getKeysPaged(
         pageSize: number,
         block: Block,
-        key: [number, v1080.V9CoreIndex]
-    ): AsyncIterable<[number, v1080.V9CoreIndex][]>
-    getPairs(block: Block): Promise<[k: [number, v1080.V9CoreIndex], v: v1080.Schedule | undefined][]>
+        key: [number, enjinV1080.V9CoreIndex]
+    ): AsyncIterable<[number, enjinV1080.V9CoreIndex][]>
+    getPairs(block: Block): Promise<[k: [number, enjinV1080.V9CoreIndex], v: enjinV1080.Schedule | undefined][]>
     getPairs(
         block: Block,
-        key: [number, v1080.V9CoreIndex]
-    ): Promise<[k: [number, v1080.V9CoreIndex], v: v1080.Schedule | undefined][]>
+        key: [number, enjinV1080.V9CoreIndex]
+    ): Promise<[k: [number, enjinV1080.V9CoreIndex], v: enjinV1080.Schedule | undefined][]>
     getPairsPaged(
         pageSize: number,
         block: Block
-    ): AsyncIterable<[k: [number, v1080.V9CoreIndex], v: v1080.Schedule | undefined][]>
+    ): AsyncIterable<[k: [number, enjinV1080.V9CoreIndex], v: enjinV1080.Schedule | undefined][]>
     getPairsPaged(
         pageSize: number,
         block: Block,
-        key: [number, v1080.V9CoreIndex]
-    ): AsyncIterable<[k: [number, v1080.V9CoreIndex], v: v1080.Schedule | undefined][]>
+        key: [number, enjinV1080.V9CoreIndex]
+    ): AsyncIterable<[k: [number, enjinV1080.V9CoreIndex], v: enjinV1080.Schedule | undefined][]>
 }
 
 export const coreDescriptors = {
@@ -425,12 +425,12 @@ export const coreDescriptors = {
      *
      *  Managed by the `assigner_coretime` submodule.
      */
-    v1080: new StorageType(
+    enjinV1080: new StorageType(
         'ParaScheduler.CoreDescriptors',
         'Default',
         [],
-        sts.array(() => sts.tuple(() => [v1080.V9CoreIndex, v1080.CoreDescriptor]))
-    ) as CoreDescriptorsV1080,
+        sts.array(() => sts.tuple(() => [enjinV1080.V9CoreIndex, enjinV1080.CoreDescriptor]))
+    ) as CoreDescriptorsEnjinV1080,
 }
 
 /**
@@ -440,8 +440,8 @@ export const coreDescriptors = {
  *
  *  Managed by the `assigner_coretime` submodule.
  */
-export interface CoreDescriptorsV1080 {
+export interface CoreDescriptorsEnjinV1080 {
     is(block: RuntimeCtx): boolean
-    getDefault(block: Block): [v1080.V9CoreIndex, v1080.CoreDescriptor][]
-    get(block: Block): Promise<[v1080.V9CoreIndex, v1080.CoreDescriptor][] | undefined>
+    getDefault(block: Block): [enjinV1080.V9CoreIndex, enjinV1080.CoreDescriptor][]
+    get(block: Block): Promise<[enjinV1080.V9CoreIndex, enjinV1080.CoreDescriptor][] | undefined>
 }

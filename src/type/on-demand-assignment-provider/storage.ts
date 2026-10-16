@@ -1,6 +1,6 @@
 import { sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx } from '../support'
 import * as enjinV1062 from '../enjinV1062'
-import * as v1080 from '../v1080'
+import * as enjinV1080 from '../enjinV1080'
 
 export const paraIdAffinity = {
     /**
@@ -186,19 +186,19 @@ export const orderStatus = {
     /**
      *  Priority queue for all orders which don't yet (or not any more) have any core affinity.
      */
-    v1080: new StorageType(
+    enjinV1080: new StorageType(
         'OnDemandAssignmentProvider.OrderStatus',
         'Default',
         [],
-        v1080.OrderStatus
-    ) as OrderStatusV1080,
+        enjinV1080.OrderStatus
+    ) as OrderStatusEnjinV1080,
 }
 
 /**
  *  Priority queue for all orders which don't yet (or not any more) have any core affinity.
  */
-export interface OrderStatusV1080 {
+export interface OrderStatusEnjinV1080 {
     is(block: RuntimeCtx): boolean
-    getDefault(block: Block): v1080.OrderStatus
-    get(block: Block): Promise<v1080.OrderStatus | undefined>
+    getDefault(block: Block): enjinV1080.OrderStatus
+    get(block: Block): Promise<enjinV1080.OrderStatus | undefined>
 }

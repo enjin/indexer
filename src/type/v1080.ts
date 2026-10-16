@@ -26,44 +26,6 @@ export interface BlockLength {
     maxHeaderSize?: number | undefined
 }
 
-export interface OrderStatus {
-    traffic: FixedU128
-    queue: OrderQueue
-}
-
-export interface OrderQueue {
-    queue: EnqueuedOrder[]
-}
-
-export interface EnqueuedOrder {
-    paraId: Id
-    orderedAt: number
-}
-
-export type FixedU128 = bigint
-
-export const OrderStatus: sts.Type<OrderStatus> = sts.struct(() => {
-    return {
-        traffic: FixedU128,
-        queue: OrderQueue,
-    }
-})
-
-export const OrderQueue: sts.Type<OrderQueue> = sts.struct(() => {
-    return {
-        queue: sts.array(() => EnqueuedOrder),
-    }
-})
-
-export const EnqueuedOrder: sts.Type<EnqueuedOrder> = sts.struct(() => {
-    return {
-        paraId: Id,
-        orderedAt: sts.number(),
-    }
-})
-
-export const FixedU128 = sts.bigint()
-
 export type V9ExecutorParam =
     | V9ExecutorParam_EnabledHostFunction
     | V9ExecutorParam_MaxMemoryPages
@@ -138,101 +100,6 @@ export type V9ExecutorHostFunction = V9ExecutorHostFunction_EccRfc163
 export interface V9ExecutorHostFunction_EccRfc163 {
     __kind: 'EccRfc163'
 }
-
-export interface CoreDescriptor {
-    queue?: QueueDescriptor | undefined
-    currentWork?: WorkState | undefined
-}
-
-export interface WorkState {
-    assignments: [CoreAssignment, AssignmentState][]
-    endHint?: number | undefined
-    pos: number
-    step: PartsOf57600
-}
-
-export type PartsOf57600 = number
-
-export interface AssignmentState {
-    ratio: PartsOf57600
-    remaining: PartsOf57600
-}
-
-export type CoreAssignment = CoreAssignment_Idle | CoreAssignment_Pool | CoreAssignment_Task
-
-export interface CoreAssignment_Idle {
-    __kind: 'Idle'
-}
-
-export interface CoreAssignment_Pool {
-    __kind: 'Pool'
-}
-
-export interface CoreAssignment_Task {
-    __kind: 'Task'
-    value: number
-}
-
-export interface QueueDescriptor {
-    first: number
-    last: number
-}
-
-export const CoreDescriptor: sts.Type<CoreDescriptor> = sts.struct(() => {
-    return {
-        queue: sts.option(() => QueueDescriptor),
-        currentWork: sts.option(() => WorkState),
-    }
-})
-
-export const WorkState: sts.Type<WorkState> = sts.struct(() => {
-    return {
-        assignments: sts.array(() => sts.tuple(() => [CoreAssignment, AssignmentState])),
-        endHint: sts.option(() => sts.number()),
-        pos: sts.number(),
-        step: PartsOf57600,
-    }
-})
-
-export const PartsOf57600 = sts.number()
-
-export const AssignmentState: sts.Type<AssignmentState> = sts.struct(() => {
-    return {
-        ratio: PartsOf57600,
-        remaining: PartsOf57600,
-    }
-})
-
-export const CoreAssignment: sts.Type<CoreAssignment> = sts.closedEnum(() => {
-    return {
-        Idle: sts.unit(),
-        Pool: sts.unit(),
-        Task: sts.number(),
-    }
-})
-
-export const QueueDescriptor: sts.Type<QueueDescriptor> = sts.struct(() => {
-    return {
-        first: sts.number(),
-        last: sts.number(),
-    }
-})
-
-export type V9CoreIndex = number
-
-export interface Schedule {
-    assignments: [CoreAssignment, PartsOf57600][]
-    endHint?: number | undefined
-    nextSchedule?: number | undefined
-}
-
-export const Schedule: sts.Type<Schedule> = sts.struct(() => {
-    return {
-        assignments: sts.array(() => sts.tuple(() => [CoreAssignment, PartsOf57600])),
-        endHint: sts.option(() => sts.number()),
-        nextSchedule: sts.option(() => sts.number()),
-    }
-})
 
 export interface V9ScrapedOnChainVotes {
     session: number
@@ -427,6 +294,8 @@ export interface OutboundHrmpMessage {
     data: Bytes
 }
 
+export type V9CoreIndex = number
+
 export const CandidatePendingAvailability: sts.Type<CandidatePendingAvailability> = sts.struct(() => {
     return {
         core: V9CoreIndex,
@@ -482,31 +351,7 @@ export const V9CandidateDescriptorV2: sts.Type<V9CandidateDescriptorV2> = sts.st
 
 export const ValidationCodeHash = sts.bytes()
 
-export interface AllowedSchedulingParentsTracker {
-    buffer: SchedulingParentInfo[]
-    latestNumber: number
-}
-
-export interface SchedulingParentInfo {
-    schedulingParent: H256
-    claimQueue: [Id, [number, V9CoreIndex[]][]][]
-}
-
-export const AllowedSchedulingParentsTracker: sts.Type<AllowedSchedulingParentsTracker> = sts.struct(() => {
-    return {
-        buffer: sts.array(() => SchedulingParentInfo),
-        latestNumber: sts.number(),
-    }
-})
-
-export const SchedulingParentInfo: sts.Type<SchedulingParentInfo> = sts.struct(() => {
-    return {
-        schedulingParent: H256,
-        claimQueue: sts.array(() =>
-            sts.tuple(() => [Id, sts.array(() => sts.tuple(() => [sts.number(), sts.array(() => V9CoreIndex)]))])
-        ),
-    }
-})
+export const Id = sts.number()
 
 export interface RelayParentInfo {
     number: number
@@ -11666,6 +11511,82 @@ export const DispatchErrorWithPostInfo: sts.Type<DispatchErrorWithPostInfo> = st
     return {
         postInfo: PostDispatchInfo,
         error: DispatchError,
+    }
+})
+
+export const DispatchError: sts.Type<DispatchError> = sts.closedEnum(() => {
+    return {
+        Arithmetic: ArithmeticError,
+        BadOrigin: sts.unit(),
+        CannotLookup: sts.unit(),
+        ConsumerRemaining: sts.unit(),
+        Corruption: sts.unit(),
+        Exhausted: sts.unit(),
+        Module: ModuleError,
+        NoProviders: sts.unit(),
+        Other: sts.unit(),
+        RootNotAllowed: sts.unit(),
+        Token: TokenError,
+        TooManyConsumers: sts.unit(),
+        Transactional: TransactionalError,
+        Trie: TrieError,
+        Unavailable: sts.unit(),
+    }
+})
+
+export const TrieError: sts.Type<TrieError> = sts.closedEnum(() => {
+    return {
+        DecodeError: sts.unit(),
+        DecoderError: sts.unit(),
+        DuplicateKey: sts.unit(),
+        ExtraneousHashReference: sts.unit(),
+        ExtraneousNode: sts.unit(),
+        ExtraneousValue: sts.unit(),
+        IncompleteDatabase: sts.unit(),
+        IncompleteProof: sts.unit(),
+        InvalidChildReference: sts.unit(),
+        InvalidHash: sts.unit(),
+        InvalidStateRoot: sts.unit(),
+        RootMismatch: sts.unit(),
+        ValueAtIncompleteKey: sts.unit(),
+        ValueMismatch: sts.unit(),
+    }
+})
+
+export const TransactionalError: sts.Type<TransactionalError> = sts.closedEnum(() => {
+    return {
+        LimitReached: sts.unit(),
+        NoLayer: sts.unit(),
+    }
+})
+
+export const TokenError: sts.Type<TokenError> = sts.closedEnum(() => {
+    return {
+        BelowMinimum: sts.unit(),
+        Blocked: sts.unit(),
+        CannotCreate: sts.unit(),
+        CannotCreateHold: sts.unit(),
+        Frozen: sts.unit(),
+        FundsUnavailable: sts.unit(),
+        NotExpendable: sts.unit(),
+        OnlyProvider: sts.unit(),
+        UnknownAsset: sts.unit(),
+        Unsupported: sts.unit(),
+    }
+})
+
+export const ModuleError: sts.Type<ModuleError> = sts.struct(() => {
+    return {
+        index: sts.number(),
+        error: sts.bytes(),
+    }
+})
+
+export const ArithmeticError: sts.Type<ArithmeticError> = sts.closedEnum(() => {
+    return {
+        DivisionByZero: sts.unit(),
+        Overflow: sts.unit(),
+        Underflow: sts.unit(),
     }
 })
 
@@ -24927,6 +24848,23 @@ export interface CoretimeCall_request_revenue_at {
     when: number
 }
 
+export type PartsOf57600 = number
+
+export type CoreAssignment = CoreAssignment_Idle | CoreAssignment_Pool | CoreAssignment_Task
+
+export interface CoreAssignment_Idle {
+    __kind: 'Idle'
+}
+
+export interface CoreAssignment_Pool {
+    __kind: 'Pool'
+}
+
+export interface CoreAssignment_Task {
+    __kind: 'Task'
+    value: number
+}
+
 /**
  * Contains a variant per dispatchable extrinsic that this pallet has.
  */
@@ -26302,6 +26240,8 @@ export const Timepoint: sts.Type<Timepoint> = sts.struct(() => {
         index: sts.number(),
     }
 })
+
+export const AccountId32 = sts.bytes()
 
 export const Weight: sts.Type<Weight> = sts.struct(() => {
     return {
@@ -29715,6 +29655,16 @@ export const CoretimeCall: sts.Type<CoretimeCall> = sts.closedEnum(() => {
     }
 })
 
+export const PartsOf57600 = sts.number()
+
+export const CoreAssignment: sts.Type<CoreAssignment> = sts.closedEnum(() => {
+    return {
+        Idle: sts.unit(),
+        Pool: sts.unit(),
+        Task: sts.number(),
+    }
+})
+
 /**
  * Contains a variant per dispatchable extrinsic that this pallet has.
  */
@@ -30152,8 +30102,6 @@ export const SlotLeasePeriodStart: sts.Type<SlotLeasePeriodStart> = sts.closedEn
     }
 })
 
-export const Id = sts.number()
-
 export const V9GroupIndex = sts.number()
 
 export const V9CoreIndex = sts.number()
@@ -30166,84 +30114,6 @@ export const V9CandidateReceiptV2: sts.Type<V9CandidateReceiptV2> = sts.struct((
         commitmentsHash: H256,
     }
 })
-
-export const DispatchError: sts.Type<DispatchError> = sts.closedEnum(() => {
-    return {
-        Arithmetic: ArithmeticError,
-        BadOrigin: sts.unit(),
-        CannotLookup: sts.unit(),
-        ConsumerRemaining: sts.unit(),
-        Corruption: sts.unit(),
-        Exhausted: sts.unit(),
-        Module: ModuleError,
-        NoProviders: sts.unit(),
-        Other: sts.unit(),
-        RootNotAllowed: sts.unit(),
-        Token: TokenError,
-        TooManyConsumers: sts.unit(),
-        Transactional: TransactionalError,
-        Trie: TrieError,
-        Unavailable: sts.unit(),
-    }
-})
-
-export const TrieError: sts.Type<TrieError> = sts.closedEnum(() => {
-    return {
-        DecodeError: sts.unit(),
-        DecoderError: sts.unit(),
-        DuplicateKey: sts.unit(),
-        ExtraneousHashReference: sts.unit(),
-        ExtraneousNode: sts.unit(),
-        ExtraneousValue: sts.unit(),
-        IncompleteDatabase: sts.unit(),
-        IncompleteProof: sts.unit(),
-        InvalidChildReference: sts.unit(),
-        InvalidHash: sts.unit(),
-        InvalidStateRoot: sts.unit(),
-        RootMismatch: sts.unit(),
-        ValueAtIncompleteKey: sts.unit(),
-        ValueMismatch: sts.unit(),
-    }
-})
-
-export const TransactionalError: sts.Type<TransactionalError> = sts.closedEnum(() => {
-    return {
-        LimitReached: sts.unit(),
-        NoLayer: sts.unit(),
-    }
-})
-
-export const TokenError: sts.Type<TokenError> = sts.closedEnum(() => {
-    return {
-        BelowMinimum: sts.unit(),
-        Blocked: sts.unit(),
-        CannotCreate: sts.unit(),
-        CannotCreateHold: sts.unit(),
-        Frozen: sts.unit(),
-        FundsUnavailable: sts.unit(),
-        NotExpendable: sts.unit(),
-        OnlyProvider: sts.unit(),
-        UnknownAsset: sts.unit(),
-        Unsupported: sts.unit(),
-    }
-})
-
-export const ModuleError: sts.Type<ModuleError> = sts.struct(() => {
-    return {
-        index: sts.number(),
-        error: sts.bytes(),
-    }
-})
-
-export const ArithmeticError: sts.Type<ArithmeticError> = sts.closedEnum(() => {
-    return {
-        DivisionByZero: sts.unit(),
-        Overflow: sts.unit(),
-        Underflow: sts.unit(),
-    }
-})
-
-export const AccountId32 = sts.bytes()
 
 export const Listing: sts.Type<Listing> = sts.struct(() => {
     return {

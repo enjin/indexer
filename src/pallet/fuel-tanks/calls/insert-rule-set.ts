@@ -13,12 +13,60 @@ export const insertRuleSet = withDispatchCheck((call: CallItem): InsertRuleSet =
             () => calls.fuelTanks.insertRuleSet.matrixV1041.decode(call)
         )
         .when(
+            () => calls.fuelTanks.insertRuleSet.matrixEnjinV1041.is(call),
+            () => calls.fuelTanks.insertRuleSet.matrixEnjinV1041.decode(call)
+        )
+        .when(
             () => calls.fuelTanks.forceInsertRuleSet.matrixV1041.is(call),
             () => calls.fuelTanks.forceInsertRuleSet.matrixV1041.decode(call)
         )
         .when(
+            () => calls.fuelTanks.forceInsertRuleSet.matrixEnjinV1041.is(call),
+            () => calls.fuelTanks.forceInsertRuleSet.matrixEnjinV1041.decode(call)
+        )
+        .when(
+            () => calls.fuelTanks.forceInsertRuleSet.enjinV1080.is(call),
+            () => calls.fuelTanks.forceInsertRuleSet.enjinV1080.decode(call)
+        )
+        .when(
+            () => calls.fuelTanks.forceInsertRuleSet.v1080.is(call),
+            () => calls.fuelTanks.forceInsertRuleSet.v1080.decode(call)
+        )
+        .when(
+            () => calls.fuelTanks.forceInsertRuleSet.matrixV1040.is(call),
+            () => calls.fuelTanks.forceInsertRuleSet.matrixV1040.decode(call)
+        )
+        .when(
+            () => calls.fuelTanks.forceInsertRuleSet.matrixEnjinV1031.is(call),
+            () => calls.fuelTanks.forceInsertRuleSet.matrixEnjinV1031.decode(call)
+        )
+        .when(
+            () => calls.fuelTanks.forceInsertRuleSet.matrixV1030.is(call),
+            () => calls.fuelTanks.forceInsertRuleSet.matrixV1030.decode(call)
+        )
+        .when(
+            () => calls.fuelTanks.forceInsertRuleSet.enjinV1070.is(call),
+            () => calls.fuelTanks.forceInsertRuleSet.enjinV1070.decode(call)
+        )
+        .when(
+            () => calls.fuelTanks.forceInsertRuleSet.v1070.is(call),
+            () => calls.fuelTanks.forceInsertRuleSet.v1070.decode(call)
+        )
+        .when(
+            () => calls.fuelTanks.forceInsertRuleSet.enjinV1062.is(call),
+            () => calls.fuelTanks.forceInsertRuleSet.enjinV1062.decode(call)
+        )
+        .when(
+            () => calls.fuelTanks.forceInsertRuleSet.v1060.is(call),
+            () => calls.fuelTanks.forceInsertRuleSet.v1060.decode(call)
+        )
+        .when(
             () => calls.fuelTanks.insertRuleSet.v1080.is(call),
             () => calls.fuelTanks.insertRuleSet.v1080.decode(call)
+        )
+        .when(
+            () => calls.fuelTanks.insertRuleSet.enjinV1080.is(call),
+            () => calls.fuelTanks.insertRuleSet.enjinV1080.decode(call)
         )
         .when(
             () => calls.fuelTanks.insertRuleSet.matrixEnjinV1031.is(call),

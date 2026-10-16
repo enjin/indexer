@@ -6,6 +6,7 @@ import * as v104 from '../v104'
 import * as v105 from '../v105'
 import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
+import * as enjinV1080 from '../enjinV1080'
 import * as v1080 from '../v1080'
 
 export const activeConfig = {
@@ -36,6 +37,15 @@ export const activeConfig = {
         [],
         enjinV1032.HostConfiguration
     ) as ActiveConfigEnjinV1032,
+    /**
+     *  The active configuration for the current session.
+     */
+    enjinV1080: new StorageType(
+        'Configuration.ActiveConfig',
+        'Default',
+        [],
+        enjinV1080.HostConfiguration
+    ) as ActiveConfigEnjinV1080,
     /**
      *  The active configuration for the current session.
      */
@@ -83,6 +93,15 @@ export interface ActiveConfigEnjinV1032 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): enjinV1032.HostConfiguration
     get(block: Block): Promise<enjinV1032.HostConfiguration | undefined>
+}
+
+/**
+ *  The active configuration for the current session.
+ */
+export interface ActiveConfigEnjinV1080 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): enjinV1080.HostConfiguration
+    get(block: Block): Promise<enjinV1080.HostConfiguration | undefined>
 }
 
 /**
@@ -176,6 +195,21 @@ export const pendingConfigs = {
         [],
         sts.array(() => sts.tuple(() => [sts.number(), enjinV1032.HostConfiguration]))
     ) as PendingConfigsEnjinV1032,
+    /**
+     *  Pending configuration changes.
+     *
+     *  This is a list of configuration changes, each with a session index at which it should
+     *  be applied.
+     *
+     *  The list is sorted ascending by session index. Also, this list can only contain at most
+     *  2 items: for the next session and for the `scheduled_session`.
+     */
+    enjinV1080: new StorageType(
+        'Configuration.PendingConfigs',
+        'Default',
+        [],
+        sts.array(() => sts.tuple(() => [sts.number(), enjinV1080.HostConfiguration]))
+    ) as PendingConfigsEnjinV1080,
     /**
      *  Pending configuration changes.
      *
@@ -296,6 +330,21 @@ export interface PendingConfigsEnjinV1032 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): [number, enjinV1032.HostConfiguration][]
     get(block: Block): Promise<[number, enjinV1032.HostConfiguration][] | undefined>
+}
+
+/**
+ *  Pending configuration changes.
+ *
+ *  This is a list of configuration changes, each with a session index at which it should
+ *  be applied.
+ *
+ *  The list is sorted ascending by session index. Also, this list can only contain at most
+ *  2 items: for the next session and for the `scheduled_session`.
+ */
+export interface PendingConfigsEnjinV1080 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): [number, enjinV1080.HostConfiguration][]
+    get(block: Block): Promise<[number, enjinV1080.HostConfiguration][] | undefined>
 }
 
 /**

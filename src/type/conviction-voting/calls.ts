@@ -3,7 +3,7 @@ import * as v100 from '../v100'
 import * as matrixEnjinV1041 from '../matrixEnjinV1041'
 import * as enjinV1070 from '../enjinV1070'
 import * as v1070 from '../v1070'
-import * as v1080 from '../v1080'
+import * as enjinV1080 from '../enjinV1080'
 
 export const vote = {
     name: 'ConvictionVoting.vote',
@@ -680,10 +680,10 @@ export const forcePurgePoolVoting = {
      * Any delegated weight is returned to its target and any votes on ongoing polls are taken
      * back out of their tallies. Weight that *other* accounts delegated to `who` is untouched.
      */
-    v1080: new CallType(
+    enjinV1080: new CallType(
         'ConvictionVoting.force_purge_pool_voting',
         sts.struct({
-            who: v1080.MultiAddress,
+            who: enjinV1080.MultiAddress,
             class: sts.number(),
             tokenId: sts.bigint(),
         })
