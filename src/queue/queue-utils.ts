@@ -571,6 +571,14 @@ export function dispatchBackfillExtrinsicBlockRelation(options?: {
     })
 }
 
+export async function dispatchBackfillEventPosition(data?: { batchSize?: number }): Promise<void> {
+    const logicalId = 'validators.backfill-event-position'
+    await ValidatorsQueue.add(JobsEnum.BACKFILL_EVENT_POSITION, data ?? {}, {
+        jobId: `${logicalId}.${randomUUID()}`,
+        deduplication: { id: logicalId },
+    })
+}
+
 export function dispatchBackfillChainFinality(options?: {
     fromBlock?: number
     toBlock?: number

@@ -72,6 +72,8 @@ type Extrinsic @entity {
 
 type Event @entity {
   id: ID!
+  index: Int
+  blockNumber: Int @index
   extrinsic: Extrinsic
   data: EventData
   name: String! @index
