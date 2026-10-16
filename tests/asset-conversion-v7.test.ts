@@ -13,7 +13,15 @@ import { decodeTokenStorageValue, hasV6TokenLayout, tokenLayout } from '~/pallet
 // The processors pull in the queue helpers, which open BullMQ connections; stub them so the run exits.
 const testRequire = createRequire(__filename)
 const noop = () => Promise.resolve()
-const queueStubs = { dispatchComputeStats: noop, dispatchComputeAccountStats: noop, dispatchComputeMetadata: noop }
+const accountStatsDispatched: string[] = []
+const queueStubs = {
+    dispatchComputeStats: noop,
+    dispatchComputeAccountStats: (id: string) => {
+        accountStatsDispatched.push(id)
+        return Promise.resolve()
+    },
+    dispatchComputeMetadata: noop,
+}
 const stubbed: [string, NodeJS.Module | undefined][] = []
 for (const [path, exports] of [
     ['~/queue', { QueueUtils: queueStubs }],
@@ -323,6 +331,7 @@ void test('AssetConversion swaps refresh affected token accounts and supply from
         }),
         event('MultiTokens.Transferred', {}),
     ])
+    accountStatsDispatched.length = 0
     await acProcessors.refreshAssetConversionBalances(ctx, block, targets)
 
     const balance = (account: string, tokenId: bigint) =>
@@ -333,4 +342,5 @@ void test('AssetConversion swaps refresh affected token accounts and supply from
     assert.equal(balance(pool, 1n), 1010n)
     assert.equal(balance(pool, 2n), 991n)
     assert.equal(token.supply, 5n)
+    assert.deepEqual([...new Set(accountStatsDispatched)].sort(), [pool, sendTo, who].sort())
 })

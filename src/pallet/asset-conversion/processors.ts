@@ -85,6 +85,7 @@ export async function refreshAssetConversionBalances(
     targets: AssetConversionTargets
 ): Promise<void> {
     const collections = new Set<string>()
+    const accounts = new Set<string>()
     const updatedAt = new Date(block.timestamp ?? 0)
 
     for (const key of targets.tokenAccounts) {
@@ -107,6 +108,7 @@ export async function refreshAssetConversionBalances(
         tokenAccount.updatedAt = updatedAt
         await ctx.store.save(tokenAccount)
         collections.add(key.collectionId.toString())
+        accounts.add(key.accountId)
     }
 
     for (const asset of targets.tokens) {
@@ -126,5 +128,10 @@ export async function refreshAssetConversionBalances(
 
     for (const collectionId of collections) {
         await QueueUtils.dispatchComputeStats(collectionId)
+    }
+
+    // swaps between existing token accounts emit no account events, so recompute the stats of the accounts refreshed
+    for (const accountId of accounts) {
+        await QueueUtils.dispatchComputeAccountStats(accountId)
     }
 }
