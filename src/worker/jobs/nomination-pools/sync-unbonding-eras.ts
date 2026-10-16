@@ -33,16 +33,23 @@ export async function syncUnbondingEras(job: Job): Promise<void> {
         relations: { pool: true, account: true },
     })
 
+    // Read every batch at one block so the unbonding points and the sub-pools they are priced against agree.
+    const apiAt = await api.at(await api.rpc.chain.getFinalizedHead())
     const toSave: PoolMember[] = []
 
     for (let i = 0; i < members.length; i += BATCH_SIZE) {
         const batch = members.slice(i, i + BATCH_SIZE)
-        const storage = await api.query.nominationPools.unbondingMembers.multi(
-            batch.map((member) => [Number.parseInt(member.pool.id, 10), member.account.address])
-        )
+        const poolIds = [...new Set(batch.map((member) => Number.parseInt(member.pool.id, 10)))]
+        const [storage, subPools] = await Promise.all([
+            apiAt.query.nominationPools.unbondingMembers.multi(
+                batch.map((member) => [Number.parseInt(member.pool.id, 10), member.account.address])
+            ),
+            apiAt.query.nominationPools.subPoolsStorage.multi(poolIds),
+        ])
+        const subPoolsById = new Map(poolIds.map((poolId, j) => [poolId, subPools[j]]))
 
         batch.forEach((member, j) => {
-            const eras = unbondingErasFromChain(storage[j])
+            const eras = unbondingErasFromChain(storage[j], subPoolsById.get(Number.parseInt(member.pool.id, 10)))
             if (!sameEras(member.unbondingEras, eras)) {
                 member.unbondingEras = eras
                 toSave.push(member)

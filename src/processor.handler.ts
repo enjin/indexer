@@ -266,6 +266,18 @@ export async function eventHandler(
             .with(nominationPools.stateChanged.name, () => p.nominationPools.processors.stateChanged(ctx, block, item))
             .with(nominationPools.unbonded.name, () => p.nominationPools.processors.unbonded(ctx, block, item))
             .with(nominationPools.withdrawn.name, () => p.nominationPools.processors.withdrawn(ctx, block, item))
+            .with(nominationPools.unbondingPoolSlashed.name, () =>
+                p.nominationPools.processors.unbondingPoolSlashed(ctx, block, item)
+            )
+            .with(nominationPools.commissionUpdated.name, () =>
+                p.nominationPools.processors.commissionUpdated(ctx, block, item)
+            )
+            .with(nominationPools.rewardPayoutFailed.name, () =>
+                p.nominationPools.processors.rewardPayoutFailed(ctx, block, item)
+            )
+            .with(nominationPools.unbondingMemberRemoved.name, () =>
+                p.nominationPools.processors.unbondingMemberRemoved(ctx, block, item)
+            )
             .with(nominationPools.earlyBirdBonusPaymentUnlocked.name, () =>
                 p.nominationPools.processors.earlyBirdBonusPaymentUnlocked(ctx, block, item)
             )

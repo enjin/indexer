@@ -1662,7 +1662,36 @@ type NominationPoolsRewardPaid {
 
 type NominationPoolsPoolSlashed {
   pool: NominationPool!
-  balance: BigInt!
+  balance: BigInt! # active balance left after the slash, as emitted by the chain
+  amount: BigInt # active balance removed by the slash
+  poolId: String!
+}
+
+type NominationPoolsUnbondingPoolSlashed {
+  pool: NominationPool!
+  era: Int!
+  balance: BigInt! # balance left in the era's unbonding pool after the slash
+  poolId: String!
+}
+
+type NominationPoolsCommissionUpdated {
+  pool: NominationPool!
+  current: Float
+  poolId: String!
+}
+
+type NominationPoolsRewardPayoutFailed {
+  pool: NominationPool!
+  era: Int!
+  validatorStash: Account!
+  reward: BigInt!
+  error: String
+  poolId: String!
+}
+
+type NominationPoolsUnbondingMemberRemoved {
+  pool: NominationPool!
+  account: Account!
   poolId: String!
 }
 
@@ -1734,7 +1763,8 @@ type BonusCycle {
 }
 
 type PoolSlash {
-  amount: BigInt!
+  amount: BigInt! # active balance removed by the slash
+  balance: BigInt # active balance left after the slash
   appliedAt: DateTime!
   appliedBlock: Int!
 }
@@ -1988,5 +2018,7 @@ union EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiToken
   | NominationPoolsEarlyBirdSharesCaptured | NominationPoolsEarlyBirdBonusPaid | ImOnlineSomeOffline | ValidatorPrefsSet
   | NominationPoolsWithdrawn | NominationPoolsEraRewardsProcessed | NominationPoolsRewardPaid | NominationPoolsPoolSlashed
   | NominationPoolsNominated | NominationPoolsCreated | NominationPoolsDestroyed | NominationPoolsPoolMutated
+  | NominationPoolsUnbondingPoolSlashed | NominationPoolsCommissionUpdated | NominationPoolsRewardPayoutFailed
+  | NominationPoolsUnbondingMemberRemoved
   | StakeExchangeOfferCreated | StakeExchangeOfferCancelled | StakeExchangeLiquidityWithdrawn
   | StakeExchangeLiquidityConfigUpdated | StakeExchangeLiquidityAdded | StakeExchangeBuyOrderCompleted | StakeExchangeOfferCompleted
