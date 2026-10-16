@@ -1,5 +1,5 @@
 import { throwFatalError } from '~/util/errors'
-import { Token, TokenAccount } from '~/model'
+import { CollectionAccount, Token, TokenAccount } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
 import { SnsEvent } from '~/util/sns'
@@ -7,6 +7,38 @@ import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
 import { EventHandlerResult } from '~/processor.handler'
 import Big from 'big.js'
+import { isOperator } from '~/pallet/multi-tokens/processors/approved'
+
+/**
+ * An operator transfer spends the operator's token allowance on the source account (the chain's
+ * `DefaultTokenAccountMutation`): the approval is lowered by the amount and removed once it reaches zero. A live
+ * collection approval for the operator takes precedence and leaves the token approvals untouched. No event announces
+ * this.
+ */
+export async function spendOperatorAllowance(
+    ctx: CommonContext,
+    tokenAccount: TokenAccount,
+    data: { collectionId: bigint; operator: string; from: string; amount: bigint },
+    height: number
+): Promise<void> {
+    if (data.operator === data.from) return
+
+    const approval = tokenAccount.approvals?.find((a) => isOperator(a.accountId, data.operator))
+    if (!approval) return
+
+    const collectionAccount = await ctx.store.findOne<CollectionAccount>(CollectionAccount, {
+        where: { id: `${data.collectionId}-${data.from}` },
+    })
+    const collectionApproved = collectionAccount?.approvals?.some(
+        (a) => isOperator(a.accountId, data.operator) && (a.expiration == null || a.expiration > height)
+    )
+    if (collectionApproved) return
+
+    approval.amount -= data.amount
+    if (approval.amount <= 0n) {
+        tokenAccount.approvals = tokenAccount.approvals?.filter((a) => a !== approval) ?? null
+    }
+}
 
 export async function transferred(
     ctx: CommonContext,
@@ -48,6 +80,7 @@ export async function transferred(
     if (fromTokenAccount) {
         fromTokenAccount.balance -= data.amount
         fromTokenAccount.totalBalance -= data.amount
+        await spendOperatorAllowance(ctx, fromTokenAccount, { ...data, from: from.id }, block.height)
         fromTokenAccount.updatedAt = new Date(block.timestamp ?? 0)
         await ctx.store.save(fromTokenAccount)
     } else {
