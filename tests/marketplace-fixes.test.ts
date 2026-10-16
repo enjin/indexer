@@ -4,6 +4,7 @@ import test, { after } from 'node:test'
 import { FindOperator } from 'typeorm'
 import type { Block, CommonContext, EventItem } from '~/contexts'
 import { getRuntimeCached } from '~/decoder/metadata'
+import type { Network } from '~/decoder/types'
 import {
     Account,
     AuctionData,
@@ -24,7 +25,6 @@ import {
     Token,
     WhitelistedAccount,
 } from '~/model'
-import { hasLapsed, markExpired } from '~/worker/jobs/listings/compute-listings'
 import { accruedWhitelistUsage } from '~/pallet/marketplace/utils/whitelist'
 
 // The processors pull in the queue helpers, which open BullMQ connections; stub them so the run exits.
@@ -49,6 +49,10 @@ for (const [path, exports] of [
 }
 
 const marketplace = testRequire('~/pallet/marketplace/processors') as typeof import('~/pallet/marketplace/processors')
+const { expireLapsedListings, hasLapsed, markExpired } = testRequire(
+    '~/worker/jobs/listings/compute-listings'
+) as typeof import('~/worker/jobs/listings/compute-listings')
+const { getBestListing } = testRequire('~/util/entities') as typeof import('~/util/entities')
 
 after(() => {
     for (const [path, original] of stubbed) testRequire.cache[path] = original
@@ -111,8 +115,8 @@ const listingId = listingHex.slice(2)
 
 let blockCounter = 0
 
-async function fixture(rows: Row[] = [], height = 500) {
-    const runtime = await getRuntimeCached('enjin-relaychain', 1080)
+async function fixture(rows: Row[] = [], height = 500, network: Network = 'enjin-relaychain', specVersion = 1080) {
+    const runtime = await getRuntimeCached(network, specVersion)
     blockCounter += 1
     const block = { _runtime: runtime, height, hash: `0x${blockCounter}`, timestamp: 0 } as unknown as Block
     const store = new MemoryStore(rows)
@@ -223,6 +227,59 @@ void test('M1: expiry only flags the state and never touches status, activity or
     assert.equal(markExpired(listingRow()), false, 'fixed-price listings never expire')
 })
 
+void test('M1: expiring an auction refreshes its token best listing; expiring an offer does not', () => {
+    const auction = listingRow({
+        id: 'auction',
+        type: ListingType.Auction,
+        data: new AuctionData({ listingType: ListingType.Auction, endHeight: 450 }),
+        state: new AuctionState({ listingType: ListingType.Auction, isExpired: false }),
+    })
+    const offer = listingRow({
+        id: 'offer',
+        type: ListingType.Offer,
+        makeAssetId: new Token({ id: '0-0' }),
+        data: new OfferData({ listingType: ListingType.Offer, expiration: 450 }),
+        state: new OfferState({
+            listingType: ListingType.Offer,
+            amountFilled: 0n,
+            amountRemaining: 10n,
+            counterOfferCount: 0,
+            isExpired: false,
+        }),
+    })
+    const live = listingRow({
+        id: 'live',
+        type: ListingType.Auction,
+        data: new AuctionData({ listingType: ListingType.Auction, endHeight: 600 }),
+        state: new AuctionState({ listingType: ListingType.Auction, isExpired: false }),
+    })
+
+    const { expired, bestListingTokenIds } = expireLapsedListings([auction, offer, live], 500)
+    assert.deepEqual(
+        expired.map((listing) => listing.id),
+        ['auction', 'offer']
+    )
+    assert.deepEqual([...bestListingTokenIds], ['5-1'])
+})
+
+void test('M1: best listing lookups skip listings flagged expired', async () => {
+    let captured: Record<string, unknown> | undefined
+    const ctx = {
+        store: {
+            findOne: (_entity: unknown, options: { where: Record<string, unknown> }) => {
+                captured = options.where
+                return Promise.resolve(undefined)
+            },
+        },
+    } as unknown as CommonContext
+
+    await getBestListing(ctx, '5-1')
+    const state = captured?.state as FindOperator<unknown>
+    assert.ok(state instanceof FindOperator)
+    assert.equal(state.type, 'raw')
+    assert.equal(state.getSql?.('"state"'), `COALESCE(("state"->>'isExpired')::boolean, false) = false`)
+})
+
 void test('M3: PendingActivation listings are promoted once the processed height reaches their start block', async () => {
     const due = listingRow({ id: 'due', bookState: MarketplaceListingBookState.PendingActivation, startBlock: 500 })
     const later = listingRow({ id: 'later', bookState: MarketplaceListingBookState.PendingActivation, startBlock: 501 })
@@ -234,6 +291,14 @@ void test('M3: PendingActivation listings are promoted once the processed height
     assert.equal(state('due'), MarketplaceListingBookState.Indexed)
     assert.equal(state('later'), MarketplaceListingBookState.PendingActivation)
     assert.equal(state('removed'), MarketplaceListingBookState.Removed)
+})
+
+void test('M3: legacy PendingActivations runtimes are not promoted by height alone', async () => {
+    const due = listingRow({ id: 'due', bookState: MarketplaceListingBookState.PendingActivation, startBlock: 500 })
+    const { store, ctx, block } = await fixture([due], 500, 'canary-matrixchain', 1040)
+
+    assert.equal(await marketplace.promoteActivatedListings(ctx, block), 0)
+    assert.equal(store.of(Listing)[0].bookState, MarketplaceListingBookState.PendingActivation)
 })
 
 void test('M3: listings created on enjin relay 1080 participate in the book', async () => {

@@ -3,6 +3,8 @@ import { AuctionState, Listing, ListingType } from '~/model'
 import { Brackets } from 'typeorm'
 import { Job } from 'bullmq'
 import { rebuildOfferState } from '~/pallet/marketplace/utils/listing-state'
+import { QueueUtils } from '~/queue'
+import { notExpiredListingSql } from '~/util/listing-availability'
 
 /**
  * Whether an active listing is past the block it can be traded in: an auction stops taking bids at its end block
@@ -43,10 +45,33 @@ export function markExpired(listing: Listing): boolean {
     return false
 }
 
+/**
+ * Flags every lapsed listing in `listings` as expired and returns the expired listings plus the tokens whose cached
+ * best listing may have pointed at one of them. Only auctions sell the token they make, so offers (which make the
+ * currency) never feed a token's best listing.
+ */
+export function expireLapsedListings(
+    listings: Listing[],
+    height: number
+): { expired: Listing[]; bestListingTokenIds: Set<string> } {
+    const expired: Listing[] = []
+    const bestListingTokenIds = new Set<string>()
+    for (const listing of listings) {
+        if (!hasLapsed(listing, height) || !markExpired(listing)) continue
+        expired.push(listing)
+        if (listing.type === ListingType.Auction && listing.makeAssetId?.id) {
+            bestListingTokenIds.add(listing.makeAssetId.id)
+        }
+    }
+    return { expired, bestListingTokenIds }
+}
+
 export async function computeListings(_job: Job) {
     const con = await connectionManager()
 
     await _job.updateProgress(10)
+
+    let bestListingTokenIds = new Set<string>()
 
     await con.transaction('READ COMMITTED', async (em) => {
         const status: { height: number }[] = await em.query(`SELECT height FROM squid_processor.status WHERE id = 0`)
@@ -64,6 +89,8 @@ export async function computeListings(_job: Job) {
         const candidates = await em
             .getRepository(Listing)
             .createQueryBuilder('listing')
+            .leftJoin('listing.makeAssetId', 'makeAsset')
+            .addSelect('makeAsset.id')
             .where('listing.isActive = true')
             .andWhere(
                 new Brackets((qb) => {
@@ -76,24 +103,25 @@ export async function computeListings(_job: Job) {
                     })
                 })
             )
-            .andWhere("COALESCE((listing.state->>'isExpired')::boolean, false) = false")
+            .andWhere(notExpiredListingSql('listing.state'))
             .getMany()
 
         await _job.updateProgress(60)
 
         const now = new Date()
-        let processed = 0
-
-        for (const listing of candidates) {
-            if (!hasLapsed(listing, height) || !markExpired(listing)) continue
+        const result = expireLapsedListings(candidates, height)
+        for (const listing of result.expired) {
             listing.updatedAt = now
             await em.save(listing)
-            processed++
         }
+        bestListingTokenIds = result.bestListingTokenIds
 
-        await _job.log(`Marked ${processed} listings as expired (height: ${height})`)
+        await _job.log(`Marked ${result.expired.length} listings as expired (height: ${height})`)
         await _job.updateProgress(90)
     })
+
+    // Expired listings no longer qualify as a token's best listing, so recompute the cached price once committed.
+    await Promise.all(Array.from(bestListingTokenIds, (id) => QueueUtils.dispatchComputeTokenBestListing(id)))
 
     await _job.updateProgress(100)
 }
