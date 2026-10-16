@@ -20,12 +20,20 @@ export async function whitelistedAccountsAdded(
     const newWhitelistedAccounts = await Promise.all(
         event.accounts.map(async (account) => {
             const accountEntity = await getOrCreateAccount(ctx, account.accountId)
+            const id = `${listingId}-${accountEntity.id}`
+            const existing = await ctx.store.findOneBy<WhitelistedAccount>(WhitelistedAccount, { id })
+            // Re-adding an account only replaces its allowance on chain; the usage accrued so far is kept.
+            if (existing) {
+                existing.allowance = account.allowance ?? 0n
+                existing.updatedAt = new Date(block.timestamp ?? 0)
+                return existing
+            }
             return new WhitelistedAccount({
-                id: `${listingId}-${accountEntity.id}`,
+                id,
                 listing,
                 account: accountEntity,
-                allowance: Number(account.allowance ?? 0n),
-                amountUsed: 0,
+                allowance: account.allowance ?? 0n,
+                amountUsed: 0n,
                 deposit: 0n,
                 createdAt: new Date(block.timestamp ?? 0),
                 updatedAt: new Date(block.timestamp ?? 0),

@@ -1,15 +1,47 @@
 import { connectionManager } from '~/contexts'
-import {
-    AuctionState,
-    Listing,
-    ListingStatus,
-    ListingStatusType,
-    ListingType,
-    MarketplaceListingBookState,
-} from '~/model'
+import { AuctionState, Listing, ListingType } from '~/model'
 import { Brackets } from 'typeorm'
 import { Job } from 'bullmq'
 import { rebuildOfferState } from '~/pallet/marketplace/utils/listing-state'
+
+/**
+ * Whether an active listing is past the block it can be traded in: an auction stops taking bids at its end block
+ * and an offer stops being fillable at its expiration block (both half-open on chain).
+ */
+export function hasLapsed(listing: Pick<Listing, 'data'>, height: number): boolean {
+    if (listing.data.isTypeOf === 'AuctionData') {
+        return listing.data.endHeight > 0 && listing.data.endHeight <= height
+    }
+    if (listing.data.isTypeOf === 'OfferData') {
+        return listing.data.expiration != null && listing.data.expiration <= height
+    }
+    return false
+}
+
+/**
+ * Flags lapsed listings as expired and nothing else. Removing them is the chain's job: the on_idle sweep settles due
+ * auctions and offers and emits AuctionFinalized, ExpiredListingRemoved or ListingCancelled, whose processors write
+ * the terminal status, deactivate the listing and take it off the book. Writing a Cancelled status here would
+ * misreport auctions that are about to be finalized with a winner, and could overwrite the status those events write
+ * under the same `${listingId}-${height}` id.
+ */
+export function markExpired(listing: Listing): boolean {
+    if (listing.state.isTypeOf === 'AuctionState') {
+        if (listing.state.isExpired === true) return false
+        listing.state = new AuctionState({
+            listingType: ListingType.Auction,
+            highBid: listing.state.highBid,
+            isExpired: true,
+        })
+        return true
+    }
+    if (listing.state.isTypeOf === 'OfferState') {
+        if (listing.state.isExpired === true) return false
+        listing.state = rebuildOfferState(listing.amount, listing.state, { isExpired: true })
+        return true
+    }
+    return false
+}
 
 export async function computeListings(_job: Job) {
     const con = await connectionManager()
@@ -28,102 +60,38 @@ export async function computeListings(_job: Job) {
 
         const { height } = status[0]
 
-        // Listings that already have a Cancelled status – we skip them
-        const cancelledStatuses = await em.getRepository(ListingStatus).find({
-            where: { type: ListingStatusType.Cancelled },
-            relations: { listing: true },
-        })
-        const cancelledListingIds = [...new Set(cancelledStatuses.map((s) => s.listing.id))]
-
-        await _job.updateProgress(40)
-
-        const qb = em
+        // Only listings still live on chain: finalized, filled, cancelled and removed ones are inactive.
+        const candidates = await em
             .getRepository(Listing)
             .createQueryBuilder('listing')
-            .where('listing.type IN (:...types)', { types: [ListingType.Auction, ListingType.Offer] })
+            .where('listing.isActive = true')
             .andWhere(
                 new Brackets((qb) => {
                     qb.where(
-                        "listing.type = :auctionType AND (listing.data->>'endHeight')::int < :height AND (listing.data->>'endHeight')::int > 0",
-                        {
-                            auctionType: ListingType.Auction,
-                            height,
-                        }
+                        "listing.type = :auctionType AND (listing.data->>'endHeight')::int <= :height AND (listing.data->>'endHeight')::int > 0",
+                        { auctionType: ListingType.Auction, height }
                     ).orWhere("listing.type = :offerType AND (listing.data->>'expiration')::int <= :height", {
                         offerType: ListingType.Offer,
                         height,
                     })
                 })
             )
-
-        if (cancelledListingIds.length > 0) {
-            qb.andWhere('listing.id NOT IN (:...cancelledIds)', { cancelledIds: cancelledListingIds })
-        }
-
-        const expiredListings = await qb.getMany()
+            .andWhere("COALESCE((listing.state->>'isExpired')::boolean, false) = false")
+            .getMany()
 
         await _job.updateProgress(60)
 
         const now = new Date()
         let processed = 0
 
-        for (const listing of expiredListings) {
-            if (listing.data.isTypeOf === 'AuctionData') {
-                const auctionData = listing.data
-                if (
-                    auctionData.endHeight < height &&
-                    auctionData.endHeight > 0 &&
-                    listing.state.isTypeOf === 'AuctionState' &&
-                    (listing.state.isExpired === false || listing.state.isExpired === undefined)
-                ) {
-                    const highBid = listing.state.highBid
-                    listing.state = new AuctionState({
-                        listingType: ListingType.Auction,
-                        highBid,
-                        isExpired: true,
-                    })
-                    const listingStatus = new ListingStatus({
-                        id: `${listing.id}-${height}`,
-                        type: ListingStatusType.Cancelled,
-                        listing,
-                        height,
-                        createdAt: now,
-                    })
-                    listing.isActive = false
-                    listing.bookState = MarketplaceListingBookState.Removed
-                    listing.updatedAt = now
-                    await em.save(listingStatus)
-                    await em.save(listing)
-                    processed++
-                }
-            }
-
-            if (listing.data.isTypeOf === 'OfferData') {
-                const offerData = listing.data
-                if (
-                    listing.state.isTypeOf === 'OfferState' &&
-                    ((offerData.expiration != null && offerData.expiration <= height) ||
-                        listing.state.isExpired === true)
-                ) {
-                    listing.state = rebuildOfferState(listing.amount, listing.state, { isExpired: true })
-                    const listingStatus = new ListingStatus({
-                        id: `${listing.id}-${height}`,
-                        type: ListingStatusType.Cancelled,
-                        listing,
-                        height,
-                        createdAt: now,
-                    })
-                    listing.isActive = false
-                    listing.bookState = MarketplaceListingBookState.Removed
-                    listing.updatedAt = now
-                    await em.save(listingStatus)
-                    await em.save(listing)
-                    processed++
-                }
-            }
+        for (const listing of candidates) {
+            if (!hasLapsed(listing, height) || !markExpired(listing)) continue
+            listing.updatedAt = now
+            await em.save(listing)
+            processed++
         }
 
-        await _job.log(`Expired ${processed} listings (height: ${height})`)
+        await _job.log(`Marked ${processed} listings as expired (height: ${height})`)
         await _job.updateProgress(90)
     })
 

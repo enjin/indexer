@@ -1,0 +1,64 @@
+import assert from "assert"
+import * as marshal from "./marshal"
+import {Listing} from "./listing.model"
+
+export class MarketplaceAbandonedListingReleased {
+    public readonly isTypeOf = 'MarketplaceAbandonedListingReleased'
+    private _listingId!: string
+    private _listing!: string | undefined | null
+    private _returnedBidder!: string | undefined | null
+    private _returnedBidPrice!: bigint | undefined | null
+
+    constructor(props?: Partial<Omit<MarketplaceAbandonedListingReleased, 'toJSON'>>, json?: any) {
+        Object.assign(this, props)
+        if (json != null) {
+            this._listingId = marshal.string.fromJSON(json.listingId)
+            this._listing = json.listing == null ? undefined : marshal.string.fromJSON(json.listing)
+            this._returnedBidder = json.returnedBidder == null ? undefined : marshal.string.fromJSON(json.returnedBidder)
+            this._returnedBidPrice = json.returnedBidPrice == null ? undefined : marshal.bigint.fromJSON(json.returnedBidPrice)
+        }
+    }
+
+    get listingId(): string {
+        assert(this._listingId != null, 'uninitialized access')
+        return this._listingId
+    }
+
+    set listingId(value: string) {
+        this._listingId = value
+    }
+
+    get listing(): string | undefined | null {
+        return this._listing
+    }
+
+    set listing(value: string | undefined | null) {
+        this._listing = value
+    }
+
+    get returnedBidder(): string | undefined | null {
+        return this._returnedBidder
+    }
+
+    set returnedBidder(value: string | undefined | null) {
+        this._returnedBidder = value
+    }
+
+    get returnedBidPrice(): bigint | undefined | null {
+        return this._returnedBidPrice
+    }
+
+    set returnedBidPrice(value: bigint | undefined | null) {
+        this._returnedBidPrice = value
+    }
+
+    toJSON(): object {
+        return {
+            isTypeOf: this.isTypeOf,
+            listingId: this.listingId,
+            listing: this.listing,
+            returnedBidder: this.returnedBidder,
+            returnedBidPrice: this.returnedBidPrice == null ? undefined : marshal.bigint.toJSON(this.returnedBidPrice),
+        }
+    }
+}

@@ -170,6 +170,9 @@ async function bootstrap() {
 
                 const lastBlock = ctx.blocks[ctx.blocks.length - 1].header
 
+                // Book state only: promotion has no event, so it is resolved once per batch at its last height.
+                await p.marketplace.processors.promoteActivatedListings(ctx, lastBlock)
+
                 if (lastBlock.height === dataService.lastBlockNumber) {
                     QueueUtils.dispatchComputeCollections()
                     QueueUtils.dispatchFetchAllBalances()
