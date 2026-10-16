@@ -157,6 +157,27 @@ export async function eventHandler(
             .with(multiTokens.tokenGroupsUpdated.name, () =>
                 p.multiTokens.processors.tokenGroupUpdated(ctx, block, item, skipSave)
             )
+            .with(multiTokens.slashed.name, () => p.multiTokens.processors.slashed(ctx, block, item, skipSave))
+            .with(multiTokens.reserveRepatriated.name, () =>
+                p.multiTokens.processors.reserveRepatriated(ctx, block, item, skipSave)
+            )
+            .with(multiTokens.locked.name, () => p.multiTokens.processors.locked(ctx, block, item, skipSave))
+            .with(multiTokens.unlocked.name, () => p.multiTokens.processors.unlocked(ctx, block, item, skipSave))
+            .with(multiTokens.tokenAccountDepositUpdated.name, () =>
+                p.multiTokens.processors.tokenAccountDepositUpdated(ctx, block, item, skipSave)
+            )
+            .with(multiTokens.tokenAccountUpdated.name, () =>
+                p.multiTokens.processors.tokenAccountUpdated(ctx, block, item, skipSave)
+            )
+            .with(multiTokens.collectionAccountUpdated.name, () =>
+                p.multiTokens.processors.collectionAccountUpdated(ctx, block, item, skipSave)
+            )
+            .with(multiTokens.collectionUpdated.name, () =>
+                p.multiTokens.processors.collectionUpdated(ctx, block, item, skipSave)
+            )
+            .with(multiTokens.tokenUpdated.name, () =>
+                p.multiTokens.processors.tokenUpdated(ctx, block, item, skipSave)
+            )
             .with(balances.transfer.name, () => {
                 p.balances.processors.save(item)
                 return p.balances.processors.transfer(item)
