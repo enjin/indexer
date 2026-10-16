@@ -3,6 +3,7 @@ import { BigInteger } from '@subsquid/graphql-server'
 import { Listing, Token, TokenAccount, Account } from '~/model'
 import 'reflect-metadata'
 import { EntityManager } from 'typeorm'
+import { notExpiredListingSql } from '~/util/listing-availability'
 
 enum ListingType {
     FixedPrice = 'FixedPrice',
@@ -210,6 +211,7 @@ export class TokenListingsResolver {
             .leftJoinAndMapOne('listing.seller', Account, 'account', 'account.id = listing.seller_id')
             .where('listing.make_asset_id_id = :assetId', { assetId })
             .andWhere('listing.is_active = true')
+            .andWhere(notExpiredListingSql('listing.state'))
             .andWhere('listing.type != :type', { type: ListingType.Offer })
             .andWhere('token_account.is_frozen = false')
 
