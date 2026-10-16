@@ -3,7 +3,13 @@ import { UnsupportedStorageError } from '~/util/errors'
 import { multiTokens } from '~/type/storage'
 import { match } from 'ts-pattern'
 import { Token } from '~/pallet/multi-tokens/storage/types'
-import { getMixedToken, getMixedTokenPairs, normalizeToken, normalizeTokenPairs } from './token-values'
+import { getMixedToken, getMixedTokenPairs, normalizeToken, normalizeTokenPairs, tokenLayout } from './token-values'
+
+// Storage v7 has no generated type yet; its keys are unchanged, so they are paged straight from the runtime metadata.
+const rawTokenKeys = {
+    getKeysPaged: (pageSize: number, block: Block): AsyncIterable<[bigint, bigint][]> =>
+        block._runtime.getStorageKeysPaged(pageSize, block.hash, 'MultiTokens.Tokens'),
+}
 
 export async function tokens(
     block: Block,
@@ -119,6 +125,16 @@ export async function tokens(
         .when(
             () => multiTokens.tokens.v100.is(block),
             () => getTokens(multiTokens.tokens.v100)
+        )
+        .when(
+            () => block._runtime.hasStorageItem('MultiTokens.Tokens') && tokenLayout(block._runtime) === 'v7',
+            () => {
+                if (params?.collectionId !== undefined && params.tokenId !== undefined) {
+                    return getMixedToken(block, [params.collectionId, params.tokenId])
+                }
+
+                return Promise.resolve(getMixedTokenPairs(block, rawTokenKeys, params?.batchSize ?? 1000))
+            }
         )
         .otherwise(() => {
             throw new UnsupportedStorageError(tokens.name)

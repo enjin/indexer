@@ -9,8 +9,18 @@ type TokenStorage<K extends unknown[]> = {
     getKeysPaged(pageSize: number, block: Block): AsyncIterable<K[]>
 }
 
-const legacyCodecs = new WeakMap<Runtime, { codec: Codec; type: number }>()
+const legacyCodecs = new WeakMap<Runtime, LegacyCodec[]>()
 const V6_TOKEN_FIELDS = ['ephemeralExpiration', 'isLendable', 'lending', 'mintRateLimit']
+// Storage v7 (enjin/pallets master, matrixchain Unreleased) appends `creation_block` after `mint_rate_limit`.
+const V7_TOKEN_FIELDS = [...V6_TOKEN_FIELDS, 'creationBlock']
+
+type LegacyCodec = { codec: Codec; type: number }
+
+/**
+ * The trailing token fields of a runtime's `MultiTokens.Tokens` value. Storage v6 and v7 both migrate lazily, so a
+ * runtime with the v7 layout still holds v6 and pre-v6 encodings until each token is rewritten.
+ */
+export type TokenLayout = 'v6' | 'v7'
 
 function storageValueType(runtime: Runtime): number {
     const item = runtime.description.storage.MultiTokens.items.Tokens
@@ -27,30 +37,57 @@ function tokenFields(runtime: Runtime): string[] {
     })
 }
 
-export function hasV6TokenLayout(runtime: Runtime): boolean {
-    return tokenFields(runtime)
-        .slice(-V6_TOKEN_FIELDS.length)
-        .every((field, index) => field === V6_TOKEN_FIELDS[index])
+function endsWith(fields: string[], suffix: string[]): boolean {
+    return fields.length >= suffix.length && fields.slice(-suffix.length).every((field, i) => field === suffix[i])
 }
 
-function legacyTokenCodec(runtime: Runtime): { codec: Codec; type: number } {
-    const cached = legacyCodecs.get(runtime)
-    if (cached) return cached
+export function tokenLayout(runtime: Runtime): TokenLayout | undefined {
+    const fields = tokenFields(runtime)
+    if (endsWith(fields, V7_TOKEN_FIELDS)) return 'v7'
+    if (endsWith(fields, V6_TOKEN_FIELDS)) return 'v6'
+    return undefined
+}
 
-    const type = storageValueType(runtime)
+/**
+ * Whether the runtime's token carries the v6 fields (`isLendable`, `lending`, `mintRateLimit`), in the v6 layout or
+ * in the v7 layout that appends `creationBlock` after them.
+ */
+export function hasV6TokenLayout(runtime: Runtime): boolean {
+    return tokenLayout(runtime) !== undefined
+}
+
+function truncatedTokenCodec(runtime: Runtime, type: number, dropped: number): LegacyCodec {
     const definition = runtime.description.types[type]
     assert(definition.kind === TypeKind.Composite, 'MultiTokens.Tokens is not a token composite')
-    assert(hasV6TokenLayout(runtime), 'MultiTokens.Tokens does not have the expected v6 trailing fields')
 
     const types = runtime.description.types.slice() as Type[]
     types[type] = {
         ...definition,
-        fields: definition.fields.slice(0, -V6_TOKEN_FIELDS.length),
+        fields: definition.fields.slice(0, -dropped),
     }
 
-    const codec = { codec: new Codec(types), type }
-    legacyCodecs.set(runtime, codec)
-    return codec
+    return { codec: new Codec(types), type }
+}
+
+/** Older encodings a lazily migrating runtime may still hold, newest first. */
+function legacyTokenCodecs(runtime: Runtime): LegacyCodec[] {
+    const cached = legacyCodecs.get(runtime)
+    if (cached) return cached
+
+    const layout = tokenLayout(runtime)
+    assert(layout, 'MultiTokens.Tokens does not have the expected v6 or v7 trailing fields')
+
+    const type = storageValueType(runtime)
+    const codecs =
+        layout === 'v7'
+            ? [
+                  truncatedTokenCodec(runtime, type, V7_TOKEN_FIELDS.length - V6_TOKEN_FIELDS.length),
+                  truncatedTokenCodec(runtime, type, V7_TOKEN_FIELDS.length),
+              ]
+            : [truncatedTokenCodec(runtime, type, V6_TOKEN_FIELDS.length)]
+
+    legacyCodecs.set(runtime, codecs)
+    return codecs
 }
 
 function normalizedToken(value: unknown): Token {
@@ -65,11 +102,15 @@ function normalizedToken(value: unknown): Token {
         'Token storage value must contain a listing-forbidden flag'
     )
 
-    const raw = value as Omit<Token, 'ephemeralExpiration' | 'isLendable' | 'lending' | 'mintRateLimit'> & {
+    const raw = value as Omit<
+        Token,
+        'ephemeralExpiration' | 'isLendable' | 'lending' | 'mintRateLimit' | 'creationBlock'
+    > & {
         ephemeralExpiration?: number | bigint
         isLendable?: boolean
         lending?: { lender: string; expiration: number | bigint }
         mintRateLimit?: unknown
+        creationBlock?: number | bigint
     }
     assert(
         raw.ephemeralExpiration === undefined ||
@@ -85,6 +126,12 @@ function normalizedToken(value: unknown): Token {
                 (typeof raw.lending.expiration === 'number' || typeof raw.lending.expiration === 'bigint')),
         'Token lending state is invalid'
     )
+    assert(
+        raw.creationBlock === undefined ||
+            typeof raw.creationBlock === 'number' ||
+            typeof raw.creationBlock === 'bigint',
+        'Token creation block must be a block number'
+    )
 
     return {
         ...raw,
@@ -97,6 +144,7 @@ function normalizedToken(value: unknown): Token {
               }
             : undefined,
         mintRateLimit: normalizeOptionalMintRateLimitState(raw.mintRateLimit),
+        creationBlock: raw.creationBlock === undefined ? undefined : BigInt(raw.creationBlock),
     }
 }
 
@@ -114,16 +162,20 @@ export function decodeTokenStorageValue(runtime: Runtime, value: string): Token 
         throw error
     }
 
-    try {
-        const { codec, type } = legacyTokenCodec(runtime)
-        return normalizedToken(codec.decodeBinary(type, value))
-    } catch (legacyError) {
-        const error = new Error(
-            'Unable to decode MultiTokens.Tokens as either current or strict pre-v6 token storage'
-        ) as Error & { cause?: unknown }
-        error.cause = { currentError, legacyError }
-        throw error
+    const legacyErrors: unknown[] = []
+    for (const { codec, type } of legacyTokenCodecs(runtime)) {
+        try {
+            return normalizedToken(codec.decodeBinary(type, value))
+        } catch (legacyError) {
+            legacyErrors.push(legacyError)
+        }
     }
+
+    const error = new Error(
+        'Unable to decode MultiTokens.Tokens as either current or strict pre-v6 token storage'
+    ) as Error & { cause?: unknown }
+    error.cause = { currentError, legacyErrors }
+    throw error
 }
 
 async function queryRawValues(block: Block, keys: unknown[][]): Promise<(string | undefined)[]> {
