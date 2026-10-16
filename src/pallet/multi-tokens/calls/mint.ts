@@ -73,6 +73,30 @@ const decodeMint = withDispatchCheck((call: CallItem): Mint => {
             () => calls.multiTokens.mint.v100.is(call),
             () => calls.multiTokens.mint.v100.decode(call)
         )
+        .when(
+            () => calls.multiTokens.mint.matrixEnjinV1031.is(call),
+            () => calls.multiTokens.mint.matrixEnjinV1031.decode(call)
+        )
+        .when(
+            () => calls.multiTokens.mint.matrixEnjinV1041.is(call),
+            () => calls.multiTokens.mint.matrixEnjinV1041.decode(call) as unknown as Mint
+        )
+        .when(
+            () => calls.multiTokens.mint.enjinV1050.is(call),
+            () => calls.multiTokens.mint.enjinV1050.decode(call)
+        )
+        .when(
+            () => calls.multiTokens.mint.enjinV1062.is(call),
+            () => calls.multiTokens.mint.enjinV1062.decode(call)
+        )
+        .when(
+            () => calls.multiTokens.mint.enjinV1080.is(call),
+            () => calls.multiTokens.mint.enjinV1080.decode(call) as unknown as Mint
+        )
+        .when(
+            () => calls.multiTokens.mint.v1060.is(call),
+            () => calls.multiTokens.mint.v1060.decode(call)
+        )
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })

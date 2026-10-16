@@ -32,6 +32,14 @@ export function thawed(event: EventItem): Thaw {
             () => multiTokens.thawed.v1070.is(event),
             () => multiTokens.thawed.v1070.decode(event)
         )
+        .when(
+            () => multiTokens.thawed.enjinV100.is(event),
+            () => multiTokens.thawed.enjinV100.decode(event)
+        )
+        .when(
+            () => multiTokens.thawed.v100.is(event),
+            () => multiTokens.thawed.v100.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

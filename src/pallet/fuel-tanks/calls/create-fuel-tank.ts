@@ -228,6 +228,18 @@ export const createFuelTank = withDispatchCheck((call: CallItem): CreateFuelTank
             () => calls.fuelTanks.createFuelTank.v102.is(call),
             () => calls.fuelTanks.createFuelTank.v102.decode(call)
         )
+        .when(
+            () => calls.fuelTanks.createFuelTank.enjinV1050.is(call),
+            () => calls.fuelTanks.createFuelTank.enjinV1050.decode(call)
+        )
+        .when(
+            () => calls.fuelTanks.createFuelTank.enjinV1062.is(call),
+            () => calls.fuelTanks.createFuelTank.enjinV1062.decode(call)
+        )
+        .when(
+            () => calls.fuelTanks.createFuelTank.v1060.is(call),
+            () => calls.fuelTanks.createFuelTank.v1060.decode(call)
+        )
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })

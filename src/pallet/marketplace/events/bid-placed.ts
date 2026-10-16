@@ -29,6 +29,26 @@ export function bidPlaced(event: EventItem): BidPlaced {
             () => marketplace.bidPlaced.matrixEnjinV603.is(event),
             () => marketplace.bidPlaced.matrixEnjinV603.decode(event)
         )
+        .when(
+            () => marketplace.bidPlaced.matrixV500.is(event),
+            () => marketplace.bidPlaced.matrixV500.decode(event)
+        )
+        .when(
+            () => marketplace.bidPlaced.enjinV110.is(event),
+            () => marketplace.bidPlaced.enjinV110.decode(event)
+        )
+        .when(
+            () => marketplace.bidPlaced.enjinV1062.is(event),
+            () => marketplace.bidPlaced.enjinV1062.decode(event)
+        )
+        .when(
+            () => marketplace.bidPlaced.v110.is(event),
+            () => marketplace.bidPlaced.v110.decode(event)
+        )
+        .when(
+            () => marketplace.bidPlaced.v1060.is(event),
+            () => marketplace.bidPlaced.v1060.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

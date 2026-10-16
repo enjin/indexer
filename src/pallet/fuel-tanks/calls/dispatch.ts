@@ -231,6 +231,14 @@ export function dispatch(call: CallItem): Dispatch {
             () => calls.fuelTanks.dispatch.v102.is(call),
             () => calls.fuelTanks.dispatch.v102.decode(call)
         )
+        .when(
+            () => calls.fuelTanks.dispatch.enjinV1050.is(call),
+            () => calls.fuelTanks.dispatch.enjinV1050.decode(call)
+        )
+        .when(
+            () => calls.fuelTanks.dispatch.enjinV1062.is(call),
+            () => calls.fuelTanks.dispatch.enjinV1062.decode(call)
+        )
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })

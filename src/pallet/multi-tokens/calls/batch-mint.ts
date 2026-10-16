@@ -77,6 +77,26 @@ const decodeBatchMint = withDispatchCheck((call: CallItem): BatchMint => {
             () => calls.multiTokens.batchMint.v100.is(call),
             () => calls.multiTokens.batchMint.v100.decode(call)
         )
+        .when(
+            () => calls.multiTokens.batchMint.matrixEnjinV1041.is(call),
+            () => calls.multiTokens.batchMint.matrixEnjinV1041.decode(call) as unknown as BatchMint
+        )
+        .when(
+            () => calls.multiTokens.batchMint.enjinV1050.is(call),
+            () => calls.multiTokens.batchMint.enjinV1050.decode(call)
+        )
+        .when(
+            () => calls.multiTokens.batchMint.enjinV1062.is(call),
+            () => calls.multiTokens.batchMint.enjinV1062.decode(call)
+        )
+        .when(
+            () => calls.multiTokens.batchMint.enjinV1080.is(call),
+            () => calls.multiTokens.batchMint.enjinV1080.decode(call) as unknown as BatchMint
+        )
+        .when(
+            () => calls.multiTokens.batchMint.v1060.is(call),
+            () => calls.multiTokens.batchMint.v1060.decode(call)
+        )
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })

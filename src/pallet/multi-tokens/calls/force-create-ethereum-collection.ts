@@ -60,6 +60,42 @@ export const forceCreateEthereumCollection = withDispatchCheck((call: CallItem):
             () => calls.multiTokens.forceCreateEthereumCollection.v120.is(call),
             () => calls.multiTokens.forceCreateEthereumCollection.v120.decode(call)
         )
+        .when(
+            () => calls.multiTokens.forceCreateEthereumCollection.matrixEnjinV1031.is(call),
+            () => calls.multiTokens.forceCreateEthereumCollection.matrixEnjinV1031.decode(call)
+        )
+        .when(
+            () => calls.multiTokens.forceCreateEthereumCollection.matrixEnjinV1041.is(call),
+            () => calls.multiTokens.forceCreateEthereumCollection.matrixEnjinV1041.decode(call)
+        )
+        .when(
+            () => calls.multiTokens.forceCreateEthereumCollection.matrixV1030.is(call),
+            () => calls.multiTokens.forceCreateEthereumCollection.matrixV1030.decode(call)
+        )
+        .when(
+            () => calls.multiTokens.forceCreateEthereumCollection.matrixV1040.is(call),
+            () => calls.multiTokens.forceCreateEthereumCollection.matrixV1040.decode(call)
+        )
+        .when(
+            () => calls.multiTokens.forceCreateEthereumCollection.enjinV1050.is(call),
+            () => calls.multiTokens.forceCreateEthereumCollection.enjinV1050.decode(call)
+        )
+        .when(
+            () => calls.multiTokens.forceCreateEthereumCollection.enjinV1062.is(call),
+            () => calls.multiTokens.forceCreateEthereumCollection.enjinV1062.decode(call)
+        )
+        .when(
+            () => calls.multiTokens.forceCreateEthereumCollection.enjinV1080.is(call),
+            () => calls.multiTokens.forceCreateEthereumCollection.enjinV1080.decode(call)
+        )
+        .when(
+            () => calls.multiTokens.forceCreateEthereumCollection.v1060.is(call),
+            () => calls.multiTokens.forceCreateEthereumCollection.v1060.decode(call)
+        )
+        .when(
+            () => calls.multiTokens.forceCreateEthereumCollection.v1080.is(call),
+            () => calls.multiTokens.forceCreateEthereumCollection.v1080.decode(call)
+        )
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })

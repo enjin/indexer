@@ -207,6 +207,18 @@ export function dispatchAndTouch(call: CallItem): DispatchAndTouch {
             () => calls.fuelTanks.dispatchAndTouch.v102.is(call),
             () => calls.fuelTanks.dispatchAndTouch.v102.decode(call)
         )
+        .when(
+            () => calls.fuelTanks.dispatchAndTouch.enjinV1050.is(call),
+            () => calls.fuelTanks.dispatchAndTouch.enjinV1050.decode(call)
+        )
+        .when(
+            () => calls.fuelTanks.dispatchAndTouch.enjinV1062.is(call),
+            () => calls.fuelTanks.dispatchAndTouch.enjinV1062.decode(call)
+        )
+        .when(
+            () => calls.fuelTanks.dispatchAndTouch.v1060.is(call),
+            () => calls.fuelTanks.dispatchAndTouch.v1060.decode(call)
+        )
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })

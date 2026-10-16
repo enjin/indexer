@@ -36,6 +36,18 @@ export function frozen(event: EventItem): Freeze {
             () => multiTokens.frozen.v1070.is(event),
             () => multiTokens.frozen.v1070.decode(event)
         )
+        .when(
+            () => multiTokens.frozen.enjinV100.is(event),
+            () => multiTokens.frozen.enjinV100.decode(event)
+        )
+        .when(
+            () => multiTokens.frozen.enjinV1080.is(event),
+            () => multiTokens.frozen.enjinV1080.decode(event)
+        )
+        .when(
+            () => multiTokens.frozen.v100.is(event),
+            () => multiTokens.frozen.v100.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

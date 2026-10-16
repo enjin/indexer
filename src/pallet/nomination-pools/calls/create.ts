@@ -40,6 +40,17 @@ export const create = withDispatchCheck((call: CallItem): CreatePool => {
             () => calls.nominationPools.create.v1060.is(call),
             () => calls.nominationPools.create.v1060.decode(call)
         )
+        .when(
+            () => calls.nominationPools.create.enjinV1062.is(call),
+            () => calls.nominationPools.create.enjinV1062.decode(call)
+        )
+        .when(
+            () => calls.nominationPools.create.v100.is(call),
+            () => {
+                const { amount, ...rest } = calls.nominationPools.create.v100.decode(call)
+                return { ...rest, deposit: amount }
+            }
+        )
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })
