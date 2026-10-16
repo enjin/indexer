@@ -96,7 +96,25 @@ async function fixture(rows: Row[] = [], specVersion = 1041) {
         ({ id: '500-0', name, args, success: true, block }) as unknown as CallItem
     const event = (name: string, args: unknown, emitter?: CallItem): EventItem =>
         ({ id: '500-1', name, args, block, call: emitter, extrinsic: { id: '500-0', index: 0 } }) as EventItem
-    return { block, store, ctx, call, event, warnings }
+    // Events emitted by one call of one extrinsic, in order, so processors can see their siblings.
+    const siblings = (emitter: CallItem, items: [string, unknown][]): EventItem[] => {
+        const extrinsic = { id: '500-0', index: 0, events: [] as EventItem[] }
+        extrinsic.events = items.map(
+            ([name, args], index) =>
+                ({
+                    id: `500-${index + 1}`,
+                    index,
+                    name,
+                    args,
+                    block,
+                    call: emitter,
+                    callAddress: [],
+                    extrinsic,
+                }) as unknown as EventItem
+        )
+        return extrinsic.events
+    }
+    return { block, store, ctx, call, event, siblings, warnings }
 }
 
 function ruleSetRow(extra: Partial<FuelTankRuleSet> = {}) {
@@ -138,6 +156,18 @@ const descriptor = (accountExpiration?: number) => ({
     coveragePolicy: { __kind: 'Fees' },
     accountRules: [],
     accountExpiration,
+})
+const insertVia = (address: unknown, maxBurn: string) => ({
+    __kind: 'FuelTanks',
+    value: { __kind: 'insert_rule_set', ...insertArgs(tankId, maxBurn), tankId: address },
+})
+const createCall = (accountExpiration: number) => ({
+    __kind: 'FuelTanks',
+    value: { __kind: 'create_fuel_tank', descriptor: descriptor(accountExpiration) },
+})
+const utility = (kind: string, args: Record<string, unknown>) => ({
+    __kind: 'Utility',
+    value: { __kind: kind, ...args },
 })
 const dispatchArgs = (inner: unknown) => ({ tankId: { __kind: 'Id', value: tankId }, call: inner })
 
@@ -274,6 +304,124 @@ void test('FuelTankCreated inside a dispatched batch stores account_expiration a
     const [tank] = store.of(FuelTank)
     assert.equal(tank.accountExpiration, 1_200)
     assert.equal(store.of(FuelTankRuleSet)[0].maxFuelBurnPerTransaction?.value, 9n)
+})
+
+void test('RuleSetInserted ignores inserts scheduled through Scheduler inside the dispatched batch', async () => {
+    const { ctx, block, store, call, event, warnings } = await fixture()
+    const scheduled = {
+        __kind: 'Scheduler',
+        value: { __kind: 'schedule', when: 900, priority: 0, call: insertCall(tankId, '8') },
+    }
+    const emitter = call(
+        'FuelTanks.dispatch',
+        dispatchArgs(utility('batch_all', { calls: [insertCall(tankId, '7'), scheduled] }))
+    )
+
+    await ruleSetInserted(ctx, block, event('FuelTanks.RuleSetInserted', { tankId, ruleSetId: 1 }, emitter))
+
+    assert.equal(store.of(FuelTankRuleSet)[0].maxFuelBurnPerTransaction?.value, 7n)
+    assert.equal(warnings.length, 0)
+})
+
+void test('RuleSetInserted compares Address32 tank ids and never treats unresolved addresses as wildcards', async () => {
+    const { ctx, block, store, call, event, warnings } = await fixture()
+    const emitter = call(
+        'FuelTanks.dispatch',
+        dispatchArgs(
+            utility('batch_all', {
+                calls: [
+                    insertVia({ __kind: 'Id', value: tankId }, '7'),
+                    insertVia({ __kind: 'Address32', value: otherTankId }, '8'),
+                    insertVia({ __kind: 'Index' }, '9'),
+                ],
+            })
+        )
+    )
+
+    await ruleSetInserted(ctx, block, event('FuelTanks.RuleSetInserted', { tankId, ruleSetId: 1 }, emitter))
+    await ruleSetInserted(
+        ctx,
+        block,
+        event('FuelTanks.RuleSetInserted', { tankId: otherTankId, ruleSetId: 1 }, emitter)
+    )
+
+    const byId = new Map(store.of(FuelTankRuleSet).map((row) => [row.id, row]))
+    assert.equal(byId.get(ruleSetKey)?.maxFuelBurnPerTransaction?.value, 7n)
+    assert.equal(byId.get(`${otherTankId}-1`)?.maxFuelBurnPerTransaction?.value, 8n)
+    assert.equal(warnings.length, 0)
+})
+
+void test('RuleSetInserted maps repeated executed inserts of one rule set by event order', async () => {
+    const { ctx, block, store, call, siblings } = await fixture()
+    const emitter = call(
+        'FuelTanks.dispatch',
+        dispatchArgs(utility('batch_all', { calls: [insertCall(tankId, '7'), insertCall(tankId, '8')] }))
+    )
+    const [first, second] = siblings(emitter, [
+        ['FuelTanks.RuleSetInserted', { tankId, ruleSetId: 1 }],
+        ['FuelTanks.RuleSetInserted', { tankId, ruleSetId: 1 }],
+    ])
+
+    await ruleSetInserted(ctx, block, first)
+    assert.equal(store.of(FuelTankRuleSet)[0].maxFuelBurnPerTransaction?.value, 7n)
+    await ruleSetInserted(ctx, block, second)
+    assert.equal(store.of(FuelTankRuleSet)[0].maxFuelBurnPerTransaction?.value, 8n)
+})
+
+void test('RuleSetInserted skips with a warning when an unexecuted if_else branch also matches', async () => {
+    for (const wrapper of [
+        utility('if_else', { main: insertCall(tankId, '7'), fallback: insertCall(tankId, '8') }),
+        utility('batch', {
+            calls: [
+                insertCall(tankId, '7'),
+                { __kind: 'System', value: { __kind: 'remark', remark: '0x' } },
+                insertCall(tankId, '8'),
+            ],
+        }),
+    ]) {
+        const { ctx, block, store, call, siblings, warnings } = await fixture([ruleSetRow()])
+        const emitter = call('FuelTanks.dispatch', dispatchArgs(wrapper))
+        const [inserted] = siblings(emitter, [['FuelTanks.RuleSetInserted', { tankId, ruleSetId: 1 }]])
+
+        await ruleSetInserted(ctx, block, inserted)
+
+        assert.deepEqual(store.of(FuelTankRuleSet)[0].whitelistedCallers, [userId])
+        assert.equal(warnings.length, 1)
+        assert.match(warnings[0], /2 differing insert_rule_set calls/)
+    }
+})
+
+void test('FuelTankCreated maps same-named creates by event order and skips unexecuted if_else descriptors', async () => {
+    const created = (tank: string): [string, unknown] => [
+        'FuelTanks.FuelTankCreated',
+        { owner: userId, name: '0x74616e6b', tankId: tank },
+    ]
+
+    const batch = await fixture()
+    const batchEmitter = batch.call(
+        'FuelTanks.dispatch',
+        dispatchArgs(utility('batch_all', { calls: [createCall(100), createCall(200)] }))
+    )
+    const [first, second] = batch.siblings(batchEmitter, [created(tankId), created(otherTankId)])
+    await fuelTankCreated(batch.ctx, batch.block, first)
+    await fuelTankCreated(batch.ctx, batch.block, second)
+    const expirations = new Map(batch.store.of(FuelTank).map((tank) => [tank.id, tank.accountExpiration]))
+    assert.equal(expirations.get(tankId), 100)
+    assert.equal(expirations.get(otherTankId), 200)
+
+    const branch = await fixture()
+    const branchEmitter = branch.call(
+        'FuelTanks.dispatch',
+        dispatchArgs(utility('if_else', { main: createCall(100), fallback: createCall(200) }))
+    )
+    const [only] = branch.siblings(branchEmitter, [created(tankId)])
+    await fuelTankCreated(branch.ctx, branch.block, only)
+    const [tank] = branch.store.of(FuelTank)
+    assert.equal(tank.id, tankId)
+    assert.equal(tank.accountExpiration, null)
+    assert.equal(branch.store.of(FuelTankRuleSet).length, 0)
+    assert.equal(branch.warnings.length, 1)
+    assert.match(branch.warnings[0], /2 differing create calls/)
 })
 
 void test('DestroyFuelTankScheduled flags the tank and records the event', async () => {
