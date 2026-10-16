@@ -91,29 +91,37 @@ export function liquidityCallAmounts(call: CallItem, method: LiquidityMethod, of
     return out
 }
 
-// How many events of one kind have already consumed amounts from the same emitting call, so that a wrapper holding
-// several liquidity calls on the same offer hands each event its own amount (events are emitted in call order).
-// Call ids are unique per block, so the counters are dropped whenever a new block starts.
-let consumedBlock: string | undefined
-const consumed = new Map<string, number>()
+function decodeEventOfferId(event: EventItem, method: LiquidityMethod): bigint | undefined {
+    try {
+        return method === 'add_liquidity'
+            ? mappings.stakeExchange.events.liquidityAdded(event).offerId
+            : mappings.stakeExchange.events.liquidityWithdrawn(event).offerId
+    } catch {
+        return undefined
+    }
+}
 
 /**
- * Resolves the amount of the liquidity call that emitted `item`, or `undefined` when no matching call can be found
- * (an unknown wrapper, a missing decoder, or an event without a call).
+ * Resolves the amount of the liquidity call that emitted `item`, or `undefined` when it cannot be determined
+ * unambiguously (an unknown wrapper, a missing decoder, an event without a call, or a wrapper whose candidate calls
+ * cannot be paired one-to-one with the events they emitted).
+ *
+ * Several candidate calls on the same offer are paired with the emitter's events of the same kind in event order,
+ * but only when both counts match: under `force_batch` a failed or skipped inner call emits no event, so a count
+ * mismatch means positions cannot be trusted and the amount is left unresolved instead of guessed.
  */
 export function liquidityAmountFor(item: EventItem, method: LiquidityMethod, offerId: bigint): bigint | undefined {
     if (!item.call) return undefined
 
     const amounts = liquidityCallAmounts(item.call, method, offerId)
-    if (amounts.length <= 1) return amounts[0]
+    if (amounts.length === 0) return undefined
+    if (amounts.every((amount) => amount === amounts[0])) return amounts[0]
 
-    if (consumedBlock !== item.block.hash) {
-        consumedBlock = item.block.hash
-        consumed.clear()
-    }
-    const key = `${item.call.id}|${method}|${offerId}`
-    const index = consumed.get(key) ?? 0
-    consumed.set(key, index + 1)
+    const siblings = item.call.events
+        .filter((event) => event.name === item.name && decodeEventOfferId(event, method) === offerId)
+        .sort((a, b) => a.index - b.index)
+    const position = siblings.findIndex((event) => event.id === item.id)
+    if (position < 0 || siblings.length !== amounts.length) return undefined
 
-    return amounts[index]
+    return amounts[position]
 }
