@@ -3,7 +3,7 @@ import { CollectionAccount, TokenAccount } from '~/model'
 import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { Block, CommonContext, EventItem } from '~/contexts'
-import { encodeAddress } from '~/util/tools'
+import { isOperator } from '~/pallet/multi-tokens/processors/approved'
 import { EventHandlerResult } from '~/processor.handler'
 
 export async function unapproved(
@@ -25,7 +25,7 @@ export async function unapproved(
 
         if (tokenAccount) {
             tokenAccount.approvals = tokenAccount.approvals?.filter(
-                (approval) => approval.accountId !== encodeAddress(data.operator)
+                (approval) => !isOperator(approval.accountId, data.operator)
             )
             tokenAccount.updatedAt = new Date(block.timestamp ?? 0)
 
@@ -42,7 +42,7 @@ export async function unapproved(
 
         if (collectionAccount) {
             collectionAccount.approvals = collectionAccount.approvals?.filter(
-                (approval) => approval.accountId !== encodeAddress(data.operator)
+                (approval) => !isOperator(approval.accountId, data.operator)
             )
             collectionAccount.updatedAt = new Date(block.timestamp ?? 0)
 

@@ -6,6 +6,13 @@ import * as mappings from '~/pallet/index'
 import { encodeAddress } from '~/util/tools'
 import { EventHandlerResult } from '~/processor.handler'
 
+/**
+ * Approvals are indexed with the SS58 operator, but the genesis/warp import keeps the raw public key; match either.
+ */
+export function isOperator(accountId: string, operator: string): boolean {
+    return accountId === operator || accountId === encodeAddress(operator)
+}
+
 export async function approved(ctx: CommonContext, item: EventItem, skipSave: boolean): Promise<EventHandlerResult> {
     const data = mappings.multiTokens.events.approved(item)
 
@@ -25,16 +32,15 @@ export async function approved(ctx: CommonContext, item: EventItem, skipSave: bo
             return [mappings.multiTokens.events.approvedEventModel(item, data), undefined]
         }
 
-        const approvals = tokenAccount.approvals ?? []
-        approvals.push(
+        // The chain keeps one approval per operator: approving again replaces it.
+        tokenAccount.approvals = [
+            ...(tokenAccount.approvals ?? []).filter((approval) => !isOperator(approval.accountId, data.operator)),
             new TokenApproval({
                 accountId: encodeAddress(data.operator),
                 amount: data.amount,
                 expiration: data.expiration,
-            })
-        )
-
-        tokenAccount.approvals = approvals
+            }),
+        ]
         tokenAccount.updatedAt = new Date(item.block.timestamp ?? 0)
         await ctx.store.save(tokenAccount)
     } else {
@@ -47,15 +53,13 @@ export async function approved(ctx: CommonContext, item: EventItem, skipSave: bo
             return [mappings.multiTokens.events.approvedEventModel(item, data), undefined]
         }
 
-        const approvals = collectionAccount.approvals ?? []
-        approvals.push(
+        collectionAccount.approvals = [
+            ...(collectionAccount.approvals ?? []).filter((approval) => !isOperator(approval.accountId, data.operator)),
             new CollectionApproval({
                 accountId: encodeAddress(data.operator),
                 expiration: data.expiration,
-            })
-        )
-
-        collectionAccount.approvals = approvals
+            }),
+        ]
         collectionAccount.updatedAt = new Date(item.block.timestamp ?? 0)
         await ctx.store.save(collectionAccount)
     }
