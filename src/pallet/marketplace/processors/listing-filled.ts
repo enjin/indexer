@@ -9,7 +9,6 @@ import {
     ListingStatusType,
     ListingType,
     TokenAccount,
-    WhitelistedAccount,
 } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
@@ -20,6 +19,7 @@ import { ListingFilled } from '~/pallet/marketplace/events'
 import { dispatchComputeAccountStats } from '~/queue/queue-utils'
 import { listingFillParties, rebuildFixedPriceState, rebuildOfferState } from '~/pallet/marketplace/utils/listing-state'
 import { listingFilledSnsEvent } from '~/pallet/marketplace/processors/listing-filled-sns'
+import { accrueWhitelistUsage } from '~/pallet/marketplace/utils/whitelist'
 
 export async function listingFilled(
     ctx: CommonContext,
@@ -61,14 +61,7 @@ export async function listingFilled(
     await ctx.store.save(sale)
 
     if (listing.usesWhitelist) {
-        const whitelistAccount = await ctx.store.findOne<WhitelistedAccount>(WhitelistedAccount, {
-            where: { listing: { id: listingId }, account: { id: filler.id } },
-        })
-
-        if (whitelistAccount) {
-            whitelistAccount.amountUsed += Number(event.amountFilled)
-            await ctx.store.save(whitelistAccount)
-        }
+        await accrueWhitelistUsage(ctx, listingId, filler.id, event.amountFilled, new Date(block.timestamp ?? 0))
     }
 
     await dispatchComputeAccountStats(buyer.id)

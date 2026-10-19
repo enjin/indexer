@@ -5,6 +5,7 @@ import * as mappings from '~/pallet/index'
 import { getOrCreateAccount } from '~/util/entities'
 import { QueueUtils } from '~/queue'
 import Big from 'big.js'
+import { accrueWhitelistUsage } from '~/pallet/marketplace/utils/whitelist'
 
 export async function bidPlaced(
     ctx: CommonContext,
@@ -61,6 +62,11 @@ export async function bidPlaced(
     }
 
     await Promise.all([ctx.store.save(bid), ctx.store.save(listing)])
+
+    // Every accepted bid counts the whole auction amount against the bidder's whitelist allowance.
+    if (listing.usesWhitelist) {
+        await accrueWhitelistUsage(ctx, listingId, currentBidder.id, listing.amount, new Date(block.timestamp ?? 0))
+    }
 
     const snsEvent: SnsEvent = {
         id: item.id,

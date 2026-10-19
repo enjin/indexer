@@ -108,6 +108,9 @@ export class Listing {
     @BooleanColumn_({nullable: true})
     hasRoyaltyIncreased!: boolean | undefined | null
 
+    @BooleanColumn_({nullable: true})
+    settlementAbandoned!: boolean | undefined | null
+
     @Index_()
     @DateTimeColumn_({nullable: false})
     createdAt!: Date
