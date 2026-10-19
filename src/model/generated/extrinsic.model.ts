@@ -54,6 +54,9 @@ export class Extrinsic {
     @StringColumn_({nullable: true})
     error!: string | undefined | null
 
+    @StringColumn_({nullable: true})
+    dispatchError!: string | undefined | null
+
     @DateTimeColumn_({nullable: false})
     createdAt!: Date
 

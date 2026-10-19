@@ -3,6 +3,7 @@ import { Account, Balance } from '~/model'
 import { getOrCreateAccount } from '~/util/entities'
 import { decode } from '@subsquid/ss58'
 import { Job } from 'bullmq'
+import { transferableBalance } from '~/pallet/balances/transferable'
 import Rpc from '~/util/rpc'
 import { encodeAddress } from '~/util/tools'
 
@@ -26,7 +27,12 @@ export async function fetchBalance(_job: Job, id: string) {
     account.balance.free = BigInt(balanceRes.data.free.toString())
     account.balance.reserved = BigInt(balanceRes.data.reserved.toString())
     account.balance.miscFrozen = BigInt(balanceRes.data.frozen.toString())
-    account.balance.transferable = account.balance.free - account.balance.miscFrozen
+    account.balance.frozen = account.balance.miscFrozen
+    account.balance.transferable = transferableBalance(
+        account.balance.free,
+        account.balance.reserved,
+        account.balance.frozen
+    )
     account.balance.feeFrozen = 0n
 
     await ctx.store.save(account)
