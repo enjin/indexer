@@ -1,4 +1,4 @@
-import { CallItem } from '~/contexts'
+import { Block, CallItem } from '~/contexts'
 import { match } from 'ts-pattern'
 import { UnsupportedCallError } from '~/util/errors'
 import { calls } from '~/type'
@@ -64,10 +64,21 @@ export function anyMint(call: CallItem, collectionId: bigint, tokenId: bigint): 
 }
 
 export async function getCollectionAsCall(call: CallItem, collectionId: bigint): Promise<CreateCollection> {
-    const collection = await mappings.multiTokens.storage.collections(call.block, { collectionId: collectionId })
+    const collection = await collectionFromStorageAsCall(call.block, collectionId)
     if (!collection) {
         throw new UnsupportedCallError(call)
     }
+
+    return collection
+}
+
+/** The collection's stored policy and royalty currencies at the block, shaped like a `create_collection` call. */
+export async function collectionFromStorageAsCall(
+    block: Block,
+    collectionId: bigint
+): Promise<CreateCollection | undefined> {
+    const collection = await mappings.multiTokens.storage.collections(block, { collectionId: collectionId })
+    if (!collection) return undefined
 
     const royaltyCurrencies = collection.explicitRoyaltyCurrencies.map((tuple) => {
         const assetId = tuple[0]
