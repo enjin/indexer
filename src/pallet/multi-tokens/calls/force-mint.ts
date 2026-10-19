@@ -81,6 +81,30 @@ const decodeForceMint = withDispatchCheck((call: CallItem): ForceMint => {
             () => calls.multiTokens.forceMint.v105.is(call),
             () => calls.multiTokens.forceMint.v105.decode(call)
         )
+        .when(
+            () => calls.multiTokens.forceMint.matrixEnjinV1041.is(call),
+            () => calls.multiTokens.forceMint.matrixEnjinV1041.decode(call) as unknown as ForceMint
+        )
+        .when(
+            () => calls.multiTokens.forceMint.matrixV1030.is(call),
+            () => calls.multiTokens.forceMint.matrixV1030.decode(call)
+        )
+        .when(
+            () => calls.multiTokens.forceMint.enjinV1050.is(call),
+            () => calls.multiTokens.forceMint.enjinV1050.decode(call)
+        )
+        .when(
+            () => calls.multiTokens.forceMint.enjinV1062.is(call),
+            () => calls.multiTokens.forceMint.enjinV1062.decode(call)
+        )
+        .when(
+            () => calls.multiTokens.forceMint.enjinV1080.is(call),
+            () => calls.multiTokens.forceMint.enjinV1080.decode(call) as unknown as ForceMint
+        )
+        .when(
+            () => calls.multiTokens.forceMint.v1060.is(call),
+            () => calls.multiTokens.forceMint.v1060.decode(call)
+        )
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })

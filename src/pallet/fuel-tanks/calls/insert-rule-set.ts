@@ -268,6 +268,22 @@ export const insertRuleSet = withDispatchCheck((call: CallItem): InsertRuleSet =
             () => calls.fuelTanks.insertRuleSet.v102.is(call),
             () => calls.fuelTanks.insertRuleSet.v102.decode(call)
         )
+        .when(
+            () => calls.fuelTanks.insertRuleSet.matrixV1004.is(call),
+            () => calls.fuelTanks.insertRuleSet.matrixV1004.decode(call)
+        )
+        .when(
+            () => calls.fuelTanks.insertRuleSet.enjinV1050.is(call),
+            () => calls.fuelTanks.insertRuleSet.enjinV1050.decode(call)
+        )
+        .when(
+            () => calls.fuelTanks.insertRuleSet.v106.is(call),
+            () => calls.fuelTanks.insertRuleSet.v106.decode(call)
+        )
+        .when(
+            () => calls.fuelTanks.insertRuleSet.v1070.is(call),
+            () => calls.fuelTanks.insertRuleSet.v1070.decode(call)
+        )
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })

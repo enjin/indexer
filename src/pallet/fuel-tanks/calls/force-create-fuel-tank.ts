@@ -176,6 +176,38 @@ export const forceCreateFuelTank = withDispatchCheck((call: CallItem): ForceCrea
             () => calls.fuelTanks.forceCreateFuelTank.v105.is(call),
             () => calls.fuelTanks.forceCreateFuelTank.v105.decode(call)
         )
+        .when(
+            () => calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1031.is(call),
+            () => calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1031.decode(call)
+        )
+        .when(
+            () => calls.fuelTanks.forceCreateFuelTank.matrixV604.is(call),
+            () => calls.fuelTanks.forceCreateFuelTank.matrixV604.decode(call)
+        )
+        .when(
+            () => calls.fuelTanks.forceCreateFuelTank.matrixV1030.is(call),
+            () => calls.fuelTanks.forceCreateFuelTank.matrixV1030.decode(call)
+        )
+        .when(
+            () => calls.fuelTanks.forceCreateFuelTank.matrixV1040.is(call),
+            () => calls.fuelTanks.forceCreateFuelTank.matrixV1040.decode(call)
+        )
+        .when(
+            () => calls.fuelTanks.forceCreateFuelTank.enjinV1050.is(call),
+            () => calls.fuelTanks.forceCreateFuelTank.enjinV1050.decode(call)
+        )
+        .when(
+            () => calls.fuelTanks.forceCreateFuelTank.enjinV1062.is(call),
+            () => calls.fuelTanks.forceCreateFuelTank.enjinV1062.decode(call)
+        )
+        .when(
+            () => calls.fuelTanks.forceCreateFuelTank.v1060.is(call),
+            () => calls.fuelTanks.forceCreateFuelTank.v1060.decode(call)
+        )
+        .when(
+            () => calls.fuelTanks.forceCreateFuelTank.v1070.is(call),
+            () => calls.fuelTanks.forceCreateFuelTank.v1070.decode(call)
+        )
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })

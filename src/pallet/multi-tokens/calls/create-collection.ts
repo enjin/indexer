@@ -60,6 +60,34 @@ export const createCollection = withDispatchCheck((call: CallItem): CreateCollec
             () => calls.multiTokens.createCollection.v100.is(call),
             () => calls.multiTokens.createCollection.v100.decode(call)
         )
+        .when(
+            () => calls.multiTokens.createCollection.matrixEnjinV1041.is(call),
+            () => calls.multiTokens.createCollection.matrixEnjinV1041.decode(call)
+        )
+        .when(
+            () => calls.multiTokens.createCollection.matrixV1040.is(call),
+            () => calls.multiTokens.createCollection.matrixV1040.decode(call)
+        )
+        .when(
+            () => calls.multiTokens.createCollection.enjinV1050.is(call),
+            () => calls.multiTokens.createCollection.enjinV1050.decode(call)
+        )
+        .when(
+            () => calls.multiTokens.createCollection.enjinV1062.is(call),
+            () => calls.multiTokens.createCollection.enjinV1062.decode(call)
+        )
+        .when(
+            () => calls.multiTokens.createCollection.enjinV1080.is(call),
+            () => calls.multiTokens.createCollection.enjinV1080.decode(call)
+        )
+        .when(
+            () => calls.multiTokens.createCollection.v1060.is(call),
+            () => calls.multiTokens.createCollection.v1060.decode(call)
+        )
+        .when(
+            () => calls.multiTokens.createCollection.v1080.is(call),
+            () => calls.multiTokens.createCollection.v1080.decode(call)
+        )
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })

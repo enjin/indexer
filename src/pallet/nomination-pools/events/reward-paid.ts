@@ -20,6 +20,10 @@ export function rewardPaid(event: EventItem): RewardPaid {
             () => nominationPools.rewardPaid.v1060.is(event),
             () => nominationPools.rewardPaid.v1060.decode(event)
         )
+        .when(
+            () => nominationPools.rewardPaid.v102.is(event),
+            () => nominationPools.rewardPaid.v102.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

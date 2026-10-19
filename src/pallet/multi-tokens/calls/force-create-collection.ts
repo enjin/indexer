@@ -52,6 +52,42 @@ export const forceCreateCollection = withDispatchCheck((call: CallItem): ForceCr
             () => calls.multiTokens.forceCreateCollection.v100.is(call),
             () => calls.multiTokens.forceCreateCollection.v100.decode(call)
         )
+        .when(
+            () => calls.multiTokens.forceCreateCollection.matrixEnjinV1031.is(call),
+            () => calls.multiTokens.forceCreateCollection.matrixEnjinV1031.decode(call)
+        )
+        .when(
+            () => calls.multiTokens.forceCreateCollection.matrixEnjinV1041.is(call),
+            () => calls.multiTokens.forceCreateCollection.matrixEnjinV1041.decode(call)
+        )
+        .when(
+            () => calls.multiTokens.forceCreateCollection.matrixV1030.is(call),
+            () => calls.multiTokens.forceCreateCollection.matrixV1030.decode(call)
+        )
+        .when(
+            () => calls.multiTokens.forceCreateCollection.matrixV1040.is(call),
+            () => calls.multiTokens.forceCreateCollection.matrixV1040.decode(call)
+        )
+        .when(
+            () => calls.multiTokens.forceCreateCollection.enjinV1050.is(call),
+            () => calls.multiTokens.forceCreateCollection.enjinV1050.decode(call)
+        )
+        .when(
+            () => calls.multiTokens.forceCreateCollection.enjinV1062.is(call),
+            () => calls.multiTokens.forceCreateCollection.enjinV1062.decode(call)
+        )
+        .when(
+            () => calls.multiTokens.forceCreateCollection.enjinV1080.is(call),
+            () => calls.multiTokens.forceCreateCollection.enjinV1080.decode(call)
+        )
+        .when(
+            () => calls.multiTokens.forceCreateCollection.v1060.is(call),
+            () => calls.multiTokens.forceCreateCollection.v1060.decode(call)
+        )
+        .when(
+            () => calls.multiTokens.forceCreateCollection.v1080.is(call),
+            () => calls.multiTokens.forceCreateCollection.v1080.decode(call)
+        )
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })

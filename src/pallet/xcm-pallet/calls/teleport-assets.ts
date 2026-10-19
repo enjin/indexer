@@ -28,6 +28,10 @@ export const teleportAssets = withDispatchCheck((call: CallItem): TeleportAssets
             () => calls.xcmPallet.teleportAssets.v100.is(call),
             () => calls.xcmPallet.teleportAssets.v100.decode(call)
         )
+        .when(
+            () => calls.xcmPallet.teleportAssets.enjinV1062.is(call),
+            () => calls.xcmPallet.teleportAssets.enjinV1062.decode(call)
+        )
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })
