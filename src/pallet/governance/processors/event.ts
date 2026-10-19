@@ -180,8 +180,7 @@ export async function refreshReferendum(
     const existing = await ctx.store.findOneBy(GovernanceReferendum, { id })
     if (existing && existing.updatedAtBlock > block.height) return
     const referendum =
-        existing ??
-        new GovernanceReferendum({ id, pallet, referendumIndex, status: 'Ongoing', updatedAtBlock: block.height })
+        existing ?? new GovernanceReferendum({ id, pallet, status: 'Ongoing', updatedAtBlock: block.height })
 
     const info = await referendumInfo(block, pallet, referendumIndex)
     if (info?.__kind === 'Ongoing' && info.value) {
@@ -312,7 +311,10 @@ async function updateDelegation(
         },
     })
     for (const referendum of referenda) {
-        await refreshReferendum(ctx, block, 'Referenda', referendum.referendumIndex, '', {})
+        const match = /^Referenda:(0|[1-9]\d*)$/.exec(referendum.id)
+        const referendumIndex = match ? index(Number(match[1])) : undefined
+        if (referendumIndex === undefined) throw new Error(`Invalid referendum ID: ${referendum.id}`)
+        await refreshReferendum(ctx, block, 'Referenda', referendumIndex, '', {})
     }
 }
 

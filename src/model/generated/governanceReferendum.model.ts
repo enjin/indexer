@@ -13,10 +13,6 @@ export class GovernanceReferendum {
     @StringColumn_({nullable: false})
     pallet!: string
 
-    @Index_("idx_governance_referendum_referendum_index_98d90a26")
-    @IntColumn_({nullable: false})
-    referendumIndex!: number
-
     @IntColumn_({nullable: true})
     track!: number | undefined | null
 
