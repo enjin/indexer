@@ -612,6 +612,26 @@ type FuelTankDestroyed {
   tank: String!
 }
 
+type FuelTankDestroyScheduled {
+  tank: String!
+}
+
+type FuelTankAccountRuleDataRemoved {
+  tank: String!
+  user: String!
+  ruleSetId: Int!
+  ruleKind: String!
+}
+
+type FuelTankConsumptionSet {
+  tank: String!
+  # Null when the tank-wide (TankFuelBudget) consumption was set
+  user: String
+  ruleSetId: Int!
+  totalConsumed: BigInt!
+  lastResetBlock: Int
+}
+
 type FuelTankDispatchFailed {
   # Human-readable DispatchError of the wrapped call (e.g. "MultiTokens.NoPermission")
   error: String
@@ -1466,6 +1486,8 @@ type FuelTank @entity {
   accountCount: Int!
   coveragePolicy: CoveragePolicy
   accountExpiration: Int
+  # Block of DestroyFuelTankScheduled: dispatch is blocked until on_idle removes the accounts and FuelTankDestroyed fires
+  destroyScheduledAt: Int
 
   userAccounts: [FuelTankUserAccounts] @derivedFrom(field: "tank")
   userAccountManagement: FuelTankUserAccountManagement
@@ -1959,7 +1981,7 @@ union EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiToken
   | MarketplaceOfferCreated | MarketplaceOfferSettled | MarketplaceOfferCancelled | MarketplaceListingRemovedUnderMinimum
   | BalancesTransfer | TeleportBalanceWithdrawn | ClaimsClaimRequested | ClaimsClaimed | MarketplaceWhitelistedAccountsAdded
   | MarketplaceWhitelistedAccountsRemoved
-  | FuelTankCreated | FuelTankDestroyed | FuelTankDispatchFailed | UtilityItemFailed | UtilityBatchInterrupted
+  | FuelTankCreated | FuelTankDestroyed | FuelTankDestroyScheduled | FuelTankAccountRuleDataRemoved | FuelTankConsumptionSet | FuelTankDispatchFailed | UtilityItemFailed | UtilityBatchInterrupted
   | MigrationsUpgradeCompleted
   | MultiTokensClaimedCollections | MultiTokensClaimTokensInitiated
   | MultiTokensClaimTokensCompleted | MultiTokensCollectionTransferred | MultiTokensCollectionTransferCancelled | MultiTokensInfused

@@ -1,6 +1,6 @@
 import { hexToString } from '@polkadot/util'
 import { randomBytes } from 'crypto'
-import { CallNotDefinedError } from '~/util/errors'
+import { CallNotDefinedError, UnsupportedCallError } from '~/util/errors'
 import { safeString } from '~/util/tools'
 import {
     CoveragePolicy,
@@ -18,6 +18,8 @@ import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
 import * as mappings from '~/pallet/index'
 import { rulesToMap } from '~/pallet/fuel-tanks/utils'
+import { FuelTankCreateSource, fuelTankCallSources, resolveCallSource } from '~/pallet/fuel-tanks/call-sources'
+import { events } from '~/type'
 
 export async function fuelTankCreated(
     ctx: CommonContext,
@@ -27,7 +29,20 @@ export async function fuelTankCreated(
     if (!item.call) throw new CallNotDefinedError()
 
     const event = mappings.fuelTanks.events.fuelTankCreated(item)
-    const call = mappings.fuelTanks.utils.anyCreateFuelTank(item.call)
+    // Several tanks can be created by one batch; the descriptor name identifies the one behind this event.
+    const creates = fuelTankCallSources(item.call).filter((s): s is FuelTankCreateSource => s.kind === 'create')
+    if (creates.length === 0) throw new UnsupportedCallError(item.call)
+    const named = creates.filter((s) => s.descriptor.name === event.name)
+    const candidates = named.length > 0 ? named : creates
+    const call = resolveCallSource(item, candidates, (e) => isSameFuelTankCreated(e, event.name))
+    if (call === undefined) {
+        // Persist the tank from the event alone rather than guess its configuration from an unexecuted call.
+        ctx.log.warn(
+            `FuelTankCreated ${event.tankId} at block ${block.height}: ${candidates.length} differing create calls ` +
+                `in ${item.call.name} cannot be matched to this event; tank stored without descriptor settings`
+        )
+    }
+    const descriptor = call?.descriptor
 
     const [tankAccount, owner] = await Promise.all([
         getOrCreateAccount(ctx, event.tankId),
@@ -35,21 +50,20 @@ export async function fuelTankCreated(
     ])
 
     let userAccountManagement: FuelTankUserAccountManagement | undefined
-    if (call.descriptor.userAccountManagement) {
+    if (descriptor?.userAccountManagement) {
         userAccountManagement = new FuelTankUserAccountManagement({
-            tankReservesAccountCreationDeposit:
-                call.descriptor.userAccountManagement.tankReservesAccountCreationDeposit,
+            tankReservesAccountCreationDeposit: descriptor.userAccountManagement.tankReservesAccountCreationDeposit,
             tankReservesExistentialDeposit:
-                'tankReservesExistentialDeposit' in call.descriptor.userAccountManagement
-                    ? call.descriptor.userAccountManagement.tankReservesExistentialDeposit
-                    : call.descriptor.userAccountManagement.tankReservesAccountCreationDeposit,
+                'tankReservesExistentialDeposit' in descriptor.userAccountManagement
+                    ? descriptor.userAccountManagement.tankReservesExistentialDeposit
+                    : descriptor.userAccountManagement.tankReservesAccountCreationDeposit,
         })
     }
 
     let providesDeposit: boolean | undefined
-    if (call.descriptor.providesDeposit !== undefined) {
+    if (descriptor?.providesDeposit !== undefined) {
         //  'providesDeposit' in callData.descriptor ? callData.descriptor.providesDeposit : false,
-        providesDeposit = call.descriptor.providesDeposit
+        providesDeposit = descriptor.providesDeposit
     }
 
     const fuelTank = new FuelTank({
@@ -60,14 +74,15 @@ export async function fuelTankCreated(
         isFrozen: false,
         accountCount: 0,
         providesDeposit: providesDeposit ?? false,
-        coveragePolicy: call.descriptor.coveragePolicy ? CoveragePolicy[call.descriptor.coveragePolicy.__kind] : null,
+        coveragePolicy: descriptor?.coveragePolicy ? CoveragePolicy[descriptor.coveragePolicy.__kind] : null,
         userAccountManagement,
+        accountExpiration: descriptor?.accountExpiration ?? null,
     })
 
     await ctx.store.save(fuelTank)
 
-    if (call.descriptor.accountRules.length > 0) {
-        for (const rule of call.descriptor.accountRules) {
+    if (descriptor && descriptor.accountRules.length > 0) {
+        for (const rule of descriptor.accountRules) {
             let accountRule: WhitelistedCallers | RequireToken
             if (rule.__kind === 'WhitelistedCallers') {
                 accountRule = new WhitelistedCallers({
@@ -90,8 +105,8 @@ export async function fuelTankCreated(
         }
     }
 
-    if (call.descriptor.ruleSets.length > 0) {
-        for (const ruleSet of call.descriptor.ruleSets) {
+    if (descriptor && descriptor.ruleSets.length > 0) {
+        for (const ruleSet of descriptor.ruleSets) {
             const index = ruleSet[0]
             let rules = ruleSet[1]
             let requireAccount = false
@@ -153,4 +168,13 @@ export async function fuelTankCreated(
             name: safeString(hexToString(event.name)),
         }),
     })
+}
+
+function isSameFuelTankCreated(item: EventItem, name: string): boolean {
+    if (item.name !== events.fuelTanks.fuelTankCreated.name) return false
+    try {
+        return mappings.fuelTanks.events.fuelTankCreated(item).name === name
+    } catch {
+        return false
+    }
 }
