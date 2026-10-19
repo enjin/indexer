@@ -3,6 +3,7 @@ import * as marshal from "./marshal"
 
 export class PoolSlash {
     private _amount!: bigint
+    private _balance!: bigint | undefined | null
     private _appliedAt!: Date
     private _appliedBlock!: number
 
@@ -10,6 +11,7 @@ export class PoolSlash {
         Object.assign(this, props)
         if (json != null) {
             this._amount = marshal.bigint.fromJSON(json.amount)
+            this._balance = json.balance == null ? undefined : marshal.bigint.fromJSON(json.balance)
             this._appliedAt = marshal.datetime.fromJSON(json.appliedAt)
             this._appliedBlock = marshal.int.fromJSON(json.appliedBlock)
         }
@@ -22,6 +24,14 @@ export class PoolSlash {
 
     set amount(value: bigint) {
         this._amount = value
+    }
+
+    get balance(): bigint | undefined | null {
+        return this._balance
+    }
+
+    set balance(value: bigint | undefined | null) {
+        this._balance = value
     }
 
     get appliedAt(): Date {
@@ -45,6 +55,7 @@ export class PoolSlash {
     toJSON(): object {
         return {
             amount: marshal.bigint.toJSON(this.amount),
+            balance: this.balance == null ? undefined : marshal.bigint.toJSON(this.balance),
             appliedAt: marshal.datetime.toJSON(this.appliedAt),
             appliedBlock: this.appliedBlock,
         }

@@ -1,60 +1,73 @@
 import { Job } from 'bullmq'
 import { dataHandlerContext } from '~/contexts'
 import { Account, UnbondingEras } from '~/model'
+import { unbondingErasFromPoints } from '~/pallet/nomination-pools/processors/unbonding-eras'
+import { SubPools, UnbondPool } from '~/pallet/nomination-pools/storage/types'
 import Rpc from '~/util/rpc'
 
-type UnbondingMembersJson = {
-    unbondingEras?: [number, string | number][]
+type OptionCodec = {
+    isSome?: boolean
+    isNone?: boolean
+    isEmpty?: boolean
+    unwrap?: () => unknown
+    toJSON?: () => unknown
 }
 
-export function unbondingErasFromChain(raw: unknown): UnbondingEras[] | null {
-    const opt = raw as {
-        isSome?: boolean
-        isNone?: boolean
-        isEmpty?: boolean
-        unwrap?: () => { unbondingEras: unknown[] }
-        toJSON?: () => UnbondingMembersJson | null
+/** The value inside a polkadot.js `Option`, or `undefined` for `None`. Falls back to `toJSON` for plain values. */
+function unwrapOption(raw: unknown): Record<string, unknown> | undefined {
+    const opt = raw as OptionCodec | null | undefined
+    if (opt == null || opt.isNone === true || opt.isEmpty === true || opt.isSome === false) {
+        return undefined
     }
-
     if (opt.isSome === true && typeof opt.unwrap === 'function') {
-        const pm = opt.unwrap()
-        const eras = pm.unbondingEras ?? []
-        if (eras.length === 0) {
-            return null
-        }
-        const out: UnbondingEras[] = []
-        for (const tuple of eras) {
-            const t = tuple as [unknown, unknown]
-            const eraCodec = t[0] as { toNumber?: () => number } | number
-            const balCodec = t[1] as { toString?: () => string } | string | number | bigint
-            const era =
-                typeof eraCodec === 'object' &&
-                eraCodec != null &&
-                'toNumber' in eraCodec &&
-                typeof eraCodec.toNumber === 'function'
-                    ? eraCodec.toNumber()
-                    : Number(eraCodec)
-            const balance =
-                typeof balCodec === 'object' &&
-                balCodec != null &&
-                'toString' in balCodec &&
-                typeof balCodec.toString === 'function'
-                    ? BigInt(balCodec.toString())
-                    : BigInt(String(balCodec))
-            out.push(new UnbondingEras({ era, balance }))
-        }
-        return out
+        return opt.unwrap() as Record<string, unknown>
+    }
+    const json = typeof opt.toJSON === 'function' ? opt.toJSON() : raw
+    return json == null ? undefined : (json as Record<string, unknown>)
+}
+
+/** `[key, value]` pairs of a `BTreeMap`: a polkadot.js `Map`, its `toJSON` object, or a list of tuples. */
+function entriesOf(value: unknown): [unknown, unknown][] {
+    if (value == null) return []
+    if (Array.isArray(value)) return value as [unknown, unknown][]
+    if (value instanceof Map) return [...(value as Map<unknown, unknown>).entries()]
+    return Object.entries(value as Record<string, unknown>)
+}
+
+// Codec `toString` is decimal; `toJSON` renders a `u128` as a number or a hex string. `BigInt` parses all of them.
+const toBigInt = (value: unknown): bigint => BigInt(String(value))
+const toEra = (value: unknown): number => Number(String(value))
+
+/** `NominationPools.UnbondingMembers` as `[era, points]` pairs. */
+export function unbondingPointsFromChain(raw: unknown): [number, bigint][] {
+    const member = unwrapOption(raw)
+    return entriesOf(member?.unbondingEras).map(([era, points]) => [toEra(era), toBigInt(points)])
+}
+
+/** `NominationPools.SubPoolsStorage` for a pool, `undefined` when the pool has none. */
+export function subPoolsFromChain(raw: unknown): SubPools | undefined {
+    const subPools = unwrapOption(raw)
+    if (subPools?.noEra == null) {
+        return undefined
     }
 
-    if (opt.isNone === true || opt.isEmpty === true || opt.isSome === false) {
-        return null
+    const pool = (value: unknown): UnbondPool => {
+        const { points, balance } = value as { points: unknown; balance: unknown }
+        return { points: toBigInt(points), balance: toBigInt(balance) }
     }
 
-    const json = typeof opt.toJSON === 'function' ? opt.toJSON() : null
-    if (json == null || !Array.isArray(json.unbondingEras) || json.unbondingEras.length === 0) {
-        return null
+    return {
+        noEra: pool(subPools.noEra),
+        withEra: entriesOf(subPools.withEra).map(([era, value]) => [toEra(era), pool(value)]),
     }
-    return json.unbondingEras.map(([era, bal]) => new UnbondingEras({ era: Number(era), balance: BigInt(String(bal)) }))
+}
+
+/**
+ * A member's unbonding chunks from RPC, converted to ENJ exactly as the processors do (`unbondingErasFromPoints`).
+ * `unbonding` and `subPools` must be read at the same block hash.
+ */
+export function unbondingErasFromChain(unbonding: unknown, subPools: unknown): UnbondingEras[] | null {
+    return unbondingErasFromPoints(unbondingPointsFromChain(unbonding), subPoolsFromChain(subPools))
 }
 
 export async function syncAccountUnbondingEras(job: Job, id: string): Promise<void> {
@@ -78,6 +91,8 @@ export async function syncAccountUnbondingEras(job: Job, id: string): Promise<vo
         return
     }
 
+    // Read every pool at one block so the unbonding points and the sub-pools they are priced against agree.
+    const apiAt = await api.at(await api.rpc.chain.getFinalizedHead())
     let saved = 0
 
     for (let i = 0; i < joined.length; i++) {
@@ -90,8 +105,11 @@ export async function syncAccountUnbondingEras(job: Job, id: string): Promise<vo
 
         await job.updateProgress(Math.round((i / joined.length) * 90))
 
-        const storage = await api.query.nominationPools.unbondingMembers(poolId, account.address)
-        member.unbondingEras = unbondingErasFromChain(storage)
+        const [unbonding, subPools] = await Promise.all([
+            apiAt.query.nominationPools.unbondingMembers(poolId, account.address),
+            apiAt.query.nominationPools.subPoolsStorage(poolId),
+        ])
+        member.unbondingEras = unbondingErasFromChain(unbonding, subPools)
 
         await ctx.store.save(member)
         saved++

@@ -10,7 +10,7 @@ export async function poolMutated(ctx: CommonContext, block: Block, item: EventI
     if (!item.extrinsic) return undefined
 
     const data = mappings.nominationPools.events.poolMutated(item)
-    const mutation: Record<string, number | string | Record<string, number>> = {}
+    const mutation: Record<string, number | string | Record<string, number> | null> = {}
 
     const pool = await ctx.store.findOne<NominationPool>(NominationPool, {
         where: {
@@ -39,19 +39,24 @@ export async function poolMutated(ctx: CommonContext, block: Block, item: EventI
         mutation.duration = data.mutation.duration
     }
 
-    if (
-        data.mutation.newCommission !== undefined &&
-        data.mutation.newCommission.__kind === 'SomeMutation' &&
-        data.mutation.newCommission.value !== undefined
-    ) {
+    if (data.mutation.newCommission !== undefined && data.mutation.newCommission.__kind === 'SomeMutation') {
+        // `SomeMutation(None)` removes the commission, and the chain stores a zero commission as `None` too
+        // (`Commission::try_update_current`).
+        const newCommission = data.mutation.newCommission.value || null
         mutation.oldCommission = pool.commission.current ?? 0
-        pool.commission.current = data.mutation.newCommission.value
-        mutation.newCommission = data.mutation.newCommission.value
+        pool.commission.current = newCommission
+        mutation.newCommission = newCommission
     }
 
     if (data.mutation.maxCommission !== undefined) {
         pool.commission.max = data.mutation.maxCommission
         mutation.maxCommission = data.mutation.maxCommission
+
+        // The chain applies the new commission before the new max and clamps it to the max
+        // (`Commission::try_update_max`, which also emits `CommissionUpdated` before this event).
+        if (pool.commission.current != null && pool.commission.current > data.mutation.maxCommission) {
+            pool.commission.current = data.mutation.maxCommission
+        }
     }
 
     if (data.mutation.changeRate) {
