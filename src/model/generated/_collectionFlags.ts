@@ -5,6 +5,7 @@ export class CollectionFlags {
     private _hiddenForLegalReasons!: boolean
     private _featured!: boolean
     private _marketplaceDisabled!: boolean
+    private _verifiedEnjin!: boolean
 
     constructor(props?: Partial<Omit<CollectionFlags, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
@@ -12,6 +13,7 @@ export class CollectionFlags {
             this._hiddenForLegalReasons = marshal.boolean.fromJSON(json.hiddenForLegalReasons)
             this._featured = marshal.boolean.fromJSON(json.featured)
             this._marketplaceDisabled = marshal.boolean.fromJSON(json.marketplaceDisabled)
+            this._verifiedEnjin = marshal.boolean.fromJSON(json.verifiedEnjin)
         }
     }
 
@@ -42,11 +44,21 @@ export class CollectionFlags {
         this._marketplaceDisabled = value
     }
 
+    get verifiedEnjin(): boolean {
+        assert(this._verifiedEnjin != null, 'uninitialized access')
+        return this._verifiedEnjin
+    }
+
+    set verifiedEnjin(value: boolean) {
+        this._verifiedEnjin = value
+    }
+
     toJSON(): object {
         return {
             hiddenForLegalReasons: this.hiddenForLegalReasons,
             featured: this.featured,
             marketplaceDisabled: this.marketplaceDisabled,
+            verifiedEnjin: this.verifiedEnjin,
         }
     }
 }

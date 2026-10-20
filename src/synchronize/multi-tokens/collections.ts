@@ -84,7 +84,7 @@ export async function collections(ctx: CommonContext, block: Block) {
                     featured: false,
                     hiddenForLegalReasons: false,
                     marketplaceDisabled: false,
-                    // verified: false,
+                    verifiedEnjin: false,
                 }),
                 hidden: false,
                 burnPolicy: null,

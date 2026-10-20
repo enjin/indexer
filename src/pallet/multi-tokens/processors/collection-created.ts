@@ -133,6 +133,7 @@ export async function collectionCreated(
             featured: false,
             hiddenForLegalReasons: false,
             marketplaceDisabled: false,
+            verifiedEnjin: false,
         }),
         verifiedAt: null,
         hidden: false,

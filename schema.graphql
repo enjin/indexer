@@ -802,6 +802,7 @@ type Account @entity {
   username: String
   verifiedAt: DateTime
   verified: Boolean!
+  verifiedEnjin: Boolean!
   image: String
 }
 
@@ -870,6 +871,7 @@ type CollectionFlags {
   hiddenForLegalReasons: Boolean!
   featured: Boolean!
   marketplaceDisabled: Boolean!
+  verifiedEnjin: Boolean!
 }
 
 type EntitySocials {

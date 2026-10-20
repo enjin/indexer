@@ -88,6 +88,9 @@ export class Account {
     @BooleanColumn_({nullable: false})
     verified!: boolean
 
+    @BooleanColumn_({nullable: false})
+    verifiedEnjin!: boolean
+
     @StringColumn_({nullable: true})
     image!: string | undefined | null
 }

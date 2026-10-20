@@ -8,6 +8,7 @@ const addressesQuery = `query AddressesQuery($ids: [String!]) {
       username
       image
       verified
+      verifiedEnjin
       verifiedDate
     }
   }`
@@ -20,6 +21,7 @@ const collectionsQuery = `query CollectionsQuery($ids: [String!]) {
       category
       featured
       marketplaceDisabled
+      verifiedEnjin
       verifiedAt
     }
   }`
@@ -29,6 +31,7 @@ type AddressVerification = {
     publicKey: string
     image?: string
     verified: boolean
+    verifiedEnjin: boolean
     verifiedDate: string
 }
 
@@ -39,6 +42,7 @@ type CollectionExtra = {
     category: string | null
     featured: boolean
     marketplaceDisabled: boolean
+    verifiedEnjin: boolean
     verifiedAt: string | null
 }
 
@@ -81,6 +85,7 @@ export async function fetchAccountsDetail(ids: string[]) {
                 username: account.username || null,
                 image: account.image || null,
                 verifiedAt: account.verified ? new Date(account.verifiedDate) : null,
+                verifiedEnjin: account.verifiedEnjin,
             }
         })
     } catch {
@@ -89,7 +94,7 @@ export async function fetchAccountsDetail(ids: string[]) {
 }
 
 export async function fetchCollectionsExtra(ids: string[]) {
-    const response = await axios.post<{ data: { result: CollectionExtra[] } } | { errors: string }>(
+    const response = await axios.post<{ data: { result: CollectionExtra[] } } | { errors: unknown }>(
         isMainnet() ? processorConfig.marketplace.prod : processorConfig.marketplace.stg,
         {
             query: collectionsQuery,
@@ -108,7 +113,7 @@ export async function fetchCollectionsExtra(ids: string[]) {
     )
 
     if ('errors' in response.data) {
-        throw new Error(response.data.errors)
+        throw new Error(JSON.stringify(response.data.errors))
     }
 
     return response.data.data.result
