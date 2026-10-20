@@ -13,6 +13,7 @@ import {
     Token,
 } from '~/model'
 import { ListingCreated } from '~/pallet/marketplace/events/types'
+import { normalizeListingId } from '~/pallet/marketplace/utils/listing-id'
 
 export function listingCreated(event: EventItem): ListingCreated {
     return match(event)
@@ -134,6 +135,7 @@ export function listingCreatedEventModel(
         toAccount: Account | undefined
     }
 ): [EventModel, AccountTokenEvent] {
+    const listingId = normalizeListingId(data.listingId)
     const event = new EventModel({
         id: eventId,
         name: data.isOffer ? MarketplaceOfferCreated.name : MarketplaceListingCreated.name,
@@ -142,10 +144,10 @@ export function listingCreatedEventModel(
         tokenId: `${data.collectionId.toString()}-${data.tokenId.toString()}`,
         data: data.isOffer
             ? new MarketplaceOfferCreated({
-                  listing: data.listingId,
+                  listing: listingId,
               })
             : new MarketplaceListingCreated({
-                  listing: data.listingId,
+                  listing: listingId,
               }),
     })
 
