@@ -12,7 +12,7 @@ const addressesQuery = `query AddressesQuery($ids: [String!]) {
     }
   }`
 
-const collectionsQuery = (includeVerifiedEnjin: boolean) => `query CollectionsQuery($ids: [String!]) {
+const collectionsQuery = `query CollectionsQuery($ids: [String!]) {
     result: CollectionsExtra(collectionIds:$ids){
       collectionId
       hidden
@@ -20,7 +20,7 @@ const collectionsQuery = (includeVerifiedEnjin: boolean) => `query CollectionsQu
       category
       featured
       marketplaceDisabled
-      ${includeVerifiedEnjin ? 'verifiedEnjin' : ''}
+      verifiedEnjin
       verifiedAt
     }
   }`
@@ -40,14 +40,8 @@ type CollectionExtra = {
     category: string | null
     featured: boolean
     marketplaceDisabled: boolean
-    verifiedEnjin?: boolean
+    verifiedEnjin: boolean
     verifiedAt: string | null
-}
-
-type GraphQLErrors = string | { message: string }[]
-
-function graphQLErrorMessage(errors: GraphQLErrors): string {
-    return typeof errors === 'string' ? errors : errors.map((error) => error.message).join(', ')
 }
 
 export async function fetchAccountsDetail(ids: string[]) {
@@ -97,35 +91,26 @@ export async function fetchAccountsDetail(ids: string[]) {
 }
 
 export async function fetchCollectionsExtra(ids: string[]) {
-    const fetch = (includeVerifiedEnjin: boolean) =>
-        axios.post<{ data: { result: CollectionExtra[] } } | { errors: GraphQLErrors }>(
-            isMainnet() ? processorConfig.marketplace.prod : processorConfig.marketplace.stg,
-            {
-                query: collectionsQuery(includeVerifiedEnjin),
-                variables: {
-                    ids,
-                },
+    const response = await axios.post<{ data: { result: CollectionExtra[] } } | { errors: unknown }>(
+        isMainnet() ? processorConfig.marketplace.prod : processorConfig.marketplace.stg,
+        {
+            query: collectionsQuery,
+            variables: {
+                ids,
             },
-            {
-                headers: {
-                    Accept: 'application/json',
-                    'X-Network': isMainnet() ? 'enjin' : 'canary',
-                    'CF-Access-Client-Id': process.env.CF_ACCESS_CLIENT_ID,
-                    'CF-Access-Client-Secret': process.env.CF_ACCESS_CLIENT_SECRET,
-                },
-            }
-        )
-
-    let response = await fetch(true)
-    if (
-        'errors' in response.data &&
-        /Cannot query field ["']verifiedEnjin["']/.test(graphQLErrorMessage(response.data.errors))
-    ) {
-        response = await fetch(false)
-    }
+        },
+        {
+            headers: {
+                Accept: 'application/json',
+                'X-Network': isMainnet() ? 'enjin' : 'canary',
+                'CF-Access-Client-Id': process.env.CF_ACCESS_CLIENT_ID,
+                'CF-Access-Client-Secret': process.env.CF_ACCESS_CLIENT_SECRET,
+            },
+        }
+    )
 
     if ('errors' in response.data) {
-        throw new Error(graphQLErrorMessage(response.data.errors))
+        throw new Error(JSON.stringify(response.data.errors))
     }
 
     return response.data.data.result
