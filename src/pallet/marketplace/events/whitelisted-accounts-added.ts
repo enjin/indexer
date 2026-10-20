@@ -4,6 +4,7 @@ import { match } from 'ts-pattern'
 import { WhitelistedAccountsAdded } from './types'
 import { UnsupportedEventError } from '~/util/errors'
 import { Event as EventModel, Extrinsic, MarketplaceWhitelistedAccountsAdded } from '~/model'
+import { normalizeListingId } from '~/pallet/marketplace/utils/listing-id'
 
 export function whitelistedAccountsAdded(event: EventItem): WhitelistedAccountsAdded {
     return match(event)
@@ -23,7 +24,7 @@ export function whitelistedAccountsAddedEventModel(item: EventItem, data: Whitel
         name: MarketplaceWhitelistedAccountsAdded.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new MarketplaceWhitelistedAccountsAdded({
-            listing: data.listingId,
+            listing: normalizeListingId(data.listingId),
             accounts: data.accounts.map((account) => account.accountId),
         }),
     })
