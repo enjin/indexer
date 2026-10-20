@@ -8,6 +8,7 @@ const addressesQuery = `query AddressesQuery($ids: [String!]) {
       username
       image
       verified
+      verifiedEnjin
       verifiedDate
     }
   }`
@@ -30,6 +31,7 @@ type AddressVerification = {
     publicKey: string
     image?: string
     verified: boolean
+    verifiedEnjin: boolean
     verifiedDate: string
 }
 
@@ -83,6 +85,7 @@ export async function fetchAccountsDetail(ids: string[]) {
                 username: account.username || null,
                 image: account.image || null,
                 verifiedAt: account.verified ? new Date(account.verifiedDate) : null,
+                verifiedEnjin: account.verifiedEnjin,
             }
         })
     } catch {

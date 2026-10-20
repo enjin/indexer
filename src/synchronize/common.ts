@@ -66,6 +66,7 @@ export async function getAccountMap(
                 feeFrozen: 0n,
             }),
             verified: false,
+            verifiedEnjin: false,
             nonce: 0,
         })
 

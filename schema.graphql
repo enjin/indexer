@@ -802,6 +802,7 @@ type Account @entity {
   username: String
   verifiedAt: DateTime
   verified: Boolean!
+  verifiedEnjin: Boolean!
   image: String
 }
 

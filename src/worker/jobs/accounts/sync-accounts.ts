@@ -34,6 +34,7 @@ export async function syncAccounts(_job: Job, ids: string[] | null): Promise<voi
             account.image = _d.image
             account.verifiedAt = _d.verifiedAt
             account.verified = !!_d.verifiedAt
+            account.verifiedEnjin = _d.verifiedEnjin
 
             return account
         })

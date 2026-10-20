@@ -69,6 +69,7 @@ export async function getOrCreateAccount(
                 feeFrozen: 0n,
             }),
             verified: false,
+            verifiedEnjin: false,
             nonce: 0,
         })
         await ctx.store.save(account)
