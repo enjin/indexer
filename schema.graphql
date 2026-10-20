@@ -870,6 +870,7 @@ type CollectionFlags {
   hiddenForLegalReasons: Boolean!
   featured: Boolean!
   marketplaceDisabled: Boolean!
+  verifiedEnjin: Boolean!
 }
 
 type EntitySocials {
