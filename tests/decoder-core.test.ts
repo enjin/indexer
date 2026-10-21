@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { decode } from '~/decoder/core'
+import { decode, getLatestSpecVersion } from '~/decoder/core'
+import { getRuntimeCached } from '~/decoder/metadata'
 
 const calls = [
     '0x2809b69a070001030000000000000000000000000000000c6b65791476616c7565',
@@ -27,4 +28,26 @@ void test('decode omits readable views from an array of calls by default', async
         assert.ok(item && typeof item === 'object' && 'calls' in item)
         assert.ok(!('view' in item))
     }
+})
+
+void test('Canary Matrixchain defaults to 1042 metadata for nested Fuel Tanks calls', async () => {
+    const runtime = await getRuntimeCached('canary-matrixchain', 1042)
+    const call = runtime.scaleCodec.encodeToHex(runtime.description.call, {
+        __kind: 'FuelTanks',
+        value: {
+            __kind: 'dispatch',
+            tankId: { __kind: 'Id', value: `0x${'11'.repeat(32)}` },
+            ruleSetId: undefined,
+            call: { __kind: 'System', value: { __kind: 'remark', remark: '0x74657374' } },
+            settings: undefined,
+        },
+    })
+
+    assert.equal(getLatestSpecVersion('canary-matrixchain'), 1042)
+    const decoded = await decode({ network: 'canary-matrixchain', call })
+    assert.deepEqual(decoded, await decode({ network: 'canary-matrixchain', spec_version: 1042, call }))
+    const dispatch = (decoded as { calls: { FuelTanks: { dispatch: { call: unknown; rule_set_id: unknown } } } }).calls
+        .FuelTanks.dispatch
+    assert.equal(dispatch.rule_set_id, null)
+    assert.deepEqual(dispatch.call, { System: { remark: { remark: [116, 101, 115, 116] } } })
 })

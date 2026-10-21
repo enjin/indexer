@@ -23,6 +23,7 @@ import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 import * as enjinV1032 from '../enjinV1032'
 import * as matrixV1040 from '../matrixV1040'
 import * as matrixEnjinV1041 from '../matrixEnjinV1041'
+import * as matrixV1042 from '../matrixV1042'
 import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 import * as v1060 from '../v1060'
@@ -2684,6 +2685,21 @@ export const tokens = {
         matrixV1040.Token
     ) as TokensMatrixV1040,
     /**
+     *  Tokens storage. Do not access directly while the v7 lazy migration is live — go through
+     *  the [`Tokens`] migrating wrapper instead so pre-v7 values decode correctly.
+     *
+     *  FRAME's try-runtime decode check is disabled because it would reject every value the lazy
+     *  migration has not rewritten yet. `do_try_state` checks each value whole instead, in the
+     *  current encoding or an older one. [`MigrateV6ToV7`](migrations::MigrateV6ToV7) runs it after
+     *  the upgrade, because try-runtime runs `try_state` only for `--checks all` or `try-state`.
+     */
+    matrixV1042: new StorageType(
+        'MultiTokens.Tokens',
+        'Optional',
+        [sts.bigint(), sts.bigint()],
+        matrixV1042.Token
+    ) as TokensMatrixV1042,
+    /**
      *  Tokens storage
      */
     enjinV100: new StorageType(
@@ -3163,6 +3179,49 @@ export interface TokensMatrixV1040 {
         key1: bigint,
         key2: bigint
     ): AsyncIterable<[k: [bigint, bigint], v: matrixV1040.Token | undefined][]>
+}
+
+/**
+ *  Tokens storage. Do not access directly while the v7 lazy migration is live — go through
+ *  the [`Tokens`] migrating wrapper instead so pre-v7 values decode correctly.
+ *
+ *  FRAME's try-runtime decode check is disabled because it would reject every value the lazy
+ *  migration has not rewritten yet. `do_try_state` checks each value whole instead, in the
+ *  current encoding or an older one. [`MigrateV6ToV7`](migrations::MigrateV6ToV7) runs it after
+ *  the upgrade, because try-runtime runs `try_state` only for `--checks all` or `try-state`.
+ */
+export interface TokensMatrixV1042 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key1: bigint, key2: bigint): Promise<matrixV1042.Token | undefined>
+    getMany(block: Block, keys: [bigint, bigint][]): Promise<(matrixV1042.Token | undefined)[]>
+    getKeys(block: Block): Promise<[bigint, bigint][]>
+    getKeys(block: Block, key1: bigint): Promise<[bigint, bigint][]>
+    getKeys(block: Block, key1: bigint, key2: bigint): Promise<[bigint, bigint][]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[bigint, bigint][]>
+    getKeysPaged(pageSize: number, block: Block, key1: bigint): AsyncIterable<[bigint, bigint][]>
+    getKeysPaged(pageSize: number, block: Block, key1: bigint, key2: bigint): AsyncIterable<[bigint, bigint][]>
+    getPairs(block: Block): Promise<[k: [bigint, bigint], v: matrixV1042.Token | undefined][]>
+    getPairs(block: Block, key1: bigint): Promise<[k: [bigint, bigint], v: matrixV1042.Token | undefined][]>
+    getPairs(
+        block: Block,
+        key1: bigint,
+        key2: bigint
+    ): Promise<[k: [bigint, bigint], v: matrixV1042.Token | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: [bigint, bigint], v: matrixV1042.Token | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint
+    ): AsyncIterable<[k: [bigint, bigint], v: matrixV1042.Token | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint,
+        key2: bigint
+    ): AsyncIterable<[k: [bigint, bigint], v: matrixV1042.Token | undefined][]>
 }
 
 /**

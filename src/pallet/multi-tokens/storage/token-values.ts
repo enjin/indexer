@@ -11,7 +11,7 @@ type TokenStorage<K extends unknown[]> = {
 
 const legacyCodecs = new WeakMap<Runtime, LegacyCodec[]>()
 const V6_TOKEN_FIELDS = ['ephemeralExpiration', 'isLendable', 'lending', 'mintRateLimit']
-// Storage v7 (enjin/pallets master, matrixchain Unreleased) appends `creation_block` after `mint_rate_limit`.
+// Storage v7 (Canary Matrixchain 1042) appends `creation_block` after `mint_rate_limit`.
 const V7_TOKEN_FIELDS = [...V6_TOKEN_FIELDS, 'creationBlock']
 
 type LegacyCodec = { codec: Codec; type: number }
