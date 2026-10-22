@@ -13,15 +13,14 @@ export function codeUpdated(block: Block, item: EventItem, skipSave: boolean): [
         return [event, undefined]
     }
 
-    return [
-        event,
-        {
-            id: item.id,
-            name: item.name,
-            body: {
-                blockNumber: block.height,
-                specVersion: block.specVersion,
-            },
+    const snsEvent: SnsEvent = {
+        id: item.id,
+        name: item.name,
+        body: {
+            blockNumber: block.height,
+            specVersion: block.specVersion,
         },
-    ]
+    }
+
+    return [event, snsEvent]
 }
