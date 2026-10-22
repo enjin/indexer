@@ -3,6 +3,7 @@ import { AccountTokenEvent, Event } from '~/model'
 import { match } from 'ts-pattern'
 import * as p from '~/pallet'
 import {
+    system,
     multiTokens,
     balances,
     claims,
@@ -54,6 +55,7 @@ export async function eventHandler(
 
     return (
         match(item.name)
+            .with(system.codeUpdated.name, () => p.system.processors.codeUpdated(block, item, skipSave))
             .with(multiTokens.approved.name, () => p.multiTokens.processors.approved(ctx, item, skipSave))
             .with(multiTokens.attributeRemoved.name, () =>
                 p.multiTokens.processors.attributeRemoved(ctx, block, item, skipSave)
