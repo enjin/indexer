@@ -43,6 +43,7 @@ const relayEvents: string[] = [
 ]
 
 const commonEvents: string[] = [
+    events.system.codeUpdated.name,
     ...getEventNames(events.balances),
     ...getEventNames(events.fuelTanks),
     ...getEventNames(events.identity),
