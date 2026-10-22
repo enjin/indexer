@@ -170,6 +170,21 @@ void test('token layout check accepts the v6 and v7 trailing fields', async () =
     assert.equal(hasV6TokenLayout(runtime), true)
 })
 
+void test('Canary Matrixchain 1042 metadata decodes current and lazily unmigrated tokens', async () => {
+    const current = await getRuntimeCached('canary-matrixchain', 1042)
+    const previous = await getRuntimeCached('canary-matrixchain', 1041)
+    const currentType = current.description.storage.MultiTokens.items.Tokens.value
+    const previousType = previous.description.storage.MultiTokens.items.Tokens.value
+
+    assert.equal(tokenLayout(current), 'v7')
+    assert.equal(tokenLayout(previous), 'v6')
+
+    const v7 = current.scaleCodec.encodeToHex(currentType, { ...tokenValue(), creationBlock: 13376712 })
+    const v6 = previous.scaleCodec.encodeToHex(previousType, tokenValue())
+    assert.equal(decodeTokenStorageValue(current, v7).creationBlock, 13376712n)
+    assert.equal(decodeTokenStorageValue(current, v6).creationBlock, undefined)
+})
+
 void test('v7 token decoder reads v7, lazily unmigrated v6 and pre-v6 encodings', async () => {
     const { real } = await fixture()
     const { runtime, codec, type } = v7Runtime(real)

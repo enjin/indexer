@@ -96,6 +96,7 @@ for (const [network, version] of [
     ['canary-relaychain', 1080],
     ['enjin-matrixchain', 1041],
     ['canary-matrixchain', 1041],
+    ['canary-matrixchain', 1042],
 ] as const) {
     void test(`fuel tank and batch decoders unwrap calls on ${network} v${version}`, () => {
         const runtime = runtimeFor(network, version)
@@ -103,12 +104,12 @@ for (const [network, version] of [
         const dispatched = dispatch(
             callItem(runtime, 'FuelTanks.dispatch', {
                 tankId: { __kind: 'Id', value: tankId },
-                ruleSetId: 0,
+                ruleSetId: version === 1042 ? undefined : 0,
                 call: remark,
                 settings: { useNoneOrigin: false, paysRemainingFee: true, signature: undefined, createAccount: false },
             })
         )
-        assert.equal(dispatched.ruleSetId, 0)
+        assert.equal(dispatched.ruleSetId, version === 1042 ? undefined : 0)
         assert.deepEqual(dispatched.call, remark)
 
         const batch = batchAll(callItem(runtime, 'Utility.batch_all', { calls: [remark, remark] }))

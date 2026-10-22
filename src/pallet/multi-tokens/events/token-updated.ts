@@ -8,6 +8,10 @@ export function tokenUpdated(event: EventItem): TokenUpdated {
     return match(event)
         .returnType<TokenUpdated>()
         .when(
+            () => multiTokens.tokenUpdated.matrixV1042.is(event),
+            () => multiTokens.tokenUpdated.matrixV1042.decode(event)
+        )
+        .when(
             () => multiTokens.tokenUpdated.matrixEnjinV603.is(event),
             () => multiTokens.tokenUpdated.matrixEnjinV603.decode(event)
         )
