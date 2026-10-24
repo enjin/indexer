@@ -179,7 +179,7 @@ async function handleDryRun(req: Request, res: Response): Promise<void> {
 
 export const server: Application = express()
 
-server.use(express.json({ limit: '1mb' }))
+server.use(express.json({ limit: '1mb', inflate: false }))
 
 server.get('/decoder', (_req, res) => {
     res.set('Allow', 'POST')
