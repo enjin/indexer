@@ -128,6 +128,7 @@
   "pnpm": {
     "overrides": {
       "axios@<1.20.0": "1.20.0",
+      "follow-redirects@<1.16.1": "1.16.1",
       "brace-expansion@<1.1.21": "1.1.21",
       "brace-expansion@>=2.0.0 <2.1.7": "2.1.7",
       "brace-expansion@>=4.0.0 <5.0.9": "5.0.12",
