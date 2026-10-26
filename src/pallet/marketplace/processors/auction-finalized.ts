@@ -129,6 +129,7 @@ export async function auctionFinalized(
             makeAssetId.collection,
             makeAssetId
         ),
-        item.extrinsic ? snsEvent : undefined,
+        // Auctions end in the on_idle sweep since matrix 1040 (no extrinsic); consumers still need the message.
+        snsEvent,
     ]
 }

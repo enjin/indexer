@@ -111,6 +111,7 @@ export async function expiredListingRemoved(
             collection: isOffer ? takeAssetId.collection : makeAssetId.collection,
             token: isOffer ? takeAssetId : makeAssetId,
         }),
-        item.extrinsic ? snsEvent : undefined,
+        // Expiry is settled by the on_idle sweep since matrix 1040 (no extrinsic); consumers still need the message.
+        snsEvent,
     ]
 }

@@ -121,6 +121,7 @@ export async function listingCancelled(
             collection: isOffer ? takeAssetId.collection : makeAssetId.collection,
             token: isOffer ? takeAssetId : makeAssetId,
         }),
-        item.extrinsic ? snsEvent : undefined,
+        // CancelWhenUnlistable cancels from the on_idle sweep since matrix 1041 (no extrinsic); consumers still need the message.
+        snsEvent,
     ]
 }
