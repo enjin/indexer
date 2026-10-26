@@ -48,6 +48,29 @@ void test('encode uses the enjin-matrixchain 1041 metadata ahead of the enjin up
     await assert.rejects(encode({ call, network: 'enjin-matrixchain', spec_version: 1031 }), /Invalid U32/)
 })
 
+void test('encode uses the enjin-matrixchain 1042 metadata ahead of the enjin upgrade', async () => {
+    const tankId = `0x${'11'.repeat(32)}`
+    const call = {
+        pallet: 'FuelTanks',
+        name: 'dispatch',
+        args: {
+            tankId: { __kind: 'Id', value: tankId },
+            ruleSetId: undefined,
+            call: { __kind: 'System', value: { __kind: 'remark', remark: '0x6b6579' } },
+            settings: undefined,
+        },
+    }
+    const expected = `0x360500${'11'.repeat(32)}0000000c6b657900`
+
+    assert.deepEqual(await encode({ call, network: 'enjin-matrixchain', spec_version: 1042 }), {
+        encoded: expected,
+        network: 'enjin-matrixchain',
+        spec_version: 1042,
+    })
+    // Enjin and canary matrix 1042 share every call shape; only chain constants and the Sudo pallet differ.
+    assert.equal((await encode({ call, network: 'canary-matrixchain', spec_version: 1042 })).encoded, expected)
+})
+
 void test('encode uses the enjin-relaychain 1080 metadata ahead of the relay upgrade', async () => {
     const tankId = `0x${'11'.repeat(32)}`
     const call = {

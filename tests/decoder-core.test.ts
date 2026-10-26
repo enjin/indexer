@@ -51,3 +51,25 @@ void test('Canary Matrixchain defaults to 1042 metadata for nested Fuel Tanks ca
     assert.equal(dispatch.rule_set_id, null)
     assert.deepEqual(dispatch.call, { System: { remark: { remark: [116, 101, 115, 116] } } })
 })
+
+void test('Enjin Matrixchain 1042 metadata decodes nested Fuel Tanks calls while the default stays 1031', async () => {
+    const runtime = await getRuntimeCached('enjin-matrixchain', 1042)
+    const call = runtime.scaleCodec.encodeToHex(runtime.description.call, {
+        __kind: 'FuelTanks',
+        value: {
+            __kind: 'dispatch',
+            tankId: { __kind: 'Id', value: `0x${'11'.repeat(32)}` },
+            ruleSetId: undefined,
+            call: { __kind: 'System', value: { __kind: 'remark', remark: '0x74657374' } },
+            settings: undefined,
+        },
+    })
+
+    assert.equal(getLatestSpecVersion('enjin-matrixchain'), 1031)
+    const decoded = await decode({ network: 'enjin-matrixchain', spec_version: 1042, call })
+    assert.deepEqual(decoded, await decode({ network: 'canary-matrixchain', spec_version: 1042, call }))
+    const dispatch = (decoded as { calls: { FuelTanks: { dispatch: { call: unknown; rule_set_id: unknown } } } }).calls
+        .FuelTanks.dispatch
+    assert.equal(dispatch.rule_set_id, null)
+    assert.deepEqual(dispatch.call, { System: { remark: { remark: [116, 101, 115, 116] } } })
+})

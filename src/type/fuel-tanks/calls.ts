@@ -49,6 +49,7 @@ import * as v1032 from '../v1032'
 import * as matrixV1040 from '../matrixV1040'
 import * as matrixEnjinV1041 from '../matrixEnjinV1041'
 import * as matrixV1041 from '../matrixV1041'
+import * as matrixEnjinV1042 from '../matrixEnjinV1042'
 import * as matrixV1042 from '../matrixV1042'
 import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
@@ -187,6 +188,23 @@ export const createFuelTank = {
         'FuelTanks.create_fuel_tank',
         sts.struct({
             descriptor: matrixEnjinV1041.FuelTankDescriptor,
+        })
+    ),
+    /**
+     * Creates a fuel tank, given a `descriptor`.
+     *
+     * Generates a discrete `AccountId` for the fuel tank based on passed in parameters, it
+     * takes a storage deposit and emits `FuelTankCreated` event in the success case.
+     *
+     * # Errors
+     *
+     * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
+     * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
+     */
+    matrixEnjinV1042: new CallType(
+        'FuelTanks.create_fuel_tank',
+        sts.struct({
+            descriptor: matrixEnjinV1042.FuelTankDescriptor,
         })
     ),
     /**
@@ -1652,6 +1670,42 @@ export const dispatch = {
             ruleSetId: sts.option(() => sts.number()),
             call: matrixEnjinV1041.Call,
             settings: sts.option(() => matrixEnjinV1041.DispatchSettings),
+        })
+    ),
+    /**
+     * Dispatch a call using the `tank_id` subject to the rules of a rule set.
+     *
+     * `rule_set_id` selects the rule set governing the dispatch:
+     * - `Some(id)`(Some) dispatches subject to that specific rule set.
+     * - [`None`] auto-selects: the tank's rule sets are evaluated in ascending `RuleSetId`
+     *   order and the first one that fully succeeds for the caller is used (frozen rule sets,
+     *   rule sets requiring an account the caller lacks, and rule sets with any failing rule
+     *   are skipped). If no rule set succeeds, dispatch fails with
+     *   [`Error::NoMatchingRuleSet`].
+     *
+     * The rule set is resolved (and all rules evaluated) in the `CheckFuelTank` transaction
+     * extension; for the [`None`] case the extension charges the worst-case selection weight
+     * up front and refunds the portion for rule sets it did not have to examine.
+     *
+     * # Errors
+     * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
+     * - [`Error::NoMatchingRuleSet`] if `rule_set_id` is [`None`] and no rule set succeeds.
+     * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
+     * - [`Error::CallerDoesNotHaveRuleSetTokenBalance`] if caller does not own the tokens to
+     *   use the ruleset for remaining_fee when `pays_remaining_fee` is true
+     * - [`Error::FuelTankOutOfFunds`] if the fuel tank account cannot pay fees
+     * If `settings.create_account` is set, an account is created for `origin` if it does not
+     * exist, is required, and is allowed by the fuel tank's `user_account_management`
+     * settings. The account creation is performed in the `CheckFuelTank` transaction
+     * extension, which also accounts for its weight (see its `weight` impl).
+     */
+    matrixEnjinV1042: new CallType(
+        'FuelTanks.dispatch',
+        sts.struct({
+            tankId: matrixEnjinV1042.MultiAddress,
+            ruleSetId: sts.option(() => sts.number()),
+            call: matrixEnjinV1042.Call,
+            settings: sts.option(() => matrixEnjinV1042.DispatchSettings),
         })
     ),
     /**
@@ -3828,6 +3882,31 @@ export const insertRuleSet = {
      * ### Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::NoPermission`] if caller is not the fuel tank owner
+     * - [`Error::CannotRemoveRuleThatIsStoringAccountData`] if removing a rule that is storing
+     *   account data
+     * - [`Error::MaxRuleSetsExceeded`] if max number of rule sets was exceeded
+     * - [`Error::DuplicateRuleKinds`] if adding a rule set with multiple rules of the same
+     *   kind
+     */
+    matrixEnjinV1042: new CallType(
+        'FuelTanks.insert_rule_set',
+        sts.struct({
+            tankId: matrixEnjinV1042.MultiAddress,
+            ruleSetId: sts.number(),
+            ruleSet: matrixEnjinV1042.RuleSetDescriptor,
+        })
+    ),
+    /**
+     * Insert a new rule set for `tank_id` and `rule_set_id`. It can be a new rule set
+     * or it can replace an existing one. If it is replacing a rule set, a rule that is storing
+     * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
+     * the data first. If a rule is being replaced, it will be mutated with the new parameters,
+     * and it will maintain any persistent data it already has.
+     *
+     * This is only callable by the fuel tank's owner.
+     * ### Errors
+     * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
+     * - [`Error::NoPermission`] if caller is not the fuel tank owner
      * - [`Error::RequiresFrozenTankOrRuleset`] if tank or rule set is not frozen
      * - [`Error::CannotRemoveRuleThatIsStoringAccountData`] if removing a rule that is storing
      *   account data
@@ -5281,6 +5360,20 @@ export const forceCreateFuelTank = {
      *
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      */
+    matrixEnjinV1042: new CallType(
+        'FuelTanks.force_create_fuel_tank',
+        sts.struct({
+            owner: matrixEnjinV1042.MultiAddress,
+            descriptor: matrixEnjinV1042.FuelTankDescriptor,
+        })
+    ),
+    /**
+     * Force creates a fuel tank
+     *
+     * # Errors
+     *
+     * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
+     */
     matrixV604: new CallType(
         'FuelTanks.force_create_fuel_tank',
         sts.struct({
@@ -5936,6 +6029,17 @@ export const forceInsertRuleSet = {
             tankId: matrixEnjinV1041.MultiAddress,
             ruleSetId: sts.number(),
             ruleSet: matrixEnjinV1041.RuleSetDescriptor,
+        })
+    ),
+    /**
+     * Force inserting a ruleset using the force origin
+     */
+    matrixEnjinV1042: new CallType(
+        'FuelTanks.force_insert_rule_set',
+        sts.struct({
+            tankId: matrixEnjinV1042.MultiAddress,
+            ruleSetId: sts.number(),
+            ruleSet: matrixEnjinV1042.RuleSetDescriptor,
         })
     ),
     /**

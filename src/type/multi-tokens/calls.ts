@@ -30,6 +30,7 @@ import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 import * as enjinV1032 from '../enjinV1032'
 import * as matrixV1040 from '../matrixV1040'
 import * as matrixEnjinV1041 from '../matrixEnjinV1041'
+import * as matrixEnjinV1042 from '../matrixEnjinV1042'
 import * as matrixV1042 from '../matrixV1042'
 import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
@@ -5259,6 +5260,21 @@ export const forceSetToken = {
             collectionId: sts.bigint(),
             tokenId: sts.bigint(),
             value: sts.option(() => matrixEnjinV1041.Token),
+        })
+    ),
+    /**
+     * Set the Tokens storage to the given `value`, origin must be root
+     *
+     * The value is stored as given, `creation_block` included. Creating a token this way does
+     * not record the current block: a caller that sets a token where none exists, or replaces
+     * one, chooses the creation block that later readers compare against.
+     */
+    matrixEnjinV1042: new CallType(
+        'MultiTokens.force_set_token',
+        sts.struct({
+            collectionId: sts.bigint(),
+            tokenId: sts.bigint(),
+            value: sts.option(() => matrixEnjinV1042.Token),
         })
     ),
     /**
