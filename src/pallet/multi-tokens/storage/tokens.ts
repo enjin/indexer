@@ -33,6 +33,18 @@ export async function tokens(
     return match(block)
         .returnType<Promise<Token | AsyncIterable<[k: [bigint, bigint], v: Token | undefined][]> | undefined>>()
         .when(
+            () => multiTokens.tokens.matrixEnjinV1042.is(block),
+            () => {
+                if (params?.collectionId !== undefined && params.tokenId !== undefined) {
+                    return getMixedToken(block, [params.collectionId, params.tokenId])
+                }
+
+                return Promise.resolve(
+                    getMixedTokenPairs(block, multiTokens.tokens.matrixEnjinV1042, params?.batchSize ?? 1000)
+                )
+            }
+        )
+        .when(
             () => multiTokens.tokens.matrixV1042.is(block),
             () => {
                 if (params?.collectionId !== undefined && params.tokenId !== undefined) {

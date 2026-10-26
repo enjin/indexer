@@ -27,6 +27,7 @@ import * as v1032 from '../v1032'
 import * as matrixV1040 from '../matrixV1040'
 import * as matrixEnjinV1041 from '../matrixEnjinV1041'
 import * as matrixV1041 from '../matrixV1041'
+import * as matrixEnjinV1042 from '../matrixEnjinV1042'
 import * as matrixV1042 from '../matrixV1042'
 import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
@@ -75,6 +76,12 @@ export const dispatchWhitelistedCallWithPreimage = {
         'Whitelist.dispatch_whitelisted_call_with_preimage',
         sts.struct({
             call: matrixEnjinV1041.Call,
+        })
+    ),
+    matrixEnjinV1042: new CallType(
+        'Whitelist.dispatch_whitelisted_call_with_preimage',
+        sts.struct({
+            call: matrixEnjinV1042.Call,
         })
     ),
     matrixV1040: new CallType(

@@ -24,6 +24,7 @@ import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 import * as enjinV1032 from '../enjinV1032'
 import * as matrixV1040 from '../matrixV1040'
 import * as matrixEnjinV1041 from '../matrixEnjinV1041'
+import * as matrixEnjinV1042 from '../matrixEnjinV1042'
 import * as matrixV1042 from '../matrixV1042'
 import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
@@ -3547,6 +3548,26 @@ export const tokenUpdated = {
              * new value of Token storage
              */
             value: sts.option(() => matrixEnjinV1041.Token),
+        })
+    ),
+    /**
+     * Token storage was set to `value`
+     */
+    matrixEnjinV1042: new EventType(
+        'MultiTokens.TokenUpdated',
+        sts.struct({
+            /**
+             * The collection id for which the value is set
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token id for which the value is set
+             */
+            tokenId: sts.bigint(),
+            /**
+             * new value of Token storage
+             */
+            value: sts.option(() => matrixEnjinV1042.Token),
         })
     ),
     /**

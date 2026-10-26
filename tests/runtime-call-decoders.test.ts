@@ -90,6 +90,34 @@ void test('Enjin Relaychain 1080 events and storage reuse the codecs already gen
     assert(storage.multiTokens.attributes.v1080.is(block))
 })
 
+void test('Enjin Matrixchain 1042 calls that embed a RuntimeCall only match the matrixEnjinV1042 codecs', () => {
+    const block = { _runtime: runtimeFor('enjin-matrixchain', 1042) } as Block
+
+    for (const item of [
+        calls.utility.batchAll,
+        calls.fuelTanks.dispatch,
+        calls.fuelTanks.createFuelTank,
+        calls.fuelTanks.forceCreateFuelTank,
+        calls.fuelTanks.insertRuleSet,
+        calls.fuelTanks.forceInsertRuleSet,
+    ]) {
+        assert(item.matrixEnjinV1042.matches(block), `${item.name} should match matrixEnjinV1042`)
+        assert(!item.matrixV1042.matches(block), `${item.name} must not match the canary matrixV1042 codec`)
+        assert(!item.matrixEnjinV1041.matches(block), `${item.name} must not match matrixEnjinV1041`)
+    }
+})
+
+void test('Enjin Matrixchain 1042 has matrixEnjinV1042 codecs for token storage and TokenUpdated; unchanged items keep matching the 1041 codecs', () => {
+    const block = { _runtime: runtimeFor('enjin-matrixchain', 1042) } as Block
+
+    assert(storage.multiTokens.tokens.matrixEnjinV1042.is(block))
+    assert(events.multiTokens.tokenUpdated.matrixEnjinV1042.matches(block))
+    assert(events.marketplace.listingCreated.matrixEnjinV1041.matches(block))
+    assert(events.multiTokens.frozen.matrixEnjinV1041.matches(block))
+    assert(calls.multiTokens.mint.matrixEnjinV1041.matches(block))
+    assert(storage.multiTokens.collections.matrixEnjinV1041.is(block))
+})
+
 for (const [network, version] of [
     ['enjin-relaychain', 1080],
     ['enjin-relaychain', 1070],
@@ -97,6 +125,7 @@ for (const [network, version] of [
     ['enjin-matrixchain', 1041],
     ['canary-matrixchain', 1041],
     ['canary-matrixchain', 1042],
+    ['enjin-matrixchain', 1042],
 ] as const) {
     void test(`fuel tank and batch decoders unwrap calls on ${network} v${version}`, () => {
         const runtime = runtimeFor(network, version)

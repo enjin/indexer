@@ -185,6 +185,21 @@ void test('Canary Matrixchain 1042 metadata decodes current and lazily unmigrate
     assert.equal(decodeTokenStorageValue(current, v6).creationBlock, undefined)
 })
 
+void test('Enjin Matrixchain 1042 metadata decodes current and lazily unmigrated tokens', async () => {
+    const current = await getRuntimeCached('enjin-matrixchain', 1042)
+    const previous = await getRuntimeCached('enjin-matrixchain', 1041)
+    const currentType = current.description.storage.MultiTokens.items.Tokens.value
+    const previousType = previous.description.storage.MultiTokens.items.Tokens.value
+
+    assert.equal(tokenLayout(current), 'v7')
+    assert.equal(tokenLayout(previous), 'v6')
+
+    const v7 = current.scaleCodec.encodeToHex(currentType, { ...tokenValue(), creationBlock: 12331000 })
+    const v6 = previous.scaleCodec.encodeToHex(previousType, tokenValue())
+    assert.equal(decodeTokenStorageValue(current, v7).creationBlock, 12331000n)
+    assert.equal(decodeTokenStorageValue(current, v6).creationBlock, undefined)
+})
+
 void test('v7 token decoder reads v7, lazily unmigrated v6 and pre-v6 encodings', async () => {
     const { real } = await fixture()
     const { runtime, codec, type } = v7Runtime(real)

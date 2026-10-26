@@ -51,6 +51,7 @@ import * as v1032 from '../v1032'
 import * as matrixV1040 from '../matrixV1040'
 import * as matrixEnjinV1041 from '../matrixEnjinV1041'
 import * as matrixV1041 from '../matrixV1041'
+import * as matrixEnjinV1042 from '../matrixEnjinV1042'
 import * as matrixV1042 from '../matrixV1042'
 import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
@@ -169,6 +170,18 @@ export const schedule = {
             maybePeriodic: sts.option(() => sts.tuple(() => [sts.number(), sts.number()])),
             priority: sts.number(),
             call: matrixEnjinV1041.Call,
+        })
+    ),
+    /**
+     * Anonymously schedule a task.
+     */
+    matrixEnjinV1042: new CallType(
+        'Scheduler.schedule',
+        sts.struct({
+            when: sts.number(),
+            maybePeriodic: sts.option(() => sts.tuple(() => [sts.number(), sts.number()])),
+            priority: sts.number(),
+            call: matrixEnjinV1042.Call,
         })
     ),
     /**
@@ -928,6 +941,19 @@ export const scheduleNamed = {
             maybePeriodic: sts.option(() => sts.tuple(() => [sts.number(), sts.number()])),
             priority: sts.number(),
             call: matrixEnjinV1041.Call,
+        })
+    ),
+    /**
+     * Schedule a named task.
+     */
+    matrixEnjinV1042: new CallType(
+        'Scheduler.schedule_named',
+        sts.struct({
+            id: sts.bytes(),
+            when: sts.number(),
+            maybePeriodic: sts.option(() => sts.tuple(() => [sts.number(), sts.number()])),
+            priority: sts.number(),
+            call: matrixEnjinV1042.Call,
         })
     ),
     /**
@@ -1733,6 +1759,18 @@ export const scheduleAfter = {
     ),
     /**
      * Anonymously schedule a task after a delay.
+     */
+    matrixEnjinV1042: new CallType(
+        'Scheduler.schedule_after',
+        sts.struct({
+            after: sts.number(),
+            maybePeriodic: sts.option(() => sts.tuple(() => [sts.number(), sts.number()])),
+            priority: sts.number(),
+            call: matrixEnjinV1042.Call,
+        })
+    ),
+    /**
+     * Anonymously schedule a task after a delay.
      *
      * # <weight>
      * Same as [`schedule`].
@@ -2502,6 +2540,19 @@ export const scheduleNamedAfter = {
             maybePeriodic: sts.option(() => sts.tuple(() => [sts.number(), sts.number()])),
             priority: sts.number(),
             call: matrixEnjinV1041.Call,
+        })
+    ),
+    /**
+     * Schedule a named task after a delay.
+     */
+    matrixEnjinV1042: new CallType(
+        'Scheduler.schedule_named_after',
+        sts.struct({
+            id: sts.bytes(),
+            after: sts.number(),
+            maybePeriodic: sts.option(() => sts.tuple(() => [sts.number(), sts.number()])),
+            priority: sts.number(),
+            call: matrixEnjinV1042.Call,
         })
     ),
     /**
