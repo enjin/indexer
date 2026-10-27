@@ -11,6 +11,8 @@ import {
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
 import { SnsEvent } from '~/util/sns'
+import { SnsCause } from '~/util/sns-cause'
+import { marketplace } from '~/type/events'
 import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
 import { rebuildOfferState } from '~/pallet/marketplace/utils/listing-state'
@@ -64,10 +66,13 @@ export async function expiredListingRemoved(
 
     await QueueUtils.dispatchComputeTokenBestListing(!isOffer ? makeAssetId.id : takeAssetId.id)
 
+    // The chain removes an expired listing instead of cancelling it, so consumers get the cancellation they already
+    // handle, with the reason; the chain-level name is not published.
     const snsEvent: SnsEvent = {
         id: item.id,
-        name: item.name,
+        name: marketplace.listingCancelled.name,
         body: {
+            cause: SnsCause.expired,
             listing: {
                 id: listing.id,
                 price: listing.price.toString(),

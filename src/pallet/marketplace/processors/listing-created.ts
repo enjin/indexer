@@ -184,6 +184,8 @@ export async function listingCreated(
             token: isOffer ? takeAssetId.id : makeAssetId.id,
             decimalCount: makeAssetId.nativeMetadata?.decimalCount,
             extrinsic: item.extrinsic?.id,
+            // false when the ListingNotIndexed before this event left the listing out of the order book
+            indexed: bookState !== MarketplaceListingBookState.NotIndexed,
         },
     }
 

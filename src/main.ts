@@ -34,6 +34,7 @@ import { readableDispatchError } from '~/util/dispatch-error'
 import { getExtrinsicNonce } from '~/util/extrinsic-nonce'
 import { dispatchFeeShares, fuelTankDispatchError } from '~/pallet/fuel-tanks/dispatch-fee'
 import { isSnsEvent, Sns, SnsEvent } from '~/util/sns'
+import { rememberBlockEvents } from '~/util/sns-cause'
 import { queueMissingBlocks } from '~/migration/queue-missing-blocks'
 import { initializeCrashReporting, reportCrash } from '~/util/crash-report'
 
@@ -77,6 +78,7 @@ async function bootstrap() {
 
                 for (const block of ctx.blocks) {
                     const blockStart = Date.now()
+                    rememberBlockEvents(block.header.hash, block.events)
                     ctx.log.debug(
                         `Processing block ${block.header.height}, ${block.events.length} events, ${block.calls.length} calls to process`
                     )

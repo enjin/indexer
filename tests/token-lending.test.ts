@@ -254,18 +254,8 @@ void test('loan processors update current state and emit account history without
     assert(returnedResult[1] instanceof AccountTokenEvent)
     assert.equal(returnedResult[1].from.id, borrower.id)
     assert.equal(returnedResult[1].to?.id, lender.id)
-    assert.deepEqual(returnedResult[2], {
-        id: '88-1',
-        name: 'MultiTokens.TokenReturned',
-        body: {
-            collectionId: 7n,
-            tokenId: 9n,
-            token: '7-9',
-            lender: lender.id,
-            borrower: borrower.id,
-            extrinsic: undefined,
-        },
-    })
+    // not published on its own: the Transferred of the return carries `cause: loanReturn`
+    assert.equal(returnedResult.length, 2)
     assert.equal(loan, undefined)
 
     await processTokenLent(

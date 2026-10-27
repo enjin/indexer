@@ -17,6 +17,7 @@ import {
     Token,
 } from '~/model'
 import { SnsEvent } from '~/util/sns'
+import { rememberBlockEvents } from '~/util/sns-cause'
 
 // The processors pull in the job queue; stub it so the run exits and no Redis is needed.
 const testRequire = createRequire(__filename)
@@ -48,6 +49,9 @@ const { listingCancelled } = testRequire(
 const { expiredListingRemoved } = testRequire(
     '~/pallet/marketplace/processors/expired-listing-removed'
 ) as typeof import('~/pallet/marketplace/processors/expired-listing-removed')
+const { listingRemovedUnderMinimum } = testRequire(
+    '~/pallet/marketplace/processors/listing-removed-under-minimum'
+) as typeof import('~/pallet/marketplace/processors/listing-removed-under-minimum')
 
 after(() => {
     for (const [modulePath, original] of stubbed) testRequire.cache[modulePath] = original
@@ -163,6 +167,8 @@ void test('ListingCancelled from the on_idle sweep still publishes the SNS messa
     )
 
     assert.equal(sns.name, 'Marketplace.ListingCancelled')
+    assert.equal(sns.body.cause, 'cancelled')
+    assert.equal(sns.body.returnedBid, undefined)
     assert.equal((sns.body.listing as { id: string; type: string }).id, listingId)
     assert.equal((sns.body.listing as { type: string }).type, 'FixedPrice')
     assert.equal(sns.body.extrinsic, undefined)
@@ -179,9 +185,54 @@ void test('ExpiredListingRemoved from the on_idle sweep still publishes the SNS 
         )
     )
 
-    assert.equal(sns.name, 'Marketplace.ExpiredListingRemoved')
+    // published as the cancellation consumers already handle, with the reason
+    assert.equal(sns.name, 'Marketplace.ListingCancelled')
+    assert.equal(sns.body.cause, 'expired')
     assert.equal((sns.body.listing as { id: string }).id, listingId)
     assert.equal(sns.body.extrinsic, undefined)
+})
+
+void test('ListingRemovedUnderMinimum from the on_idle sweep publishes ListingCancelled with cause underMinimum', async () => {
+    const { listing, ctx } = fixtures(ListingType.Auction)
+
+    const sns = snsOf(
+        await listingRemovedUnderMinimum(
+            ctx,
+            block,
+            sweepItem(runtime, '500-6', 'Marketplace.ListingRemovedUnderMinimum', { listingId: `0x${listingId}` })
+        )
+    )
+
+    assert.equal(sns.name, 'Marketplace.ListingCancelled')
+    assert.equal(sns.body.cause, 'underMinimum')
+    assert.equal((sns.body.listing as { id: string }).id, listingId)
+    assert.equal(sns.body.extrinsic, undefined)
+    assert.equal(listing.isActive, false)
+})
+
+void test('ListingCancelled followed by AbandonedListingReleased carries cause abandoned and the returned bid', async () => {
+    const { ctx } = fixtures(ListingType.Auction)
+    const cancelledItem = {
+        ...sweepItem(runtime, '501-2', 'Marketplace.ListingCancelled', { listingId: `0x${listingId}` }),
+        extrinsic: { id: '501-1' },
+    } as EventItem
+    const releasedItem = {
+        ...sweepItem(runtime, '501-3', 'Marketplace.AbandonedListingReleased', {
+            listingId: `0x${listingId}`,
+            returnedBid: { bidder, price: '15', blockNumber: 480 },
+        }),
+        extrinsic: { id: '501-1' },
+    } as EventItem
+    rememberBlockEvents(block.hash, [cancelledItem, releasedItem])
+
+    const sns = snsOf(await listingCancelled(ctx, block, cancelledItem))
+
+    assert.equal(sns.name, 'Marketplace.ListingCancelled')
+    assert.equal(sns.body.cause, 'abandoned')
+    const returnedBid = sns.body.returnedBid as { bidder: string; price: bigint }
+    assert.equal(returnedBid.bidder, bidder)
+    assert.equal(returnedBid.price, 15n)
+    rememberBlockEvents(block.hash, [])
 })
 
 void test('a signed cancellation keeps carrying its extrinsic id', async () => {

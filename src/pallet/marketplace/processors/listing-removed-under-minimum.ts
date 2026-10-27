@@ -10,6 +10,8 @@ import {
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
 import { SnsEvent } from '~/util/sns'
+import { SnsCause } from '~/util/sns-cause'
+import { marketplace } from '~/type/events'
 import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
 import { normalizeListingId } from '~/pallet/marketplace/utils/listing-id'
@@ -61,10 +63,13 @@ export async function listingRemovedUnderMinimum(
     await ctx.store.insert(listingStatus)
     await ctx.store.save(listing)
 
+    // The chain removes a listing it cannot settle at its minimum instead of cancelling or filling it, so consumers
+    // get the cancellation they already handle, with the reason; the chain-level name is not published.
     const snsEvent: SnsEvent = {
         id: item.id,
-        name: item.name,
+        name: marketplace.listingCancelled.name,
         body: {
+            cause: SnsCause.underMinimum,
             listing: {
                 id: listing.id,
                 price: listing.price.toString(),
@@ -92,6 +97,7 @@ export async function listingRemovedUnderMinimum(
             collection: isOffer ? takeAssetId.collection : makeAssetId.collection,
             token: isOffer ? takeAssetId : makeAssetId,
         }),
-        item.extrinsic ? snsEvent : undefined,
+        // An auction finalized by the on_idle sweep has no extrinsic; consumers still need the message.
+        snsEvent,
     ]
 }

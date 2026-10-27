@@ -1,15 +1,21 @@
 import Big from 'big.js'
 import { Listing, ListingType, Token } from '~/model'
 import { EventItem } from '~/contexts'
-import { ListingFilled } from '~/pallet/marketplace/events'
+import { ListingFilled, OrderMatched } from '~/pallet/marketplace/events'
 import { SnsEvent } from '~/util/sns'
+import { SnsCause } from '~/util/sns-cause'
 
+/**
+ * `match` is the OrderMatched of the same extrinsic when the fill came from `create_listing_and_match`: the taker's
+ * order filled this resting listing. The OrderMatched event itself is not published.
+ */
 export function listingFilledSnsEvent(
     item: EventItem,
     event: ListingFilled,
     listing: Listing,
     makeAssetId: Token,
-    takeAssetId: Token
+    takeAssetId: Token,
+    match?: Pick<OrderMatched, 'taker' | 'side'>
 ): SnsEvent {
     const isOffer = listing.type === ListingType.Offer
     const tokenAsset = isOffer ? takeAssetId : makeAssetId
@@ -45,6 +51,9 @@ export function listingFilledSnsEvent(
             royalty: event.royalty,
             decimalCount: tokenAsset.nativeMetadata?.decimalCount,
             extrinsic: item.extrinsic?.id,
+            cause: match ? SnsCause.match : SnsCause.fill,
+            taker: match ? { id: match.taker } : undefined,
+            side: match?.side.__kind,
         },
     }
 }

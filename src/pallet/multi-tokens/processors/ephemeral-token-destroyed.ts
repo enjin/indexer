@@ -1,29 +1,10 @@
 import { Block, CommonContext, EventItem } from '~/contexts'
 import * as mappings from '~/pallet/index'
 import { EventHandlerResult } from '~/processor.handler'
-import { SnsEvent } from '~/util/sns'
 
-export function ephemeralTokenDestroyed(
-    _ctx: CommonContext,
-    _block: Block,
-    item: EventItem,
-    skipSave: boolean
-): EventHandlerResult {
+// Not published on SNS: the Burned of the same destruction carries `cause: ephemeralExpiry` and the expiration
+// block (see `~/util/sns-cause`).
+export function ephemeralTokenDestroyed(_ctx: CommonContext, _block: Block, item: EventItem): EventHandlerResult {
     const data = mappings.multiTokens.events.ephemeralTokenDestroyed(item)
-    const event = mappings.multiTokens.events.ephemeralTokenDestroyedEventModel(item, data)
-    if (skipSave) return event
-
-    const snsEvent: SnsEvent = {
-        id: item.id,
-        name: item.name,
-        body: {
-            collectionId: data.collectionId,
-            tokenId: data.tokenId,
-            token: `${data.collectionId}-${data.tokenId}`,
-            expiration: data.expiration,
-            extrinsic: item.extrinsic?.id,
-        },
-    }
-
-    return [event, snsEvent]
+    return mappings.multiTokens.events.ephemeralTokenDestroyedEventModel(item, data)
 }
