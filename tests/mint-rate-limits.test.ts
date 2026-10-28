@@ -4,8 +4,16 @@ import { createRequire, Module } from 'node:module'
 import test, { after } from 'node:test'
 import { Codec, Type, TypeKind } from '@subsquid/scale-codec'
 import { Runtime } from '@subsquid/substrate-runtime'
+import { buildSchemaSync } from 'type-graphql'
 import { Block, EventItem } from '~/contexts'
-import { Collection, Token } from '~/model'
+import {
+    Collection,
+    MintRateLimit,
+    MintRateLimitState,
+    MintRateWindow,
+    PendingMintRateLimitChange,
+    Token,
+} from '~/model'
 import { normalizeDefaultMintParams, normalizeFlexibleMintParams } from '~/pallet/multi-tokens/calls/mint-rate-limit'
 import {
     mintRateLimitChangeScheduled,
@@ -16,6 +24,7 @@ import {
 import { decodeCollectionStorageValue, getMixedCollection } from '~/pallet/multi-tokens/storage/collection-values'
 import { normalizeMintRateLimitState } from '~/pallet/multi-tokens/storage/mint-rate-limit'
 import { decodeTokenStorageValue } from '~/pallet/multi-tokens/storage/token-values'
+import { EffectiveMintRateLimitResolver, mintRateLimitAtBlock } from '~/server-extension/effective-mint-rate-limit'
 import { calls, events, storage } from '~/type'
 
 const testRequire = createRequire(__filename)
@@ -81,6 +90,89 @@ function runtime1040(call?: (method: string, params?: unknown[]) => Promise<unkn
 
 const owner = `0x${'11'.repeat(32)}`
 const largeMaximum = 9_007_199_254_740_993n
+
+function storedRateLimit(newLimit: MintRateLimit | null, effectiveBlock = 200n): MintRateLimitState {
+    return new MintRateLimitState({
+        limit: new MintRateLimit({ period: 200n, max: largeMaximum }),
+        window: new MintRateWindow({ lastSlot: 10n, buckets: Array(9).fill(0n) }),
+        pending: new PendingMintRateLimitChange({ newLimit, effectiveBlock }),
+    })
+}
+
+void test('effective rate limit switches exactly at the scheduled block without altering raw storage', () => {
+    const removal = storedRateLimit(null)
+    assert.deepEqual(mintRateLimitAtBlock(removal, 199n), {
+        limit: { period: 200n, max: largeMaximum },
+        pending: { newLimit: null, effectiveBlock: 200n },
+    })
+    assert.deepEqual(mintRateLimitAtBlock(removal, 200n), { limit: null, pending: null })
+    assert.deepEqual(mintRateLimitAtBlock(removal, 201n), { limit: null, pending: null })
+    assert.equal(removal.limit.max, largeMaximum)
+    assert.equal(removal.pending?.effectiveBlock, 200n)
+
+    const replacement = storedRateLimit(new MintRateLimit({ period: 100n, max: largeMaximum + 1n }))
+    assert.deepEqual(mintRateLimitAtBlock(replacement, 200n), {
+        limit: { period: 100n, max: largeMaximum + 1n },
+        pending: null,
+    })
+    assert.deepEqual(
+        mintRateLimitAtBlock(
+            new MintRateLimitState({
+                limit: removal.limit,
+                window: removal.window,
+                pending: null,
+            }),
+            201n
+        ),
+        { limit: { period: 200n, max: largeMaximum }, pending: null }
+    )
+    assert.deepEqual(mintRateLimitAtBlock(null, 201n), { limit: null, pending: null })
+})
+
+void test('effective rate limit resolver uses the indexed block for token and collection scope', async () => {
+    const state = storedRateLimit(null)
+    const collection = new Collection({ id: '101706', mintRateLimit: state })
+    const token = new Token({ id: '101706-455', mintRateLimit: state })
+    const lookedUp: string[] = []
+    const manager = {
+        query: (sql: string) => {
+            assert.match(sql, /squid_processor\.status/)
+            assert.match(sql, /squid_processor\.hot_block/)
+            return Promise.resolve([{ height: '200' }])
+        },
+        getRepository: (model: unknown) => ({
+            findOneBy: ({ id }: { id: string }) => {
+                lookedUp.push(id)
+                return Promise.resolve(model === Collection ? collection : token)
+            },
+        }),
+    }
+    const resolver = new EffectiveMintRateLimitResolver(() => Promise.resolve(manager as never))
+
+    assert.deepEqual(await resolver.effectiveMintRateLimit('101706', '455'), {
+        asOfBlock: 200n,
+        limit: null,
+        pending: null,
+    })
+    assert.deepEqual(await resolver.effectiveMintRateLimit('101706'), {
+        asOfBlock: 200n,
+        limit: null,
+        pending: null,
+    })
+    assert.deepEqual(lookedUp, ['101706-455', '101706'])
+    await assert.rejects(resolver.effectiveMintRateLimit('101706', '455x'), /tokenId must be/)
+})
+
+void test('GraphQL registers the effective rate limit query for both scopes', () => {
+    const schema = buildSchemaSync({
+        resolvers: [EffectiveMintRateLimitResolver],
+        validate: false,
+    })
+    const field = schema.getQueryType()?.getFields().effectiveMintRateLimit
+    assert(field)
+    assert.deepEqual(field.args.map((arg) => arg.name).sort(), ['collectionId', 'tokenId'])
+    assert.equal(field.type.toString(), 'EffectiveMintRateLimitResult')
+})
 
 function rateState(pendingRemoval = false) {
     return {
