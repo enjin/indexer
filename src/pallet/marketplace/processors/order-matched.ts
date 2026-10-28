@@ -100,22 +100,8 @@ export async function orderMatched(
 
     await refreshPromotedListings(ctx, block, data)
 
-    const snsEvent: SnsEvent = {
-        id: item.id,
-        name: item.name,
-        body: {
-            taker: { id: taker.id },
-            assetId: assetId(data.assetId),
-            currencyId: assetId(data.currencyId),
-            side: data.side.__kind,
-            amountMatched: data.amountMatched,
-            ordersExamined: data.ordersExamined,
-            remainderListingId,
-            unrestedAmount: data.unrestedAmount,
-            extrinsic: item.extrinsic?.id,
-        },
-    }
-
+    // Not published on SNS: each ListingFilled of the match carries `cause: match` with the taker and side, and the
+    // remainder's ListingCreated is published as any listing (see `~/util/sns-cause`).
     return [
         ...mappings.marketplace.events.orderMatchedEventModel(
             item,
@@ -125,6 +111,6 @@ export async function orderMatched(
             asset,
             asset?.collection
         ),
-        item.extrinsic ? snsEvent : undefined,
+        undefined,
     ]
 }

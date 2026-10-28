@@ -11,6 +11,8 @@ import {
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
 import { SnsEvent } from '~/util/sns'
+import { findSiblingEvent, SnsCause } from '~/util/sns-cause'
+import { marketplace } from '~/type/events'
 import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
 import Big from 'big.js'
@@ -69,6 +71,16 @@ export async function listingCancelled(
         listing.type !== ListingType.Offer ? makeAssetId.id : takeAssetId.id
     )
 
+    // `resolve_abandoned_listing` emits ListingCancelled and then AbandonedListingReleased for the listing; the
+    // release (and the bid it returned) travels on this message, the release event is not published on its own.
+    const release = findSiblingEvent(
+        block,
+        item,
+        marketplace.abandonedListingReleased.name,
+        mappings.marketplace.events.abandonedListingReleased,
+        (e) => normalizeListingId(e.listingId) === listingId
+    )
+
     const snsEvent: SnsEvent = {
         id: item.id,
         name: item.name,
@@ -94,6 +106,8 @@ export async function listingCancelled(
             token: listing.type === ListingType.Offer ? takeAssetId.id : makeAssetId.id,
             decimalCount: makeAssetId.nativeMetadata?.decimalCount,
             extrinsic: item.extrinsic?.id,
+            cause: release ? SnsCause.abandoned : SnsCause.cancelled,
+            returnedBid: release?.returnedBid,
         },
     }
 

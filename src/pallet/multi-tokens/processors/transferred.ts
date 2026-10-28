@@ -3,6 +3,8 @@ import { CollectionAccount, Token, TokenAccount } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
 import { SnsEvent } from '~/util/sns'
+import { findSiblingEvent, SnsCause } from '~/util/sns-cause'
+import { multiTokens } from '~/type/events'
 import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
 import { EventHandlerResult } from '~/processor.handler'
@@ -98,6 +100,16 @@ export async function transferred(
         throwFatalError(`[Transferred] We have not found token account ${to.id}-${data.collectionId}-${data.tokenId}.`)
     }
 
+    // A transfer that ends a loan (the borrower sending the token back, or the chain returning it at the loan's
+    // expiration block) comes with a TokenReturned; that event is not published on its own.
+    const loanReturn = findSiblingEvent(
+        block,
+        item,
+        multiTokens.tokenReturned.name,
+        mappings.multiTokens.events.tokenReturned,
+        (e) => e.collectionId === data.collectionId && e.tokenId === data.tokenId && e.borrower === data.from
+    )
+
     const snsEvent: SnsEvent = {
         id: item.id,
         name: item.name,
@@ -113,6 +125,9 @@ export async function transferred(
                 .toNumber(),
             extrinsic: item.extrinsic?.id,
             decimalCount: token?.nativeMetadata?.decimalCount,
+            cause: loanReturn ? SnsCause.loanReturn : SnsCause.transfer,
+            lender: loanReturn?.lender,
+            borrower: loanReturn?.borrower,
         },
     }
 

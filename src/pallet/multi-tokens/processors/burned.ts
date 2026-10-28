@@ -1,6 +1,8 @@
 import { Token, TokenAccount, UserInfusion } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { SnsEvent } from '~/util/sns'
+import { findSiblingEvent, SnsCause } from '~/util/sns-cause'
+import { multiTokens } from '~/type/events'
 import * as mappings from '~/pallet/index'
 import { getOrCreateAccount } from '~/util/entities'
 import { QueueUtils } from '~/queue'
@@ -84,6 +86,16 @@ export async function burned(
         ctx.log.error(`Error processing burned event ${item.id} : ${error}`)
     }
 
+    // An ephemeral token that reached its expiration block is burned by the chain itself, which says so in an
+    // EphemeralTokenDestroyed next to the Burned; that event is not published on its own.
+    const expiry = findSiblingEvent(
+        block,
+        item,
+        multiTokens.ephemeralTokenDestroyed.name,
+        mappings.multiTokens.events.ephemeralTokenDestroyed,
+        (e) => e.collectionId === data.collectionId && e.tokenId === data.tokenId
+    )
+
     const snsEvent: SnsEvent = {
         id: item.id,
         name: item.name,
@@ -99,6 +111,8 @@ export async function burned(
             extrinsic: item.extrinsic?.id,
             infusion: infusionBeforeBurn,
             totalBurntInfusion: totalBurntInfusion,
+            cause: expiry ? SnsCause.ephemeralExpiry : SnsCause.burn,
+            expiration: expiry?.expiration,
         },
     }
 

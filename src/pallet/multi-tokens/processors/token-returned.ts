@@ -3,7 +3,6 @@ import { Block, CommonContext, EventItem } from '~/contexts'
 import * as mappings from '~/pallet/index'
 import { EventHandlerResult } from '~/processor.handler'
 import { getOrCreateAccount } from '~/util/entities'
-import { SnsEvent } from '~/util/sns'
 
 export async function tokenReturned(
     ctx: CommonContext,
@@ -33,18 +32,7 @@ export async function tokenReturned(
     const loan = await ctx.store.findOneBy(TokenLoan, { id: `${data.collectionId}-${data.tokenId}` })
     if (loan) await ctx.store.remove(loan)
 
-    const snsEvent: SnsEvent = {
-        id: item.id,
-        name: item.name,
-        body: {
-            collectionId: data.collectionId,
-            tokenId: data.tokenId,
-            token: `${data.collectionId}-${data.tokenId}`,
-            lender: data.lender,
-            borrower: data.borrower,
-            extrinsic: item.extrinsic?.id,
-        },
-    }
-
-    return [...event, snsEvent]
+    // Not published on SNS: the Transferred of the same return carries `cause: loanReturn` with the lender and
+    // borrower (see `~/util/sns-cause`).
+    return event
 }

@@ -15,7 +15,9 @@ import { getOrCreateAccount } from '~/util/entities'
 import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
-import { ListingFilled } from '~/pallet/marketplace/events'
+import { assetId, ListingFilled } from '~/pallet/marketplace/events'
+import { findSiblingEvent } from '~/util/sns-cause'
+import { marketplace } from '~/type/events'
 import { dispatchComputeAccountStats } from '~/queue/queue-utils'
 import { listingFillParties, rebuildFixedPriceState, rebuildOfferState } from '~/pallet/marketplace/utils/listing-state'
 import { listingFilledSnsEvent } from '~/pallet/marketplace/processors/listing-filled-sns'
@@ -115,7 +117,15 @@ export async function listingFilled(
 
     await QueueUtils.dispatchComputeTokenBestListing(!isOffer ? makeAssetId.id : takeAssetId.id)
 
-    const snsEvent = listingFilledSnsEvent(item, event, listing, makeAssetId, takeAssetId)
+    const match = findSiblingEvent(
+        block,
+        item,
+        marketplace.orderMatched.name,
+        mappings.marketplace.events.orderMatched,
+        (e) => assetId(e.assetId) === (isOffer ? takeAssetId.id : makeAssetId.id),
+        true
+    )
+    const snsEvent = listingFilledSnsEvent(item, event, listing, makeAssetId, takeAssetId, match)
 
     await QueueUtils.dispatchComputeStats(isOffer ? takeAssetId.collection.id : makeAssetId.collection.id)
 
