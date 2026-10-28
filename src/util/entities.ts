@@ -84,7 +84,15 @@ export async function getBestListing(ctx: CommonContext, tokenId: string): Promi
             makeAssetId: { id: tokenId },
             isActive: true,
             hasRoyaltyIncreased: IsNull(),
-            state: Raw((column) => notExpiredListingSql(column)),
+            // TypeORM passes an unquoted alias (Listing.state); PostgreSQL folds it to lowercase.
+            state: Raw((column) =>
+                notExpiredListingSql(
+                    column
+                        .split('.')
+                        .map((identifier) => `"${identifier}"`)
+                        .join('.')
+                )
+            ),
         },
         order: { highestPrice: 'ASC' },
     })

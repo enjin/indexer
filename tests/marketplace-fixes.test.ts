@@ -277,7 +277,7 @@ void test('M1: best listing lookups skip listings flagged expired', async () => 
     const state = captured?.state as FindOperator<unknown>
     assert.ok(state instanceof FindOperator)
     assert.equal(state.type, 'raw')
-    assert.equal(state.getSql?.('"state"'), `COALESCE(("state"->>'isExpired')::boolean, false) = false`)
+    assert.equal(state.getSql?.('Listing.state'), `COALESCE(("Listing"."state"->>'isExpired')::boolean, false) = false`)
 })
 
 void test('M3: PendingActivation listings are promoted once the processed height reaches their start block', async () => {
