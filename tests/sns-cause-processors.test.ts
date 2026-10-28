@@ -228,11 +228,22 @@ void test('a fill from create_listing_and_match carries cause match with the tak
         {
             taker: lender,
             side: { __kind: 'Bid' },
+            assetId: { collectionId: 10n, tokenId: 20n },
+            currencyId: { collectionId: 0n, tokenId: 0n },
+            amountMatched: 3n,
+            ordersExamined: 2,
+            remainderListingId: `0x${'bb'.repeat(32)}`,
+            unrestedAmount: 1n,
         }
     )
     assert.equal(matched.body.cause, 'match')
     assert.deepEqual(matched.body.taker, { id: lender })
     assert.equal(matched.body.side, 'Bid')
+    // the OrderMatched summary nft-io reads (NFTIO-4382) travels on each fill of the match
+    assert.equal(matched.body.amountMatched, 3n)
+    assert.equal(matched.body.ordersExamined, 2)
+    assert.equal(matched.body.remainderListingId, 'bb'.repeat(32))
+    assert.equal(matched.body.unrestedAmount, 1n)
 
     const plain = listingFilledSnsEvent(
         eventItem('500-3', 'Marketplace.ListingFilled', {}, '500-0'),
@@ -244,4 +255,5 @@ void test('a fill from create_listing_and_match carries cause match with the tak
     assert.equal(plain.body.cause, 'fill')
     assert.equal(plain.body.taker, undefined)
     assert.equal(plain.body.side, undefined)
+    assert.equal(plain.body.amountMatched, undefined)
 })

@@ -7,7 +7,8 @@ import { SnsCause } from '~/util/sns-cause'
 
 /**
  * `match` is the OrderMatched of the same extrinsic when the fill came from `create_listing_and_match`: the taker's
- * order filled this resting listing. The OrderMatched event itself is not published.
+ * order filled this resting listing. The OrderMatched event itself is not published, so every fill of the match
+ * carries its summary (the same values on each).
  */
 export function listingFilledSnsEvent(
     item: EventItem,
@@ -15,7 +16,7 @@ export function listingFilledSnsEvent(
     listing: Listing,
     makeAssetId: Token,
     takeAssetId: Token,
-    match?: Pick<OrderMatched, 'taker' | 'side'>
+    match?: OrderMatched
 ): SnsEvent {
     const isOffer = listing.type === ListingType.Offer
     const tokenAsset = isOffer ? takeAssetId : makeAssetId
@@ -54,6 +55,10 @@ export function listingFilledSnsEvent(
             cause: match ? SnsCause.match : SnsCause.fill,
             taker: match ? { id: match.taker } : undefined,
             side: match?.side.__kind,
+            amountMatched: match?.amountMatched,
+            ordersExamined: match?.ordersExamined,
+            remainderListingId: match?.remainderListingId?.replace(/^0x/, ''),
+            unrestedAmount: match?.unrestedAmount,
         },
     }
 }
