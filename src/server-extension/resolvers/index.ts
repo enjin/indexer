@@ -20,6 +20,7 @@ import {
     RefreshListingsResolver,
     CollectionInventoryResolver,
     ChainStatsResolver,
+    EffectiveMintRateLimitResolver,
 } from '~/server-extension'
 
 export {
@@ -44,4 +45,5 @@ export {
     RefreshListingsResolver,
     CollectionInventoryResolver,
     ChainStatsResolver,
+    EffectiveMintRateLimitResolver,
 }
