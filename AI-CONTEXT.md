@@ -31,6 +31,8 @@ The decoder service can dry-run batches against any supported network. It lazily
 
 Processor batch failures emit a structured `process_crash` report with block, pod, runtime, and memory context and flush both Logtail and Sentry before Subsquid terminates the process. The GraphQL server preloads the same Sentry initialization so its uncaught exceptions retain their stack traces. `start.sh` also reports unexpected processor, worker, and GraphQL exit codes after the child process stops; the GraphQL role forwards shutdown signals and terminates its metrics and decoder side processes before exiting. Exit code 137 is labeled as SIGKILL and a possible OOM, but Kubernetes pod status remains the authoritative source for `OOMKilled`.
 
+After a successful source dry run, non-empty `forwardedXcms` trigger `dryRunXcm` on the receiving chain through the same RPC pool. Matrixchain/Relaychain routes are resolved within the requested network, using Matrixchain's on-chain parachain ID. Both runtime API errors and incomplete/failed XCM execution return the existing `success: false`/`error` response, including the destination network and instruction index when available. Further forwarded messages are checked up to 100 messages per input; unsupported routes or unavailable destination APIs fail explicitly. Calls without forwarded messages make no destination RPC requests. Each message is simulated independently against the receiving chain's state; storage effects are not shared between messages, and preflight cannot guarantee later execution or model state dependencies between deliveries.
+
 ## Main processing flow
 
 ```text
