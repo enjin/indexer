@@ -171,7 +171,16 @@ async function handleDryRun(req: Request, res: Response): Promise<void> {
         const rpc = await DecoderRpc.getInstance(validation.data.network)
         await rpc.ensureConnected()
 
-        res.json(await dryRunBatch(rpc.api, validation.data.inputs))
+        res.json(
+            await dryRunBatch(rpc.api, validation.data.inputs, {
+                network: validation.data.network,
+                getApi: async (network) => {
+                    const destination = await DecoderRpc.getInstance(network)
+                    await destination.ensureConnected()
+                    return destination.api
+                },
+            })
+        )
     } catch (error) {
         handleServerError(error, req, res, 'Dry run')
     }

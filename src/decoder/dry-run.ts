@@ -1,5 +1,6 @@
 import type { ApiPromise } from '@polkadot/api'
 import type { DryRunBatchResponse, DryRunError, DryRunInput, DryRunResponse } from './types'
+import { dryRunForwardedXcms, type ForwardedXcms, type XcmDryRunContext } from '~/decoder/xcm-dry-run'
 
 export const DRY_RUN_XCM_VERSION = 5
 export const DRY_RUN_CONCURRENCY = 5
@@ -42,6 +43,7 @@ interface DryRunEvent {
 interface DryRunEffects {
     executionResult: ExecutionResult
     emittedEvents?: DryRunEvent[]
+    forwardedXcms?: ForwardedXcms
 }
 
 interface DryRunResult {
@@ -177,7 +179,11 @@ export function buildDryRunOrigin(request: DryRunInput): DryRunOriginCaller {
     }
 }
 
-export async function dryRun(api: ApiPromise, request: DryRunInput): Promise<DryRunResponse> {
+export async function dryRun(
+    api: ApiPromise,
+    request: DryRunInput,
+    context?: XcmDryRunContext
+): Promise<DryRunResponse> {
     const runtimeApi = (api.call as unknown as { dryRunApi?: DryRunRuntimeApi }).dryRunApi
     if (!runtimeApi) {
         throw new Error('dryRunApi.dryRunCall is not available on the configured chain')
@@ -185,17 +191,24 @@ export async function dryRun(api: ApiPromise, request: DryRunInput): Promise<Dry
 
     const result = await runtimeApi.dryRunCall(buildDryRunOrigin(request), request.encodedData, DRY_RUN_XCM_VERSION)
 
-    return formatDryRunResult(api.registry as unknown as DryRunRegistry, result)
+    const response = formatDryRunResult(api.registry as unknown as DryRunRegistry, result)
+    if (!response.success) return response
+
+    return dryRunForwardedXcms(api, result.asOk.forwardedXcms ?? [], context)
 }
 
-export async function dryRunBatch(api: ApiPromise, inputs: DryRunInput[]): Promise<DryRunBatchResponse> {
+export async function dryRunBatch(
+    api: ApiPromise,
+    inputs: DryRunInput[],
+    context?: XcmDryRunContext
+): Promise<DryRunBatchResponse> {
     const results = new Array<DryRunResponse>(inputs.length)
     let nextIndex = 0
 
     async function worker(): Promise<void> {
         while (nextIndex < inputs.length) {
             const index = nextIndex++
-            results[index] = await dryRun(api, inputs[index])
+            results[index] = await dryRun(api, inputs[index], context)
         }
     }
 
