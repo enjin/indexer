@@ -206,6 +206,43 @@ class CollectionInventoryConnection {
     }
 }
 
+/**
+ * Keyset condition for the rows after `cursor` in the page query's order:
+ * `sort_priority ASC, <sortColumn> <order> NULLS LAST|FIRST, id ASC`.
+ *
+ * Postgres sorts NULLs last for ASC and first for DESC, so a NULL sort value needs its own branch.
+ * Group ids are bare token group ids and token ids are `<collectionId>-<tokenId>`, so the cursor's
+ * sort_priority comes from its id; this keeps cursors issued before the priority mattered valid.
+ */
+export function buildCursorCondition(
+    sortColumn: string,
+    order: CollectionInventoryOrderInput,
+    cursor: { id: string; orderValue: string | null },
+    firstParamIndex: number
+): { sql: string; params: (string | number)[] } {
+    const priority = /^\d+$/.test(cursor.id) ? 0 : 1
+    const priorityParam = `$${firstParamIndex}`
+    const idParam = `$${firstParamIndex + 1}`
+    const valueParam = `$${firstParamIndex + 2}`
+    const ascending = order === CollectionInventoryOrderInput.ASC
+
+    let withinPriority: string
+    if (cursor.orderValue === null) {
+        withinPriority = ascending
+            ? `${sortColumn} IS NULL AND id > ${idParam}`
+            : `${sortColumn} IS NOT NULL OR (${sortColumn} IS NULL AND id > ${idParam})`
+    } else {
+        withinPriority = ascending
+            ? `${sortColumn} > ${valueParam} OR ${sortColumn} IS NULL OR (${sortColumn} = ${valueParam} AND id > ${idParam})`
+            : `${sortColumn} < ${valueParam} OR (${sortColumn} = ${valueParam} AND id > ${idParam})`
+    }
+
+    return {
+        sql: `AND (sort_priority > ${priorityParam} OR (sort_priority = ${priorityParam} AND (${withinPriority})))`,
+        params: cursor.orderValue === null ? [priority, cursor.id] : [priority, cursor.id, cursor.orderValue],
+    }
+}
+
 @Resolver()
 export class CollectionInventoryResolver {
     constructor(private tx: () => Promise<EntityManager>) {}
@@ -236,25 +273,11 @@ export class CollectionInventoryResolver {
         }
         const limit = Math.min(requested, 100)
 
-        let afterId: string | null = null
-        let afterOrderValue: string | null = null
-
-        if (after) {
-            const decoded = decodeCursor(after)
-            afterId = decoded.id
-            afterOrderValue = decoded.orderValue
-        }
+        // Earlier cursors encoded a NULL sort value as ''; token_name is NULLIF-ed, so '' is never a real value
+        const decoded = after ? decodeCursor(after) : null
+        const cursor = decoded ? { id: decoded.id, orderValue: decoded.orderValue || null } : null
 
         const manager = await this.tx()
-
-        // Decode cursor to get keyset pagination anchor
-        let cursorOrderValue: string | null = null
-        let cursorId: string | null = null
-
-        if (afterId && afterOrderValue !== undefined) {
-            cursorOrderValue = afterOrderValue
-            cursorId = afterId
-        }
 
         // Determine SQL column name and order direction for sorting
         const getSortColumn = (sortBy: CollectionInventoryOrderByInput): string => {
@@ -271,8 +294,7 @@ export class CollectionInventoryResolver {
         }
 
         const sortColumn = getSortColumn(orderBy)
-        const sortOrder = order === CollectionInventoryOrderInput.ASC ? 'ASC' : 'DESC'
-        const comparison = order === CollectionInventoryOrderInput.ASC ? '>' : '<'
+        const sortOrder = order === CollectionInventoryOrderInput.ASC ? 'ASC NULLS LAST' : 'DESC NULLS FIRST'
 
         // Build search condition for query parameter
         let searchCondition = ''
@@ -297,20 +319,11 @@ export class CollectionInventoryResolver {
         const accountIdPlaceholders = accountIds.map((_, i) => `$${i + 1}`).join(', ')
         const collectionIdPlaceholder = `$${accountIds.length + 1}`
 
-        // Build cursor condition
         let cursorCondition = ''
-        if (cursorOrderValue !== null && cursorId !== null) {
-            const cursorOrderValueIndex = queryParams.length + 1
-            const cursorIdIndex = queryParams.length + 2
-
-            // Handle NULL order values (encoded as empty string)
-            if (cursorOrderValue === '') {
-                cursorCondition = `AND (${sortColumn} IS NOT NULL OR (${sortColumn} IS NULL AND id ${comparison} $${cursorIdIndex}))`
-                queryParams.push(cursorId)
-            } else {
-                cursorCondition = `AND (${sortColumn} ${comparison} $${cursorOrderValueIndex} OR (${sortColumn} = $${cursorOrderValueIndex} AND id ${comparison} $${cursorIdIndex}))`
-                queryParams.push(cursorOrderValue, cursorId)
-            }
+        if (cursor) {
+            const condition = buildCursorCondition(sortColumn, order, cursor, queryParams.length + 1)
+            cursorCondition = condition.sql
+            queryParams.push(...condition.params)
         }
 
         const pageItems = await manager.query(
@@ -323,7 +336,7 @@ export class CollectionInventoryResolver {
                     0 AS sort_priority,
                     MIN(token.created_at) AS created_at,
                     MIN(token.token_id) AS token_id,
-                    MIN(token.name) AS token_name,
+                    MIN(NULLIF(token.name, '')) AS token_name,
                     MAX(token.best_listing_price) AS best_listing_price
                 FROM token_account
                 INNER JOIN token ON token_account.token_id = token.id
@@ -346,7 +359,7 @@ export class CollectionInventoryResolver {
                     1 AS sort_priority,
                     token.created_at AS created_at,
                     token.token_id AS token_id,
-                    token.name AS token_name,
+                    NULLIF(token.name, '') AS token_name,
                     token.best_listing_price AS best_listing_price
                 FROM token_account
                 INNER JOIN token ON token_account.token_id = token.id
@@ -762,17 +775,17 @@ export class CollectionInventoryResolver {
             const pageItem = pageItems[index]
 
             // Extract the order value based on the sorting column
-            let orderValue: string = ''
+            let orderValue: string | null = null
             if (pageItem) {
                 switch (orderBy) {
                     case CollectionInventoryOrderByInput.DATE:
-                        orderValue = pageItem.created_at ? new Date(pageItem.created_at).toISOString() : ''
+                        orderValue = pageItem.created_at ? new Date(pageItem.created_at).toISOString() : null
                         break
                     case CollectionInventoryOrderByInput.TOKEN_NAME:
-                        orderValue = pageItem.token_name || ''
+                        orderValue = pageItem.token_name ?? null
                         break
                     case CollectionInventoryOrderByInput.BEST_LISTING_HIGHEST_PRICE:
-                        orderValue = pageItem.best_listing_price != null ? String(pageItem.best_listing_price) : ''
+                        orderValue = pageItem.best_listing_price != null ? String(pageItem.best_listing_price) : null
                         break
                 }
             }
