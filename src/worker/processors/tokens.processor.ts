@@ -14,6 +14,7 @@ import {
     syncCollectionTokensNative,
     explainQuery,
     backfillEphemeralTokens,
+    backfillLoanExtensionActivity,
 } from '~/worker/jobs'
 import { logDebug, logError } from '~/worker/utils'
 
@@ -55,6 +56,9 @@ export class TokensProcessor implements ProcessorDef {
                 break
             case JobsEnum.BACKFILL_EPHEMERAL_TOKENS:
                 await backfillEphemeralTokens(job)
+                break
+            case JobsEnum.BACKFILL_LOAN_EXTENSION_ACTIVITY:
+                await backfillLoanExtensionActivity(job)
                 break
             default:
                 throw new Error(`${job.name} is not a valid job for this processor`)
