@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, IntColumn as IntColumn_, Index as Index_, ManyToOne as ManyToOne_, Relation as Relation_, StringColumn as StringColumn_} from "@subsquid/typeorm-store"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, DateTimeColumn as DateTimeColumn_, IntColumn as IntColumn_, Index as Index_, ManyToOne as ManyToOne_, Relation as Relation_, StringColumn as StringColumn_} from "@subsquid/typeorm-store"
 import * as marshal from "./marshal"
 import {Extrinsic} from "./extrinsic.model"
 import {EventData, fromJsonEventData} from "./_eventData"
@@ -11,6 +11,9 @@ export class Event {
 
     @PrimaryColumn_()
     id!: string
+
+    @DateTimeColumn_({nullable: true})
+    createdAt!: Date | undefined | null
 
     @IntColumn_({nullable: true})
     index!: number | undefined | null

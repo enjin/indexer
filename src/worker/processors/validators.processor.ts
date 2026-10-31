@@ -8,6 +8,7 @@ import {
     importBlock,
     backfillExtrinsicBlockRelation,
     backfillEventPosition,
+    backfillEventTimestamps,
     backfillChainFinality,
     backfillGovernance,
     importGovernanceState,
@@ -42,6 +43,9 @@ export class ValidatorsProcessor implements ProcessorDef {
                 break
             case JobsEnum.BACKFILL_EVENT_POSITION:
                 await backfillEventPosition(job)
+                break
+            case JobsEnum.BACKFILL_EVENT_TIMESTAMPS:
+                await backfillEventTimestamps(job)
                 break
             case JobsEnum.BACKFILL_CHAIN_FINALITY:
                 await backfillChainFinality(job)
