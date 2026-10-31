@@ -579,6 +579,19 @@ export async function dispatchBackfillEventPosition(data?: { batchSize?: number 
     })
 }
 
+/** Explicitly requested historical repair, bounded to at most 100,000 blocks per job. */
+export async function dispatchBackfillEventTimestamps(data: {
+    fromBlock: number
+    toBlock: number
+    batchSize?: number
+}): Promise<void> {
+    const logicalId = `validators.backfill-event-timestamps.${data.fromBlock}-${data.toBlock}`
+    await ValidatorsQueue.add(JobsEnum.BACKFILL_EVENT_TIMESTAMPS, data, {
+        jobId: `${logicalId}.${randomUUID()}`,
+        deduplication: { id: logicalId },
+    })
+}
+
 export function dispatchBackfillChainFinality(options?: {
     fromBlock?: number
     toBlock?: number

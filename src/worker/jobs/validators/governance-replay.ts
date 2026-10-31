@@ -4,6 +4,7 @@ import { Event } from '~/model'
 import { indexedEvent, processEvent } from '~/pallet/governance/processors'
 import { governanceEventItems } from '~/processor.config'
 import config from '~/util/config'
+import { setEventBlock } from '~/util/event-block'
 
 function blockNumber(value: string | undefined): number {
     const parsed = value && /^\d+$/.test(value) ? Number(value) : NaN
@@ -27,7 +28,7 @@ function main(): void {
         .setRpcEndpoint(config.dataSource.chain)
         .setBlockRange({ from, to })
         .addEvent({ name: governanceEventItems, call: true, extrinsic: true })
-        .setFields({ call: { args: true, name: true, success: true } })
+        .setFields({ block: { timestamp: true }, call: { args: true, name: true, success: true } })
 
     processor.run(
         new TypeormDatabase({
@@ -40,7 +41,9 @@ function main(): void {
                 for (const event of block.events) {
                     const activity = await processEvent(ctx, block.header, event)
                     if (!(await ctx.store.findOneBy(Event, { id: activity.id }))) {
-                        await ctx.store.save(indexedEvent(activity, false))
+                        const model = indexedEvent(activity, false)
+                        setEventBlock(model, block.header, event.index)
+                        await ctx.store.save(model)
                     }
                 }
             }
