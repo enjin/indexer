@@ -44,7 +44,7 @@ void test('historical repair rejects missing/unbounded ranges and invalid batch 
 })
 
 void test(
-    'migration and batched historical repair use exact stored times, preserve existing times, and skip unknown/forked blocks',
+    'migration and batched repair skip extrinsic events, preserve existing times, and skip unknown/forked blocks',
     {
         skip: !process.env.EVENT_TIMESTAMP_TEST_DB_URL,
     },
@@ -79,12 +79,16 @@ void test(
                 [blockTime]
             )
             await runner.query('INSERT INTO extrinsic VALUES ($1, $2)', ['tx', signedTime])
+            await runner.query('INSERT INTO extrinsic VALUES ($1, null)', ['tx-without-time'])
             await runner.query(
                 `INSERT INTO event VALUES
             ('0013503916-abcde-000001', null, null),
             ('0013503916-abcde-000002', null, null),
             ('0013503916-abcde-000003', 'tx', null),
             ('0013503916-abcde-000004', null, $1),
+            ('0013503916-abcde-000005', 'tx-without-time', null),
+            ('0013503916-abcde-000006', 'missing-tx', null),
+            ('0013503916-abcde-000007', 'tx', $1),
             ('0013503917-abcde-000001', null, null),
             ('0013503918-fffff-000001', null, null),
             ('0013503919-abcde-000001', null, null),
@@ -98,8 +102,8 @@ void test(
                 (await runner.query('SELECT created_at FROM event ORDER BY id')).map(
                     (row: { created_at: Date | null }) => row.created_at?.toISOString() ?? null
                 )
-            const expected = [blockTime, blockTime, signedTime, existingTime].map((time) =>
-                new Date(time).toISOString()
+            const expected = [blockTime, blockTime, null, existingTime, null, null, existingTime].map((time) =>
+                time == null ? null : new Date(time).toISOString()
             )
             assert.deepEqual(await readTimes(), [...expected, null, null, null, null])
             await backfillEventTimestamps(request)
@@ -119,16 +123,22 @@ void test(
             try {
                 const result = await graphql({
                     schema: schemaBuilder.build(),
-                    source: `{ events(where: { id_in: ["0013503916-abcde-000001", "0013503916-abcde-000002"] }) {
-                        id createdAt extrinsic { id }
+                    source: `{ events(where: { id_in: ["0013503916-abcde-000001", "0013503916-abcde-000002", "0013503916-abcde-000003"] }) {
+                        id createdAt extrinsic { id createdAt }
                     } }`,
                     contextValue: { openreader },
                 })
                 assert.equal(result.errors, undefined)
-                assert.equal(result.data.events.length, 2)
+                assert.equal(result.data.events.length, 3)
                 for (const event of result.data.events) {
-                    assert.equal(Date.parse(event.createdAt), Date.parse(blockTime))
-                    assert.equal(event.extrinsic, null)
+                    if (event.id === '0013503916-abcde-000003') {
+                        assert.equal(event.createdAt, null)
+                        assert.equal(event.extrinsic.id, 'tx')
+                        assert.equal(Date.parse(event.extrinsic.createdAt), Date.parse(signedTime))
+                    } else {
+                        assert.equal(Date.parse(event.createdAt), Date.parse(blockTime))
+                        assert.equal(event.extrinsic, null)
+                    }
                 }
             } finally {
                 await openreader.close()

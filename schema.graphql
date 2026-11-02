@@ -78,7 +78,7 @@ type Extrinsic @entity {
 
 type Event @entity {
   id: ID!
-  # Timestamp of the containing block, including initialization/finalization events.
+  # Timestamp of the containing block for events without an extrinsic.
   createdAt: DateTime
   index: Int
   blockNumber: Int @index

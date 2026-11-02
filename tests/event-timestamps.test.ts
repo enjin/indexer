@@ -16,12 +16,21 @@ for (const name of ['MultiTokensTokenReturned', 'MultiTokensTransferred']) {
     })
 }
 
-void test('signed events use the containing block time and retain their extrinsic', () => {
+void test('events with an extrinsic leave createdAt null and retain their extrinsic and block position', () => {
     const extrinsic = new Extrinsic({ id: 'tx', createdAt: new Date(0) })
     const event = new Event({ extrinsic })
     setEventBlock(event, { height: 13503916, timestamp }, 5)
-    assert.equal(event.createdAt?.getTime(), timestamp)
+    assert.equal(event.createdAt, null)
     assert.equal(event.extrinsic, extrinsic)
+    assert.equal(event.blockNumber, 13503916)
+    assert.equal(event.index, 5)
+})
+
+void test('events with an undefined extrinsic use the containing block time', () => {
+    const event = new Event()
+    setEventBlock(event, { height: 13503916, timestamp }, 1)
+    assert.equal(event.createdAt?.getTime(), timestamp)
+    assert.equal(event.extrinsic, undefined)
 })
 
 void test('an unavailable block timestamp stays unknown rather than using the epoch or current time', () => {

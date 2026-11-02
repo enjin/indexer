@@ -5,5 +5,5 @@ import type { Event } from '~/model'
 export function setEventBlock(event: Event, block: Pick<Block, 'height' | 'timestamp'>, index: number): void {
     event.index = index
     event.blockNumber = block.height
-    event.createdAt = block.timestamp == null ? null : new Date(block.timestamp)
+    event.createdAt = event.extrinsic == null && block.timestamp != null ? new Date(block.timestamp) : null
 }
