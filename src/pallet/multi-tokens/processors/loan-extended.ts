@@ -1,7 +1,8 @@
-import { Token, TokenLoan } from '~/model'
+import { Account, Token, TokenLoan } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import * as mappings from '~/pallet/index'
 import { EventHandlerResult } from '~/processor.handler'
+import { SnsEvent } from '~/util/sns'
 import { upsertTokenLoanFromStorage } from './loan-state'
 import { loanExtensionParties } from './loan-extension-parties'
 
@@ -22,7 +23,7 @@ export async function loanExtended(
     const loan =
         existingLoan ??
         (!skipSave ? await upsertTokenLoanFromStorage(ctx, block, data.collectionId, data.tokenId) : undefined)
-    const parties = loan ?? (await loanExtensionParties(ctx, block, item, id))
+    const parties: { lender?: Account; borrower?: Account } = loan ?? (await loanExtensionParties(ctx, block, item, id))
     const event = mappings.multiTokens.events.loanExtendedEventModel(
         item,
         data,
@@ -38,5 +39,23 @@ export async function loanExtended(
         loan.updatedAt = new Date(block.timestamp ?? 0)
         await ctx.store.save(loan)
     }
-    return event
+    if (!parties.lender || !parties.borrower) return event
+
+    const snsEvent: SnsEvent = {
+        id: item.id,
+        name: item.name,
+        body: {
+            collectionId: data.collectionId,
+            tokenId: data.tokenId,
+            token: id,
+            lender: parties.lender.id,
+            borrower: parties.borrower.id,
+            oldExpiration: data.oldExpiration,
+            newExpiration: data.newExpiration,
+            ...(block.timestamp !== undefined ? { blockTimestamp: new Date(block.timestamp).toISOString() } : {}),
+            extrinsic: item.extrinsic?.id,
+        },
+    }
+
+    return [...event, snsEvent]
 }
