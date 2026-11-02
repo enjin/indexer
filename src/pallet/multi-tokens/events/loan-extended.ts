@@ -1,5 +1,13 @@
 import { EventItem } from '~/contexts'
-import { Event as EventModel, Extrinsic, MultiTokensLoanExtended } from '~/model'
+import {
+    Account,
+    AccountTokenEvent,
+    Collection,
+    Event as EventModel,
+    Extrinsic,
+    MultiTokensLoanExtended,
+    Token,
+} from '~/model'
 import { LoanExtended } from '~/pallet/multi-tokens/events/types'
 import { multiTokens } from '~/type/events'
 import { UnsupportedEventError } from '~/util/errors'
@@ -12,8 +20,15 @@ export function loanExtended(event: EventItem): LoanExtended {
     throw new UnsupportedEventError(event)
 }
 
-export function loanExtendedEventModel(item: EventItem, data: LoanExtended): EventModel {
-    return new EventModel({
+export function loanExtendedEventModel(
+    item: EventItem,
+    data: LoanExtended,
+    lender: Account | undefined,
+    borrower: Account | undefined,
+    collection: Collection | null,
+    token: Token | null
+): [EventModel, AccountTokenEvent] {
+    const event = new EventModel({
         id: item.id,
         name: MultiTokensLoanExtended.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
@@ -26,4 +41,6 @@ export function loanExtendedEventModel(item: EventItem, data: LoanExtended): Eve
             newExpirationBlock: BigInt(data.newExpiration),
         }),
     })
+
+    return [event, new AccountTokenEvent({ id: item.id, event, from: lender, to: borrower ?? null, collection, token })]
 }

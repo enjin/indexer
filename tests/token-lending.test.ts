@@ -130,7 +130,18 @@ void test('lending event decoders retain lifecycle identity and nullable extrins
     assert.equal(lentEvent.data.expirationBlock, 88n)
     assert.equal(lentAccountEvent.from.id, lender)
     assert.equal(lentAccountEvent.to?.id, borrower)
-    assert.equal(loanExtendedEventModel(extendedItem, extended).data.newExpirationBlock, 99n)
+    const [extendedEvent, extendedAccountEvent] = loanExtendedEventModel(
+        extendedItem,
+        extended,
+        lenderAccount,
+        borrowerAccount,
+        collection,
+        token
+    )
+    assert.equal(extendedEvent.data.newExpirationBlock, 99n)
+    assert.equal(extendedAccountEvent.from.id, lender)
+    assert.equal(extendedAccountEvent.to?.id, borrower)
+    assert.equal(extendedAccountEvent.token?.id, token.id)
     const [returnedEvent, returnedAccountEvent] = tokenReturnedEventModel(
         returnedItem,
         returned,
@@ -158,7 +169,8 @@ void test('loan processors update current state and emit account history without
     const ctx = {
         log: { warn: () => undefined },
         store: {
-            findOne: (entity: unknown) => Promise.resolve(entity === Token ? token : undefined),
+            findOne: (entity: unknown) =>
+                Promise.resolve(entity === Token ? token : entity === TokenLoan ? loan : undefined),
             findOneBy: (entity: unknown, where: { id: string }) => {
                 if (entity === Token) return Promise.resolve(token)
                 if (entity === Account) return Promise.resolve(where.id === lender.id ? lender : borrower)
@@ -211,7 +223,7 @@ void test('loan processors update current state and emit account history without
     assert.equal(loan.borrower.id, borrower.id)
     assert.equal(loan.expiration, 88n)
 
-    await processLoanExtended(
+    const extensionResult = await processLoanExtended(
         ctx,
         { ...block, height: 89 },
         eventItem(runtime, 'MultiTokens.LoanExtended', {
@@ -224,6 +236,11 @@ void test('loan processors update current state and emit account history without
     )
     assert(loan)
     assert.equal(loan.expiration, 99n)
+    assert(Array.isArray(extensionResult))
+    assert(extensionResult[1] instanceof AccountTokenEvent)
+    assert.equal(extensionResult[1].from.id, lender.id)
+    assert.equal(extensionResult[1].to?.id, borrower.id)
+    assert.equal(extensionResult[1].event.id, extensionResult[0].id)
 
     await processLoanReturnFailed(
         ctx,
@@ -320,4 +337,131 @@ void test('lendability mutation is independent of an active loan and replay supp
     await processTokenMutated(ctx, { _runtime: runtime, height: 88 } as Block, item, false)
     assert.equal(token.isLendable, false)
     assert.equal(saves, 1)
+})
+
+void test('historical loan extensions use the preceding lending event rather than a later active loan', async () => {
+    const runtime = runtime1040()
+    const lender = new Account({ id: `0x${'33'.repeat(32)}` })
+    const borrower = new Account({ id: `0x${'44'.repeat(32)}` })
+    const token = new Token({ id: '7-9', tokenId: 9n, collection: new Collection({ id: '7' }) })
+    const queries: unknown[] = []
+    const ctx = {
+        log: { warn: () => assert.fail('historical parties should be resolved') },
+        store: {
+            findOne: (entity: unknown, options: unknown) => {
+                queries.push({ entity, options })
+                assert.notEqual(entity, TokenLoan, 'replay must not use present-day loan parties')
+                if (entity === Token) return Promise.resolve(token)
+                return Promise.resolve({
+                    data: { isTypeOf: 'MultiTokensTokenLent', lender: lender.id, borrower: borrower.id },
+                })
+            },
+            findOneBy: (_entity: unknown, where: { id: string }) =>
+                Promise.resolve(where.id === lender.id ? lender : borrower),
+            save: () => assert.fail('replay must not mutate loan state'),
+        },
+    } as never
+    const result = await processLoanExtended(
+        ctx,
+        { _runtime: runtime, height: 90, hash: 'historical' } as Block,
+        eventItem(
+            runtime,
+            'MultiTokens.LoanExtended',
+            { collectionId: '7', tokenId: '9', oldExpiration: 100, newExpiration: 200 },
+            '0000000090-aaaaa-000001'
+        ),
+        true
+    )
+    assert(Array.isArray(result))
+    assert(result[1] instanceof AccountTokenEvent)
+    assert.equal(result[1].from.id, lender.id)
+    assert.equal(result[1].to?.id, borrower.id)
+    assert.equal(result[1].token?.id, token.id)
+    assert.equal(queries.length, 2)
+})
+
+void test('historical extensions resolve the most recent preceding lend in the same block', async () => {
+    const { rememberBlockEvents } = await import('~/util/sns-cause')
+    const runtime = runtime1040()
+    const lender = new Account({ id: `0x${'55'.repeat(32)}` })
+    const borrower = new Account({ id: `0x${'66'.repeat(32)}` })
+    const block = { _runtime: runtime, height: 90, hash: 'same-block-loan' } as Block
+    const makeLend = (id: string, borrowerId: string) =>
+        eventItem(
+            runtime,
+            'MultiTokens.TokenLent',
+            {
+                collectionId: '7',
+                tokenId: '9',
+                lender: lender.id,
+                borrower: borrowerId,
+                expiration: 100,
+            },
+            id
+        )
+    const extension = eventItem(
+        runtime,
+        'MultiTokens.LoanExtended',
+        {
+            collectionId: '7',
+            tokenId: '9',
+            oldExpiration: 100,
+            newExpiration: 200,
+        },
+        '0000000090-aaaaa-000003'
+    )
+    rememberBlockEvents(block.hash, [
+        makeLend('0000000090-aaaaa-000001', `0x${'77'.repeat(32)}`),
+        makeLend('0000000090-aaaaa-000002', borrower.id),
+        extension,
+        makeLend('0000000090-aaaaa-000004', `0x${'88'.repeat(32)}`),
+    ])
+    const ctx = {
+        log: { warn: () => assert.fail('same-block parties should be resolved') },
+        store: {
+            findOne: (entity: unknown) => {
+                assert.equal(entity, Token)
+                return Promise.resolve(undefined)
+            },
+            findOneBy: (_entity: unknown, where: { id: string }) =>
+                Promise.resolve(where.id === lender.id ? lender : borrower),
+            save: () => assert.fail('replay must not mutate state'),
+        },
+    } as never
+    const result = await processLoanExtended(ctx, block, extension, true)
+    assert(Array.isArray(result))
+    assert(result[1] instanceof AccountTokenEvent)
+    assert.equal(result[1].from.id, lender.id)
+    assert.equal(result[1].to?.id, borrower.id)
+    assert.equal(result[1].token, null)
+    assert.equal(result[1].collection, null)
+})
+
+void test('an extension still has token activity when its historical parties cannot be recovered', async () => {
+    const runtime = runtime1040()
+    const warnings: string[] = []
+    const ctx = {
+        log: { warn: (message: string) => warnings.push(message) },
+        store: {
+            findOne: () => Promise.resolve(undefined),
+            save: () => assert.fail('replay must not mutate state'),
+        },
+    } as never
+    const result = await processLoanExtended(
+        ctx,
+        { _runtime: runtime, height: 90, hash: 'missing-history' } as Block,
+        eventItem(runtime, 'MultiTokens.LoanExtended', {
+            collectionId: '7',
+            tokenId: '9',
+            oldExpiration: 100,
+            newExpiration: 200,
+        }),
+        true
+    )
+    assert(Array.isArray(result))
+    assert(result[1] instanceof AccountTokenEvent)
+    assert.equal(result[1].event.id, result[0].id)
+    assert.equal(result[1].from, undefined)
+    assert.equal(result[1].to, null)
+    assert.equal(warnings.length, 1)
 })

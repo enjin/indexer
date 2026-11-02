@@ -20,6 +20,7 @@ import type { BackfillEphemeralTokensData } from '~/worker/jobs/tokens/backfill-
 import type { BackfillCancellationListingIdsData } from '~/worker/jobs/listings/backfill-cancellation-listing-ids'
 import type { BackfillGovernanceData } from '~/worker/jobs/validators/backfill-governance'
 import type { ImportGovernanceStateData } from '~/worker/jobs/validators/import-governance-state'
+import type { BackfillLoanExtensionActivityData } from '~/worker/jobs/tokens/backfill-loan-extension-activity'
 import { randomUUID } from 'node:crypto'
 
 const LOGGER_NAMESPACE = 'sqd:queue'
@@ -574,6 +575,16 @@ export function dispatchBackfillExtrinsicBlockRelation(options?: {
 export async function dispatchBackfillEventPosition(data?: { batchSize?: number }): Promise<void> {
     const logicalId = 'validators.backfill-event-position'
     await ValidatorsQueue.add(JobsEnum.BACKFILL_EVENT_POSITION, data ?? {}, {
+        jobId: `${logicalId}.${randomUUID()}`,
+        deduplication: { id: logicalId },
+    })
+}
+
+export async function dispatchBackfillLoanExtensionActivity(
+    data: BackfillLoanExtensionActivityData = {}
+): Promise<void> {
+    const logicalId = 'tokens.backfill-loan-extension-activity'
+    await TokensQueue.add(JobsEnum.BACKFILL_LOAN_EXTENSION_ACTIVITY, data, {
         jobId: `${logicalId}.${randomUUID()}`,
         deduplication: { id: logicalId },
     })

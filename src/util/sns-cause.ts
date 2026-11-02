@@ -34,6 +34,10 @@ export function rememberBlockEvents(hash: string, events: EventItem[]): void {
     current = { hash, events }
 }
 
+export function rememberedBlockEvents(block: Pick<Block, 'hash'>): readonly EventItem[] {
+    return current?.hash === block.hash ? current.events : []
+}
+
 /**
  * The decoded data of the first event named `name` in `item`'s block, other than `item`, whose data satisfies
  * `matches`. With `sameExtrinsic`, only events of `item`'s extrinsic qualify, and none when `item` has no extrinsic
