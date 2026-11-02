@@ -448,6 +448,29 @@ void test('M6: auction bids count the whole auction amount against the allowance
     assert.equal(store.of(WhitelistedAccount)[0].amountUsed, 20n)
 })
 
+void test('a bid keeps the auction not expired', async () => {
+    const { store, ctx, block, event } = await fixture([
+        listingRow({
+            type: ListingType.Auction,
+            data: new AuctionData({ listingType: ListingType.Auction, endHeight: 900 }),
+            state: new AuctionState({ listingType: ListingType.Auction, isExpired: false }),
+        }),
+        new Account({ id: buyerId }),
+    ])
+    await marketplace.bidPlaced(
+        ctx,
+        block,
+        event('Marketplace.BidPlaced', {
+            listingId: listingHex,
+            bid: { bidder: buyerId, price: '150', blockNumber: 500 },
+        })
+    )
+    const [auction] = store.of(Listing)
+    assert.equal(auction.state.isTypeOf, 'AuctionState')
+    assert.equal(auction.state.isExpired, false)
+    assert.equal(auction.state.highBid, `${listingId}-${buyerId}-150`)
+})
+
 void test('M6: re-adding a whitelisted account replaces its allowance and keeps its usage', async () => {
     const { store, ctx, block, event } = await fixture([
         listingRow({ usesWhitelist: true }),

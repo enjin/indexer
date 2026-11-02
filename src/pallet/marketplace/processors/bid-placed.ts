@@ -49,6 +49,7 @@ export async function bidPlaced(
     listing.state = new AuctionState({
         listingType: ListingType.Auction,
         highBid: bid.id,
+        isExpired: listing.state.isTypeOf === 'AuctionState' ? (listing.state.isExpired ?? false) : false,
     })
 
     const secondsPerBlock = 6
