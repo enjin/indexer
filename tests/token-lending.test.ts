@@ -241,6 +241,21 @@ void test('loan processors update current state and emit account history without
     assert.equal(extensionResult[1].from.id, lender.id)
     assert.equal(extensionResult[1].to?.id, borrower.id)
     assert.equal(extensionResult[1].event.id, extensionResult[0].id)
+    assert.deepEqual(extensionResult[2], {
+        id: '88-1',
+        name: 'MultiTokens.LoanExtended',
+        body: {
+            collectionId: 7n,
+            tokenId: 9n,
+            token: '7-9',
+            lender: lender.id,
+            borrower: borrower.id,
+            oldExpiration: 88,
+            newExpiration: 99,
+            blockTimestamp: '1970-01-01T00:00:01.000Z',
+            extrinsic: undefined,
+        },
+    })
 
     await processLoanReturnFailed(
         ctx,
@@ -378,6 +393,7 @@ void test('historical loan extensions use the preceding lending event rather tha
     assert.equal(result[1].to?.id, borrower.id)
     assert.equal(result[1].token?.id, token.id)
     assert.equal(queries.length, 2)
+    assert.equal(result.length, 2, 'historical replay must not emit notifications')
 })
 
 void test('historical extensions resolve the most recent preceding lend in the same block', async () => {
@@ -435,6 +451,7 @@ void test('historical extensions resolve the most recent preceding lend in the s
     assert.equal(result[1].to?.id, borrower.id)
     assert.equal(result[1].token, null)
     assert.equal(result[1].collection, null)
+    assert.equal(result.length, 2, 'historical replay must not emit notifications')
 })
 
 void test('an extension still has token activity when its historical parties cannot be recovered', async () => {
@@ -465,3 +482,70 @@ void test('an extension still has token activity when its historical parties can
     assert.equal(result[1].to, null)
     assert.equal(warnings.length, 1)
 })
+
+for (const hasLendingHistory of [true, false]) {
+    void test(`live loan extension ${hasLendingHistory ? 'publishes recovered parties' : 'skips notifications with unknown parties'}`, async () => {
+        const runtime = runtime1040(() => Promise.resolve(null))
+        const lender = new Account({ id: `0x${'33'.repeat(32)}` })
+        const borrower = new Account({ id: `0x${'44'.repeat(32)}` })
+        const warnings: string[] = []
+        const collectionId = 9_007_199_254_740_993n
+        const tokenId = 340282366920938463463374607431768211455n
+        const ctx = {
+            log: { warn: (message: string) => warnings.push(message) },
+            store: {
+                findOne: (entity: unknown) =>
+                    Promise.resolve(
+                        entity !== Token && entity !== TokenLoan && hasLendingHistory
+                            ? { data: { isTypeOf: 'MultiTokensTokenLent', lender: lender.id, borrower: borrower.id } }
+                            : undefined
+                    ),
+                findOneBy: (_entity: unknown, where: { id: string }) =>
+                    Promise.resolve(where.id === lender.id ? lender : borrower),
+                save: () => assert.fail('unavailable active loan state must not be invented'),
+            },
+        } as never
+        const item = eventItem(
+            runtime,
+            'MultiTokens.LoanExtended',
+            {
+                collectionId: collectionId.toString(),
+                tokenId: tokenId.toString(),
+                oldExpiration: 100,
+                newExpiration: 200,
+            },
+            '0000000090-aaaaa-000001'
+        )
+        item.extrinsic = { id: '0000000090-aaaaa-000000' } as EventItem['extrinsic']
+
+        const result = await processLoanExtended(
+            ctx,
+            { _runtime: runtime, height: 90, hash: 'missing-active-loan' } as Block,
+            item,
+            false
+        )
+
+        assert(Array.isArray(result))
+        assert(result[1] instanceof AccountTokenEvent)
+        assert.equal(result[1].token, null)
+        assert.equal(result[1].collection, null)
+        assert.equal(result.length, hasLendingHistory ? 3 : 2)
+        assert.equal(warnings.length, hasLendingHistory ? 0 : 1)
+        if (hasLendingHistory) {
+            assert.deepEqual(result[2], {
+                id: item.id,
+                name: 'MultiTokens.LoanExtended',
+                body: {
+                    collectionId,
+                    tokenId,
+                    token: `${collectionId}-${tokenId}`,
+                    lender: lender.id,
+                    borrower: borrower.id,
+                    oldExpiration: 100,
+                    newExpiration: 200,
+                    extrinsic: item.extrinsic?.id,
+                },
+            })
+        }
+    })
+}
