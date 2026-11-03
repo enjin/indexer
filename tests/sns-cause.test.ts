@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import type { Block, EventItem } from '~/contexts'
-import { findSiblingEvent, rememberBlockEvents, SnsCause } from '~/util/sns-cause'
+import { findPairedFollowingEvent, findSiblingEvent, rememberBlockEvents, SnsCause } from '~/util/sns-cause'
 
 type Fake = EventItem & { data: { token: string } }
 
@@ -93,6 +93,45 @@ void test('does not decode events of other names', () => {
     )
 })
 
+void test('paired events consume each nearest preceding candidate only once', () => {
+    const first = fake('0001-1', 'MultiTokens.Transferred', '1-2', 'ext-1')
+    const nearest = fake('0001-2', 'MultiTokens.Transferred', '1-2', 'ext-1')
+    const firstLoan = fake('0001-3', 'MultiTokens.TokenLent', '1-2', 'ext-1')
+    const secondLoan = fake('0001-4', 'MultiTokens.TokenLent', '1-2', 'ext-1')
+    rememberBlockEvents(block.hash, [first, nearest, firstLoan, secondLoan])
+
+    const paired = (item: EventItem) =>
+        findPairedFollowingEvent(
+            block,
+            item,
+            'MultiTokens.TokenLent',
+            decode,
+            (event) => ({ ...decode(event), id: event.id }),
+            (transfer, loan) => transfer.token === loan.token
+        )
+
+    assert.equal(paired(nearest)?.id, firstLoan.id)
+    assert.equal(paired(first)?.id, secondLoan.id)
+    assert.equal(paired(nearest)?.id, firstLoan.id)
+    rememberBlockEvents('0xanother-block', [first, nearest, firstLoan, secondLoan])
+    assert.equal(paired(first), undefined)
+})
+
+void test('ordinary transfer batches without a same-extrinsic loan are not decoded for pairing', () => {
+    const transfer = fake('0001-1', 'MultiTokens.Transferred', '1-2', 'ext-1')
+    const anotherTransfer = fake('0001-2', 'MultiTokens.Transferred', '1-2', 'ext-1')
+    const unrelatedLoan = fake('0001-3', 'MultiTokens.TokenLent', '1-2', 'ext-2')
+    rememberBlockEvents(block.hash, [transfer, anotherTransfer, unrelatedLoan])
+    const throwing = (): { token: string } => {
+        throw new Error('unrelated transfer batch decoded for pairing')
+    }
+
+    assert.equal(
+        findPairedFollowingEvent(block, transfer, 'MultiTokens.TokenLent', throwing, throwing, () => true),
+        undefined
+    )
+})
+
 void test('cause values are the documented SNS contract', () => {
     assert.deepEqual(Object.values(SnsCause).sort(), [
         'abandoned',
@@ -102,6 +141,7 @@ void test('cause values are the documented SNS contract', () => {
         'expired',
         'fill',
         'loanReturn',
+        'loanStart',
         'match',
         'transfer',
         'underMinimum',
