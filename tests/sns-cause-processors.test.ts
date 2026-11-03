@@ -4,7 +4,7 @@ import { createRequire, Module } from 'node:module'
 import test, { after } from 'node:test'
 import { Runtime } from '@subsquid/substrate-runtime'
 import { Block, EventItem } from '~/contexts'
-import { Account, Collection, Token, TokenAccount } from '~/model'
+import { Account, Collection, Event as EventModel, MultiTokensBurned, Token, TokenAccount } from '~/model'
 import { SnsEvent } from '~/util/sns'
 import { rememberBlockEvents } from '~/util/sns-cause'
 
@@ -157,6 +157,48 @@ void test('a burn with no expiry in its block is published with cause burn', asy
     assert.equal(sns.body.cause, 'burn')
     assert.equal(sns.body.expiration, undefined)
     assert.equal(sns.body.extrinsic, '500-0')
+})
+
+function storedBurn(result: readonly unknown[] | undefined): MultiTokensBurned {
+    assert(result)
+    const event = result[0] as EventModel
+    assert(event.data instanceof MultiTokensBurned)
+    return event.data
+}
+
+void test('a burn of an expired ephemeral token stores cause ephemeralExpiry and the expiration block', async () => {
+    const { ctx } = fixtures()
+    const burnedItem = eventItem('500-1', 'MultiTokens.Burned', burnedArgs)
+    const expiryItem = eventItem('500-2', 'MultiTokens.EphemeralTokenDestroyed', expiryArgs)
+    rememberBlockEvents(block.hash, [burnedItem, expiryItem])
+
+    const data = storedBurn(await burned(ctx, block, burnedItem, false))
+
+    assert.equal(data.cause, 'ephemeralExpiry')
+    assert.equal(data.expirationBlock, 500n)
+})
+
+void test('a burn with no expiry in its block stores cause burn and no expiration', async () => {
+    const { ctx } = fixtures()
+    const burnedItem = eventItem('500-1', 'MultiTokens.Burned', burnedArgs, '500-0')
+    rememberBlockEvents(block.hash, [burnedItem])
+
+    const data = storedBurn(await burned(ctx, block, burnedItem, false))
+
+    assert.equal(data.cause, 'burn')
+    assert.equal(data.expirationBlock, null)
+})
+
+void test('a burn whose state changes are skipped still stores the cause', async () => {
+    const { ctx } = fixtures()
+    const burnedItem = eventItem('500-1', 'MultiTokens.Burned', burnedArgs)
+    const expiryItem = eventItem('500-2', 'MultiTokens.EphemeralTokenDestroyed', expiryArgs)
+    rememberBlockEvents(block.hash, [burnedItem, expiryItem])
+
+    const data = storedBurn(await burned(ctx, block, burnedItem, true))
+
+    assert.equal(data.cause, 'ephemeralExpiry')
+    assert.equal(data.expirationBlock, 500n)
 })
 
 const transferArgs = { collectionId: '10', tokenId: '20', operator: holder, from: holder, to: lender, amount: '1' }

@@ -10,6 +10,8 @@ export class MultiTokensBurned {
     private _token!: string | undefined | null
     private _account!: string
     private _amount!: bigint
+    private _cause!: string | undefined | null
+    private _expirationBlock!: bigint | undefined | null
 
     constructor(props?: Partial<Omit<MultiTokensBurned, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
@@ -19,6 +21,8 @@ export class MultiTokensBurned {
             this._token = json.token == null ? undefined : marshal.string.fromJSON(json.token)
             this._account = marshal.string.fromJSON(json.account)
             this._amount = marshal.bigint.fromJSON(json.amount)
+            this._cause = json.cause == null ? undefined : marshal.string.fromJSON(json.cause)
+            this._expirationBlock = json.expirationBlock == null ? undefined : marshal.bigint.fromJSON(json.expirationBlock)
         }
     }
 
@@ -66,6 +70,22 @@ export class MultiTokensBurned {
         this._amount = value
     }
 
+    get cause(): string | undefined | null {
+        return this._cause
+    }
+
+    set cause(value: string | undefined | null) {
+        this._cause = value
+    }
+
+    get expirationBlock(): bigint | undefined | null {
+        return this._expirationBlock
+    }
+
+    set expirationBlock(value: bigint | undefined | null) {
+        this._expirationBlock = value
+    }
+
     toJSON(): object {
         return {
             isTypeOf: this.isTypeOf,
@@ -74,6 +94,8 @@ export class MultiTokensBurned {
             token: this.token,
             account: this.account,
             amount: marshal.bigint.toJSON(this.amount),
+            cause: this.cause,
+            expirationBlock: this.expirationBlock == null ? undefined : marshal.bigint.toJSON(this.expirationBlock),
         }
     }
 }

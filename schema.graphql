@@ -373,6 +373,11 @@ type MultiTokensBurned {
   token: Token
   account: Account!
   amount: BigInt!
+  # Why the token was burned: "burn" (a user action) or "ephemeralExpiry" (the chain burned an expired
+  # ephemeral token). Rows indexed before this field existed have no cause, which means "burn".
+  cause: String
+  # Expiration block of the ephemeral token the chain burned; set only with cause "ephemeralExpiry"
+  expirationBlock: BigInt
 }
 
 type MultiTokensCollectionAccountCreated {
