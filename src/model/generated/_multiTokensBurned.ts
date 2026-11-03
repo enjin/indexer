@@ -70,9 +70,6 @@ export class MultiTokensBurned {
         this._amount = value
     }
 
-    /**
-     * Why the token was burned: `burn` (a user action) or `ephemeralExpiry` (the chain burned an expired ephemeral token). Rows indexed before this field existed have none, which means `burn`.
-     */
     get cause(): string | undefined | null {
         return this._cause
     }
@@ -81,9 +78,6 @@ export class MultiTokensBurned {
         this._cause = value
     }
 
-    /**
-     * The expiration block of an ephemeral token burned by the chain; set only with cause `ephemeralExpiry`.
-     */
     get expirationBlock(): bigint | undefined | null {
         return this._expirationBlock
     }
