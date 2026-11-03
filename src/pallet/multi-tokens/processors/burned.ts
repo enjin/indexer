@@ -23,6 +23,17 @@ export async function burned(
         relations: { collection: true },
     })
 
+    // An ephemeral token that reached its expiration block is burned by the chain itself, which says so in an
+    // EphemeralTokenDestroyed next to the Burned; that event is not published on its own. The stored event row
+    // carries the cause too, so GraphQL consumers can tell an expiry from a user burn.
+    const expiry = findSiblingEvent(
+        block,
+        item,
+        multiTokens.ephemeralTokenDestroyed.name,
+        mappings.multiTokens.events.ephemeralTokenDestroyed,
+        (e) => e.collectionId === data.collectionId && e.tokenId === data.tokenId
+    )
+
     if (skipSave || !token || data.amount === 0n) {
         return [
             ...mappings.multiTokens.events.burnedEventModel(
@@ -30,7 +41,8 @@ export async function burned(
                 data,
                 account,
                 token?.collection ?? null,
-                token ?? null
+                token ?? null,
+                expiry
             ),
             undefined,
         ]
@@ -86,16 +98,6 @@ export async function burned(
         ctx.log.error(`Error processing burned event ${item.id} : ${error}`)
     }
 
-    // An ephemeral token that reached its expiration block is burned by the chain itself, which says so in an
-    // EphemeralTokenDestroyed next to the Burned; that event is not published on its own.
-    const expiry = findSiblingEvent(
-        block,
-        item,
-        multiTokens.ephemeralTokenDestroyed.name,
-        mappings.multiTokens.events.ephemeralTokenDestroyed,
-        (e) => e.collectionId === data.collectionId && e.tokenId === data.tokenId
-    )
-
     const snsEvent: SnsEvent = {
         id: item.id,
         name: item.name,
@@ -119,5 +121,8 @@ export async function burned(
     await QueueUtils.dispatchComputeStats(data.collectionId.toString())
     await QueueUtils.dispatchComputeTraits(data.collectionId.toString())
 
-    return [...mappings.multiTokens.events.burnedEventModel(item, data, account, token.collection, token), snsEvent]
+    return [
+        ...mappings.multiTokens.events.burnedEventModel(item, data, account, token.collection, token, expiry),
+        snsEvent,
+    ]
 }

@@ -11,7 +11,8 @@ import {
     MultiTokensBurned,
     Token,
 } from '~/model'
-import { Burned } from '~/pallet/multi-tokens/events/types'
+import { SnsCause } from '~/util/sns-cause'
+import { Burned, EphemeralTokenDestroyed } from '~/pallet/multi-tokens/events/types'
 
 export function burned(event: EventItem): Burned {
     return match(event)
@@ -30,7 +31,8 @@ export function burnedEventModel(
     data: Burned,
     account: Account,
     collection: Collection | null,
-    token: Token | null
+    token: Token | null,
+    expiry: EphemeralTokenDestroyed | undefined
 ): [EventModel, AccountTokenEvent | undefined] {
     const collectionId = collection ? collection.id : data.collectionId.toString()
     const tokenId = token ? token.id : `${collectionId}-${data.tokenId}`
@@ -47,6 +49,8 @@ export function burnedEventModel(
             token: tokenId,
             account: data.accountId,
             amount: data.amount,
+            cause: expiry ? SnsCause.ephemeralExpiry : SnsCause.burn,
+            expirationBlock: expiry ? BigInt(expiry.expiration) : null,
         }),
     })
 
