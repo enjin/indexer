@@ -3,7 +3,7 @@ import { CollectionAccount, Token, TokenAccount } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
 import { SnsEvent } from '~/util/sns'
-import { findSiblingEvent, SnsCause } from '~/util/sns-cause'
+import { findPairedFollowingEvent, findSiblingEvent, SnsCause } from '~/util/sns-cause'
 import { multiTokens } from '~/type/events'
 import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
@@ -100,15 +100,34 @@ export async function transferred(
         throwFatalError(`[Transferred] We have not found token account ${to.id}-${data.collectionId}-${data.tokenId}.`)
     }
 
-    // A transfer that ends a loan (the borrower sending the token back, or the chain returning it at the loan's
-    // expiration block) comes with a TokenReturned; that event is not published on its own.
-    const loanReturn = findSiblingEvent(
-        block,
-        item,
-        multiTokens.tokenReturned.name,
-        mappings.multiTokens.events.tokenReturned,
-        (e) => e.collectionId === data.collectionId && e.tokenId === data.tokenId && e.borrower === data.from
-    )
+    const loanStart =
+        data.amount !== 1n
+            ? undefined
+            : findPairedFollowingEvent(
+                  block,
+                  item,
+                  multiTokens.tokenLent.name,
+                  mappings.multiTokens.events.transferred,
+                  mappings.multiTokens.events.tokenLent,
+                  (transfer, loan) =>
+                      transfer.amount === 1n &&
+                      transfer.collectionId === loan.collectionId &&
+                      transfer.tokenId === loan.tokenId &&
+                      transfer.from === loan.lender &&
+                      transfer.to === loan.borrower
+              )
+    // A proven loan-start pair must not be mistaken for another loan's return elsewhere in the block. Other
+    // transfers retain the existing return lookup, including automatic returns without an extrinsic.
+    const loanReturn = loanStart
+        ? undefined
+        : findSiblingEvent(
+              block,
+              item,
+              multiTokens.tokenReturned.name,
+              mappings.multiTokens.events.tokenReturned,
+              (e) => e.collectionId === data.collectionId && e.tokenId === data.tokenId && e.borrower === data.from
+          )
+    const loan = loanStart ?? loanReturn
 
     const snsEvent: SnsEvent = {
         id: item.id,
@@ -125,9 +144,9 @@ export async function transferred(
                 .toNumber(),
             extrinsic: item.extrinsic?.id,
             decimalCount: token?.nativeMetadata?.decimalCount,
-            cause: loanReturn ? SnsCause.loanReturn : SnsCause.transfer,
-            lender: loanReturn?.lender,
-            borrower: loanReturn?.borrower,
+            cause: loanStart ? SnsCause.loanStart : loanReturn ? SnsCause.loanReturn : SnsCause.transfer,
+            lender: loan?.lender,
+            borrower: loan?.borrower,
         },
     }
 

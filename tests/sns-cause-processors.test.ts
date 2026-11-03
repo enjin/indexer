@@ -77,6 +77,7 @@ function eventItem(id: string, name: string, args: unknown, extrinsic?: string):
 
 function fixtures() {
     const accounts = new Map<string, Account>()
+    const savedTokenAccounts: TokenAccount[] = []
     const token = new Token({
         id: '10-20',
         tokenId: 20n,
@@ -99,13 +100,14 @@ function fixtures() {
             find: () => Promise.resolve([]),
             save: (entity: unknown) => {
                 if (entity instanceof Account) accounts.set(entity.id, entity)
+                if (entity instanceof TokenAccount) savedTokenAccounts.push(entity)
                 return Promise.resolve(entity)
             },
             insert: (entity: unknown) => Promise.resolve(entity),
         },
         log: { error: () => undefined, warn: () => undefined },
     } as never
-    return { ctx, token }
+    return { ctx, token, savedTokenAccounts }
 }
 
 function snsOf(result: readonly unknown[] | undefined): SnsEvent | undefined {
@@ -188,6 +190,192 @@ void test('a transfer with no return in its block is published with cause transf
     assert.equal(sns.body.cause, 'transfer')
     assert.equal(sns.body.lender, undefined)
     assert.equal(sns.body.borrower, undefined)
+})
+
+const loanStartArgs = { collectionId: '10', tokenId: '20', lender: holder, borrower: lender, expiration: 600 }
+
+void test('the exact transfer for a loan start carries loanStart across nested calls without changing balances or history', async () => {
+    const { ctx, savedTokenAccounts } = fixtures()
+    const transferItem = {
+        ...eventItem('500-1', 'MultiTokens.Transferred', transferArgs, '500-0'),
+        call: { id: '500-0-0' },
+    } as EventItem
+    const lentItem = {
+        ...eventItem('500-2', 'MultiTokens.TokenLent', loanStartArgs, '500-0'),
+        call: { id: '500-0' },
+    } as EventItem
+    rememberBlockEvents(block.hash, [transferItem, lentItem])
+
+    const result = await transferred(ctx, block, transferItem, false)
+    const sns = snsOf(result)
+
+    assert(sns)
+    assert.equal(sns.name, 'MultiTokens.Transferred')
+    assert.equal(sns.body.cause, 'loanStart')
+    assert.equal(sns.body.lender, holder)
+    assert.equal(sns.body.borrower, lender)
+    assert.equal(sns.body.amount, 1)
+    assert.equal(sns.body.extrinsic, '500-0')
+    assert(result)
+    assert.equal(result[0]?.id, transferItem.id)
+    assert.equal(result[1]?.id, transferItem.id)
+    assert.equal(savedTokenAccounts.length, 2)
+    assert.equal(savedTokenAccounts[0].balance, 0n)
+    assert.equal(savedTokenAccounts[0].totalBalance, 0n)
+    assert.equal(savedTokenAccounts[1].balance, 2n)
+    assert.equal(savedTokenAccounts[1].totalBalance, 2n)
+})
+
+const unrelatedLoanStarts: {
+    label: string
+    transfer?: Partial<typeof transferArgs>
+    loan?: Partial<typeof loanStartArgs>
+    extrinsic?: 'different' | 'missing' | 'empty'
+    before?: boolean
+}[] = [
+    { label: 'another extrinsic', extrinsic: 'different' },
+    { label: 'no extrinsic', extrinsic: 'missing' },
+    { label: 'empty extrinsic IDs', extrinsic: 'empty' },
+    { label: 'another collection', loan: { collectionId: '11' } },
+    { label: 'another token', loan: { tokenId: '21' } },
+    { label: 'another lender', loan: { lender: `0x${'33'.repeat(32)}` } },
+    { label: 'another borrower', loan: { borrower: `0x${'44'.repeat(32)}` } },
+    { label: 'an amount greater than one', transfer: { amount: '2' } },
+    { label: 'a zero amount', transfer: { amount: '0' } },
+    { label: 'a preceding TokenLent', before: true },
+]
+
+for (const scenario of unrelatedLoanStarts) {
+    void test(`a transfer stays ordinary when TokenLent has ${scenario.label}`, async () => {
+        const { ctx } = fixtures()
+        const transferItem = eventItem(
+            '500-1',
+            'MultiTokens.Transferred',
+            { ...transferArgs, ...scenario.transfer },
+            '500-0'
+        )
+        const lentItem = eventItem('500-2', 'MultiTokens.TokenLent', { ...loanStartArgs, ...scenario.loan }, '500-0')
+        if (scenario.extrinsic === 'different') lentItem.extrinsic = { id: '500-9' } as EventItem['extrinsic']
+        if (scenario.extrinsic === 'missing') {
+            transferItem.extrinsic = undefined
+            lentItem.extrinsic = undefined
+        }
+        if (scenario.extrinsic === 'empty') {
+            transferItem.extrinsic = { id: '' } as EventItem['extrinsic']
+            lentItem.extrinsic = { id: '' } as EventItem['extrinsic']
+        }
+        rememberBlockEvents(block.hash, scenario.before ? [lentItem, transferItem] : [transferItem, lentItem])
+
+        const sns = snsOf(await transferred(ctx, block, transferItem, false))
+
+        assert(sns)
+        assert.equal(sns.body.cause, 'transfer')
+        assert.equal(sns.body.lender, undefined)
+        assert.equal(sns.body.borrower, undefined)
+    })
+}
+
+void test('only the nearest matching transfer is tagged in an A-to-B, B-to-A, lend-A-to-B batch', async () => {
+    const ordinary = eventItem('500-1', 'MultiTokens.Transferred', transferArgs, '500-0')
+    const back = eventItem('500-2', 'MultiTokens.Transferred', { ...transferArgs, from: lender, to: holder }, '500-0')
+    const loanTransfer = eventItem('500-3', 'MultiTokens.Transferred', transferArgs, '500-0')
+    const lent = eventItem('500-5', 'MultiTokens.TokenLent', loanStartArgs, '500-0')
+    rememberBlockEvents(block.hash, [
+        ordinary,
+        back,
+        loanTransfer,
+        eventItem('500-4', 'System.ExtrinsicSuccess', {}, '500-0'),
+        lent,
+    ])
+
+    // Process out of order and repeat the loan transfer: pairing cannot depend on which processor ran first.
+    for (const [item, cause] of [
+        [loanTransfer, 'loanStart'],
+        [ordinary, 'transfer'],
+        [back, 'transfer'],
+        [loanTransfer, 'loanStart'],
+    ] as const) {
+        const { ctx } = fixtures()
+        const sns = snsOf(await transferred(ctx, block, item, false))
+        assert.equal(sns?.body.cause, cause)
+    }
+})
+
+void test('multiple loans in one extrinsic each tag their own preceding transfer once', async () => {
+    const firstTransfer = eventItem('500-1', 'MultiTokens.Transferred', transferArgs, '500-0')
+    const firstLoan = eventItem('500-2', 'MultiTokens.TokenLent', loanStartArgs, '500-0')
+    const returned = eventItem(
+        '500-3',
+        'MultiTokens.TokenReturned',
+        { ...returnedArgs, lender: holder, borrower: lender },
+        '500-0'
+    )
+    const returnTransfer = eventItem(
+        '500-4',
+        'MultiTokens.Transferred',
+        { ...transferArgs, from: lender, to: holder },
+        '500-0'
+    )
+    const ordinary = eventItem('500-5', 'MultiTokens.Transferred', transferArgs, '500-0')
+    const ordinaryBack = eventItem(
+        '500-6',
+        'MultiTokens.Transferred',
+        { ...transferArgs, from: lender, to: holder },
+        '500-0'
+    )
+    const secondTransfer = eventItem('500-7', 'MultiTokens.Transferred', transferArgs, '500-0')
+    const secondLoan = eventItem('500-8', 'MultiTokens.TokenLent', { ...loanStartArgs, expiration: 700 }, '500-0')
+    rememberBlockEvents(block.hash, [
+        firstTransfer,
+        firstLoan,
+        returned,
+        returnTransfer,
+        ordinary,
+        ordinaryBack,
+        secondTransfer,
+        secondLoan,
+    ])
+
+    for (const [item, cause] of [
+        [secondTransfer, 'loanStart'],
+        [ordinary, 'transfer'],
+        [firstTransfer, 'loanStart'],
+        [returnTransfer, 'loanReturn'],
+    ] as const) {
+        const { ctx } = fixtures()
+        const sns = snsOf(await transferred(ctx, block, item, false))
+        assert.equal(sns?.body.cause, cause)
+    }
+})
+
+void test('an unrelated prior return in another extrinsic cannot preempt an exact loan-start transfer', async () => {
+    const { ctx } = fixtures()
+    const returned = eventItem('500-1', 'MultiTokens.TokenReturned', returnedArgs, '500-9')
+    const transferItem = eventItem('500-2', 'MultiTokens.Transferred', transferArgs, '500-0')
+    const lentItem = eventItem('500-3', 'MultiTokens.TokenLent', loanStartArgs, '500-0')
+    rememberBlockEvents(block.hash, [returned, transferItem, lentItem])
+
+    const sns = snsOf(await transferred(ctx, block, transferItem, false))
+
+    assert(sns)
+    assert.equal(sns.body.cause, 'loanStart')
+    assert.equal(sns.body.lender, holder)
+    assert.equal(sns.body.borrower, lender)
+})
+
+void test('historical transfer replay keeps activity and suppresses loan-start SNS and balance writes', async () => {
+    const { ctx, savedTokenAccounts } = fixtures()
+    const transferItem = eventItem('500-1', 'MultiTokens.Transferred', transferArgs, '500-0')
+    const lentItem = eventItem('500-2', 'MultiTokens.TokenLent', loanStartArgs, '500-0')
+    rememberBlockEvents(block.hash, [transferItem, lentItem])
+
+    const result = await transferred(ctx, block, transferItem, true)
+
+    assert(result)
+    assert.equal(snsOf(result), undefined)
+    assert.equal(result[0]?.id, transferItem.id)
+    assert.equal(result[1]?.id, transferItem.id)
+    assert.equal(savedTokenAccounts.length, 0)
 })
 
 void test('a fill from create_listing_and_match carries cause match with the taker and side', () => {

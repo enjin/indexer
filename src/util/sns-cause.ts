@@ -7,12 +7,14 @@ import { Block, EventItem } from '~/contexts'
  * expired ephemeral token is `Burned` + `EphemeralTokenDestroyed`) or instead of it (a listing that cannot settle
  * at its minimum is `ListingRemovedUnderMinimum`, never `ListingCancelled`). Every consumer would have to know the
  * pairs, so the indexer folds them: SNS carries the generic name with a `cause` and the variant's data, and the
- * chain-level variants are not published. Their `Event` rows stay for the GraphQL history.
+ * chain-level variants are not published. Their `Event` rows stay for the GraphQL history. Loan starts keep the
+ * dedicated TokenLent message and tag its paired Transferred with loanStart so consumers can suppress duplicates.
  */
 export const SnsCause = {
     burn: 'burn',
     ephemeralExpiry: 'ephemeralExpiry',
     transfer: 'transfer',
+    loanStart: 'loanStart',
     loanReturn: 'loanReturn',
     cancelled: 'cancelled',
     expired: 'expired',
@@ -59,6 +61,46 @@ export function findSiblingEvent<T>(
         if (sameExtrinsic && (!item.extrinsic || event.extrinsic?.id !== item.extrinsic.id)) continue
         const data = decode(event)
         if (matches(data)) return data
+    }
+
+    return undefined
+}
+
+/**
+ * Pair each sibling with its nearest preceding, unmatched item of the same name as `item`. Only events in the
+ * same non-empty extrinsic qualify. Unlike a broad sibling match, this identifies the specific transfer emitted by
+ * a loan when an extrinsic also transfers the same token between the same accounts in other calls.
+ * Matching is recomputed from chain order, so repeated processing never consumes a different pair.
+ */
+export function findPairedFollowingEvent<T, S>(
+    block: Pick<Block, 'hash'>,
+    item: EventItem,
+    name: string,
+    decodeItem: (event: EventItem) => T,
+    decodeSibling: (event: EventItem) => S,
+    matches: (itemData: T, siblingData: S) => boolean
+): S | undefined {
+    if (!item.extrinsic?.id || current?.hash !== block.hash) return undefined
+    if (!current.events.some((event) => event.name === name && event.extrinsic?.id === item.extrinsic?.id)) {
+        return undefined
+    }
+
+    const unmatched: { event: EventItem; data: T }[] = []
+    for (const event of current.events) {
+        if (event.extrinsic?.id !== item.extrinsic.id) continue
+        if (event.name === item.name) {
+            unmatched.push({ event, data: decodeItem(event) })
+            continue
+        }
+        if (event.name !== name) continue
+
+        const data = decodeSibling(event)
+        for (let index = unmatched.length - 1; index >= 0; index--) {
+            if (!matches(unmatched[index].data, data)) continue
+            const [paired] = unmatched.splice(index, 1)
+            if (paired.event.id === item.id) return data
+            break
+        }
     }
 
     return undefined
