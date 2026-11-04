@@ -58,7 +58,9 @@ export function burnedEventModel(
         }),
     })
 
-    if (!token) {
+    // A token the chain destroyed earlier in the block still has its collection; the history keeps the burn there,
+    // the way TokenDestroyed keeps the token's earlier history with the token unlinked.
+    if (!token && !collection) {
         return [event, undefined]
     }
 

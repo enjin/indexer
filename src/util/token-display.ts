@@ -22,19 +22,29 @@ export function tokenDisplay(token: Token): TokenDisplay {
     }
 }
 
-let destroyed: { hash: string; tokens: Map<string, TokenDisplay> } | undefined
-
-/**
- * Keeps the display data of a token the current block destroys, so that a processor running later in the same block
- * can still read it after the Token row is gone. The chain burns an expired ephemeral token after it destroyed it
- * (canary block 13550470: TokenDestroyed, then Burned, then EphemeralTokenDestroyed), and the store deletes the row
- * at once. Only the current block is kept; a block processed again (hot blocks) remembers it again.
- */
-export function rememberDestroyedTokenDisplay(block: Pick<Block, 'hash'>, token: Token): void {
-    if (!destroyed || destroyed.hash !== block.hash) destroyed = { hash: block.hash, tokens: new Map() }
-    destroyed.tokens.set(token.id, tokenDisplay(token))
+/** What a Burned processed after its token was destroyed in the same block still needs from the Token row. */
+export type DestroyedToken = TokenDisplay & {
+    decimalCount: number | undefined
+    infusion: bigint
 }
 
-export function recallDestroyedTokenDisplay(block: Pick<Block, 'hash'>, tokenId: string): TokenDisplay | undefined {
+let destroyed: { hash: string; tokens: Map<string, DestroyedToken> } | undefined
+
+/**
+ * Keeps what a later processor in the same block needs from a token the current block destroys, after the Token row
+ * is gone. The chain burns an expired ephemeral token after it destroyed it (canary block 13550470: TokenDestroyed,
+ * then Burned, then EphemeralTokenDestroyed), and the store deletes the row at once. Only the current block is kept;
+ * a block processed again (hot blocks) remembers it again.
+ */
+export function rememberDestroyedToken(block: Pick<Block, 'hash'>, token: Token): void {
+    if (!destroyed || destroyed.hash !== block.hash) destroyed = { hash: block.hash, tokens: new Map() }
+    destroyed.tokens.set(token.id, {
+        ...tokenDisplay(token),
+        decimalCount: token.nativeMetadata?.decimalCount,
+        infusion: token.infusion,
+    })
+}
+
+export function recallDestroyedToken(block: Pick<Block, 'hash'>, tokenId: string): DestroyedToken | undefined {
     return destroyed && destroyed.hash === block.hash ? destroyed.tokens.get(tokenId) : undefined
 }

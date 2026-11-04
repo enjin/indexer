@@ -6,6 +6,7 @@ import { Runtime } from '@subsquid/substrate-runtime'
 import { Block, EventItem } from '~/contexts'
 import {
     Account,
+    AccountTokenEvent,
     Collection,
     Event as EventModel,
     Metadata,
@@ -14,6 +15,7 @@ import {
     Token,
     TokenAccount,
 } from '~/model'
+import { SnsEvent } from '~/util/sns'
 import { rememberBlockEvents } from '~/util/sns-cause'
 
 // The processors pull in the job queue; stub it so the run exits and no Redis is needed.
@@ -80,7 +82,13 @@ function eventItem(id: string, name: string, args: unknown, extrinsic?: string):
     } as EventItem
 }
 
-type TokenOverrides = { metadata?: Metadata | null; name?: string | null; nativeName?: string }
+type TokenOverrides = {
+    metadata?: Metadata | null
+    name?: string | null
+    nativeName?: string
+    decimalCount?: number
+    infusion?: bigint
+}
 
 function tokenWith(overrides: TokenOverrides = {}): Token {
     const metadata =
@@ -96,13 +104,14 @@ function tokenWith(overrides: TokenOverrides = {}): Token {
         tokenId: 20n,
         collection: new Collection({ id: '10', collectionId: 10n }),
         supply: 1n,
-        infusion: 0n,
+        infusion: overrides.infusion ?? 0n,
         ephemeralExpiration: 13550470n,
         name: overrides.name === undefined ? metadata?.name : overrides.name,
         metadata: metadata ?? undefined,
-        nativeMetadata: overrides.nativeName
-            ? { name: overrides.nativeName, symbol: 'GT', decimalCount: 0 }
-            : undefined,
+        nativeMetadata:
+            overrides.nativeName || overrides.decimalCount !== undefined
+                ? { name: overrides.nativeName ?? '', symbol: 'GT', decimalCount: overrides.decimalCount ?? 0 }
+                : undefined,
     } as never)
 }
 
@@ -273,4 +282,86 @@ void test('a destroyed token display does not leak into another block', async ()
 
     assert.equal(data.tokenName, null)
     assert.equal(data.tokenImage, null)
+})
+
+function snsOf(result: readonly unknown[] | undefined): SnsEvent | undefined {
+    assert(result)
+    return result[2] as SnsEvent | undefined
+}
+
+function historyOf(result: readonly unknown[] | undefined): AccountTokenEvent | undefined {
+    assert(result)
+    return result[1] as AccountTokenEvent | undefined
+}
+
+// The same canary order: the Token row is gone when Burned runs, yet the expiry must still reach SNS consumers
+// (PLA-2649) and the holder's history.
+void test('an expiry burn in a block where the token was destroyed first is still published with its cause', async () => {
+    const { ctx } = fixtures(tokenWith({ decimalCount: 2, infusion: 5n }))
+    const destroyedItem = eventItem('13550470-4', 'MultiTokens.TokenDestroyed', destroyedArgs)
+    const burnedItem = eventItem('13550470-5', 'MultiTokens.Burned', { ...burnedArgs, amount: '100' })
+    const expiryItem = eventItem('13550470-6', 'MultiTokens.EphemeralTokenDestroyed', expiryArgs)
+    rememberBlockEvents(block.hash, [destroyedItem, burnedItem, expiryItem])
+
+    await tokenDestroyed(ctx, block, destroyedItem, false)
+    const sns = snsOf(await burned(ctx, block, burnedItem, false))
+
+    assert(sns)
+    assert.equal(sns.id, '13550470-5')
+    assert.equal(sns.name, 'MultiTokens.Burned')
+    assert.equal(sns.body.cause, 'ephemeralExpiry')
+    assert.equal(sns.body.expiration, 13550470)
+    assert.equal(sns.body.collectionId, 10n)
+    assert.equal(sns.body.tokenId, 20n)
+    assert.equal(sns.body.token, '10-20')
+    assert.equal(sns.body.account, holder)
+    assert.equal(sns.body.amount, 1)
+    assert.equal(sns.body.decimalCount, 2)
+    assert.equal(sns.body.infusion, 5n)
+    assert.equal(sns.body.totalBurntInfusion, 500n)
+    assert.equal(sns.body.extrinsic, undefined)
+})
+
+void test('an expiry burn in a block where the token was destroyed first stays in the holder history', async () => {
+    const { ctx } = fixtures()
+    const destroyedItem = eventItem('13550470-4', 'MultiTokens.TokenDestroyed', destroyedArgs)
+    const burnedItem = eventItem('13550470-5', 'MultiTokens.Burned', burnedArgs)
+    const expiryItem = eventItem('13550470-6', 'MultiTokens.EphemeralTokenDestroyed', expiryArgs)
+    rememberBlockEvents(block.hash, [destroyedItem, burnedItem, expiryItem])
+
+    await tokenDestroyed(ctx, block, destroyedItem, false)
+    const history = historyOf(await burned(ctx, block, burnedItem, false))
+
+    assert(history)
+    assert.equal(history.id, '13550470-5')
+    assert.equal(history.from.id, holder)
+    assert.equal(history.event.id, '13550470-5')
+    assert.equal(history.collection?.id, '10')
+    assert.equal(history.token, null)
+})
+
+void test('a skipped burn in a block where the token was destroyed first is not published', async () => {
+    const { ctx } = fixtures()
+    const destroyedItem = eventItem('13550470-4', 'MultiTokens.TokenDestroyed', destroyedArgs)
+    const burnedItem = eventItem('13550470-5', 'MultiTokens.Burned', burnedArgs)
+    const expiryItem = eventItem('13550470-6', 'MultiTokens.EphemeralTokenDestroyed', expiryArgs)
+    rememberBlockEvents(block.hash, [destroyedItem, burnedItem, expiryItem])
+
+    await tokenDestroyed(ctx, block, destroyedItem, false)
+    const result = await burned(ctx, block, burnedItem, true)
+
+    assert.equal(snsOf(result), undefined)
+    assert.equal(historyOf(result), undefined)
+})
+
+void test('a burn of a token the indexer never had is neither published nor added to history', async () => {
+    const { ctx } = fixtures()
+    const burnedItem = eventItem('13550470-1', 'MultiTokens.Burned', { ...burnedArgs, tokenId: '21' }, '13550470-0')
+    rememberBlockEvents(block.hash, [burnedItem])
+    ;(ctx as { store: { findOne: unknown } }).store.findOne = () => Promise.resolve(undefined)
+
+    const result = await burned(ctx, block, burnedItem, false)
+
+    assert.equal(snsOf(result), undefined)
+    assert.equal(historyOf(result), undefined)
 })

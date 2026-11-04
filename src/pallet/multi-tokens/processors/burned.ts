@@ -1,8 +1,9 @@
-import { Token, TokenAccount, UserInfusion } from '~/model'
+import { Collection, Token, TokenAccount, UserInfusion } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { SnsEvent } from '~/util/sns'
 import { findSiblingEvent, SnsCause } from '~/util/sns-cause'
-import { recallDestroyedTokenDisplay, tokenDisplay } from '~/util/token-display'
+import { Burned, EphemeralTokenDestroyed } from '~/pallet/multi-tokens/events/types'
+import { recallDestroyedToken, tokenDisplay } from '~/util/token-display'
 import { multiTokens } from '~/type/events'
 import * as mappings from '~/pallet/index'
 import { getOrCreateAccount } from '~/util/entities'
@@ -40,7 +41,28 @@ export async function burned(
     // deletes the Token row and the AccountTokenEvent link, so history read later has nothing else to display.
     // When the chain destroyed the token before burning it, the row is already gone and the TokenDestroyed
     // processor's stash for this block is the only source.
-    const display = token ? tokenDisplay(token) : recallDestroyedTokenDisplay(block, tokenKey)
+    const destroyed = token ? undefined : recallDestroyedToken(block, tokenKey)
+    const display = token ? tokenDisplay(token) : destroyed
+
+    // Every ephemeral expiry lands here: the chain destroys the token (and its accounts) before it burns it, so there
+    // is no row left to update, but the burn is still published and kept in the holder's history.
+    if (!skipSave && !token && destroyed && data.amount !== 0n) {
+        await QueueUtils.dispatchComputeStats(data.collectionId.toString())
+        await QueueUtils.dispatchComputeTraits(data.collectionId.toString())
+
+        return [
+            ...mappings.multiTokens.events.burnedEventModel(
+                item,
+                data,
+                account,
+                new Collection({ id: data.collectionId.toString() }),
+                null,
+                expiry,
+                display
+            ),
+            burnedSnsEvent(item, data, destroyed.decimalCount, destroyed.infusion, expiry),
+        ]
+    }
 
     if (skipSave || !token || data.amount === 0n) {
         return [
@@ -71,7 +93,6 @@ export async function burned(
 
     // saving history for SNS event
     const infusionBeforeBurn = token.infusion
-    const totalBurntInfusion = infusionBeforeBurn * data.amount
 
     const supplyBeforeBurn = token.supply
     token.supply -= data.amount
@@ -107,7 +128,23 @@ export async function burned(
         ctx.log.error(`Error processing burned event ${item.id} : ${error}`)
     }
 
-    const snsEvent: SnsEvent = {
+    await QueueUtils.dispatchComputeStats(data.collectionId.toString())
+    await QueueUtils.dispatchComputeTraits(data.collectionId.toString())
+
+    return [
+        ...mappings.multiTokens.events.burnedEventModel(item, data, account, token.collection, token, expiry, display),
+        burnedSnsEvent(item, data, token.nativeMetadata?.decimalCount, infusionBeforeBurn, expiry),
+    ]
+}
+
+function burnedSnsEvent(
+    item: EventItem,
+    data: Burned,
+    decimalCount: number | undefined,
+    infusion: bigint,
+    expiry: EphemeralTokenDestroyed | undefined
+): SnsEvent {
+    return {
         id: item.id,
         name: item.name,
         body: {
@@ -116,22 +153,14 @@ export async function burned(
             token: `${data.collectionId}-${data.tokenId}`,
             account: data.accountId,
             amount: Big(data.amount.toString())
-                .div(10 ** (token.nativeMetadata?.decimalCount ?? 0))
+                .div(10 ** (decimalCount ?? 0))
                 .toNumber(),
-            decimalCount: token.nativeMetadata?.decimalCount,
+            decimalCount,
             extrinsic: item.extrinsic?.id,
-            infusion: infusionBeforeBurn,
-            totalBurntInfusion: totalBurntInfusion,
+            infusion,
+            totalBurntInfusion: infusion * data.amount,
             cause: expiry ? SnsCause.ephemeralExpiry : SnsCause.burn,
             expiration: expiry?.expiration,
         },
     }
-
-    await QueueUtils.dispatchComputeStats(data.collectionId.toString())
-    await QueueUtils.dispatchComputeTraits(data.collectionId.toString())
-
-    return [
-        ...mappings.multiTokens.events.burnedEventModel(item, data, account, token.collection, token, expiry, display),
-        snsEvent,
-    ]
 }
