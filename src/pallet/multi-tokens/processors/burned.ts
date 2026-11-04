@@ -1,9 +1,9 @@
-import { Collection, Token, TokenAccount, UserInfusion } from '~/model'
+import { Collection, Event as EventModel, MultiTokensBurned, Token, TokenAccount, UserInfusion } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { SnsEvent } from '~/util/sns'
 import { findSiblingEvent, SnsCause } from '~/util/sns-cause'
 import { Burned, EphemeralTokenDestroyed } from '~/pallet/multi-tokens/events/types'
-import { recallDestroyedToken, tokenSnapshot } from '~/util/destroyed-token'
+import { extrinsicDestroysToken, recallDestroyedToken, TokenSnapshot, tokenSnapshot } from '~/util/destroyed-token'
 import { multiTokens } from '~/type/events'
 import * as mappings from '~/pallet/index'
 import { getOrCreateAccount } from '~/util/entities'
@@ -40,19 +40,17 @@ export async function burned(
     // A burn that destroys the token keeps a snapshot of its metadata on the stored event: the Token row and the
     // AccountTokenEvent link are gone afterwards, so history read later has nothing else to show. The chain destroys
     // an expired ephemeral token before burning it, so the row is already gone and the TokenDestroyed processor's
-    // stash for this block is the only source; a holder's burn that removes the token storage comes before its
-    // TokenDestroyed, so the row is still here. A burn of a surviving token stores no snapshot.
+    // stash for this block is the only source; a holder's burn that removes the token storage comes before the
+    // TokenDestroyed of its own extrinsic, so the row is still here. A burn of a surviving token stores no snapshot.
     const destroyed = token ? undefined : recallDestroyedToken(block, tokenKey)
     const destroyedLater =
-        token &&
-        findSiblingEvent(
-            block,
-            item,
-            multiTokens.tokenDestroyed.name,
-            mappings.multiTokens.events.tokenDestroyed,
-            (e) => e.collectionId === data.collectionId && e.tokenId === data.tokenId
-        )
-    const snapshot = destroyed ?? (token && destroyedLater ? tokenSnapshot(token) : undefined)
+        token && extrinsicDestroysToken(block, item, tokenKey, mappings.multiTokens.events.tokenDestroyed)
+    // A replay (skipSave) finds neither: the original run deleted the row and TokenDestroyed stashes nothing on
+    // replay. The Event row is saved again by id, so carry over the snapshot the original run stored.
+    const snapshot =
+        destroyed ??
+        (token && destroyedLater ? tokenSnapshot(token) : undefined) ??
+        (skipSave && !token ? await storedSnapshot(ctx, item.id) : undefined)
 
     // Every ephemeral expiry lands here: the chain destroys the token (and its accounts) before it burns it, so there
     // is no row left to update, but the burn is still published and kept in the holder's history.
@@ -173,4 +171,14 @@ function burnedSnsEvent(
             expiration: expiry?.expiration,
         },
     }
+}
+
+async function storedSnapshot(ctx: CommonContext, eventId: string): Promise<TokenSnapshot | undefined> {
+    const stored = await ctx.store.findOneBy(EventModel, { id: eventId })
+    if (!(stored?.data instanceof MultiTokensBurned)) return undefined
+
+    const { tokenMetadata, tokenNativeMetadata } = stored.data
+    if (!tokenMetadata && !tokenNativeMetadata) return undefined
+
+    return { metadata: tokenMetadata ?? null, nativeMetadata: tokenNativeMetadata ?? null }
 }

@@ -121,9 +121,11 @@ function tokenWith(overrides: TokenOverrides = {}): Token {
 }
 
 /** A store whose Token row disappears once `tokenDestroyed` removes it, the way the real store does within a block. */
-function fixtures(token: Token = tokenWith()) {
+/** `token: null` is a store without the Token row (deleted by an earlier run). */
+function fixtures(token: Token | null = tokenWith(), storedEvents: EventModel[] = []) {
     const accounts = new Map<string, Account>()
-    let tokenRow: Token | undefined = token
+    const events = new Map(storedEvents.map((event) => [event.id, event]))
+    let tokenRow: Token | undefined = token ?? undefined
     const ctx = {
         store: {
             findOne: (entity: unknown, options: { where: { id: string } }) => {
@@ -136,6 +138,7 @@ function fixtures(token: Token = tokenWith()) {
             findOneBy: (entity: unknown, where: { id: string }) => {
                 if (entity === Account) return Promise.resolve(accounts.get(where.id))
                 if (entity === Token) return Promise.resolve(tokenRow)
+                if (entity === EventModel) return Promise.resolve(events.get(where.id))
                 return Promise.resolve(undefined)
             },
             find: () => Promise.resolve([]),
@@ -261,6 +264,74 @@ void test('a burn of a token the indexer never had stores no snapshot', async ()
     const data = storedBurn(await burned(ctx, block, burnedItem, false))
 
     assert.equal(data.token, '10-21')
+    assert.equal(data.tokenMetadata, null)
+    assert.equal(data.tokenNativeMetadata, null)
+})
+
+// Another holder destroys the token in a different extrinsic of the same block; this holder's partial burn does not.
+void test('a burn in another extrinsic than the TokenDestroyed of its token stores no snapshot', async () => {
+    const { ctx } = fixtures()
+    const partialBurn = eventItem('13550470-1', 'MultiTokens.Burned', burnedArgs, '13550470-0')
+    const destroyingBurn = eventItem(
+        '13550470-3',
+        'MultiTokens.Burned',
+        { ...burnedArgs, accountId: pallet },
+        '13550470-2'
+    )
+    const destroyedItem = eventItem('13550470-4', 'MultiTokens.TokenDestroyed', destroyedArgs, '13550470-2')
+    rememberBlockEvents(block.hash, [partialBurn, destroyingBurn, destroyedItem])
+
+    const data = storedBurn(await burned(ctx, block, partialBurn, false))
+
+    assert.equal(data.tokenMetadata, null)
+    assert.equal(data.tokenNativeMetadata, null)
+})
+
+// A replay (block at or below the configured state block) runs with skipSave: TokenDestroyed returns before it stashes
+// anything and the Token row was deleted by the original run, yet the Event row is saved again by id.
+void test('a replay of the expiry order keeps the snapshot the original run stored', async () => {
+    const original = tokenWith({ nativeName: 'Gold', decimalCount: 0 })
+    assert(original.metadata && original.nativeMetadata)
+    const stored = new EventModel({
+        id: '13550470-5',
+        name: MultiTokensBurned.name,
+        data: new MultiTokensBurned({
+            collectionId: 10n,
+            tokenId: 20n,
+            token: '10-20',
+            account: holder,
+            amount: 1n,
+            cause: 'ephemeralExpiry',
+            expirationBlock: 13550470n,
+            tokenMetadata: original.metadata,
+            tokenNativeMetadata: original.nativeMetadata,
+        }),
+    })
+    const { ctx } = fixtures(null, [stored])
+    // A block of its own: the TokenDestroyed stash of an earlier test in this file must not stand in for the replay.
+    const replayBlock = { ...block, hash: '0x5e01' }
+    const destroyedItem = eventItem('13550470-4', 'MultiTokens.TokenDestroyed', destroyedArgs)
+    const burnedItem = eventItem('13550470-5', 'MultiTokens.Burned', burnedArgs)
+    const expiryItem = eventItem('13550470-6', 'MultiTokens.EphemeralTokenDestroyed', expiryArgs)
+    rememberBlockEvents(replayBlock.hash, [destroyedItem, burnedItem, expiryItem])
+
+    await tokenDestroyed(ctx, replayBlock, destroyedItem, true)
+    const data = storedBurn(await burned(ctx, replayBlock, burnedItem, true))
+
+    assert.deepEqual(snapshotJson(data), {
+        metadata: original.metadata.toJSON(),
+        nativeMetadata: original.nativeMetadata.toJSON(),
+    })
+})
+
+void test('a replay with no earlier Event row stores no snapshot', async () => {
+    const { ctx } = fixtures(null)
+    const replayBlock = { ...block, hash: '0x5e02' }
+    const burnedItem = eventItem('13550470-5', 'MultiTokens.Burned', burnedArgs)
+    rememberBlockEvents(replayBlock.hash, [burnedItem])
+
+    const data = storedBurn(await burned(ctx, replayBlock, burnedItem, true))
+
     assert.equal(data.tokenMetadata, null)
     assert.equal(data.tokenNativeMetadata, null)
 })
