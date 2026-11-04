@@ -8,15 +8,17 @@ export type TokenDisplay = {
 }
 
 /**
- * The display name is the metadata name (also copied to `Token.name` by the metadata service), else the on-chain
- * native name of a fungible token. The display image is the first media url, else the metadata fallback image.
+ * Resolved the way Enjin Wallet displays an asset (walletapi `app/EnjinChain/Asset.php`, `getDisplayName` and
+ * `getDefaultImage`), so a row kept after the token is gone shows what the asset showed: the name is the on-chain
+ * native name unless it is empty or `0x`, else the metadata name; the image is the metadata fallback image. A missing
+ * value stays null so the consumer applies its own default (`#<tokenId>`, its placeholder image).
  */
 export function tokenDisplay(token: Token): TokenDisplay {
-    const media = token.metadata?.media?.find((entry) => entry?.url)
+    const nativeName = token.nativeMetadata?.name
 
     return {
-        name: token.metadata?.name ?? token.name ?? token.nativeMetadata?.name ?? null,
-        image: media?.url ?? token.metadata?.fallbackImage ?? null,
+        name: (nativeName && nativeName !== '0x' ? nativeName : token.metadata?.name) || null,
+        image: token.metadata?.fallbackImage || null,
     }
 }
 

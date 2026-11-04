@@ -165,7 +165,7 @@ void test('an expiry burn in a block where the token was destroyed first still s
     assert.equal(data.cause, 'ephemeralExpiry')
     assert.equal(data.token, '10-20')
     assert.equal(data.tokenName, 'Golden Ticket')
-    assert.equal(data.tokenImage, 'https://cdn.example/ticket.png')
+    assert.equal(data.tokenImage, 'https://cdn.example/fallback.png')
 })
 
 void test('a plain burn of a surviving token stores the name and image', async () => {
@@ -177,7 +177,7 @@ void test('a plain burn of a surviving token stores the name and image', async (
 
     assert.equal(data.cause, 'burn')
     assert.equal(data.tokenName, 'Golden Ticket')
-    assert.equal(data.tokenImage, 'https://cdn.example/ticket.png')
+    assert.equal(data.tokenImage, 'https://cdn.example/fallback.png')
 })
 
 void test('a burn whose state changes are skipped still stores the name and image', async () => {
@@ -188,23 +188,54 @@ void test('a burn whose state changes are skipped still stores the name and imag
     const data = storedBurn(await burned(ctx, block, burnedItem, true))
 
     assert.equal(data.tokenName, 'Golden Ticket')
-    assert.equal(data.tokenImage, 'https://cdn.example/ticket.png')
+    assert.equal(data.tokenImage, 'https://cdn.example/fallback.png')
 })
 
-void test('the image falls back to the metadata fallback image when the token has no media', async () => {
+// The wallet (walletapi app/EnjinChain/Asset.php) shows the native name before the metadata name, and the metadata fallback
+// image, never a media url; the stored event follows it so the expired row looks like the asset did.
+void test('the on-chain native name wins over the metadata name, as the wallet shows it', async () => {
+    const { ctx } = fixtures(tokenWith({ nativeName: 'Gold' }))
+    const burnedItem = eventItem('13550470-1', 'MultiTokens.Burned', burnedArgs, '13550470-0')
+    rememberBlockEvents(block.hash, [burnedItem])
+
+    const data = storedBurn(await burned(ctx, block, burnedItem, false))
+
+    assert.equal(data.tokenName, 'Gold')
+})
+
+void test('an empty or 0x native name falls back to the metadata name', async () => {
+    for (const nativeName of ['', '0x']) {
+        const token = tokenWith()
+        token.nativeMetadata = { name: nativeName, symbol: 'GT', decimalCount: 0 } as never
+        const { ctx } = fixtures(token)
+        const burnedItem = eventItem('13550470-1', 'MultiTokens.Burned', burnedArgs, '13550470-0')
+        rememberBlockEvents(block.hash, [burnedItem])
+
+        const data = storedBurn(await burned(ctx, block, burnedItem, false))
+
+        assert.equal(data.tokenName, 'Golden Ticket', `native name ${JSON.stringify(nativeName)}`)
+    }
+})
+
+void test('a token with media but no fallback image stores no image', async () => {
     const { ctx } = fixtures(
-        tokenWith({ metadata: new Metadata({ name: 'Plain', fallbackImage: 'https://cdn.example/fallback.png' }) })
+        tokenWith({
+            metadata: new Metadata({
+                name: 'Clip',
+                media: [new MetadataMedia({ url: 'https://cdn.example/clip.mp4', type: 'video/mp4', alt: '' })],
+            }),
+        })
     )
     const burnedItem = eventItem('13550470-1', 'MultiTokens.Burned', burnedArgs, '13550470-0')
     rememberBlockEvents(block.hash, [burnedItem])
 
     const data = storedBurn(await burned(ctx, block, burnedItem, false))
 
-    assert.equal(data.tokenName, 'Plain')
-    assert.equal(data.tokenImage, 'https://cdn.example/fallback.png')
+    assert.equal(data.tokenName, 'Clip')
+    assert.equal(data.tokenImage, null)
 })
 
-void test('the name falls back to the on-chain native name when the token has no metadata', async () => {
+void test('a token without metadata stores its native name and no image', async () => {
     const { ctx } = fixtures(tokenWith({ metadata: null, name: null, nativeName: 'Gold' }))
     const burnedItem = eventItem('13550470-1', 'MultiTokens.Burned', burnedArgs, '13550470-0')
     rememberBlockEvents(block.hash, [burnedItem])
