@@ -12,6 +12,7 @@ import {
     Token,
 } from '~/model'
 import { SnsCause } from '~/util/sns-cause'
+import { TokenSnapshot } from '~/util/destroyed-token'
 import { Burned, EphemeralTokenDestroyed } from '~/pallet/multi-tokens/events/types'
 
 export function burned(event: EventItem): Burned {
@@ -32,7 +33,8 @@ export function burnedEventModel(
     account: Account,
     collection: Collection | null,
     token: Token | null,
-    expiry: EphemeralTokenDestroyed | undefined
+    expiry: EphemeralTokenDestroyed | undefined,
+    snapshot: TokenSnapshot | undefined
 ): [EventModel, AccountTokenEvent | undefined] {
     const collectionId = collection ? collection.id : data.collectionId.toString()
     const tokenId = token ? token.id : `${collectionId}-${data.tokenId}`
@@ -51,10 +53,14 @@ export function burnedEventModel(
             amount: data.amount,
             cause: expiry ? SnsCause.ephemeralExpiry : SnsCause.burn,
             expirationBlock: expiry ? BigInt(expiry.expiration) : null,
+            tokenMetadata: snapshot?.metadata ?? null,
+            tokenNativeMetadata: snapshot?.nativeMetadata ?? null,
         }),
     })
 
-    if (!token) {
+    // A token the chain destroyed earlier in the block still has its collection; the history keeps the burn there,
+    // the way TokenDestroyed keeps the token's earlier history with the token unlinked.
+    if (!token && !collection) {
         return [event, undefined]
     }
 

@@ -378,6 +378,13 @@ type MultiTokensBurned {
   cause: String
   # Expiration block of the ephemeral token the chain burned; set only with cause "ephemeralExpiry"
   expirationBlock: BigInt
+  # Snapshot of the token's metadata (Token.metadata as indexed, with group and collection inheritance applied),
+  # stored only when the burn destroys the token: the Token row is deleted afterwards, so history has nothing else
+  # to read. Consumers apply their own display rules. Null for a burn of a surviving token and for rows indexed
+  # before this field existed. Named token* so no EventData member gets a same-named field of another type.
+  tokenMetadata: Metadata
+  # Snapshot of the token's on-chain native metadata (Token.nativeMetadata); same lifetime as tokenMetadata
+  tokenNativeMetadata: NativeTokenMetadata
 }
 
 type MultiTokensCollectionAccountCreated {

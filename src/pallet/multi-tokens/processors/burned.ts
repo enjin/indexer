@@ -1,7 +1,9 @@
-import { Token, TokenAccount, UserInfusion } from '~/model'
+import { Collection, Event as EventModel, MultiTokensBurned, Token, TokenAccount, UserInfusion } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { SnsEvent } from '~/util/sns'
 import { findSiblingEvent, SnsCause } from '~/util/sns-cause'
+import { Burned, EphemeralTokenDestroyed } from '~/pallet/multi-tokens/events/types'
+import { extrinsicDestroysToken, recallDestroyedToken, TokenSnapshot, tokenSnapshot } from '~/util/destroyed-token'
 import { multiTokens } from '~/type/events'
 import * as mappings from '~/pallet/index'
 import { getOrCreateAccount } from '~/util/entities'
@@ -18,8 +20,9 @@ export async function burned(
     const data = mappings.multiTokens.events.burned(item)
     const account = await getOrCreateAccount(ctx, data.accountId)
 
+    const tokenKey = `${data.collectionId}-${data.tokenId}`
     const token = await ctx.store.findOne(Token, {
-        where: { id: `${data.collectionId}-${data.tokenId}` },
+        where: { id: tokenKey },
         relations: { collection: true },
     })
 
@@ -34,6 +37,41 @@ export async function burned(
         (e) => e.collectionId === data.collectionId && e.tokenId === data.tokenId
     )
 
+    // A burn that destroys the token keeps a snapshot of its metadata on the stored event: the Token row and the
+    // AccountTokenEvent link are gone afterwards, so history read later has nothing else to show. The chain destroys
+    // an expired ephemeral token before burning it, so the row is already gone and the TokenDestroyed processor's
+    // stash for this block is the only source; a holder's burn that removes the token storage comes before the
+    // TokenDestroyed of its own extrinsic, so the row is still here. A burn of a surviving token stores no snapshot.
+    const destroyed = token ? undefined : recallDestroyedToken(block, tokenKey)
+    const destroyedLater =
+        token && extrinsicDestroysToken(block, item, tokenKey, mappings.multiTokens.events.tokenDestroyed)
+    // A replay (skipSave) finds neither: the original run deleted the row and TokenDestroyed stashes nothing on
+    // replay. The Event row is saved again by id, so carry over the snapshot the original run stored.
+    const snapshot =
+        destroyed ??
+        (token && destroyedLater ? tokenSnapshot(token) : undefined) ??
+        (skipSave && !token ? await storedSnapshot(ctx, item.id) : undefined)
+
+    // Every ephemeral expiry lands here: the chain destroys the token (and its accounts) before it burns it, so there
+    // is no row left to update, but the burn is still published and kept in the holder's history.
+    if (!skipSave && !token && destroyed && data.amount !== 0n) {
+        await QueueUtils.dispatchComputeStats(data.collectionId.toString())
+        await QueueUtils.dispatchComputeTraits(data.collectionId.toString())
+
+        return [
+            ...mappings.multiTokens.events.burnedEventModel(
+                item,
+                data,
+                account,
+                new Collection({ id: data.collectionId.toString() }),
+                null,
+                expiry,
+                snapshot
+            ),
+            burnedSnsEvent(item, data, destroyed.decimalCount, destroyed.infusion, expiry),
+        ]
+    }
+
     if (skipSave || !token || data.amount === 0n) {
         return [
             ...mappings.multiTokens.events.burnedEventModel(
@@ -42,7 +80,8 @@ export async function burned(
                 account,
                 token?.collection ?? null,
                 token ?? null,
-                expiry
+                expiry,
+                snapshot
             ),
             undefined,
         ]
@@ -62,7 +101,6 @@ export async function burned(
 
     // saving history for SNS event
     const infusionBeforeBurn = token.infusion
-    const totalBurntInfusion = infusionBeforeBurn * data.amount
 
     const supplyBeforeBurn = token.supply
     token.supply -= data.amount
@@ -98,7 +136,23 @@ export async function burned(
         ctx.log.error(`Error processing burned event ${item.id} : ${error}`)
     }
 
-    const snsEvent: SnsEvent = {
+    await QueueUtils.dispatchComputeStats(data.collectionId.toString())
+    await QueueUtils.dispatchComputeTraits(data.collectionId.toString())
+
+    return [
+        ...mappings.multiTokens.events.burnedEventModel(item, data, account, token.collection, token, expiry, snapshot),
+        burnedSnsEvent(item, data, token.nativeMetadata?.decimalCount, infusionBeforeBurn, expiry),
+    ]
+}
+
+function burnedSnsEvent(
+    item: EventItem,
+    data: Burned,
+    decimalCount: number | undefined,
+    infusion: bigint,
+    expiry: EphemeralTokenDestroyed | undefined
+): SnsEvent {
+    return {
         id: item.id,
         name: item.name,
         body: {
@@ -107,22 +161,24 @@ export async function burned(
             token: `${data.collectionId}-${data.tokenId}`,
             account: data.accountId,
             amount: Big(data.amount.toString())
-                .div(10 ** (token.nativeMetadata?.decimalCount ?? 0))
+                .div(10 ** (decimalCount ?? 0))
                 .toNumber(),
-            decimalCount: token.nativeMetadata?.decimalCount,
+            decimalCount,
             extrinsic: item.extrinsic?.id,
-            infusion: infusionBeforeBurn,
-            totalBurntInfusion: totalBurntInfusion,
+            infusion,
+            totalBurntInfusion: infusion * data.amount,
             cause: expiry ? SnsCause.ephemeralExpiry : SnsCause.burn,
             expiration: expiry?.expiration,
         },
     }
+}
 
-    await QueueUtils.dispatchComputeStats(data.collectionId.toString())
-    await QueueUtils.dispatchComputeTraits(data.collectionId.toString())
+async function storedSnapshot(ctx: CommonContext, eventId: string): Promise<TokenSnapshot | undefined> {
+    const stored = await ctx.store.findOneBy(EventModel, { id: eventId })
+    if (!(stored?.data instanceof MultiTokensBurned)) return undefined
 
-    return [
-        ...mappings.multiTokens.events.burnedEventModel(item, data, account, token.collection, token, expiry),
-        snsEvent,
-    ]
+    const { tokenMetadata, tokenNativeMetadata } = stored.data
+    if (!tokenMetadata && !tokenNativeMetadata) return undefined
+
+    return { metadata: tokenMetadata ?? null, nativeMetadata: tokenNativeMetadata ?? null }
 }
