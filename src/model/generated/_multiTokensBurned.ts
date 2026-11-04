@@ -2,6 +2,8 @@ import assert from "assert"
 import * as marshal from "./marshal"
 import {Token} from "./token.model"
 import {Account} from "./account.model"
+import {Metadata} from "./_metadata"
+import {NativeTokenMetadata} from "./_nativeTokenMetadata"
 
 export class MultiTokensBurned {
     public readonly isTypeOf = 'MultiTokensBurned'
@@ -12,8 +14,8 @@ export class MultiTokensBurned {
     private _amount!: bigint
     private _cause!: string | undefined | null
     private _expirationBlock!: bigint | undefined | null
-    private _tokenName!: string | undefined | null
-    private _tokenImage!: string | undefined | null
+    private _tokenMetadata!: Metadata | undefined | null
+    private _tokenNativeMetadata!: NativeTokenMetadata | undefined | null
 
     constructor(props?: Partial<Omit<MultiTokensBurned, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
@@ -25,8 +27,8 @@ export class MultiTokensBurned {
             this._amount = marshal.bigint.fromJSON(json.amount)
             this._cause = json.cause == null ? undefined : marshal.string.fromJSON(json.cause)
             this._expirationBlock = json.expirationBlock == null ? undefined : marshal.bigint.fromJSON(json.expirationBlock)
-            this._tokenName = json.tokenName == null ? undefined : marshal.string.fromJSON(json.tokenName)
-            this._tokenImage = json.tokenImage == null ? undefined : marshal.string.fromJSON(json.tokenImage)
+            this._tokenMetadata = json.tokenMetadata == null ? undefined : new Metadata(undefined, json.tokenMetadata)
+            this._tokenNativeMetadata = json.tokenNativeMetadata == null ? undefined : new NativeTokenMetadata(undefined, json.tokenNativeMetadata)
         }
     }
 
@@ -90,20 +92,20 @@ export class MultiTokensBurned {
         this._expirationBlock = value
     }
 
-    get tokenName(): string | undefined | null {
-        return this._tokenName
+    get tokenMetadata(): Metadata | undefined | null {
+        return this._tokenMetadata
     }
 
-    set tokenName(value: string | undefined | null) {
-        this._tokenName = value
+    set tokenMetadata(value: Metadata | undefined | null) {
+        this._tokenMetadata = value
     }
 
-    get tokenImage(): string | undefined | null {
-        return this._tokenImage
+    get tokenNativeMetadata(): NativeTokenMetadata | undefined | null {
+        return this._tokenNativeMetadata
     }
 
-    set tokenImage(value: string | undefined | null) {
-        this._tokenImage = value
+    set tokenNativeMetadata(value: NativeTokenMetadata | undefined | null) {
+        this._tokenNativeMetadata = value
     }
 
     toJSON(): object {
@@ -116,8 +118,8 @@ export class MultiTokensBurned {
             amount: marshal.bigint.toJSON(this.amount),
             cause: this.cause,
             expirationBlock: this.expirationBlock == null ? undefined : marshal.bigint.toJSON(this.expirationBlock),
-            tokenName: this.tokenName,
-            tokenImage: this.tokenImage,
+            tokenMetadata: this.tokenMetadata == null ? undefined : this.tokenMetadata.toJSON(),
+            tokenNativeMetadata: this.tokenNativeMetadata == null ? undefined : this.tokenNativeMetadata.toJSON(),
         }
     }
 }

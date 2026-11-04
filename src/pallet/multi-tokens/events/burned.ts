@@ -12,7 +12,7 @@ import {
     Token,
 } from '~/model'
 import { SnsCause } from '~/util/sns-cause'
-import { TokenDisplay } from '~/util/token-display'
+import { TokenSnapshot } from '~/util/destroyed-token'
 import { Burned, EphemeralTokenDestroyed } from '~/pallet/multi-tokens/events/types'
 
 export function burned(event: EventItem): Burned {
@@ -34,7 +34,7 @@ export function burnedEventModel(
     collection: Collection | null,
     token: Token | null,
     expiry: EphemeralTokenDestroyed | undefined,
-    display: TokenDisplay | undefined
+    snapshot: TokenSnapshot | undefined
 ): [EventModel, AccountTokenEvent | undefined] {
     const collectionId = collection ? collection.id : data.collectionId.toString()
     const tokenId = token ? token.id : `${collectionId}-${data.tokenId}`
@@ -53,8 +53,8 @@ export function burnedEventModel(
             amount: data.amount,
             cause: expiry ? SnsCause.ephemeralExpiry : SnsCause.burn,
             expirationBlock: expiry ? BigInt(expiry.expiration) : null,
-            tokenName: display?.name ?? null,
-            tokenImage: display?.image ?? null,
+            tokenMetadata: snapshot?.metadata ?? null,
+            tokenNativeMetadata: snapshot?.nativeMetadata ?? null,
         }),
     })
 

@@ -23,7 +23,7 @@ import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
 import { In } from 'typeorm'
 import { EventHandlerResult } from '~/processor.handler'
-import { rememberDestroyedToken } from '~/util/token-display'
+import { rememberDestroyedToken } from '~/util/destroyed-token'
 
 export async function tokenDestroyed(
     ctx: CommonContext,

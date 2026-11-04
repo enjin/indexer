@@ -1,29 +1,21 @@
 import { Block } from '~/contexts'
-import { Token } from '~/model'
-
-/** What a wallet or marketplace shows for a token: its name and one image, resolved from the indexed metadata. */
-export type TokenDisplay = {
-    name: string | null
-    image: string | null
-}
+import { Metadata, NativeTokenMetadata, Token } from '~/model'
 
 /**
- * Resolved the way Enjin Wallet displays an asset (walletapi `app/EnjinChain/Asset.php`, `getDisplayName` and
- * `getDefaultImage`), so a row kept after the token is gone shows what the asset showed: the name is the on-chain
- * native name unless it is empty or `0x`, else the metadata name; the image is the metadata fallback image. A missing
- * value stays null so the consumer applies its own default (`#<tokenId>`, its placeholder image).
+ * The token's metadata as indexed (`Token.metadata`, with group and collection inheritance applied, and the on-chain
+ * `Token.nativeMetadata`), copied as-is onto a burn that destroys the token. Consumers apply their own display rules.
  */
-export function tokenDisplay(token: Token): TokenDisplay {
-    const nativeName = token.nativeMetadata?.name
+export type TokenSnapshot = {
+    metadata: Metadata | null
+    nativeMetadata: NativeTokenMetadata | null
+}
 
-    return {
-        name: (nativeName && nativeName !== '0x' ? nativeName : token.metadata?.name) || null,
-        image: token.metadata?.fallbackImage || null,
-    }
+export function tokenSnapshot(token: Token): TokenSnapshot {
+    return { metadata: token.metadata ?? null, nativeMetadata: token.nativeMetadata ?? null }
 }
 
 /** What a Burned processed after its token was destroyed in the same block still needs from the Token row. */
-export type DestroyedToken = TokenDisplay & {
+export type DestroyedToken = TokenSnapshot & {
     decimalCount: number | undefined
     infusion: bigint
 }
@@ -39,7 +31,7 @@ let destroyed: { hash: string; tokens: Map<string, DestroyedToken> } | undefined
 export function rememberDestroyedToken(block: Pick<Block, 'hash'>, token: Token): void {
     if (!destroyed || destroyed.hash !== block.hash) destroyed = { hash: block.hash, tokens: new Map() }
     destroyed.tokens.set(token.id, {
-        ...tokenDisplay(token),
+        ...tokenSnapshot(token),
         decimalCount: token.nativeMetadata?.decimalCount,
         infusion: token.infusion,
     })

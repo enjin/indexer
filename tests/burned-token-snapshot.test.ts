@@ -12,6 +12,7 @@ import {
     Metadata,
     MetadataMedia,
     MultiTokensBurned,
+    NativeTokenMetadata,
     Token,
     TokenAccount,
 } from '~/model'
@@ -110,9 +111,13 @@ function tokenWith(overrides: TokenOverrides = {}): Token {
         metadata: metadata ?? undefined,
         nativeMetadata:
             overrides.nativeName || overrides.decimalCount !== undefined
-                ? { name: overrides.nativeName ?? '', symbol: 'GT', decimalCount: overrides.decimalCount ?? 0 }
+                ? new NativeTokenMetadata({
+                      name: overrides.nativeName ?? '',
+                      symbol: 'GT',
+                      decimalCount: overrides.decimalCount ?? 0,
+                  })
                 : undefined,
-    } as never)
+    })
 }
 
 /** A store whose Token row disappears once `tokenDestroyed` removes it, the way the real store does within a block. */
@@ -160,9 +165,18 @@ const burnedArgs = { collectionId: '10', tokenId: '20', accountId: holder, amoun
 const destroyedArgs = { collectionId: '10', tokenId: '20', caller: pallet }
 const expiryArgs = { collectionId: '10', tokenId: '20', expiration: 13550470 }
 
+// The stored burn keeps a snapshot of the token's metadata only when the burn destroys the token: afterwards the Token
+// row is gone and the event is the only place history can read it from. Consumers apply their own display rules.
+
+function snapshotJson(data: MultiTokensBurned) {
+    const json = data.toJSON() as { tokenMetadata?: unknown; tokenNativeMetadata?: unknown }
+    return { metadata: json.tokenMetadata, nativeMetadata: json.tokenNativeMetadata }
+}
+
 // Canary block 13550470: TokenAccountDestroyed (2), TokenDestroyed (4), Burned (5), EphemeralTokenDestroyed (6).
-void test('an expiry burn in a block where the token was destroyed first still stores the name and image', async () => {
-    const { ctx } = fixtures()
+void test('an expiry burn in a block where the token was destroyed first stores the metadata snapshot', async () => {
+    const token = tokenWith({ nativeName: 'Gold', decimalCount: 0 })
+    const { ctx } = fixtures(token)
     const destroyedItem = eventItem('13550470-4', 'MultiTokens.TokenDestroyed', destroyedArgs)
     const burnedItem = eventItem('13550470-5', 'MultiTokens.Burned', burnedArgs)
     const expiryItem = eventItem('13550470-6', 'MultiTokens.EphemeralTokenDestroyed', expiryArgs)
@@ -173,102 +187,85 @@ void test('an expiry burn in a block where the token was destroyed first still s
 
     assert.equal(data.cause, 'ephemeralExpiry')
     assert.equal(data.token, '10-20')
-    assert.equal(data.tokenName, 'Golden Ticket')
-    assert.equal(data.tokenImage, 'https://cdn.example/fallback.png')
+    assert(token.metadata && token.nativeMetadata)
+    assert.deepEqual(snapshotJson(data), {
+        metadata: token.metadata.toJSON(),
+        nativeMetadata: token.nativeMetadata.toJSON(),
+    })
 })
 
-void test('a plain burn of a surviving token stores the name and image', async () => {
-    const { ctx } = fixtures()
+// A holder's burn that removes the token storage: Burned first, TokenDestroyed later in the same extrinsic.
+void test('a burn followed by TokenDestroyed of the same token in its block stores the metadata snapshot', async () => {
+    const token = tokenWith({ nativeName: 'Gold', decimalCount: 0 })
+    const { ctx } = fixtures(token)
     const burnedItem = eventItem('13550470-1', 'MultiTokens.Burned', burnedArgs, '13550470-0')
-    rememberBlockEvents(block.hash, [burnedItem])
+    const destroyedItem = eventItem('13550470-2', 'MultiTokens.TokenDestroyed', destroyedArgs, '13550470-0')
+    rememberBlockEvents(block.hash, [burnedItem, destroyedItem])
 
     const data = storedBurn(await burned(ctx, block, burnedItem, false))
 
     assert.equal(data.cause, 'burn')
-    assert.equal(data.tokenName, 'Golden Ticket')
-    assert.equal(data.tokenImage, 'https://cdn.example/fallback.png')
+    assert(token.metadata && token.nativeMetadata)
+    assert.deepEqual(snapshotJson(data), {
+        metadata: token.metadata.toJSON(),
+        nativeMetadata: token.nativeMetadata.toJSON(),
+    })
 })
 
-void test('a burn whose state changes are skipped still stores the name and image', async () => {
+void test('a token without metadata keeps only its native metadata in the snapshot', async () => {
+    const token = tokenWith({ metadata: null, name: null, nativeName: 'Gold', decimalCount: 6 })
+    const { ctx } = fixtures(token)
+    const burnedItem = eventItem('13550470-1', 'MultiTokens.Burned', burnedArgs, '13550470-0')
+    const destroyedItem = eventItem('13550470-2', 'MultiTokens.TokenDestroyed', destroyedArgs, '13550470-0')
+    rememberBlockEvents(block.hash, [burnedItem, destroyedItem])
+
+    const data = storedBurn(await burned(ctx, block, burnedItem, false))
+
+    assert.equal(data.tokenMetadata, null)
+    assert(data.tokenNativeMetadata)
+    assert.equal(data.tokenNativeMetadata.name, 'Gold')
+    assert.equal(data.tokenNativeMetadata.decimalCount, 6)
+})
+
+void test('a burn of a surviving token stores no snapshot', async () => {
+    const { ctx } = fixtures(tokenWith({ nativeName: 'Gold' }))
+    const burnedItem = eventItem('13550470-1', 'MultiTokens.Burned', burnedArgs, '13550470-0')
+    const otherDestroyed = eventItem('13550470-2', 'MultiTokens.TokenDestroyed', { ...destroyedArgs, tokenId: '21' })
+    rememberBlockEvents(block.hash, [burnedItem, otherDestroyed])
+
+    const data = storedBurn(await burned(ctx, block, burnedItem, false))
+
+    assert.equal(data.tokenMetadata, null)
+    assert.equal(data.tokenNativeMetadata, null)
+    assert.deepEqual(snapshotJson(data), { metadata: undefined, nativeMetadata: undefined })
+})
+
+void test('a burn whose state changes are skipped stores no snapshot for a surviving token', async () => {
     const { ctx } = fixtures()
     const burnedItem = eventItem('13550470-1', 'MultiTokens.Burned', burnedArgs, '13550470-0')
     rememberBlockEvents(block.hash, [burnedItem])
 
     const data = storedBurn(await burned(ctx, block, burnedItem, true))
 
-    assert.equal(data.tokenName, 'Golden Ticket')
-    assert.equal(data.tokenImage, 'https://cdn.example/fallback.png')
+    assert.equal(data.tokenMetadata, null)
+    assert.equal(data.tokenNativeMetadata, null)
 })
 
-// The wallet (walletapi app/EnjinChain/Asset.php) shows the native name before the metadata name, and the metadata fallback
-// image, never a media url; the stored event follows it so the expired row looks like the asset did.
-void test('the on-chain native name wins over the metadata name, as the wallet shows it', async () => {
-    const { ctx } = fixtures(tokenWith({ nativeName: 'Gold' }))
-    const burnedItem = eventItem('13550470-1', 'MultiTokens.Burned', burnedArgs, '13550470-0')
-    rememberBlockEvents(block.hash, [burnedItem])
-
-    const data = storedBurn(await burned(ctx, block, burnedItem, false))
-
-    assert.equal(data.tokenName, 'Gold')
-})
-
-void test('an empty or 0x native name falls back to the metadata name', async () => {
-    for (const nativeName of ['', '0x']) {
-        const token = tokenWith()
-        token.nativeMetadata = { name: nativeName, symbol: 'GT', decimalCount: 0 } as never
-        const { ctx } = fixtures(token)
-        const burnedItem = eventItem('13550470-1', 'MultiTokens.Burned', burnedArgs, '13550470-0')
-        rememberBlockEvents(block.hash, [burnedItem])
-
-        const data = storedBurn(await burned(ctx, block, burnedItem, false))
-
-        assert.equal(data.tokenName, 'Golden Ticket', `native name ${JSON.stringify(nativeName)}`)
-    }
-})
-
-void test('a token with media but no fallback image stores no image', async () => {
-    const { ctx } = fixtures(
-        tokenWith({
-            metadata: new Metadata({
-                name: 'Clip',
-                media: [new MetadataMedia({ url: 'https://cdn.example/clip.mp4', type: 'video/mp4', alt: '' })],
-            }),
-        })
-    )
-    const burnedItem = eventItem('13550470-1', 'MultiTokens.Burned', burnedArgs, '13550470-0')
-    rememberBlockEvents(block.hash, [burnedItem])
-
-    const data = storedBurn(await burned(ctx, block, burnedItem, false))
-
-    assert.equal(data.tokenName, 'Clip')
-    assert.equal(data.tokenImage, null)
-})
-
-void test('a token without metadata stores its native name and no image', async () => {
-    const { ctx } = fixtures(tokenWith({ metadata: null, name: null, nativeName: 'Gold' }))
-    const burnedItem = eventItem('13550470-1', 'MultiTokens.Burned', burnedArgs, '13550470-0')
-    rememberBlockEvents(block.hash, [burnedItem])
-
-    const data = storedBurn(await burned(ctx, block, burnedItem, false))
-
-    assert.equal(data.tokenName, 'Gold')
-    assert.equal(data.tokenImage, null)
-})
-
-void test('a burn of a token the indexer never had stores no name or image', async () => {
+void test('a burn of a token the indexer never had stores no snapshot', async () => {
     const { ctx } = fixtures()
     const burnedItem = eventItem('13550470-1', 'MultiTokens.Burned', { ...burnedArgs, tokenId: '21' }, '13550470-0')
-    rememberBlockEvents(block.hash, [burnedItem])
+    const destroyedItem = eventItem('13550470-2', 'MultiTokens.TokenDestroyed', { ...destroyedArgs, tokenId: '21' })
+    rememberBlockEvents(block.hash, [burnedItem, destroyedItem])
     ;(ctx as { store: { findOne: unknown } }).store.findOne = () => Promise.resolve(undefined)
 
     const data = storedBurn(await burned(ctx, block, burnedItem, false))
 
     assert.equal(data.token, '10-21')
-    assert.equal(data.tokenName, null)
-    assert.equal(data.tokenImage, null)
+    assert.equal(data.tokenMetadata, null)
+    assert.equal(data.tokenNativeMetadata, null)
 })
 
-void test('a destroyed token display does not leak into another block', async () => {
+void test('a destroyed token snapshot does not leak into another block', async () => {
     const { ctx } = fixtures()
     const destroyedItem = eventItem('13550470-4', 'MultiTokens.TokenDestroyed', destroyedArgs)
     rememberBlockEvents(block.hash, [destroyedItem])
@@ -280,8 +277,8 @@ void test('a destroyed token display does not leak into another block', async ()
 
     const data = storedBurn(await burned(ctx, laterBlock, burnedItem, false))
 
-    assert.equal(data.tokenName, null)
-    assert.equal(data.tokenImage, null)
+    assert.equal(data.tokenMetadata, null)
+    assert.equal(data.tokenNativeMetadata, null)
 })
 
 function snsOf(result: readonly unknown[] | undefined): SnsEvent | undefined {
