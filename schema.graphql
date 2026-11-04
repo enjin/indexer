@@ -378,6 +378,12 @@ type MultiTokensBurned {
   cause: String
   # Expiration block of the ephemeral token the chain burned; set only with cause "ephemeralExpiry"
   expirationBlock: BigInt
+  # Display name of the token at burn time (metadata name), kept because a burn that destroys the token also
+  # deletes the Token row and the event's token link. Rows indexed before this field existed have none.
+  tokenName: String
+  # Display image of the token at burn time (first media url, else the metadata fallback image); same lifetime
+  # as tokenName
+  tokenImage: String
 }
 
 type MultiTokensCollectionAccountCreated {

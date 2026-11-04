@@ -2,6 +2,7 @@ import { Token, TokenAccount, UserInfusion } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { SnsEvent } from '~/util/sns'
 import { findSiblingEvent, SnsCause } from '~/util/sns-cause'
+import { recallDestroyedTokenDisplay, tokenDisplay } from '~/util/token-display'
 import { multiTokens } from '~/type/events'
 import * as mappings from '~/pallet/index'
 import { getOrCreateAccount } from '~/util/entities'
@@ -18,8 +19,9 @@ export async function burned(
     const data = mappings.multiTokens.events.burned(item)
     const account = await getOrCreateAccount(ctx, data.accountId)
 
+    const tokenKey = `${data.collectionId}-${data.tokenId}`
     const token = await ctx.store.findOne(Token, {
-        where: { id: `${data.collectionId}-${data.tokenId}` },
+        where: { id: tokenKey },
         relations: { collection: true },
     })
 
@@ -34,6 +36,12 @@ export async function burned(
         (e) => e.collectionId === data.collectionId && e.tokenId === data.tokenId
     )
 
+    // The stored event keeps the token's name and image: a burn that destroys the token (every expiry does) also
+    // deletes the Token row and the AccountTokenEvent link, so history read later has nothing else to display.
+    // When the chain destroyed the token before burning it, the row is already gone and the TokenDestroyed
+    // processor's stash for this block is the only source.
+    const display = token ? tokenDisplay(token) : recallDestroyedTokenDisplay(block, tokenKey)
+
     if (skipSave || !token || data.amount === 0n) {
         return [
             ...mappings.multiTokens.events.burnedEventModel(
@@ -42,7 +50,8 @@ export async function burned(
                 account,
                 token?.collection ?? null,
                 token ?? null,
-                expiry
+                expiry,
+                display
             ),
             undefined,
         ]
@@ -122,7 +131,7 @@ export async function burned(
     await QueueUtils.dispatchComputeTraits(data.collectionId.toString())
 
     return [
-        ...mappings.multiTokens.events.burnedEventModel(item, data, account, token.collection, token, expiry),
+        ...mappings.multiTokens.events.burnedEventModel(item, data, account, token.collection, token, expiry, display),
         snsEvent,
     ]
 }

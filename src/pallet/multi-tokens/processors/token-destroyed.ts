@@ -23,10 +23,11 @@ import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
 import { In } from 'typeorm'
 import { EventHandlerResult } from '~/processor.handler'
+import { rememberDestroyedTokenDisplay } from '~/util/token-display'
 
 export async function tokenDestroyed(
     ctx: CommonContext,
-    _block: Block,
+    block: Block,
     item: EventItem,
     skipSave: boolean
 ): Promise<EventHandlerResult> {
@@ -40,6 +41,10 @@ export async function tokenDestroyed(
         ctx.log.warn(`[TokenDestroyed] Token ${data.collectionId}-${data.tokenId} was already absent`)
         return [event, tokenDestroyedSnsEvent(item, data)]
     }
+
+    // A Burned later in this block (the chain destroys an expired ephemeral token before burning it) stores the
+    // token's name and image on its event; by then this row is gone, so keep what it needs.
+    rememberDestroyedTokenDisplay(block, token)
 
     token.bestListing = null
     token.bestListingPrice = null
