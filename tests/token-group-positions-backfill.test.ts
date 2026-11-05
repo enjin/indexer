@@ -2,26 +2,24 @@ import assert from 'node:assert/strict'
 import { createRequire, Module } from 'node:module'
 import test, { after } from 'node:test'
 import { FindOperator } from 'typeorm'
-import { ChainInfo, Token, TokenGroup, TokenGroupToken } from '~/model'
-
-const HASH = `0x${'ab'.repeat(32)}`
-const OTHER_HASH = `0x${'cd'.repeat(32)}`
-const GENESIS = `0x${'11'.repeat(32)}`
-const HEIGHT = 100
+import {
+    Event,
+    MultiTokensTokenCreated,
+    MultiTokensTokenGroupAdded,
+    MultiTokensTokenGroupsUpdated,
+    Token,
+    TokenGroup,
+    TokenGroupToken,
+} from '~/model'
 
 type Fixture = {
     tokens: Token[]
-    latest: ChainInfo | undefined
-    canonicalHash: string
-    finalizedHeight: number
-    storageHeight: number
-    genesisHash: string
-    chainTokens: Map<string, { groups?: bigint[] } | undefined>
+    events: Map<string, Event[]>
     databaseConnections: number
     rpcConnections: number
-    storageHashes: string[]
-    storageReads: [bigint, bigint][]
+    historyReads: string[]
     updates: { id: string; position: number }[]
+    concurrentPosition?: number
 }
 
 let current: Fixture
@@ -41,23 +39,48 @@ stubModule('~/contexts', {
     connectionManager: () => {
         current.databaseConnections++
         return Promise.resolve({
-            transaction: (isolation: string, callback: (tx: unknown) => Promise<void>) => {
+            transaction: (isolation: string, callback: (tx: unknown) => Promise<unknown>) => {
                 assert.equal(isolation, 'REPEATABLE READ')
                 return callback({
-                    find: (entity: unknown, options: { where?: { id: FindOperator<string> } }) => {
-                        if (entity === ChainInfo) return Promise.resolve(current.latest ? [current.latest] : [])
+                    findOne: (entity: unknown, options: { where: { id: string } }) => {
                         assert.equal(entity, Token)
-                        const ids = options.where?.id.value as string[]
-                        assert(Array.isArray(ids), 'repair must query only its requested token IDs')
-                        return Promise.resolve(current.tokens.filter((token) => ids.includes(token.id)))
+                        return Promise.resolve(current.tokens.find((token) => token.id === options.where.id))
                     },
-                    update: (entity: unknown, criteria: { id: string }, changes: { position: number }) => {
+                    find: (
+                        entity: unknown,
+                        options: {
+                            where: { collectionId: string; name: FindOperator<string>; data: FindOperator<string> }
+                            take: number
+                        }
+                    ) => {
+                        assert.equal(entity, Event)
+                        assert.equal(options.where.data.type, 'raw')
+                        const tokenId = options.where.data.objectLiteralParameters?.tokenId as string
+                        const id = `${options.where.collectionId}-${tokenId}`
+                        current.historyReads.push(id)
+                        assert(options.take <= 10_001, 'event history must remain bounded')
+                        return Promise.resolve(current.events.get(id) ?? [])
+                    },
+                    update: (
+                        entity: unknown,
+                        criteria: {
+                            id: string
+                            token: { id: string }
+                            tokenGroup: { id: string }
+                            position: FindOperator<number>
+                        },
+                        changes: { position: number }
+                    ) => {
                         assert.equal(entity, TokenGroupToken)
+                        assert.equal(criteria.position.type, 'isNull', 'existing positions must be preserved')
                         assert.deepEqual(Object.keys(changes), ['position'])
                         const membership = current.tokens
                             .flatMap((token) => token.tokenGroupTokens)
-                            .find((row) => row.id === criteria.id)
+                            .find((row) => row.id === criteria.id && row.token.id === criteria.token.id)
                         assert(membership, 'repair must update an existing membership')
+                        assert.equal(membership.tokenGroup.id, criteria.tokenGroup.id)
+                        if (current.concurrentPosition !== undefined) membership.position = current.concurrentPosition
+                        if (membership.position != null) return Promise.resolve({ affected: 0 })
                         current.updates.push({ id: membership.id, position: changes.position })
                         membership.position = changes.position
                         return Promise.resolve({ affected: 1 })
@@ -73,37 +96,7 @@ stubModule('~/util/rpc', {
     default: {
         getInstance: () => {
             current.rpcConnections++
-            return Promise.resolve({
-                api: {
-                    genesisHash: { toString: () => current.genesisHash },
-                    rpc: {
-                        chain: {
-                            getFinalizedHead: () => Promise.resolve(HASH),
-                            getHeader: () => Promise.resolve({ number: { toNumber: () => current.finalizedHeight } }),
-                            getBlockHash: (height: number) => {
-                                assert.equal(height, HEIGHT)
-                                return Promise.resolve({ toString: () => current.canonicalHash })
-                            },
-                        },
-                    },
-                },
-            })
-        },
-    },
-})
-
-stubModule('~/worker/jobs/tokens/token-storage-reader', {
-    FinalizedTokenStorageReader: {
-        create: (_api: unknown, hash: string) => {
-            current.storageHashes.push(hash)
-            return Promise.resolve({
-                hash,
-                height: current.storageHeight,
-                token: (collectionId: bigint, tokenId: bigint) => {
-                    current.storageReads.push([collectionId, tokenId])
-                    return Promise.resolve(current.chainTokens.get(`${collectionId}-${tokenId}`))
-                },
-            })
+            throw new Error('Event-based position repair must not require RPC')
         },
     },
 })
@@ -130,19 +123,31 @@ function token(id: string, memberships: [string, number | null][]): Token {
     return row
 }
 
+function event(id: string, data: Event['data']): Event {
+    assert(data)
+    return new Event({ id, name: data.isTypeOf, data })
+}
+
+function history(id: string, groups = ['32', '33']): Event[] {
+    const [collectionId, tokenId] = id.split('-').map(BigInt)
+    return [
+        event('0002614762-50e63-000005', new MultiTokensTokenCreated({ collectionId, tokenId })),
+        ...groups.map((group, index) =>
+            event(
+                `0006825${index.toString().padStart(3, '0')}-1c5fe-000004`,
+                new MultiTokensTokenGroupAdded({ collectionId, tokenId, tokenGroupId: BigInt(group) })
+            )
+        ),
+    ]
+}
+
 function fixture(tokens: Token[] = []): Fixture {
     current = {
         tokens,
-        latest: new ChainInfo({ blockHash: HASH, blockNumber: HEIGHT, genesisHash: GENESIS }),
-        canonicalHash: HASH,
-        finalizedHeight: HEIGHT + 5,
-        storageHeight: HEIGHT,
-        genesisHash: GENESIS,
-        chainTokens: new Map(),
+        events: new Map(tokens.map((row) => [row.id, history(row.id)])),
         databaseConnections: 0,
         rpcConnections: 0,
-        storageHashes: [],
-        storageReads: [],
+        historyReads: [],
         updates: [],
     }
     return current
@@ -168,22 +173,16 @@ function job(data: unknown) {
     }
 }
 
-void test('position repair rejects missing or unbounded scope and invalid inputs before database or RPC access', async () => {
-    const base = { tokenIds: ['3844-11'], blockHash: HASH }
+void test('event repair validates a bounded token scope before database access', async () => {
+    const base = { tokenIds: ['3844-11'] }
     for (const data of [
         undefined,
         {},
-        { ...base, tokenIds: [] },
-        { ...base, tokenIds: '3844-11' },
-        { ...base, tokenIds: Array.from({ length: 101 }, (_, index) => `3844-${index}`) },
-        { ...base, tokenIds: [11] },
-        ...['', '11', '-1-11', '3844--1', '03844-11', '3844-011', '3844-1.5'].map((id) => ({
-            ...base,
-            tokenIds: [id],
-        })),
-        { ...base, blockHash: undefined },
-        { ...base, blockHash: '0x1234' },
-        { ...base, blockHash: `0x${'zz'.repeat(32)}` },
+        { tokenIds: [] },
+        { tokenIds: '3844-11' },
+        { tokenIds: Array.from({ length: 101 }, (_, index) => `3844-${index}`) },
+        { tokenIds: [11] },
+        ...['', '11', '-1-11', '3844--1', '03844-11', '3844-011', '3844-1.5'].map((id) => ({ tokenIds: [id] })),
         { ...base, dryRun: 'false' },
     ]) {
         const state = fixture()
@@ -193,29 +192,24 @@ void test('position repair rejects missing or unbounded scope and invalid inputs
     }
 })
 
-void test('position repair defaults to a dry run and pins token reads to the supplied indexed block', async () => {
+void test('event repair defaults to a dry run without a block hash or RPC', async () => {
     const row = token('3844-11', [
         ['32', null],
         ['33', null],
     ])
     const state = fixture([row])
-    state.chainTokens.set(row.id, { groups: [33n, 32n] })
-    const request = job({ tokenIds: [row.id], blockHash: HASH })
+    const request = job({ tokenIds: [row.id] })
 
     await syncTokenGroupPositions(request.request)
 
     assert.deepEqual(state.updates, [])
-    assert.deepEqual(
-        row.tokenGroupTokens.map((membership) => membership.position),
-        [null, null]
-    )
-    assert.deepEqual(state.storageHashes, [HASH])
-    assert.deepEqual(state.storageReads, [[3844n, 11n]])
+    assert(row.tokenGroupTokens.every((membership) => membership.position === null))
+    assert.equal(state.rpcConnections, 0)
+    assert(request.messages.some((message) => message.includes('2 positions would change')))
     assert.equal(request.progress.at(-1), 100)
-    assert(request.messages.length > 0)
 })
 
-void test('position repair follows each token group list rather than database row or group token order', async () => {
+void test('event repair reconstructs production assignment order and follows explicit reorder events', async () => {
     const first = token('3844-11', [
         ['33', null],
         ['32', null],
@@ -225,40 +219,44 @@ void test('position repair follows each token group list rather than database ro
         ['33', null],
     ])
     const state = fixture([second, first])
-    state.chainTokens.set(first.id, { groups: [32n, 33n] })
-    state.chainTokens.set(second.id, { groups: [33n, 32n] })
-    const request = job({ tokenIds: [first.id, second.id], blockHash: HASH, dryRun: false })
+    const secondHistory = state.events.get(second.id)
+    assert(secondHistory)
+    secondHistory.push(
+        event(
+            '0007000000-aabbc-000004',
+            new MultiTokensTokenGroupsUpdated({ collectionId: 3844n, tokenId: 6n, tokenGroups: [33n, 32n] })
+        )
+    )
+    const request = job({ tokenIds: [first.id, second.id], dryRun: false })
 
     await syncTokenGroupPositions(request.request)
 
-    assert.deepEqual(
-        [...state.updates].sort((a, b) => a.id.localeCompare(b.id)),
-        [
-            { id: '11-32', position: 0 },
-            { id: '11-33', position: 1 },
-            { id: '6-32', position: 1 },
-            { id: '6-33', position: 0 },
-        ]
-    )
-    assert.equal(request.progress.at(-1), 100)
+    assert.deepEqual(state.updates, [
+        { id: '11-33', position: 1 },
+        { id: '11-32', position: 0 },
+        { id: '6-32', position: 1 },
+        { id: '6-33', position: 0 },
+    ])
+    assert.equal(state.rpcConnections, 0)
+    assert(request.messages.some((message) => message.includes('0007000000-aabbc-000004')))
 })
 
-void test('position repair writes only incorrect positions and is idempotent on retry', async () => {
+void test('event repair fills only missing positions and is idempotent', async () => {
     const row = token('3844-11', [
         ['32', 0],
-        ['33', 8],
+        ['33', null],
     ])
     const state = fixture([row])
-    state.chainTokens.set(row.id, { groups: [32n, 33n] })
-    const data = { tokenIds: [row.id], blockHash: HASH, dryRun: false }
+    const data = { tokenIds: [row.id, row.id], dryRun: false }
 
     await syncTokenGroupPositions(job(data).request)
-    assert.deepEqual(state.updates, [{ id: '11-33', position: 1 }])
     await syncTokenGroupPositions(job(data).request)
+
     assert.deepEqual(state.updates, [{ id: '11-33', position: 1 }])
+    assert.deepEqual(state.historyReads, [row.id])
 })
 
-void test('position repair skips absent storage, unknown groups, mismatched memberships and duplicate chain groups', async () => {
+void test('event repair skips missing history, mismatched memberships, conflicting positions and absent tokens', async () => {
     const rows = [1, 2, 3, 4].map((id) =>
         token(`3844-${id}`, [
             ['32', null],
@@ -266,64 +264,47 @@ void test('position repair skips absent storage, unknown groups, mismatched memb
         ])
     )
     const state = fixture(rows)
-    state.chainTokens.set(rows[1].id, {})
-    state.chainTokens.set(rows[2].id, { groups: [32n, 34n] })
-    state.chainTokens.set(rows[3].id, { groups: [32n, 32n] })
-    const request = job({ tokenIds: [...rows.map((row) => row.id), '3844-99'], blockHash: HASH, dryRun: false })
+    state.events.set(rows[0].id, [])
+    state.events.set(rows[1].id, history(rows[1].id, ['32', '34']))
+    rows[2].tokenGroupTokens[0].position = 1
+    state.events.set(rows[3].id, history(rows[3].id).slice(1))
+    const request = job({ tokenIds: [...rows.map((row) => row.id), '3844-99'], dryRun: false })
 
     await syncTokenGroupPositions(request.request)
 
     assert.deepEqual(state.updates, [])
-    assert(rows.every((row) => row.tokenGroupTokens.every((membership) => membership.position === null)))
     assert.equal(request.progress.at(-1), 100)
+    assert.equal(request.messages.filter((message) => message.startsWith('Skipped')).length, 5)
 })
 
-void test('position repair preserves bigint collection, token and group identifiers', async () => {
+void test('event repair rejects concurrent position changes instead of overwriting them', async () => {
+    const row = token('3844-11', [['32', null]])
+    const state = fixture([row])
+    state.events.set(row.id, history(row.id, ['32']))
+    state.concurrentPosition = 9
+
+    await assert.rejects(syncTokenGroupPositions(job({ tokenIds: [row.id], dryRun: false }).request), /changed/)
+
+    assert.deepEqual(state.updates, [])
+    assert.equal(row.tokenGroupTokens[0].position, 9)
+})
+
+void test('event repair preserves bigint identifiers and bounds retained event history', async () => {
     const collectionId = 9_007_199_254_740_993n
     const tokenId = 340_282_366_920_938_463_463_374_607_431_768_211_455n
     const groupId = 9_007_199_254_740_995n
     const row = token(`${collectionId}-${tokenId}`, [[groupId.toString(), null]])
     const state = fixture([row])
-    state.chainTokens.set(row.id, { groups: [groupId] })
-
-    await syncTokenGroupPositions(job({ tokenIds: [row.id], blockHash: HASH, dryRun: false }).request)
-
-    assert.deepEqual(state.storageReads, [[collectionId, tokenId]])
+    state.events.set(row.id, history(row.id, [groupId.toString()]))
+    await syncTokenGroupPositions(job({ tokenIds: [row.id], dryRun: false }).request)
     assert.deepEqual(state.updates, [{ id: `${tokenId}-${groupId}`, position: 0 }])
-})
 
-void test('position repair rejects wrong, missing, forked or unfinalized indexed snapshots without writes', async () => {
-    const cases: ((state: Fixture) => void)[] = [
-        (state) => {
-            state.latest = undefined
-        },
-        (state) => {
-            assert(state.latest)
-            state.latest.blockHash = OTHER_HASH
-        },
-        (state) => {
-            state.genesisHash = OTHER_HASH
-        },
-        (state) => {
-            state.canonicalHash = OTHER_HASH
-        },
-        (state) => {
-            state.finalizedHeight = HEIGHT - 1
-        },
-        (state) => {
-            state.storageHeight = HEIGHT + 1
-        },
-    ]
-    for (const configure of cases) {
-        const row = token('3844-11', [['32', null]])
-        const state = fixture([row])
-        state.chainTokens.set(row.id, { groups: [32n] })
-        configure(state)
-
-        await assert.rejects(
-            syncTokenGroupPositions(job({ tokenIds: [row.id], blockHash: HASH, dryRun: false }).request)
-        )
-
-        assert.deepEqual(state.updates, [])
-    }
+    row.tokenGroupTokens[0].position = null
+    state.updates = []
+    state.events.set(
+        row.id,
+        Array.from({ length: 10_001 }, () => history(row.id)[0])
+    )
+    await syncTokenGroupPositions(job({ tokenIds: [row.id], dryRun: false }).request)
+    assert.deepEqual(state.updates, [])
 })

@@ -1,107 +1,113 @@
 import type { Job } from 'bullmq'
-import { In } from 'typeorm'
+import { EntityManager, In, IsNull, Raw } from 'typeorm'
 import { connectionManager } from '~/contexts'
-import { ChainInfo, Token, TokenGroupToken } from '~/model'
-import Rpc from '~/util/rpc'
+import { Event, Token, TokenGroupToken } from '~/model'
 import { isRelay } from '~/util/tools'
-import { FinalizedTokenStorageReader } from './token-storage-reader'
+import { TOKEN_GROUP_HISTORY_NAMES, tokenGroupOrderFromEvents } from './token-group-event-order'
 
 export type SyncTokenGroupPositionsData = {
     tokenIds: string[]
-    blockHash: string
     dryRun?: boolean
 }
 
-/** Repair positions only, using a bounded token list at the latest indexed finalized block. */
-export async function syncTokenGroupPositions(job: Job<SyncTokenGroupPositionsData>): Promise<void> {
-    const { tokenIds, blockHash, dryRun = true } = job.data ?? {}
+const MAX_HISTORY_EVENTS = 10_000
+type RepairResult = { changed: number; message: string }
+
+function skipped(id: string, reason: string): RepairResult {
+    return { changed: 0, message: `Skipped ${id}: ${reason}` }
+}
+
+async function repairToken(tx: EntityManager, id: string, dryRun: boolean): Promise<RepairResult> {
+    const token = await tx.findOne(Token, {
+        where: { id },
+        relations: { tokenGroupTokens: { tokenGroup: true } },
+    })
+    if (!token) return skipped(id, 'token is not indexed')
+    const memberships = token.tokenGroupTokens
+    if (memberships.every((membership) => membership.position != null)) {
+        return { changed: 0, message: `${id}: all membership positions are already set` }
+    }
+
+    const [collectionId, tokenId] = id.split('-')
+    // Added/GroupsUpdated historically omitted Event.tokenId; Removed stored the bare token ID.
+    const events = await tx.find(Event, {
+        where: {
+            collectionId,
+            name: In(TOKEN_GROUP_HISTORY_NAMES),
+            data: Raw((column) => `${column} ->> 'tokenId' = :tokenId`, { tokenId }),
+        },
+        order: { id: 'DESC' },
+        take: MAX_HISTORY_EVENTS + 1,
+    })
+    if (events.length > MAX_HISTORY_EVENTS) return skipped(id, 'event history exceeds 10000 events')
+    const order = tokenGroupOrderFromEvents(events)
+    if (!order) return skipped(id, 'group order cannot be determined from indexed events')
+
+    const { groups, baselineEventId } = order
+    const groupSet = new Set(groups)
+    if (
+        memberships.length !== groups.length ||
+        new Set(memberships.map((membership) => membership.tokenGroup.id)).size !== groups.length ||
+        memberships.some((membership) => !groupSet.has(membership.tokenGroup.id))
+    ) {
+        return skipped(id, 'indexed memberships differ from event history')
+    }
+    if (
+        memberships.some(
+            (membership) =>
+                membership.position != null && membership.position !== groups.indexOf(membership.tokenGroup.id)
+        )
+    ) {
+        return skipped(id, 'existing positions disagree with event history')
+    }
+
+    const missing = memberships.filter((membership) => membership.position == null)
+    if (!dryRun) {
+        for (const membership of missing) {
+            const result = await tx.update(
+                TokenGroupToken,
+                {
+                    id: membership.id,
+                    token: { id },
+                    tokenGroup: { id: membership.tokenGroup.id },
+                    position: IsNull(),
+                },
+                { position: groups.indexOf(membership.tokenGroup.id) }
+            )
+            if (result.affected !== 1) throw new Error(`Membership ${membership.id} changed during repair; retry`)
+        }
+    }
+    return {
+        changed: missing.length,
+        message: `${id}: [${groups.join(', ')}] from ${baselineEventId}; ${missing.length} positions ${dryRun ? 'would change' : 'updated'}`,
+    }
+}
+
+/** Fill missing membership positions from indexed assignment/reorder events without an RPC snapshot. */
+export async function syncTokenGroupPositions(job: Job<SyncTokenGroupPositionsData | undefined>): Promise<void> {
+    const { tokenIds, dryRun = true } = job.data ?? {}
     if (
         !Array.isArray(tokenIds) ||
         tokenIds.length === 0 ||
         tokenIds.length > 100 ||
         tokenIds.some((id) => typeof id !== 'string' || !/^(0|[1-9]\d*)-(0|[1-9]\d*)$/.test(id)) ||
-        typeof blockHash !== 'string' ||
-        !/^0x[0-9a-fA-F]{64}$/.test(blockHash) ||
         typeof dryRun !== 'boolean'
     ) {
-        throw new Error(
-            'Token group position repair requires 1-100 full tokenIds, a blockHash and optional boolean dryRun'
-        )
+        throw new Error('Token group position repair requires 1-100 full tokenIds and optional boolean dryRun')
     }
     if (isRelay()) throw new Error('Token group position repair requires Matrixchain')
 
     const ids = [...new Set(tokenIds)]
     const em = await connectionManager()
-    const { api } = await Rpc.getInstance()
-
-    // A concurrent update/delete of a membership aborts the transaction instead of overwriting newer positions.
-    // Pause the processor for write runs; ChainInfo is persisted only at the end of a processor batch.
-    await em.transaction('REPEATABLE READ', async (tx) => {
-        const [latest] = await tx.find(ChainInfo, { order: { blockNumber: 'DESC' }, take: 1 })
-        if (!latest || latest.blockHash.toLowerCase() !== blockHash.toLowerCase()) {
-            throw new Error('Token group position repair blockHash must match the latest indexed block')
-        }
-        if (latest.genesisHash.toLowerCase() !== api.genesisHash.toString().toLowerCase()) {
-            throw new Error('Token group position repair RPC and database genesis hashes differ')
-        }
-
-        const finalizedHash = await api.rpc.chain.getFinalizedHead()
-        const [finalized, canonicalHash] = await Promise.all([
-            api.rpc.chain.getHeader(finalizedHash),
-            api.rpc.chain.getBlockHash(latest.blockNumber),
-        ])
-        if (
-            latest.blockNumber > finalized.number.toNumber() ||
-            canonicalHash.toString().toLowerCase() !== blockHash.toLowerCase()
-        ) {
-            throw new Error('Token group position repair requires a canonical finalized indexed block')
-        }
-
-        const tokens = await tx.find(Token, {
-            where: { id: In(ids) },
-            relations: { tokenGroupTokens: { tokenGroup: true } },
-        })
-        const storage = await FinalizedTokenStorageReader.create(api, blockHash)
-        if (storage.height !== latest.blockNumber) throw new Error('Token group position repair block height mismatch')
-
-        let changed = 0
-        for (const [index, id] of ids.entries()) {
-            const token = tokens.find((candidate) => candidate.id === id)
-            if (!token) {
-                await job.log(`Skipped ${id}: token is not indexed`)
-                continue
-            }
-
-            const stored = await storage.token(BigInt(id.split('-')[0]), token.tokenId)
-            if (!stored?.groups) {
-                await job.log(`Skipped ${id}: token or group storage is unavailable`)
-                continue
-            }
-
-            const groups = stored.groups.map(String)
-            const memberships = token.tokenGroupTokens
-            const groupSet = new Set(groups)
-            if (
-                groupSet.size !== groups.length ||
-                memberships.length !== groups.length ||
-                new Set(memberships.map((membership) => membership.tokenGroup.id)).size !== groups.length ||
-                memberships.some((membership) => !groupSet.has(membership.tokenGroup.id))
-            ) {
-                await job.log(`Skipped ${id}: indexed memberships differ from the snapshot`)
-                continue
-            }
-
-            for (const membership of memberships) {
-                const position = groups.indexOf(membership.tokenGroup.id)
-                if (membership.position === position) continue
-                if (!dryRun) await tx.update(TokenGroupToken, { id: membership.id }, { position })
-                changed++
-            }
-            await job.updateProgress(Math.floor(((index + 1) / ids.length) * 90))
-        }
-        await job.log(
-            `Token group position ${dryRun ? 'dry run' : 'repair'} at ${blockHash}: ${changed} positions ${dryRun ? 'would change' : 'updated'} across ${ids.length} requested tokens`
-        )
-    })
-    await job.updateProgress(100)
+    let changed = 0
+    for (const [index, id] of ids.entries()) {
+        // Events and memberships come from the same committed view. Conflicting row writes abort this token's repair.
+        const result = await em.transaction('REPEATABLE READ', (tx) => repairToken(tx, id, dryRun))
+        changed += result.changed
+        await job.log(result.message)
+        await job.updateProgress(Math.floor(((index + 1) / ids.length) * 100))
+    }
+    await job.log(
+        `Token group position ${dryRun ? 'dry run' : 'repair'}: ${changed} positions ${dryRun ? 'would change' : 'updated'} across ${ids.length} requested tokens`
+    )
 }
