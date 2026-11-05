@@ -12,10 +12,13 @@ export async function replaceTokenGroupTokens(ctx: CommonContext, token: Token, 
     })
     const membershipId = (tokenGroupId: string) => `${token.tokenId}-${tokenGroupId}`
 
-    const current = [...existing]
-        .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
-        .map((membership) => membership.id)
-    if (current.length === groupIds.length && current.every((id, index) => id === membershipId(groupIds[index])))
+    const current = [...existing].sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
+    if (
+        current.length === groupIds.length &&
+        current.every(
+            (membership, index) => membership.id === membershipId(groupIds[index]) && membership.position === index
+        )
+    )
         return false
 
     const tokenGroups =
