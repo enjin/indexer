@@ -1,10 +1,11 @@
 import type { ApiPromise } from '@polkadot/api'
-import { hexToString } from '@polkadot/util'
+import { hexToString, isHex } from '@polkadot/util'
 import { FuelTank, FuelTankRuleSet, PermittedExtrinsics } from '~/model'
 import { connectionManager } from '~/contexts'
 import { Job } from 'bullmq'
 import Rpc from '~/util/rpc'
 import { rulesToMap } from '~/pallet/fuel-tanks/utils'
+import { decodeAddress } from '~/util/tools'
 import type { Call, DispatchRuleDescriptor } from '~/pallet/common/types'
 
 function num(v: { toNumber?: () => number; toString?: () => string } | number | bigint | null | undefined): number {
@@ -37,6 +38,15 @@ function big(v: { toString?: () => string } | bigint | number | string | null | 
     } catch {
         return 0n
     }
+}
+
+/**
+ * Storage JSON renders accounts as SS58; the event processors store them as lowercase hex and
+ * compatibleFuelTanks compares against that, so normalise here.
+ */
+function accountToHex(account: unknown): string {
+    const s = String(account)
+    return (isHex(s) ? s : decodeAddress(s)).toLowerCase()
 }
 
 function capitalizeKind(s: string): string {
@@ -158,11 +168,15 @@ function jsonVariantToDescriptor(api: ApiPromise, kind: string, raw: unknown): D
             }
         }
         case 'WhitelistedCallers': {
-            const arr = (Array.isArray(v) ? v : ((v.value as string[]) ?? [])) as string[]
-            return { __kind: 'WhitelistedCallers', value: arr.map(String) }
+            const arr = (
+                Array.isArray(v) ? v : (((v.whitelistedCallers ?? v.value) as unknown[] | undefined) ?? [])
+            ) as unknown[]
+            return { __kind: 'WhitelistedCallers', value: arr.map(accountToHex) }
         }
         case 'WhitelistedCollections': {
-            const arr = (Array.isArray(v) ? v : ((v.value as unknown[]) ?? [])) as unknown[]
+            const arr = (
+                Array.isArray(v) ? v : (((v.whitelistedCollections ?? v.value) as unknown[] | undefined) ?? [])
+            ) as unknown[]
             return { __kind: 'WhitelistedCollections', value: arr.filter((c) => c != null).map((c) => big(String(c))) }
         }
         case 'WhitelistedPallets': {
@@ -248,7 +262,7 @@ function ruleCodecToDescriptor(api: ApiPromise, rule: { type: string; value: unk
         case 'whitelistedCallers':
             return {
                 __kind: 'WhitelistedCallers',
-                value: [...(v as unknown as Iterable<{ toString: () => string }>)].map((a) => a.toString()),
+                value: [...(v as unknown as Iterable<{ toHex: () => string }>)].map((a) => accountToHex(a.toHex())),
             }
         case 'whitelistedCollections':
             return {
@@ -318,7 +332,7 @@ function ruleCodecToDescriptor(api: ApiPromise, rule: { type: string; value: unk
     }
 }
 
-function tankRuleSetEntries(
+export function tankRuleSetEntries(
     api: ApiPromise,
     chainTank: unknown
 ): Array<{ index: number; descriptors: DispatchRuleDescriptor[]; requireAccount: boolean }> {
