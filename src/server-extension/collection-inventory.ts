@@ -14,7 +14,7 @@ import { BigInteger, Json } from '@subsquid/graphql-server'
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
 import { Validate } from 'class-validator'
-import { TokenAccount, Token, TokenGroup } from '~/model'
+import { Token, TokenGroup } from '~/model'
 import { decodeCursor, encodeCursor, IsPublicKeyArray } from './helpers'
 import { PageInfo } from './types'
 import { notExpiredListingSql } from '~/util/listing-availability'
@@ -124,6 +124,28 @@ class CollectionInventoryGroup {
 }
 
 @ObjectType()
+class CollectionInventoryLoanAccount {
+    @Field(() => String)
+    address!: string
+}
+
+@ObjectType()
+class CollectionInventoryTokenLoan {
+    @Field(() => CollectionInventoryLoanAccount)
+    lender!: CollectionInventoryLoanAccount
+
+    @Field(() => CollectionInventoryLoanAccount)
+    borrower!: CollectionInventoryLoanAccount
+
+    @Field(() => BigInteger)
+    expiration!: typeof BigInteger
+
+    constructor(props: Partial<CollectionInventoryTokenLoan>) {
+        Object.assign(this, props)
+    }
+}
+
+@ObjectType()
 class CollectionInventoryToken {
     @Field(() => ID)
     id!: string
@@ -151,6 +173,9 @@ class CollectionInventoryToken {
 
     @Field(() => BigInteger, { nullable: true })
     listedPrice?: typeof BigInteger | null
+
+    @Field(() => CollectionInventoryTokenLoan, { nullable: true })
+    loan?: CollectionInventoryTokenLoan | null
 
     @Field()
     createdAt!: Date
@@ -243,12 +268,29 @@ export function buildCursorCondition(
     }
 }
 
+/** Physical holdings and outstanding lender rights share one deduplicated inventory membership. */
+function inventoryTokenIdsCte(accountIds: string, collectionId: string): string {
+    return `inventory_token_ids AS (
+        SELECT token_account.token_id FROM token_account
+        INNER JOIN token ON token_account.token_id = token.id
+        INNER JOIN collection ON token.collection_id = collection.id
+        WHERE token_account.account_id IN (${accountIds}) AND token_account.total_balance > 0
+            AND collection.collection_id = ${collectionId}
+        UNION
+        SELECT token_loan.token_id FROM token_loan
+        INNER JOIN token ON token_loan.token_id = token.id
+        INNER JOIN collection ON token.collection_id = collection.id
+        WHERE token_loan.lender_id IN (${accountIds})
+            AND collection.collection_id = ${collectionId}
+    )`
+}
+
 @Resolver()
 export class CollectionInventoryResolver {
     constructor(private tx: () => Promise<EntityManager>) {}
 
     /**
-     * Returns grouped token items owned by the given accounts for one collection.
+     * Returns grouped token items held or lent by the given accounts for one collection.
      */
     @Query(() => CollectionInventoryConnection)
     async collectionInventory(@Args() args: CollectionInventoryArgs): Promise<CollectionInventoryConnection> {
@@ -318,6 +360,7 @@ export class CollectionInventoryResolver {
         // Keyset pagination query: fetch groups and ungrouped tokens in one pass
         const accountIdPlaceholders = accountIds.map((_, i) => `$${i + 1}`).join(', ')
         const collectionIdPlaceholder = `$${accountIds.length + 1}`
+        const inventoryTokens = inventoryTokenIdsCte(accountIdPlaceholders, collectionIdPlaceholder)
 
         let cursorCondition = ''
         if (cursor) {
@@ -329,7 +372,7 @@ export class CollectionInventoryResolver {
         const pageItems = await manager.query(
             `
             -- groups_data: token groups owned by the account(s) with at least two tokens
-            WITH groups_data AS (
+            WITH ${inventoryTokens}, groups_data AS (
                 SELECT
                     tg.id AS id,
                     COUNT(DISTINCT token.id) AS owned_count,
@@ -338,14 +381,12 @@ export class CollectionInventoryResolver {
                     MIN(token.token_id) AS token_id,
                     MIN(NULLIF(token.name, '')) AS token_name,
                     MAX(token.best_listing_price) AS best_listing_price
-                FROM token_account
-                INNER JOIN token ON token_account.token_id = token.id
+                FROM inventory_token_ids
+                INNER JOIN token ON inventory_token_ids.token_id = token.id
                 INNER JOIN collection ON token.collection_id = collection.id
                 INNER JOIN token_group_token tgt ON token.id = tgt.token_id
                 INNER JOIN token_group tg ON tgt.token_group_id = tg.id
-                WHERE token_account.account_id IN (${accountIdPlaceholders})
-                    AND token_account.total_balance > 0
-                    AND collection.collection_id = ${collectionIdPlaceholder}
+                WHERE collection.collection_id = ${collectionIdPlaceholder}
                     ${searchCondition}
                     ${listingCondition}
                 GROUP BY tg.id
@@ -361,15 +402,13 @@ export class CollectionInventoryResolver {
                     token.token_id AS token_id,
                     NULLIF(token.name, '') AS token_name,
                     token.best_listing_price AS best_listing_price
-                FROM token_account
-                INNER JOIN token ON token_account.token_id = token.id
+                FROM inventory_token_ids
+                INNER JOIN token ON inventory_token_ids.token_id = token.id
                 INNER JOIN collection ON token.collection_id = collection.id
                 LEFT JOIN token_group_token tgt ON token.id = tgt.token_id
                 LEFT JOIN token_group tg ON tgt.token_group_id = tg.id
                     AND tg.id IN (SELECT id FROM groups_data)
-                WHERE token_account.account_id IN (${accountIdPlaceholders})
-                    AND token_account.total_balance > 0
-                    AND collection.collection_id = ${collectionIdPlaceholder}
+                WHERE collection.collection_id = ${collectionIdPlaceholder}
                     ${searchCondition}
                     ${listingCondition}
                     AND tg.id IS NULL
@@ -395,17 +434,15 @@ export class CollectionInventoryResolver {
         const totalCountResult = await manager.query(
             `
             -- groups_data: token groups owned by the account(s) with at least two tokens
-            WITH groups_data AS (
+            WITH ${inventoryTokens}, groups_data AS (
                 SELECT
                     tg.id AS id
-                FROM token_account
-                INNER JOIN token ON token_account.token_id = token.id
+                FROM inventory_token_ids
+                INNER JOIN token ON inventory_token_ids.token_id = token.id
                 INNER JOIN collection ON token.collection_id = collection.id
                 INNER JOIN token_group_token tgt ON token.id = tgt.token_id
                 INNER JOIN token_group tg ON tgt.token_group_id = tg.id
-                WHERE token_account.account_id IN (${accountIdPlaceholders})
-                    AND token_account.total_balance > 0
-                    AND collection.collection_id = ${collectionIdPlaceholder}
+                WHERE collection.collection_id = ${collectionIdPlaceholder}
                     ${searchCondition}
                     ${listingCondition}
                 GROUP BY tg.id
@@ -415,15 +452,13 @@ export class CollectionInventoryResolver {
             ungrouped_tokens AS (
                 SELECT
                     token.id AS id
-                FROM token_account
-                INNER JOIN token ON token_account.token_id = token.id
+                FROM inventory_token_ids
+                INNER JOIN token ON inventory_token_ids.token_id = token.id
                 INNER JOIN collection ON token.collection_id = collection.id
                 LEFT JOIN token_group_token tgt ON token.id = tgt.token_id
                 LEFT JOIN token_group tg ON tgt.token_group_id = tg.id
                     AND tg.id IN (SELECT id FROM groups_data)
-                WHERE token_account.account_id IN (${accountIdPlaceholders})
-                    AND token_account.total_balance > 0
-                    AND collection.collection_id = ${collectionIdPlaceholder}
+                WHERE collection.collection_id = ${collectionIdPlaceholder}
                     ${searchCondition}
                     ${listingCondition}
                     AND tg.id IS NULL
@@ -480,35 +515,8 @@ export class CollectionInventoryResolver {
                 .where('tg.id IN (:...groupIds)', { groupIds: pageGroupIds })
                 .getMany()
 
-            // Get owned counts for each group
-            const groupOwnedCountsQuery = manager
-                .getRepository(TokenAccount)
-                .createQueryBuilder('token_account')
-                .innerJoin('token_account.token', 'token')
-                .innerJoin('token.collection', 'collection')
-                .innerJoin('token.tokenGroupTokens', 'tgt')
-                .innerJoin('tgt.tokenGroup', 'tg')
-                .select('tg.id', 'group_id')
-                .addSelect('COUNT(DISTINCT token.id)', 'token_count')
-                .where('tg.id IN (:...groupIds)', { groupIds: pageGroupIds })
-                .andWhere('token_account.account_id IN (:...accountIds)', { accountIds })
-                .andWhere('token_account.total_balance > 0')
-                .andWhere('collection.collection_id = :collectionId', { collectionId })
-                .groupBy('tg.id')
-
-            if (listingCondition) {
-                groupOwnedCountsQuery.andWhere(listingCondition.slice(4))
-            }
-
-            const groupOwnedCounts = await groupOwnedCountsQuery.getRawMany()
-
-            const ownedCountMap = new Map(
-                groupOwnedCounts.map((row) => [String(row.group_id), parseInt(row.token_count, 10)])
-            )
-
             for (const group of groupDetails) {
                 const groupId = String(group.id)
-                const ownedCount = ownedCountMap.get(groupId) || 0
 
                 const collectionAttrs = (group.collection?.attributes || [])
                     .filter((attr: any) => !attr.token)
@@ -518,7 +526,7 @@ export class CollectionInventoryResolver {
                     }))
 
                 groupsMap.set(groupId, {
-                    ownedCount,
+                    ownedCount: 0,
                     metadata: group.metadata as any,
                     attributes: (group.attributes || []).map((attr: any) => ({
                         key: attr.key,
@@ -544,32 +552,32 @@ export class CollectionInventoryResolver {
                 .join(', ')
             const groupTokens = await manager.query(
                 `
-                WITH ranked_tokens AS (
+                WITH ${inventoryTokenIdsCte(accountIdsPlaceholders, `$${pageGroupIds.length + accountIds.length + 1}`)}, ranked_tokens AS (
                     SELECT
                         tg.id AS group_id,
                         token.id AS token_id,
+                        COUNT(*) OVER (PARTITION BY tg.id) AS owned_count,
                         ROW_NUMBER() OVER (PARTITION BY tg.id ORDER BY token.id) AS rn
-                    FROM token_account
-                    INNER JOIN token ON token_account.token_id = token.id
+                    FROM inventory_token_ids
+                    INNER JOIN token ON inventory_token_ids.token_id = token.id
                     INNER JOIN token_group_token tgt ON token.id = tgt.token_id
                     INNER JOIN token_group tg ON tgt.token_group_id = tg.id
                     WHERE tg.id IN (${groupTokensPlaceholders})
-                        AND token_account.account_id IN (${accountIdsPlaceholders})
-                        AND token_account.total_balance > 0
                         ${listingCondition}
                 )
-                SELECT group_id, token_id
+                SELECT group_id, token_id, owned_count
                 FROM ranked_tokens
                 WHERE rn <= 4
                 ORDER BY group_id, rn
                 `,
-                [...pageGroupIds, ...accountIds]
+                [...pageGroupIds, ...accountIds, collectionId]
             )
 
             for (const row of groupTokens) {
                 const groupId = String(row.group_id)
                 const groupData = groupsMap.get(groupId)
                 if (groupData) {
+                    groupData.ownedCount = Number(row.owned_count)
                     groupData.tokenIds.push(String(row.token_id))
                 }
             }
@@ -617,6 +625,7 @@ export class CollectionInventoryResolver {
                 balance: bigint
                 reservedBalance: bigint
                 listedPrice?: bigint
+                loan?: CollectionInventoryTokenLoan | null
             }
         >()
         if (allTokenIds.length > 0) {
@@ -633,6 +642,9 @@ export class CollectionInventoryResolver {
             const tokenDetails = await manager
                 .getRepository(Token)
                 .createQueryBuilder('token')
+                .leftJoinAndSelect('token.loan', 'loan')
+                .leftJoinAndSelect('loan.lender', 'lender')
+                .leftJoinAndSelect('loan.borrower', 'borrower')
                 .leftJoinAndSelect('token.collection', 'collection')
                 .leftJoinAndSelect('token.attributes', 'tokenAttrs', 'tokenAttrs.key IN (:...metadataKeys)', {
                     metadataKeys,
@@ -710,6 +722,13 @@ export class CollectionInventoryResolver {
                     balance: balances.balance,
                     reservedBalance: balances.reservedBalance,
                     listedPrice: ownListing,
+                    loan: token.loan
+                        ? new CollectionInventoryTokenLoan({
+                              lender: token.loan.lender,
+                              borrower: token.loan.borrower,
+                              expiration: token.loan.expiration as any,
+                          })
+                        : null,
                 })
             }
         }
@@ -731,6 +750,7 @@ export class CollectionInventoryResolver {
                         balance: (tokenData?.balance ?? 0n) as any,
                         reservedBalance: (tokenData?.reservedBalance ?? 0n) as any,
                         listedPrice: tokenData?.listedPrice as any,
+                        loan: tokenData?.loan,
                         createdAt: tokenData?.createdAt ?? new Date(),
                         collection:
                             tokenData?.collection ||
@@ -761,6 +781,7 @@ export class CollectionInventoryResolver {
                     balance: (tokenData?.balance ?? 0n) as any,
                     reservedBalance: (tokenData?.reservedBalance ?? 0n) as any,
                     listedPrice: tokenData?.listedPrice as any,
+                    loan: tokenData?.loan,
                     createdAt: tokenData?.createdAt ?? new Date(),
                     collection:
                         tokenData?.collection ||
