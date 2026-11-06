@@ -135,7 +135,16 @@ void test('supports removals with an unambiguous remaining order and puts re-add
     })
 })
 
-void test('does not guess removal semantics when at least two groups remain', () => {
+void test('last and penultimate removals preserve a provable order', () => {
+    const baseline = updated([32n, 33n, 34n, 35n], 0)
+    const history = [baseline, removed(34n, 1), removed(35n, 2), added(36n, 3)]
+    assert.deepEqual(tokenGroupOrderFromEvents(history), {
+        groups: ['32', '33', '36'],
+        baselineEventId: baseline.id,
+    })
+})
+
+void test('does not guess when an earlier removal can reorder surviving groups', () => {
     const history = [updated([32n, 33n, 34n], 0), removed(32n, 1), added(35n, 2)]
     assert.equal(tokenGroupOrderFromEvents(history), undefined)
     const baseline = updated([34n, 33n, 35n], 3)

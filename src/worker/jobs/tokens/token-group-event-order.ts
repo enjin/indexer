@@ -94,9 +94,10 @@ export function tokenGroupOrderFromEvents(events: Event[]): TokenGroupEventOrder
                 case 'MultiTokensTokenGroupRemoved': {
                     if (!state) break
                     const id = groupId(data.tokenGroupId)
-                    // With two or more survivors, retain/remove and swap-remove may yield different orders.
-                    if (id === undefined || !state.groups.includes(id) || state.groups.length > 2) state = undefined
-                    else state.groups = state.groups.filter((group) => group !== id)
+                    const index = id === undefined ? -1 : state.groups.indexOf(id)
+                    // Stable removal and swap removal agree only for the last two positions.
+                    if (index < 0 || index < state.groups.length - 2) state = undefined
+                    else state.groups.splice(index, 1)
                     break
                 }
             }
