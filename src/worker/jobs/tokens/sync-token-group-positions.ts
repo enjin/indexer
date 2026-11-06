@@ -24,9 +24,6 @@ async function repairToken(tx: EntityManager, id: string, dryRun: boolean): Prom
     })
     if (!token) return skipped(id, 'token is not indexed')
     const memberships = token.tokenGroupTokens
-    if (memberships.every((membership) => membership.position != null)) {
-        return { changed: 0, message: `${id}: all membership positions are already set` }
-    }
 
     const [collectionId, tokenId] = id.split('-')
     // Added/GroupsUpdated historically omitted Event.tokenId; Removed stored the bare token ID.
@@ -52,38 +49,31 @@ async function repairToken(tx: EntityManager, id: string, dryRun: boolean): Prom
     ) {
         return skipped(id, 'indexed memberships differ from event history')
     }
-    if (
-        memberships.some(
-            (membership) =>
-                membership.position != null && membership.position !== groups.indexOf(membership.tokenGroup.id)
-        )
-    ) {
-        return skipped(id, 'existing positions disagree with event history')
-    }
-
-    const missing = memberships.filter((membership) => membership.position == null)
+    const changes = memberships
+        .map((membership) => ({ membership, position: groups.indexOf(membership.tokenGroup.id) }))
+        .filter(({ membership, position }) => membership.position !== position)
     if (!dryRun) {
-        for (const membership of missing) {
+        for (const { membership, position } of changes) {
             const result = await tx.update(
                 TokenGroupToken,
                 {
                     id: membership.id,
                     token: { id },
                     tokenGroup: { id: membership.tokenGroup.id },
-                    position: IsNull(),
+                    position: membership.position ?? IsNull(),
                 },
-                { position: groups.indexOf(membership.tokenGroup.id) }
+                { position }
             )
             if (result.affected !== 1) throw new Error(`Membership ${membership.id} changed during repair; retry`)
         }
     }
     return {
-        changed: missing.length,
-        message: `${id}: [${groups.join(', ')}] from ${baselineEventId}; ${missing.length} positions ${dryRun ? 'would change' : 'updated'}`,
+        changed: changes.length,
+        message: `${id}: [${groups.join(', ')}] from ${baselineEventId}; ${changes.length} positions ${dryRun ? 'would change' : 'updated'}`,
     }
 }
 
-/** Fill missing membership positions from indexed assignment/reorder events without an RPC snapshot. */
+/** Correct membership positions from indexed assignment and reorder events. */
 export async function syncTokenGroupPositions(job: Job<SyncTokenGroupPositionsData | undefined>): Promise<void> {
     const { tokenIds, dryRun = true } = job.data ?? {}
     if (

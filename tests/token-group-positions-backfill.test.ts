@@ -67,12 +67,12 @@ stubModule('~/contexts', {
                             id: string
                             token: { id: string }
                             tokenGroup: { id: string }
-                            position: FindOperator<number>
+                            position: FindOperator<number> | number
                         },
                         changes: { position: number }
                     ) => {
                         assert.equal(entity, TokenGroupToken)
-                        assert.equal(criteria.position.type, 'isNull', 'existing positions must be preserved')
+                        if (typeof criteria.position !== 'number') assert.equal(criteria.position.type, 'isNull')
                         assert.deepEqual(Object.keys(changes), ['position'])
                         const membership = current.tokens
                             .flatMap((token) => token.tokenGroupTokens)
@@ -80,7 +80,8 @@ stubModule('~/contexts', {
                         assert(membership, 'repair must update an existing membership')
                         assert.equal(membership.tokenGroup.id, criteria.tokenGroup.id)
                         if (current.concurrentPosition !== undefined) membership.position = current.concurrentPosition
-                        if (membership.position != null) return Promise.resolve({ affected: 0 })
+                        const expectedPosition = typeof criteria.position === 'number' ? criteria.position : null
+                        if (membership.position !== expectedPosition) return Promise.resolve({ affected: 0 })
                         current.updates.push({ id: membership.id, position: changes.position })
                         membership.position = changes.position
                         return Promise.resolve({ affected: 1 })
@@ -209,14 +210,53 @@ void test('event repair defaults to a dry run without a block hash or RPC', asyn
     assert.equal(request.progress.at(-1), 100)
 })
 
+void test('assignments correct populated positions using only token IDs', async () => {
+    const row = token('105178-36', [
+        ['76', 0],
+        ['71', 2],
+        ['22', 7],
+    ])
+    const state = fixture([row])
+    const groups = ['22', '71', '76']
+    state.events.set(row.id, history(row.id, groups))
+    const data = { tokenIds: [row.id] }
+    const preview = job(data)
+
+    await syncTokenGroupPositions(preview.request)
+    assert(preview.messages.some((message) => message.includes('3 positions would change')))
+    assert.deepEqual(state.updates, [])
+
+    await syncTokenGroupPositions(job({ ...data, dryRun: false }).request)
+    assert.deepEqual(
+        row.tokenGroupTokens.map((membership) => membership.position),
+        [2, 1, 0]
+    )
+
+    await syncTokenGroupPositions(job({ ...data, dryRun: false }).request)
+    assert.equal(state.updates.length, 3)
+    assert.equal(state.rpcConnections, 0)
+})
+
+void test('event repair rejects a concurrent change to a populated position', async () => {
+    const row = token('105178-2', [
+        ['32', 1],
+        ['33', 0],
+    ])
+    const state = fixture([row])
+    const data = { tokenIds: [row.id], dryRun: false }
+    state.concurrentPosition = 2
+    await assert.rejects(syncTokenGroupPositions(job(data).request), /changed during repair/)
+    assert.deepEqual(state.updates, [])
+})
+
 void test('event repair reconstructs production assignment order and follows explicit reorder events', async () => {
     const first = token('3844-11', [
         ['33', null],
         ['32', null],
     ])
     const second = token('3844-6', [
-        ['32', null],
-        ['33', null],
+        ['32', 0],
+        ['33', 1],
     ])
     const state = fixture([second, first])
     const secondHistory = state.events.get(second.id)
@@ -241,7 +281,7 @@ void test('event repair reconstructs production assignment order and follows exp
     assert(request.messages.some((message) => message.includes('0007000000-aabbc-000004')))
 })
 
-void test('event repair fills only missing positions and is idempotent', async () => {
+void test('event repair preserves matching positions and is idempotent', async () => {
     const row = token('3844-11', [
         ['32', 0],
         ['33', null],
@@ -253,28 +293,27 @@ void test('event repair fills only missing positions and is idempotent', async (
     await syncTokenGroupPositions(job(data).request)
 
     assert.deepEqual(state.updates, [{ id: '11-33', position: 1 }])
-    assert.deepEqual(state.historyReads, [row.id])
+    assert.deepEqual(state.historyReads, [row.id, row.id])
 })
 
-void test('event repair skips missing history, mismatched memberships, conflicting positions and absent tokens', async () => {
-    const rows = [1, 2, 3, 4].map((id) =>
+void test('event repair skips missing history, mismatched memberships and absent tokens', async () => {
+    const rows = [1, 2, 3].map((id) =>
         token(`3844-${id}`, [
-            ['32', null],
-            ['33', null],
+            ['32', 1],
+            ['33', 0],
         ])
     )
     const state = fixture(rows)
     state.events.set(rows[0].id, [])
     state.events.set(rows[1].id, history(rows[1].id, ['32', '34']))
-    rows[2].tokenGroupTokens[0].position = 1
-    state.events.set(rows[3].id, history(rows[3].id).slice(1))
+    state.events.set(rows[2].id, history(rows[2].id).slice(1))
     const request = job({ tokenIds: [...rows.map((row) => row.id), '3844-99'], dryRun: false })
 
     await syncTokenGroupPositions(request.request)
 
     assert.deepEqual(state.updates, [])
     assert.equal(request.progress.at(-1), 100)
-    assert.equal(request.messages.filter((message) => message.startsWith('Skipped')).length, 5)
+    assert.equal(request.messages.filter((message) => message.startsWith('Skipped')).length, 4)
 })
 
 void test('event repair rejects concurrent position changes instead of overwriting them', async () => {
