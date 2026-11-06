@@ -74,7 +74,12 @@ services:
       HASURA_GRAPHQL_DEV_MODE: true
       HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup,http-log,webhook-log,websocket-log,query-log
     ports:
-      - "8085:8080"
+      # Bind to localhost only to prevent external access; use a reverse proxy for production
+      - "127.0.0.1:8085:8080"
+    volumes:
+      - ./hasura-entrypoint.sh:/hasura-entrypoint.sh:ro
+    entrypoint: ["/bin/sh", "/hasura-entrypoint.sh"]
+    command: ["serve"]
     depends_on:
       - indexer_db
 
