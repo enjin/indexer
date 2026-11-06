@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import type { EntityManager } from 'typeorm'
+import { buildSchemaSync } from 'type-graphql'
 import { TokenListingFilterInput } from '~/server-extension/accounts-tokens-connection'
 import { encodeCursor } from '~/server-extension/helpers'
 import {
@@ -137,4 +138,72 @@ void test('collection inventory keeps paging into NULL sort values and from grou
     // Groups (bare ids) sort before tokens, so a group cursor keeps every token in range
     assert.deepEqual(buildCursorCondition('price', asc, { id: '7', orderValue: '5' }, 3).params, [0, '7', '5'])
     assert.deepEqual(buildCursorCondition('price', asc, { id: '123-1', orderValue: '5' }, 3).params, [1, '123-1', '5'])
+})
+
+void test('collection inventory carries the active loan without inventing a lender balance', async () => {
+    const lender = { address: 'lender-address' }
+    const borrower = { address: 'borrower-address' }
+    const token = {
+        id: '123-1',
+        tokenId: 1n,
+        supply: 1n,
+        isFrozen: false,
+        metadata: {},
+        nonFungible: true,
+        createdAt: new Date('2026-01-01T00:00:00Z'),
+        attributes: [],
+        loan: { lender, borrower, expiration: 9007199254740993n },
+    }
+    const builder = {
+        leftJoinAndSelect: () => builder,
+        where: () => builder,
+        getMany: () => Promise.resolve([token]),
+    }
+    const manager = {
+        getRepository: () => ({ createQueryBuilder: () => builder }),
+        query: (sql: string) => {
+            if (sql.includes('LIMIT 2')) {
+                return Promise.resolve([{ id: token.id, sort_priority: 1, created_at: token.createdAt }])
+            }
+            if (sql.includes('SELECT COUNT(*) AS count')) return Promise.resolve([{ count: '1' }])
+            return Promise.resolve([])
+        },
+    } as unknown as EntityManager
+    const resolver = new CollectionInventoryResolver(() => Promise.resolve(manager))
+    const result = await resolver.collectionInventory({
+        accountIds: [`0x${'11'.repeat(32)}`],
+        collectionId: '123',
+        first: 1,
+        orderBy: CollectionInventoryOrderByInput.DATE,
+        order: CollectionInventoryOrderInput.DESC,
+        listingFilter: TokenListingFilterInput.ALL,
+    })
+    const item = result.edges[0].node as {
+        loan?: { lender: typeof lender; borrower: typeof borrower; expiration: bigint }
+        balance: bigint
+        reservedBalance: bigint
+    }
+
+    assert.ok(item.loan)
+    assert.deepEqual(item.loan.lender, lender)
+    assert.deepEqual(item.loan.borrower, borrower)
+    assert.equal(item.loan.expiration, token.loan.expiration)
+    assert.equal(item.balance, 0n)
+    assert.equal(item.reservedBalance, 0n)
+})
+
+void test('collection inventory exposes loan parties and expiration in its GraphQL schema', () => {
+    const schema = buildSchemaSync({ resolvers: [CollectionInventoryResolver], validate: false })
+    const tokenType = schema.getType('CollectionInventoryToken')
+    assert.ok(tokenType && 'getFields' in tokenType)
+    const fields = tokenType.getFields()
+
+    assert.ok(fields.loan, 'inventory tokens expose their active loan')
+    assert.equal(fields.loan.type.toString(), 'CollectionInventoryTokenLoan')
+    const loanType = schema.getType('CollectionInventoryTokenLoan')
+    assert.ok(loanType && 'getFields' in loanType)
+    const loanFields = loanType.getFields()
+    assert.equal(loanFields.expiration.type.toString(), 'BigInt!')
+    assert.equal(loanFields.lender.type.toString(), 'CollectionInventoryLoanAccount!')
+    assert.equal(loanFields.borrower.type.toString(), 'CollectionInventoryLoanAccount!')
 })
