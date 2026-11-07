@@ -52,12 +52,14 @@ export class RefreshMetadataResolver {
         @Arg('allTokens', () => Boolean, { nullable: true }) allTokens?: boolean,
         @Arg('traits', () => Boolean, { nullable: true }) traits?: boolean
     ): Promise<RefreshMetadataResponse> {
-        const manager = await this.tx()
-
         if (!ids || ids.length === 0) {
             return { status: RefreshMetadataResponseStatus.ERROR, error: 'No IDs provided' }
         }
+        if (ids.length > 500) {
+            return { status: RefreshMetadataResponseStatus.ERROR, error: 'Too many IDs, limit is 500' }
+        }
 
+        const manager = await this.tx()
         const errors: string[] = []
         const processedCollections = new Set<string>()
 

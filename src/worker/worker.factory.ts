@@ -43,9 +43,6 @@ export function initializeWorkers(): void {
     // replica or a still-running sandboxed child is actively processing,
     // which surfaces as "could not renew lock for job X" /
     // "Missing lock for job X. moveToFinished" errors.
-    //
-    // `QueueUtils.requeueAllActiveJobs()` is still exported for manual /
-    // administrative use (e.g. after a known single-replica crash).
     processors.forEach((processor, queueType) => {
         createWorker(queueType, processor.options)
     })

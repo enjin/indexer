@@ -17,20 +17,29 @@ assert.equal(originalQueueModule, undefined, 'queue module loaded before the tes
 assert.equal(testRequire.cache[testRequire.resolve('bullmq')], undefined, 'BullMQ loaded before processor test setup')
 const queueModule = new Module(queueModulePath)
 queueModule.loaded = true
-queueModule.exports = {
-    QueueUtils: {
-        dispatchComputeMetadata: () => Promise.resolve(),
-        dispatchComputeStats: () => Promise.resolve(),
-    },
+const queueUtils: Pick<
+    typeof import('~/queue').QueueUtils,
+    'dispatchComputeMetadata' | 'dispatchComputeStats' | 'dispatchComputeTokenGroupMetadata'
+> = {
+    dispatchComputeMetadata: () => Promise.resolve(),
+    dispatchComputeStats: () => Promise.resolve(),
+    dispatchComputeTokenGroupMetadata: () => Promise.resolve(),
 }
+queueModule.exports = { QueueUtils: queueUtils }
 testRequire.cache[queueModulePath] = queueModule
 
+const { attributeRemoved } = testRequire(
+    '~/pallet/multi-tokens/processors/attribute-removed'
+) as typeof import('~/pallet/multi-tokens/processors/attribute-removed')
 const { attributeSet } = testRequire(
     '~/pallet/multi-tokens/processors/attribute-set'
 ) as typeof import('~/pallet/multi-tokens/processors/attribute-set')
 const { frozen } = testRequire(
     '~/pallet/multi-tokens/processors/frozen'
 ) as typeof import('~/pallet/multi-tokens/processors/frozen')
+const { tokenGroupAttributeSet } = testRequire(
+    '~/pallet/multi-tokens/processors/token-group-attribute-set'
+) as typeof import('~/pallet/multi-tokens/processors/token-group-attribute-set')
 const { tokenGroupDestroyed } = testRequire(
     '~/pallet/multi-tokens/processors/token-group-destroyed'
 ) as typeof import('~/pallet/multi-tokens/processors/token-group-destroyed')
@@ -262,6 +271,63 @@ void test('attribute set reconciles same-block frozen state and a later root ove
 
     assert.equal(attribute.isFrozen, false, 'authoritative root overwrite must be allowed to clear the indexed flag')
     assert.equal(reads, 2)
+})
+
+void test('attribute changes fan out or force metadata recomputation only for the URI key', async (t) => {
+    const metadata = t.mock.method(queueUtils, 'dispatchComputeMetadata')
+    const groupMetadata = t.mock.method(queueUtils, 'dispatchComputeTokenGroupMetadata')
+    const runtime = matrixV1040Runtime(() => Promise.resolve(null))
+    const block = { _runtime: runtime, hash: '0x01', timestamp: 1_000 } as Block
+    const collection = new Collection({ id: '7', metadata: new Metadata(), attributeCount: 0 })
+    const group = new TokenGroup({ id: '9' })
+    const entities = new Map<string, Attribute | Collection | TokenGroup>([
+        [collection.id, collection],
+        [group.id, group],
+    ])
+    const ctx = {
+        store: {
+            findOne: (_entity: unknown, { where }: { where: { id: string } }) =>
+                Promise.resolve(entities.get(where.id)),
+            insert: (entity: Attribute) => Promise.resolve(entities.set(entity.id, entity)),
+            save: () => Promise.resolve(undefined),
+            remove: (entity: Attribute) => Promise.resolve(entities.delete(entity.id)),
+        },
+    } as never
+
+    for (const attributeKey of ['uri', 'name']) {
+        const key = `0x${Buffer.from(attributeKey).toString('hex')}`
+        const value = '0x6e6577'
+        await attributeSet(
+            ctx,
+            block,
+            eventItem(runtime, 'MultiTokens.AttributeSet', { collectionId: '7', key, value }),
+            false
+        )
+        await attributeRemoved(
+            ctx,
+            block,
+            eventItem(runtime, 'MultiTokens.AttributeRemoved', { collectionId: '7', key }),
+            false
+        )
+        await tokenGroupAttributeSet(
+            ctx,
+            block,
+            eventItem(runtime, 'MultiTokens.TokenGroupAttributeSet', { tokenGroupId: '9', key, value }),
+            false
+        )
+    }
+
+    assert.deepEqual(
+        metadata.mock.calls.map(({ arguments: [payload] }) => payload.allTokens),
+        [true, true, false, false]
+    )
+    assert.deepEqual(
+        groupMetadata.mock.calls.map(({ arguments: args }) => args),
+        [
+            ['9', 10000, true],
+            ['9', 10000, false],
+        ]
+    )
 })
 
 void test('legacy runtimes avoid attribute point reads when metadata has no frozen field', async () => {

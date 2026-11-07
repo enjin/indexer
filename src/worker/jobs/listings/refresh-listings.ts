@@ -20,11 +20,11 @@ function listingIdToRpcKey(id: string): string {
     return id.startsWith('0x') ? id : `0x${id}`
 }
 
-async function computeListingDistribution(listingData: any, assetRoyalty: bigint, job: Job): Promise<boolean> {
+async function computeListingDistribution(listingData: any, assetRoyalty: bigint, job: Job): Promise<boolean | null> {
     const codec = listingData.toJSON()
-    if (!codec.minReceived || !codec.price || !codec.amount) {
+    if (!codec || codec.minReceived == null || codec.price == null || codec.amount == null) {
         await job.log('Listing data is not valid')
-        return Promise.resolve(true)
+        return null
     }
     const minReceived = BigInt(codec.minReceived)
     const price = BigInt(codec.price)
@@ -33,7 +33,7 @@ async function computeListingDistribution(listingData: any, assetRoyalty: bigint
 
     const protocolFee = (BigInt(0.025 * 10 ** 18) * price) / BigInt(10 ** 18)
 
-    return Promise.resolve(price * amount - protocolFee - bigRoyalty < minReceived ? true : false)
+    return price * amount - protocolFee - bigRoyalty < minReceived
 }
 
 export async function refreshListings(job: Job, ids: string[]) {
@@ -85,12 +85,19 @@ export async function refreshListings(job: Job, ids: string[]) {
                       ?.reduce((acc: number, curr: number | undefined) => acc + (curr ?? 0), 0) ?? 0)
                 : 0
 
-        if (await computeListingDistribution(listingData, BigInt(collectionRoyaltyTotal + tokenRoyaltyTotal), job)) {
-            await job.log(`Listing ${listing.id} has royalty increased`)
-            if (listing.isActive) {
-                listing.hasRoyaltyIncreased = true
-                await em.save(listing)
-                await QueueUtils.dispatchComputeTokenBestListing(listing.makeAssetId.id)
+        const royaltyIncreased = await computeListingDistribution(
+            listingData,
+            BigInt(collectionRoyaltyTotal + tokenRoyaltyTotal),
+            job
+        )
+        if (royaltyIncreased === null || royaltyIncreased) {
+            if (royaltyIncreased) {
+                await job.log(`Listing ${listing.id} has royalty increased`)
+                if (listing.isActive) {
+                    listing.hasRoyaltyIncreased = true
+                    await em.save(listing)
+                    await QueueUtils.dispatchComputeTokenBestListing(listing.makeAssetId.id)
+                }
             }
             processed++
             const progress = Math.min(90, 30 + Math.floor((processed / totalListings) * 60))

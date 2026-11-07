@@ -8,6 +8,7 @@ import { join } from 'node:path'
 import test from 'node:test'
 import { setTimeout as delay } from 'node:timers/promises'
 import { Queue, Worker } from 'bullmq'
+import { JobsEnum } from '~/queue/constants'
 import { addRefreshJob } from '~/queue/refresh-job'
 
 const redisBinary = process.env.INDEXER_TEST_REDIS_BINARY ?? 'redis-server'
@@ -162,13 +163,19 @@ void test('refresh jobs retain history without suppressing later work', { skip: 
         await final.moveToCompleted(null, 'final', false)
     })
 
-    await t.test('native metadata and pool dispatchers execute again after retained completion', async () => {
+    await t.test('dispatchers execute again after retained completion or failure', async () => {
         const testRequire = createRequire(__filename)
         const originals = new Map<string, NodeJS.Module | undefined>()
         const dispatches: ReturnType<typeof addRefreshJob>[] = []
         const errors: string[] = []
         const overrides = {
-            '~/queue': { TokensQueue: queue, NominationPoolsQueue: queue },
+            '~/queue': {
+                TokensQueue: queue,
+                NominationPoolsQueue: queue,
+                ListingsQueue: queue,
+                ValidatorsQueue: queue,
+                MetadataQueue: queue,
+            },
             '~/util/hasher': {},
             '~/util/logger': { Logger: { error: (message: string) => errors.push(message) } },
             '~/queue/refresh-job': {
@@ -212,6 +219,54 @@ void test('refresh jobs retain history without suppressing later work', { skip: 
                 assert.notEqual(completed[0], completed[1])
                 for (const id of completed) assert.equal(await queue.getJobState(id), 'completed')
             }
+
+            const dispatchCases = [
+                [JobsEnum.IMPORT_BLOCK, 'chain.import.100-110', () => dispatchers.dispatchImportBlock(100, 110)],
+                [
+                    JobsEnum.BACKFILL_CANCELLATION_LISTING_IDS,
+                    'listings.backfill-cancellation-listing-ids.event-1',
+                    () => dispatchers.dispatchBackfillCancellationListingIds({ afterId: 'event-1' }),
+                ],
+                [
+                    JobsEnum.BACKFILL_EPHEMERAL_TOKENS,
+                    'tokens.backfill-ephemeral.123-456',
+                    () => dispatchers.dispatchBackfillEphemeralTokens({ afterId: '123-456', blockHash: '0x1234' }),
+                ],
+            ] as const
+
+            for (const [name, jobId, dispatch] of dispatchCases) {
+                const legacy = await queue.add(name, {}, { jobId })
+                const failing = await worker.getNextJob('legacy-dispatcher', { block: false })
+                assert.ok(failing)
+                assert.equal(failing.id, legacy.id)
+                await failing.moveToFailed(new Error('test failure'), 'legacy-dispatcher', false)
+
+                await Promise.all([dispatch(), dispatch()])
+                assert.equal(await queue.getWaitingCount(), 1, `${name} must enqueue one retry`)
+                const active = await worker.getNextJob('retry-dispatcher', { block: false })
+                assert.ok(active)
+                assert.equal(active.name, name)
+                assert.notEqual(active.id, legacy.id)
+                assert.equal(await legacy.getState(), 'failed')
+
+                await dispatch()
+                await active.moveToCompleted(null, 'retry-dispatcher', false)
+                assert.equal(await queue.getWaitingCount(), 0, `${name} must ignore an active duplicate`)
+
+                await dispatch()
+                const rerun = await worker.getNextJob('repeat-dispatcher', { block: false })
+                assert.ok(rerun)
+                assert.equal(rerun.name, name)
+                assert.notEqual(rerun.id, active.id)
+                assert.equal(await active.getState(), 'completed')
+                await rerun.moveToCompleted(null, 'repeat-dispatcher', false)
+            }
+
+            const collection = { id: '3846', type: 'collection', force: true, delay: 0 } as const
+            await dispatchers.dispatchComputeMetadata(collection)
+            await dispatchers.dispatchComputeMetadata({ ...collection, allTokens: true, traits: true })
+            const collectionJobs = await queue.getWaiting()
+            assert.deepEqual(collectionJobs.map((job) => job.data.allTokens).sort(), [false, true])
             assert.deepEqual(errors, [])
         } finally {
             for (const [path, original] of originals) {

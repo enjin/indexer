@@ -12,7 +12,7 @@ import {
 import { JobsEnum } from '~/queue/constants'
 import { xxhasher } from '~/util/hasher'
 import { match } from 'ts-pattern'
-import { type Queue, type Job } from 'bullmq'
+import { type Queue } from 'bullmq'
 import { addRefreshJob } from '~/queue/refresh-job'
 import { QueueType } from '~/queue/types'
 import { Logger } from '~/util/logger'
@@ -25,13 +25,6 @@ import { randomUUID } from 'node:crypto'
 
 const LOGGER_NAMESPACE = 'sqd:queue'
 
-async function hasExistingJob(job: Job | undefined): Promise<boolean> {
-    if (!job?.id) return false
-    const isWaitingOrDelayed = (await job.isDelayed()) || (await job.isWaiting())
-    const isActive = await job.isActive()
-    return isWaitingOrDelayed || isActive
-}
-
 export async function pauseQueue(type: QueueType): Promise<void> {
     const queue = getQueueByType(type)
     await queue.pause()
@@ -40,90 +33,6 @@ export async function pauseQueue(type: QueueType): Promise<void> {
 export async function resumeQueue(type: QueueType): Promise<void> {
     const queue = getQueueByType(type)
     await queue.resume()
-}
-
-/**
- * Snapshot every job in the `active` list, delete them (which also removes
- * their lock keys left over from a previous worker process), and re-add them
- * to the queue with the same `jobId`, name, data, and options.
- *
- * This is meant to be called once at worker startup so that jobs left hanging
- * in the `active` state from a crashed/restarted worker are picked up again
- * immediately instead of having to wait for `stalledInterval` and then
- * potentially failing with "UnrecoverableError: job stalled more than
- * allowable limit" once `maxStalledCount` is exceeded.
- */
-export async function requeueActiveJobs(queue: Queue): Promise<number> {
-    const activeJobs = await queue.getJobs(['active'])
-    if (activeJobs.length === 0) return 0
-
-    type Snapshot = {
-        name: string
-        data: unknown
-        opts: Record<string, unknown>
-    }
-
-    const snapshots: Snapshot[] = activeJobs
-        .filter((j) => j.id)
-        .map((j) => {
-            // Drop BullMQ-managed fields so Queue.add can re-assign them.
-            const { timestamp, delay, ...restOpts } = j.opts as Record<string, unknown>
-            void timestamp
-            void delay
-            const jobId = (restOpts.jobId as string | undefined) ?? j.id ?? j.name
-            return {
-                name: j.name,
-                data: j.data,
-                opts: { ...restOpts, jobId },
-            }
-        })
-
-    // Remove every active job (this deletes the job hash + :lock key too).
-    await queue.clean(0, 10_000, 'active')
-
-    for (const snap of snapshots) {
-        try {
-            await queue.add(snap.name, snap.data, snap.opts)
-        } catch (err) {
-            Logger.error(
-                `Failed to re-add active job ${snap.opts.jobId as string} on ${queue.name}: ${String(err)}`,
-                LOGGER_NAMESPACE
-            )
-        }
-    }
-
-    return snapshots.length
-}
-
-/**
- * Re-queue active jobs across every queue managed by this indexer. Call this
- * once, from the worker process entry point, before constructing any workers.
- */
-export async function requeueAllActiveJobs(): Promise<void> {
-    const queues: Queue[] = [
-        AccountsQueue,
-        BalancesQueue,
-        CollectionsQueue,
-        ListingsQueue,
-        MetadataQueue,
-        TokensQueue,
-        TraitsQueue,
-        ValidatorsQueue,
-        NominationPoolsQueue,
-    ]
-
-    await Promise.all(
-        queues.map(async (q) => {
-            try {
-                const count = await requeueActiveJobs(q)
-                if (count > 0) {
-                    Logger.info(`Requeued ${count} active job(s) on ${q.name}`, LOGGER_NAMESPACE)
-                }
-            } catch (err) {
-                Logger.error(`Failed to requeue active jobs on ${q.name}: ${String(err)}`, LOGGER_NAMESPACE)
-            }
-        })
-    )
 }
 
 function getQueueByType(queue: QueueType): Queue {
@@ -302,7 +211,12 @@ export function dispatchLogTraitTokenHotChanges({
     delete?: boolean
 }): void {
     const jobId = shouldDelete ? `traits.hotChanges.${tokenId}.delete` : `traits.hotChanges.${tokenId}`
-    TraitsQueue.add(JobsEnum.LOG_TRAIT_TOKEN_HOT_CHANGES, { tokenId, delete: shouldDelete }, { jobId }).catch(() => {
+    addRefreshJob(
+        TraitsQueue,
+        JobsEnum.LOG_TRAIT_TOKEN_HOT_CHANGES,
+        { tokenId, delete: shouldDelete },
+        { jobId, keepLastIfActive: false }
+    ).catch(() => {
         Logger.error('Failed to dispatch a job on traits queue', LOGGER_NAMESPACE)
     })
 }
@@ -322,7 +236,9 @@ export async function dispatchComputeMetadata({
     traits?: boolean
     delay?: number
 }) {
-    const jobId = force ? `metadata.force.${id}` : `metadata.${id}`
+    const baseJobId = force ? `metadata.force.${id}` : `metadata.${id}`
+    // Pending jobs retain the first payload, so a collection-only job cannot stand in for a fan-out.
+    const jobId = type === 'collection' && allTokens ? `${baseJobId}.all-tokens` : baseJobId
     await addRefreshJob(
         MetadataQueue,
         JobsEnum.COMPUTE_METADATA,
@@ -510,7 +426,8 @@ export async function dispatchSyncActiveValidators(): Promise<void> {
 }
 
 export function dispatchSyncChain(fromBlock?: number, toBlock?: number): void {
-    ValidatorsQueue.add(
+    addRefreshJob(
+        ValidatorsQueue,
         JobsEnum.SYNC_CHAIN,
         {
             fromBlock,
@@ -519,6 +436,7 @@ export function dispatchSyncChain(fromBlock?: number, toBlock?: number): void {
         {
             delay: 6000,
             jobId: `chain.sync.${fromBlock}-${toBlock}`,
+            keepLastIfActive: false,
         }
     ).catch(() => {
         Logger.error('Failed to dispatch sync chain', LOGGER_NAMESPACE)
@@ -526,12 +444,14 @@ export function dispatchSyncChain(fromBlock?: number, toBlock?: number): void {
 }
 
 export function dispatchSyncChainInfosFromMatrix(blockNumberGte?: number): void {
-    ValidatorsQueue.add(
+    addRefreshJob(
+        ValidatorsQueue,
         JobsEnum.SYNC_CHAIN_INFOS_FROM_MATRIX,
         { blockNumberGte },
         {
             delay: 6000,
             jobId: `chain-infos.matrix.sync.${blockNumberGte ?? 'default'}`,
+            keepLastIfActive: false,
         }
     ).catch(() => {
         Logger.error('Failed to dispatch sync chain infos from matrix', LOGGER_NAMESPACE)
@@ -540,9 +460,8 @@ export function dispatchSyncChainInfosFromMatrix(blockNumberGte?: number): void 
 
 export async function dispatchImportBlock(blockNumber: number, toBlock?: number): Promise<void> {
     const jobId = `chain.import.${blockNumber}-${toBlock ?? blockNumber}`
-    const job = await ValidatorsQueue.getJob(jobId)
-    if (job?.id && (await hasExistingJob(job))) return
-    ValidatorsQueue.add(
+    await addRefreshJob(
+        ValidatorsQueue,
         JobsEnum.IMPORT_BLOCK,
         {
             blockNumber,
@@ -551,6 +470,7 @@ export async function dispatchImportBlock(blockNumber: number, toBlock?: number)
         {
             delay: 0,
             jobId,
+            keepLastIfActive: false,
         }
     ).catch(() => {
         Logger.error('Failed to dispatch import block', LOGGER_NAMESPACE)
@@ -567,7 +487,10 @@ export function dispatchBackfillExtrinsicBlockRelation(options?: {
     const jobId = hasRange
         ? `validators.backfill-extrinsic-block.${options.fromBlock}-${options.toBlock}`
         : `validators.backfill-extrinsic.dispatch.${Date.now()}`
-    ValidatorsQueue.add(JobsEnum.BACKFILL_EXTRINSIC_BLOCK_RELATION, options ?? {}, { jobId }).catch(() => {
+    addRefreshJob(ValidatorsQueue, JobsEnum.BACKFILL_EXTRINSIC_BLOCK_RELATION, options ?? {}, {
+        jobId,
+        keepLastIfActive: false,
+    }).catch(() => {
         Logger.error('Failed to dispatch backfill extrinsic block relation', LOGGER_NAMESPACE)
     })
 }
@@ -679,11 +602,10 @@ export async function dispatchBackfillCancellationListingIds(
 ): Promise<void> {
     const cursor = data.afterId ?? 'start'
     const jobId = `listings.backfill-cancellation-listing-ids.${cursor}`
-    const job = await ListingsQueue.getJob(jobId)
-    if (job?.id && (await hasExistingJob(job))) return
-    if (job?.id) await ListingsQueue.remove(job.id)
-
-    await ListingsQueue.add(JobsEnum.BACKFILL_CANCELLATION_LISTING_IDS, data, { jobId })
+    await addRefreshJob(ListingsQueue, JobsEnum.BACKFILL_CANCELLATION_LISTING_IDS, data, {
+        jobId,
+        keepLastIfActive: false,
+    })
 }
 
 export async function dispatchComputeTokenBestListing(id: string): Promise<void> {
@@ -827,11 +749,13 @@ export function dispatchSyncAccountUnbondingEras(id: string): void {
 }
 
 export function dispatchBackfillPoolMemberRewardsEraIndex(): void {
-    NominationPoolsQueue.add(
+    addRefreshJob(
+        NominationPoolsQueue,
         JobsEnum.BACKFILL_POOL_MEMBER_REWARDS_ERA_INDEX,
         {},
         {
             jobId: 'nomination-pools.backfill-member-rewards-era-index',
+            keepLastIfActive: false,
         }
     ).catch(() => {
         Logger.error('Failed to dispatch backfill pool member rewards era index', LOGGER_NAMESPACE)
@@ -839,11 +763,13 @@ export function dispatchBackfillPoolMemberRewardsEraIndex(): void {
 }
 
 export function dispatchBackfillPoolMemberRewards(fromBlock?: number): void {
-    NominationPoolsQueue.add(
+    addRefreshJob(
+        NominationPoolsQueue,
         JobsEnum.BACKFILL_POOL_MEMBER_REWARDS,
         { fromBlock },
         {
             jobId: `nomination-pools.backfill-member-rewards.${fromBlock ?? 'auto'}`,
+            keepLastIfActive: false,
         }
     ).catch(() => {
         Logger.error('Failed to dispatch backfill pool member rewards', LOGGER_NAMESPACE)
@@ -894,11 +820,13 @@ export function dispatchComputeTokenNativeMetadata(id: string): void {
 }
 
 export function dispatchMigrateTokenGroupIds(id: string): void {
-    TokensQueue.add(
+    addRefreshJob(
+        TokensQueue,
         JobsEnum.MIGRATE_TOKEN_GROUP_IDS,
         { id },
         {
             jobId: `tokens.migrate-token-group-ids.${id}`,
+            keepLastIfActive: false,
         }
     ).catch(() => {
         Logger.error('Failed to dispatch migrate token group IDs', LOGGER_NAMESPACE)
@@ -908,9 +836,5 @@ export function dispatchMigrateTokenGroupIds(id: string): void {
 export async function dispatchBackfillEphemeralTokens(data: BackfillEphemeralTokensData = {}): Promise<void> {
     const cursor = data.afterId ?? 'start'
     const jobId = `tokens.backfill-ephemeral.${cursor}`
-    const job = await TokensQueue.getJob(jobId)
-    if (job?.id && (await hasExistingJob(job))) return
-    if (job?.id) await TokensQueue.remove(job.id)
-
-    await TokensQueue.add(JobsEnum.BACKFILL_EPHEMERAL_TOKENS, data, { jobId })
+    await addRefreshJob(TokensQueue, JobsEnum.BACKFILL_EPHEMERAL_TOKENS, data, { jobId, keepLastIfActive: false })
 }

@@ -20,11 +20,13 @@ void test('updates token metadata fields and applies on-chain attributes after e
     const metadata = metadataService.applyTokenMetadata(token, {
         name: 'External name',
         description: 'External description',
+        external_url: 'https://example.com/token',
     })
 
     assert.equal(token.name, 'On-chain name')
     assert.equal(metadata.name, 'On-chain name')
     assert.equal(metadata.description, 'On-chain description')
+    assert.equal(metadata.externalUrl, 'https://example.com/token')
     assert.ok(metadata.lastUpdated)
     assert.ok(metadata.lastUpdated >= beforeUpdate)
     assert.equal(token.metadata, metadata)
