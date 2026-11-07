@@ -46,6 +46,7 @@ stubModule('~/pallet/index', {
 
 let listingsForRefresh: Listing[] = []
 const savedListings: Listing[] = []
+let rpcListingData: unknown = { minReceived: '90', price: '100', amount: '1' }
 stubModule('~/contexts', {
     connectionManager: () =>
         Promise.resolve({
@@ -65,8 +66,7 @@ stubModule('~/util/rpc', {
                 api: {
                     query: {
                         marketplace: {
-                            listings: () =>
-                                Promise.resolve({ toJSON: () => ({ minReceived: '90', price: '100', amount: '1' }) }),
+                            listings: () => Promise.resolve({ toJSON: () => rpcListingData }),
                         },
                     },
                 },
@@ -151,4 +151,32 @@ void test('listing refresh invalidates the token when royalty makes an active li
     assert.equal(active.hasRoyaltyIncreased, true)
     assert.deepEqual(savedListings, [active])
     assert.deepEqual(dispatchedTokenIds, ['3846-73'])
+})
+
+void test('listing refresh skips a listing absent from chain storage', async () => {
+    dispatchedTokenIds.length = 0
+    savedListings.length = 0
+    const collection = new Collection({ id: '3846' })
+    const missing = listing('listing-missing', new Token({ id: '3846-73' }), collection)
+    listingsForRefresh = [missing]
+    rpcListingData = null
+    const logs: string[] = []
+    const job = {
+        updateProgress: async () => {},
+        log: (message: string) => {
+            logs.push(message)
+            return Promise.resolve()
+        },
+    }
+
+    try {
+        await refreshListings(job as never, [missing.id])
+    } finally {
+        rpcListingData = { minReceived: '90', price: '100', amount: '1' }
+    }
+
+    assert.notEqual(missing.hasRoyaltyIncreased, true)
+    assert.deepEqual(savedListings, [])
+    assert.deepEqual(dispatchedTokenIds, [])
+    assert(logs.includes('Listing data is not valid'))
 })

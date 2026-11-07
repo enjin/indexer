@@ -58,7 +58,12 @@ export async function attributeRemoved(
                 collection.hidden = false
             }
             await ctx.store.save(collection)
-            await QueueUtils.dispatchComputeMetadata({ id: collection.id, type: 'collection', traits: true })
+            await QueueUtils.dispatchComputeMetadata({
+                id: collection.id,
+                type: 'collection',
+                allTokens: attribute.key === 'uri',
+                traits: true,
+            })
         }
 
         await ctx.store.remove(attribute)

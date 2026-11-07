@@ -16,26 +16,30 @@ export function hash(str: string): string {
     return createHash('sha1').update(str).digest('hex')
 }
 
-export function logError(error: Error, job?: Job): void {
-    if (job) {
-        void job.log(`[${error.name}] ${error.message}`)
+/** Append a BullMQ log without letting logging failures affect job processing. */
+export async function safeJobLog(job: Job | undefined, message: string): Promise<void> {
+    if (!job) return
+    try {
+        await job.log(message)
+    } catch {
+        // The job may have been removed before the log write.
     }
+}
+
+export function logError(error: Error, job?: Job): void {
+    void safeJobLog(job, `[${error.name}] ${error.message}`)
 
     Logger.error(error, LOGGER_NAMESPACE)
 }
 
 export function logInfo(msg: string, job?: Job): void {
-    if (job) {
-        void job.log(`[Info] ${msg}`)
-    }
+    void safeJobLog(job, `[Info] ${msg}`)
 
     Logger.info(msg, LOGGER_NAMESPACE)
 }
 
 export function logDebug(msg: string, job?: Job): void {
-    if (job) {
-        void job.log(`[Debug] ${msg}`)
-    }
+    void safeJobLog(job, `[Debug] ${msg}`)
 
     Logger.debug(msg, LOGGER_NAMESPACE)
 }

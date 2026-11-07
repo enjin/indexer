@@ -156,7 +156,7 @@ export async function attributeSet(
         await QueueUtils.dispatchComputeMetadata({
             id: collection.id,
             type: 'collection',
-            allTokens: false,
+            allTokens: key === 'uri',
             force: true,
             traits: true,
             delay: 10000,
