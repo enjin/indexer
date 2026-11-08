@@ -83,11 +83,11 @@ export default async () => {
         collectionTokensAvg,
         accountTokensAvg,
         existentialDepositTotal,
-        enjInfusedTotal,
-        infusedTokensTotal,
-        infusedUniqueTokensTotal,
+        infusionTotals,
     ] = await Promise.all([
-        em.query('SELECT COUNT(DISTINCT account_id) AS count FROM token_account WHERE total_balance > 0'),
+        em.query(
+            'SELECT COUNT(DISTINCT account_id) AS count FROM token_account WHERE total_balance > 0 AND account_id IS NOT NULL'
+        ),
         em.query('SELECT COUNT(*) as count FROM collection'),
         em.query('SELECT COUNT(*) as count FROM token'),
         em.query(
@@ -100,9 +100,10 @@ export default async () => {
             'SELECT AVG(sq.tokens) as avg FROM (SELECT COUNT(id) as tokens FROM token_account GROUP BY account_id) as sq'
         ),
         em.query('SELECT SUM(unit_price)::numeric / POW(10,18) as sum FROM token'),
-        em.query('SELECT SUM(infusion)::numeric / POW(10,18) as sum FROM token WHERE infusion::numeric > 0'),
-        em.query('SELECT SUM(supply::numeric) as sum FROM token WHERE infusion::numeric > 0'),
-        em.query('SELECT COUNT(*) as count FROM token WHERE infusion::numeric > 0'),
+        em.query(
+            `SELECT SUM(infusion)::numeric / POW(10,18) AS enj, SUM(supply::numeric) AS supply, COUNT(*) AS count
+            FROM token WHERE infusion::numeric > 0`
+        ),
     ])
 
     indexer_multitokens_unique_holders_total.set(Number(uniqueHolders[0].count))
@@ -112,7 +113,7 @@ export default async () => {
     indexer_multitokens_collection_tokens_avg.set(parseInt(collectionTokensAvg[0].avg, 10))
     indexer_multitokens_account_tokens_avg.set(parseInt(accountTokensAvg[0].avg, 10))
     indexer_multitokens_existential_deposit_total.set(Number(existentialDepositTotal[0].sum))
-    indexer_multitokens_enj_infused_total.set(Number(enjInfusedTotal[0].sum))
-    indexer_multitokens_infused_tokens_total.set(Number(infusedTokensTotal[0].sum))
-    indexer_multitokens_infused_unique_tokens_total.set(Number(infusedUniqueTokensTotal[0].count))
+    indexer_multitokens_enj_infused_total.set(Number(infusionTotals[0].enj))
+    indexer_multitokens_infused_tokens_total.set(Number(infusionTotals[0].supply))
+    indexer_multitokens_infused_unique_tokens_total.set(Number(infusionTotals[0].count))
 }
