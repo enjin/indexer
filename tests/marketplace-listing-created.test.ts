@@ -378,6 +378,15 @@ void test('an explicit future start block is kept and pends activation', async (
     assert.equal(listing.bookState, MarketplaceListingBookState.PendingActivation)
 })
 
+void test('a start block of 0 is kept rather than defaulted', async () => {
+    const { rows } = world()
+    const { store, ctx, event, block } = await fixture(rows, 'enjin-relaychain', 1080)
+    await marketplace.listingCreated(ctx, block, event(current({ startBlock: 0 })))
+    const [listing] = store.of(Listing)
+    assert.equal(listing.startBlock, 0)
+    assert.equal(listing.bookState, MarketplaceListingBookState.Indexed)
+})
+
 void test('no SNS event without an extrinsic', async () => {
     const { rows } = world()
     const { ctx, event, block } = await fixture(rows, 'enjin-relaychain', 1080)
@@ -414,38 +423,40 @@ for (const missing of ['5-1', '0-0']) {
     })
 }
 
-void test('legacy runtime (canary 500): seller, minTakeValue and a bare deposit', async () => {
-    const { rows } = world()
-    const { store, ctx, event, block } = await fixture(rows, 'canary-matrixchain', 500)
-    await marketplace.listingCreated(
-        ctx,
-        block,
-        event({
-            listingId: listingHex,
-            listing: {
-                seller: sellerId,
-                makeAssetId: NFT,
-                takeAssetId: CURRENCY,
-                amount: '3',
-                price: '250',
-                minTakeValue: '150',
-                feeSide: { __kind: 'NoFee' },
-                creationBlock: 499,
-                deposit: '7',
-                salt: '0x',
-                data: { __kind: 'FixedPrice' },
-                state: { __kind: 'FixedPrice', amountFilled: '0' },
-            },
-        })
-    )
-    const [listing] = store.of(Listing)
-    assert.equal(listing.seller.id, sellerId)
-    assert.equal(listing.minTakeValue, 150n)
-    assert.equal(listing.deposit, 7n)
-    assert.equal(listing.feeSide, FeeSide.NoFee)
-    assert.equal(listing.startBlock, 510)
-    assert.equal(listing.bookState, MarketplaceListingBookState.Unknown, 'pre-order-book runtimes')
-})
+for (const minTakeValue of [150n, 0n]) {
+    void test(`legacy runtime (canary 500): seller, minTakeValue ${minTakeValue} and a bare deposit`, async () => {
+        const { rows } = world()
+        const { store, ctx, event, block } = await fixture(rows, 'canary-matrixchain', 500)
+        await marketplace.listingCreated(
+            ctx,
+            block,
+            event({
+                listingId: listingHex,
+                listing: {
+                    seller: sellerId,
+                    makeAssetId: NFT,
+                    takeAssetId: CURRENCY,
+                    amount: '3',
+                    price: '250',
+                    minTakeValue: minTakeValue.toString(),
+                    feeSide: { __kind: 'NoFee' },
+                    creationBlock: 499,
+                    deposit: '7',
+                    salt: '0x',
+                    data: { __kind: 'FixedPrice' },
+                    state: { __kind: 'FixedPrice', amountFilled: '0' },
+                },
+            })
+        )
+        const [listing] = store.of(Listing)
+        assert.equal(listing.seller.id, sellerId)
+        assert.equal(listing.minTakeValue, minTakeValue)
+        assert.equal(listing.deposit, 7n)
+        assert.equal(listing.feeSide, FeeSide.NoFee)
+        assert.equal(listing.startBlock, 510)
+        assert.equal(listing.bookState, MarketplaceListingBookState.Unknown, 'pre-order-book runtimes')
+    })
+}
 
 void test('canary 1011 offer state carries the counter offer count', async () => {
     const { rows } = world()
