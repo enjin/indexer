@@ -111,6 +111,15 @@ function entitiesFor() {
     }
 }
 
+void test('a block without a timestamp stamps the epoch', async () => {
+    const { tokenAccount, collectionAccount } = entitiesFor()
+    const { ctx } = fakeStore([tokenAccount, collectionAccount])
+    await thawed(ctx, {} as Block, thawEvent(1040, kinds.tokenAccount), false)
+    await thawed(ctx, {} as Block, thawEvent(1040, kinds.collectionAccount), false)
+    assert.deepEqual(tokenAccount.updatedAt, new Date(0))
+    assert.deepEqual(collectionAccount.updatedAt, new Date(0))
+})
+
 for (const specVersion of [500, 1040] as const) {
     void test(`v${specVersion}: thawing a token account unfreezes it and stamps updatedAt`, async () => {
         const { tokenAccount } = entitiesFor()
