@@ -1,55 +1,31 @@
 import { Job } from 'bullmq'
-import { ProcessorDef } from '~/worker/processors/processor.def'
 import { JobsEnum } from '~/queue/constants'
 import {
+    backfillCancellationListingIds,
     computeListings,
-    syncOffers,
     refreshListings,
     syncCounterOffers,
     syncListings,
     syncOfferEvents,
-    backfillCancellationListingIds,
+    syncOffers,
 } from '~/worker/jobs'
-import { logError, logInfo } from '~/worker/utils'
+import { JobHandler, JobRouterProcessor } from '~/worker/processors/job-router.processor'
+import { logInfo } from '~/worker/utils'
 
-export class ListingsProcessor implements ProcessorDef {
-    async handle(job: Job): Promise<void> {
-        switch (job.name as JobsEnum) {
-            case JobsEnum.INVALIDATE_LISTINGS:
-                await computeListings(job)
-                break
-            case JobsEnum.FETCH_OFFERS:
-                await syncOffers(job)
-                break
-            case JobsEnum.SYNC_COUNTER_OFFERS:
-                await syncCounterOffers(job)
-                break
-            case JobsEnum.REFRESH_LISTINGS:
-                await refreshListings(job, job.data.ids)
-                break
-            case JobsEnum.SYNC_LISTINGS:
-                await syncListings(job)
-                break
-            case JobsEnum.SYNC_OFFER_EVENTS:
-                await syncOfferEvents(job)
-                break
-            case JobsEnum.BACKFILL_CANCELLATION_LISTING_IDS:
-                await backfillCancellationListingIds(job)
-                break
-            default:
-                throw new Error(`${job.name} is not a valid job for this processor`)
-        }
-    }
+export class ListingsProcessor extends JobRouterProcessor {
+    protected readonly completedMessage = 'Finished computing listings'
+    protected readonly routes = new Map<JobsEnum, JobHandler>([
+        [JobsEnum.INVALIDATE_LISTINGS, (job) => computeListings(job)],
+        [JobsEnum.FETCH_OFFERS, (job) => syncOffers(job)],
+        [JobsEnum.SYNC_COUNTER_OFFERS, (job) => syncCounterOffers(job)],
+        [JobsEnum.REFRESH_LISTINGS, (job) => refreshListings(job, job.data.ids)],
+        [JobsEnum.SYNC_LISTINGS, (job) => syncListings(job)],
+        [JobsEnum.SYNC_OFFER_EVENTS, (job) => syncOfferEvents(job)],
+        [JobsEnum.BACKFILL_CANCELLATION_LISTING_IDS, (job) => backfillCancellationListingIds(job)],
+    ])
 
-    failed(job: Job | undefined, error: Error | undefined): void {
-        if (error === undefined) {
-            return
-        }
-        logError(error, job)
-    }
-
-    completed(job: Job): void {
-        logInfo('Finished computing listings', job)
+    override completed(job: Job): void {
+        logInfo(this.completedMessage, job)
     }
 }
 

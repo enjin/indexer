@@ -1,42 +1,16 @@
-import { Job } from 'bullmq'
-import { ProcessorDef } from '~/worker/processors/processor.def'
-import { computeAccountStats, syncAccounts, syncAccountsStats, syncAllAccounts, syncUserInfusions } from '~/worker/jobs'
 import { JobsEnum } from '~/queue/constants'
-import { logDebug, logError } from '~/worker/utils'
+import { computeAccountStats, syncAccounts, syncAccountsStats, syncAllAccounts, syncUserInfusions } from '~/worker/jobs'
+import { JobHandler, JobRouterProcessor } from '~/worker/processors/job-router.processor'
 
-export class AccountsProcessor implements ProcessorDef {
-    async handle(job: Job): Promise<void> {
-        switch (job.name as JobsEnum) {
-            case JobsEnum.FETCH_ACCOUNTS:
-                await syncAccounts(job, job.data.ids)
-                break
-            case JobsEnum.SYNC_ALL_ACCOUNTS:
-                await syncAllAccounts(job)
-                break
-            case JobsEnum.COMPUTE_ACCOUNT_STATS:
-                await computeAccountStats(job)
-                break
-            case JobsEnum.SYNC_ACCOUNTS_STATS:
-                await syncAccountsStats(job)
-                break
-            case JobsEnum.SYNC_USER_INFUSIONS:
-                await syncUserInfusions(job)
-                break
-            default:
-                throw new Error(`${job.name} is not a valid job for this processor`)
-        }
-    }
-
-    failed(job: Job | undefined, error: Error | undefined): void {
-        if (error === undefined) {
-            return
-        }
-        logError(error, job)
-    }
-
-    completed(job: Job): void {
-        logDebug('Finished fetching accounts', job)
-    }
+export class AccountsProcessor extends JobRouterProcessor {
+    protected readonly completedMessage = 'Finished fetching accounts'
+    protected readonly routes = new Map<JobsEnum, JobHandler>([
+        [JobsEnum.FETCH_ACCOUNTS, (job) => syncAccounts(job, job.data.ids)],
+        [JobsEnum.SYNC_ALL_ACCOUNTS, (job) => syncAllAccounts(job)],
+        [JobsEnum.COMPUTE_ACCOUNT_STATS, (job) => computeAccountStats(job)],
+        [JobsEnum.SYNC_ACCOUNTS_STATS, (job) => syncAccountsStats(job)],
+        [JobsEnum.SYNC_USER_INFUSIONS, (job) => syncUserInfusions(job)],
+    ])
 }
 
 export default new AccountsProcessor()

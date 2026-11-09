@@ -1,84 +1,40 @@
-import { Job } from 'bullmq'
-import { ProcessorDef } from '~/worker/processors/processor.def'
 import { JobsEnum } from '~/queue/constants'
-import { logDebug, logError } from '~/worker/utils'
 import {
-    backfillPoolMemberRewardsEraIndex,
     backfillPoolMemberRewards,
+    backfillPoolMemberRewardsEraIndex,
+    computeEraRewards,
     computePoolMemberRewards,
     computePoolOffers,
     computePoolRewards,
     refreshPool,
     syncAccountUnbondingEras,
-    syncUnbondingEras,
     syncMembersBonded,
+    syncOrphanedEarlyBirdRewards,
     syncPoolMembers,
     syncPools,
-    syncOrphanedEarlyBirdRewards,
     syncStakeExchangeOffersEvents,
-    computeEraRewards,
+    syncUnbondingEras,
 } from '~/worker/jobs'
+import { JobHandler, JobRouterProcessor } from '~/worker/processors/job-router.processor'
 
-export class NominationPoolsProcessor implements ProcessorDef {
-    async handle(job: Job): Promise<void> {
-        switch (job.name as JobsEnum) {
-            case JobsEnum.SYNC_POOLS:
-                await syncPools(job)
-                break
-            case JobsEnum.COMPUTE_POOL_REWARDS:
-                await computePoolRewards(job, job.data.id)
-                break
-            case JobsEnum.COMPUTE_ERA_REWARDS:
-                await computeEraRewards(job, job.data.id)
-                break
-            case JobsEnum.COMPUTE_POOL_MEMBER_REWARDS:
-                await computePoolMemberRewards(job, job.data.id)
-                break
-            case JobsEnum.SYNC_POOL_MEMBERS:
-                await syncPoolMembers(job)
-                break
-            case JobsEnum.SYNC_MEMBERS_BONDED:
-                await syncMembersBonded(job)
-                break
-            case JobsEnum.REFRESH_POOL:
-                await refreshPool(job, job.data.id)
-                break
-            case JobsEnum.COMPUTE_POOL_OFFERS:
-                await computePoolOffers(job, job.data.id)
-                break
-            case JobsEnum.SYNC_ORPHANED_EARLY_BIRD_REWARDS:
-                await syncOrphanedEarlyBirdRewards(job)
-                break
-            case JobsEnum.SYNC_STAKE_EXCHANGE_OFFERS_EVENT:
-                await syncStakeExchangeOffersEvents(job)
-                break
-            case JobsEnum.BACKFILL_POOL_MEMBER_REWARDS_ERA_INDEX:
-                await backfillPoolMemberRewardsEraIndex(job)
-                break
-            case JobsEnum.BACKFILL_POOL_MEMBER_REWARDS:
-                await backfillPoolMemberRewards(job)
-                break
-            case JobsEnum.SYNC_ACCOUNT_UNBONDING_ERAS:
-                await syncAccountUnbondingEras(job, job.data.id)
-                break
-            case JobsEnum.SYNC_UNBONDING_ERAS:
-                await syncUnbondingEras(job)
-                break
-            default:
-                throw new Error(`${job.name} is not a valid job for this processor`)
-        }
-    }
-
-    failed(job: Job | undefined, error: Error | undefined): void {
-        if (error === undefined) {
-            return
-        }
-        logError(error, job)
-    }
-
-    completed(job: Job): void {
-        logDebug('Finished computing nomination pools', job)
-    }
+export class NominationPoolsProcessor extends JobRouterProcessor {
+    protected readonly completedMessage = 'Finished computing nomination pools'
+    protected readonly routes = new Map<JobsEnum, JobHandler>([
+        [JobsEnum.SYNC_POOLS, (job) => syncPools(job)],
+        [JobsEnum.COMPUTE_POOL_REWARDS, (job) => computePoolRewards(job, job.data.id)],
+        [JobsEnum.COMPUTE_ERA_REWARDS, (job) => computeEraRewards(job, job.data.id)],
+        [JobsEnum.COMPUTE_POOL_MEMBER_REWARDS, (job) => computePoolMemberRewards(job, job.data.id)],
+        [JobsEnum.SYNC_POOL_MEMBERS, (job) => syncPoolMembers(job)],
+        [JobsEnum.SYNC_MEMBERS_BONDED, (job) => syncMembersBonded(job)],
+        [JobsEnum.REFRESH_POOL, (job) => refreshPool(job, job.data.id)],
+        [JobsEnum.COMPUTE_POOL_OFFERS, (job) => computePoolOffers(job, job.data.id)],
+        [JobsEnum.SYNC_ORPHANED_EARLY_BIRD_REWARDS, (job) => syncOrphanedEarlyBirdRewards(job)],
+        [JobsEnum.SYNC_STAKE_EXCHANGE_OFFERS_EVENT, (job) => syncStakeExchangeOffersEvents(job)],
+        [JobsEnum.BACKFILL_POOL_MEMBER_REWARDS_ERA_INDEX, (job) => backfillPoolMemberRewardsEraIndex(job)],
+        [JobsEnum.BACKFILL_POOL_MEMBER_REWARDS, (job) => backfillPoolMemberRewards(job)],
+        [JobsEnum.SYNC_ACCOUNT_UNBONDING_ERAS, (job) => syncAccountUnbondingEras(job, job.data.id)],
+        [JobsEnum.SYNC_UNBONDING_ERAS, (job) => syncUnbondingEras(job)],
+    ])
 }
 
 export default new NominationPoolsProcessor()

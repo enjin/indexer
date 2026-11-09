@@ -1,33 +1,13 @@
-import { Job } from 'bullmq'
-import { ProcessorDef } from '~/worker/processors/processor.def'
-import { fetchBalance, syncBalances } from '~/worker/jobs'
 import { JobsEnum } from '~/queue/constants'
-import { logDebug, logError } from '~/worker/utils'
+import { fetchBalance, syncBalances } from '~/worker/jobs'
+import { JobHandler, JobRouterProcessor } from '~/worker/processors/job-router.processor'
 
-export class BalancesProcessor implements ProcessorDef {
-    async handle(job: Job): Promise<void> {
-        switch (job.name as JobsEnum) {
-            case JobsEnum.FETCH_BALANCES:
-                await syncBalances(job, job.data.ids)
-                break
-            case JobsEnum.FETCH_BALANCE:
-                await fetchBalance(job, job.data.id)
-                break
-            default:
-                throw new Error(`${job.name} is not a valid job for this processor`)
-        }
-    }
-
-    failed(job: Job | undefined, error: Error | undefined): void {
-        if (error === undefined) {
-            return
-        }
-        logError(error, job)
-    }
-
-    completed(job: Job): void {
-        logDebug('Finished fetching balances', job)
-    }
+export class BalancesProcessor extends JobRouterProcessor {
+    protected readonly completedMessage = 'Finished fetching balances'
+    protected readonly routes = new Map<JobsEnum, JobHandler>([
+        [JobsEnum.FETCH_BALANCES, (job) => syncBalances(job, job.data.ids)],
+        [JobsEnum.FETCH_BALANCE, (job) => fetchBalance(job, job.data.id)],
+    ])
 }
 
 export default new BalancesProcessor()
