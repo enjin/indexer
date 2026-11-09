@@ -1,6 +1,6 @@
 import { Query, Resolver, Arg, ObjectType, Field, ArgsType, Args } from 'type-graphql'
 import 'reflect-metadata'
-import { isAddress } from 'web3-validator'
+import { isEthereumAddressInput } from '~/util/ethereum-address'
 import Rpc from '~/util/rpc'
 
 @ObjectType()
@@ -30,7 +30,7 @@ export class ClaimableCollectionsResolver {
             return []
         }
 
-        if (!args.addresses.every((address) => isAddress(address))) {
+        if (!args.addresses.every((address) => isEthereumAddressInput(address))) {
             throw new Error('Invalid address')
         }
 
