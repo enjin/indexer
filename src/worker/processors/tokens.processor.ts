@@ -1,80 +1,38 @@
-import { Job } from 'bullmq'
-import { ProcessorDef } from '~/worker/processors/processor.def'
 import { JobsEnum } from '~/queue/constants'
 import {
-    computeRarity,
-    syncTokens,
-    computeTokenSupply,
-    computeTokenBestListing,
-    computeTokenInfusion,
-    syncTokenGroupPositions,
-    computeTokenCreationSupply,
-    computeTokenNativeMetadata,
-    migrateTokenGroupIds,
-    syncCollectionTokensNative,
-    explainQuery,
     backfillEphemeralTokens,
     backfillLoanExtensionActivity,
+    computeRarity,
+    computeTokenBestListing,
+    computeTokenCreationSupply,
+    computeTokenInfusion,
+    computeTokenNativeMetadata,
+    computeTokenSupply,
+    explainQuery,
+    migrateTokenGroupIds,
+    syncCollectionTokensNative,
+    syncTokenGroupPositions,
+    syncTokens,
 } from '~/worker/jobs'
-import { logDebug, logError } from '~/worker/utils'
+import { JobHandler, JobRouterProcessor } from '~/worker/processors/job-router.processor'
 
-export class TokensProcessor implements ProcessorDef {
-    async handle(job: Job): Promise<void> {
-        switch (job.name as JobsEnum) {
-            case JobsEnum.COMPUTE_RARITY:
-                await computeRarity(job, job.data.id)
-                break
-            case JobsEnum.SYNC_TOKENS:
-                await syncTokens(job)
-                break
-            case JobsEnum.COMPUTE_TOKEN_SUPPLY:
-                await computeTokenSupply(job, job.data.id)
-                break
-            case JobsEnum.COMPUTE_TOKEN_BEST_LISTING:
-                await computeTokenBestListing(job, job.data.id)
-                break
-            case JobsEnum.COMPUTE_TOKEN_INFUSION:
-                await computeTokenInfusion(job, job.data.id)
-                break
-            case JobsEnum.SYNC_TOKEN_GROUP_POSITIONS:
-                await syncTokenGroupPositions(job)
-                break
-            case JobsEnum.COMPUTE_TOKEN_CREATION_SUPPLY:
-                await computeTokenCreationSupply(job, job.data.id)
-                break
-            case JobsEnum.COMPUTE_TOKEN_NATIVE_METADATA:
-                await computeTokenNativeMetadata(job, job.data.id)
-                break
-            case JobsEnum.MIGRATE_TOKEN_GROUP_IDS:
-                await migrateTokenGroupIds(job)
-                break
-            case JobsEnum.SYNC_COLLECTION_TOKENS_NATIVE:
-                await syncCollectionTokensNative(job)
-                break
-            case JobsEnum.EXPLAIN_QUERY:
-                await explainQuery(job)
-                break
-            case JobsEnum.BACKFILL_EPHEMERAL_TOKENS:
-                await backfillEphemeralTokens(job)
-                break
-            case JobsEnum.BACKFILL_LOAN_EXTENSION_ACTIVITY:
-                await backfillLoanExtensionActivity(job)
-                break
-            default:
-                throw new Error(`${job.name} is not a valid job for this processor`)
-        }
-    }
-
-    failed(job: Job | undefined, error: Error | undefined): void {
-        if (error === undefined) {
-            return
-        }
-        logError(error, job)
-    }
-
-    completed(job: Job) {
-        logDebug('Finished computing tokens', job)
-    }
+export class TokensProcessor extends JobRouterProcessor {
+    protected readonly completedMessage = 'Finished computing tokens'
+    protected readonly routes = new Map<JobsEnum, JobHandler>([
+        [JobsEnum.COMPUTE_RARITY, (job) => computeRarity(job, job.data.id)],
+        [JobsEnum.SYNC_TOKENS, (job) => syncTokens(job)],
+        [JobsEnum.COMPUTE_TOKEN_SUPPLY, (job) => computeTokenSupply(job, job.data.id)],
+        [JobsEnum.COMPUTE_TOKEN_BEST_LISTING, (job) => computeTokenBestListing(job, job.data.id)],
+        [JobsEnum.COMPUTE_TOKEN_INFUSION, (job) => computeTokenInfusion(job, job.data.id)],
+        [JobsEnum.SYNC_TOKEN_GROUP_POSITIONS, (job) => syncTokenGroupPositions(job)],
+        [JobsEnum.COMPUTE_TOKEN_CREATION_SUPPLY, (job) => computeTokenCreationSupply(job, job.data.id)],
+        [JobsEnum.COMPUTE_TOKEN_NATIVE_METADATA, (job) => computeTokenNativeMetadata(job, job.data.id)],
+        [JobsEnum.MIGRATE_TOKEN_GROUP_IDS, (job) => migrateTokenGroupIds(job)],
+        [JobsEnum.SYNC_COLLECTION_TOKENS_NATIVE, (job) => syncCollectionTokensNative(job)],
+        [JobsEnum.EXPLAIN_QUERY, (job) => explainQuery(job)],
+        [JobsEnum.BACKFILL_EPHEMERAL_TOKENS, (job) => backfillEphemeralTokens(job)],
+        [JobsEnum.BACKFILL_LOAN_EXTENSION_ACTIVITY, (job) => backfillLoanExtensionActivity(job)],
+    ])
 }
 
 export default new TokensProcessor()

@@ -1,76 +1,36 @@
-import { Job } from 'bullmq'
-import { ProcessorDef } from '~/worker/processors/processor.def'
 import { JobsEnum } from '~/queue/constants'
 import {
-    computeValidators,
-    syncValidators,
-    syncChain,
-    importBlock,
-    backfillExtrinsicBlockRelation,
+    backfillChainFinality,
     backfillEventPosition,
     backfillEventTimestamps,
-    backfillChainFinality,
+    backfillExtrinsicBlockRelation,
     backfillGovernance,
+    computeValidators,
+    importBlock,
     importGovernanceState,
+    syncChain,
     syncChainInfosFromMatrix,
+    syncValidators,
 } from '~/worker/jobs'
-import { logDebug, logError } from '~/worker/utils'
-import { syncActiveValidators } from '../jobs/validators/sync-active-validators'
+import { syncActiveValidators } from '~/worker/jobs/validators/sync-active-validators'
+import { JobHandler, JobRouterProcessor } from '~/worker/processors/job-router.processor'
 
-export class ValidatorsProcessor implements ProcessorDef {
-    async handle(job: Job): Promise<void> {
-        switch (job.name as JobsEnum) {
-            case JobsEnum.COMPUTE_VALIDATORS:
-                await computeValidators(job)
-                break
-            case JobsEnum.SYNC_VALIDATORS:
-                await syncValidators(job)
-                break
-            case JobsEnum.SYNC_CHAIN:
-                await syncChain(job, job.data.fromBlock, job.data.toBlock)
-                break
-            case JobsEnum.SYNC_ACTIVE_VALIDATORS:
-                await syncActiveValidators(job)
-                break
-            case JobsEnum.SYNC_CHAIN_INFOS_FROM_MATRIX:
-                await syncChainInfosFromMatrix(job)
-                break
-            case JobsEnum.IMPORT_BLOCK:
-                await importBlock(job, job.data.blockNumber, job.data.toBlock)
-                break
-            case JobsEnum.BACKFILL_EXTRINSIC_BLOCK_RELATION:
-                await backfillExtrinsicBlockRelation(job)
-                break
-            case JobsEnum.BACKFILL_EVENT_POSITION:
-                await backfillEventPosition(job)
-                break
-            case JobsEnum.BACKFILL_EVENT_TIMESTAMPS:
-                await backfillEventTimestamps(job)
-                break
-            case JobsEnum.BACKFILL_CHAIN_FINALITY:
-                await backfillChainFinality(job)
-                break
-            case JobsEnum.BACKFILL_GOVERNANCE:
-                await backfillGovernance(job)
-                break
-            case JobsEnum.IMPORT_GOVERNANCE_STATE:
-                await importGovernanceState(job)
-                break
-            default:
-                throw new Error(`${job.name} is not a valid job for this processor`)
-        }
-    }
-
-    failed(job: Job | undefined, error: Error | undefined): void {
-        if (error === undefined) {
-            return
-        }
-        logError(error, job)
-    }
-
-    completed(job: Job): void {
-        logDebug('Finished computing validators', job)
-    }
+export class ValidatorsProcessor extends JobRouterProcessor {
+    protected readonly completedMessage = 'Finished computing validators'
+    protected readonly routes = new Map<JobsEnum, JobHandler>([
+        [JobsEnum.COMPUTE_VALIDATORS, (job) => computeValidators(job)],
+        [JobsEnum.SYNC_VALIDATORS, (job) => syncValidators(job)],
+        [JobsEnum.SYNC_CHAIN, (job) => syncChain(job, job.data.fromBlock, job.data.toBlock)],
+        [JobsEnum.SYNC_ACTIVE_VALIDATORS, (job) => syncActiveValidators(job)],
+        [JobsEnum.SYNC_CHAIN_INFOS_FROM_MATRIX, (job) => syncChainInfosFromMatrix(job)],
+        [JobsEnum.IMPORT_BLOCK, (job) => importBlock(job, job.data.blockNumber, job.data.toBlock)],
+        [JobsEnum.BACKFILL_EXTRINSIC_BLOCK_RELATION, (job) => backfillExtrinsicBlockRelation(job)],
+        [JobsEnum.BACKFILL_EVENT_POSITION, (job) => backfillEventPosition(job)],
+        [JobsEnum.BACKFILL_EVENT_TIMESTAMPS, (job) => backfillEventTimestamps(job)],
+        [JobsEnum.BACKFILL_CHAIN_FINALITY, (job) => backfillChainFinality(job)],
+        [JobsEnum.BACKFILL_GOVERNANCE, (job) => backfillGovernance(job)],
+        [JobsEnum.IMPORT_GOVERNANCE_STATE, (job) => importGovernanceState(job)],
+    ])
 }
 
 export default new ValidatorsProcessor()
