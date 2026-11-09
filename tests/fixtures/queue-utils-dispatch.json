@@ -18,7 +18,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch a job on balances queue"
+                    "sqd:queue: Failed to dispatch a job on balances queue: redis unavailable"
                 ]
             }
         }
@@ -45,13 +45,13 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch a job on balances queue"
+                    "sqd:queue: Failed to dispatch a job on balances queue: redis unavailable"
                 ]
             },
             "whenHashingFails": {
                 "enqueued": [],
                 "logged": [
-                    "sqd:queue: Failed to hash ids"
+                    "sqd:queue: Failed to hash ids: hasher not ready"
                 ]
             }
         }
@@ -75,7 +75,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch a job on balances queue"
+                    "sqd:queue: Failed to dispatch a job on balances queue: redis unavailable"
                 ]
             }
         }
@@ -102,13 +102,13 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch a job on accounts queue"
+                    "sqd:queue: Failed to dispatch a job on accounts queue: redis unavailable"
                 ]
             },
             "whenHashingFails": {
                 "enqueued": [],
                 "logged": [
-                    "sqd:queue: Failed to hash ids"
+                    "sqd:queue: Failed to hash ids: hasher not ready"
                 ]
             }
         }
@@ -130,7 +130,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch a job on collections queue"
+                    "sqd:queue: Failed to dispatch a job on collections queue: redis unavailable"
                 ]
             }
         }
@@ -157,13 +157,13 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch collection extra job"
+                    "sqd:queue: Failed to dispatch collection extra job: redis unavailable"
                 ]
             },
             "whenHashingFails": {
                 "enqueued": [],
                 "logged": [
-                    "sqd:queue: Failed to hash collection ids"
+                    "sqd:queue: Failed to hash collection ids: hasher not ready"
                 ]
             }
         }
@@ -187,7 +187,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch a job on collections queue"
+                    "sqd:queue: Failed to dispatch a job on collections queue: redis unavailable"
                 ]
             }
         }
@@ -211,7 +211,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch a job on tokens queue"
+                    "sqd:queue: Failed to dispatch a job on tokens queue: redis unavailable"
                 ]
             }
         }
@@ -235,7 +235,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch a job on traits queue"
+                    "sqd:queue: Failed to dispatch a job on traits queue: redis unavailable"
                 ]
             }
         }
@@ -260,7 +260,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch a job on traits queue"
+                    "sqd:queue: Failed to dispatch a job on traits queue: redis unavailable"
                 ]
             }
         },
@@ -283,7 +283,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch a job on traits queue"
+                    "sqd:queue: Failed to dispatch a job on traits queue: redis unavailable"
                 ]
             }
         }
@@ -311,7 +311,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch a job on metadata queue"
+                    "sqd:queue: Failed to dispatch a job on metadata queue: redis unavailable"
                 ]
             }
         },
@@ -337,7 +337,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch a job on metadata queue"
+                    "sqd:queue: Failed to dispatch a job on metadata queue: redis unavailable"
                 ]
             }
         },
@@ -363,7 +363,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch a job on metadata queue"
+                    "sqd:queue: Failed to dispatch a job on metadata queue: redis unavailable"
                 ]
             }
         },
@@ -389,7 +389,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch a job on metadata queue"
+                    "sqd:queue: Failed to dispatch a job on metadata queue: redis unavailable"
                 ]
             }
         }
@@ -414,7 +414,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch a job on metadata queue"
+                    "sqd:queue: Failed to dispatch a job on metadata queue: redis unavailable"
                 ]
             }
         },
@@ -437,7 +437,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch a job on metadata queue"
+                    "sqd:queue: Failed to dispatch a job on metadata queue: redis unavailable"
                 ]
             }
         }
@@ -459,7 +459,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch sync token group metadata"
+                    "sqd:queue: Failed to dispatch sync token group metadata: redis unavailable"
                 ]
             }
         }
@@ -481,7 +481,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch sync all metadata"
+                    "sqd:queue: Failed to dispatch sync all metadata: redis unavailable"
                 ]
             }
         }
@@ -505,7 +505,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch sync fuel tank rule sets"
+                    "sqd:queue: Failed to dispatch sync fuel tank rule sets: redis unavailable"
                 ]
             }
         },
@@ -527,7 +527,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch sync fuel tank rule sets"
+                    "sqd:queue: Failed to dispatch sync fuel tank rule sets: redis unavailable"
                 ]
             }
         }
@@ -549,7 +549,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch sync offers"
+                    "sqd:queue: Failed to dispatch sync offers: redis unavailable"
                 ]
             }
         }
@@ -573,7 +573,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch sync collection transfer"
+                    "sqd:queue: Failed to dispatch sync collection transfer: redis unavailable"
                 ]
             }
         }
@@ -595,7 +595,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch compute validators"
+                    "sqd:queue: Failed to dispatch compute validators: redis unavailable"
                 ]
             }
         }
@@ -617,7 +617,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch sync tokens"
+                    "sqd:queue: Failed to dispatch sync tokens: redis unavailable"
                 ]
             }
         }
@@ -641,7 +641,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch compute token supply"
+                    "sqd:queue: Failed to dispatch compute token supply: redis unavailable"
                 ]
             }
         }
@@ -665,7 +665,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch refresh pool"
+                    "sqd:queue: Failed to dispatch refresh pool: redis unavailable"
                 ]
             }
         }
@@ -687,7 +687,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch sync validators"
+                    "sqd:queue: Failed to dispatch sync validators: redis unavailable"
                 ]
             }
         }
@@ -709,7 +709,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch sync active validators"
+                    "sqd:queue: Failed to dispatch sync active validators: redis unavailable"
                 ]
             }
         }
@@ -735,7 +735,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch sync chain"
+                    "sqd:queue: Failed to dispatch sync chain: redis unavailable"
                 ]
             }
         },
@@ -759,7 +759,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch sync chain"
+                    "sqd:queue: Failed to dispatch sync chain: redis unavailable"
                 ]
             }
         }
@@ -784,7 +784,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch sync chain infos from matrix"
+                    "sqd:queue: Failed to dispatch sync chain infos from matrix: redis unavailable"
                 ]
             }
         },
@@ -807,7 +807,30 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch sync chain infos from matrix"
+                    "sqd:queue: Failed to dispatch sync chain infos from matrix: redis unavailable"
+                ]
+            }
+        },
+        {
+            "enqueued": [
+                {
+                    "via": "addRefreshJob",
+                    "queue": "validators",
+                    "name": "SYNC_CHAIN_INFOS_FROM_MATRIX",
+                    "data": {
+                        "blockNumberGte": 0
+                    },
+                    "options": {
+                        "delay": 6000,
+                        "jobId": "chain-infos.matrix.sync.0",
+                        "keepLastIfActive": false
+                    }
+                }
+            ],
+            "logged": [],
+            "whenEnqueueFails": {
+                "logged": [
+                    "sqd:queue: Failed to dispatch sync chain infos from matrix: redis unavailable"
                 ]
             }
         }
@@ -833,7 +856,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch import block"
+                    "sqd:queue: Failed to dispatch import block: redis unavailable"
                 ]
             }
         },
@@ -857,7 +880,31 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch import block"
+                    "sqd:queue: Failed to dispatch import block: redis unavailable"
+                ]
+            }
+        },
+        {
+            "enqueued": [
+                {
+                    "via": "addRefreshJob",
+                    "queue": "validators",
+                    "name": "IMPORT_BLOCK",
+                    "data": {
+                        "blockNumber": 15,
+                        "toBlock": 0
+                    },
+                    "options": {
+                        "delay": 0,
+                        "jobId": "chain.import.15-0",
+                        "keepLastIfActive": false
+                    }
+                }
+            ],
+            "logged": [],
+            "whenEnqueueFails": {
+                "logged": [
+                    "sqd:queue: Failed to dispatch import block: redis unavailable"
                 ]
             }
         }
@@ -879,7 +926,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch backfill extrinsic block relation"
+                    "sqd:queue: Failed to dispatch backfill extrinsic block relation: redis unavailable"
                 ]
             }
         },
@@ -903,7 +950,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch backfill extrinsic block relation"
+                    "sqd:queue: Failed to dispatch backfill extrinsic block relation: redis unavailable"
                 ]
             }
         },
@@ -925,7 +972,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch backfill extrinsic block relation"
+                    "sqd:queue: Failed to dispatch backfill extrinsic block relation: redis unavailable"
                 ]
             }
         }
@@ -1065,7 +1112,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch backfill chain finality"
+                    "sqd:queue: Failed to dispatch backfill chain finality: redis unavailable"
                 ]
             }
         },
@@ -1087,7 +1134,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch backfill chain finality"
+                    "sqd:queue: Failed to dispatch backfill chain finality: redis unavailable"
                 ]
             }
         }
@@ -1134,6 +1181,83 @@
             "whenEnqueueFails": {
                 "logged": [],
                 "rejected": "Governance backfill requires a valid chain genesis hash and inclusive block range"
+            }
+        },
+        {
+            "enqueued": [],
+            "logged": [],
+            "rejected": "Governance backfill requires a valid chain genesis hash and inclusive block range",
+            "whenEnqueueFails": {
+                "logged": [],
+                "rejected": "Governance backfill requires a valid chain genesis hash and inclusive block range"
+            }
+        },
+        {
+            "enqueued": [],
+            "logged": [],
+            "rejected": "Governance backfill requires a valid chain genesis hash and inclusive block range",
+            "whenEnqueueFails": {
+                "logged": [],
+                "rejected": "Governance backfill requires a valid chain genesis hash and inclusive block range"
+            }
+        },
+        {
+            "enqueued": [],
+            "logged": [],
+            "rejected": "Governance backfill requires a valid chain genesis hash and inclusive block range",
+            "whenEnqueueFails": {
+                "logged": [],
+                "rejected": "Governance backfill requires a valid chain genesis hash and inclusive block range"
+            }
+        },
+        {
+            "enqueued": [
+                {
+                    "via": "queue.add",
+                    "queue": "validators",
+                    "name": "BACKFILL_GOVERNANCE",
+                    "data": {
+                        "genesisHash": "0xabababababababababababababababababababababababababababababababab",
+                        "fromBlock": 0,
+                        "toBlock": 0
+                    },
+                    "options": {
+                        "jobId": "validators.backfill-governance.abababab.0-0.<uuid>",
+                        "deduplication": {
+                            "id": "validators.backfill-governance.abababab.0-0"
+                        }
+                    }
+                }
+            ],
+            "logged": [],
+            "whenEnqueueFails": {
+                "logged": [],
+                "rejected": "redis unavailable"
+            }
+        },
+        {
+            "enqueued": [
+                {
+                    "via": "queue.add",
+                    "queue": "validators",
+                    "name": "BACKFILL_GOVERNANCE",
+                    "data": {
+                        "genesisHash": "0xabababababababababababababababababababababababababababababababab",
+                        "fromBlock": 5,
+                        "toBlock": 5
+                    },
+                    "options": {
+                        "jobId": "validators.backfill-governance.abababab.5-5.<uuid>",
+                        "deduplication": {
+                            "id": "validators.backfill-governance.abababab.5-5"
+                        }
+                    }
+                }
+            ],
+            "logged": [],
+            "whenEnqueueFails": {
+                "logged": [],
+                "rejected": "redis unavailable"
             }
         }
     ],
@@ -1188,7 +1312,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch sync accounts"
+                    "sqd:queue: Failed to dispatch sync accounts: redis unavailable"
                 ]
             }
         }
@@ -1215,7 +1339,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch refresh listings"
+                    "sqd:queue: Failed to dispatch refresh listings: redis unavailable"
                 ]
             }
         }
@@ -1260,6 +1384,27 @@
                 "logged": [],
                 "rejected": "redis unavailable"
             }
+        },
+        {
+            "enqueued": [
+                {
+                    "via": "addRefreshJob",
+                    "queue": "listings",
+                    "name": "BACKFILL_CANCELLATION_LISTING_IDS",
+                    "data": {
+                        "afterId": ""
+                    },
+                    "options": {
+                        "jobId": "listings.backfill-cancellation-listing-ids.",
+                        "keepLastIfActive": false
+                    }
+                }
+            ],
+            "logged": [],
+            "whenEnqueueFails": {
+                "logged": [],
+                "rejected": "redis unavailable"
+            }
         }
     ],
     "dispatchComputeTokenBestListing": [
@@ -1281,7 +1426,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch compute token best listing"
+                    "sqd:queue: Failed to dispatch compute token best listing: redis unavailable"
                 ]
             }
         }
@@ -1305,7 +1450,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch compute token infusion"
+                    "sqd:queue: Failed to dispatch compute token infusion: redis unavailable"
                 ]
             }
         }
@@ -1329,7 +1474,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch compute token creation supply"
+                    "sqd:queue: Failed to dispatch compute token creation supply: redis unavailable"
                 ]
             }
         }
@@ -1351,7 +1496,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch sync pools"
+                    "sqd:queue: Failed to dispatch sync pools: redis unavailable"
                 ]
             }
         }
@@ -1375,7 +1520,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch compute pool rewards"
+                    "sqd:queue: Failed to dispatch compute pool rewards: redis unavailable"
                 ]
             }
         }
@@ -1399,7 +1544,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch compute pool member rewards"
+                    "sqd:queue: Failed to dispatch compute pool member rewards: redis unavailable"
                 ]
             }
         }
@@ -1423,7 +1568,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch compute pool offers"
+                    "sqd:queue: Failed to dispatch compute pool offers: redis unavailable"
                 ]
             }
         }
@@ -1444,7 +1589,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch sync members bonded"
+                    "sqd:queue: Failed to dispatch sync members bonded: redis unavailable"
                 ]
             }
         }
@@ -1466,7 +1611,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch sync unbonding eras"
+                    "sqd:queue: Failed to dispatch sync unbonding eras: redis unavailable"
                 ]
             }
         }
@@ -1490,7 +1635,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch sync account unbonding eras"
+                    "sqd:queue: Failed to dispatch sync account unbonding eras: redis unavailable"
                 ]
             }
         }
@@ -1512,7 +1657,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch backfill pool member rewards era index"
+                    "sqd:queue: Failed to dispatch backfill pool member rewards era index: redis unavailable"
                 ]
             }
         }
@@ -1536,7 +1681,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch backfill pool member rewards"
+                    "sqd:queue: Failed to dispatch backfill pool member rewards: redis unavailable"
                 ]
             }
         },
@@ -1558,7 +1703,29 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch backfill pool member rewards"
+                    "sqd:queue: Failed to dispatch backfill pool member rewards: redis unavailable"
+                ]
+            }
+        },
+        {
+            "enqueued": [
+                {
+                    "via": "addRefreshJob",
+                    "queue": "nomination-pools",
+                    "name": "BACKFILL_POOL_MEMBER_REWARDS",
+                    "data": {
+                        "fromBlock": 0
+                    },
+                    "options": {
+                        "jobId": "nomination-pools.backfill-member-rewards.0",
+                        "keepLastIfActive": false
+                    }
+                }
+            ],
+            "logged": [],
+            "whenEnqueueFails": {
+                "logged": [
+                    "sqd:queue: Failed to dispatch backfill pool member rewards: redis unavailable"
                 ]
             }
         }
@@ -1582,7 +1749,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch compute account stats"
+                    "sqd:queue: Failed to dispatch compute account stats: redis unavailable"
                 ]
             }
         }
@@ -1604,7 +1771,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch sync user infusions"
+                    "sqd:queue: Failed to dispatch sync user infusions: redis unavailable"
                 ]
             }
         }
@@ -1628,7 +1795,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch compute token native metadata"
+                    "sqd:queue: Failed to dispatch compute token native metadata: redis unavailable"
                 ]
             }
         }
@@ -1652,7 +1819,7 @@
             "logged": [],
             "whenEnqueueFails": {
                 "logged": [
-                    "sqd:queue: Failed to dispatch migrate token group IDs"
+                    "sqd:queue: Failed to dispatch migrate token group IDs: redis unavailable"
                 ]
             }
         }
@@ -1689,6 +1856,27 @@
                     },
                     "options": {
                         "jobId": "tokens.backfill-ephemeral.tok-1",
+                        "keepLastIfActive": false
+                    }
+                }
+            ],
+            "logged": [],
+            "whenEnqueueFails": {
+                "logged": [],
+                "rejected": "redis unavailable"
+            }
+        },
+        {
+            "enqueued": [
+                {
+                    "via": "addRefreshJob",
+                    "queue": "tokens",
+                    "name": "BACKFILL_EPHEMERAL_TOKENS",
+                    "data": {
+                        "afterId": ""
+                    },
+                    "options": {
+                        "jobId": "tokens.backfill-ephemeral.",
                         "keepLastIfActive": false
                     }
                 }
