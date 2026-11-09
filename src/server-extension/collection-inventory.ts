@@ -268,22 +268,38 @@ export function buildCursorCondition(
     }
 }
 
-/** Physical holdings and outstanding lender rights share one deduplicated inventory membership. */
-function inventoryTokenIdsCte(accountIds: string, collectionId: string): string {
-    return `inventory_token_ids AS (
+/**
+ * Physical holdings and outstanding lender rights share one deduplicated inventory membership.
+ *
+ * Resolved up front and passed to the paging queries as an id list: both branches are driven by the
+ * account indexes. Filtering through `collection.collection_id` instead made Postgres walk every token of
+ * the collection and probe token_account per token, once per paging query.
+ */
+export async function findInventoryTokenIds(
+    manager: EntityManager,
+    accountIds: string[],
+    collectionId: string
+): Promise<string[]> {
+    const rows: { token_id: string }[] = await manager.query(
+        `
+        WITH target AS MATERIALIZED (SELECT id FROM collection WHERE collection_id = $2 LIMIT 1)
         SELECT token_account.token_id FROM token_account
-        INNER JOIN token ON token_account.token_id = token.id
-        INNER JOIN collection ON token.collection_id = collection.id
-        WHERE token_account.account_id IN (${accountIds}) AND token_account.total_balance > 0
-            AND collection.collection_id = ${collectionId}
+        WHERE token_account.account_id = ANY($1::text[])
+            AND token_account.total_balance > 0
+            AND token_account.collection_id = (SELECT id FROM target)
         UNION
         SELECT token_loan.token_id FROM token_loan
         INNER JOIN token ON token_loan.token_id = token.id
-        INNER JOIN collection ON token.collection_id = collection.id
-        WHERE token_loan.lender_id IN (${accountIds})
-            AND collection.collection_id = ${collectionId}
-    )`
+        WHERE token_loan.lender_id = ANY($1::text[])
+            AND token.collection_id = (SELECT id FROM target)
+        `,
+        [accountIds, collectionId]
+    )
+    return rows.map((row) => String(row.token_id))
 }
+
+/** The inventory id list as a joinable relation; the planner sizes unnest() from the array length. */
+const inventorySource = (param: string) => `unnest(${param}::text[]) AS inventory(token_id)`
 
 @Resolver()
 export class CollectionInventoryResolver {
@@ -321,6 +337,20 @@ export class CollectionInventoryResolver {
 
         const manager = await this.tx()
 
+        const inventoryTokenIds = await findInventoryTokenIds(manager, accountIds, collectionId)
+        if (inventoryTokenIds.length === 0) {
+            return new CollectionInventoryConnection({
+                edges: [],
+                pageInfo: new PageInfo({
+                    hasNextPage: false,
+                    hasPreviousPage: false,
+                    startCursor: '',
+                    endCursor: '',
+                }),
+                totalCount: 0,
+            })
+        }
+
         // Determine SQL column name and order direction for sorting
         const getSortColumn = (sortBy: CollectionInventoryOrderByInput): string => {
             switch (sortBy) {
@@ -340,7 +370,7 @@ export class CollectionInventoryResolver {
 
         // Build search condition for query parameter
         let searchCondition = ''
-        const queryParams: any[] = [...accountIds, collectionId]
+        const queryParams: any[] = [inventoryTokenIds]
 
         if (query) {
             const queryParamIndex = queryParams.length + 1
@@ -358,9 +388,9 @@ export class CollectionInventoryResolver {
         }
 
         // Keyset pagination query: fetch groups and ungrouped tokens in one pass
-        const accountIdPlaceholders = accountIds.map((_, i) => `$${i + 1}`).join(', ')
-        const collectionIdPlaceholder = `$${accountIds.length + 1}`
-        const inventoryTokens = inventoryTokenIdsCte(accountIdPlaceholders, collectionIdPlaceholder)
+        // collection.name is only read by the search condition
+        const collectionJoin = query ? 'INNER JOIN collection ON token.collection_id = collection.id' : ''
+        const inventory = inventorySource('$1')
 
         let cursorCondition = ''
         if (cursor) {
@@ -372,7 +402,7 @@ export class CollectionInventoryResolver {
         const pageItems = await manager.query(
             `
             -- groups_data: token groups owned by the account(s) with at least two tokens
-            WITH ${inventoryTokens}, groups_data AS (
+            WITH groups_data AS (
                 SELECT
                     tg.id AS id,
                     COUNT(DISTINCT token.id) AS owned_count,
@@ -381,12 +411,12 @@ export class CollectionInventoryResolver {
                     MIN(token.token_id) AS token_id,
                     MIN(NULLIF(token.name, '')) AS token_name,
                     MAX(token.best_listing_price) AS best_listing_price
-                FROM inventory_token_ids
-                INNER JOIN token ON inventory_token_ids.token_id = token.id
-                INNER JOIN collection ON token.collection_id = collection.id
+                FROM ${inventory}
+                INNER JOIN token ON inventory.token_id = token.id
+                ${collectionJoin}
                 INNER JOIN token_group_token tgt ON token.id = tgt.token_id
                 INNER JOIN token_group tg ON tgt.token_group_id = tg.id
-                WHERE collection.collection_id = ${collectionIdPlaceholder}
+                WHERE 1=1
                     ${searchCondition}
                     ${listingCondition}
                 GROUP BY tg.id
@@ -402,13 +432,13 @@ export class CollectionInventoryResolver {
                     token.token_id AS token_id,
                     NULLIF(token.name, '') AS token_name,
                     token.best_listing_price AS best_listing_price
-                FROM inventory_token_ids
-                INNER JOIN token ON inventory_token_ids.token_id = token.id
-                INNER JOIN collection ON token.collection_id = collection.id
+                FROM ${inventory}
+                INNER JOIN token ON inventory.token_id = token.id
+                ${collectionJoin}
                 LEFT JOIN token_group_token tgt ON token.id = tgt.token_id
                 LEFT JOIN token_group tg ON tgt.token_group_id = tg.id
                     AND tg.id IN (SELECT id FROM groups_data)
-                WHERE collection.collection_id = ${collectionIdPlaceholder}
+                WHERE 1=1
                     ${searchCondition}
                     ${listingCondition}
                     AND tg.id IS NULL
@@ -430,19 +460,19 @@ export class CollectionInventoryResolver {
         )
 
         // Fetch total count of matching items (without LIMIT)
-        const totalCountParams = query ? [...accountIds, collectionId, `%${query}%`] : [...accountIds, collectionId]
+        const totalCountParams = query ? [inventoryTokenIds, `%${query}%`] : [inventoryTokenIds]
         const totalCountResult = await manager.query(
             `
             -- groups_data: token groups owned by the account(s) with at least two tokens
-            WITH ${inventoryTokens}, groups_data AS (
+            WITH groups_data AS (
                 SELECT
                     tg.id AS id
-                FROM inventory_token_ids
-                INNER JOIN token ON inventory_token_ids.token_id = token.id
-                INNER JOIN collection ON token.collection_id = collection.id
+                FROM ${inventory}
+                INNER JOIN token ON inventory.token_id = token.id
+                ${collectionJoin}
                 INNER JOIN token_group_token tgt ON token.id = tgt.token_id
                 INNER JOIN token_group tg ON tgt.token_group_id = tg.id
-                WHERE collection.collection_id = ${collectionIdPlaceholder}
+                WHERE 1=1
                     ${searchCondition}
                     ${listingCondition}
                 GROUP BY tg.id
@@ -452,13 +482,13 @@ export class CollectionInventoryResolver {
             ungrouped_tokens AS (
                 SELECT
                     token.id AS id
-                FROM inventory_token_ids
-                INNER JOIN token ON inventory_token_ids.token_id = token.id
-                INNER JOIN collection ON token.collection_id = collection.id
+                FROM ${inventory}
+                INNER JOIN token ON inventory.token_id = token.id
+                ${collectionJoin}
                 LEFT JOIN token_group_token tgt ON token.id = tgt.token_id
                 LEFT JOIN token_group tg ON tgt.token_group_id = tg.id
                     AND tg.id IN (SELECT id FROM groups_data)
-                WHERE collection.collection_id = ${collectionIdPlaceholder}
+                WHERE 1=1
                     ${searchCondition}
                     ${listingCondition}
                     AND tg.id IS NULL
@@ -546,23 +576,18 @@ export class CollectionInventoryResolver {
             }
 
             // Fetch tokens for groups (owned by the requested accounts) - limit to 4 per group
-            const groupTokensPlaceholders = pageGroupIds.map((_: any, i: number) => `$${i + 1}`).join(', ')
-            const accountIdsPlaceholders = accountIds
-                .map((_: any, i: number) => `$${pageGroupIds.length + i + 1}`)
-                .join(', ')
             const groupTokens = await manager.query(
                 `
-                WITH ${inventoryTokenIdsCte(accountIdsPlaceholders, `$${pageGroupIds.length + accountIds.length + 1}`)}, ranked_tokens AS (
+                WITH ranked_tokens AS (
                     SELECT
-                        tg.id AS group_id,
+                        tgt.token_group_id AS group_id,
                         token.id AS token_id,
-                        COUNT(*) OVER (PARTITION BY tg.id) AS owned_count,
-                        ROW_NUMBER() OVER (PARTITION BY tg.id ORDER BY token.id) AS rn
-                    FROM inventory_token_ids
-                    INNER JOIN token ON inventory_token_ids.token_id = token.id
-                    INNER JOIN token_group_token tgt ON token.id = tgt.token_id
-                    INNER JOIN token_group tg ON tgt.token_group_id = tg.id
-                    WHERE tg.id IN (${groupTokensPlaceholders})
+                        COUNT(*) OVER (PARTITION BY tgt.token_group_id) AS owned_count,
+                        ROW_NUMBER() OVER (PARTITION BY tgt.token_group_id ORDER BY token.id) AS rn
+                    FROM ${inventorySource('$2')}
+                    INNER JOIN token_group_token tgt ON tgt.token_id = inventory.token_id
+                    INNER JOIN token ON token.id = tgt.token_id
+                    WHERE tgt.token_group_id = ANY($1::text[])
                         ${listingCondition}
                 )
                 SELECT group_id, token_id, owned_count
@@ -570,7 +595,7 @@ export class CollectionInventoryResolver {
                 WHERE rn <= 4
                 ORDER BY group_id, rn
                 `,
-                [...pageGroupIds, ...accountIds, collectionId]
+                [pageGroupIds.map(String), inventoryTokenIds]
             )
 
             for (const row of groupTokens) {

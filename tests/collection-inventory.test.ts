@@ -35,6 +35,7 @@ void test('collection inventory filters offers before pagination and returns the
         getRepository: () => ({ createQueryBuilder: () => builder }),
         query: (sql: string, params: unknown[]) => {
             queries.push({ sql, params })
+            if (sql.includes('WITH target AS MATERIALIZED')) return Promise.resolve([{ token_id: token.id }])
             if (sql.includes('LIMIT 2')) {
                 return Promise.resolve([
                     {
@@ -73,7 +74,8 @@ void test('collection inventory filters offers before pagination and returns the
     const item = result.edges[0].node as { listedPrice?: bigint }
     assert.equal(item.listedPrice, 1000000000000000000n)
 
-    const [pageQuery, countQuery, priceQuery] = queries
+    const [inventoryQuery, pageQuery, countQuery, priceQuery] = queries
+    assert.deepEqual(inventoryQuery.params, [[accountId], '123'])
     for (const query of [pageQuery, countQuery]) {
         assert.match(query.sql, /EXISTS \(SELECT 1 FROM listing offer WHERE offer\.take_asset_id_id = token\.id/)
         assert.match(query.sql, /offer\.type = 'Offer' AND offer\.is_active = true/)
@@ -89,6 +91,7 @@ const pageQueryFor = async (after: string, order: CollectionInventoryOrderInput)
     const manager = {
         query: (sql: string, params: unknown[]) => {
             queries.push({ sql, params })
+            if (sql.includes('WITH target AS MATERIALIZED')) return Promise.resolve([{ token_id: '123-1' }])
             return Promise.resolve(sql.includes('SELECT COUNT(*) AS count') ? [{ count: '0' }] : [])
         },
     } as unknown as EntityManager
@@ -104,7 +107,7 @@ const pageQueryFor = async (after: string, order: CollectionInventoryOrderInput)
         listingFilter: TokenListingFilterInput.ALL,
     })
 
-    return queries[0]
+    return queries[1]
 }
 
 const placeholders = (sql: string) => new Set([...sql.matchAll(/\$(\d+)/g)].map((match) => Number(match[1])))
@@ -162,6 +165,7 @@ void test('collection inventory carries the active loan without inventing a lend
     const manager = {
         getRepository: () => ({ createQueryBuilder: () => builder }),
         query: (sql: string) => {
+            if (sql.includes('WITH target AS MATERIALIZED')) return Promise.resolve([{ token_id: token.id }])
             if (sql.includes('LIMIT 2')) {
                 return Promise.resolve([{ id: token.id, sort_priority: 1, created_at: token.createdAt }])
             }
@@ -206,4 +210,59 @@ void test('collection inventory exposes loan parties and expiration in its Graph
     assert.equal(loanFields.expiration.type.toString(), 'BigInt!')
     assert.equal(loanFields.lender.type.toString(), 'CollectionInventoryLoanAccount!')
     assert.equal(loanFields.borrower.type.toString(), 'CollectionInventoryLoanAccount!')
+})
+
+void test('collection inventory resolves membership once and pages over the id list', async () => {
+    const queries: { sql: string; params: unknown[] }[] = []
+    const manager = {
+        query: (sql: string, params: unknown[]) => {
+            queries.push({ sql, params })
+            if (sql.includes('WITH target AS MATERIALIZED')) return Promise.resolve([{ token_id: '123-1' }])
+            return Promise.resolve(sql.includes('SELECT COUNT(*) AS count') ? [{ count: '0' }] : [])
+        },
+    } as unknown as EntityManager
+    const resolver = new CollectionInventoryResolver(() => Promise.resolve(manager))
+    await resolver.collectionInventory({
+        accountIds: [`0x${'11'.repeat(32)}`],
+        collectionId: '123',
+        first: 2,
+        orderBy: CollectionInventoryOrderByInput.DATE,
+        order: CollectionInventoryOrderInput.DESC,
+        listingFilter: TokenListingFilterInput.ALL,
+    })
+
+    const [inventoryQuery, ...pagingQueries] = queries
+    // Membership is driven by the account-side indexes, never by walking the collection's tokens
+    assert.match(inventoryQuery.sql, /token_account\.account_id = ANY\(\$1::text\[\]\)/)
+    assert.match(inventoryQuery.sql, /token_account\.collection_id = \(SELECT id FROM target\)/)
+    assert.match(inventoryQuery.sql, /token_loan\.lender_id = ANY\(\$1::text\[\]\)/)
+    assert.equal(pagingQueries.length, 2)
+    for (const query of pagingQueries) {
+        assert.match(query.sql, /unnest\(\$1::text\[\]\) AS inventory\(token_id\)/)
+        assert.doesNotMatch(query.sql, /collection\.collection_id/)
+        assert.deepEqual(query.params[0], ['123-1'])
+    }
+})
+
+void test('collection inventory skips the paging queries when the accounts hold nothing in the collection', async () => {
+    const queries: string[] = []
+    const manager = {
+        query: (sql: string) => {
+            queries.push(sql)
+            return Promise.resolve([])
+        },
+    } as unknown as EntityManager
+    const resolver = new CollectionInventoryResolver(() => Promise.resolve(manager))
+    const result = await resolver.collectionInventory({
+        accountIds: [`0x${'11'.repeat(32)}`],
+        collectionId: '123',
+        first: 2,
+        orderBy: CollectionInventoryOrderByInput.DATE,
+        order: CollectionInventoryOrderInput.DESC,
+        listingFilter: TokenListingFilterInput.ALL,
+    })
+
+    assert.equal(queries.length, 1)
+    assert.equal(result.totalCount, 0)
+    assert.deepEqual(result.edges, [])
 })
