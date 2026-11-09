@@ -1,6 +1,7 @@
 import { Job } from 'bullmq'
 import { connectionManager } from '~/contexts'
 import { JobsEnum } from '~/queue/constants'
+import { addRefreshJob } from '~/queue/refresh-job'
 import ValidatorsQueue from '~/queue/validators/validators.queue'
 
 const DEFAULT_BATCH_SIZE = 5000
@@ -70,11 +71,13 @@ async function dispatchRangeJobs(job: Job<BackfillExtrinsicBlockData>): Promise<
     let dispatched = 0
     for (let start = min; start <= max; start += blockSpan) {
         const end = Math.min(max, start + blockSpan - 1)
-        await ValidatorsQueue.add(
+        await addRefreshJob(
+            ValidatorsQueue,
             JobsEnum.BACKFILL_EXTRINSIC_BLOCK_RELATION,
             { fromBlock: start, toBlock: end, batchSize },
             {
                 jobId: `validators.backfill-extrinsic-block.${start}-${end}`,
+                keepLastIfActive: false,
             }
         )
         dispatched += 1
