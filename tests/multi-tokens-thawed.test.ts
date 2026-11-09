@@ -5,6 +5,7 @@ import test, { after, beforeEach } from 'node:test'
 import { Runtime } from '@subsquid/substrate-runtime'
 import { Block, EventItem } from '~/contexts'
 import { Collection, CollectionAccount, FreezeState, Token, TokenAccount, TransferPolicy } from '~/model'
+import type { Thaw } from '~/pallet/multi-tokens/events/types'
 
 const testRequire = createRequire(__filename)
 const queueModulePath = testRequire.resolve('~/queue')
@@ -23,7 +24,7 @@ queueModule.exports = {
 }
 testRequire.cache[queueModulePath] = queueModule
 
-const { thawed } = testRequire(
+const { thawed, thawTarget } = testRequire(
     '~/pallet/multi-tokens/processors/thawed'
 ) as typeof import('~/pallet/multi-tokens/processors/thawed')
 
@@ -94,6 +95,13 @@ beforeEach(() => {
     statsDispatched.length = 0
     delete process.env.APP_ENV
 })
+
+const kinds1040 = {
+    tokenAccount: { __kind: 'TokenAccount', tokenId: 5n, accountId: account },
+    collectionAccount: { __kind: 'CollectionAccount', value: account },
+    token: { __kind: 'Token', tokenId: 5n },
+    collection: { __kind: 'Collection' },
+}
 
 const kinds = {
     tokenAccount: { __kind: 'TokenAccount', tokenId: '5', accountId: account },
@@ -167,8 +175,7 @@ for (const specVersion of [500, 1040] as const) {
     for (const [kind, id, message] of [
         ['tokenAccount', `${account}-7-5`, `[Thawed] We have not found token account ${account}-7-5.`],
         ['collectionAccount', `7-${account}`, `[Thawed] We have not found collection account 7-${account}.`],
-        // Pinned as-is: the Token branch reports a collection account.
-        ['token', '7-5', '[Thawed] We have not found collection account 7-5.'],
+        ['token', '7-5', '[Thawed] We have not found token 7-5.'],
         ['collection', '7', '[Thawed] We have not found collection 7.'],
     ] as const) {
         void test(`v${specVersion}: a missing ${kind} is reported and nothing is saved or dispatched`, async () => {
@@ -241,7 +248,7 @@ void test('v500: SNS event describes the frozen target', async () => {
     }
 })
 
-void test('v500: SNS event for token 0 (pinned: token is dropped)', async () => {
+void test('v500: SNS event keeps token 0', async () => {
     const tokenZero = new Token({ id: '7-0', isFrozen: true })
     const { ctx } = fakeStore([tokenZero])
     const [, sns] = await thawed(ctx, block, thawEvent(500, { __kind: 'Token', tokenId: '0' }), false)
@@ -250,20 +257,52 @@ void test('v500: SNS event for token 0 (pinned: token is dropped)', async () => 
         address: null,
         collectionId: '7',
         tokenId: 0n,
-        token: null,
+        token: '7-0',
         extrinsic: '10-1',
     })
 })
 
-void test('v1040: SNS event (pinned: built from the absent freezeType, so it carries no target)', async () => {
+void test('v1040: SNS event describes the thawed target', async () => {
     const entities = entitiesFor()
+    const expected = {
+        tokenAccount: { kind: kinds1040.tokenAccount, address: account, tokenId: 5n, token: '7-5' },
+        collectionAccount: { kind: kinds1040.collectionAccount, address: account, tokenId: null, token: null },
+        token: { kind: kinds1040.token, address: null, tokenId: 5n, token: '7-5' },
+        collection: { kind: kinds1040.collection, address: null, tokenId: null, token: null },
+    }
     for (const kind of Object.keys(kinds) as (keyof typeof kinds)[]) {
         const { ctx } = fakeStore([entities[kind]])
         const [, sns] = await thawed(ctx, block, thawEvent(1040, kinds[kind]), false)
-        assert.deepEqual(
-            sns?.body,
-            { kind: undefined, address: null, collectionId: '7', tokenId: null, token: null, extrinsic: '10-1' },
-            kind
-        )
+        assert.deepEqual(sns?.body, { ...expected[kind], collectionId: '7', extrinsic: '10-1' }, kind)
     }
+})
+
+void test('v1040: SNS event keeps token 0', async () => {
+    const tokenZero = new Token({ id: '7-0', isFrozen: true })
+    const { ctx } = fakeStore([tokenZero])
+    const [, sns] = await thawed(ctx, block, thawEvent(1040, { __kind: 'Token', tokenId: '0' }), false)
+    assert.equal(sns?.body.token, '7-0')
+})
+
+void test('thaw targets that no Thawed event version can carry are reported, not applied', () => {
+    for (const [event, kind] of [
+        [{ collectionId: 7n }, 'none'],
+        [{ collectionId: 7n, freezeType: { __kind: 'Attribute', key: '0x01' } }, 'Attribute'],
+        [
+            { collectionId: 7n, freezeType: { __kind: 'TokenGroupAttribute', tokenGroupId: 1n, key: '0x01' } },
+            'TokenGroupAttribute',
+        ],
+    ] as [Thaw, string][]) {
+        delete process.env.APP_ENV
+        assert.equal(thawTarget(event), undefined)
+        process.env.APP_ENV = 'development'
+        assert.throws(() => thawTarget(event), {
+            message: `[Thawed] Unsupported thaw target ${kind} in collection 7.`,
+        })
+    }
+})
+
+void test('thawType takes precedence over freezeType', () => {
+    const thawType = { __kind: 'Token', tokenId: 1n } as const
+    assert.equal(thawTarget({ collectionId: 7n, thawType, freezeType: { __kind: 'Collection' } }), thawType)
 })

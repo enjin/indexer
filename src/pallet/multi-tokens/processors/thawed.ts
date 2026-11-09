@@ -12,10 +12,17 @@ import { FreezeType, ThawType } from '~/pallet/common/types'
 /** What a thaw applies to. Events before v1070 name it `freezeType`, later ones `thawType`. */
 type ThawTarget = ThawType | Exclude<FreezeType, { __kind: 'Attribute' | 'TokenGroupAttribute' }>
 
-function thawTarget(event: Thaw): ThawTarget {
-    const target = event.freezeType ?? event.thawType
+/**
+ * No Thawed event version carries an attribute target (attributes are thawed by their own events), so one is
+ * reported like a missing entity instead of being applied to the whole collection.
+ */
+export function thawTarget(event: Thaw): ThawTarget | undefined {
+    const target = event.thawType ?? event.freezeType
     if (target === undefined || target.__kind === 'Attribute' || target.__kind === 'TokenGroupAttribute') {
-        return { __kind: 'Collection' }
+        throwFatalError(
+            `[Thawed] Unsupported thaw target ${target?.__kind ?? 'none'} in collection ${event.collectionId}.`
+        )
+        return undefined
     }
     return target
 }
@@ -69,7 +76,7 @@ function thawEntity(ctx: CommonContext, block: Block, collectionId: bigint, targ
             return thawStored(
                 ctx,
                 () => ctx.store.findOne<Token>(Token, { where: { id } }),
-                `collection account ${id}`,
+                `token ${id}`,
                 (token) => {
                     token.isFrozen = false
                     token.freezeState = null
@@ -90,23 +97,24 @@ function thawEntity(ctx: CommonContext, block: Block, collectionId: bigint, targ
     }
 }
 
-function thawedSnsEvent(item: EventItem, extrinsicId: string, event: Thaw): SnsEvent {
-    const { address, tokenId } = match(event.freezeType)
+function thawedSnsEvent(item: EventItem, extrinsicId: string, collectionId: bigint, target: ThawTarget): SnsEvent {
+    const { address, tokenId } = match(target)
         .returnType<{ address: string | null; tokenId: bigint | null }>()
         .with({ __kind: 'CollectionAccount' }, (t) => ({ address: t.value, tokenId: null }))
         .with({ __kind: 'TokenAccount' }, (t) => ({ address: t.accountId, tokenId: t.tokenId }))
         .with({ __kind: 'Token' }, (t) => ({ address: null, tokenId: t.tokenId }))
-        .otherwise(() => ({ address: null, tokenId: null }))
+        .with({ __kind: 'Collection' }, () => ({ address: null, tokenId: null }))
+        .exhaustive()
 
     return {
         id: item.id,
         name: item.name,
         body: {
-            kind: event.freezeType,
+            kind: target,
             address,
-            collectionId: event.collectionId.toString(),
+            collectionId: collectionId.toString(),
             tokenId,
-            token: tokenId ? `${event.collectionId}-${tokenId}` : null,
+            token: tokenId !== null ? `${collectionId}-${tokenId}` : null,
             extrinsic: extrinsicId,
         },
     }
@@ -123,9 +131,10 @@ export async function thawed(
 
     if (skipSave) return [eventModel, undefined]
 
-    if (!(await thawEntity(ctx, block, event.collectionId, thawTarget(event)))) return [eventModel, undefined]
+    const target = thawTarget(event)
+    if (!target || !(await thawEntity(ctx, block, event.collectionId, target))) return [eventModel, undefined]
 
-    const snsEvent = item.extrinsic ? thawedSnsEvent(item, item.extrinsic.id, event) : undefined
+    const snsEvent = item.extrinsic ? thawedSnsEvent(item, item.extrinsic.id, event.collectionId, target) : undefined
     await QueueUtils.dispatchComputeStats(event.collectionId.toString())
 
     return [eventModel, snsEvent]
