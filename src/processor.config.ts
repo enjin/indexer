@@ -99,6 +99,11 @@ const ignoreEvents: string[] = [
     // Phantom-deposit migration bookkeeping is not indexed.
     events.multiTokens.phantomAttributeDepositCleared.name,
     events.multiTokens.phantomAttributeDepositSkipped.name,
+    // Infusion pot bookkeeping changes no indexed infusion value; the balance side is
+    // already picked up through Balances.TransferOnHold / Balances.Held.
+    events.multiTokens.infusionMovedToPot.name,
+    events.multiTokens.infusionHeldByOwner.name,
+    events.multiTokens.infusionPayoutSkipped.name,
     events.balances.mintedCredit.name,
     events.convictionVoting.migrationStep.name,
 ]
