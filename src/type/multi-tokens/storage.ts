@@ -25,6 +25,7 @@ import * as matrixV1040 from '../matrixV1040'
 import * as matrixEnjinV1041 from '../matrixEnjinV1041'
 import * as matrixEnjinV1042 from '../matrixEnjinV1042'
 import * as matrixV1042 from '../matrixV1042'
+import * as matrixEnjinV1043 from '../matrixEnjinV1043'
 import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 import * as v1060 from '../v1060'
@@ -6894,6 +6895,233 @@ export interface FailedLoanReturnsMatrixEnjinV1041 {
         block: Block,
         key: [bigint, bigint]
     ): AsyncIterable<[k: [bigint, bigint], v: number | undefined][]>
+}
+
+export const failedEphemeralCleanupsCursor = {
+    /**
+     *  The last entry of [`FailedEphemeralCleanups`] that the automatic retry in `on_idle`
+     *  attempted. The next pass starts after it, so entries that keep failing cannot take the
+     *  whole retry budget of every pass.
+     */
+    matrixEnjinV1043: new StorageType(
+        'MultiTokens.FailedEphemeralCleanupsCursor',
+        'Optional',
+        [],
+        sts.tuple(() => [sts.bigint(), sts.bigint()])
+    ) as FailedEphemeralCleanupsCursorMatrixEnjinV1043,
+}
+
+/**
+ *  The last entry of [`FailedEphemeralCleanups`] that the automatic retry in `on_idle`
+ *  attempted. The next pass starts after it, so entries that keep failing cannot take the
+ *  whole retry budget of every pass.
+ */
+export interface FailedEphemeralCleanupsCursorMatrixEnjinV1043 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block): Promise<[bigint, bigint] | undefined>
+}
+
+export const orphanedTokenAccounts = {
+    /**
+     *  The accounts with no balance a destroyed token left, while its
+     *  [`PendingAttributeCleanups`] entry waits for the sweep: how many there are, and the sum
+     *  of the deposits they hold, as the token counted them in `account_count` and
+     *  `total_token_account_deposit`. The sweep counts off each account it removes. Creating the
+     *  token again adopts the rest as its own accounts, so a stranger's empty account cannot
+     *  keep the id from being reused. A token whose cap refuses accounts without a balance, as
+     *  `touch` refuses them for a single-supply or collapsing-supply token, does not adopt them,
+     *  and waits until the sweep or anyone calling [`Pallet::remove_empty_token_account`] removes
+     *  them.
+     */
+    matrixEnjinV1043: new StorageType(
+        'MultiTokens.OrphanedTokenAccounts',
+        'Optional',
+        [sts.tuple(() => [sts.bigint(), sts.bigint()])],
+        sts.tuple(() => [sts.number(), sts.bigint()])
+    ) as OrphanedTokenAccountsMatrixEnjinV1043,
+}
+
+/**
+ *  The accounts with no balance a destroyed token left, while its
+ *  [`PendingAttributeCleanups`] entry waits for the sweep: how many there are, and the sum
+ *  of the deposits they hold, as the token counted them in `account_count` and
+ *  `total_token_account_deposit`. The sweep counts off each account it removes. Creating the
+ *  token again adopts the rest as its own accounts, so a stranger's empty account cannot
+ *  keep the id from being reused. A token whose cap refuses accounts without a balance, as
+ *  `touch` refuses them for a single-supply or collapsing-supply token, does not adopt them,
+ *  and waits until the sweep or anyone calling [`Pallet::remove_empty_token_account`] removes
+ *  them.
+ */
+export interface OrphanedTokenAccountsMatrixEnjinV1043 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: [bigint, bigint]): Promise<[number, bigint] | undefined>
+    getMany(block: Block, keys: [bigint, bigint][]): Promise<([number, bigint] | undefined)[]>
+    getKeys(block: Block): Promise<[bigint, bigint][]>
+    getKeys(block: Block, key: [bigint, bigint]): Promise<[bigint, bigint][]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[bigint, bigint][]>
+    getKeysPaged(pageSize: number, block: Block, key: [bigint, bigint]): AsyncIterable<[bigint, bigint][]>
+    getPairs(block: Block): Promise<[k: [bigint, bigint], v: [number, bigint] | undefined][]>
+    getPairs(block: Block, key: [bigint, bigint]): Promise<[k: [bigint, bigint], v: [number, bigint] | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: [bigint, bigint], v: [number, bigint] | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: [bigint, bigint]
+    ): AsyncIterable<[k: [bigint, bigint], v: [number, bigint] | undefined][]>
+}
+
+export const deferredDeposits = {
+    /**
+     *  Deposits of removed attributes and accounts that could not be released to the account that
+     *  paid them, because the release would have left its free balance below the existential
+     *  deposit, by that account. They stay held for it until anyone calls
+     *  [`Pallet::release_deferred_deposits`] once its account can take them. So a deposit never
+     *  keeps the attribute or account it backed, which could keep a destroyed id from being
+     *  reused. A record replaces the larger account it backed, and the amount still held for it
+     *  backs the record.
+     */
+    matrixEnjinV1043: new StorageType(
+        'MultiTokens.DeferredDeposits',
+        'Optional',
+        [matrixEnjinV1043.AccountId32],
+        sts.bigint()
+    ) as DeferredDepositsMatrixEnjinV1043,
+}
+
+/**
+ *  Deposits of removed attributes and accounts that could not be released to the account that
+ *  paid them, because the release would have left its free balance below the existential
+ *  deposit, by that account. They stay held for it until anyone calls
+ *  [`Pallet::release_deferred_deposits`] once its account can take them. So a deposit never
+ *  keeps the attribute or account it backed, which could keep a destroyed id from being
+ *  reused. A record replaces the larger account it backed, and the amount still held for it
+ *  backs the record.
+ */
+export interface DeferredDepositsMatrixEnjinV1043 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: matrixEnjinV1043.AccountId32): Promise<bigint | undefined>
+    getMany(block: Block, keys: matrixEnjinV1043.AccountId32[]): Promise<(bigint | undefined)[]>
+    getKeys(block: Block): Promise<matrixEnjinV1043.AccountId32[]>
+    getKeys(block: Block, key: matrixEnjinV1043.AccountId32): Promise<matrixEnjinV1043.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<matrixEnjinV1043.AccountId32[]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key: matrixEnjinV1043.AccountId32
+    ): AsyncIterable<matrixEnjinV1043.AccountId32[]>
+    getPairs(block: Block): Promise<[k: matrixEnjinV1043.AccountId32, v: bigint | undefined][]>
+    getPairs(
+        block: Block,
+        key: matrixEnjinV1043.AccountId32
+    ): Promise<[k: matrixEnjinV1043.AccountId32, v: bigint | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: matrixEnjinV1043.AccountId32, v: bigint | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: matrixEnjinV1043.AccountId32
+    ): AsyncIterable<[k: matrixEnjinV1043.AccountId32, v: bigint | undefined][]>
+}
+
+export const phantomAttributeDepositPasses = {
+    /**
+     *  The passes of [`migrations::ClearPhantomAttributeDeposits`] that have completed, by
+     *  `PASS`. A recorded pass does nothing if it runs again.
+     */
+    matrixEnjinV1043: new StorageType(
+        'MultiTokens.PhantomAttributeDepositPasses',
+        'Optional',
+        [sts.number()],
+        sts.unit()
+    ) as PhantomAttributeDepositPassesMatrixEnjinV1043,
+}
+
+/**
+ *  The passes of [`migrations::ClearPhantomAttributeDeposits`] that have completed, by
+ *  `PASS`. A recorded pass does nothing if it runs again.
+ */
+export interface PhantomAttributeDepositPassesMatrixEnjinV1043 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: number): Promise<null | undefined>
+    getMany(block: Block, keys: number[]): Promise<(null | undefined)[]>
+    getKeys(block: Block): Promise<number[]>
+    getKeys(block: Block, key: number): Promise<number[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<number[]>
+    getKeysPaged(pageSize: number, block: Block, key: number): AsyncIterable<number[]>
+    getPairs(block: Block): Promise<[k: number, v: null | undefined][]>
+    getPairs(block: Block, key: number): Promise<[k: number, v: null | undefined][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: number, v: null | undefined][]>
+    getPairsPaged(pageSize: number, block: Block, key: number): AsyncIterable<[k: number, v: null | undefined][]>
+}
+
+export const potInfusion = {
+    /**
+     *  The part of a collection's `total_infusion` that the infusion pot
+     *  ([`Pallet::infusion_pot_account`]) holds for it. Burns are paid from the pot, never more
+     *  than this.
+     *
+     *  The rest of `total_infusion` is still held on the collection owner under
+     *  [`HoldReason::MultiTokens`], where all infusion was held before the pot existed. No entry
+     *  means none of it is in the pot. [`migrations::InfusionCustodyMigration`] and every burn
+     *  move what the owner's locks allow into the pot.
+     */
+    matrixEnjinV1043: new StorageType(
+        'MultiTokens.PotInfusion',
+        'Optional',
+        [sts.bigint()],
+        sts.bigint()
+    ) as PotInfusionMatrixEnjinV1043,
+}
+
+/**
+ *  The part of a collection's `total_infusion` that the infusion pot
+ *  ([`Pallet::infusion_pot_account`]) holds for it. Burns are paid from the pot, never more
+ *  than this.
+ *
+ *  The rest of `total_infusion` is still held on the collection owner under
+ *  [`HoldReason::MultiTokens`], where all infusion was held before the pot existed. No entry
+ *  means none of it is in the pot. [`migrations::InfusionCustodyMigration`] and every burn
+ *  move what the owner's locks allow into the pot.
+ */
+export interface PotInfusionMatrixEnjinV1043 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: bigint): Promise<bigint | undefined>
+    getMany(block: Block, keys: bigint[]): Promise<(bigint | undefined)[]>
+    getKeys(block: Block): Promise<bigint[]>
+    getKeys(block: Block, key: bigint): Promise<bigint[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<bigint[]>
+    getKeysPaged(pageSize: number, block: Block, key: bigint): AsyncIterable<bigint[]>
+    getPairs(block: Block): Promise<[k: bigint, v: bigint | undefined][]>
+    getPairs(block: Block, key: bigint): Promise<[k: bigint, v: bigint | undefined][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: bigint, v: bigint | undefined][]>
+    getPairsPaged(pageSize: number, block: Block, key: bigint): AsyncIterable<[k: bigint, v: bigint | undefined][]>
+}
+
+export const failedLoanReturnsCursor = {
+    /**
+     *  The last entry of [`FailedLoanReturns`] that the automatic retry in `on_idle` attempted,
+     *  like [`FailedEphemeralCleanupsCursor`].
+     */
+    matrixEnjinV1043: new StorageType(
+        'MultiTokens.FailedLoanReturnsCursor',
+        'Optional',
+        [],
+        sts.tuple(() => [sts.bigint(), sts.bigint()])
+    ) as FailedLoanReturnsCursorMatrixEnjinV1043,
+}
+
+/**
+ *  The last entry of [`FailedLoanReturns`] that the automatic retry in `on_idle` attempted,
+ *  like [`FailedEphemeralCleanupsCursor`].
+ */
+export interface FailedLoanReturnsCursorMatrixEnjinV1043 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block): Promise<[bigint, bigint] | undefined>
 }
 
 export const idleOperations = {

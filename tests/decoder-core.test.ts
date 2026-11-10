@@ -73,3 +73,33 @@ void test('Enjin Matrixchain 1042 metadata decodes nested Fuel Tanks calls while
     assert.equal(dispatch.rule_set_id, null)
     assert.deepEqual(dispatch.call, { System: { remark: { remark: [116, 101, 115, 116] } } })
 })
+
+for (const [network, latest] of [
+    ['enjin-matrixchain', 1031],
+    ['canary-matrixchain', 1042],
+] as const) {
+    void test(`${network} 1043 metadata decodes a Fuel Tanks dispatch of a marketplace call while the default stays ${latest}`, async () => {
+        const runtime = await getRuntimeCached(network, 1043)
+        const call = runtime.scaleCodec.encodeToHex(runtime.description.call, {
+            __kind: 'FuelTanks',
+            value: {
+                __kind: 'dispatch',
+                tankId: { __kind: 'Id', value: `0x${'11'.repeat(32)}` },
+                ruleSetId: undefined,
+                call: {
+                    __kind: 'Marketplace',
+                    value: { __kind: 'fill_listing', listingId: `0x${'33'.repeat(32)}`, amount: 1n },
+                },
+                settings: undefined,
+            },
+        })
+
+        assert.equal(getLatestSpecVersion(network), latest)
+        const decoded = await decode({ network, spec_version: 1043, call })
+        const dispatch = (decoded as { calls: { FuelTanks: { dispatch: { call: unknown; rule_set_id: unknown } } } })
+            .calls.FuelTanks.dispatch
+        assert.equal(dispatch.rule_set_id, null)
+        assert.deepEqual(Object.keys(dispatch.call as object), ['Marketplace'])
+        assert.deepEqual(Object.keys((dispatch.call as { Marketplace: object }).Marketplace), ['fill_listing'])
+    })
+}

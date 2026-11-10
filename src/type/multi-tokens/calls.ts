@@ -32,6 +32,7 @@ import * as matrixV1040 from '../matrixV1040'
 import * as matrixEnjinV1041 from '../matrixEnjinV1041'
 import * as matrixEnjinV1042 from '../matrixEnjinV1042'
 import * as matrixV1042 from '../matrixV1042'
+import * as matrixEnjinV1043 from '../matrixEnjinV1043'
 import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 import * as v1060 from '../v1060'
@@ -8293,6 +8294,133 @@ export const forceSetMintRateLimit = {
             collectionId: sts.bigint(),
             tokenId: sts.option(() => sts.bigint()),
             limit: sts.option(() => matrixEnjinV1041.MintRateLimit),
+        })
+    ),
+}
+
+export const createTokenAccount = {
+    name: 'MultiTokens.create_token_account',
+    /**
+     * Creates `origin`'s account for `token_id` of `collection_id` with no balance, holding
+     * the deposit a new account needs from `origin`, or from the fuel tank that provides
+     * deposits.
+     *
+     * A credit made without the account's owner, such as an asset-conversion swap to
+     * `send_to`, never takes a deposit from that account: it fails if the token has no free
+     * account slot. Creating the account first lets it receive such a credit.
+     *
+     * This does nothing, and succeeds, if the account exists or the token has a free slot,
+     * which a credit takes without a deposit. Another credit can take that slot first, so
+     * batch this call with the swap that relies on it.
+     *
+     * # Errors
+     *
+     * - [`Error::OperationNotAllowedForNativeToken`] for the native token
+     * - [`Error::TokenNotFound`] if the token does not exist
+     * - [`Error::CannotTouchSingleSupplyToken`] if it would create an account for a
+     *   single-supply token, such as an NFT
+     * - [`Error::CannotTouchCollapsingSupplyToken`] if it would create an account for a token
+     *   whose cap is `CollapsingSupply`
+     * - [`Error::DepositReserveFailed`] if the deposit cannot be held
+     */
+    matrixEnjinV1043: new CallType(
+        'MultiTokens.create_token_account',
+        sts.struct({
+            collectionId: sts.bigint(),
+            tokenId: sts.bigint(),
+        })
+    ),
+}
+
+export const destroyTokenAccount = {
+    name: 'MultiTokens.destroy_token_account',
+    /**
+     * Destroys `origin`'s account for `token_id` of `collection_id`, which must hold no
+     * balance, and releases its deposit to whoever paid it.
+     *
+     * # Errors
+     *
+     * - [`Error::OperationNotAllowedForNativeToken`] for the native token
+     * - [`Error::TokenAccountNotFound`] if the account does not exist
+     * - [`Error::LiquidityRestrictions`] if the account holds a balance, on hold or not, or a
+     *   lock
+     * - [`Error::Frozen`] if the account, or `origin`'s account for the collection, is frozen
+     * - [`Error::TokenNotFound`] if the token does not exist. The accounts a destroyed token
+     *   leaves are removed with its orphaned attributes (see [`PendingAttributeCleanups`]).
+     */
+    matrixEnjinV1043: new CallType(
+        'MultiTokens.destroy_token_account',
+        sts.struct({
+            collectionId: sts.bigint(),
+            tokenId: sts.bigint(),
+        })
+    ),
+}
+
+export const removeEmptyTokenAccount = {
+    name: 'MultiTokens.remove_empty_token_account',
+    /**
+     * Removes `account_id`'s account for `token_id` of `collection_id`, which must hold no
+     * balance, and releases its deposit to whoever paid it. Anyone may call it for an account
+     * that should not exist:
+     * - one a destroyed token left, which the sweep would remove (see
+     *   [`PendingAttributeCleanups`]). A token cannot be created again under the id while its
+     *   cap refuses such accounts and one remains ([`Error::PendingAttributeCleanup`]), so
+     *   this clears the id without waiting for the sweep. It also removes the accounts of a
+     *   token destroyed before destruction queued such accounts, which no queue entry lists.
+     * - one of a single-supply or collapsing-supply token, which `touch` no longer creates but
+     *   a token may have from before it refused them, or from root. Finding the holder of a
+     *   single-supply token reads only its first [`OWNER_LOOKUP_ACCOUNTS`] accounts, so such
+     *   accounts can keep an expired ephemeral token from being destroyed or a lent token from
+     *   being returned until they are removed.
+     *
+     * A deposit that cannot be released yet is recorded in [`DeferredDeposits`]. The token's
+     * `account_count` and `total_token_account_deposit` are left as they are. The fee is
+     * waived when the account is removed.
+     *
+     * # Errors
+     *
+     * - [`Error::OperationNotAllowedForNativeToken`] for the native token
+     * - [`Error::TokenAccountNotFound`] if the account does not exist, or does not decode,
+     *   which the sweep handles
+     * - [`Error::NoPermission`] if the token exists and its cap does not refuse accounts
+     *   without a balance: only its owner may remove such an account, with
+     *   [`destroy_token_account`](Self::destroy_token_account)
+     * - [`Error::LiquidityRestrictions`] if the account holds a balance, on hold or not, or a
+     *   lock. A destroyed token's accounts hold none, unless root removed the token from under
+     *   them, as [`force_set_token`](Self::force_set_token) can.
+     * - [`Error::Frozen`] if the account, or `account_id`'s account for the collection, is
+     *   frozen
+     */
+    matrixEnjinV1043: new CallType(
+        'MultiTokens.remove_empty_token_account',
+        sts.struct({
+            collectionId: sts.bigint(),
+            tokenId: sts.bigint(),
+            accountId: matrixEnjinV1043.MultiAddress,
+        })
+    ),
+}
+
+export const releaseDeferredDeposits = {
+    name: 'MultiTokens.release_deferred_deposits',
+    /**
+     * Releases the deposits [`DeferredDeposits`] records for `account_id`: deposits of
+     * attributes and accounts that were removed while releasing them would have left
+     * `account_id`'s free balance below the existential deposit. They stayed held, and are
+     * released once `account_id`'s account can take them. Anyone may call it; the fee is
+     * waived when it releases them.
+     *
+     * # Errors
+     *
+     * - [`Error::NoDeferredDeposit`] if no deposit is recorded for `account_id`
+     * - The release's error, such as `TokenError::BelowMinimum`, while releasing the deposits
+     *   would still leave `account_id` below the existential deposit. They stay recorded.
+     */
+    matrixEnjinV1043: new CallType(
+        'MultiTokens.release_deferred_deposits',
+        sts.struct({
+            accountId: matrixEnjinV1043.MultiAddress,
         })
     ),
 }
