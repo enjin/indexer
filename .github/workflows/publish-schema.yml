@@ -13,15 +13,14 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
       APOLLO_VCS_BRANCH: ${{ github.head_ref }}
       APOLLO_VCS_COMMIT: ${{ github.event.pull_request.head.sha }}
 
     services:
-      postgres:
-        image: postgres
+      ****:
+        image: ****
         env:
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_PASSWORD: ****
         ports:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
@@ -61,10 +60,12 @@ jobs:
 
       - name: Install Rover
         run: |
-          curl -sSL https://rover.apollo.dev/nix/latest | sh
+          curl -sSL https://rover.apollo.dev/nix/v0.26.2 | sh
           echo "$HOME/.rover/bin" >> $GITHUB_PATH
 
       - name: Introspect & Lint
+        env:
+          APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
         run: |
           rover graph introspect -o apollo.graphql http://localhost:4000/graphql 
         #   rover graph lint --client-timeout 120 --schema apollo.graphql enjin-indexer@master
@@ -73,6 +74,8 @@ jobs:
     #     id: check
     #     if: github.ref_name != 'master' && github.event_name != 'release'
     #     continue-on-error: true
+    #     env:
+    #       APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
     #     run: |
     #       rover graph check --client-timeout 120 --schema apollo.graphql enjin-indexer@master 
 
@@ -84,10 +87,14 @@ jobs:
 
     #   - name: Publishes Apollo Schema to Master
     #     if: github.ref_name == 'master'
+    #     env:
+    #       APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
     #     run: |
     #       rover graph publish --schema apollo.graphql enjin-indexer@master
 
     #   - name: Publishes Apollo Schema to Current
     #     if: github.event_name == 'release'
+    #     env:
+    #       APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
     #     run: |
     #       rover graph publish --schema apollo.graphql enjin-indexer@current
