@@ -71,6 +71,30 @@ void test('encode uses the enjin-matrixchain 1042 metadata ahead of the enjin up
     assert.equal((await encode({ call, network: 'canary-matrixchain', spec_version: 1042 })).encoded, expected)
 })
 
+void test('encode uses the matrixchain 1043 metadata on enjin and canary ahead of the upgrade', async () => {
+    const tankId = `0x${'11'.repeat(32)}`
+    const call = {
+        pallet: 'FuelTanks',
+        name: 'dispatch',
+        args: {
+            tankId: { __kind: 'Id', value: tankId },
+            ruleSetId: undefined,
+            call: { __kind: 'System', value: { __kind: 'remark', remark: '0x6b6579' } },
+            settings: undefined,
+        },
+    }
+    // 1043 removes pallets and adds MultiTokens calls, but FuelTanks.dispatch and System.remark keep their indices.
+    const expected = `0x360500${'11'.repeat(32)}0000000c6b657900`
+
+    for (const network of ['enjin-matrixchain', 'canary-matrixchain'] as const) {
+        assert.deepEqual(await encode({ call, network, spec_version: 1043 }), {
+            encoded: expected,
+            network,
+            spec_version: 1043,
+        })
+    }
+})
+
 void test('encode uses the enjin-relaychain 1080 metadata ahead of the relay upgrade', async () => {
     const tankId = `0x${'11'.repeat(32)}`
     const call = {

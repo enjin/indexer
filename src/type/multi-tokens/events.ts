@@ -26,6 +26,7 @@ import * as matrixV1040 from '../matrixV1040'
 import * as matrixEnjinV1041 from '../matrixEnjinV1041'
 import * as matrixEnjinV1042 from '../matrixEnjinV1042'
 import * as matrixV1042 from '../matrixV1042'
+import * as matrixEnjinV1043 from '../matrixEnjinV1043'
 import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 import * as v1060 from '../v1060'
@@ -5804,6 +5805,136 @@ export const phantomAttributeDepositSkipped = {
              * The attribute key
              */
             key: sts.bytes(),
+        })
+    ),
+}
+
+export const infusionPayoutSkipped = {
+    name: 'MultiTokens.InfusionPayoutSkipped',
+    /**
+     * A forced burn, such as an ephemeral token's destruction, left the infusion of the
+     * burned units in the infusion pot, because paying it would have left `account_id`
+     * below the existential deposit
+     */
+    matrixEnjinV1043: new EventType(
+        'MultiTokens.InfusionPayoutSkipped',
+        sts.struct({
+            /**
+             * The collection of the burned token
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The burned token
+             */
+            tokenId: sts.bigint(),
+            /**
+             * The account the infusion would have been paid to
+             */
+            accountId: matrixEnjinV1043.AccountId32,
+            /**
+             * The infusion that stayed in the infusion pot
+             */
+            amount: sts.bigint(),
+        })
+    ),
+}
+
+export const infusionMovedToPot = {
+    name: 'MultiTokens.InfusionMovedToPot',
+    /**
+     * Infusion held on a collection's owner moved to the infusion pot (see [`PotInfusion`])
+     */
+    matrixEnjinV1043: new EventType(
+        'MultiTokens.InfusionMovedToPot',
+        sts.struct({
+            /**
+             * The collection the infusion belongs to
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The collection owner it was held on
+             */
+            owner: matrixEnjinV1043.AccountId32,
+            /**
+             * The amount that moved
+             */
+            amount: sts.bigint(),
+            /**
+             * The collection's infusion still held on the owner
+             */
+            remaining: sts.bigint(),
+        })
+    ),
+}
+
+export const infusionHeldByOwner = {
+    name: 'MultiTokens.InfusionHeldByOwner',
+    /**
+     * A mint the collection owner did not make, such as an Ethereum token claim, held its
+     * infusion on the owner because the owner could not pay it into the infusion pot. It
+     * moves to the pot once the owner's locks allow (see [`PotInfusion`]).
+     */
+    matrixEnjinV1043: new EventType(
+        'MultiTokens.InfusionHeldByOwner',
+        sts.struct({
+            /**
+             * The collection of the minted token
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The minted token
+             */
+            tokenId: sts.bigint(),
+            /**
+             * The collection owner
+             */
+            owner: matrixEnjinV1043.AccountId32,
+            /**
+             * The infusion held on the owner
+             */
+            amount: sts.bigint(),
+        })
+    ),
+}
+
+export const depositReleaseDeferred = {
+    name: 'MultiTokens.DepositReleaseDeferred',
+    /**
+     * The deposit of a removed attribute or account stayed held, because releasing it would
+     * have left `account_id`'s free balance below the existential deposit. It is recorded in
+     * [`DeferredDeposits`] for [`Pallet::release_deferred_deposits`].
+     */
+    matrixEnjinV1043: new EventType(
+        'MultiTokens.DepositReleaseDeferred',
+        sts.struct({
+            /**
+             * The account that paid the deposit
+             */
+            accountId: matrixEnjinV1043.AccountId32,
+            /**
+             * The deposit that stayed held
+             */
+            amount: sts.bigint(),
+        })
+    ),
+}
+
+export const deferredDepositReleased = {
+    name: 'MultiTokens.DeferredDepositReleased',
+    /**
+     * The deposits [`DeferredDeposits`] recorded for `account_id` were released
+     */
+    matrixEnjinV1043: new EventType(
+        'MultiTokens.DeferredDepositReleased',
+        sts.struct({
+            /**
+             * The account the deposits were released to
+             */
+            accountId: matrixEnjinV1043.AccountId32,
+            /**
+             * The amount released
+             */
+            amount: sts.bigint(),
         })
     ),
 }

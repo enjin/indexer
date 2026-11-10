@@ -200,6 +200,27 @@ void test('Enjin Matrixchain 1042 metadata decodes current and lazily unmigrated
     assert.equal(decodeTokenStorageValue(current, v6).creationBlock, undefined)
 })
 
+for (const network of ['enjin-matrixchain', 'canary-matrixchain'] as const) {
+    void test(`${network} 1043 keeps the v7 token layout of 1042`, async () => {
+        const current = await getRuntimeCached(network, 1043)
+        const previous = await getRuntimeCached(network, 1042)
+        const currentType = current.description.storage.MultiTokens.items.Tokens.value
+
+        assert.equal(tokenLayout(current), 'v7')
+        assert.equal(tokenLayout(previous), 'v7')
+
+        const v7 = current.scaleCodec.encodeToHex(currentType, { ...tokenValue(), creationBlock: 13500000 })
+        assert.equal(
+            v7,
+            previous.scaleCodec.encodeToHex(previous.description.storage.MultiTokens.items.Tokens.value, {
+                ...tokenValue(),
+                creationBlock: 13500000,
+            })
+        )
+        assert.equal(decodeTokenStorageValue(current, v7).creationBlock, 13500000n)
+    })
+}
+
 void test('v7 token decoder reads v7, lazily unmigrated v6 and pre-v6 encodings', async () => {
     const { real } = await fixture()
     const { runtime, codec, type } = v7Runtime(real)

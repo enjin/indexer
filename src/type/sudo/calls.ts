@@ -42,6 +42,7 @@ import * as v1032 from '../v1032'
 import * as matrixV1040 from '../matrixV1040'
 import * as matrixV1041 from '../matrixV1041'
 import * as matrixV1042 from '../matrixV1042'
+import * as matrixV1043 from '../matrixV1043'
 import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 import * as v1060 from '../v1060'
@@ -253,6 +254,15 @@ export const sudo = {
         'Sudo.sudo',
         sts.struct({
             call: matrixV1042.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     */
+    matrixV1043: new CallType(
+        'Sudo.sudo',
+        sts.struct({
+            call: matrixV1043.Call,
         })
     ),
     /**
@@ -915,6 +925,20 @@ export const sudoUncheckedWeight = {
         sts.struct({
             call: matrixV1042.Call,
             weight: matrixV1042.Weight,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * This function does not check the weight of the call, and instead allows the
+     * Sudo user to specify the weight of the call.
+     *
+     * The dispatch origin for this call must be _Signed_.
+     */
+    matrixV1043: new CallType(
+        'Sudo.sudo_unchecked_weight',
+        sts.struct({
+            call: matrixV1043.Call,
+            weight: matrixV1043.Weight,
         })
     ),
     /**
@@ -1690,6 +1714,19 @@ export const sudoAs = {
         sts.struct({
             who: matrixV1042.MultiAddress,
             call: matrixV1042.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+     * a given account.
+     *
+     * The dispatch origin for this call must be _Signed_.
+     */
+    matrixV1043: new CallType(
+        'Sudo.sudo_as',
+        sts.struct({
+            who: matrixV1043.MultiAddress,
+            call: matrixV1043.Call,
         })
     ),
     /**
