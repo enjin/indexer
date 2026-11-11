@@ -11,6 +11,9 @@ enum ListingType {
     Offer = 'Offer',
 }
 
+// Subsquid always projects isTypeOf for union values, but listingType may not be selected.
+type ListingDiscriminator = { isTypeOf?: string; listingType?: ListingType }
+
 enum ListingOrderByInput {
     AMOUNT = 'amount',
     PRICE = 'price',
@@ -72,10 +75,11 @@ export class OfferData {
 const ListingData = createUnionType({
     name: 'ListingData',
     types: () => [FixedPriceData, AuctionData, OfferData] as const,
-    resolveType: (value) => {
-        if (value.listingType === 'FixedPrice') return FixedPriceData
-        if (value.listingType === 'Auction') return AuctionData
-        if (value.listingType === 'Offer') return OfferData
+    resolveType: (value: ListingDiscriminator) => {
+        const type = value.isTypeOf ?? value.listingType
+        if (type === 'FixedPriceData' || type === ListingType.FixedPrice) return FixedPriceData
+        if (type === 'AuctionData' || type === ListingType.Auction) return AuctionData
+        if (type === 'OfferData' || type === ListingType.Offer) return OfferData
         return undefined
     },
 })
@@ -116,10 +120,11 @@ export class OfferState {
 const ListingState = createUnionType({
     name: 'ListingState',
     types: () => [FixedPriceState, AuctionState, OfferState] as const,
-    resolveType: (value) => {
-        if (value.listingType === 'FixedPrice') return FixedPriceState
-        if (value.listingType === 'Auction') return AuctionState
-        if (value.listingType === 'Offer') return OfferState
+    resolveType: (value: ListingDiscriminator) => {
+        const type = value.isTypeOf ?? value.listingType
+        if (type === 'FixedPriceState' || type === ListingType.FixedPrice) return FixedPriceState
+        if (type === 'AuctionState' || type === ListingType.Auction) return AuctionState
+        if (type === 'OfferState' || type === ListingType.Offer) return OfferState
         return undefined
     },
 })
