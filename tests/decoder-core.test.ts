@@ -30,8 +30,8 @@ void test('decode omits readable views from an array of calls by default', async
     }
 })
 
-void test('Canary Matrixchain defaults to 1042 metadata for nested Fuel Tanks calls', async () => {
-    const runtime = await getRuntimeCached('canary-matrixchain', 1042)
+void test('Canary Matrixchain defaults to 1043 metadata for nested Fuel Tanks calls', async () => {
+    const runtime = await getRuntimeCached('canary-matrixchain', 1043)
     const call = runtime.scaleCodec.encodeToHex(runtime.description.call, {
         __kind: 'FuelTanks',
         value: {
@@ -43,9 +43,9 @@ void test('Canary Matrixchain defaults to 1042 metadata for nested Fuel Tanks ca
         },
     })
 
-    assert.equal(getLatestSpecVersion('canary-matrixchain'), 1042)
+    assert.equal(getLatestSpecVersion('canary-matrixchain'), 1043)
     const decoded = await decode({ network: 'canary-matrixchain', call })
-    assert.deepEqual(decoded, await decode({ network: 'canary-matrixchain', spec_version: 1042, call }))
+    assert.deepEqual(decoded, await decode({ network: 'canary-matrixchain', spec_version: 1043, call }))
     const dispatch = (decoded as { calls: { FuelTanks: { dispatch: { call: unknown; rule_set_id: unknown } } } }).calls
         .FuelTanks.dispatch
     assert.equal(dispatch.rule_set_id, null)
@@ -76,7 +76,7 @@ void test('Enjin Matrixchain 1042 metadata decodes nested Fuel Tanks calls while
 
 for (const [network, latest] of [
     ['enjin-matrixchain', 1031],
-    ['canary-matrixchain', 1042],
+    ['canary-matrixchain', 1043],
 ] as const) {
     void test(`${network} 1043 metadata decodes a Fuel Tanks dispatch of a marketplace call while the default stays ${latest}`, async () => {
         const runtime = await getRuntimeCached(network, 1043)
