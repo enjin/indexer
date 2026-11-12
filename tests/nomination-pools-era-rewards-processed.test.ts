@@ -688,6 +688,7 @@ void test('member points come only from pool-token accounts with an account id; 
 })
 
 void test('a later accumulated balance treats a null member total as zero', async () => {
+    const sentry = captureSentry()
     const member = memberRow(memberId, { accumulatedRewards: null })
     const { block, ctx, store, event, setPairs } = await fixture([poolRow({ rate: E18 }), member])
     setPairs([[[1n, 1n, memberId], { balance: 2_000_000n }]])
@@ -695,8 +696,37 @@ void test('a later accumulated balance treats a null member total as zero', asyn
     await eraRewardsProcessed(ctx, block, event(eventArgs()))
 
     assert.equal(store.get(EraReward, '1-10').changeInRate, 0n)
+    assert.equal(store.get(EraReward, '1-10').averageApy, 0)
+    assert.equal(sentry.mock.callCount(), 0, 'an APY of exactly 0% is not flagged')
     assert.equal(member.accumulatedRewards, 0n)
     assert.equal(store.get(PoolMemberRewards, `1-${memberId}-10`).rewards, 0n)
+    sentry.mock.restore()
+})
+
+void test('an average APY of exactly 200% is not flagged', async () => {
+    const sentry = captureSentry()
+    // The new era (APY 0) is more than 50 points from the 160% pool APY and is discarded; the two kept eras average 200.
+    const history = [eraRewardRow(8, { apy: 200 }), eraRewardRow(9, { apy: 200 })]
+    const { block, ctx, store, event } = await fixture([poolRow({ apy: 160 }), ...history])
+
+    await eraRewardsProcessed(ctx, block, event(eventArgs({ reinvested: '0' })))
+
+    assert.equal(store.get(EraReward, '1-10').apy, 0)
+    assert.equal(store.get(NominationPool, '1').apy, 200)
+    assert.equal(sentry.mock.callCount(), 0)
+    sentry.mock.restore()
+})
+
+void test('an average more than 50 above the pool APY falls back to the new era placeholder average of 0', async () => {
+    // Pinned as-is: computeEraApy falls back to validApys[0].averageApy, and validApys[0] is the era reward being
+    // created, whose averageApy is still the placeholder 0 at that point. The pool APY therefore drops to 0.
+    const history = [eraRewardRow(8, { apy: 300, averageApy: 290 }), eraRewardRow(9, { apy: 300, averageApy: 295 })]
+    const { block, ctx, store, event } = await fixture([poolRow({ apy: 0 }), ...history])
+
+    await eraRewardsProcessed(ctx, block, event(eventArgs({ reinvested: '0' })))
+
+    assert.equal(store.get(EraReward, '1-10').averageApy, 0)
+    assert.equal(store.get(NominationPool, '1').apy, 0)
 })
 
 void test('discardEra drops eras 50 or more points away from a non-zero pool APY', () => {
