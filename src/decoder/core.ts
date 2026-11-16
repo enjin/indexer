@@ -27,7 +27,7 @@ export const LATEST_SPEC_VERSIONS: Record<Network, number> = {
     'enjin-relaychain': 1080,
     'enjin-matrixchain': 1031,
     'canary-relaychain': 1080,
-    'canary-matrixchain': 1042,
+    'canary-matrixchain': 1043,
 }
 
 export function getLatestSpecVersion(network: Network): number {
