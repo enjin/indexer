@@ -13,8 +13,8 @@ import { multiTokens } from '~/type/events'
 import { UnsupportedEventError } from '~/util/errors'
 
 export function loanExtended(event: EventItem): LoanExtended {
-    if (multiTokens.loanExtended.matrixEnjinV1041.is(event)) {
-        return multiTokens.loanExtended.matrixEnjinV1041.decode(event)
+    if (multiTokens.loanExtended.matrixEnjinV1043.is(event)) {
+        return multiTokens.loanExtended.matrixEnjinV1043.decode(event)
     }
 
     throw new UnsupportedEventError(event)

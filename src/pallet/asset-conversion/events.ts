@@ -30,7 +30,7 @@ export function assetConversionEffect(item: EventItem): AssetConversionEffect {
     return match(item.name)
         .returnType<AssetConversionEffect>()
         .with(assetConversion.poolCreated.name, () => {
-            const e = decode(item, assetConversion.poolCreated.matrixEnjinV1041)
+            const e = decode(item, assetConversion.poolCreated.matrixEnjinV1043)
             return {
                 accounts: [{ accountId: e.poolAccount, assets: [...e.poolId, e.lpToken] }],
                 pools: [e.poolId],
@@ -38,7 +38,7 @@ export function assetConversionEffect(item: EventItem): AssetConversionEffect {
             }
         })
         .with(assetConversion.liquidityAdded.name, () => {
-            const e = decode(item, assetConversion.liquidityAdded.matrixEnjinV1041)
+            const e = decode(item, assetConversion.liquidityAdded.matrixEnjinV1043)
             return {
                 accounts: [
                     { accountId: e.who, assets: [...e.poolId] },
@@ -49,7 +49,7 @@ export function assetConversionEffect(item: EventItem): AssetConversionEffect {
             }
         })
         .with(assetConversion.liquidityRemoved.name, () => {
-            const e = decode(item, assetConversion.liquidityRemoved.matrixEnjinV1041)
+            const e = decode(item, assetConversion.liquidityRemoved.matrixEnjinV1043)
             return {
                 accounts: [
                     { accountId: e.who, assets: [e.lpToken] },
@@ -60,7 +60,7 @@ export function assetConversionEffect(item: EventItem): AssetConversionEffect {
             }
         })
         .with(assetConversion.swapExecuted.name, () => {
-            const e = decode(item, assetConversion.swapExecuted.matrixEnjinV1041)
+            const e = decode(item, assetConversion.swapExecuted.matrixEnjinV1043)
             const path = e.path.map(([asset]) => asset)
             return {
                 accounts: [
@@ -72,7 +72,7 @@ export function assetConversionEffect(item: EventItem): AssetConversionEffect {
             }
         })
         .with(assetConversion.swapCreditExecuted.name, () => {
-            const e = decode(item, assetConversion.swapCreditExecuted.matrixEnjinV1041)
+            const e = decode(item, assetConversion.swapCreditExecuted.matrixEnjinV1043)
             const path = e.path.map(([asset]) => asset)
             return {
                 accounts: [],
@@ -81,7 +81,7 @@ export function assetConversionEffect(item: EventItem): AssetConversionEffect {
             }
         })
         .with(assetConversion.touched.name, () => {
-            const e = decode(item, assetConversion.touched.matrixEnjinV1041)
+            const e = decode(item, assetConversion.touched.matrixEnjinV1043)
             return { accounts: [], pools: [e.poolId], lpTokens: [] }
         })
         .otherwise(() => {

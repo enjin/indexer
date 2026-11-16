@@ -4,39 +4,39 @@ import * as v100 from '../v100'
 import * as enjinV101 from '../enjinV101'
 import * as v104 from '../v104'
 import * as v105 from '../v105'
-import * as matrixEnjinV1041 from '../matrixEnjinV1041'
+import * as matrixEnjinV1043 from '../matrixEnjinV1043'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
 
 export const callWhitelisted = {
     name: 'Whitelist.CallWhitelisted',
-    matrixEnjinV1041: new EventType(
+    matrixEnjinV1043: new EventType(
         'Whitelist.CallWhitelisted',
         sts.struct({
-            callHash: matrixEnjinV1041.H256,
+            callHash: matrixEnjinV1043.H256,
         })
     ),
 }
 
 export const whitelistedCallRemoved = {
     name: 'Whitelist.WhitelistedCallRemoved',
-    matrixEnjinV1041: new EventType(
+    matrixEnjinV1043: new EventType(
         'Whitelist.WhitelistedCallRemoved',
         sts.struct({
-            callHash: matrixEnjinV1041.H256,
+            callHash: matrixEnjinV1043.H256,
         })
     ),
 }
 
 export const whitelistedCallDispatched = {
     name: 'Whitelist.WhitelistedCallDispatched',
-    matrixEnjinV1041: new EventType(
+    matrixEnjinV1043: new EventType(
         'Whitelist.WhitelistedCallDispatched',
         sts.struct({
-            callHash: matrixEnjinV1041.H256,
+            callHash: matrixEnjinV1043.H256,
             result: sts.result(
-                () => matrixEnjinV1041.PostDispatchInfo,
-                () => matrixEnjinV1041.DispatchErrorWithPostInfo
+                () => matrixEnjinV1043.PostDispatchInfo,
+                () => matrixEnjinV1043.DispatchErrorWithPostInfo
             ),
         })
     ),

@@ -17,20 +17,12 @@ export const batchAll = withDispatchCheck((call: CallItem): Batch => {
             () => calls.utility.batchAll.matrixV1043.decode(call)
         )
         .when(
-            () => calls.utility.batchAll.matrixEnjinV1042.is(call),
-            () => calls.utility.batchAll.matrixEnjinV1042.decode(call)
-        )
-        .when(
             () => calls.utility.batchAll.matrixV1042.is(call),
             () => calls.utility.batchAll.matrixV1042.decode(call)
         )
         .when(
             () => calls.utility.batchAll.matrixV1041.is(call),
             () => calls.utility.batchAll.matrixV1041.decode(call)
-        )
-        .when(
-            () => calls.utility.batchAll.matrixEnjinV1041.is(call),
-            () => calls.utility.batchAll.matrixEnjinV1041.decode(call)
         )
         .when(
             () => calls.utility.batchAll.v1080.is(call),

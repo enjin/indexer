@@ -14,8 +14,8 @@ import { marketplace } from '~/type/events'
 import { UnsupportedEventError } from '~/util/errors'
 
 export function abandonedListingReleased(event: EventItem): AbandonedListingReleased {
-    if (!marketplace.abandonedListingReleased.matrixEnjinV1041.is(event)) throw new UnsupportedEventError(event)
-    return marketplace.abandonedListingReleased.matrixEnjinV1041.decode(event)
+    if (!marketplace.abandonedListingReleased.matrixEnjinV1043.is(event)) throw new UnsupportedEventError(event)
+    return marketplace.abandonedListingReleased.matrixEnjinV1043.decode(event)
 }
 
 export function abandonedListingReleasedEventModel(

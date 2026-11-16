@@ -33,7 +33,6 @@ import { Call as CallMatrixV1030 } from 'src/type/matrixV1030'
 import { Call as CallMatrixV1040 } from 'src/type/matrixV1040'
 import { Call as CallMatrixV1041 } from '~/type/matrixV1041'
 import { Call as CallMatrixV1042 } from '~/type/matrixV1042'
-import { Call as CallMatrixEnjinV1042 } from '~/type/matrixEnjinV1042'
 import { Call as CallMatrixV1043 } from '~/type/matrixV1043'
 import { Call as CallMatrixEnjinV1043 } from '~/type/matrixEnjinV1043'
 import { Call as CallV100 } from 'src/type/v100'
@@ -96,7 +95,6 @@ type Call =
     | CallMatrixV1040
     | CallMatrixV1041
     | CallMatrixV1042
-    | CallMatrixEnjinV1042
     | CallMatrixV1043
     | CallMatrixEnjinV1043
     | CallV100

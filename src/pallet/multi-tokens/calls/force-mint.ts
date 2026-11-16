@@ -82,8 +82,8 @@ const decodeForceMint = withDispatchCheck((call: CallItem): ForceMint => {
             () => calls.multiTokens.forceMint.v105.decode(call)
         )
         .when(
-            () => calls.multiTokens.forceMint.matrixEnjinV1041.is(call),
-            () => calls.multiTokens.forceMint.matrixEnjinV1041.decode(call) as unknown as ForceMint
+            () => calls.multiTokens.forceMint.matrixEnjinV1043.is(call),
+            () => calls.multiTokens.forceMint.matrixEnjinV1043.decode(call) as unknown as ForceMint
         )
         .when(
             () => calls.multiTokens.forceMint.matrixV1030.is(call),

@@ -20,8 +20,8 @@ export function collectionUpdated(event: EventItem): CollectionUpdated {
             () => multiTokens.collectionUpdated.matrixEnjinV1022.decode(event)
         )
         .when(
-            () => multiTokens.collectionUpdated.matrixEnjinV1041.is(event),
-            () => multiTokens.collectionUpdated.matrixEnjinV1041.decode(event)
+            () => multiTokens.collectionUpdated.matrixEnjinV1043.is(event),
+            () => multiTokens.collectionUpdated.matrixEnjinV1043.decode(event)
         )
         .when(
             () => multiTokens.collectionUpdated.matrixV500.is(event),

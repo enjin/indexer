@@ -21,8 +21,8 @@ export function frozen(event: EventItem): Freeze {
             () => multiTokens.frozen.enjinV1070.decode(event)
         )
         .when(
-            () => multiTokens.frozen.matrixEnjinV1041.is(event),
-            () => multiTokens.frozen.matrixEnjinV1041.decode(event)
+            () => multiTokens.frozen.matrixEnjinV1043.is(event),
+            () => multiTokens.frozen.matrixEnjinV1043.decode(event)
         )
         .when(
             () => multiTokens.frozen.matrixV1040.is(event),

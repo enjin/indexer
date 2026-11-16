@@ -61,7 +61,7 @@ export function listingFillParties(
 export function listingCreatedSupportsOrderBook(item: EventItem): boolean {
     return (
         marketplaceEvents.listingCreated.matrixV1040.is(item) ||
-        marketplaceEvents.listingCreated.matrixEnjinV1041.is(item) ||
+        marketplaceEvents.listingCreated.matrixEnjinV1043.is(item) ||
         marketplaceEvents.listingCreated.v1080.is(item) ||
         marketplaceEvents.listingCreated.enjinV1080.is(item)
     )

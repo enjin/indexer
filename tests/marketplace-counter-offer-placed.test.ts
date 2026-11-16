@@ -431,7 +431,7 @@ void test('zero prices are reported as missing in the SNS payload', async () => 
 
 for (const [network, specVersion] of [
     ['enjin-relaychain', 1080],
-    ['enjin-matrixchain', 1041],
+    ['enjin-matrixchain', 1043],
 ] as const) {
     void test(`${network} ${specVersion} no longer has counter offers and rejects the event`, async () => {
         const { rows } = world()

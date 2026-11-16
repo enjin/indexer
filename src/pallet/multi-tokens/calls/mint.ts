@@ -78,8 +78,8 @@ const decodeMint = withDispatchCheck((call: CallItem): Mint => {
             () => calls.multiTokens.mint.matrixEnjinV1031.decode(call)
         )
         .when(
-            () => calls.multiTokens.mint.matrixEnjinV1041.is(call),
-            () => calls.multiTokens.mint.matrixEnjinV1041.decode(call) as unknown as Mint
+            () => calls.multiTokens.mint.matrixEnjinV1043.is(call),
+            () => calls.multiTokens.mint.matrixEnjinV1043.decode(call) as unknown as Mint
         )
         .when(
             () => calls.multiTokens.mint.enjinV1050.is(call),

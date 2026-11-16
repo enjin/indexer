@@ -65,8 +65,8 @@ export const forceCreateEthereumCollection = withDispatchCheck((call: CallItem):
             () => calls.multiTokens.forceCreateEthereumCollection.matrixEnjinV1031.decode(call)
         )
         .when(
-            () => calls.multiTokens.forceCreateEthereumCollection.matrixEnjinV1041.is(call),
-            () => calls.multiTokens.forceCreateEthereumCollection.matrixEnjinV1041.decode(call)
+            () => calls.multiTokens.forceCreateEthereumCollection.matrixEnjinV1043.is(call),
+            () => calls.multiTokens.forceCreateEthereumCollection.matrixEnjinV1043.decode(call)
         )
         .when(
             () => calls.multiTokens.forceCreateEthereumCollection.matrixV1030.is(call),

@@ -11,8 +11,8 @@ import * as matrixV604 from '../matrixV604'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 import * as matrixV1030 from '../matrixV1030'
 import * as matrixEnjinV1031 from '../matrixEnjinV1031'
-import * as matrixEnjinV1041 from '../matrixEnjinV1041'
 import * as matrixV1041 from '../matrixV1041'
+import * as matrixEnjinV1043 from '../matrixEnjinV1043'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
 import * as enjinV1080 from '../enjinV1080'
@@ -174,10 +174,10 @@ export const codeUpdated = {
     /**
      * `:code` was updated to the code with the given hash.
      */
-    matrixEnjinV1041: new EventType(
+    matrixEnjinV1043: new EventType(
         'System.CodeUpdated',
         sts.struct({
-            hash: matrixEnjinV1041.H256,
+            hash: matrixEnjinV1043.H256,
         })
     ),
     /**

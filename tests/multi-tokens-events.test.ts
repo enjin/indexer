@@ -119,7 +119,7 @@ const HEIGHT = 500
 const json = (value: unknown) => JSON.stringify(value, (_, v: unknown) => (typeof v === 'bigint' ? v.toString() : v))
 
 async function fixture(rows: Row[]) {
-    const real = await getRuntimeCached('enjin-matrixchain', 1041)
+    const real = await getRuntimeCached('enjin-matrixchain', 1043)
     const chain = new Map<string, unknown>()
     const runtime = Object.create(real) as typeof real & Record<string, unknown>
     runtime.getStorage = (_hash: string, name: string, ...key: unknown[]) =>
@@ -374,6 +374,7 @@ function storedToken(overrides: Record<string, unknown> = {}) {
         isLendable: false,
         lending: undefined,
         mintRateLimit: undefined,
+        creationBlock: 100,
         ...overrides,
     }
 }

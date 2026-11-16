@@ -32,6 +32,7 @@ import { QueuesEnum } from '~/queue/constants'
 import { Logger } from '~/util/logger'
 import { getSnsEventHash, isRelay } from '~/util/tools'
 import { readableDispatchError } from '~/util/dispatch-error'
+import { shouldIndexExtrinsic } from '~/util/extrinsic-indexing'
 import { getExtrinsicNonce } from '~/util/extrinsic-nonce'
 import { dispatchFeeShares, fuelTankDispatchError } from '~/pallet/fuel-tanks/dispatch-fee'
 import { isSnsEvent, Sns, SnsEvent } from '~/util/sns'
@@ -332,7 +333,7 @@ async function processExtrinsics(
     let fuelTank = null
     let callerFeeShare = 0n
 
-    if (call && [calls.parachainSystem.setValidationData.name, calls.timestamp.set.name].includes(call.name)) {
+    if (!shouldIndexExtrinsic(extrinsic)) {
         return [undefined, undefined]
     }
 

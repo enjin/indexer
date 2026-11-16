@@ -29,8 +29,6 @@ import * as v1030 from '../v1030'
 import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 import * as enjinV1032 from '../enjinV1032'
 import * as matrixV1040 from '../matrixV1040'
-import * as matrixEnjinV1041 from '../matrixEnjinV1041'
-import * as matrixEnjinV1042 from '../matrixEnjinV1042'
 import * as matrixV1042 from '../matrixV1042'
 import * as matrixEnjinV1043 from '../matrixEnjinV1043'
 import * as enjinV1050 from '../enjinV1050'
@@ -198,11 +196,12 @@ export const createCollection = {
      * # Errors
      *
      * - [`Error::DepositReserveFailed`] if the deposit cannot be reserved
+     * - [`Error::CollectionIdAlreadyInUse`] if [`NextCollectionId`] names a stored collection
      */
-    matrixEnjinV1041: new CallType(
+    matrixEnjinV1043: new CallType(
         'MultiTokens.create_collection',
         sts.struct({
-            descriptor: matrixEnjinV1041.DefaultCollectionDescriptor,
+            descriptor: matrixEnjinV1043.DefaultCollectionDescriptor,
         })
     ),
     /**
@@ -912,16 +911,18 @@ export const mutateToken = {
      *
      * - [`Error::CurrencyIncompatibleWithCollectionRoyalty`] if token has already been
      *   assigned a royalty
-     * - [`Error::NoPermission`] if not the collection owner
+     * - [`Error::CollectionNotFound`] if the collection does not exist
+     * - [`Error::NoPermission`] if not the collection owner, checked before the token is read:
+     *   a caller who does not own the collection gets this even for a token that does not
+     *   exist
      * - [`Error::TokenNotFound`] if Token does not exist
-     * - [`Error::ConflictingLocation`] if the new location is already occupied
      */
-    matrixEnjinV1041: new CallType(
+    matrixEnjinV1043: new CallType(
         'MultiTokens.mutate_token',
         sts.struct({
             collectionId: sts.bigint(),
             tokenId: sts.bigint(),
-            mutation: matrixEnjinV1041.DefaultTokenMutation,
+            mutation: matrixEnjinV1043.DefaultTokenMutation,
         })
     ),
     /**
@@ -1408,7 +1409,10 @@ export const mint = {
      *
      * **Mint**
      *
-     * After a token is created, you can mint additional balance using this variant.
+     * After a token is created, you can mint additional balance using this variant. A mint
+     * into a token with no supply, whether created with none or burned to none, creates it
+     * again, so its whole amount counts against the collection's mint rate limit, as a new
+     * token's initial supply does.
      *
      * # Errors
      *
@@ -1418,23 +1422,28 @@ export const mint = {
      * - [`Error::TokenAlreadyExists`] if attempting to create a token that already exists
      * - [`Error::NoPermission`] if `caller` is not allowed to mint the `collection`.
      * - [`Error::TokenMintCapExceeded`] if the mint policy TokenCap does not allow minting
+     * - [`Error::MintRateLimitExceeded`] if the mint exceeds the token's mint rate limit, or
+     *   the collection's when it creates a token or mints into one with no supply
      * - `MaxTokenCountExceeded` if the mint policy max_token_count is exceeded
      * - [`Error::DepositReserveFailed`] if the issuer does not have sufficient balance for
      *   token deposit
-     * - [`Error::ConflictingLocation`] if the token is foreign and the location is already
-     *   mapped to another asset in `AssetIdsByLocation`
-     * - `BadOrigin` if `privileged_params` sets any privileged field (a deposit-free token or
-     *   a foreign token) and `origin` is not [`Config::ForceOrigin`]
+     * - [`Error::ForeignTokensNotSupported`] if `privileged_params` sets `foreign_params`,
+     *   whatever the origin
+     * - `BadOrigin` if `privileged_params` creates a deposit-free token and `origin` is not
+     *   [`Config::ForceOrigin`]
      * - [`Error::NoPermission`] if `privileged_params` sets a privileged field *and*
      *   `attributes` or `groups` is non-empty: that call runs as root, which has no account to
      *   set them on behalf of. Set them in a follow-up call instead.
+     * - [`Error::PendingAttributeCleanup`] if creating a token under the id of a destroyed
+     *   token whose attributes still wait for the sweep, or, for a single-supply or
+     *   collapsing-supply token, whose accounts with no balance do
      */
-    matrixEnjinV1041: new CallType(
+    matrixEnjinV1043: new CallType(
         'MultiTokens.mint',
         sts.struct({
-            recipient: matrixEnjinV1041.MultiAddress,
+            recipient: matrixEnjinV1043.MultiAddress,
             collectionId: sts.bigint(),
-            params: matrixEnjinV1041.DefaultMintParams,
+            params: matrixEnjinV1043.DefaultMintParams,
         })
     ),
     /**
@@ -2504,10 +2513,10 @@ export const freeze = {
     /**
      * Freeze collection, token or account
      */
-    matrixEnjinV1041: new CallType(
+    matrixEnjinV1043: new CallType(
         'MultiTokens.freeze',
         sts.struct({
-            info: matrixEnjinV1041.Freeze,
+            info: matrixEnjinV1043.Freeze,
         })
     ),
     /**
@@ -2598,10 +2607,10 @@ export const thaw = {
     /**
      * Thaw collection, token or account
      */
-    matrixEnjinV1041: new CallType(
+    matrixEnjinV1043: new CallType(
         'MultiTokens.thaw',
         sts.struct({
-            info: matrixEnjinV1041.Thaw,
+            info: matrixEnjinV1043.Thaw,
         })
     ),
     /**
@@ -2750,7 +2759,7 @@ export const setAttribute = {
      * - [`Error::DepositReserveFailed`] if unable to reserve the deposit for the attribute
      *   storage.
      */
-    matrixEnjinV1041: new CallType(
+    matrixEnjinV1043: new CallType(
         'MultiTokens.set_attribute',
         sts.struct({
             collectionId: sts.bigint(),
@@ -3459,19 +3468,26 @@ export const batchMint = {
      * - [`Error::CollectionNotFound`] if `collection` does **not** exist.
      * - [`Error::NoPermission`] if `caller` is not allowed to mint the `collection`.
      * - [`Error::TokenMintCapExceeded`] if the mint policy TokenCap does not allow minting
+     * - [`Error::MintRateLimitExceeded`] if the batch exceeds a token's mint rate limit, or
+     *   the collection's with the tokens it creates and its mints into tokens with no supply
      * - [`Error::MaxTokenCountExceeded`] if the mint policy max_token_count is exceeded
      * - [`Error::DepositReserveFailed`] if the issuer does not have sufficient balance for
      *   token deposit
-     * - `BadOrigin` if any recipient's `privileged_params` sets a privileged field (a
-     *   deposit-free token or a foreign token) and `origin` is not [`Config::ForceOrigin`]
+     * - [`Error::ForeignTokensNotSupported`] if any recipient's `privileged_params` sets
+     *   `foreign_params`, whatever the origin
+     * - `BadOrigin` if any recipient's `privileged_params` creates a deposit-free token and
+     *   `origin` is not [`Config::ForceOrigin`]
      * - [`Error::NoPermission`] if any recipient sets a privileged field: the whole batch then
      *   runs as root, so no recipient in it may carry `attributes` or `groups`
+     * - [`Error::PendingAttributeCleanup`] if any recipient creates a token under the id of a
+     *   destroyed token whose attributes still wait for the sweep, or, for a single-supply or
+     *   collapsing-supply token, whose accounts with no balance do
      */
-    matrixEnjinV1041: new CallType(
+    matrixEnjinV1043: new CallType(
         'MultiTokens.batch_mint',
         sts.struct({
             collectionId: sts.bigint(),
-            recipients: sts.array(() => matrixEnjinV1041.Type_458),
+            recipients: sts.array(() => matrixEnjinV1043.Type_451),
         })
     ),
     /**
@@ -3962,12 +3978,12 @@ export const batchSetAttribute = {
      * - [`Error::DepositReserveFailed`] if unable to reserve the deposit for the attribute
      *   storage.
      */
-    matrixEnjinV1041: new CallType(
+    matrixEnjinV1043: new CallType(
         'MultiTokens.batch_set_attribute',
         sts.struct({
             collectionId: sts.bigint(),
             tokenId: sts.option(() => sts.bigint()),
-            attributes: sts.array(() => matrixEnjinV1041.AttributeKeyValuePair),
+            attributes: sts.array(() => matrixEnjinV1043.AttributeKeyValuePair),
         })
     ),
     /**
@@ -5050,12 +5066,29 @@ export const forceSetCollection = {
      * until the new owner's hold covers it. To move a collection together with its backing,
      * set a pending transfer with [`Self::force_mutate_collection`] for the new owner to
      * accept.
+     *
+     * Nor does it touch the collection's share of the infusion pot ([`PotInfusion`]). The
+     * pallet reads the part of `total_infusion` the share does not cover as held on `owner`,
+     * and every burn of the collection's units moves what it can of that part out of the
+     * owner's `MultiTokens` hold into the pot. So the next burn after this call takes it from
+     * the hold of a new `owner`, which backs that owner's own deposits, if:
+     * - `owner` changes while some of the infusion is still held on the previous owner;
+     * - `total_infusion` is raised by an amount that is not held on `owner`.
+     *
+     * Removing a collection (`None`) keeps its share recorded at its id, so that setting the
+     * record back restores it. A collection created at the id drops the share, but a record
+     * set there with this call takes it over.
+     *
+     * It does not move [`NextCollectionId`] either. A collection set at or above it stops
+     * automatic creation once the cursor reaches its id, until
+     * [`Self::force_set_next_collection_id`] moves the cursor past it. To create a collection
+     * at an explicit id, use [`Self::force_create_collection`].
      */
-    matrixEnjinV1041: new CallType(
+    matrixEnjinV1043: new CallType(
         'MultiTokens.force_set_collection',
         sts.struct({
             collectionId: sts.bigint(),
-            value: sts.option(() => matrixEnjinV1041.Collection),
+            value: sts.option(() => matrixEnjinV1043.Collection),
         })
     ),
     /**
@@ -5254,28 +5287,26 @@ export const forceSetToken = {
     ),
     /**
      * Set the Tokens storage to the given `value`, origin must be root
-     */
-    matrixEnjinV1041: new CallType(
-        'MultiTokens.force_set_token',
-        sts.struct({
-            collectionId: sts.bigint(),
-            tokenId: sts.bigint(),
-            value: sts.option(() => matrixEnjinV1041.Token),
-        })
-    ),
-    /**
-     * Set the Tokens storage to the given `value`, origin must be root
      *
-     * The value is stored as given, `creation_block` included. Creating a token this way does
+     * The value is stored as given, `creation_block` and the metadata's `foreign` included:
+     * this is the one call that can still write foreign metadata, which nothing reads any
+     * more. Creating a token this way does
      * not record the current block: a caller that sets a token where none exists, or replaces
      * one, chooses the creation block that later readers compare against.
+     *
+     * # Errors
+     *
+     * - [`Error::PendingAttributeCleanup`] if `value` is set while the attributes or accounts
+     *   of a destroyed token under this id still wait for the sweep, which would remove the
+     *   new token's accounts, balances included. Running
+     *   [`cleanup_orphaned_attributes`](Self::cleanup_orphaned_attributes) first clears it.
      */
-    matrixEnjinV1042: new CallType(
+    matrixEnjinV1043: new CallType(
         'MultiTokens.force_set_token',
         sts.struct({
             collectionId: sts.bigint(),
             tokenId: sts.bigint(),
-            value: sts.option(() => matrixEnjinV1042.Token),
+            value: sts.option(() => matrixEnjinV1043.Token),
         })
     ),
     /**
@@ -5511,13 +5542,13 @@ export const forceSetAttribute = {
     /**
      * Set the Tokens storage to the given `value`, origin must be root
      */
-    matrixEnjinV1041: new CallType(
+    matrixEnjinV1043: new CallType(
         'MultiTokens.force_set_attribute',
         sts.struct({
             collectionId: sts.bigint(),
             tokenId: sts.option(() => sts.bigint()),
             key: sts.bytes(),
-            value: sts.option(() => matrixEnjinV1041.Attribute),
+            value: sts.option(() => matrixEnjinV1043.Attribute),
         })
     ),
     /**
@@ -5698,13 +5729,13 @@ export const forceSetTokenAccount = {
     /**
      * Set the TokenAccounts storage to the given `value`, origin must be root
      */
-    matrixEnjinV1041: new CallType(
+    matrixEnjinV1043: new CallType(
         'MultiTokens.force_set_token_account',
         sts.struct({
             collectionId: sts.bigint(),
             tokenId: sts.bigint(),
-            accountId: matrixEnjinV1041.MultiAddress,
-            value: sts.option(() => matrixEnjinV1041.TokenAccount),
+            accountId: matrixEnjinV1043.MultiAddress,
+            value: sts.option(() => matrixEnjinV1043.TokenAccount),
         })
     ),
     /**
@@ -5967,17 +5998,26 @@ export const forceCreateCollection = {
     /**
      * Creates a new collection from `descriptor` at `collection_id`, origin must be root
      *
+     * If `collection_id` is at or above [`NextCollectionId`], that moves past it, so
+     * [`create_collection`](Self::create_collection) does not reach this id. It stays put
+     * rather than move to the maximum id, which would stop automatic creation; an id that
+     * close to the maximum is still never replaced.
+     *
+     * A transfer that a collection removed without being destroyed, such as through
+     * [`Self::force_set_collection`], left pending at `collection_id` is cancelled, with
+     * [`Event::CollectionTransferCancelled`].
+     *
      * # Errors
      * - [`Error::DepositReserveFailed`] if the deposit cannot be reserved
      * - [`Error::CollectionIdAlreadyInUse`] if the collection id is already in use
      */
-    matrixEnjinV1041: new CallType(
+    matrixEnjinV1043: new CallType(
         'MultiTokens.force_create_collection',
         sts.struct({
-            owner: matrixEnjinV1041.AccountId32,
+            owner: matrixEnjinV1043.AccountId32,
             collectionId: sts.bigint(),
-            descriptor: matrixEnjinV1041.DefaultCollectionDescriptor,
-            depositor: sts.option(() => matrixEnjinV1041.AccountId32),
+            descriptor: matrixEnjinV1043.DefaultCollectionDescriptor,
+            depositor: sts.option(() => matrixEnjinV1043.AccountId32),
         })
     ),
     /**
@@ -6298,18 +6338,33 @@ export const forceMint = {
      * migrated tokens legitimately skip the storage deposit.
      *
      * ## Errors
-     * - [`Error::NoPermission`] if `params` would create a foreign token. Registering an XCM
-     *   `Location` requires [`Config::ForceOrigin`], which is strictly stronger than
-     *   [`Config::EthereumMigrationOrigin`]; use [`mint`](Self::mint) for that.
+     * - [`Error::ForeignTokensNotSupported`] if `params` sets `foreign_params`, even for a
+     *   token that already exists
+     * - [`Error::NoPermission`] if the origin is signed and `depositor` is not the signer. The
+     *   depositor's balance moves without its consent, so a signed origin must back the mint
+     *   itself.
+     * - [`Error::NoPermission`] if the origin is signed and `params` would create a token with
+     *   a non-zero `infusion` in a collection the signer does not own. The collection owner
+     *   pays the infusion, and burning a unit pays it to the burner. Minting more of an
+     *   existing infused token is still allowed, and takes the owner's funds the same way. If
+     *   a lock claims them, that mint holds them on the owner instead of failing (see
+     *   [Infusion](crate#infusions)).
+     * - [`Error::NoPermission`] if `depositor` is the infusion pot, whose balance backs the
+     *   collections' infusions.
+     * - `BadOrigin` if the origin is neither root nor signed, even if
+     *   [`Config::EthereumMigrationOrigin`] admits it.
+     *
+     * The weight is at least that of minting into an existing infused token, which a token
+     * claim does, and which `force_mint`'s own benchmark does not measure.
      */
-    matrixEnjinV1041: new CallType(
+    matrixEnjinV1043: new CallType(
         'MultiTokens.force_mint',
         sts.struct({
-            caller: sts.option(() => matrixEnjinV1041.MultiAddress),
-            recipient: matrixEnjinV1041.MultiAddress,
+            caller: sts.option(() => matrixEnjinV1043.MultiAddress),
+            recipient: matrixEnjinV1043.MultiAddress,
             collectionId: sts.bigint(),
-            params: matrixEnjinV1041.FlexibleMintParams,
-            depositor: sts.option(() => matrixEnjinV1041.MultiAddress),
+            params: matrixEnjinV1043.FlexibleMintParams,
+            depositor: sts.option(() => matrixEnjinV1043.MultiAddress),
         })
     ),
     /**
@@ -6735,11 +6790,13 @@ export const forceFreeze = {
     ),
     /**
      * Same as [`freeze`](Self::freeze), but it is callable by [`Config::ForceOrigin`]
+     *
+     * It freezes as the collection owner, so the owner can [`thaw`](Self::thaw) it.
      */
-    matrixEnjinV1041: new CallType(
+    matrixEnjinV1043: new CallType(
         'MultiTokens.force_freeze',
         sts.struct({
-            info: matrixEnjinV1041.Freeze,
+            info: matrixEnjinV1043.Freeze,
         })
     ),
     /**
@@ -7028,9 +7085,9 @@ export const forceCreateEthereumCollection = {
         })
     ),
     /**
-     * Creates a new collection from `descriptor` at `collection_id`, origin must be
-     * [`Config::EthereumMigrationOrigin`]. It differs from `force_create_collection`
-     * since it writes to `NativeCollectionIds` and `ClaimableCollectionIds`.
+     * Creates a new collection from `descriptor` at `collection_id`, origin must be root. It
+     * differs from `force_create_collection` since it writes to `NativeCollectionIds` and
+     * `ClaimableCollectionIds`.
      *
      * # Params
      * - `owner` - the account that will own the new collection
@@ -7043,13 +7100,13 @@ export const forceCreateEthereumCollection = {
      * - [`Error::EthereumCollectionAlreadyMapped`] if `ethereum_collection_id` already maps to
      *   a native collection
      */
-    matrixEnjinV1041: new CallType(
+    matrixEnjinV1043: new CallType(
         'MultiTokens.force_create_ethereum_collection',
         sts.struct({
-            owner: matrixEnjinV1041.AccountId32,
-            claimer: matrixEnjinV1041.H160,
+            owner: matrixEnjinV1043.AccountId32,
+            claimer: matrixEnjinV1043.H160,
             ethereumCollectionId: sts.bigint(),
-            descriptor: matrixEnjinV1041.DefaultCollectionDescriptor,
+            descriptor: matrixEnjinV1043.DefaultCollectionDescriptor,
         })
     ),
     /**
@@ -7737,7 +7794,7 @@ export const setTokenGroupAttribute = {
      * - [`Error::DepositReserveFailed`] if unable to reserve the deposit for the attribute
      *   storage.
      */
-    matrixEnjinV1041: new CallType(
+    matrixEnjinV1043: new CallType(
         'MultiTokens.set_token_group_attribute',
         sts.struct({
             tokenGroupId: sts.bigint(),
@@ -8020,284 +8077,6 @@ export const batchInfuse = {
     ),
 }
 
-export const cleanupExpiredEphemeral = {
-    name: 'MultiTokens.cleanup_expired_ephemeral',
-    /**
-     * Permissionless fallback that performs up to `max_items` units of expired
-     * ephemeral-token cleanup (one unit per token destroyed, attribute removed, or
-     * schedule bucket visited).
-     *
-     * Acts as a manual nudge when `on_idle` cleanup is not keeping up with the schedule.
-     * Anyone may call it; the fee is waived (`Pays::No`) when at least one token was
-     * destroyed, and unused weight is refunded.
-     *
-     * # Errors
-     * This extrinsic does not produce errors for an empty schedule or zero work
-     * performed; it simply returns `Ok(())`.
-     */
-    matrixEnjinV1041: new CallType(
-        'MultiTokens.cleanup_expired_ephemeral',
-        sts.struct({
-            maxItems: sts.number(),
-        })
-    ),
-}
-
-export const retryFailedEphemeralCleanup = {
-    name: 'MultiTokens.retry_failed_ephemeral_cleanup',
-    /**
-     * Permissionless retry for an ephemeral token whose automatic destruction failed and
-     * was parked in [`FailedEphemeralCleanups`]. `max_units` caps the weight charged up
-     * front (see [`Self::cleanup_expired_ephemeral`] for the unit definition); a retry
-     * always consumes one unit, so at least one unit is charged whatever `max_units` says.
-     *
-     * The fee is waived (`Pays::No`) when the token is fully destroyed.
-     *
-     * # Errors
-     * - [`Error::NoFailedEphemeralCleanup`] if the token is not parked
-     * - any error from the destruction attempt itself (state is rolled back and the token
-     *   remains parked)
-     */
-    matrixEnjinV1041: new CallType(
-        'MultiTokens.retry_failed_ephemeral_cleanup',
-        sts.struct({
-            collectionId: sts.bigint(),
-            tokenId: sts.bigint(),
-            maxUnits: sts.number(),
-        })
-    ),
-}
-
-export const upgradeAttributes = {
-    name: 'MultiTokens.upgrade_attributes',
-    /**
-     * Upgrade a list of attributes in storage to the latest encoding (storage version 6).
-     *
-     * Pre-v6 attribute values are upgraded lazily whenever they are mutated; this
-     * extrinsic rewrites them proactively so off-chain consumers that decode raw storage
-     * see the current encoding. Permissionless; a no-op for keys that are missing or
-     * already upgraded.
-     */
-    matrixEnjinV1041: new CallType(
-        'MultiTokens.upgrade_attributes',
-        sts.struct({
-            attributeKeys: sts.array(() =>
-                sts.tuple(() => [sts.bigint(), sts.option(() => sts.bigint()), sts.bytes()])
-            ),
-        })
-    ),
-}
-
-export const lend = {
-    name: 'MultiTokens.lend',
-    /**
-     * Lend a token to `borrower` until `expiration`, at which block it is automatically
-     * returned to the caller. The token moves to the borrower through the standard
-     * transfer path; the caller funds the borrower's token account deposit.
-     *
-     * While lent, the token cannot be listed or burned and can only be transferred back
-     * to the lender — a return supersedes freeze and transferability restrictions. The
-     * borrower may return early by transferring the token back; the lender may extend
-     * the loan via [`Self::extend_loan`] but cannot claw it back early.
-     *
-     * Only single-supply NFTs (cap == `Supply(1)` or `CollapsingSupply(1)`) with
-     * lending enabled may be lent. Ephemeral tokens may be lent, but destruction
-     * supersedes return: once the ephemeral expiration is reached the token is
-     * destroyed, not returned.
-     *
-     * # Errors
-     * - [`Error::LoanExpirationInPast`] if `expiration` is not in the future
-     * - [`Error::TokenNotFound`] if the token does not exist
-     * - [`Error::TokenNotLendable`] if lending is disabled for the token
-     * - [`Error::TokenAlreadyLent`] if the token is already lent
-     * - [`Error::LendingRequiresSingleSupply`] if the token is not a single-supply NFT
-     * - [`Error::LoanScheduleFull`] if too many loans already come due on `expiration`
-     * - any error from the transfer itself (e.g. [`Error::Frozen`], [`Error::BalanceLow`],
-     *   [`Error::CannotTransferToSelf`])
-     */
-    matrixEnjinV1041: new CallType(
-        'MultiTokens.lend',
-        sts.struct({
-            collectionId: sts.bigint(),
-            tokenId: sts.bigint(),
-            borrower: matrixEnjinV1041.MultiAddress,
-            expiration: sts.number(),
-        })
-    ),
-}
-
-export const extendLoan = {
-    name: 'MultiTokens.extend_loan',
-    /**
-     * Extend the expiration of an active loan to a strictly later block. Only the
-     * lender may extend, and only before the current expiration has been reached.
-     *
-     * # Errors
-     * - [`Error::TokenNotFound`] if the token does not exist
-     * - [`Error::LoanNotFound`] if the token is not lent
-     * - [`Error::NoPermission`] if the caller is not the lender
-     * - [`Error::LoanExpired`] if the loan has already reached its expiration block
-     * - [`Error::LoanExpirationNotLater`] if `new_expiration` is not strictly later
-     * - [`Error::LoanScheduleFull`] if too many loans already come due on `new_expiration`
-     */
-    matrixEnjinV1041: new CallType(
-        'MultiTokens.extend_loan',
-        sts.struct({
-            collectionId: sts.bigint(),
-            tokenId: sts.bigint(),
-            newExpiration: sts.number(),
-        })
-    ),
-}
-
-export const processExpiredLoans = {
-    name: 'MultiTokens.process_expired_loans',
-    /**
-     * Permissionless fallback that performs up to `max_items` units of expired-loan
-     * processing (one unit per token returned or schedule bucket visited).
-     *
-     * Acts as a manual nudge when `on_idle` processing is not keeping up with the
-     * schedule. Anyone may call it; the fee is waived (`Pays::No`) when at least one
-     * token was returned, and unused weight is refunded.
-     *
-     * # Errors
-     * This extrinsic does not produce errors for an empty schedule or zero work
-     * performed; it simply returns `Ok(())`.
-     */
-    matrixEnjinV1041: new CallType(
-        'MultiTokens.process_expired_loans',
-        sts.struct({
-            maxItems: sts.number(),
-        })
-    ),
-}
-
-export const retryFailedLoanReturn = {
-    name: 'MultiTokens.retry_failed_loan_return',
-    /**
-     * Permissionless retry for a lent token whose automatic return failed and was
-     * parked in [`FailedLoanReturns`]. The fee is waived (`Pays::No`) on success.
-     *
-     * # Errors
-     * - [`Error::NoFailedLoanReturn`] if the token is not parked
-     * - any error from the return attempt itself (state is rolled back and the token remains
-     *   parked)
-     */
-    matrixEnjinV1041: new CallType(
-        'MultiTokens.retry_failed_loan_return',
-        sts.struct({
-            collectionId: sts.bigint(),
-            tokenId: sts.bigint(),
-        })
-    ),
-}
-
-export const cleanupOrphanedAttributes = {
-    name: 'MultiTokens.cleanup_orphaned_attributes',
-    /**
-     * Permissionless fallback that performs up to `max_units` units of orphaned-attribute
-     * removal (one unit per attribute removed or drained queue entry; see
-     * [`PendingAttributeCleanups`] and [`PendingGroupAttributeCleanups`]).
-     *
-     * Acts as a manual nudge when `on_idle` sweeping is not keeping up — for example to
-     * unblock the re-creation of a destroyed token id
-     * ([`Error::PendingAttributeCleanup`]). Anyone may call it; the fee is waived
-     * (`Pays::No`) whenever the call made progress — removed an attribute or drained a
-     * queue entry (which is what unblocks re-creation) — and unused weight is refunded.
-     *
-     * # Errors
-     * This extrinsic does not produce errors for empty queues or zero work performed;
-     * it simply returns `Ok(())`.
-     */
-    matrixEnjinV1041: new CallType(
-        'MultiTokens.cleanup_orphaned_attributes',
-        sts.struct({
-            maxUnits: sts.number(),
-        })
-    ),
-}
-
-export const setMintRateLimit = {
-    name: 'MultiTokens.set_mint_rate_limit',
-    /**
-     * Set, change, or remove the mint rate limit of a collection (`token_id` = `None`) or
-     * a single token. Only callable by the collection owner.
-     *
-     * Adding a limit or tightening it (a lower `max` and a period that is not shorter)
-     * takes effect immediately. Any other change — loosening, mixed changes, and removal
-     * (`limit` = `None`) — is scheduled to take effect after
-     * [`Config::MintRateLimitLooseningDelay`] blocks and can be cancelled until then with
-     * [`cancel_mint_rate_limit_change`](Self::cancel_mint_rate_limit_change). A new
-     * request overwrites a pending one and restarts the delay.
-     *
-     * # Errors
-     *
-     * - [`Error::CollectionNotFound`] if `collection_id` does not exist
-     * - [`Error::TokenNotFound`] if `token_id` is `Some` and the token does not exist
-     * - [`Error::NoPermission`] if `origin` is not the owner of the collection
-     * - [`Error::InvalidMintRateLimit`] if `limit` has a zero `period` or `max`
-     * - [`Error::MintRateLimitNotFound`] if removing while no limit is set
-     */
-    matrixEnjinV1041: new CallType(
-        'MultiTokens.set_mint_rate_limit',
-        sts.struct({
-            collectionId: sts.bigint(),
-            tokenId: sts.option(() => sts.bigint()),
-            limit: sts.option(() => matrixEnjinV1041.MintRateLimit),
-        })
-    ),
-}
-
-export const cancelMintRateLimitChange = {
-    name: 'MultiTokens.cancel_mint_rate_limit_change',
-    /**
-     * Cancel a pending mint rate limit change scheduled with
-     * [`set_mint_rate_limit`](Self::set_mint_rate_limit) before it takes effect.
-     * Cancellation is a tightening action and applies immediately. Only callable by the
-     * collection owner.
-     *
-     * # Errors
-     *
-     * - [`Error::CollectionNotFound`] if `collection_id` does not exist
-     * - [`Error::TokenNotFound`] if `token_id` is `Some` and the token does not exist
-     * - [`Error::NoPermission`] if `origin` is not the owner of the collection
-     * - [`Error::NoPendingMintRateLimitChange`] if there is no pending change, including when
-     *   the change has already taken effect
-     */
-    matrixEnjinV1041: new CallType(
-        'MultiTokens.cancel_mint_rate_limit_change',
-        sts.struct({
-            collectionId: sts.bigint(),
-            tokenId: sts.option(() => sts.bigint()),
-        })
-    ),
-}
-
-export const forceSetMintRateLimit = {
-    name: 'MultiTokens.force_set_mint_rate_limit',
-    /**
-     * Same as [`set_mint_rate_limit`](Self::set_mint_rate_limit), but only callable by
-     * [`Config::ForceOrigin`] and every change — including loosening and removal — takes
-     * effect immediately. Serves as the governance escape hatch, e.g. to tighten a limit
-     * or clear a malicious pending loosening on a collection with a compromised owner key.
-     *
-     * # Errors
-     *
-     * - [`Error::CollectionNotFound`] if `collection_id` does not exist
-     * - [`Error::TokenNotFound`] if `token_id` is `Some` and the token does not exist
-     * - [`Error::InvalidMintRateLimit`] if `limit` has a zero `period` or `max`
-     * - [`Error::MintRateLimitNotFound`] if removing while no limit is set
-     */
-    matrixEnjinV1041: new CallType(
-        'MultiTokens.force_set_mint_rate_limit',
-        sts.struct({
-            collectionId: sts.bigint(),
-            tokenId: sts.option(() => sts.bigint()),
-            limit: sts.option(() => matrixEnjinV1041.MintRateLimit),
-        })
-    ),
-}
-
 export const createTokenAccount = {
     name: 'MultiTokens.create_token_account',
     /**
@@ -8421,6 +8200,290 @@ export const releaseDeferredDeposits = {
         'MultiTokens.release_deferred_deposits',
         sts.struct({
             accountId: matrixEnjinV1043.MultiAddress,
+        })
+    ),
+}
+
+export const cleanupExpiredEphemeral = {
+    name: 'MultiTokens.cleanup_expired_ephemeral',
+    /**
+     * Permissionless fallback that performs up to `max_items` units of expired
+     * ephemeral-token cleanup (one unit per token destroyed, attribute removed, or
+     * schedule bucket visited).
+     *
+     * Acts as a manual nudge when `on_idle` cleanup is not keeping up with the schedule.
+     * Anyone may call it; the fee is waived (`Pays::No`) when at least one token was
+     * destroyed, and unused weight is refunded.
+     *
+     * # Errors
+     * This extrinsic does not produce errors for an empty schedule or zero work
+     * performed; it simply returns `Ok(())`.
+     */
+    matrixEnjinV1043: new CallType(
+        'MultiTokens.cleanup_expired_ephemeral',
+        sts.struct({
+            maxItems: sts.number(),
+        })
+    ),
+}
+
+export const retryFailedEphemeralCleanup = {
+    name: 'MultiTokens.retry_failed_ephemeral_cleanup',
+    /**
+     * Permissionless retry for an ephemeral token whose automatic destruction failed and
+     * was parked in [`FailedEphemeralCleanups`]. `max_units` caps the weight charged up
+     * front (see [`Self::cleanup_expired_ephemeral`] for the unit definition); a retry
+     * always consumes one unit, so at least one unit is charged whatever `max_units` says.
+     *
+     * The fee is waived (`Pays::No`) when the token is fully destroyed.
+     *
+     * # Errors
+     * - [`Error::NoFailedEphemeralCleanup`] if the token is not parked
+     * - any error from the destruction attempt itself (state is rolled back and the token
+     *   remains parked)
+     */
+    matrixEnjinV1043: new CallType(
+        'MultiTokens.retry_failed_ephemeral_cleanup',
+        sts.struct({
+            collectionId: sts.bigint(),
+            tokenId: sts.bigint(),
+            maxUnits: sts.number(),
+        })
+    ),
+}
+
+export const upgradeAttributes = {
+    name: 'MultiTokens.upgrade_attributes',
+    /**
+     * Upgrade a list of attributes in storage to the latest encoding (storage version 6).
+     *
+     * Pre-v6 attribute values are upgraded lazily whenever they are mutated; this
+     * extrinsic rewrites them proactively so off-chain consumers that decode raw storage
+     * see the current encoding. Permissionless; a no-op for keys that are missing or
+     * already upgraded.
+     */
+    matrixEnjinV1043: new CallType(
+        'MultiTokens.upgrade_attributes',
+        sts.struct({
+            attributeKeys: sts.array(() =>
+                sts.tuple(() => [sts.bigint(), sts.option(() => sts.bigint()), sts.bytes()])
+            ),
+        })
+    ),
+}
+
+export const lend = {
+    name: 'MultiTokens.lend',
+    /**
+     * Lend a token to `borrower` until `expiration`, at which block it is automatically
+     * returned to the caller. The token moves to the borrower through the standard
+     * transfer path; the caller funds the borrower's token account deposit.
+     *
+     * While lent, the token cannot be listed or burned and can only be transferred back
+     * to the lender — a return supersedes freeze and transferability restrictions. The
+     * borrower may return early by transferring the token back; the lender may extend
+     * the loan via [`Self::extend_loan`] but cannot claw it back early.
+     *
+     * Only single-supply NFTs (cap == `Supply(1)` or `CollapsingSupply(1)`) with
+     * lending enabled may be lent. Ephemeral tokens may be lent, but destruction
+     * supersedes return: once the ephemeral expiration is reached the token is
+     * destroyed, not returned.
+     *
+     * # Errors
+     * - [`Error::LoanExpirationInPast`] if `expiration` is not in the future
+     * - [`Error::TokenNotFound`] if the token does not exist
+     * - [`Error::TokenNotLendable`] if lending is disabled for the token
+     * - [`Error::TokenAlreadyLent`] if the token is already lent
+     * - [`Error::LendingRequiresSingleSupply`] if the token is not a single-supply NFT
+     * - [`Error::LoanScheduleFull`] if too many loans already come due on `expiration`
+     * - any error from the transfer itself (e.g. [`Error::Frozen`], [`Error::BalanceLow`],
+     *   [`Error::CannotTransferToSelf`])
+     */
+    matrixEnjinV1043: new CallType(
+        'MultiTokens.lend',
+        sts.struct({
+            collectionId: sts.bigint(),
+            tokenId: sts.bigint(),
+            borrower: matrixEnjinV1043.MultiAddress,
+            expiration: sts.number(),
+        })
+    ),
+}
+
+export const extendLoan = {
+    name: 'MultiTokens.extend_loan',
+    /**
+     * Extend the expiration of an active loan to a strictly later block. Only the
+     * lender may extend, and only before the current expiration has been reached.
+     *
+     * # Errors
+     * - [`Error::TokenNotFound`] if the token does not exist
+     * - [`Error::LoanNotFound`] if the token is not lent
+     * - [`Error::NoPermission`] if the caller is not the lender
+     * - [`Error::LoanExpired`] if the loan has already reached its expiration block
+     * - [`Error::LoanExpirationNotLater`] if `new_expiration` is not strictly later
+     * - [`Error::LoanScheduleFull`] if too many loans already come due on `new_expiration`
+     */
+    matrixEnjinV1043: new CallType(
+        'MultiTokens.extend_loan',
+        sts.struct({
+            collectionId: sts.bigint(),
+            tokenId: sts.bigint(),
+            newExpiration: sts.number(),
+        })
+    ),
+}
+
+export const processExpiredLoans = {
+    name: 'MultiTokens.process_expired_loans',
+    /**
+     * Permissionless fallback that performs up to `max_items` units of expired-loan
+     * processing (one unit per token returned or schedule bucket visited).
+     *
+     * Acts as a manual nudge when `on_idle` processing is not keeping up with the
+     * schedule. Anyone may call it; the fee is waived (`Pays::No`) when at least one
+     * token was returned, and unused weight is refunded.
+     *
+     * # Errors
+     * This extrinsic does not produce errors for an empty schedule or zero work
+     * performed; it simply returns `Ok(())`.
+     */
+    matrixEnjinV1043: new CallType(
+        'MultiTokens.process_expired_loans',
+        sts.struct({
+            maxItems: sts.number(),
+        })
+    ),
+}
+
+export const retryFailedLoanReturn = {
+    name: 'MultiTokens.retry_failed_loan_return',
+    /**
+     * Permissionless retry for a lent token whose automatic return failed and was
+     * parked in [`FailedLoanReturns`]. The fee is waived (`Pays::No`) on success.
+     *
+     * # Errors
+     * - [`Error::NoFailedLoanReturn`] if the token is not parked
+     * - any error from the return attempt itself (state is rolled back and the token remains
+     *   parked)
+     */
+    matrixEnjinV1043: new CallType(
+        'MultiTokens.retry_failed_loan_return',
+        sts.struct({
+            collectionId: sts.bigint(),
+            tokenId: sts.bigint(),
+        })
+    ),
+}
+
+export const cleanupOrphanedAttributes = {
+    name: 'MultiTokens.cleanup_orphaned_attributes',
+    /**
+     * Permissionless fallback that performs up to `max_units` units of orphaned-attribute
+     * removal (one unit per attribute removed or drained queue entry, and the weight of
+     * [`destroy_token_account`](Self::destroy_token_account) in units per account removed;
+     * see [`PendingAttributeCleanups`] and [`PendingGroupAttributeCleanups`]). The accounts
+     * are those a destroyed token left with no balance.
+     *
+     * Acts as a manual nudge when `on_idle` sweeping is not keeping up — for example to
+     * unblock the re-creation of a destroyed token id
+     * ([`Error::PendingAttributeCleanup`]). Anyone may call it; the fee is waived
+     * (`Pays::No`) whenever the call made progress — removed an attribute or an account, or
+     * drained a queue entry (which is what unblocks re-creation) — and unused weight is
+     * refunded. A deposit that cannot be released yet does not keep its attribute or account:
+     * it stays held and is recorded in [`DeferredDeposits`]. To clear the accounts of one
+     * destroyed token without waiting for the queue, see
+     * [`remove_empty_token_account`](Self::remove_empty_token_account).
+     *
+     * # Errors
+     * This extrinsic does not produce errors for empty queues or zero work performed;
+     * it simply returns `Ok(())`.
+     */
+    matrixEnjinV1043: new CallType(
+        'MultiTokens.cleanup_orphaned_attributes',
+        sts.struct({
+            maxUnits: sts.number(),
+        })
+    ),
+}
+
+export const setMintRateLimit = {
+    name: 'MultiTokens.set_mint_rate_limit',
+    /**
+     * Set, change, or remove the mint rate limit of a collection (`token_id` = `None`) or
+     * a single token. Only callable by the collection owner.
+     *
+     * Adding a limit or tightening it (a lower `max` and a period that is not shorter)
+     * takes effect immediately. Any other change — loosening, mixed changes, and removal
+     * (`limit` = `None`) — is scheduled to take effect after
+     * [`Config::MintRateLimitLooseningDelay`] blocks and can be cancelled until then with
+     * [`cancel_mint_rate_limit_change`](Self::cancel_mint_rate_limit_change). A new
+     * request overwrites a pending one and restarts the delay.
+     *
+     * # Errors
+     *
+     * - [`Error::CollectionNotFound`] if `collection_id` does not exist
+     * - [`Error::TokenNotFound`] if `token_id` is `Some` and the token does not exist
+     * - [`Error::NoPermission`] if `origin` is not the owner of the collection
+     * - [`Error::InvalidMintRateLimit`] if `limit` has a zero `period` or `max`
+     * - [`Error::MintRateLimitNotFound`] if removing while no limit is set
+     */
+    matrixEnjinV1043: new CallType(
+        'MultiTokens.set_mint_rate_limit',
+        sts.struct({
+            collectionId: sts.bigint(),
+            tokenId: sts.option(() => sts.bigint()),
+            limit: sts.option(() => matrixEnjinV1043.MintRateLimit),
+        })
+    ),
+}
+
+export const cancelMintRateLimitChange = {
+    name: 'MultiTokens.cancel_mint_rate_limit_change',
+    /**
+     * Cancel a pending mint rate limit change scheduled with
+     * [`set_mint_rate_limit`](Self::set_mint_rate_limit) before it takes effect.
+     * Cancellation is a tightening action and applies immediately. Only callable by the
+     * collection owner.
+     *
+     * # Errors
+     *
+     * - [`Error::CollectionNotFound`] if `collection_id` does not exist
+     * - [`Error::TokenNotFound`] if `token_id` is `Some` and the token does not exist
+     * - [`Error::NoPermission`] if `origin` is not the owner of the collection
+     * - [`Error::NoPendingMintRateLimitChange`] if there is no pending change, including when
+     *   the change has already taken effect
+     */
+    matrixEnjinV1043: new CallType(
+        'MultiTokens.cancel_mint_rate_limit_change',
+        sts.struct({
+            collectionId: sts.bigint(),
+            tokenId: sts.option(() => sts.bigint()),
+        })
+    ),
+}
+
+export const forceSetMintRateLimit = {
+    name: 'MultiTokens.force_set_mint_rate_limit',
+    /**
+     * Same as [`set_mint_rate_limit`](Self::set_mint_rate_limit), but only callable by
+     * [`Config::ForceOrigin`] and every change — including loosening and removal — takes
+     * effect immediately. Serves as the governance escape hatch, e.g. to tighten a limit
+     * or clear a malicious pending loosening on a collection with a compromised owner key.
+     *
+     * # Errors
+     *
+     * - [`Error::CollectionNotFound`] if `collection_id` does not exist
+     * - [`Error::TokenNotFound`] if `token_id` is `Some` and the token does not exist
+     * - [`Error::InvalidMintRateLimit`] if `limit` has a zero `period` or `max`
+     * - [`Error::MintRateLimitNotFound`] if removing while no limit is set
+     */
+    matrixEnjinV1043: new CallType(
+        'MultiTokens.force_set_mint_rate_limit',
+        sts.struct({
+            collectionId: sts.bigint(),
+            tokenId: sts.option(() => sts.bigint()),
+            limit: sts.option(() => matrixEnjinV1043.MintRateLimit),
         })
     ),
 }

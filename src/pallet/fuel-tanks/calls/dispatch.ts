@@ -16,10 +16,6 @@ export function dispatch(call: CallItem): Dispatch {
             () => calls.fuelTanks.dispatch.matrixV1043.decode(call)
         )
         .when(
-            () => calls.fuelTanks.dispatch.matrixEnjinV1042.is(call),
-            () => calls.fuelTanks.dispatch.matrixEnjinV1042.decode(call)
-        )
-        .when(
             () => calls.fuelTanks.dispatch.matrixV1042.is(call),
             () => calls.fuelTanks.dispatch.matrixV1042.decode(call)
         )
@@ -30,10 +26,6 @@ export function dispatch(call: CallItem): Dispatch {
         .when(
             () => calls.fuelTanks.dispatch.matrixV1041.is(call),
             () => calls.fuelTanks.dispatch.matrixV1041.decode(call)
-        )
-        .when(
-            () => calls.fuelTanks.dispatch.matrixEnjinV1041.is(call),
-            () => calls.fuelTanks.dispatch.matrixEnjinV1041.decode(call)
         )
         .when(
             () => calls.fuelTanks.dispatch.v1080.is(call),

@@ -3,7 +3,7 @@ import * as enjinV100 from '../enjinV100'
 import * as v104 from '../v104'
 import * as matrixV500 from '../matrixV500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
-import * as matrixEnjinV1041 from '../matrixEnjinV1041'
+import * as matrixEnjinV1043 from '../matrixEnjinV1043'
 
 export const claimRequested = {
     name: 'Claims.ClaimRequested',
@@ -212,13 +212,13 @@ export const claimRequestSkippedZeroAmount = {
      * source block, so nothing else in the extrinsic's output records that the burn was seen
      * at all.
      */
-    matrixEnjinV1041: new EventType(
+    matrixEnjinV1043: new EventType(
         'Claims.ClaimRequestSkippedZeroAmount',
         sts.struct({
             /**
              * The account whose burn was dropped
              */
-            who: matrixEnjinV1041.H160,
+            who: matrixEnjinV1043.H160,
             /**
              * The amount of burned tokens, as attested by the Relayer
              */
@@ -226,7 +226,7 @@ export const claimRequestSkippedZeroAmount = {
             /**
              * Hash of the transaction in which the tokens were burnt
              */
-            transactionHash: matrixEnjinV1041.H256,
+            transactionHash: matrixEnjinV1043.H256,
             /**
              * If the burnt token is EFI or not — an EFI burn is what usually reaches this event,
              * since the conversion to ENJ rounds down
@@ -250,13 +250,13 @@ export const claimRequestSkippedAtBound = {
      * Acting on that is the relayer's job — a successful `request_claims` does not mean every
      * burn in the batch was stored, and this event is the only record of which ones were not.
      */
-    matrixEnjinV1041: new EventType(
+    matrixEnjinV1043: new EventType(
         'Claims.ClaimRequestSkippedAtBound',
         sts.struct({
             /**
              * The account whose claim vector is full
              */
-            who: matrixEnjinV1041.H160,
+            who: matrixEnjinV1043.H160,
             /**
              * The amount of burned tokens, as attested by the Relayer
              */
@@ -264,7 +264,7 @@ export const claimRequestSkippedAtBound = {
             /**
              * Hash of the transaction in which the tokens were burnt. Still re-requestable
              */
-            transactionHash: matrixEnjinV1041.H256,
+            transactionHash: matrixEnjinV1043.H256,
             /**
              * If the burnt token is EFI or not
              */

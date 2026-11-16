@@ -17,20 +17,12 @@ export const createFuelTank = withDispatchCheck((call: CallItem): CreateFuelTank
             () => calls.fuelTanks.createFuelTank.matrixV1043.decode(call)
         )
         .when(
-            () => calls.fuelTanks.createFuelTank.matrixEnjinV1042.is(call),
-            () => calls.fuelTanks.createFuelTank.matrixEnjinV1042.decode(call)
-        )
-        .when(
             () => calls.fuelTanks.createFuelTank.matrixV1042.is(call),
             () => calls.fuelTanks.createFuelTank.matrixV1042.decode(call)
         )
         .when(
             () => calls.fuelTanks.createFuelTank.matrixV1041.is(call),
             () => calls.fuelTanks.createFuelTank.matrixV1041.decode(call)
-        )
-        .when(
-            () => calls.fuelTanks.createFuelTank.matrixEnjinV1041.is(call),
-            () => calls.fuelTanks.createFuelTank.matrixEnjinV1041.decode(call)
         )
         .when(
             () => calls.fuelTanks.createFuelTank.v1080.is(call),

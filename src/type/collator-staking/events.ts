@@ -2,7 +2,7 @@ import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../sup
 import * as matrixV500 from '../matrixV500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV1040 from '../matrixV1040'
-import * as matrixEnjinV1041 from '../matrixEnjinV1041'
+import * as matrixEnjinV1043 from '../matrixEnjinV1043'
 
 export const newInvulnerables = {
     name: 'CollatorStaking.NewInvulnerables',
@@ -61,13 +61,13 @@ export const candidateJoined = {
     /**
      * A new candidate joined the list of candidates.
      */
-    matrixEnjinV1041: new EventType(
+    matrixEnjinV1043: new EventType(
         'CollatorStaking.CandidateJoined',
         sts.struct({
             /**
              * accountId of the new candidate
              */
-            accountId: matrixEnjinV1041.AccountId32,
+            accountId: matrixEnjinV1043.AccountId32,
             /**
              * amount staked
              */
@@ -208,17 +208,17 @@ export const candidateExitFailed = {
      * renumbered `CollatorSelected` from 6 to 7. New variants are appended;
      * `test_event_indices_are_stable` pins the whole set so this cannot happen again.
      */
-    matrixEnjinV1041: new EventType(
+    matrixEnjinV1043: new EventType(
         'CollatorStaking.CandidateExitFailed',
         sts.struct({
             /**
              * AccountId of the candidate whose exit failed
              */
-            accountId: matrixEnjinV1041.AccountId32,
+            accountId: matrixEnjinV1043.AccountId32,
             /**
              * why the exit failed
              */
-            error: matrixEnjinV1041.DispatchError,
+            error: matrixEnjinV1043.DispatchError,
         })
     ),
 }

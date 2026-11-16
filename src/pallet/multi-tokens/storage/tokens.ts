@@ -5,7 +5,7 @@ import { match } from 'ts-pattern'
 import { Token } from '~/pallet/multi-tokens/storage/types'
 import { getMixedToken, getMixedTokenPairs, normalizeToken, normalizeTokenPairs, tokenLayout } from './token-values'
 
-// Storage v7 has no generated type yet; its keys are unchanged, so they are paged straight from the runtime metadata.
+// Page keys directly when a v7 token layout has no matching generated codec.
 const rawTokenKeys = {
     getKeysPaged: (pageSize: number, block: Block): AsyncIterable<[bigint, bigint][]> =>
         block._runtime.getStorageKeysPaged(pageSize, block.hash, 'MultiTokens.Tokens'),
@@ -33,14 +33,14 @@ export async function tokens(
     return match(block)
         .returnType<Promise<Token | AsyncIterable<[k: [bigint, bigint], v: Token | undefined][]> | undefined>>()
         .when(
-            () => multiTokens.tokens.matrixEnjinV1042.is(block),
+            () => multiTokens.tokens.matrixEnjinV1043.is(block),
             () => {
                 if (params?.collectionId !== undefined && params.tokenId !== undefined) {
                     return getMixedToken(block, [params.collectionId, params.tokenId])
                 }
 
                 return Promise.resolve(
-                    getMixedTokenPairs(block, multiTokens.tokens.matrixEnjinV1042, params?.batchSize ?? 1000)
+                    getMixedTokenPairs(block, multiTokens.tokens.matrixEnjinV1043, params?.batchSize ?? 1000)
                 )
             }
         )

@@ -3,7 +3,8 @@ import fs from 'node:fs'
 import { createRequire, Module } from 'node:module'
 import test, { after } from 'node:test'
 import { Runtime } from '@subsquid/substrate-runtime'
-import { Block, CallItem } from '~/contexts'
+import { Block, CallItem, EventItem } from '~/contexts'
+import { tokenUpdated } from '~/pallet/multi-tokens/events/token-updated'
 import { calls, events, storage } from '~/type'
 
 // The decoders pull in the processor mappings, which open the job queue; stub it so the run exits.
@@ -90,34 +91,6 @@ void test('Enjin Relaychain 1080 events and storage reuse the codecs already gen
     assert(storage.multiTokens.attributes.v1080.is(block))
 })
 
-void test('Enjin Matrixchain 1042 calls that embed a RuntimeCall only match the matrixEnjinV1042 codecs', () => {
-    const block = { _runtime: runtimeFor('enjin-matrixchain', 1042) } as Block
-
-    for (const item of [
-        calls.utility.batchAll,
-        calls.fuelTanks.dispatch,
-        calls.fuelTanks.createFuelTank,
-        calls.fuelTanks.forceCreateFuelTank,
-        calls.fuelTanks.insertRuleSet,
-        calls.fuelTanks.forceInsertRuleSet,
-    ]) {
-        assert(item.matrixEnjinV1042.matches(block), `${item.name} should match matrixEnjinV1042`)
-        assert(!item.matrixV1042.matches(block), `${item.name} must not match the canary matrixV1042 codec`)
-        assert(!item.matrixEnjinV1041.matches(block), `${item.name} must not match matrixEnjinV1041`)
-    }
-})
-
-void test('Enjin Matrixchain 1042 has matrixEnjinV1042 codecs for token storage and TokenUpdated; unchanged items keep matching the 1041 codecs', () => {
-    const block = { _runtime: runtimeFor('enjin-matrixchain', 1042) } as Block
-
-    assert(storage.multiTokens.tokens.matrixEnjinV1042.is(block))
-    assert(events.multiTokens.tokenUpdated.matrixEnjinV1042.matches(block))
-    assert(events.marketplace.listingCreated.matrixEnjinV1041.matches(block))
-    assert(events.multiTokens.frozen.matrixEnjinV1041.matches(block))
-    assert(calls.multiTokens.mint.matrixEnjinV1041.matches(block))
-    assert(storage.multiTokens.collections.matrixEnjinV1041.is(block))
-})
-
 void test('Matrixchain 1043 calls that embed a RuntimeCall only match the 1043 codecs on enjin and canary', () => {
     const enjin = { _runtime: runtimeFor('enjin-matrixchain', 1043) } as Block
     const canary = { _runtime: runtimeFor('canary-matrixchain', 1043) } as Block
@@ -131,7 +104,7 @@ void test('Matrixchain 1043 calls that embed a RuntimeCall only match the 1043 c
         calls.fuelTanks.forceInsertRuleSet,
     ]) {
         assert(item.matrixEnjinV1043.matches(enjin), `${item.name} should match matrixEnjinV1043`)
-        assert(!item.matrixEnjinV1042.matches(enjin), `${item.name} must not match matrixEnjinV1042 on enjin 1043`)
+        assert(!item.matrixV1042.matches(enjin), `${item.name} must not match the canary matrixV1042 codec`)
         assert(!item.matrixV1043.matches(enjin), `${item.name} must not match the canary matrixV1043 codec`)
         assert(item.matrixV1043.matches(canary), `${item.name} should match matrixV1043`)
         assert(!item.matrixV1042.matches(canary), `${item.name} must not match matrixV1042 on canary 1043`)
@@ -139,19 +112,29 @@ void test('Matrixchain 1043 calls that embed a RuntimeCall only match the 1043 c
     }
 })
 
-void test('Matrixchain 1043 events and storage keep matching the 1042 codecs', () => {
+void test('Matrixchain 1043 events and storage match the mainnet and Canary codecs', () => {
     const enjin = { _runtime: runtimeFor('enjin-matrixchain', 1043) } as Block
     const canary = { _runtime: runtimeFor('canary-matrixchain', 1043) } as Block
 
-    assert(storage.multiTokens.tokens.matrixEnjinV1042.is(enjin))
-    assert(events.multiTokens.tokenUpdated.matrixEnjinV1042.matches(enjin))
-    assert(events.marketplace.listingCreated.matrixEnjinV1041.matches(enjin))
-    assert(calls.multiTokens.mint.matrixEnjinV1041.matches(enjin))
-    assert(calls.marketplace.fillListing.matrixEnjinV1041.matches(enjin))
-    assert(storage.multiTokens.collections.matrixEnjinV1041.is(enjin))
+    assert(storage.multiTokens.tokens.matrixEnjinV1043.is(enjin))
+    assert(events.multiTokens.tokenUpdated.matrixEnjinV1043.matches(enjin))
+    assert(events.marketplace.listingCreated.matrixEnjinV1043.matches(enjin))
+    assert(events.multiTokens.frozen.matrixEnjinV1043.matches(enjin))
+    assert(calls.multiTokens.mint.matrixEnjinV1043.matches(enjin))
+    assert(calls.marketplace.fillListing.matrixEnjinV1043.matches(enjin))
+    assert(storage.multiTokens.collections.matrixEnjinV1043.is(enjin))
 
     assert(storage.multiTokens.tokens.matrixV1042.is(canary))
     assert(events.multiTokens.tokenUpdated.matrixV1042.matches(canary))
+
+    for (const block of [enjin, canary]) {
+        const item = {
+            block,
+            name: 'MultiTokens.TokenUpdated',
+            args: { collectionId: '2000', tokenId: '9007199254740993', value: undefined },
+        } as EventItem
+        assert.deepEqual(tokenUpdated(item), { collectionId: 2000n, tokenId: 9007199254740993n, value: undefined })
+    }
 })
 
 for (const network of ['enjin-matrixchain', 'canary-matrixchain'] as const) {
@@ -242,10 +225,8 @@ for (const [network, version] of [
     ['enjin-relaychain', 1080],
     ['enjin-relaychain', 1070],
     ['canary-relaychain', 1080],
-    ['enjin-matrixchain', 1041],
     ['canary-matrixchain', 1041],
     ['canary-matrixchain', 1042],
-    ['enjin-matrixchain', 1042],
     ['canary-matrixchain', 1043],
     ['enjin-matrixchain', 1043],
 ] as const) {

@@ -16,7 +16,7 @@ import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 import * as v1031 from '../v1031'
 import * as enjinV1032 from '../enjinV1032'
 import * as matrixV1040 from '../matrixV1040'
-import * as matrixEnjinV1041 from '../matrixEnjinV1041'
+import * as matrixEnjinV1043 from '../matrixEnjinV1043'
 import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 import * as v1060 from '../v1060'
@@ -95,17 +95,17 @@ export const listingCreated = {
     /**
      * A listing was created
      */
-    matrixEnjinV1041: new EventType(
+    matrixEnjinV1043: new EventType(
         'Marketplace.ListingCreated',
         sts.struct({
             /**
              * Id for the listing
              */
-            listingId: matrixEnjinV1041.H256,
+            listingId: matrixEnjinV1043.H256,
             /**
              * The listing
              */
-            listing: matrixEnjinV1041.Listing,
+            listing: matrixEnjinV1043.Listing,
         })
     ),
     /**
@@ -1468,37 +1468,37 @@ export const orderMatched = {
      * A matching call examined resting listings on the book. Each fill also emits
      * [`Event::ListingFilled`] for the resting listing.
      */
-    matrixEnjinV1041: new EventType(
+    matrixEnjinV1043: new EventType(
         'Marketplace.OrderMatched',
         sts.struct({
             /**
              * The account whose listing was matched against the book
              */
-            taker: matrixEnjinV1041.AccountId32,
+            taker: matrixEnjinV1043.AccountId32,
             /**
              * The asset side of the book
              */
-            assetId: matrixEnjinV1041.AssetId,
+            assetId: matrixEnjinV1043.AssetId,
             /**
              * The currency side of the book
              */
-            currencyId: matrixEnjinV1041.AssetId,
+            currencyId: matrixEnjinV1043.AssetId,
             /**
              * The side of the book the taker's listing belongs to
              */
-            side: matrixEnjinV1041.OrderSide,
+            side: matrixEnjinV1043.OrderSide,
             /**
              * The total amount filled by matching
              */
             amountMatched: sts.bigint(),
             /**
-             * The number of resting listings examined (filled or skipped)
+             * The number of resting listings examined (filled, skipped or removed)
              */
             ordersExamined: sts.number(),
             /**
              * The listing id of the resting remainder, if any
              */
-            remainderListingId: sts.option(() => matrixEnjinV1041.H256),
+            remainderListingId: sts.option(() => matrixEnjinV1043.H256),
             /**
              * The amount of the taker's order that was neither filled nor rested because the
              * book had no room for the remainder (immediate-or-cancel). Zero when the remainder
@@ -1515,13 +1515,13 @@ export const listingNotIndexed = {
      * A listing could not be indexed into the book during the migration because the book was
      * full. It stays fillable via `fill_listing` and can be cancelled normally.
      */
-    matrixEnjinV1041: new EventType(
+    matrixEnjinV1043: new EventType(
         'Marketplace.ListingNotIndexed',
         sts.struct({
             /**
              * Id for the listing
              */
-            listingId: matrixEnjinV1041.H256,
+            listingId: matrixEnjinV1043.H256,
         })
     ),
 }
@@ -1541,13 +1541,13 @@ export const listingSettlementAbandoned = {
      * [`resolve_abandoned_listing`](Pallet::resolve_abandoned_listing), which retries the
      * settlement and releases both sides when the trade cannot be completed at all.
      */
-    matrixEnjinV1041: new EventType(
+    matrixEnjinV1043: new EventType(
         'Marketplace.ListingSettlementAbandoned',
         sts.struct({
             /**
              * Id for the listing
              */
-            listingId: matrixEnjinV1041.H256,
+            listingId: matrixEnjinV1043.H256,
             /**
              * How many attempts were made
              */
@@ -1565,18 +1565,18 @@ export const abandonedListingReleased = {
      * back with the seller, the bid is back with the bidder, the deposit is back with its
      * depositor and the listing is gone. `ListingCancelled` is emitted for the same listing.
      */
-    matrixEnjinV1041: new EventType(
+    matrixEnjinV1043: new EventType(
         'Marketplace.AbandonedListingReleased',
         sts.struct({
             /**
              * Id for the listing
              */
-            listingId: matrixEnjinV1041.H256,
+            listingId: matrixEnjinV1043.H256,
             /**
              * The winning bid that went back to the bidder, out of escrow or off hold, if the
              * listing had one
              */
-            returnedBid: sts.option(() => matrixEnjinV1041.Bid),
+            returnedBid: sts.option(() => matrixEnjinV1043.Bid),
         })
     ),
 }
@@ -1588,7 +1588,7 @@ export const migrationCompleted = {
      * exhausted, the on-chain storage version is current, and every marketplace call is
      * available again
      */
-    matrixEnjinV1041: new EventType(
+    matrixEnjinV1043: new EventType(
         'Marketplace.MigrationCompleted',
         sts.struct({
             /**

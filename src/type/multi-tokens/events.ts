@@ -23,8 +23,6 @@ import * as matrixV1030 from '../matrixV1030'
 import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 import * as enjinV1032 from '../enjinV1032'
 import * as matrixV1040 from '../matrixV1040'
-import * as matrixEnjinV1041 from '../matrixEnjinV1041'
-import * as matrixEnjinV1042 from '../matrixEnjinV1042'
 import * as matrixV1042 from '../matrixV1042'
 import * as matrixEnjinV1043 from '../matrixEnjinV1043'
 import * as enjinV1050 from '../enjinV1050'
@@ -341,7 +339,7 @@ export const tokenMutated = {
     /**
      * A token was mutated
      */
-    matrixEnjinV1041: new EventType(
+    matrixEnjinV1043: new EventType(
         'MultiTokens.TokenMutated',
         sts.struct({
             /**
@@ -355,7 +353,7 @@ export const tokenMutated = {
             /**
              * mutation that was applied to the Token
              */
-            mutation: matrixEnjinV1041.DefaultTokenMutation,
+            mutation: matrixEnjinV1043.DefaultTokenMutation,
         })
     ),
     /**
@@ -706,7 +704,7 @@ export const frozen = {
     /**
      * Collection, token or account was frozen
      */
-    matrixEnjinV1041: new EventType('MultiTokens.Frozen', matrixEnjinV1041.Freeze),
+    matrixEnjinV1043: new EventType('MultiTokens.Frozen', matrixEnjinV1043.Freeze),
     /**
      * Collection, token or account was frozen
      */
@@ -750,7 +748,7 @@ export const thawed = {
     /**
      * Collection, token or account was unfrozen
      */
-    matrixEnjinV1041: new EventType('MultiTokens.Thawed', matrixEnjinV1041.Thaw),
+    matrixEnjinV1043: new EventType('MultiTokens.Thawed', matrixEnjinV1043.Thaw),
     /**
      * Collection, token or account was unfrozen
      */
@@ -1074,7 +1072,7 @@ export const reserved = {
     /**
      * Token units were reserved
      */
-    matrixEnjinV1041: new EventType(
+    matrixEnjinV1043: new EventType(
         'MultiTokens.Reserved',
         sts.struct({
             /**
@@ -1088,7 +1086,7 @@ export const reserved = {
             /**
              * The account that reserved the tokens
              */
-            accountId: matrixEnjinV1041.AccountId32,
+            accountId: matrixEnjinV1043.AccountId32,
             /**
              * The amount that was reserved
              */
@@ -1096,7 +1094,7 @@ export const reserved = {
             /**
              * The identifier of the reserves
              */
-            reserveId: matrixEnjinV1041.RuntimeHoldReason,
+            reserveId: matrixEnjinV1043.RuntimeHoldReason,
         })
     ),
     /**
@@ -1554,7 +1552,7 @@ export const unreserved = {
     /**
      * Token units were unreserved
      */
-    matrixEnjinV1041: new EventType(
+    matrixEnjinV1043: new EventType(
         'MultiTokens.Unreserved',
         sts.struct({
             /**
@@ -1568,7 +1566,7 @@ export const unreserved = {
             /**
              * The account that unreserved the tokens
              */
-            accountId: matrixEnjinV1041.AccountId32,
+            accountId: matrixEnjinV1043.AccountId32,
             /**
              * The amount that was unreserved
              */
@@ -1576,7 +1574,7 @@ export const unreserved = {
             /**
              * The identifier of the unreserved tokens
              */
-            reserveId: matrixEnjinV1041.RuntimeHoldReason,
+            reserveId: matrixEnjinV1043.RuntimeHoldReason,
         })
     ),
     /**
@@ -2046,7 +2044,7 @@ export const movedReserves = {
     /**
      * Reserved token units were moved
      */
-    matrixEnjinV1041: new EventType(
+    matrixEnjinV1043: new EventType(
         'MultiTokens.MovedReserves',
         sts.struct({
             /**
@@ -2060,11 +2058,11 @@ export const movedReserves = {
             /**
              * The account that reserves were moved from
              */
-            source: matrixEnjinV1041.AccountId32,
+            source: matrixEnjinV1043.AccountId32,
             /**
              * The account that received the moved reserves
              */
-            destination: matrixEnjinV1041.AccountId32,
+            destination: matrixEnjinV1043.AccountId32,
             /**
              * The amount that was moved
              */
@@ -2072,7 +2070,7 @@ export const movedReserves = {
             /**
              * The identifier of the moved reserves
              */
-            reserveId: matrixEnjinV1041.RuntimeHoldReason,
+            reserveId: matrixEnjinV1043.RuntimeHoldReason,
         })
     ),
     /**
@@ -2594,7 +2592,7 @@ export const reserveRepatriated = {
     /**
      * Reserved token units were transferred
      */
-    matrixEnjinV1041: new EventType(
+    matrixEnjinV1043: new EventType(
         'MultiTokens.ReserveRepatriated',
         sts.struct({
             /**
@@ -2608,11 +2606,11 @@ export const reserveRepatriated = {
             /**
              * The account that reserves were moved from
              */
-            source: matrixEnjinV1041.AccountId32,
+            source: matrixEnjinV1043.AccountId32,
             /**
              * The account that received the moved reserves
              */
-            destination: matrixEnjinV1041.AccountId32,
+            destination: matrixEnjinV1043.AccountId32,
             /**
              * The amount that was moved
              */
@@ -2620,7 +2618,7 @@ export const reserveRepatriated = {
             /**
              * The identifier of the moved reserves
              */
-            reserveId: matrixEnjinV1041.RuntimeHoldReason,
+            reserveId: matrixEnjinV1043.RuntimeHoldReason,
         })
     ),
     /**
@@ -3210,7 +3208,7 @@ export const collectionUpdated = {
     /**
      * Collection storage was set to `value`
      */
-    matrixEnjinV1041: new EventType(
+    matrixEnjinV1043: new EventType(
         'MultiTokens.CollectionUpdated',
         sts.struct({
             /**
@@ -3220,7 +3218,7 @@ export const collectionUpdated = {
             /**
              * new value of Collection storage
              */
-            value: sts.option(() => matrixEnjinV1041.Collection),
+            value: sts.option(() => matrixEnjinV1043.Collection),
         })
     ),
     /**
@@ -3534,7 +3532,7 @@ export const tokenUpdated = {
     /**
      * Token storage was set to `value`
      */
-    matrixEnjinV1041: new EventType(
+    matrixEnjinV1043: new EventType(
         'MultiTokens.TokenUpdated',
         sts.struct({
             /**
@@ -3548,27 +3546,7 @@ export const tokenUpdated = {
             /**
              * new value of Token storage
              */
-            value: sts.option(() => matrixEnjinV1041.Token),
-        })
-    ),
-    /**
-     * Token storage was set to `value`
-     */
-    matrixEnjinV1042: new EventType(
-        'MultiTokens.TokenUpdated',
-        sts.struct({
-            /**
-             * The collection id for which the value is set
-             */
-            collectionId: sts.bigint(),
-            /**
-             * The token id for which the value is set
-             */
-            tokenId: sts.bigint(),
-            /**
-             * new value of Token storage
-             */
-            value: sts.option(() => matrixEnjinV1042.Token),
+            value: sts.option(() => matrixEnjinV1043.Token),
         })
     ),
     /**
@@ -4071,7 +4049,7 @@ export const tokenAccountUpdated = {
     /**
      * TokenAccount storage was set to `value`
      */
-    matrixEnjinV1041: new EventType(
+    matrixEnjinV1043: new EventType(
         'MultiTokens.TokenAccountUpdated',
         sts.struct({
             /**
@@ -4085,11 +4063,11 @@ export const tokenAccountUpdated = {
             /**
              * The account id that owned the token account
              */
-            accountId: matrixEnjinV1041.AccountId32,
+            accountId: matrixEnjinV1043.AccountId32,
             /**
              * new value of TokenAccount storage
              */
-            value: sts.option(() => matrixEnjinV1041.TokenAccount),
+            value: sts.option(() => matrixEnjinV1043.TokenAccount),
         })
     ),
     /**
@@ -5418,7 +5396,7 @@ export const locked = {
     /**
      * Token units were locked
      */
-    matrixEnjinV1041: new EventType(
+    matrixEnjinV1043: new EventType(
         'MultiTokens.Locked',
         sts.struct({
             /**
@@ -5432,7 +5410,7 @@ export const locked = {
             /**
              * The account that was locked
              */
-            accountId: matrixEnjinV1041.AccountId32,
+            accountId: matrixEnjinV1043.AccountId32,
             /**
              * The amount that was locked
              */
@@ -5446,7 +5424,7 @@ export const unlocked = {
     /**
      * Token units were unlocked
      */
-    matrixEnjinV1041: new EventType(
+    matrixEnjinV1043: new EventType(
         'MultiTokens.Unlocked',
         sts.struct({
             /**
@@ -5460,7 +5438,7 @@ export const unlocked = {
             /**
              * The account that was unlocked
              */
-            accountId: matrixEnjinV1041.AccountId32,
+            accountId: matrixEnjinV1043.AccountId32,
             /**
              * The amount that was unlocked
              */
@@ -5474,7 +5452,7 @@ export const ephemeralTokenDestroyed = {
     /**
      * An ephemeral token reached its expiration block and was automatically destroyed.
      */
-    matrixEnjinV1041: new EventType(
+    matrixEnjinV1043: new EventType(
         'MultiTokens.EphemeralTokenDestroyed',
         sts.struct({
             /**
@@ -5498,7 +5476,7 @@ export const attributeUpgraded = {
     /**
      * An attribute was upgraded to the latest storage encoding
      */
-    matrixEnjinV1041: new EventType(
+    matrixEnjinV1043: new EventType(
         'MultiTokens.AttributeUpgraded',
         sts.struct({
             /**
@@ -5528,7 +5506,7 @@ export const ephemeralCleanupFailed = {
      * in [`FailedEphemeralCleanups`] and can be retried via
      * [`Pallet::retry_failed_ephemeral_cleanup`].
      */
-    matrixEnjinV1041: new EventType(
+    matrixEnjinV1043: new EventType(
         'MultiTokens.EphemeralCleanupFailed',
         sts.struct({
             /**
@@ -5546,7 +5524,7 @@ export const ephemeralCleanupFailed = {
             /**
              * why the destruction failed
              */
-            error: matrixEnjinV1041.DispatchError,
+            error: matrixEnjinV1043.DispatchError,
         })
     ),
 }
@@ -5557,7 +5535,7 @@ export const tokenLent = {
      * A token was lent to a borrower. It will be automatically returned to the lender at
      * the expiration block.
      */
-    matrixEnjinV1041: new EventType(
+    matrixEnjinV1043: new EventType(
         'MultiTokens.TokenLent',
         sts.struct({
             /**
@@ -5571,11 +5549,11 @@ export const tokenLent = {
             /**
              * the account that lent the token and will receive it back
              */
-            lender: matrixEnjinV1041.AccountId32,
+            lender: matrixEnjinV1043.AccountId32,
             /**
              * the account holding the token for the duration of the loan
              */
-            borrower: matrixEnjinV1041.AccountId32,
+            borrower: matrixEnjinV1043.AccountId32,
             /**
              * the block at which the token is scheduled to be returned
              */
@@ -5589,7 +5567,7 @@ export const loanExtended = {
     /**
      * The expiration block of an active loan was extended by the lender.
      */
-    matrixEnjinV1041: new EventType(
+    matrixEnjinV1043: new EventType(
         'MultiTokens.LoanExtended',
         sts.struct({
             /**
@@ -5618,7 +5596,7 @@ export const tokenReturned = {
      * A lent token was returned to its lender, either by the borrower transferring it
      * back or by the automatic return at the loan's expiration block.
      */
-    matrixEnjinV1041: new EventType(
+    matrixEnjinV1043: new EventType(
         'MultiTokens.TokenReturned',
         sts.struct({
             /**
@@ -5632,11 +5610,11 @@ export const tokenReturned = {
             /**
              * the account the token was returned to
              */
-            lender: matrixEnjinV1041.AccountId32,
+            lender: matrixEnjinV1043.AccountId32,
             /**
              * the account that held the token during the loan
              */
-            borrower: matrixEnjinV1041.AccountId32,
+            borrower: matrixEnjinV1043.AccountId32,
         })
     ),
 }
@@ -5647,7 +5625,7 @@ export const loanReturnFailed = {
      * Automatic return of a lent token failed. The token was parked in
      * [`FailedLoanReturns`] and can be retried via [`Pallet::retry_failed_loan_return`].
      */
-    matrixEnjinV1041: new EventType(
+    matrixEnjinV1043: new EventType(
         'MultiTokens.LoanReturnFailed',
         sts.struct({
             /**
@@ -5665,7 +5643,7 @@ export const loanReturnFailed = {
             /**
              * why the return failed
              */
-            error: matrixEnjinV1041.DispatchError,
+            error: matrixEnjinV1043.DispatchError,
         })
     ),
 }
@@ -5676,7 +5654,7 @@ export const mintRateLimitUpdated = {
      * A mint rate limit was added or tightened, effective immediately. If `token_id` is
      * `None`, it applies to the collection scope.
      */
-    matrixEnjinV1041: new EventType(
+    matrixEnjinV1043: new EventType(
         'MultiTokens.MintRateLimitUpdated',
         sts.struct({
             /**
@@ -5691,7 +5669,7 @@ export const mintRateLimitUpdated = {
              * The rate limit now being enforced. `None` means the limit was removed (only
              * possible via [`force_set_mint_rate_limit`](Pallet::force_set_mint_rate_limit)).
              */
-            limit: sts.option(() => matrixEnjinV1041.MintRateLimit),
+            limit: sts.option(() => matrixEnjinV1043.MintRateLimit),
         })
     ),
 }
@@ -5702,7 +5680,7 @@ export const mintRateLimitChangeScheduled = {
      * A loosening or removal of a mint rate limit was scheduled. It takes effect at
      * `effective_block` unless cancelled or superseded before then.
      */
-    matrixEnjinV1041: new EventType(
+    matrixEnjinV1043: new EventType(
         'MultiTokens.MintRateLimitChangeScheduled',
         sts.struct({
             /**
@@ -5717,7 +5695,7 @@ export const mintRateLimitChangeScheduled = {
              * The rate limit that will be enforced from `effective_block`. `None` removes the
              * limit entirely.
              */
-            newLimit: sts.option(() => matrixEnjinV1041.MintRateLimit),
+            newLimit: sts.option(() => matrixEnjinV1043.MintRateLimit),
             /**
              * The block at which `new_limit` takes effect
              */
@@ -5731,7 +5709,7 @@ export const mintRateLimitChangeCancelled = {
     /**
      * A pending mint rate limit change was cancelled before taking effect
      */
-    matrixEnjinV1041: new EventType(
+    matrixEnjinV1043: new EventType(
         'MultiTokens.MintRateLimitChangeCancelled',
         sts.struct({
             /**
@@ -5752,7 +5730,7 @@ export const phantomAttributeDepositCleared = {
      * [`ClearPhantomAttributeDeposits`](migrations::ClearPhantomAttributeDeposits) removed the
      * part of an attribute's recorded deposit that no hold backed (audit finding MT-04)
      */
-    matrixEnjinV1041: new EventType(
+    matrixEnjinV1043: new EventType(
         'MultiTokens.PhantomAttributeDepositCleared',
         sts.struct({
             /**
@@ -5770,7 +5748,7 @@ export const phantomAttributeDepositCleared = {
             /**
              * The attribute's depositor; `None` is the collection owner
              */
-            depositor: sts.option(() => matrixEnjinV1041.AccountId32),
+            depositor: sts.option(() => matrixEnjinV1043.AccountId32),
             /**
              * The deposit the attribute records now
              */
@@ -5790,7 +5768,7 @@ export const phantomAttributeDepositSkipped = {
      * listed attribute unchanged because it no longer matched the list: it was removed, or
      * its depositor or deposit changed, after the list was generated
      */
-    matrixEnjinV1041: new EventType(
+    matrixEnjinV1043: new EventType(
         'MultiTokens.PhantomAttributeDepositSkipped',
         sts.struct({
             /**

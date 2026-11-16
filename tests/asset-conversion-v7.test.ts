@@ -2,7 +2,6 @@ import assert from 'node:assert/strict'
 import { createRequire, Module } from 'node:module'
 import test, { after } from 'node:test'
 import { Codec, Type, TypeKind } from '@subsquid/scale-codec'
-import { Runtime } from '@subsquid/substrate-runtime'
 import { compactToU8a, stringToU8a, u8aConcat, u8aToHex } from '@polkadot/util'
 import { blake2AsU8a } from '@polkadot/util-crypto'
 import type { Block, CallItem, CommonContext, EventItem } from '~/contexts'
@@ -111,7 +110,7 @@ function tokenValue() {
 }
 
 async function fixture(rows: Row[] = []) {
-    const real = await getRuntimeCached('enjin-matrixchain', 1041)
+    const real = await getRuntimeCached('enjin-matrixchain', 1043)
     const chain = new Map<string, unknown>()
     const raw = new Map<string, string>()
     const runtime = Object.create(real) as typeof real & Record<string, unknown>
@@ -135,39 +134,20 @@ async function fixture(rows: Row[] = []) {
         const type = real.description.storage.MultiTokens.items.Tokens.value
         raw.set(
             real.encodeStorageKey('MultiTokens.Tokens', collectionId, tokenId),
-            real.scaleCodec.encodeToHex(type, value)
+            real.scaleCodec.encodeToHex(type, { ...value, creationBlock: 900 })
         )
     }
-    return { real, block, ctx, store, event, setStorage, setToken }
-}
-
-/** The runtime with storage v7's `creationBlock` appended to the token, as enjin/pallets master encodes it. */
-function v7Runtime(real: Runtime) {
-    const type = real.description.storage.MultiTokens.items.Tokens.value
-    const definition = real.description.types[type]
-    assert(definition.kind === TypeKind.Composite)
-    const u32 = real.description.types.findIndex((t) => t.kind === TypeKind.Primitive && t.primitive === 'U32')
-    assert(u32 >= 0)
-
-    const types = real.description.types.slice() as Type[]
-    types[type] = { ...definition, fields: [...definition.fields, { name: 'creationBlock', type: u32 }] }
-    const codec = new Codec(types)
-    const runtime = {
-        description: { ...real.description, types },
-        decodeStorageValue: (_name: string, value: string) => codec.decodeBinary(type, value),
-    } as unknown as Runtime
-
-    return { runtime, codec, type }
+    return { block, ctx, store, event, setStorage, setToken }
 }
 
 void test('token layout check accepts the v6 and v7 trailing fields', async () => {
-    const { real } = await fixture()
-    const { runtime } = v7Runtime(real)
+    const previous = await getRuntimeCached('canary-matrixchain', 1041)
+    const current = await getRuntimeCached('enjin-matrixchain', 1043)
 
-    assert.equal(tokenLayout(real), 'v6')
-    assert.equal(tokenLayout(runtime), 'v7')
-    assert.equal(hasV6TokenLayout(real), true)
-    assert.equal(hasV6TokenLayout(runtime), true)
+    assert.equal(tokenLayout(previous), 'v6')
+    assert.equal(tokenLayout(current), 'v7')
+    assert.equal(hasV6TokenLayout(previous), true)
+    assert.equal(hasV6TokenLayout(current), true)
 })
 
 void test('Canary Matrixchain 1042 metadata decodes current and lazily unmigrated tokens', async () => {
@@ -185,25 +165,10 @@ void test('Canary Matrixchain 1042 metadata decodes current and lazily unmigrate
     assert.equal(decodeTokenStorageValue(current, v6).creationBlock, undefined)
 })
 
-void test('Enjin Matrixchain 1042 metadata decodes current and lazily unmigrated tokens', async () => {
-    const current = await getRuntimeCached('enjin-matrixchain', 1042)
-    const previous = await getRuntimeCached('enjin-matrixchain', 1041)
-    const currentType = current.description.storage.MultiTokens.items.Tokens.value
-    const previousType = previous.description.storage.MultiTokens.items.Tokens.value
-
-    assert.equal(tokenLayout(current), 'v7')
-    assert.equal(tokenLayout(previous), 'v6')
-
-    const v7 = current.scaleCodec.encodeToHex(currentType, { ...tokenValue(), creationBlock: 12331000 })
-    const v6 = previous.scaleCodec.encodeToHex(previousType, tokenValue())
-    assert.equal(decodeTokenStorageValue(current, v7).creationBlock, 12331000n)
-    assert.equal(decodeTokenStorageValue(current, v6).creationBlock, undefined)
-})
-
 for (const network of ['enjin-matrixchain', 'canary-matrixchain'] as const) {
-    void test(`${network} 1043 keeps the v7 token layout of 1042`, async () => {
+    void test(`${network} 1043 matches the v7 token layout from Canary Matrixchain 1042`, async () => {
         const current = await getRuntimeCached(network, 1043)
-        const previous = await getRuntimeCached(network, 1042)
+        const previous = await getRuntimeCached('canary-matrixchain', 1042)
         const currentType = current.description.storage.MultiTokens.items.Tokens.value
 
         assert.equal(tokenLayout(current), 'v7')
@@ -221,22 +186,24 @@ for (const network of ['enjin-matrixchain', 'canary-matrixchain'] as const) {
     })
 }
 
-void test('v7 token decoder reads v7, lazily unmigrated v6 and pre-v6 encodings', async () => {
-    const { real } = await fixture()
-    const { runtime, codec, type } = v7Runtime(real)
+void test('Enjin Matrixchain token decoder reads v7, lazily unmigrated v6 and pre-v6 encodings', async () => {
+    const runtime = await getRuntimeCached('enjin-matrixchain', 1043)
+    const previous = await getRuntimeCached('canary-matrixchain', 1041)
+    const currentType = runtime.description.storage.MultiTokens.items.Tokens.value
+    const previousType = previous.description.storage.MultiTokens.items.Tokens.value
 
-    const v7 = codec.encodeToHex(type, { ...tokenValue(), creationBlock: 1234 })
-    const v6 = real.scaleCodec.encodeToHex(type, tokenValue())
-    const preV6Types = real.description.types.slice() as Type[]
-    const definition = real.description.types[type]
+    const v7 = runtime.scaleCodec.encodeToHex(currentType, { ...tokenValue(), creationBlock: 1234 })
+    const v6 = previous.scaleCodec.encodeToHex(previousType, tokenValue())
+    const preV6Types = previous.description.types.slice() as Type[]
+    const definition = previous.description.types[previousType]
     assert(definition.kind === TypeKind.Composite)
-    preV6Types[type] = { ...definition, fields: definition.fields.slice(0, -4) }
+    preV6Types[previousType] = { ...definition, fields: definition.fields.slice(0, -4) }
     const preV6Value = tokenValue()
     delete preV6Value.ephemeralExpiration
     delete preV6Value.isLendable
     delete preV6Value.lending
     delete preV6Value.mintRateLimit
-    const preV6 = new Codec(preV6Types).encodeToHex(type, preV6Value)
+    const preV6 = new Codec(preV6Types).encodeToHex(previousType, preV6Value)
 
     const current = decodeTokenStorageValue(runtime, v7)
     assert.equal(current.creationBlock, 1234n)

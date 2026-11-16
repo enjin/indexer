@@ -78,8 +78,8 @@ const decodeBatchMint = withDispatchCheck((call: CallItem): BatchMint => {
             () => calls.multiTokens.batchMint.v100.decode(call)
         )
         .when(
-            () => calls.multiTokens.batchMint.matrixEnjinV1041.is(call),
-            () => calls.multiTokens.batchMint.matrixEnjinV1041.decode(call) as unknown as BatchMint
+            () => calls.multiTokens.batchMint.matrixEnjinV1043.is(call),
+            () => calls.multiTokens.batchMint.matrixEnjinV1043.decode(call) as unknown as BatchMint
         )
         .when(
             () => calls.multiTokens.batchMint.enjinV1050.is(call),

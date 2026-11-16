@@ -86,7 +86,7 @@ const otherTankId = `0x${'33'.repeat(32)}`
 const userId = `0x${'22'.repeat(32)}`
 const ruleSetKey = `${tankId}-1`
 
-async function fixture(rows: Row[] = [], specVersion = 1041) {
+async function fixture(rows: Row[] = [], specVersion = 1043) {
     const runtime = await getRuntimeCached('enjin-matrixchain', specVersion)
     const block = { _runtime: runtime, height: 500, hash: '0x00', timestamp: 0 } as unknown as Block
     const store = new MemoryStore(rows)
@@ -233,7 +233,7 @@ void test('RuleSetInserted inside FuelTanks.dispatch(Utility.batch_all) uses the
 })
 
 void test('RuleSetInserted inside MatrixUtility.batch is decoded', async () => {
-    // MatrixUtility was removed from the runtime in 1041.
+    // MatrixUtility was removed from the Enjin Matrixchain runtime in 1043.
     const { ctx, block, store, call, event } = await fixture([], 1031)
     const emitter = call('MatrixUtility.batch', { calls: [insertCall(tankId, '11')], continueOnFailure: false })
 

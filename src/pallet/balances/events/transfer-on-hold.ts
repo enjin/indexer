@@ -8,8 +8,8 @@ export function transferOnHold(event: EventItem): TransferOnHold {
     return match(event)
         .returnType<TransferOnHold>()
         .when(
-            () => balances.transferOnHold.matrixEnjinV1041.is(event),
-            () => balances.transferOnHold.matrixEnjinV1041.decode(event)
+            () => balances.transferOnHold.matrixEnjinV1043.is(event),
+            () => balances.transferOnHold.matrixEnjinV1043.decode(event)
         )
         .when(
             () => balances.transferOnHold.enjinV1070.is(event),

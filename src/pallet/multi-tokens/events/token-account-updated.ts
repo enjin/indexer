@@ -24,8 +24,8 @@ export function tokenAccountUpdated(event: EventItem): TokenAccountUpdated {
             () => multiTokens.tokenAccountUpdated.matrixEnjinV1031.decode(event)
         )
         .when(
-            () => multiTokens.tokenAccountUpdated.matrixEnjinV1041.is(event),
-            () => multiTokens.tokenAccountUpdated.matrixEnjinV1041.decode(event)
+            () => multiTokens.tokenAccountUpdated.matrixEnjinV1043.is(event),
+            () => multiTokens.tokenAccountUpdated.matrixEnjinV1043.decode(event)
         )
         .when(
             () => multiTokens.tokenAccountUpdated.matrixV500.is(event),

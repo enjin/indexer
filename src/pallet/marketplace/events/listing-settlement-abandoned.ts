@@ -14,8 +14,8 @@ import { marketplace } from '~/type/events'
 import { UnsupportedEventError } from '~/util/errors'
 
 export function listingSettlementAbandoned(event: EventItem): ListingSettlementAbandoned {
-    if (!marketplace.listingSettlementAbandoned.matrixEnjinV1041.is(event)) throw new UnsupportedEventError(event)
-    return marketplace.listingSettlementAbandoned.matrixEnjinV1041.decode(event)
+    if (!marketplace.listingSettlementAbandoned.matrixEnjinV1043.is(event)) throw new UnsupportedEventError(event)
+    return marketplace.listingSettlementAbandoned.matrixEnjinV1043.decode(event)
 }
 
 export function listingSettlementAbandonedEventModel(
