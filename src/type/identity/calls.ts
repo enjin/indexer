@@ -7,7 +7,7 @@ import * as v1030 from '../v1030'
 import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 import * as enjinV1032 from '../enjinV1032'
 import * as matrixV1040 from '../matrixV1040'
-import * as matrixEnjinV1041 from '../matrixEnjinV1041'
+import * as matrixEnjinV1043 from '../matrixEnjinV1043'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
 import * as enjinV1070 from '../enjinV1070'
@@ -535,12 +535,12 @@ export const setUsernameFor = {
      *   - When combined with the suffix of the issuing authority be _less than_ the
      *     `MaxUsernameLength`.
      */
-    matrixEnjinV1041: new CallType(
+    matrixEnjinV1043: new CallType(
         'Identity.set_username_for',
         sts.struct({
-            who: matrixEnjinV1041.MultiAddress,
+            who: matrixEnjinV1043.MultiAddress,
             username: sts.bytes(),
-            signature: sts.option(() => matrixEnjinV1041.MultiSignature),
+            signature: sts.option(() => matrixEnjinV1043.MultiSignature),
             useAllocation: sts.boolean(),
         })
     ),

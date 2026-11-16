@@ -51,9 +51,7 @@ import * as v1032 from '../v1032'
 import * as enjinV1033 from '../enjinV1033'
 import * as v1033 from '../v1033'
 import * as matrixV1040 from '../matrixV1040'
-import * as matrixEnjinV1041 from '../matrixEnjinV1041'
 import * as matrixV1041 from '../matrixV1041'
-import * as matrixEnjinV1042 from '../matrixEnjinV1042'
 import * as matrixV1042 from '../matrixV1042'
 import * as matrixEnjinV1043 from '../matrixEnjinV1043'
 import * as matrixV1043 from '../matrixV1043'
@@ -541,36 +539,6 @@ export const events = {
         [],
         sts.array(() => matrixEnjinV1031.EventRecord)
     ) as EventsMatrixEnjinV1031,
-    /**
-     *  Events deposited for the current block.
-     *
-     *  NOTE: The item is unbound and should therefore never be read on chain.
-     *  It could otherwise inflate the PoV size of a block.
-     *
-     *  Events have a large in-memory size. Box the events to not go out-of-memory
-     *  just in case someone still reads them from within the runtime.
-     */
-    matrixEnjinV1041: new StorageType(
-        'System.Events',
-        'Default',
-        [],
-        sts.array(() => matrixEnjinV1041.EventRecord)
-    ) as EventsMatrixEnjinV1041,
-    /**
-     *  Events deposited for the current block.
-     *
-     *  NOTE: The item is unbound and should therefore never be read on chain.
-     *  It could otherwise inflate the PoV size of a block.
-     *
-     *  Events have a large in-memory size. Box the events to not go out-of-memory
-     *  just in case someone still reads them from within the runtime.
-     */
-    matrixEnjinV1042: new StorageType(
-        'System.Events',
-        'Default',
-        [],
-        sts.array(() => matrixEnjinV1042.EventRecord)
-    ) as EventsMatrixEnjinV1042,
     /**
      *  Events deposited for the current block.
      *
@@ -1531,36 +1499,6 @@ export interface EventsMatrixEnjinV1031 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): matrixEnjinV1031.EventRecord[]
     get(block: Block): Promise<matrixEnjinV1031.EventRecord[] | undefined>
-}
-
-/**
- *  Events deposited for the current block.
- *
- *  NOTE: The item is unbound and should therefore never be read on chain.
- *  It could otherwise inflate the PoV size of a block.
- *
- *  Events have a large in-memory size. Box the events to not go out-of-memory
- *  just in case someone still reads them from within the runtime.
- */
-export interface EventsMatrixEnjinV1041 {
-    is(block: RuntimeCtx): boolean
-    getDefault(block: Block): matrixEnjinV1041.EventRecord[]
-    get(block: Block): Promise<matrixEnjinV1041.EventRecord[] | undefined>
-}
-
-/**
- *  Events deposited for the current block.
- *
- *  NOTE: The item is unbound and should therefore never be read on chain.
- *  It could otherwise inflate the PoV size of a block.
- *
- *  Events have a large in-memory size. Box the events to not go out-of-memory
- *  just in case someone still reads them from within the runtime.
- */
-export interface EventsMatrixEnjinV1042 {
-    is(block: RuntimeCtx): boolean
-    getDefault(block: Block): matrixEnjinV1042.EventRecord[]
-    get(block: Block): Promise<matrixEnjinV1042.EventRecord[] | undefined>
 }
 
 /**
@@ -2641,7 +2579,7 @@ export const blockSize = {
      *
      *  Tracks the size of the header and all extrinsics.
      */
-    matrixEnjinV1041: new StorageType('System.BlockSize', 'Optional', [], sts.number()) as BlockSizeMatrixEnjinV1041,
+    matrixEnjinV1043: new StorageType('System.BlockSize', 'Optional', [], sts.number()) as BlockSizeMatrixEnjinV1043,
 }
 
 /**
@@ -2649,7 +2587,7 @@ export const blockSize = {
  *
  *  Tracks the size of the header and all extrinsics.
  */
-export interface BlockSizeMatrixEnjinV1041 {
+export interface BlockSizeMatrixEnjinV1043 {
     is(block: RuntimeCtx): boolean
     get(block: Block): Promise<number | undefined>
 }
@@ -2658,18 +2596,18 @@ export const blocksTillUpgrade = {
     /**
      *  Number of blocks till the pending code upgrade is applied.
      */
-    matrixEnjinV1041: new StorageType(
+    matrixEnjinV1043: new StorageType(
         'System.BlocksTillUpgrade',
         'Optional',
         [],
         sts.number()
-    ) as BlocksTillUpgradeMatrixEnjinV1041,
+    ) as BlocksTillUpgradeMatrixEnjinV1043,
 }
 
 /**
  *  Number of blocks till the pending code upgrade is applied.
  */
-export interface BlocksTillUpgradeMatrixEnjinV1041 {
+export interface BlocksTillUpgradeMatrixEnjinV1043 {
     is(block: RuntimeCtx): boolean
     get(block: Block): Promise<number | undefined>
 }

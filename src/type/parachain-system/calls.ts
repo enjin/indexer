@@ -5,7 +5,7 @@ import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV1030 from '../matrixV1030'
 import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 import * as matrixV1040 from '../matrixV1040'
-import * as matrixEnjinV1041 from '../matrixEnjinV1041'
+import * as matrixEnjinV1043 from '../matrixEnjinV1043'
 
 export const setValidationData = {
     name: 'ParachainSystem.set_validation_data',
@@ -54,11 +54,11 @@ export const setValidationData = {
      * As a side effect, this function upgrades the current validation function
      * if the appropriate time has come.
      */
-    matrixEnjinV1041: new CallType(
+    matrixEnjinV1043: new CallType(
         'ParachainSystem.set_validation_data',
         sts.struct({
-            data: matrixEnjinV1041.BasicParachainInherentData,
-            inboundMessagesData: matrixEnjinV1041.InboundMessagesData,
+            data: matrixEnjinV1043.BasicParachainInherentData,
+            inboundMessagesData: matrixEnjinV1043.InboundMessagesData,
         })
     ),
     /**

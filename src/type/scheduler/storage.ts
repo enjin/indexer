@@ -12,8 +12,8 @@ import * as v1030 from '../v1030'
 import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 import * as enjinV1032 from '../enjinV1032'
 import * as matrixV1040 from '../matrixV1040'
-import * as matrixEnjinV1041 from '../matrixEnjinV1041'
 import * as matrixV1041 from '../matrixV1041'
+import * as matrixEnjinV1043 from '../matrixEnjinV1043'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
 import * as enjinV1070 from '../enjinV1070'
@@ -66,12 +66,12 @@ export const agenda = {
     /**
      *  Items to be executed, indexed by the block number that they should be executed on.
      */
-    matrixEnjinV1041: new StorageType(
+    matrixEnjinV1043: new StorageType(
         'Scheduler.Agenda',
         'Default',
         [sts.number()],
-        sts.array(() => sts.option(() => matrixEnjinV1041.Scheduled))
-    ) as AgendaMatrixEnjinV1041,
+        sts.array(() => sts.option(() => matrixEnjinV1043.Scheduled))
+    ) as AgendaMatrixEnjinV1043,
     /**
      *  Items to be executed, indexed by the block number that they should be executed on.
      */
@@ -314,29 +314,29 @@ export interface AgendaMatrixEnjinV1031 {
 /**
  *  Items to be executed, indexed by the block number that they should be executed on.
  */
-export interface AgendaMatrixEnjinV1041 {
+export interface AgendaMatrixEnjinV1043 {
     is(block: RuntimeCtx): boolean
-    getDefault(block: Block): (matrixEnjinV1041.Scheduled | undefined)[]
-    get(block: Block, key: number): Promise<(matrixEnjinV1041.Scheduled | undefined)[] | undefined>
-    getMany(block: Block, keys: number[]): Promise<((matrixEnjinV1041.Scheduled | undefined)[] | undefined)[]>
+    getDefault(block: Block): (matrixEnjinV1043.Scheduled | undefined)[]
+    get(block: Block, key: number): Promise<(matrixEnjinV1043.Scheduled | undefined)[] | undefined>
+    getMany(block: Block, keys: number[]): Promise<((matrixEnjinV1043.Scheduled | undefined)[] | undefined)[]>
     getKeys(block: Block): Promise<number[]>
     getKeys(block: Block, key: number): Promise<number[]>
     getKeysPaged(pageSize: number, block: Block): AsyncIterable<number[]>
     getKeysPaged(pageSize: number, block: Block, key: number): AsyncIterable<number[]>
-    getPairs(block: Block): Promise<[k: number, v: (matrixEnjinV1041.Scheduled | undefined)[] | undefined][]>
+    getPairs(block: Block): Promise<[k: number, v: (matrixEnjinV1043.Scheduled | undefined)[] | undefined][]>
     getPairs(
         block: Block,
         key: number
-    ): Promise<[k: number, v: (matrixEnjinV1041.Scheduled | undefined)[] | undefined][]>
+    ): Promise<[k: number, v: (matrixEnjinV1043.Scheduled | undefined)[] | undefined][]>
     getPairsPaged(
         pageSize: number,
         block: Block
-    ): AsyncIterable<[k: number, v: (matrixEnjinV1041.Scheduled | undefined)[] | undefined][]>
+    ): AsyncIterable<[k: number, v: (matrixEnjinV1043.Scheduled | undefined)[] | undefined][]>
     getPairsPaged(
         pageSize: number,
         block: Block,
         key: number
-    ): AsyncIterable<[k: number, v: (matrixEnjinV1041.Scheduled | undefined)[] | undefined][]>
+    ): AsyncIterable<[k: number, v: (matrixEnjinV1043.Scheduled | undefined)[] | undefined][]>
 }
 
 /**

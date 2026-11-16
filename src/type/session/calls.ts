@@ -6,7 +6,7 @@ import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV1030 from '../matrixV1030'
 import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 import * as matrixV1040 from '../matrixV1040'
-import * as matrixEnjinV1041 from '../matrixEnjinV1041'
+import * as matrixEnjinV1043 from '../matrixEnjinV1043'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
 import * as enjinV1070 from '../enjinV1070'
@@ -65,10 +65,10 @@ export const setKeys = {
      *   [`impl_opaque_keys`](sp_runtime::impl_opaque_keys) for more information about the
      *   proof format.
      */
-    matrixEnjinV1041: new CallType(
+    matrixEnjinV1043: new CallType(
         'Session.set_keys',
         sts.struct({
-            keys: matrixEnjinV1041.SessionKeys,
+            keys: matrixEnjinV1043.SessionKeys,
             proof: sts.bytes(),
         })
     ),

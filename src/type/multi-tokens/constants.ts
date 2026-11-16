@@ -282,7 +282,7 @@ export const maxScheduledPerBlock = {
      *  The maximum number of ephemeral tokens that may be scheduled to expire on a single
      *  block. Used to cap on-chain work performed by `on_idle` cleanup.
      */
-    matrixEnjinV1041: new ConstantType('MultiTokens.MaxScheduledPerBlock', sts.number()),
+    matrixEnjinV1043: new ConstantType('MultiTokens.MaxScheduledPerBlock', sts.number()),
 }
 
 export const maxEphemeralLifetime = {
@@ -291,7 +291,7 @@ export const maxEphemeralLifetime = {
      *  at most this many blocks after the block that creates it. Zero disables ephemeral
      *  tokens.
      */
-    matrixEnjinV1041: new ConstantType('MultiTokens.MaxEphemeralLifetime', sts.number()),
+    matrixEnjinV1043: new ConstantType('MultiTokens.MaxEphemeralLifetime', sts.number()),
 }
 
 export const maxClaimTokensPerBlock = {
@@ -300,7 +300,7 @@ export const maxClaimTokensPerBlock = {
      *  fee-free, so this bounds the block space a flood of signature-valid claims can take.
      *  Zero disables the call, for a chain that runs no Ethereum token migration.
      */
-    matrixEnjinV1041: new ConstantType('MultiTokens.MaxClaimTokensPerBlock', sts.number()),
+    matrixEnjinV1043: new ConstantType('MultiTokens.MaxClaimTokensPerBlock', sts.number()),
 }
 
 export const mintRateLimitLooseningDelay = {
@@ -308,7 +308,7 @@ export const mintRateLimitLooseningDelay = {
      *  The delay, in blocks, before a mint rate limit change that loosens the effective
      *  rate (or removes the limit) takes effect. Tightening changes apply immediately.
      */
-    matrixEnjinV1041: new ConstantType('MultiTokens.MintRateLimitLooseningDelay', sts.number()),
+    matrixEnjinV1043: new ConstantType('MultiTokens.MintRateLimitLooseningDelay', sts.number()),
 }
 
 export const preExistingTokensLendable = {

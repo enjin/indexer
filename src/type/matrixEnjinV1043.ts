@@ -1,14 +1,1961 @@
 import { sts, Result, Option, Bytes, BitSequence } from './support'
 
+export const TrackDetails: sts.Type<TrackDetails> = sts.struct(() => {
+    return {
+        name: sts.string(),
+        maxDeciding: sts.number(),
+        decisionDeposit: sts.bigint(),
+        preparePeriod: sts.number(),
+        decisionPeriod: sts.number(),
+        confirmPeriod: sts.number(),
+        minEnactmentPeriod: sts.number(),
+        minApproval: Curve,
+        minSupport: Curve,
+    }
+})
+
+export const Curve: sts.Type<Curve> = sts.closedEnum(() => {
+    return {
+        LinearDecreasing: sts.enumStruct({
+            length: Perbill,
+            floor: Perbill,
+            ceil: Perbill,
+        }),
+        Reciprocal: sts.enumStruct({
+            factor: FixedI64,
+            xOffset: FixedI64,
+            yOffset: FixedI64,
+        }),
+        SteppedDecreasing: sts.enumStruct({
+            begin: Perbill,
+            end: Perbill,
+            step: Perbill,
+            period: Perbill,
+        }),
+    }
+})
+
+export const FixedI64 = sts.bigint()
+
+export const Perbill = sts.number()
+
+export type Curve = Curve_LinearDecreasing | Curve_Reciprocal | Curve_SteppedDecreasing
+
+export interface Curve_LinearDecreasing {
+    __kind: 'LinearDecreasing'
+    length: Perbill
+    floor: Perbill
+    ceil: Perbill
+}
+
+export interface Curve_Reciprocal {
+    __kind: 'Reciprocal'
+    factor: FixedI64
+    xOffset: FixedI64
+    yOffset: FixedI64
+}
+
+export interface Curve_SteppedDecreasing {
+    __kind: 'SteppedDecreasing'
+    begin: Perbill
+    end: Perbill
+    step: Perbill
+    period: Perbill
+}
+
+export type FixedI64 = bigint
+
+export type Perbill = number
+
+export interface TrackDetails {
+    name: string
+    maxDeciding: number
+    decisionDeposit: bigint
+    preparePeriod: number
+    decisionPeriod: number
+    confirmPeriod: number
+    minEnactmentPeriod: number
+    minApproval: Curve
+    minSupport: Curve
+}
+
+export const PalletId = sts.bytes()
+
+export const BlockLength: sts.Type<BlockLength> = sts.struct(() => {
+    return {
+        max: Type_610,
+        maxHeaderSize: sts.option(() => sts.number()),
+    }
+})
+
+export const Type_610: sts.Type<Type_610> = sts.struct(() => {
+    return {
+        normal: sts.number(),
+        operational: sts.number(),
+        mandatory: sts.number(),
+    }
+})
+
+export interface Type_610 {
+    normal: number
+    operational: number
+    mandatory: number
+}
+
+export interface BlockLength {
+    max: Type_610
+    maxHeaderSize?: number | undefined
+}
+
+export type Type_915 =
+    Type_915_Approved | Type_915_Cancelled | Type_915_Killed | Type_915_Ongoing | Type_915_Rejected | Type_915_TimedOut
+
+export interface Type_915_Approved {
+    __kind: 'Approved'
+    value: [number, Type_893 | undefined, Type_893 | undefined]
+}
+
+export interface Type_915_Cancelled {
+    __kind: 'Cancelled'
+    value: [number, Type_893 | undefined, Type_893 | undefined]
+}
+
+export interface Type_915_Killed {
+    __kind: 'Killed'
+    value: number
+}
+
+export interface Type_915_Ongoing {
+    __kind: 'Ongoing'
+    value: Type_916
+}
+
+export interface Type_915_Rejected {
+    __kind: 'Rejected'
+    value: [number, Type_893 | undefined, Type_893 | undefined]
+}
+
+export interface Type_915_TimedOut {
+    __kind: 'TimedOut'
+    value: [number, Type_893 | undefined, Type_893 | undefined]
+}
+
+export interface Type_916 {
+    track: number
+    origin: OriginCaller
+    proposal: Bounded
+    enactment: DispatchTime
+    submitted: number
+    submissionDeposit: Type_893
+    decisionDeposit?: Type_893 | undefined
+    deciding?: DecidingStatus | undefined
+    tally: Type_598
+    inQueue: boolean
+    alarm?: [number, [number, number]] | undefined
+}
+
+export interface Type_598 {
+    bareAyes: number
+    ayes: number
+    nays: number
+}
+
+export interface DecidingStatus {
+    since: number
+    confirming?: number | undefined
+}
+
+export type DispatchTime = DispatchTime_After | DispatchTime_At
+
+export interface DispatchTime_After {
+    __kind: 'After'
+    value: number
+}
+
+export interface DispatchTime_At {
+    __kind: 'At'
+    value: number
+}
+
+export type Bounded = Bounded_Inline | Bounded_Legacy | Bounded_Lookup
+
+export interface Bounded_Inline {
+    __kind: 'Inline'
+    value: Bytes
+}
+
+export interface Bounded_Legacy {
+    __kind: 'Legacy'
+    hash: H256
+}
+
+export interface Bounded_Lookup {
+    __kind: 'Lookup'
+    hash: H256
+    len: number
+}
+
+export type OriginCaller =
+    | OriginCaller_CumulusXcm
+    | OriginCaller_FuelTanks
+    | OriginCaller_Origins
+    | OriginCaller_PolkadotXcm
+    | OriginCaller_system
+
+export interface OriginCaller_CumulusXcm {
+    __kind: 'CumulusXcm'
+    value: Type_367
+}
+
+export interface OriginCaller_FuelTanks {
+    __kind: 'FuelTanks'
+    value: Type_368
+}
+
+export interface OriginCaller_Origins {
+    __kind: 'Origins'
+    value: Type_369
+}
+
+export interface OriginCaller_PolkadotXcm {
+    __kind: 'PolkadotXcm'
+    value: Origin
+}
+
+export interface OriginCaller_system {
+    __kind: 'system'
+    value: RawOrigin
+}
+
+export type RawOrigin = RawOrigin_Authorized | RawOrigin_None | RawOrigin_Root | RawOrigin_Signed
+
+export interface RawOrigin_Authorized {
+    __kind: 'Authorized'
+}
+
+export interface RawOrigin_None {
+    __kind: 'None'
+}
+
+export interface RawOrigin_Root {
+    __kind: 'Root'
+}
+
+export interface RawOrigin_Signed {
+    __kind: 'Signed'
+    value: AccountId32
+}
+
+export type Origin = Origin_Response | Origin_Xcm
+
+export interface Origin_Response {
+    __kind: 'Response'
+    value: V5Location
+}
+
+export interface Origin_Xcm {
+    __kind: 'Xcm'
+    value: V5Location
+}
+
+export interface V5Location {
+    parents: number
+    interior: V5Junctions
+}
+
+export type V5Junctions =
+    | V5Junctions_Here
+    | V5Junctions_X1
+    | V5Junctions_X2
+    | V5Junctions_X3
+    | V5Junctions_X4
+    | V5Junctions_X5
+    | V5Junctions_X6
+    | V5Junctions_X7
+    | V5Junctions_X8
+
+export interface V5Junctions_Here {
+    __kind: 'Here'
+}
+
+export interface V5Junctions_X1 {
+    __kind: 'X1'
+    value: V5Junction[]
+}
+
+export interface V5Junctions_X2 {
+    __kind: 'X2'
+    value: V5Junction[]
+}
+
+export interface V5Junctions_X3 {
+    __kind: 'X3'
+    value: V5Junction[]
+}
+
+export interface V5Junctions_X4 {
+    __kind: 'X4'
+    value: V5Junction[]
+}
+
+export interface V5Junctions_X5 {
+    __kind: 'X5'
+    value: V5Junction[]
+}
+
+export interface V5Junctions_X6 {
+    __kind: 'X6'
+    value: V5Junction[]
+}
+
+export interface V5Junctions_X7 {
+    __kind: 'X7'
+    value: V5Junction[]
+}
+
+export interface V5Junctions_X8 {
+    __kind: 'X8'
+    value: V5Junction[]
+}
+
+export type V5Junction =
+    | V5Junction_AccountId32
+    | V5Junction_AccountIndex64
+    | V5Junction_AccountKey20
+    | V5Junction_GeneralIndex
+    | V5Junction_GeneralKey
+    | V5Junction_GlobalConsensus
+    | V5Junction_OnlyChild
+    | V5Junction_PalletInstance
+    | V5Junction_Parachain
+    | V5Junction_Plurality
+
+export interface V5Junction_AccountId32 {
+    __kind: 'AccountId32'
+    network?: V5NetworkId | undefined
+    id: Bytes
+}
+
+export interface V5Junction_AccountIndex64 {
+    __kind: 'AccountIndex64'
+    network?: V5NetworkId | undefined
+    index: bigint
+}
+
+export interface V5Junction_AccountKey20 {
+    __kind: 'AccountKey20'
+    network?: V5NetworkId | undefined
+    key: Bytes
+}
+
+export interface V5Junction_GeneralIndex {
+    __kind: 'GeneralIndex'
+    value: bigint
+}
+
+export interface V5Junction_GeneralKey {
+    __kind: 'GeneralKey'
+    length: number
+    data: Bytes
+}
+
+export interface V5Junction_GlobalConsensus {
+    __kind: 'GlobalConsensus'
+    value: V5NetworkId
+}
+
+export interface V5Junction_OnlyChild {
+    __kind: 'OnlyChild'
+}
+
+export interface V5Junction_PalletInstance {
+    __kind: 'PalletInstance'
+    value: number
+}
+
+export interface V5Junction_Parachain {
+    __kind: 'Parachain'
+    value: number
+}
+
+export interface V5Junction_Plurality {
+    __kind: 'Plurality'
+    id: V3BodyId
+    part: V3BodyPart
+}
+
+export type V3BodyPart =
+    | V3BodyPart_AtLeastProportion
+    | V3BodyPart_Fraction
+    | V3BodyPart_Members
+    | V3BodyPart_MoreThanProportion
+    | V3BodyPart_Voice
+
+export interface V3BodyPart_AtLeastProportion {
+    __kind: 'AtLeastProportion'
+    nom: number
+    denom: number
+}
+
+export interface V3BodyPart_Fraction {
+    __kind: 'Fraction'
+    nom: number
+    denom: number
+}
+
+export interface V3BodyPart_Members {
+    __kind: 'Members'
+    count: number
+}
+
+export interface V3BodyPart_MoreThanProportion {
+    __kind: 'MoreThanProportion'
+    nom: number
+    denom: number
+}
+
+export interface V3BodyPart_Voice {
+    __kind: 'Voice'
+}
+
+export type V3BodyId =
+    | V3BodyId_Administration
+    | V3BodyId_Defense
+    | V3BodyId_Executive
+    | V3BodyId_Index
+    | V3BodyId_Judicial
+    | V3BodyId_Legislative
+    | V3BodyId_Moniker
+    | V3BodyId_Technical
+    | V3BodyId_Treasury
+    | V3BodyId_Unit
+
+export interface V3BodyId_Administration {
+    __kind: 'Administration'
+}
+
+export interface V3BodyId_Defense {
+    __kind: 'Defense'
+}
+
+export interface V3BodyId_Executive {
+    __kind: 'Executive'
+}
+
+export interface V3BodyId_Index {
+    __kind: 'Index'
+    value: number
+}
+
+export interface V3BodyId_Judicial {
+    __kind: 'Judicial'
+}
+
+export interface V3BodyId_Legislative {
+    __kind: 'Legislative'
+}
+
+export interface V3BodyId_Moniker {
+    __kind: 'Moniker'
+    value: Bytes
+}
+
+export interface V3BodyId_Technical {
+    __kind: 'Technical'
+}
+
+export interface V3BodyId_Treasury {
+    __kind: 'Treasury'
+}
+
+export interface V3BodyId_Unit {
+    __kind: 'Unit'
+}
+
+export type V5NetworkId =
+    | V5NetworkId_BitcoinCash
+    | V5NetworkId_BitcoinCore
+    | V5NetworkId_ByFork
+    | V5NetworkId_ByGenesis
+    | V5NetworkId_Ethereum
+    | V5NetworkId_Kusama
+    | V5NetworkId_Polkadot
+    | V5NetworkId_PolkadotBulletin
+
+export interface V5NetworkId_BitcoinCash {
+    __kind: 'BitcoinCash'
+}
+
+export interface V5NetworkId_BitcoinCore {
+    __kind: 'BitcoinCore'
+}
+
+export interface V5NetworkId_ByFork {
+    __kind: 'ByFork'
+    blockNumber: bigint
+    blockHash: Bytes
+}
+
+export interface V5NetworkId_ByGenesis {
+    __kind: 'ByGenesis'
+    value: Bytes
+}
+
+export interface V5NetworkId_Ethereum {
+    __kind: 'Ethereum'
+    chainId: bigint
+}
+
+export interface V5NetworkId_Kusama {
+    __kind: 'Kusama'
+}
+
+export interface V5NetworkId_Polkadot {
+    __kind: 'Polkadot'
+}
+
+export interface V5NetworkId_PolkadotBulletin {
+    __kind: 'PolkadotBulletin'
+}
+
+export type Type_369 =
+    | Type_369_BigSpender
+    | Type_369_BigTipper
+    | Type_369_Emergency
+    | Type_369_Fellows
+    | Type_369_Fellowship1Dan
+    | Type_369_Fellowship2Dan
+    | Type_369_Fellowship3Dan
+    | Type_369_Fellowship4Dan
+    | Type_369_Fellowship5Dan
+    | Type_369_Fellowship6Dan
+    | Type_369_Fellowship7Dan
+    | Type_369_Fellowship8Dan
+    | Type_369_Fellowship9Dan
+    | Type_369_FellowshipAdmin
+    | Type_369_FellowshipExperts
+    | Type_369_FellowshipInitiates
+    | Type_369_FellowshipMasters
+    | Type_369_FuelTanksAdmin
+    | Type_369_GeneralAdmin
+    | Type_369_MediumSpender
+    | Type_369_MultiTokensAdmin
+    | Type_369_ReferendumCanceller
+    | Type_369_ReferendumKiller
+    | Type_369_SmallSpender
+    | Type_369_SmallTipper
+    | Type_369_StakingAdmin
+    | Type_369_TreasuryAdmin
+    | Type_369_WhitelistedCaller
+
+export interface Type_369_BigSpender {
+    __kind: 'BigSpender'
+}
+
+export interface Type_369_BigTipper {
+    __kind: 'BigTipper'
+}
+
+export interface Type_369_Emergency {
+    __kind: 'Emergency'
+}
+
+export interface Type_369_Fellows {
+    __kind: 'Fellows'
+}
+
+export interface Type_369_Fellowship1Dan {
+    __kind: 'Fellowship1Dan'
+}
+
+export interface Type_369_Fellowship2Dan {
+    __kind: 'Fellowship2Dan'
+}
+
+export interface Type_369_Fellowship3Dan {
+    __kind: 'Fellowship3Dan'
+}
+
+export interface Type_369_Fellowship4Dan {
+    __kind: 'Fellowship4Dan'
+}
+
+export interface Type_369_Fellowship5Dan {
+    __kind: 'Fellowship5Dan'
+}
+
+export interface Type_369_Fellowship6Dan {
+    __kind: 'Fellowship6Dan'
+}
+
+export interface Type_369_Fellowship7Dan {
+    __kind: 'Fellowship7Dan'
+}
+
+export interface Type_369_Fellowship8Dan {
+    __kind: 'Fellowship8Dan'
+}
+
+export interface Type_369_Fellowship9Dan {
+    __kind: 'Fellowship9Dan'
+}
+
+export interface Type_369_FellowshipAdmin {
+    __kind: 'FellowshipAdmin'
+}
+
+export interface Type_369_FellowshipExperts {
+    __kind: 'FellowshipExperts'
+}
+
+export interface Type_369_FellowshipInitiates {
+    __kind: 'FellowshipInitiates'
+}
+
+export interface Type_369_FellowshipMasters {
+    __kind: 'FellowshipMasters'
+}
+
+export interface Type_369_FuelTanksAdmin {
+    __kind: 'FuelTanksAdmin'
+}
+
+export interface Type_369_GeneralAdmin {
+    __kind: 'GeneralAdmin'
+}
+
+export interface Type_369_MediumSpender {
+    __kind: 'MediumSpender'
+}
+
+export interface Type_369_MultiTokensAdmin {
+    __kind: 'MultiTokensAdmin'
+}
+
+export interface Type_369_ReferendumCanceller {
+    __kind: 'ReferendumCanceller'
+}
+
+export interface Type_369_ReferendumKiller {
+    __kind: 'ReferendumKiller'
+}
+
+export interface Type_369_SmallSpender {
+    __kind: 'SmallSpender'
+}
+
+export interface Type_369_SmallTipper {
+    __kind: 'SmallTipper'
+}
+
+export interface Type_369_StakingAdmin {
+    __kind: 'StakingAdmin'
+}
+
+export interface Type_369_TreasuryAdmin {
+    __kind: 'TreasuryAdmin'
+}
+
+export interface Type_369_WhitelistedCaller {
+    __kind: 'WhitelistedCaller'
+}
+
+export type Type_368 = Type_368_FuelTank
+
+export interface Type_368_FuelTank {
+    __kind: 'FuelTank'
+    caller: AccountId32
+    tankId: AccountId32
+    providesDeposit: boolean
+    ruleSetId?: number | undefined
+}
+
+export type Type_367 = Type_367_Relay | Type_367_SiblingParachain
+
+export interface Type_367_Relay {
+    __kind: 'Relay'
+}
+
+export interface Type_367_SiblingParachain {
+    __kind: 'SiblingParachain'
+    value: Id
+}
+
+export type Id = number
+
+export interface Type_893 {
+    who: AccountId32
+    amount: bigint
+}
+
+export const Type_915: sts.Type<Type_915> = sts.closedEnum(() => {
+    return {
+        Approved: sts.tuple(() => [sts.number(), sts.option(() => Type_893), sts.option(() => Type_893)]),
+        Cancelled: sts.tuple(() => [sts.number(), sts.option(() => Type_893), sts.option(() => Type_893)]),
+        Killed: sts.number(),
+        Ongoing: Type_916,
+        Rejected: sts.tuple(() => [sts.number(), sts.option(() => Type_893), sts.option(() => Type_893)]),
+        TimedOut: sts.tuple(() => [sts.number(), sts.option(() => Type_893), sts.option(() => Type_893)]),
+    }
+})
+
+export const Type_916: sts.Type<Type_916> = sts.struct(() => {
+    return {
+        track: sts.number(),
+        origin: OriginCaller,
+        proposal: Bounded,
+        enactment: DispatchTime,
+        submitted: sts.number(),
+        submissionDeposit: Type_893,
+        decisionDeposit: sts.option(() => Type_893),
+        deciding: sts.option(() => DecidingStatus),
+        tally: Type_598,
+        inQueue: sts.boolean(),
+        alarm: sts.option(() => sts.tuple(() => [sts.number(), sts.tuple(() => [sts.number(), sts.number()])])),
+    }
+})
+
+export const DecidingStatus: sts.Type<DecidingStatus> = sts.struct(() => {
+    return {
+        since: sts.number(),
+        confirming: sts.option(() => sts.number()),
+    }
+})
+
+export const Type_893: sts.Type<Type_893> = sts.struct(() => {
+    return {
+        who: AccountId32,
+        amount: sts.bigint(),
+    }
+})
+
+export type VoteRecord = VoteRecord_Aye | VoteRecord_Nay
+
+export interface VoteRecord_Aye {
+    __kind: 'Aye'
+    value: number
+}
+
+export interface VoteRecord_Nay {
+    __kind: 'Nay'
+    value: number
+}
+
+export interface MemberRecord {
+    rank: number
+}
+
+export const MemberRecord: sts.Type<MemberRecord> = sts.struct(() => {
+    return {
+        rank: sts.number(),
+    }
+})
+
+export type ReferendumInfo =
+    | ReferendumInfo_Approved
+    | ReferendumInfo_Cancelled
+    | ReferendumInfo_Killed
+    | ReferendumInfo_Ongoing
+    | ReferendumInfo_Rejected
+    | ReferendumInfo_TimedOut
+
+export interface ReferendumInfo_Approved {
+    __kind: 'Approved'
+    value: [number, Type_893 | undefined, Type_893 | undefined]
+}
+
+export interface ReferendumInfo_Cancelled {
+    __kind: 'Cancelled'
+    value: [number, Type_893 | undefined, Type_893 | undefined]
+}
+
+export interface ReferendumInfo_Killed {
+    __kind: 'Killed'
+    value: number
+}
+
+export interface ReferendumInfo_Ongoing {
+    __kind: 'Ongoing'
+    value: ReferendumStatus
+}
+
+export interface ReferendumInfo_Rejected {
+    __kind: 'Rejected'
+    value: [number, Type_893 | undefined, Type_893 | undefined]
+}
+
+export interface ReferendumInfo_TimedOut {
+    __kind: 'TimedOut'
+    value: [number, Type_893 | undefined, Type_893 | undefined]
+}
+
+export interface ReferendumStatus {
+    track: number
+    origin: OriginCaller
+    proposal: Bounded
+    enactment: DispatchTime
+    submitted: number
+    submissionDeposit: Type_893
+    decisionDeposit?: Type_893 | undefined
+    deciding?: DecidingStatus | undefined
+    tally: Tally
+    inQueue: boolean
+    alarm?: [number, [number, number]] | undefined
+}
+
+export interface Tally {
+    ayes: bigint
+    nays: bigint
+    support: bigint
+}
+
+export const ReferendumInfo: sts.Type<ReferendumInfo> = sts.closedEnum(() => {
+    return {
+        Approved: sts.tuple(() => [sts.number(), sts.option(() => Type_893), sts.option(() => Type_893)]),
+        Cancelled: sts.tuple(() => [sts.number(), sts.option(() => Type_893), sts.option(() => Type_893)]),
+        Killed: sts.number(),
+        Ongoing: ReferendumStatus,
+        Rejected: sts.tuple(() => [sts.number(), sts.option(() => Type_893), sts.option(() => Type_893)]),
+        TimedOut: sts.tuple(() => [sts.number(), sts.option(() => Type_893), sts.option(() => Type_893)]),
+    }
+})
+
+export const ReferendumStatus: sts.Type<ReferendumStatus> = sts.struct(() => {
+    return {
+        track: sts.number(),
+        origin: OriginCaller,
+        proposal: Bounded,
+        enactment: DispatchTime,
+        submitted: sts.number(),
+        submissionDeposit: Type_893,
+        decisionDeposit: sts.option(() => Type_893),
+        deciding: sts.option(() => DecidingStatus),
+        tally: Tally,
+        inQueue: sts.boolean(),
+        alarm: sts.option(() => sts.tuple(() => [sts.number(), sts.tuple(() => [sts.number(), sts.number()])])),
+    }
+})
+
+export type Voting = Voting_Casting | Voting_Delegating
+
+export interface Voting_Casting {
+    __kind: 'Casting'
+    value: Casting
+}
+
+export interface Voting_Delegating {
+    __kind: 'Delegating'
+    value: Delegating
+}
+
+export interface Delegating {
+    balance: bigint
+    target: AccountId32
+    conviction: Conviction
+    delegations: Delegations
+    prior: PriorLock
+}
+
+export type PriorLock = [number, bigint]
+
+export interface Delegations {
+    votes: bigint
+    capital: bigint
+}
+
+export type Conviction =
+    | Conviction_Locked1x
+    | Conviction_Locked2x
+    | Conviction_Locked3x
+    | Conviction_Locked4x
+    | Conviction_Locked5x
+    | Conviction_Locked6x
+    | Conviction_None
+
+export interface Conviction_Locked1x {
+    __kind: 'Locked1x'
+}
+
+export interface Conviction_Locked2x {
+    __kind: 'Locked2x'
+}
+
+export interface Conviction_Locked3x {
+    __kind: 'Locked3x'
+}
+
+export interface Conviction_Locked4x {
+    __kind: 'Locked4x'
+}
+
+export interface Conviction_Locked5x {
+    __kind: 'Locked5x'
+}
+
+export interface Conviction_Locked6x {
+    __kind: 'Locked6x'
+}
+
+export interface Conviction_None {
+    __kind: 'None'
+}
+
+export interface Casting {
+    votes: [number, AccountVote][]
+    delegations: Delegations
+    prior: PriorLock
+}
+
+export type AccountVote = AccountVote_Split | AccountVote_SplitAbstain | AccountVote_Standard
+
+export interface AccountVote_Split {
+    __kind: 'Split'
+    aye: bigint
+    nay: bigint
+}
+
+export interface AccountVote_SplitAbstain {
+    __kind: 'SplitAbstain'
+    aye: bigint
+    nay: bigint
+    abstain: bigint
+}
+
+export interface AccountVote_Standard {
+    __kind: 'Standard'
+    vote: Vote
+    balance: bigint
+}
+
+export type Vote = number
+
+export const Voting: sts.Type<Voting> = sts.closedEnum(() => {
+    return {
+        Casting: Casting,
+        Delegating: Delegating,
+    }
+})
+
+export const Delegating: sts.Type<Delegating> = sts.struct(() => {
+    return {
+        balance: sts.bigint(),
+        target: AccountId32,
+        conviction: Conviction,
+        delegations: Delegations,
+        prior: PriorLock,
+    }
+})
+
+export const PriorLock = sts.tuple(() => [sts.number(), sts.bigint()])
+
+export const Delegations: sts.Type<Delegations> = sts.struct(() => {
+    return {
+        votes: sts.bigint(),
+        capital: sts.bigint(),
+    }
+})
+
+export const Casting: sts.Type<Casting> = sts.struct(() => {
+    return {
+        votes: sts.array(() => sts.tuple(() => [sts.number(), AccountVote])),
+        delegations: Delegations,
+        prior: PriorLock,
+    }
+})
+
+export interface LpTokenId {
+    collectionId: bigint
+    tokenId: bigint
+}
+
+export interface PoolInfo {
+    lpToken: LpTokenId
+}
+
+export const PoolInfo: sts.Type<PoolInfo> = sts.struct(() => {
+    return {
+        lpToken: LpTokenId,
+    }
+})
+
+export type OrderSide = OrderSide_Ask | OrderSide_Bid
+
+export interface OrderSide_Ask {
+    __kind: 'Ask'
+}
+
+export interface OrderSide_Bid {
+    __kind: 'Bid'
+}
+
+export interface AssetId {
+    collectionId: bigint
+    tokenId: bigint
+}
+
+export type H256 = Bytes
+
+export interface Listing {
+    creator: AccountId32
+    makeAssetId: AssetId
+    takeAssetId: AssetId
+    amount: bigint
+    price: bigint
+    minReceived: bigint
+    feeSide: FeeSide
+    creationBlock: number
+    startBlock?: number | undefined
+    whitelistedAccountCount?: number | undefined
+    deposit: Deposit
+    salt: Bytes
+    data: ListingData
+    state: ListingState
+}
+
+export type ListingState = ListingState_Auction | ListingState_FixedPrice | ListingState_Offer
+
+export interface ListingState_Auction {
+    __kind: 'Auction'
+    value: AuctionState
+}
+
+export interface ListingState_FixedPrice {
+    __kind: 'FixedPrice'
+    amountFilled: bigint
+}
+
+export interface ListingState_Offer {
+    __kind: 'Offer'
+    value: OfferState
+}
+
+export interface OfferState {
+    amountFilled: bigint
+}
+
+export interface AuctionState {
+    highBid?: Bid | undefined
+}
+
+export interface Bid {
+    bidder: AccountId32
+    price: bigint
+    blockNumber: number
+}
+
+export type ListingData = ListingData_Auction | ListingData_FixedPrice | ListingData_Offer
+
+export interface ListingData_Auction {
+    __kind: 'Auction'
+    value: AuctionData
+}
+
+export interface ListingData_FixedPrice {
+    __kind: 'FixedPrice'
+}
+
+export interface ListingData_Offer {
+    __kind: 'Offer'
+    value: OfferData
+}
+
+export interface OfferData {
+    expiration?: number | undefined
+}
+
+export interface AuctionData {
+    endBlock: number
+}
+
+export interface Deposit {
+    depositor: AccountId32
+    amount: bigint
+}
+
+export type FeeSide = FeeSide_Make | FeeSide_NoFee | FeeSide_Take
+
+export interface FeeSide_Make {
+    __kind: 'Make'
+}
+
+export interface FeeSide_NoFee {
+    __kind: 'NoFee'
+}
+
+export interface FeeSide_Take {
+    __kind: 'Take'
+}
+
+export interface FuelTank {
+    owner: AccountId32
+    name: Bytes
+    ruleSets: [number, RuleSet][]
+    totalReserved: bigint
+    accountCount: number
+    userAccountManagement?: UserAccountManagement | undefined
+    status: TankStatus
+    coveragePolicy: CoveragePolicy
+    accountRules: [AccountRuleKind, AccountRuleWrapper][]
+    accountExpiration?: number | undefined
+    depositor: AccountId32
+}
+
+export type AccountRuleWrapper = AccountRuleWrapper_RequireToken | AccountRuleWrapper_WhitelistedCallers
+
+export interface AccountRuleWrapper_RequireToken {
+    __kind: 'RequireToken'
+    value: RequireTokenRule
+}
+
+export interface AccountRuleWrapper_WhitelistedCallers {
+    __kind: 'WhitelistedCallers'
+    value: AccountId32[]
+}
+
+export interface RequireTokenRule {
+    collectionId: bigint
+    tokenId: bigint
+}
+
+export type AccountRuleKind = AccountRuleKind_RequireToken | AccountRuleKind_WhitelistedCallers
+
+export interface AccountRuleKind_RequireToken {
+    __kind: 'RequireToken'
+}
+
+export interface AccountRuleKind_WhitelistedCallers {
+    __kind: 'WhitelistedCallers'
+}
+
+export type CoveragePolicy = CoveragePolicy_Fees | CoveragePolicy_FeesAndDeposit
+
+export interface CoveragePolicy_Fees {
+    __kind: 'Fees'
+}
+
+export interface CoveragePolicy_FeesAndDeposit {
+    __kind: 'FeesAndDeposit'
+}
+
+export type TankStatus = TankStatus_Destroyed | TankStatus_Frozen | TankStatus_Operational
+
+export interface TankStatus_Destroyed {
+    __kind: 'Destroyed'
+}
+
+export interface TankStatus_Frozen {
+    __kind: 'Frozen'
+}
+
+export interface TankStatus_Operational {
+    __kind: 'Operational'
+}
+
+export interface UserAccountManagement {
+    tankReservesAccountCreationDeposit: boolean
+    tankReservesExistentialDeposit: boolean
+}
+
+export interface RuleSet {
+    rules: [DispatchRuleKind, DispatchRuleWrapper][]
+    isFrozen: boolean
+    requireAccount: boolean
+}
+
+export type DispatchRuleWrapper =
+    | DispatchRuleWrapper_MaxFuelBurnPerTransaction
+    | DispatchRuleWrapper_MinimumInfusion
+    | DispatchRuleWrapper_PermittedCalls
+    | DispatchRuleWrapper_PermittedExtrinsics
+    | DispatchRuleWrapper_RequireSignature
+    | DispatchRuleWrapper_RequireToken
+    | DispatchRuleWrapper_TankFuelBudget
+    | DispatchRuleWrapper_UserFuelBudget
+    | DispatchRuleWrapper_WhitelistedCallers
+    | DispatchRuleWrapper_WhitelistedCollections
+    | DispatchRuleWrapper_WhitelistedPallets
+
+export interface DispatchRuleWrapper_MaxFuelBurnPerTransaction {
+    __kind: 'MaxFuelBurnPerTransaction'
+    value: MaxFuelBurnPerTransactionRule
+}
+
+export interface DispatchRuleWrapper_MinimumInfusion {
+    __kind: 'MinimumInfusion'
+    value: MinimumInfusionRule
+}
+
+export interface DispatchRuleWrapper_PermittedCalls {
+    __kind: 'PermittedCalls'
+    value: Bytes[]
+}
+
+export interface DispatchRuleWrapper_PermittedExtrinsics {
+    __kind: 'PermittedExtrinsics'
+    value: CallIndex[]
+}
+
+export interface DispatchRuleWrapper_RequireSignature {
+    __kind: 'RequireSignature'
+    value: RequireSignatureRule
+}
+
+export interface DispatchRuleWrapper_RequireToken {
+    __kind: 'RequireToken'
+    value: RequireTokenRule
+}
+
+export interface DispatchRuleWrapper_TankFuelBudget {
+    __kind: 'TankFuelBudget'
+    value: TankFuelBudgetRule
+}
+
+export interface DispatchRuleWrapper_UserFuelBudget {
+    __kind: 'UserFuelBudget'
+    value: UserFuelBudgetRule
+}
+
+export interface DispatchRuleWrapper_WhitelistedCallers {
+    __kind: 'WhitelistedCallers'
+    value: AccountId32[]
+}
+
+export interface DispatchRuleWrapper_WhitelistedCollections {
+    __kind: 'WhitelistedCollections'
+    value: bigint[]
+}
+
+export interface DispatchRuleWrapper_WhitelistedPallets {
+    __kind: 'WhitelistedPallets'
+    value: Bytes[]
+}
+
+export interface UserFuelBudgetRule {
+    budget: Budget
+    userCount: number
+}
+
+export interface Budget {
+    amount: bigint
+    resetPeriod: number
+}
+
+export interface TankFuelBudgetRule {
+    budget: Budget
+    consumption: Consumption
+}
+
+export interface Consumption {
+    totalConsumed: bigint
+    lastResetBlock?: number | undefined
+}
+
+export type RequireSignatureRule = Bytes
+
+export interface CallIndex {
+    palletIndex: number
+    functionIndex: number
+}
+
+export type MinimumInfusionRule = bigint
+
+export type MaxFuelBurnPerTransactionRule = bigint
+
+export type DispatchRuleKind =
+    | DispatchRuleKind_MaxFuelBurnPerTransaction
+    | DispatchRuleKind_MinimumInfusion
+    | DispatchRuleKind_PermittedCalls
+    | DispatchRuleKind_PermittedExtrinsics
+    | DispatchRuleKind_RequireSignature
+    | DispatchRuleKind_RequireToken
+    | DispatchRuleKind_TankFuelBudget
+    | DispatchRuleKind_UserFuelBudget
+    | DispatchRuleKind_WhitelistedCallers
+    | DispatchRuleKind_WhitelistedCollections
+    | DispatchRuleKind_WhitelistedPallets
+
+export interface DispatchRuleKind_MaxFuelBurnPerTransaction {
+    __kind: 'MaxFuelBurnPerTransaction'
+}
+
+export interface DispatchRuleKind_MinimumInfusion {
+    __kind: 'MinimumInfusion'
+}
+
+export interface DispatchRuleKind_PermittedCalls {
+    __kind: 'PermittedCalls'
+}
+
+export interface DispatchRuleKind_PermittedExtrinsics {
+    __kind: 'PermittedExtrinsics'
+}
+
+export interface DispatchRuleKind_RequireSignature {
+    __kind: 'RequireSignature'
+}
+
+export interface DispatchRuleKind_RequireToken {
+    __kind: 'RequireToken'
+}
+
+export interface DispatchRuleKind_TankFuelBudget {
+    __kind: 'TankFuelBudget'
+}
+
+export interface DispatchRuleKind_UserFuelBudget {
+    __kind: 'UserFuelBudget'
+}
+
+export interface DispatchRuleKind_WhitelistedCallers {
+    __kind: 'WhitelistedCallers'
+}
+
+export interface DispatchRuleKind_WhitelistedCollections {
+    __kind: 'WhitelistedCollections'
+}
+
+export interface DispatchRuleKind_WhitelistedPallets {
+    __kind: 'WhitelistedPallets'
+}
+
+export const FuelTank: sts.Type<FuelTank> = sts.struct(() => {
+    return {
+        owner: AccountId32,
+        name: sts.bytes(),
+        ruleSets: sts.array(() => sts.tuple(() => [sts.number(), RuleSet])),
+        totalReserved: sts.bigint(),
+        accountCount: sts.number(),
+        userAccountManagement: sts.option(() => UserAccountManagement),
+        status: TankStatus,
+        coveragePolicy: CoveragePolicy,
+        accountRules: sts.array(() => sts.tuple(() => [AccountRuleKind, AccountRuleWrapper])),
+        accountExpiration: sts.option(() => sts.number()),
+        depositor: AccountId32,
+    }
+})
+
+export const AccountRuleWrapper: sts.Type<AccountRuleWrapper> = sts.closedEnum(() => {
+    return {
+        RequireToken: RequireTokenRule,
+        WhitelistedCallers: sts.array(() => AccountId32),
+    }
+})
+
+export const RequireTokenRule: sts.Type<RequireTokenRule> = sts.struct(() => {
+    return {
+        collectionId: sts.bigint(),
+        tokenId: sts.bigint(),
+    }
+})
+
+export const AccountRuleKind: sts.Type<AccountRuleKind> = sts.closedEnum(() => {
+    return {
+        RequireToken: sts.unit(),
+        WhitelistedCallers: sts.unit(),
+    }
+})
+
+export const CoveragePolicy: sts.Type<CoveragePolicy> = sts.closedEnum(() => {
+    return {
+        Fees: sts.unit(),
+        FeesAndDeposit: sts.unit(),
+    }
+})
+
+export const TankStatus: sts.Type<TankStatus> = sts.closedEnum(() => {
+    return {
+        Destroyed: sts.unit(),
+        Frozen: sts.unit(),
+        Operational: sts.unit(),
+    }
+})
+
+export const UserAccountManagement: sts.Type<UserAccountManagement> = sts.struct(() => {
+    return {
+        tankReservesAccountCreationDeposit: sts.boolean(),
+        tankReservesExistentialDeposit: sts.boolean(),
+    }
+})
+
+export const RuleSet: sts.Type<RuleSet> = sts.struct(() => {
+    return {
+        rules: sts.array(() => sts.tuple(() => [DispatchRuleKind, DispatchRuleWrapper])),
+        isFrozen: sts.boolean(),
+        requireAccount: sts.boolean(),
+    }
+})
+
+export const DispatchRuleWrapper: sts.Type<DispatchRuleWrapper> = sts.closedEnum(() => {
+    return {
+        MaxFuelBurnPerTransaction: MaxFuelBurnPerTransactionRule,
+        MinimumInfusion: MinimumInfusionRule,
+        PermittedCalls: sts.array(() => sts.bytes()),
+        PermittedExtrinsics: sts.array(() => CallIndex),
+        RequireSignature: RequireSignatureRule,
+        RequireToken: RequireTokenRule,
+        TankFuelBudget: TankFuelBudgetRule,
+        UserFuelBudget: UserFuelBudgetRule,
+        WhitelistedCallers: sts.array(() => AccountId32),
+        WhitelistedCollections: sts.array(() => sts.bigint()),
+        WhitelistedPallets: sts.array(() => sts.bytes()),
+    }
+})
+
+export const UserFuelBudgetRule: sts.Type<UserFuelBudgetRule> = sts.struct(() => {
+    return {
+        budget: Budget,
+        userCount: sts.number(),
+    }
+})
+
+export const Budget: sts.Type<Budget> = sts.struct(() => {
+    return {
+        amount: sts.bigint(),
+        resetPeriod: sts.number(),
+    }
+})
+
+export const TankFuelBudgetRule: sts.Type<TankFuelBudgetRule> = sts.struct(() => {
+    return {
+        budget: Budget,
+        consumption: Consumption,
+    }
+})
+
+export const Consumption: sts.Type<Consumption> = sts.struct(() => {
+    return {
+        totalConsumed: sts.bigint(),
+        lastResetBlock: sts.option(() => sts.number()),
+    }
+})
+
+export const RequireSignatureRule = sts.bytes()
+
+export const CallIndex: sts.Type<CallIndex> = sts.struct(() => {
+    return {
+        palletIndex: sts.number(),
+        functionIndex: sts.number(),
+    }
+})
+
+export const MinimumInfusionRule = sts.bigint()
+
+export const MaxFuelBurnPerTransactionRule = sts.bigint()
+
+export const DispatchRuleKind: sts.Type<DispatchRuleKind> = sts.closedEnum(() => {
+    return {
+        MaxFuelBurnPerTransaction: sts.unit(),
+        MinimumInfusion: sts.unit(),
+        PermittedCalls: sts.unit(),
+        PermittedExtrinsics: sts.unit(),
+        RequireSignature: sts.unit(),
+        RequireToken: sts.unit(),
+        TankFuelBudget: sts.unit(),
+        UserFuelBudget: sts.unit(),
+        WhitelistedCallers: sts.unit(),
+        WhitelistedCollections: sts.unit(),
+        WhitelistedPallets: sts.unit(),
+    }
+})
+
+export interface Attribute {
+    value: Bytes
+    deposit: bigint
+    depositor?: AccountId32 | undefined
+    frozen: boolean
+}
+
+export interface Token {
+    supply: bigint
+    cap?: TokenCap | undefined
+    freezeState?: FreezeState | undefined
+    requiresDeposit: boolean
+    creationDeposit: AmbiguousDeposit
+    ownerDeposit: bigint
+    totalTokenAccountDeposit: bigint
+    attributeCount: number
+    accountCount: number
+    marketBehavior?: TokenMarketBehavior | undefined
+    listingForbidden: boolean
+    metadata: DefaultTokenMetadata
+    infusion: bigint
+    anyoneCanInfuse: boolean
+    groups: bigint[]
+    ephemeralExpiration?: number | undefined
+    isLendable: boolean
+    lending?: LendingInfo | undefined
+    mintRateLimit?: MintRateLimitState | undefined
+    creationBlock: number
+}
+
+export interface MintRateLimitState {
+    limit: MintRateLimit
+    window: MintRateWindow
+    pending?: PendingMintRateLimitChange | undefined
+}
+
+export interface PendingMintRateLimitChange {
+    newLimit?: MintRateLimit | undefined
+    effectiveBlock: number
+}
+
+export interface MintRateWindow {
+    lastSlot: number
+    buckets: bigint[]
+}
+
+export interface MintRateLimit {
+    period: number
+    max: bigint
+}
+
+export interface LendingInfo {
+    lender: AccountId32
+    expiration: number
+}
+
+export interface DefaultTokenMetadata {
+    decimalCount: number
+    name: BoundedString
+    symbol: Bytes
+    foreign?: DefaultForeignTokenMetadata | undefined
+}
+
+export interface DefaultForeignTokenMetadata {
+    location?: V5Location | undefined
+    unitsPerSecond?: bigint | undefined
+}
+
+export type BoundedString = Bytes
+
+export type TokenMarketBehavior = TokenMarketBehavior_HasRoyalty | TokenMarketBehavior_IsCurrency
+
+export interface TokenMarketBehavior_HasRoyalty {
+    __kind: 'HasRoyalty'
+    value: DefaultRoyalty
+}
+
+export interface TokenMarketBehavior_IsCurrency {
+    __kind: 'IsCurrency'
+}
+
+export interface DefaultRoyalty {
+    beneficiaries: DefaultRoyaltyInfo[]
+}
+
+export interface DefaultRoyaltyInfo {
+    beneficiary: AccountId32
+    percentage: number
+}
+
+export interface AmbiguousDeposit {
+    depositor?: AccountId32 | undefined
+    amount: bigint
+}
+
+export type FreezeState = FreezeState_Never | FreezeState_Permanent | FreezeState_Temporary
+
+export interface FreezeState_Never {
+    __kind: 'Never'
+}
+
+export interface FreezeState_Permanent {
+    __kind: 'Permanent'
+}
+
+export interface FreezeState_Temporary {
+    __kind: 'Temporary'
+}
+
+export type TokenCap = TokenCap_CollapsingSupply | TokenCap_Supply
+
+export interface TokenCap_CollapsingSupply {
+    __kind: 'CollapsingSupply'
+    value: bigint
+}
+
+export interface TokenCap_Supply {
+    __kind: 'Supply'
+    value: bigint
+}
+
+export interface Collection {
+    owner: AccountId32
+    policy: DefaultCollectionPolicy
+    tokenCount: bigint
+    attributeCount: number
+    creationDeposit: Deposit
+    totalDeposit: bigint
+    explicitRoyaltyCurrencies: [AssetId, null][]
+    totalInfusion: bigint
+    tokenGroupCount: number
+    mintRateLimit?: MintRateLimitState | undefined
+}
+
+export interface DefaultCollectionPolicy {
+    mint: DefaultMintPolicy
+    transfer: DefaultTransferPolicy
+    market: DefaultMarketPolicy
+}
+
+export interface DefaultMarketPolicy {
+    royalty?: DefaultRoyalty | undefined
+}
+
+export interface DefaultTransferPolicy {
+    isFrozen: boolean
+}
+
+export interface DefaultMintPolicy {
+    maxTokenCount?: bigint | undefined
+    maxTokenSupply?: bigint | undefined
+    forceCollapsingSupply: boolean
+}
+
+export interface TokenAccount {
+    balance: bigint
+    reservedBalance: bigint
+    lockedBalance: bigint
+    holds: TokenAccountReserve[]
+    locks: [Bytes, bigint][]
+    approvals: [AccountId32, Approval][]
+    isFrozen: boolean
+    deposit?: Deposit | undefined
+    storageVersion: number
+}
+
+export interface Approval {
+    amount: bigint
+    expiration?: number | undefined
+}
+
+export interface TokenAccountReserve {
+    reason: RuntimeHoldReason
+    balance: bigint
+}
+
+export type RuntimeHoldReason =
+    | RuntimeHoldReason_CollatorStaking
+    | RuntimeHoldReason_FuelTanks
+    | RuntimeHoldReason_Marketplace
+    | RuntimeHoldReason_MultiTokens
+    | RuntimeHoldReason_PolkadotXcm
+    | RuntimeHoldReason_Preimage
+    | RuntimeHoldReason_SafeMode
+    | RuntimeHoldReason_Session
+
+export interface RuntimeHoldReason_CollatorStaking {
+    __kind: 'CollatorStaking'
+    value: Type_44
+}
+
+export interface RuntimeHoldReason_FuelTanks {
+    __kind: 'FuelTanks'
+    value: Type_49
+}
+
+export interface RuntimeHoldReason_Marketplace {
+    __kind: 'Marketplace'
+    value: Type_48
+}
+
+export interface RuntimeHoldReason_MultiTokens {
+    __kind: 'MultiTokens'
+    value: Type_47
+}
+
+export interface RuntimeHoldReason_PolkadotXcm {
+    __kind: 'PolkadotXcm'
+    value: Type_46
+}
+
+export interface RuntimeHoldReason_Preimage {
+    __kind: 'Preimage'
+    value: HoldReason
+}
+
+export interface RuntimeHoldReason_SafeMode {
+    __kind: 'SafeMode'
+    value: Type_50
+}
+
+export interface RuntimeHoldReason_Session {
+    __kind: 'Session'
+    value: Type_45
+}
+
+export type Type_45 = Type_45_Keys
+
+export interface Type_45_Keys {
+    __kind: 'Keys'
+}
+
+export type Type_50 = Type_50_EnterOrExtend
+
+export interface Type_50_EnterOrExtend {
+    __kind: 'EnterOrExtend'
+}
+
+export type HoldReason = HoldReason_Preimage
+
+export interface HoldReason_Preimage {
+    __kind: 'Preimage'
+}
+
+export type Type_46 = Type_46_AuthorizeAlias
+
+export interface Type_46_AuthorizeAlias {
+    __kind: 'AuthorizeAlias'
+}
+
+export type Type_47 = Type_47_MultiTokens
+
+export interface Type_47_MultiTokens {
+    __kind: 'MultiTokens'
+}
+
+export type Type_48 = Type_48_Marketplace
+
+export interface Type_48_Marketplace {
+    __kind: 'Marketplace'
+}
+
+export type Type_49 = Type_49_FuelTanks
+
+export interface Type_49_FuelTanks {
+    __kind: 'FuelTanks'
+}
+
+export type Type_44 = Type_44_CollatorStaking
+
+export interface Type_44_CollatorStaking {
+    __kind: 'CollatorStaking'
+}
+
+export interface OutboundChannelDetails {
+    recipient: Id
+    state: OutboundState
+    signalsExist: boolean
+    firstIndex: number
+    lastIndex: number
+    flags: OutboundChannelFlags
+    queuedBytes: number
+}
+
+export interface OutboundChannelFlags {
+    bits: number
+}
+
+export type OutboundState = OutboundState_Ok | OutboundState_Suspended
+
+export interface OutboundState_Ok {
+    __kind: 'Ok'
+}
+
+export interface OutboundState_Suspended {
+    __kind: 'Suspended'
+}
+
+export const OutboundChannelDetails: sts.Type<OutboundChannelDetails> = sts.struct(() => {
+    return {
+        recipient: Id,
+        state: OutboundState,
+        signalsExist: sts.boolean(),
+        firstIndex: sts.number(),
+        lastIndex: sts.number(),
+        flags: OutboundChannelFlags,
+        queuedBytes: sts.number(),
+    }
+})
+
+export const OutboundChannelFlags: sts.Type<OutboundChannelFlags> = sts.struct(() => {
+    return {
+        bits: sts.number(),
+    }
+})
+
+export const OutboundState: sts.Type<OutboundState> = sts.closedEnum(() => {
+    return {
+        Ok: sts.unit(),
+        Suspended: sts.unit(),
+    }
+})
+
+export const Id = sts.number()
+
+export interface SessionKeys {
+    aura: Public
+    offchainWorker: Bytes
+}
+
+export type Public = Bytes
+
+export interface Round {
+    number: number
+    startingBlock: number
+    collators: Collator[]
+}
+
+export const Round: sts.Type<Round> = sts.struct(() => {
+    return {
+        number: sts.number(),
+        startingBlock: sts.number(),
+        collators: sts.array(() => Collator),
+    }
+})
+
+export interface Nomination {
+    account: AccountId32
+    collator: AccountId32
+    amount: bigint
+}
+
+export const Nomination: sts.Type<Nomination> = sts.struct(() => {
+    return {
+        account: AccountId32,
+        collator: AccountId32,
+        amount: sts.bigint(),
+    }
+})
+
+export interface Collator {
+    account: AccountId32
+    amount: bigint
+    totalStake: bigint
+    nominators: AccountId32[]
+}
+
+export const Collator: sts.Type<Collator> = sts.struct(() => {
+    return {
+        account: AccountId32,
+        amount: sts.bigint(),
+        totalStake: sts.bigint(),
+        nominators: sts.array(() => AccountId32),
+    }
+})
+
+export interface NoDrop {
+    amount: bigint
+}
+
+export const NoDrop: sts.Type<NoDrop> = sts.struct(() => {
+    return {
+        amount: sts.bigint(),
+    }
+})
+
 export type AccountId32 = Bytes
+
+export interface IdAmount {
+    id: RuntimeHoldReason
+    amount: bigint
+}
+
+export const IdAmount: sts.Type<IdAmount> = sts.struct(() => {
+    return {
+        id: RuntimeHoldReason,
+        amount: sts.bigint(),
+    }
+})
+
+export interface Scheduled {
+    maybeId?: Bytes | undefined
+    priority: number
+    call: Bounded
+    maybePeriodic?: [number, number] | undefined
+    origin: OriginCaller
+}
+
+export const Scheduled: sts.Type<Scheduled> = sts.struct(() => {
+    return {
+        maybeId: sts.option(() => sts.bytes()),
+        priority: sts.number(),
+        call: Bounded,
+        maybePeriodic: sts.option(() => sts.tuple(() => [sts.number(), sts.number()])),
+        origin: OriginCaller,
+    }
+})
+
+export interface PoVMessages {
+    relayStorageRootOrHash: H256
+    coreSelector: number
+    bundleIndex: number
+    umpMsgCount: number
+    hrmpOutboundCount: number
+    hrmpOutboundRecipients: Id[]
+}
+
+export const PoVMessages: sts.Type<PoVMessages> = sts.struct(() => {
+    return {
+        relayStorageRootOrHash: H256,
+        coreSelector: sts.number(),
+        bundleIndex: sts.number(),
+        umpMsgCount: sts.number(),
+        hrmpOutboundCount: sts.number(),
+        hrmpOutboundRecipients: sts.array(() => Id),
+    }
+})
+
+export interface InboundMessageId {
+    sentAt: number
+    reverseIdx: number
+}
+
+export const InboundMessageId: sts.Type<InboundMessageId> = sts.struct(() => {
+    return {
+        sentAt: sts.number(),
+        reverseIdx: sts.number(),
+    }
+})
+
+export type BlockWeightMode =
+    BlockWeightMode_FractionOfCore | BlockWeightMode_FullCore | BlockWeightMode_PotentialFullCore
+
+export interface BlockWeightMode_FractionOfCore {
+    __kind: 'FractionOfCore'
+    context: number
+    firstTransactionIndex?: number | undefined
+}
+
+export interface BlockWeightMode_FullCore {
+    __kind: 'FullCore'
+    context: number
+}
+
+export interface BlockWeightMode_PotentialFullCore {
+    __kind: 'PotentialFullCore'
+    context: number
+    firstTransactionIndex?: number | undefined
+    targetWeight: Weight
+}
+
+export interface Weight {
+    refTime: bigint
+    proofSize: bigint
+}
+
+export const BlockWeightMode: sts.Type<BlockWeightMode> = sts.closedEnum(() => {
+    return {
+        FractionOfCore: sts.enumStruct({
+            context: sts.number(),
+            firstTransactionIndex: sts.option(() => sts.number()),
+        }),
+        FullCore: sts.enumStruct({
+            context: sts.number(),
+        }),
+        PotentialFullCore: sts.enumStruct({
+            context: sts.number(),
+            firstTransactionIndex: sts.option(() => sts.number()),
+            targetWeight: Weight,
+        }),
+    }
+})
 
 export interface EventRecord {
     phase: Phase
     event: Event
     topics: H256[]
 }
-
-export type H256 = Bytes
 
 export type Event =
     | Event_AssetConversion
@@ -486,11 +2433,6 @@ export interface Pays_No {
 
 export interface Pays_Yes {
     __kind: 'Yes'
-}
-
-export interface Weight {
-    refTime: bigint
-    proofSize: bigint
 }
 
 /**
@@ -1191,30 +3133,6 @@ export interface ReferendaEvent_TimedOut {
     tally: Tally
 }
 
-export type Bounded = Bounded_Inline | Bounded_Legacy | Bounded_Lookup
-
-export interface Bounded_Inline {
-    __kind: 'Inline'
-    value: Bytes
-}
-
-export interface Bounded_Legacy {
-    __kind: 'Legacy'
-    hash: H256
-}
-
-export interface Bounded_Lookup {
-    __kind: 'Lookup'
-    hash: H256
-    len: number
-}
-
-export interface Tally {
-    ayes: bigint
-    nays: bigint
-    support: bigint
-}
-
 /**
  * The `Event` enum of this pallet
  */
@@ -1399,8 +3317,6 @@ export interface PoolsMutation {
 export interface Pool {
     feeShare: Perbill
 }
-
-export type Perbill = number
 
 /**
  * The `Event` enum of this pallet
@@ -2099,160 +4015,6 @@ export interface V5Instruction_WithdrawAsset {
     value: V5Asset[]
 }
 
-export type V5Junction =
-    | V5Junction_AccountId32
-    | V5Junction_AccountIndex64
-    | V5Junction_AccountKey20
-    | V5Junction_GeneralIndex
-    | V5Junction_GeneralKey
-    | V5Junction_GlobalConsensus
-    | V5Junction_OnlyChild
-    | V5Junction_PalletInstance
-    | V5Junction_Parachain
-    | V5Junction_Plurality
-
-export interface V5Junction_AccountId32 {
-    __kind: 'AccountId32'
-    network?: V5NetworkId | undefined
-    id: Bytes
-}
-
-export interface V5Junction_AccountIndex64 {
-    __kind: 'AccountIndex64'
-    network?: V5NetworkId | undefined
-    index: bigint
-}
-
-export interface V5Junction_AccountKey20 {
-    __kind: 'AccountKey20'
-    network?: V5NetworkId | undefined
-    key: Bytes
-}
-
-export interface V5Junction_GeneralIndex {
-    __kind: 'GeneralIndex'
-    value: bigint
-}
-
-export interface V5Junction_GeneralKey {
-    __kind: 'GeneralKey'
-    length: number
-    data: Bytes
-}
-
-export interface V5Junction_GlobalConsensus {
-    __kind: 'GlobalConsensus'
-    value: V5NetworkId
-}
-
-export interface V5Junction_OnlyChild {
-    __kind: 'OnlyChild'
-}
-
-export interface V5Junction_PalletInstance {
-    __kind: 'PalletInstance'
-    value: number
-}
-
-export interface V5Junction_Parachain {
-    __kind: 'Parachain'
-    value: number
-}
-
-export interface V5Junction_Plurality {
-    __kind: 'Plurality'
-    id: V3BodyId
-    part: V3BodyPart
-}
-
-export type V3BodyPart =
-    | V3BodyPart_AtLeastProportion
-    | V3BodyPart_Fraction
-    | V3BodyPart_Members
-    | V3BodyPart_MoreThanProportion
-    | V3BodyPart_Voice
-
-export interface V3BodyPart_AtLeastProportion {
-    __kind: 'AtLeastProportion'
-    nom: number
-    denom: number
-}
-
-export interface V3BodyPart_Fraction {
-    __kind: 'Fraction'
-    nom: number
-    denom: number
-}
-
-export interface V3BodyPart_Members {
-    __kind: 'Members'
-    count: number
-}
-
-export interface V3BodyPart_MoreThanProportion {
-    __kind: 'MoreThanProportion'
-    nom: number
-    denom: number
-}
-
-export interface V3BodyPart_Voice {
-    __kind: 'Voice'
-}
-
-export type V3BodyId =
-    | V3BodyId_Administration
-    | V3BodyId_Defense
-    | V3BodyId_Executive
-    | V3BodyId_Index
-    | V3BodyId_Judicial
-    | V3BodyId_Legislative
-    | V3BodyId_Moniker
-    | V3BodyId_Technical
-    | V3BodyId_Treasury
-    | V3BodyId_Unit
-
-export interface V3BodyId_Administration {
-    __kind: 'Administration'
-}
-
-export interface V3BodyId_Defense {
-    __kind: 'Defense'
-}
-
-export interface V3BodyId_Executive {
-    __kind: 'Executive'
-}
-
-export interface V3BodyId_Index {
-    __kind: 'Index'
-    value: number
-}
-
-export interface V3BodyId_Judicial {
-    __kind: 'Judicial'
-}
-
-export interface V3BodyId_Legislative {
-    __kind: 'Legislative'
-}
-
-export interface V3BodyId_Moniker {
-    __kind: 'Moniker'
-    value: Bytes
-}
-
-export interface V3BodyId_Technical {
-    __kind: 'Technical'
-}
-
-export interface V3BodyId_Treasury {
-    __kind: 'Treasury'
-}
-
-export interface V3BodyId_Unit {
-    __kind: 'Unit'
-}
-
 export interface DoubleEncoded {
     encoded: Bytes
 }
@@ -2307,52 +4069,6 @@ export interface V5AssetTransferFilter_Teleport {
     value: V5AssetFilter
 }
 
-export type V5NetworkId =
-    | V5NetworkId_BitcoinCash
-    | V5NetworkId_BitcoinCore
-    | V5NetworkId_ByFork
-    | V5NetworkId_ByGenesis
-    | V5NetworkId_Ethereum
-    | V5NetworkId_Kusama
-    | V5NetworkId_Polkadot
-    | V5NetworkId_PolkadotBulletin
-
-export interface V5NetworkId_BitcoinCash {
-    __kind: 'BitcoinCash'
-}
-
-export interface V5NetworkId_BitcoinCore {
-    __kind: 'BitcoinCore'
-}
-
-export interface V5NetworkId_ByFork {
-    __kind: 'ByFork'
-    blockNumber: bigint
-    blockHash: Bytes
-}
-
-export interface V5NetworkId_ByGenesis {
-    __kind: 'ByGenesis'
-    value: Bytes
-}
-
-export interface V5NetworkId_Ethereum {
-    __kind: 'Ethereum'
-    chainId: bigint
-}
-
-export interface V5NetworkId_Kusama {
-    __kind: 'Kusama'
-}
-
-export interface V5NetworkId_Polkadot {
-    __kind: 'Polkadot'
-}
-
-export interface V5NetworkId_PolkadotBulletin {
-    __kind: 'PolkadotBulletin'
-}
-
 export type V3MaybeErrorCode = V3MaybeErrorCode_Error | V3MaybeErrorCode_Success | V3MaybeErrorCode_TruncatedError
 
 export interface V3MaybeErrorCode_Error {
@@ -2367,61 +4083,6 @@ export interface V3MaybeErrorCode_Success {
 export interface V3MaybeErrorCode_TruncatedError {
     __kind: 'TruncatedError'
     value: Bytes
-}
-
-export type V5Junctions =
-    | V5Junctions_Here
-    | V5Junctions_X1
-    | V5Junctions_X2
-    | V5Junctions_X3
-    | V5Junctions_X4
-    | V5Junctions_X5
-    | V5Junctions_X6
-    | V5Junctions_X7
-    | V5Junctions_X8
-
-export interface V5Junctions_Here {
-    __kind: 'Here'
-}
-
-export interface V5Junctions_X1 {
-    __kind: 'X1'
-    value: V5Junction[]
-}
-
-export interface V5Junctions_X2 {
-    __kind: 'X2'
-    value: V5Junction[]
-}
-
-export interface V5Junctions_X3 {
-    __kind: 'X3'
-    value: V5Junction[]
-}
-
-export interface V5Junctions_X4 {
-    __kind: 'X4'
-    value: V5Junction[]
-}
-
-export interface V5Junctions_X5 {
-    __kind: 'X5'
-    value: V5Junction[]
-}
-
-export interface V5Junctions_X6 {
-    __kind: 'X6'
-    value: V5Junction[]
-}
-
-export interface V5Junctions_X7 {
-    __kind: 'X7'
-    value: V5Junction[]
-}
-
-export interface V5Junctions_X8 {
-    __kind: 'X8'
-    value: V5Junction[]
 }
 
 export type V5AssetFilter = V5AssetFilter_Definite | V5AssetFilter_Wild
@@ -3388,11 +5049,6 @@ export interface V3AssetId_Abstract {
 export interface V3AssetId_Concrete {
     __kind: 'Concrete'
     value: V3MultiLocation
-}
-
-export interface V5Location {
-    parents: number
-    interior: V5Junctions
 }
 
 /**
@@ -4991,115 +6647,6 @@ export interface MultiTokensEvent_Withdraw {
     amount: bigint
 }
 
-export interface Token {
-    supply: bigint
-    cap?: TokenCap | undefined
-    freezeState?: FreezeState | undefined
-    requiresDeposit: boolean
-    creationDeposit: AmbiguousDeposit
-    ownerDeposit: bigint
-    totalTokenAccountDeposit: bigint
-    attributeCount: number
-    accountCount: number
-    marketBehavior?: TokenMarketBehavior | undefined
-    listingForbidden: boolean
-    metadata: DefaultTokenMetadata
-    infusion: bigint
-    anyoneCanInfuse: boolean
-    groups: bigint[]
-    ephemeralExpiration?: number | undefined
-    isLendable: boolean
-    lending?: LendingInfo | undefined
-    mintRateLimit?: MintRateLimitState | undefined
-    creationBlock: number
-}
-
-export interface MintRateLimitState {
-    limit: MintRateLimit
-    window: MintRateWindow
-    pending?: PendingMintRateLimitChange | undefined
-}
-
-export interface PendingMintRateLimitChange {
-    newLimit?: MintRateLimit | undefined
-    effectiveBlock: number
-}
-
-export interface MintRateWindow {
-    lastSlot: number
-    buckets: bigint[]
-}
-
-export interface LendingInfo {
-    lender: AccountId32
-    expiration: number
-}
-
-export interface DefaultTokenMetadata {
-    decimalCount: number
-    name: BoundedString
-    symbol: Bytes
-    foreign?: DefaultForeignTokenMetadata | undefined
-}
-
-export interface DefaultForeignTokenMetadata {
-    location?: V5Location | undefined
-    unitsPerSecond?: bigint | undefined
-}
-
-export type BoundedString = Bytes
-
-export type TokenMarketBehavior = TokenMarketBehavior_HasRoyalty | TokenMarketBehavior_IsCurrency
-
-export interface TokenMarketBehavior_HasRoyalty {
-    __kind: 'HasRoyalty'
-    value: DefaultRoyalty
-}
-
-export interface TokenMarketBehavior_IsCurrency {
-    __kind: 'IsCurrency'
-}
-
-export interface DefaultRoyalty {
-    beneficiaries: DefaultRoyaltyInfo[]
-}
-
-export interface DefaultRoyaltyInfo {
-    beneficiary: AccountId32
-    percentage: number
-}
-
-export interface AmbiguousDeposit {
-    depositor?: AccountId32 | undefined
-    amount: bigint
-}
-
-export type FreezeState = FreezeState_Never | FreezeState_Permanent | FreezeState_Temporary
-
-export interface FreezeState_Never {
-    __kind: 'Never'
-}
-
-export interface FreezeState_Permanent {
-    __kind: 'Permanent'
-}
-
-export interface FreezeState_Temporary {
-    __kind: 'Temporary'
-}
-
-export type TokenCap = TokenCap_CollapsingSupply | TokenCap_Supply
-
-export interface TokenCap_CollapsingSupply {
-    __kind: 'CollapsingSupply'
-    value: bigint
-}
-
-export interface TokenCap_Supply {
-    __kind: 'Supply'
-    value: bigint
-}
-
 export interface DefaultTokenMutation {
     behavior: Type_175
     listingForbidden: Type_178
@@ -5141,33 +6688,6 @@ export interface Type_175_SomeMutation {
     value?: TokenMarketBehavior | undefined
 }
 
-export interface TokenAccount {
-    balance: bigint
-    reservedBalance: bigint
-    lockedBalance: bigint
-    holds: TokenAccountReserve[]
-    locks: [Bytes, bigint][]
-    approvals: [AccountId32, Approval][]
-    isFrozen: boolean
-    deposit?: Deposit | undefined
-    storageVersion: number
-}
-
-export interface Deposit {
-    depositor: AccountId32
-    amount: bigint
-}
-
-export interface Approval {
-    amount: bigint
-    expiration?: number | undefined
-}
-
-export interface TokenAccountReserve {
-    reason: RuntimeHoldReason
-    balance: bigint
-}
-
 export interface Thaw {
     collectionId: bigint
     thawType: ThawType
@@ -5193,109 +6713,6 @@ export interface ThawType_TokenAccount {
     __kind: 'TokenAccount'
     tokenId: bigint
     accountId: AccountId32
-}
-
-export type RuntimeHoldReason =
-    | RuntimeHoldReason_CollatorStaking
-    | RuntimeHoldReason_FuelTanks
-    | RuntimeHoldReason_Marketplace
-    | RuntimeHoldReason_MultiTokens
-    | RuntimeHoldReason_PolkadotXcm
-    | RuntimeHoldReason_Preimage
-    | RuntimeHoldReason_SafeMode
-    | RuntimeHoldReason_Session
-
-export interface RuntimeHoldReason_CollatorStaking {
-    __kind: 'CollatorStaking'
-    value: Type_44
-}
-
-export interface RuntimeHoldReason_FuelTanks {
-    __kind: 'FuelTanks'
-    value: Type_49
-}
-
-export interface RuntimeHoldReason_Marketplace {
-    __kind: 'Marketplace'
-    value: Type_48
-}
-
-export interface RuntimeHoldReason_MultiTokens {
-    __kind: 'MultiTokens'
-    value: Type_47
-}
-
-export interface RuntimeHoldReason_PolkadotXcm {
-    __kind: 'PolkadotXcm'
-    value: Type_46
-}
-
-export interface RuntimeHoldReason_Preimage {
-    __kind: 'Preimage'
-    value: HoldReason
-}
-
-export interface RuntimeHoldReason_SafeMode {
-    __kind: 'SafeMode'
-    value: Type_50
-}
-
-export interface RuntimeHoldReason_Session {
-    __kind: 'Session'
-    value: Type_45
-}
-
-export type Type_45 = Type_45_Keys
-
-export interface Type_45_Keys {
-    __kind: 'Keys'
-}
-
-export type Type_50 = Type_50_EnterOrExtend
-
-export interface Type_50_EnterOrExtend {
-    __kind: 'EnterOrExtend'
-}
-
-export type HoldReason = HoldReason_Preimage
-
-export interface HoldReason_Preimage {
-    __kind: 'Preimage'
-}
-
-export type Type_46 = Type_46_AuthorizeAlias
-
-export interface Type_46_AuthorizeAlias {
-    __kind: 'AuthorizeAlias'
-}
-
-export type Type_47 = Type_47_MultiTokens
-
-export interface Type_47_MultiTokens {
-    __kind: 'MultiTokens'
-}
-
-export type Type_48 = Type_48_Marketplace
-
-export interface Type_48_Marketplace {
-    __kind: 'Marketplace'
-}
-
-export type Type_49 = Type_49_FuelTanks
-
-export interface Type_49_FuelTanks {
-    __kind: 'FuelTanks'
-}
-
-export type Type_44 = Type_44_CollatorStaking
-
-export interface Type_44_CollatorStaking {
-    __kind: 'CollatorStaking'
-}
-
-export interface MintRateLimit {
-    period: number
-    max: bigint
 }
 
 export type RootOrSigned = RootOrSigned_Root | RootOrSigned_Signed
@@ -5353,44 +6770,6 @@ export interface FreezeType_TokenGroupAttribute {
     __kind: 'TokenGroupAttribute'
     tokenGroupId: bigint
     key: Bytes
-}
-
-export interface Collection {
-    owner: AccountId32
-    policy: DefaultCollectionPolicy
-    tokenCount: bigint
-    attributeCount: number
-    creationDeposit: Deposit
-    totalDeposit: bigint
-    explicitRoyaltyCurrencies: [AssetId, null][]
-    totalInfusion: bigint
-    tokenGroupCount: number
-    mintRateLimit?: MintRateLimitState | undefined
-}
-
-export interface AssetId {
-    collectionId: bigint
-    tokenId: bigint
-}
-
-export interface DefaultCollectionPolicy {
-    mint: DefaultMintPolicy
-    transfer: DefaultTransferPolicy
-    market: DefaultMarketPolicy
-}
-
-export interface DefaultMarketPolicy {
-    royalty?: DefaultRoyalty | undefined
-}
-
-export interface DefaultTransferPolicy {
-    isFrozen: boolean
-}
-
-export interface DefaultMintPolicy {
-    maxTokenCount?: bigint | undefined
-    maxTokenSupply?: bigint | undefined
-    forceCollapsingSupply: boolean
 }
 
 export interface DefaultCollectionMutation {
@@ -5685,8 +7064,6 @@ export interface AggregateMessageOrigin_Sibling {
     __kind: 'Sibling'
     value: Id
 }
-
-export type Id = number
 
 /**
  * The Event for this pallet
@@ -6033,102 +7410,6 @@ export interface MarketplaceEvent_WhitelistedAccountsRemoved {
 export interface WhitelistAddAccount {
     accountId: AccountId32
     allowance?: bigint | undefined
-}
-
-export type OrderSide = OrderSide_Ask | OrderSide_Bid
-
-export interface OrderSide_Ask {
-    __kind: 'Ask'
-}
-
-export interface OrderSide_Bid {
-    __kind: 'Bid'
-}
-
-export interface Listing {
-    creator: AccountId32
-    makeAssetId: AssetId
-    takeAssetId: AssetId
-    amount: bigint
-    price: bigint
-    minReceived: bigint
-    feeSide: FeeSide
-    creationBlock: number
-    startBlock?: number | undefined
-    whitelistedAccountCount?: number | undefined
-    deposit: Deposit
-    salt: Bytes
-    data: ListingData
-    state: ListingState
-}
-
-export type ListingState = ListingState_Auction | ListingState_FixedPrice | ListingState_Offer
-
-export interface ListingState_Auction {
-    __kind: 'Auction'
-    value: AuctionState
-}
-
-export interface ListingState_FixedPrice {
-    __kind: 'FixedPrice'
-    amountFilled: bigint
-}
-
-export interface ListingState_Offer {
-    __kind: 'Offer'
-    value: OfferState
-}
-
-export interface OfferState {
-    amountFilled: bigint
-}
-
-export interface AuctionState {
-    highBid?: Bid | undefined
-}
-
-export type ListingData = ListingData_Auction | ListingData_FixedPrice | ListingData_Offer
-
-export interface ListingData_Auction {
-    __kind: 'Auction'
-    value: AuctionData
-}
-
-export interface ListingData_FixedPrice {
-    __kind: 'FixedPrice'
-}
-
-export interface ListingData_Offer {
-    __kind: 'Offer'
-    value: OfferData
-}
-
-export interface OfferData {
-    expiration?: number | undefined
-}
-
-export interface AuctionData {
-    endBlock: number
-}
-
-export type FeeSide = FeeSide_Make | FeeSide_NoFee | FeeSide_Take
-
-export interface FeeSide_Make {
-    __kind: 'Make'
-}
-
-export interface FeeSide_NoFee {
-    __kind: 'NoFee'
-}
-
-export interface FeeSide_Take {
-    __kind: 'Take'
-}
-
-export interface Bid {
-    bidder: AccountId32
-    price: bigint
-    blockNumber: number
 }
 
 /**
@@ -6644,21 +7925,6 @@ export interface AccountRuleDescriptor_WhitelistedCallers {
     value: AccountId32[]
 }
 
-export interface RequireTokenRule {
-    collectionId: bigint
-    tokenId: bigint
-}
-
-export type CoveragePolicy = CoveragePolicy_Fees | CoveragePolicy_FeesAndDeposit
-
-export interface CoveragePolicy_Fees {
-    __kind: 'Fees'
-}
-
-export interface CoveragePolicy_FeesAndDeposit {
-    __kind: 'FeesAndDeposit'
-}
-
 export type Type_284 = Type_284_NoMutation | Type_284_SomeMutation
 
 export interface Type_284_NoMutation {
@@ -6668,73 +7934,6 @@ export interface Type_284_NoMutation {
 export interface Type_284_SomeMutation {
     __kind: 'SomeMutation'
     value?: UserAccountManagement | undefined
-}
-
-export interface UserAccountManagement {
-    tankReservesAccountCreationDeposit: boolean
-    tankReservesExistentialDeposit: boolean
-}
-
-export interface Consumption {
-    totalConsumed: bigint
-    lastResetBlock?: number | undefined
-}
-
-export type DispatchRuleKind =
-    | DispatchRuleKind_MaxFuelBurnPerTransaction
-    | DispatchRuleKind_MinimumInfusion
-    | DispatchRuleKind_PermittedCalls
-    | DispatchRuleKind_PermittedExtrinsics
-    | DispatchRuleKind_RequireSignature
-    | DispatchRuleKind_RequireToken
-    | DispatchRuleKind_TankFuelBudget
-    | DispatchRuleKind_UserFuelBudget
-    | DispatchRuleKind_WhitelistedCallers
-    | DispatchRuleKind_WhitelistedCollections
-    | DispatchRuleKind_WhitelistedPallets
-
-export interface DispatchRuleKind_MaxFuelBurnPerTransaction {
-    __kind: 'MaxFuelBurnPerTransaction'
-}
-
-export interface DispatchRuleKind_MinimumInfusion {
-    __kind: 'MinimumInfusion'
-}
-
-export interface DispatchRuleKind_PermittedCalls {
-    __kind: 'PermittedCalls'
-}
-
-export interface DispatchRuleKind_PermittedExtrinsics {
-    __kind: 'PermittedExtrinsics'
-}
-
-export interface DispatchRuleKind_RequireSignature {
-    __kind: 'RequireSignature'
-}
-
-export interface DispatchRuleKind_RequireToken {
-    __kind: 'RequireToken'
-}
-
-export interface DispatchRuleKind_TankFuelBudget {
-    __kind: 'TankFuelBudget'
-}
-
-export interface DispatchRuleKind_UserFuelBudget {
-    __kind: 'UserFuelBudget'
-}
-
-export interface DispatchRuleKind_WhitelistedCallers {
-    __kind: 'WhitelistedCallers'
-}
-
-export interface DispatchRuleKind_WhitelistedCollections {
-    __kind: 'WhitelistedCollections'
-}
-
-export interface DispatchRuleKind_WhitelistedPallets {
-    __kind: 'WhitelistedPallets'
 }
 
 /**
@@ -7004,12 +8203,6 @@ export interface FellowshipReferendaEvent_TimedOut {
     tally: Type_598
 }
 
-export interface Type_598 {
-    bareAyes: number
-    ayes: number
-    nays: number
-}
-
 /**
  * The `Event` enum of this pallet
  */
@@ -7065,18 +8258,6 @@ export interface FellowshipCollectiveEvent_Voted {
     poll: number
     vote: VoteRecord
     tally: Type_598
-}
-
-export type VoteRecord = VoteRecord_Aye | VoteRecord_Nay
-
-export interface VoteRecord_Aye {
-    __kind: 'Aye'
-    value: number
-}
-
-export interface VoteRecord_Nay {
-    __kind: 'Nay'
-    value: number
 }
 
 /**
@@ -7209,29 +8390,6 @@ export interface ConvictionVotingEvent_Voted {
     vote: AccountVote
     pollIndex: number
 }
-
-export type AccountVote = AccountVote_Split | AccountVote_SplitAbstain | AccountVote_Standard
-
-export interface AccountVote_Split {
-    __kind: 'Split'
-    aye: bigint
-    nay: bigint
-}
-
-export interface AccountVote_SplitAbstain {
-    __kind: 'SplitAbstain'
-    aye: bigint
-    nay: bigint
-    abstain: bigint
-}
-
-export interface AccountVote_Standard {
-    __kind: 'Standard'
-    vote: Vote
-    balance: bigint
-}
-
-export type Vote = number
 
 /**
  * The `Event` enum of this pallet
@@ -8207,11 +9365,6 @@ export interface AssetConversionEvent_Touched {
 
 export type Permill = number
 
-export interface LpTokenId {
-    collectionId: bigint
-    tokenId: bigint
-}
-
 export type Phase = Phase_ApplyExtrinsic | Phase_Finalization | Phase_Initialization
 
 export interface Phase_ApplyExtrinsic {
@@ -8234,8 +9387,6 @@ export const EventRecord: sts.Type<EventRecord> = sts.struct(() => {
         topics: sts.array(() => H256),
     }
 })
-
-export const H256 = sts.bytes()
 
 export const Event: sts.Type<Event> = sts.closedEnum(() => {
     return {
@@ -8302,103 +9453,6 @@ export const WhitelistEvent: sts.Type<WhitelistEvent> = sts.closedEnum(() => {
         WhitelistedCallRemoved: sts.enumStruct({
             callHash: H256,
         }),
-    }
-})
-
-export const DispatchErrorWithPostInfo: sts.Type<DispatchErrorWithPostInfo> = sts.struct(() => {
-    return {
-        postInfo: PostDispatchInfo,
-        error: DispatchError,
-    }
-})
-
-export const DispatchError: sts.Type<DispatchError> = sts.closedEnum(() => {
-    return {
-        Arithmetic: ArithmeticError,
-        BadOrigin: sts.unit(),
-        CannotLookup: sts.unit(),
-        ConsumerRemaining: sts.unit(),
-        Corruption: sts.unit(),
-        Exhausted: sts.unit(),
-        Module: ModuleError,
-        NoProviders: sts.unit(),
-        Other: sts.unit(),
-        RootNotAllowed: sts.unit(),
-        Token: TokenError,
-        TooManyConsumers: sts.unit(),
-        Transactional: TransactionalError,
-        Trie: TrieError,
-        Unavailable: sts.unit(),
-    }
-})
-
-export const TrieError: sts.Type<TrieError> = sts.closedEnum(() => {
-    return {
-        DecodeError: sts.unit(),
-        DecoderError: sts.unit(),
-        DuplicateKey: sts.unit(),
-        ExtraneousHashReference: sts.unit(),
-        ExtraneousNode: sts.unit(),
-        ExtraneousValue: sts.unit(),
-        IncompleteDatabase: sts.unit(),
-        IncompleteProof: sts.unit(),
-        InvalidChildReference: sts.unit(),
-        InvalidHash: sts.unit(),
-        InvalidStateRoot: sts.unit(),
-        RootMismatch: sts.unit(),
-        ValueAtIncompleteKey: sts.unit(),
-        ValueMismatch: sts.unit(),
-    }
-})
-
-export const TransactionalError: sts.Type<TransactionalError> = sts.closedEnum(() => {
-    return {
-        LimitReached: sts.unit(),
-        NoLayer: sts.unit(),
-    }
-})
-
-export const TokenError: sts.Type<TokenError> = sts.closedEnum(() => {
-    return {
-        BelowMinimum: sts.unit(),
-        Blocked: sts.unit(),
-        CannotCreate: sts.unit(),
-        CannotCreateHold: sts.unit(),
-        Frozen: sts.unit(),
-        FundsUnavailable: sts.unit(),
-        NotExpendable: sts.unit(),
-        OnlyProvider: sts.unit(),
-        UnknownAsset: sts.unit(),
-        Unsupported: sts.unit(),
-    }
-})
-
-export const ModuleError: sts.Type<ModuleError> = sts.struct(() => {
-    return {
-        index: sts.number(),
-        error: sts.bytes(),
-    }
-})
-
-export const ArithmeticError: sts.Type<ArithmeticError> = sts.closedEnum(() => {
-    return {
-        DivisionByZero: sts.unit(),
-        Overflow: sts.unit(),
-        Underflow: sts.unit(),
-    }
-})
-
-export const PostDispatchInfo: sts.Type<PostDispatchInfo> = sts.struct(() => {
-    return {
-        actualWeight: sts.option(() => Weight),
-        paysFee: Pays,
-    }
-})
-
-export const Pays: sts.Type<Pays> = sts.closedEnum(() => {
-    return {
-        No: sts.unit(),
-        Yes: sts.unit(),
     }
 })
 
@@ -8484,6 +9538,13 @@ export const DispatchEventInfo: sts.Type<DispatchEventInfo> = sts.struct(() => {
         weight: Weight,
         class: DispatchClass,
         paysFee: Pays,
+    }
+})
+
+export const Pays: sts.Type<Pays> = sts.closedEnum(() => {
+    return {
+        No: sts.unit(),
+        Yes: sts.unit(),
     }
 })
 
@@ -8679,27 +9740,6 @@ export const ReferendaEvent: sts.Type<ReferendaEvent> = sts.closedEnum(() => {
     }
 })
 
-export const Bounded: sts.Type<Bounded> = sts.closedEnum(() => {
-    return {
-        Inline: sts.bytes(),
-        Legacy: sts.enumStruct({
-            hash: H256,
-        }),
-        Lookup: sts.enumStruct({
-            hash: H256,
-            len: sts.number(),
-        }),
-    }
-})
-
-export const Tally: sts.Type<Tally> = sts.struct(() => {
-    return {
-        ayes: sts.bigint(),
-        nays: sts.bigint(),
-        support: sts.bigint(),
-    }
-})
-
 /**
  * The `Event` enum of this pallet
  */
@@ -8803,8 +9843,6 @@ export const Pool: sts.Type<Pool> = sts.struct(() => {
         feeShare: Perbill,
     }
 })
-
-export const Perbill = sts.number()
 
 /**
  * The `Event` enum of this pallet
@@ -10093,359 +11131,10 @@ export const MultiTokensEvent: sts.Type<MultiTokensEvent> = sts.closedEnum(() =>
     }
 })
 
-export const Token: sts.Type<Token> = sts.struct(() => {
-    return {
-        supply: sts.bigint(),
-        cap: sts.option(() => TokenCap),
-        freezeState: sts.option(() => FreezeState),
-        requiresDeposit: sts.boolean(),
-        creationDeposit: AmbiguousDeposit,
-        ownerDeposit: sts.bigint(),
-        totalTokenAccountDeposit: sts.bigint(),
-        attributeCount: sts.number(),
-        accountCount: sts.number(),
-        marketBehavior: sts.option(() => TokenMarketBehavior),
-        listingForbidden: sts.boolean(),
-        metadata: DefaultTokenMetadata,
-        infusion: sts.bigint(),
-        anyoneCanInfuse: sts.boolean(),
-        groups: sts.array(() => sts.bigint()),
-        ephemeralExpiration: sts.option(() => sts.number()),
-        isLendable: sts.boolean(),
-        lending: sts.option(() => LendingInfo),
-        mintRateLimit: sts.option(() => MintRateLimitState),
-        creationBlock: sts.number(),
-    }
-})
-
-export const MintRateLimitState: sts.Type<MintRateLimitState> = sts.struct(() => {
-    return {
-        limit: MintRateLimit,
-        window: MintRateWindow,
-        pending: sts.option(() => PendingMintRateLimitChange),
-    }
-})
-
-export const PendingMintRateLimitChange: sts.Type<PendingMintRateLimitChange> = sts.struct(() => {
-    return {
-        newLimit: sts.option(() => MintRateLimit),
-        effectiveBlock: sts.number(),
-    }
-})
-
-export const MintRateWindow: sts.Type<MintRateWindow> = sts.struct(() => {
-    return {
-        lastSlot: sts.number(),
-        buckets: sts.array(() => sts.bigint()),
-    }
-})
-
-export const LendingInfo: sts.Type<LendingInfo> = sts.struct(() => {
-    return {
-        lender: AccountId32,
-        expiration: sts.number(),
-    }
-})
-
-export const DefaultTokenMetadata: sts.Type<DefaultTokenMetadata> = sts.struct(() => {
-    return {
-        decimalCount: sts.number(),
-        name: BoundedString,
-        symbol: sts.bytes(),
-        foreign: sts.option(() => DefaultForeignTokenMetadata),
-    }
-})
-
-export const DefaultForeignTokenMetadata: sts.Type<DefaultForeignTokenMetadata> = sts.struct(() => {
-    return {
-        location: sts.option(() => V5Location),
-        unitsPerSecond: sts.option(() => sts.bigint()),
-    }
-})
-
-export const BoundedString = sts.bytes()
-
-export const TokenMarketBehavior: sts.Type<TokenMarketBehavior> = sts.closedEnum(() => {
-    return {
-        HasRoyalty: DefaultRoyalty,
-        IsCurrency: sts.unit(),
-    }
-})
-
-export const DefaultRoyalty: sts.Type<DefaultRoyalty> = sts.struct(() => {
-    return {
-        beneficiaries: sts.array(() => DefaultRoyaltyInfo),
-    }
-})
-
-export const DefaultRoyaltyInfo: sts.Type<DefaultRoyaltyInfo> = sts.struct(() => {
-    return {
-        beneficiary: AccountId32,
-        percentage: sts.number(),
-    }
-})
-
-export const AmbiguousDeposit: sts.Type<AmbiguousDeposit> = sts.struct(() => {
-    return {
-        depositor: sts.option(() => AccountId32),
-        amount: sts.bigint(),
-    }
-})
-
-export const FreezeState: sts.Type<FreezeState> = sts.closedEnum(() => {
-    return {
-        Never: sts.unit(),
-        Permanent: sts.unit(),
-        Temporary: sts.unit(),
-    }
-})
-
-export const TokenCap: sts.Type<TokenCap> = sts.closedEnum(() => {
-    return {
-        CollapsingSupply: sts.bigint(),
-        Supply: sts.bigint(),
-    }
-})
-
-export const DefaultTokenMutation: sts.Type<DefaultTokenMutation> = sts.struct(() => {
-    return {
-        behavior: Type_175,
-        listingForbidden: Type_178,
-        isLendable: Type_178,
-        anyoneCanInfuse: Type_178,
-        name: Type_179,
-    }
-})
-
-export const Type_179: sts.Type<Type_179> = sts.closedEnum(() => {
-    return {
-        NoMutation: sts.unit(),
-        SomeMutation: BoundedString,
-    }
-})
-
-export const Type_178: sts.Type<Type_178> = sts.closedEnum(() => {
-    return {
-        NoMutation: sts.unit(),
-        SomeMutation: sts.boolean(),
-    }
-})
-
-export const Type_175: sts.Type<Type_175> = sts.closedEnum(() => {
-    return {
-        NoMutation: sts.unit(),
-        SomeMutation: sts.option(() => TokenMarketBehavior),
-    }
-})
-
-export const TokenAccount: sts.Type<TokenAccount> = sts.struct(() => {
-    return {
-        balance: sts.bigint(),
-        reservedBalance: sts.bigint(),
-        lockedBalance: sts.bigint(),
-        holds: sts.array(() => TokenAccountReserve),
-        locks: sts.array(() => sts.tuple(() => [sts.bytes(), sts.bigint()])),
-        approvals: sts.array(() => sts.tuple(() => [AccountId32, Approval])),
-        isFrozen: sts.boolean(),
-        deposit: sts.option(() => Deposit),
-        storageVersion: sts.number(),
-    }
-})
-
-export const Deposit: sts.Type<Deposit> = sts.struct(() => {
-    return {
-        depositor: AccountId32,
-        amount: sts.bigint(),
-    }
-})
-
-export const Approval: sts.Type<Approval> = sts.struct(() => {
-    return {
-        amount: sts.bigint(),
-        expiration: sts.option(() => sts.number()),
-    }
-})
-
-export const TokenAccountReserve: sts.Type<TokenAccountReserve> = sts.struct(() => {
-    return {
-        reason: RuntimeHoldReason,
-        balance: sts.bigint(),
-    }
-})
-
-export const Thaw: sts.Type<Thaw> = sts.struct(() => {
-    return {
-        collectionId: sts.bigint(),
-        thawType: ThawType,
-    }
-})
-
-export const ThawType: sts.Type<ThawType> = sts.closedEnum(() => {
-    return {
-        Collection: sts.unit(),
-        CollectionAccount: AccountId32,
-        Token: sts.enumStruct({
-            tokenId: sts.bigint(),
-        }),
-        TokenAccount: sts.enumStruct({
-            tokenId: sts.bigint(),
-            accountId: AccountId32,
-        }),
-    }
-})
-
-export const RuntimeHoldReason: sts.Type<RuntimeHoldReason> = sts.closedEnum(() => {
-    return {
-        CollatorStaking: Type_44,
-        FuelTanks: Type_49,
-        Marketplace: Type_48,
-        MultiTokens: Type_47,
-        PolkadotXcm: Type_46,
-        Preimage: HoldReason,
-        SafeMode: Type_50,
-        Session: Type_45,
-    }
-})
-
-export const Type_45: sts.Type<Type_45> = sts.closedEnum(() => {
-    return {
-        Keys: sts.unit(),
-    }
-})
-
-export const Type_50: sts.Type<Type_50> = sts.closedEnum(() => {
-    return {
-        EnterOrExtend: sts.unit(),
-    }
-})
-
-export const HoldReason: sts.Type<HoldReason> = sts.closedEnum(() => {
-    return {
-        Preimage: sts.unit(),
-    }
-})
-
-export const Type_46: sts.Type<Type_46> = sts.closedEnum(() => {
-    return {
-        AuthorizeAlias: sts.unit(),
-    }
-})
-
-export const Type_47: sts.Type<Type_47> = sts.closedEnum(() => {
-    return {
-        MultiTokens: sts.unit(),
-    }
-})
-
-export const Type_48: sts.Type<Type_48> = sts.closedEnum(() => {
-    return {
-        Marketplace: sts.unit(),
-    }
-})
-
-export const Type_49: sts.Type<Type_49> = sts.closedEnum(() => {
-    return {
-        FuelTanks: sts.unit(),
-    }
-})
-
-export const Type_44: sts.Type<Type_44> = sts.closedEnum(() => {
-    return {
-        CollatorStaking: sts.unit(),
-    }
-})
-
-export const MintRateLimit: sts.Type<MintRateLimit> = sts.struct(() => {
-    return {
-        period: sts.number(),
-        max: sts.bigint(),
-    }
-})
-
 export const RootOrSigned: sts.Type<RootOrSigned> = sts.closedEnum(() => {
     return {
         Root: sts.unit(),
         Signed: AccountId32,
-    }
-})
-
-export const Freeze: sts.Type<Freeze> = sts.struct(() => {
-    return {
-        collectionId: sts.bigint(),
-        freezeType: FreezeType,
-    }
-})
-
-export const FreezeType: sts.Type<FreezeType> = sts.closedEnum(() => {
-    return {
-        Attribute: sts.enumStruct({
-            tokenId: sts.option(() => sts.bigint()),
-            key: sts.bytes(),
-        }),
-        Collection: sts.unit(),
-        CollectionAccount: AccountId32,
-        Token: sts.enumStruct({
-            tokenId: sts.bigint(),
-            freezeState: FreezeState,
-        }),
-        TokenAccount: sts.enumStruct({
-            tokenId: sts.bigint(),
-            accountId: AccountId32,
-        }),
-        TokenGroupAttribute: sts.enumStruct({
-            tokenGroupId: sts.bigint(),
-            key: sts.bytes(),
-        }),
-    }
-})
-
-export const Collection: sts.Type<Collection> = sts.struct(() => {
-    return {
-        owner: AccountId32,
-        policy: DefaultCollectionPolicy,
-        tokenCount: sts.bigint(),
-        attributeCount: sts.number(),
-        creationDeposit: Deposit,
-        totalDeposit: sts.bigint(),
-        explicitRoyaltyCurrencies: sts.array(() => sts.tuple(() => [AssetId, sts.unit()])),
-        totalInfusion: sts.bigint(),
-        tokenGroupCount: sts.number(),
-        mintRateLimit: sts.option(() => MintRateLimitState),
-    }
-})
-
-export const AssetId: sts.Type<AssetId> = sts.struct(() => {
-    return {
-        collectionId: sts.bigint(),
-        tokenId: sts.bigint(),
-    }
-})
-
-export const DefaultCollectionPolicy: sts.Type<DefaultCollectionPolicy> = sts.struct(() => {
-    return {
-        mint: DefaultMintPolicy,
-        transfer: DefaultTransferPolicy,
-        market: DefaultMarketPolicy,
-    }
-})
-
-export const DefaultMarketPolicy: sts.Type<DefaultMarketPolicy> = sts.struct(() => {
-    return {
-        royalty: sts.option(() => DefaultRoyalty),
-    }
-})
-
-export const DefaultTransferPolicy: sts.Type<DefaultTransferPolicy> = sts.struct(() => {
-    return {
-        isFrozen: sts.boolean(),
-    }
-})
-
-export const DefaultMintPolicy: sts.Type<DefaultMintPolicy> = sts.struct(() => {
-    return {
-        maxTokenCount: sts.option(() => sts.bigint()),
-        maxTokenSupply: sts.option(() => sts.bigint()),
-        forceCollapsingSupply: sts.boolean(),
     }
 })
 
@@ -10464,6 +11153,19 @@ export const ShouldMutate: sts.Type<ShouldMutate> = sts.closedEnum(() => {
     }
 })
 
+export const DefaultRoyalty: sts.Type<DefaultRoyalty> = sts.struct(() => {
+    return {
+        beneficiaries: sts.array(() => DefaultRoyaltyInfo),
+    }
+})
+
+export const DefaultRoyaltyInfo: sts.Type<DefaultRoyaltyInfo> = sts.struct(() => {
+    return {
+        beneficiary: AccountId32,
+        percentage: sts.number(),
+    }
+})
+
 export const CollectionAccount: sts.Type<CollectionAccount> = sts.struct(() => {
     return {
         isFrozen: sts.boolean(),
@@ -10479,8 +11181,6 @@ export const AssetIdWithEth: sts.Type<AssetIdWithEth> = sts.struct(() => {
         tokenId: sts.bigint(),
     }
 })
-
-export const H160 = sts.bytes()
 
 /**
  * The `Event` enum of this pallet
@@ -10560,8 +11260,6 @@ export const AggregateMessageOrigin: sts.Type<AggregateMessageOrigin> = sts.clos
         Sibling: Id,
     }
 })
-
-export const Id = sts.number()
 
 /**
  * The Event for this pallet
@@ -10654,90 +11352,6 @@ export const WhitelistAddAccount: sts.Type<WhitelistAddAccount> = sts.struct(() 
     return {
         accountId: AccountId32,
         allowance: sts.option(() => sts.bigint()),
-    }
-})
-
-export const OrderSide: sts.Type<OrderSide> = sts.closedEnum(() => {
-    return {
-        Ask: sts.unit(),
-        Bid: sts.unit(),
-    }
-})
-
-export const Listing: sts.Type<Listing> = sts.struct(() => {
-    return {
-        creator: AccountId32,
-        makeAssetId: AssetId,
-        takeAssetId: AssetId,
-        amount: sts.bigint(),
-        price: sts.bigint(),
-        minReceived: sts.bigint(),
-        feeSide: FeeSide,
-        creationBlock: sts.number(),
-        startBlock: sts.option(() => sts.number()),
-        whitelistedAccountCount: sts.option(() => sts.number()),
-        deposit: Deposit,
-        salt: sts.bytes(),
-        data: ListingData,
-        state: ListingState,
-    }
-})
-
-export const ListingState: sts.Type<ListingState> = sts.closedEnum(() => {
-    return {
-        Auction: AuctionState,
-        FixedPrice: sts.enumStruct({
-            amountFilled: sts.bigint(),
-        }),
-        Offer: OfferState,
-    }
-})
-
-export const OfferState: sts.Type<OfferState> = sts.struct(() => {
-    return {
-        amountFilled: sts.bigint(),
-    }
-})
-
-export const AuctionState: sts.Type<AuctionState> = sts.struct(() => {
-    return {
-        highBid: sts.option(() => Bid),
-    }
-})
-
-export const ListingData: sts.Type<ListingData> = sts.closedEnum(() => {
-    return {
-        Auction: AuctionData,
-        FixedPrice: sts.unit(),
-        Offer: OfferData,
-    }
-})
-
-export const OfferData: sts.Type<OfferData> = sts.struct(() => {
-    return {
-        expiration: sts.option(() => sts.number()),
-    }
-})
-
-export const AuctionData: sts.Type<AuctionData> = sts.struct(() => {
-    return {
-        endBlock: sts.number(),
-    }
-})
-
-export const FeeSide: sts.Type<FeeSide> = sts.closedEnum(() => {
-    return {
-        Make: sts.unit(),
-        NoFee: sts.unit(),
-        Take: sts.unit(),
-    }
-})
-
-export const Bid: sts.Type<Bid> = sts.struct(() => {
-    return {
-        bidder: AccountId32,
-        price: sts.bigint(),
-        blockNumber: sts.number(),
     }
 })
 
@@ -10930,54 +11544,10 @@ export const AccountRuleDescriptor: sts.Type<AccountRuleDescriptor> = sts.closed
     }
 })
 
-export const RequireTokenRule: sts.Type<RequireTokenRule> = sts.struct(() => {
-    return {
-        collectionId: sts.bigint(),
-        tokenId: sts.bigint(),
-    }
-})
-
-export const CoveragePolicy: sts.Type<CoveragePolicy> = sts.closedEnum(() => {
-    return {
-        Fees: sts.unit(),
-        FeesAndDeposit: sts.unit(),
-    }
-})
-
 export const Type_284: sts.Type<Type_284> = sts.closedEnum(() => {
     return {
         NoMutation: sts.unit(),
         SomeMutation: sts.option(() => UserAccountManagement),
-    }
-})
-
-export const UserAccountManagement: sts.Type<UserAccountManagement> = sts.struct(() => {
-    return {
-        tankReservesAccountCreationDeposit: sts.boolean(),
-        tankReservesExistentialDeposit: sts.boolean(),
-    }
-})
-
-export const Consumption: sts.Type<Consumption> = sts.struct(() => {
-    return {
-        totalConsumed: sts.bigint(),
-        lastResetBlock: sts.option(() => sts.number()),
-    }
-})
-
-export const DispatchRuleKind: sts.Type<DispatchRuleKind> = sts.closedEnum(() => {
-    return {
-        MaxFuelBurnPerTransaction: sts.unit(),
-        MinimumInfusion: sts.unit(),
-        PermittedCalls: sts.unit(),
-        PermittedExtrinsics: sts.unit(),
-        RequireSignature: sts.unit(),
-        RequireToken: sts.unit(),
-        TankFuelBudget: sts.unit(),
-        UserFuelBudget: sts.unit(),
-        WhitelistedCallers: sts.unit(),
-        WhitelistedCollections: sts.unit(),
-        WhitelistedPallets: sts.unit(),
     }
 })
 
@@ -11056,14 +11626,6 @@ export const FellowshipReferendaEvent: sts.Type<FellowshipReferendaEvent> = sts.
     }
 })
 
-export const Type_598: sts.Type<Type_598> = sts.struct(() => {
-    return {
-        bareAyes: sts.number(),
-        ayes: sts.number(),
-        nays: sts.number(),
-    }
-})
-
 /**
  * The `Event` enum of this pallet
  */
@@ -11090,13 +11652,6 @@ export const FellowshipCollectiveEvent: sts.Type<FellowshipCollectiveEvent> = st
             vote: VoteRecord,
             tally: Type_598,
         }),
-    }
-})
-
-export const VoteRecord: sts.Type<VoteRecord> = sts.closedEnum(() => {
-    return {
-        Aye: sts.number(),
-        Nay: sts.number(),
     }
 })
 
@@ -11156,26 +11711,6 @@ export const ConvictionVotingEvent: sts.Type<ConvictionVotingEvent> = sts.closed
         }),
     }
 })
-
-export const AccountVote: sts.Type<AccountVote> = sts.closedEnum(() => {
-    return {
-        Split: sts.enumStruct({
-            aye: sts.bigint(),
-            nay: sts.bigint(),
-        }),
-        SplitAbstain: sts.enumStruct({
-            aye: sts.bigint(),
-            nay: sts.bigint(),
-            abstain: sts.bigint(),
-        }),
-        Standard: sts.enumStruct({
-            vote: Vote,
-            balance: sts.bigint(),
-        }),
-    }
-})
-
-export const Vote = sts.number()
 
 /**
  * The `Event` enum of this pallet
@@ -11452,13 +11987,6 @@ export const BalancesEvent: sts.Type<BalancesEvent> = sts.closedEnum(() => {
     }
 })
 
-export const UnexpectedKind: sts.Type<UnexpectedKind> = sts.closedEnum(() => {
-    return {
-        BalanceUpdated: sts.unit(),
-        FailedToMutateAccount: sts.unit(),
-    }
-})
-
 export const BalanceStatus: sts.Type<BalanceStatus> = sts.closedEnum(() => {
     return {
         Free: sts.unit(),
@@ -11515,15 +12043,6 @@ export const AssetConversionEvent: sts.Type<AssetConversionEvent> = sts.closedEn
     }
 })
 
-export const Permill = sts.number()
-
-export const LpTokenId: sts.Type<LpTokenId> = sts.struct(() => {
-    return {
-        collectionId: sts.bigint(),
-        tokenId: sts.bigint(),
-    }
-})
-
 export const Phase: sts.Type<Phase> = sts.closedEnum(() => {
     return {
         ApplyExtrinsic: sts.number(),
@@ -11532,15 +12051,148 @@ export const Phase: sts.Type<Phase> = sts.closedEnum(() => {
     }
 })
 
-export const ProxyType: sts.Type<ProxyType> = sts.closedEnum(() => {
+export const DispatchTime: sts.Type<DispatchTime> = sts.closedEnum(() => {
     return {
-        Any: sts.unit(),
-        Governance: sts.unit(),
-        MultiTokensTransfer: sts.unit(),
-        Staking: sts.unit(),
-        Tokens: sts.unit(),
+        After: sts.number(),
+        At: sts.number(),
     }
 })
+
+export const Conviction: sts.Type<Conviction> = sts.closedEnum(() => {
+    return {
+        Locked1x: sts.unit(),
+        Locked2x: sts.unit(),
+        Locked3x: sts.unit(),
+        Locked4x: sts.unit(),
+        Locked5x: sts.unit(),
+        Locked6x: sts.unit(),
+        None: sts.unit(),
+    }
+})
+
+export const OrderDescriptor: sts.Type<OrderDescriptor> = sts.struct(() => {
+    return {
+        makeAssetId: AssetId,
+        takeAssetId: AssetId,
+        amount: sts.bigint(),
+        price: sts.bigint(),
+        startBlock: sts.option(() => sts.number()),
+        salt: sts.bytes(),
+        data: OrderData,
+    }
+})
+
+export const OrderData: sts.Type<OrderData> = sts.closedEnum(() => {
+    return {
+        Ask: sts.unit(),
+        Bid: OfferData,
+    }
+})
+
+export const OfferData: sts.Type<OfferData> = sts.struct(() => {
+    return {
+        expiration: sts.option(() => sts.number()),
+    }
+})
+
+export type OrderData = OrderData_Ask | OrderData_Bid
+
+export interface OrderData_Ask {
+    __kind: 'Ask'
+}
+
+export interface OrderData_Bid {
+    __kind: 'Bid'
+    value: OfferData
+}
+
+export interface OrderDescriptor {
+    makeAssetId: AssetId
+    takeAssetId: AssetId
+    amount: bigint
+    price: bigint
+    startBlock?: number | undefined
+    salt: Bytes
+    data: OrderData
+}
+
+export const MultiSignature: sts.Type<MultiSignature> = sts.closedEnum(() => {
+    return {
+        Ecdsa: sts.bytes(),
+        Ed25519: sts.bytes(),
+        Eth: sts.bytes(),
+        Sr25519: sts.bytes(),
+    }
+})
+
+export type MultiSignature = MultiSignature_Ecdsa | MultiSignature_Ed25519 | MultiSignature_Eth | MultiSignature_Sr25519
+
+export interface MultiSignature_Ecdsa {
+    __kind: 'Ecdsa'
+    value: Bytes
+}
+
+export interface MultiSignature_Ed25519 {
+    __kind: 'Ed25519'
+    value: Bytes
+}
+
+export interface MultiSignature_Eth {
+    __kind: 'Eth'
+    value: Bytes
+}
+
+export interface MultiSignature_Sr25519 {
+    __kind: 'Sr25519'
+    value: Bytes
+}
+
+export const RemoveExpiredAccountPayload: sts.Type<RemoveExpiredAccountPayload> = sts.struct(() => {
+    return {
+        tankId: AccountId32,
+        userId: AccountId32,
+        validatorId: AccountId32,
+        public: MultiSigner,
+    }
+})
+
+export const MultiSigner: sts.Type<MultiSigner> = sts.closedEnum(() => {
+    return {
+        Ecdsa: sts.bytes(),
+        Ed25519: sts.bytes(),
+        Eth: sts.bytes(),
+        Sr25519: sts.bytes(),
+    }
+})
+
+export type MultiSigner = MultiSigner_Ecdsa | MultiSigner_Ed25519 | MultiSigner_Eth | MultiSigner_Sr25519
+
+export interface MultiSigner_Ecdsa {
+    __kind: 'Ecdsa'
+    value: Bytes
+}
+
+export interface MultiSigner_Ed25519 {
+    __kind: 'Ed25519'
+    value: Bytes
+}
+
+export interface MultiSigner_Eth {
+    __kind: 'Eth'
+    value: Bytes
+}
+
+export interface MultiSigner_Sr25519 {
+    __kind: 'Sr25519'
+    value: Bytes
+}
+
+export interface RemoveExpiredAccountPayload {
+    tankId: AccountId32
+    userId: AccountId32
+    validatorId: AccountId32
+    public: MultiSigner
+}
 
 export const RuleSetDescriptor: sts.Type<RuleSetDescriptor> = sts.struct(() => {
     return {
@@ -11588,12 +12240,6 @@ export interface TankFuelBudgetRuleDescriptor {
     amount: bigint
     resetPeriod: number
 }
-
-export const RequireSignatureRule = sts.bytes()
-
-export const MinimumInfusionRule = sts.bigint()
-
-export const MaxFuelBurnPerTransactionRule = sts.bigint()
 
 export type DispatchRuleDescriptor =
     | DispatchRuleDescriptor_MaxFuelBurnPerTransaction
@@ -11662,8 +12308,6 @@ export interface DispatchRuleDescriptor_WhitelistedPallets {
     __kind: 'WhitelistedPallets'
     value: Call[]
 }
-
-export type RequireSignatureRule = Bytes
 
 export type Call =
     | Call_AssetConversion
@@ -12127,232 +12771,6 @@ export interface UtilityCall_with_weight {
     weight: Weight
 }
 
-export type OriginCaller =
-    | OriginCaller_CumulusXcm
-    | OriginCaller_FuelTanks
-    | OriginCaller_Origins
-    | OriginCaller_PolkadotXcm
-    | OriginCaller_system
-
-export interface OriginCaller_CumulusXcm {
-    __kind: 'CumulusXcm'
-    value: Type_367
-}
-
-export interface OriginCaller_FuelTanks {
-    __kind: 'FuelTanks'
-    value: Type_368
-}
-
-export interface OriginCaller_Origins {
-    __kind: 'Origins'
-    value: Type_369
-}
-
-export interface OriginCaller_PolkadotXcm {
-    __kind: 'PolkadotXcm'
-    value: Origin
-}
-
-export interface OriginCaller_system {
-    __kind: 'system'
-    value: RawOrigin
-}
-
-export type RawOrigin = RawOrigin_Authorized | RawOrigin_None | RawOrigin_Root | RawOrigin_Signed
-
-export interface RawOrigin_Authorized {
-    __kind: 'Authorized'
-}
-
-export interface RawOrigin_None {
-    __kind: 'None'
-}
-
-export interface RawOrigin_Root {
-    __kind: 'Root'
-}
-
-export interface RawOrigin_Signed {
-    __kind: 'Signed'
-    value: AccountId32
-}
-
-export type Origin = Origin_Response | Origin_Xcm
-
-export interface Origin_Response {
-    __kind: 'Response'
-    value: V5Location
-}
-
-export interface Origin_Xcm {
-    __kind: 'Xcm'
-    value: V5Location
-}
-
-export type Type_369 =
-    | Type_369_BigSpender
-    | Type_369_BigTipper
-    | Type_369_Emergency
-    | Type_369_Fellows
-    | Type_369_Fellowship1Dan
-    | Type_369_Fellowship2Dan
-    | Type_369_Fellowship3Dan
-    | Type_369_Fellowship4Dan
-    | Type_369_Fellowship5Dan
-    | Type_369_Fellowship6Dan
-    | Type_369_Fellowship7Dan
-    | Type_369_Fellowship8Dan
-    | Type_369_Fellowship9Dan
-    | Type_369_FellowshipAdmin
-    | Type_369_FellowshipExperts
-    | Type_369_FellowshipInitiates
-    | Type_369_FellowshipMasters
-    | Type_369_FuelTanksAdmin
-    | Type_369_GeneralAdmin
-    | Type_369_MediumSpender
-    | Type_369_MultiTokensAdmin
-    | Type_369_ReferendumCanceller
-    | Type_369_ReferendumKiller
-    | Type_369_SmallSpender
-    | Type_369_SmallTipper
-    | Type_369_StakingAdmin
-    | Type_369_TreasuryAdmin
-    | Type_369_WhitelistedCaller
-
-export interface Type_369_BigSpender {
-    __kind: 'BigSpender'
-}
-
-export interface Type_369_BigTipper {
-    __kind: 'BigTipper'
-}
-
-export interface Type_369_Emergency {
-    __kind: 'Emergency'
-}
-
-export interface Type_369_Fellows {
-    __kind: 'Fellows'
-}
-
-export interface Type_369_Fellowship1Dan {
-    __kind: 'Fellowship1Dan'
-}
-
-export interface Type_369_Fellowship2Dan {
-    __kind: 'Fellowship2Dan'
-}
-
-export interface Type_369_Fellowship3Dan {
-    __kind: 'Fellowship3Dan'
-}
-
-export interface Type_369_Fellowship4Dan {
-    __kind: 'Fellowship4Dan'
-}
-
-export interface Type_369_Fellowship5Dan {
-    __kind: 'Fellowship5Dan'
-}
-
-export interface Type_369_Fellowship6Dan {
-    __kind: 'Fellowship6Dan'
-}
-
-export interface Type_369_Fellowship7Dan {
-    __kind: 'Fellowship7Dan'
-}
-
-export interface Type_369_Fellowship8Dan {
-    __kind: 'Fellowship8Dan'
-}
-
-export interface Type_369_Fellowship9Dan {
-    __kind: 'Fellowship9Dan'
-}
-
-export interface Type_369_FellowshipAdmin {
-    __kind: 'FellowshipAdmin'
-}
-
-export interface Type_369_FellowshipExperts {
-    __kind: 'FellowshipExperts'
-}
-
-export interface Type_369_FellowshipInitiates {
-    __kind: 'FellowshipInitiates'
-}
-
-export interface Type_369_FellowshipMasters {
-    __kind: 'FellowshipMasters'
-}
-
-export interface Type_369_FuelTanksAdmin {
-    __kind: 'FuelTanksAdmin'
-}
-
-export interface Type_369_GeneralAdmin {
-    __kind: 'GeneralAdmin'
-}
-
-export interface Type_369_MediumSpender {
-    __kind: 'MediumSpender'
-}
-
-export interface Type_369_MultiTokensAdmin {
-    __kind: 'MultiTokensAdmin'
-}
-
-export interface Type_369_ReferendumCanceller {
-    __kind: 'ReferendumCanceller'
-}
-
-export interface Type_369_ReferendumKiller {
-    __kind: 'ReferendumKiller'
-}
-
-export interface Type_369_SmallSpender {
-    __kind: 'SmallSpender'
-}
-
-export interface Type_369_SmallTipper {
-    __kind: 'SmallTipper'
-}
-
-export interface Type_369_StakingAdmin {
-    __kind: 'StakingAdmin'
-}
-
-export interface Type_369_TreasuryAdmin {
-    __kind: 'TreasuryAdmin'
-}
-
-export interface Type_369_WhitelistedCaller {
-    __kind: 'WhitelistedCaller'
-}
-
-export type Type_368 = Type_368_FuelTank
-
-export interface Type_368_FuelTank {
-    __kind: 'FuelTank'
-    caller: AccountId32
-    tankId: AccountId32
-    providesDeposit: boolean
-    ruleSetId?: number | undefined
-}
-
-export type Type_367 = Type_367_Relay | Type_367_SiblingParachain
-
-export interface Type_367_Relay {
-    __kind: 'Relay'
-}
-
-export interface Type_367_SiblingParachain {
-    __kind: 'SiblingParachain'
-    value: Id
-}
-
 /**
  * Contains a variant per dispatchable extrinsic that this pallet has.
  */
@@ -12552,13 +12970,6 @@ export interface SessionCall_set_keys {
     keys: SessionKeys
     proof: Bytes
 }
-
-export interface SessionKeys {
-    aura: Public
-    offchainWorker: Bytes
-}
-
-export type Public = Bytes
 
 /**
  * Contains a variant per dispatchable extrinsic that this pallet has.
@@ -12981,18 +13392,6 @@ export interface ReferendaCall_submit {
     proposalOrigin: OriginCaller
     proposal: Bounded
     enactmentMoment: DispatchTime
-}
-
-export type DispatchTime = DispatchTime_After | DispatchTime_At
-
-export interface DispatchTime_After {
-    __kind: 'After'
-    value: number
-}
-
-export interface DispatchTime_At {
-    __kind: 'At'
-    value: number
 }
 
 /**
@@ -17668,13 +18067,6 @@ export interface DefaultTransferParams_Simple {
     amount: bigint
 }
 
-export interface Attribute {
-    value: Bytes
-    deposit: bigint
-    depositor?: AccountId32 | undefined
-    frozen: boolean
-}
-
 export type FlexibleMintParams = FlexibleMintParams_CreateOrMint | FlexibleMintParams_Mint
 
 export interface FlexibleMintParams_CreateOrMint {
@@ -18295,27 +18687,6 @@ export interface MarketplaceCall_set_protocol_fee {
     protocolFee: Perbill
 }
 
-export interface OrderDescriptor {
-    makeAssetId: AssetId
-    takeAssetId: AssetId
-    amount: bigint
-    price: bigint
-    startBlock?: number | undefined
-    salt: Bytes
-    data: OrderData
-}
-
-export type OrderData = OrderData_Ask | OrderData_Bid
-
-export interface OrderData_Ask {
-    __kind: 'Ask'
-}
-
-export interface OrderData_Bid {
-    __kind: 'Bid'
-    value: OfferData
-}
-
 export interface ListingDescriptor {
     makeAssetId: AssetId
     takeAssetId: AssetId
@@ -18703,28 +19074,6 @@ export interface IdentityCall_set_username_for {
 export interface IdentityCall_unbind_username {
     __kind: 'unbind_username'
     username: Bytes
-}
-
-export type MultiSignature = MultiSignature_Ecdsa | MultiSignature_Ed25519 | MultiSignature_Eth | MultiSignature_Sr25519
-
-export interface MultiSignature_Ecdsa {
-    __kind: 'Ecdsa'
-    value: Bytes
-}
-
-export interface MultiSignature_Ed25519 {
-    __kind: 'Ed25519'
-    value: Bytes
-}
-
-export interface MultiSignature_Eth {
-    __kind: 'Eth'
-    value: Bytes
-}
-
-export interface MultiSignature_Sr25519 {
-    __kind: 'Sr25519'
-    value: Bytes
 }
 
 export interface IdentityInfo {
@@ -19344,35 +19693,6 @@ export interface FuelTanksCall_remove_rule_set {
     ruleSetId: number
 }
 
-export interface RemoveExpiredAccountPayload {
-    tankId: AccountId32
-    userId: AccountId32
-    validatorId: AccountId32
-    public: MultiSigner
-}
-
-export type MultiSigner = MultiSigner_Ecdsa | MultiSigner_Ed25519 | MultiSigner_Eth | MultiSigner_Sr25519
-
-export interface MultiSigner_Ecdsa {
-    __kind: 'Ecdsa'
-    value: Bytes
-}
-
-export interface MultiSigner_Ed25519 {
-    __kind: 'Ed25519'
-    value: Bytes
-}
-
-export interface MultiSigner_Eth {
-    __kind: 'Eth'
-    value: Bytes
-}
-
-export interface MultiSigner_Sr25519 {
-    __kind: 'Sr25519'
-    value: Bytes
-}
-
 export interface DispatchSettings {
     useNoneOrigin: boolean
     paysRemainingFee: boolean
@@ -19860,43 +20180,6 @@ export interface ConvictionVotingCall_vote {
     __kind: 'vote'
     pollIndex: number
     vote: AccountVote
-}
-
-export type Conviction =
-    | Conviction_Locked1x
-    | Conviction_Locked2x
-    | Conviction_Locked3x
-    | Conviction_Locked4x
-    | Conviction_Locked5x
-    | Conviction_Locked6x
-    | Conviction_None
-
-export interface Conviction_Locked1x {
-    __kind: 'Locked1x'
-}
-
-export interface Conviction_Locked2x {
-    __kind: 'Locked2x'
-}
-
-export interface Conviction_Locked3x {
-    __kind: 'Locked3x'
-}
-
-export interface Conviction_Locked4x {
-    __kind: 'Locked4x'
-}
-
-export interface Conviction_Locked5x {
-    __kind: 'Locked5x'
-}
-
-export interface Conviction_Locked6x {
-    __kind: 'Locked6x'
-}
-
-export interface Conviction_None {
-    __kind: 'None'
 }
 
 /**
@@ -20674,10 +20957,6 @@ export interface AssetConversionCall_touch {
     asset2: AssetId
 }
 
-export type MinimumInfusionRule = bigint
-
-export type MaxFuelBurnPerTransactionRule = bigint
-
 export interface RuleSetDescriptor {
     rules: DispatchRuleDescriptor[]
     requireAccount: boolean
@@ -20710,6 +20989,134 @@ export const FuelTankDescriptor: sts.Type<FuelTankDescriptor> = sts.struct(() =>
     }
 })
 
+export const FlexibleMintParams: sts.Type<FlexibleMintParams> = sts.closedEnum(() => {
+    return {
+        CreateOrMint: CreateTokenParams,
+        Mint: sts.enumStruct({
+            tokenId: sts.bigint(),
+            amount: sts.bigint(),
+        }),
+    }
+})
+
+export const CreateTokenParams: sts.Type<CreateTokenParams> = sts.struct(() => {
+    return {
+        tokenId: sts.bigint(),
+        amount: sts.bigint(),
+        accountDepositCount: sts.option(() => sts.number()),
+        cap: sts.option(() => TokenCap),
+        behavior: sts.option(() => TokenMarketBehavior),
+        listingForbidden: sts.boolean(),
+        freezeState: sts.option(() => FreezeState),
+        attributes: sts.array(() => AttributeKeyValuePair),
+        infusion: sts.bigint(),
+        anyoneCanInfuse: sts.boolean(),
+        metadata: CreateTokenMetadata,
+        privilegedParams: sts.option(() => PrivilegedCreateTokenParams),
+        groups: sts.array(() => sts.bigint()),
+        ephemeralExpiration: sts.option(() => sts.number()),
+        isLendable: sts.boolean(),
+        mintRateLimit: sts.option(() => MintRateLimit),
+    }
+})
+
+export const PrivilegedCreateTokenParams: sts.Type<PrivilegedCreateTokenParams> = sts.struct(() => {
+    return {
+        requiresDeposit: sts.boolean(),
+        foreignParams: sts.option(() => ForeignTokenCreationParams),
+    }
+})
+
+export const ForeignTokenCreationParams: sts.Type<ForeignTokenCreationParams> = sts.struct(() => {
+    return {
+        location: sts.option(() => V5Location),
+        unitsPerSecond: sts.option(() => sts.bigint()),
+    }
+})
+
+export const CreateTokenMetadata: sts.Type<CreateTokenMetadata> = sts.struct(() => {
+    return {
+        name: BoundedString,
+        symbol: sts.bytes(),
+        decimalCount: sts.number(),
+    }
+})
+
+export const BoundedString = sts.bytes()
+
+export const FreezeState: sts.Type<FreezeState> = sts.closedEnum(() => {
+    return {
+        Never: sts.unit(),
+        Permanent: sts.unit(),
+        Temporary: sts.unit(),
+    }
+})
+
+export const TokenMarketBehavior: sts.Type<TokenMarketBehavior> = sts.closedEnum(() => {
+    return {
+        HasRoyalty: DefaultRoyalty,
+        IsCurrency: sts.unit(),
+    }
+})
+
+export const TokenCap: sts.Type<TokenCap> = sts.closedEnum(() => {
+    return {
+        CollapsingSupply: sts.bigint(),
+        Supply: sts.bigint(),
+    }
+})
+
+export const Attribute: sts.Type<Attribute> = sts.struct(() => {
+    return {
+        value: sts.bytes(),
+        deposit: sts.bigint(),
+        depositor: sts.option(() => AccountId32),
+        frozen: sts.boolean(),
+    }
+})
+
+export const AttributeKeyValuePair: sts.Type<AttributeKeyValuePair> = sts.struct(() => {
+    return {
+        key: sts.bytes(),
+        value: sts.bytes(),
+        frozen: sts.boolean(),
+    }
+})
+
+export const Type_451: sts.Type<Type_451> = sts.struct(() => {
+    return {
+        accountId: AccountId32,
+        params: DefaultMintParams,
+    }
+})
+
+export const DefaultMintParams: sts.Type<DefaultMintParams> = sts.closedEnum(() => {
+    return {
+        CreateToken: sts.enumStruct({
+            tokenId: sts.bigint(),
+            initialSupply: sts.bigint(),
+            accountDepositCount: sts.option(() => sts.number()),
+            cap: sts.option(() => TokenCap),
+            behavior: sts.option(() => TokenMarketBehavior),
+            listingForbidden: sts.boolean(),
+            freezeState: sts.option(() => FreezeState),
+            attributes: sts.array(() => AttributeKeyValuePair),
+            infusion: sts.bigint(),
+            anyoneCanInfuse: sts.boolean(),
+            metadata: CreateTokenMetadata,
+            privilegedParams: sts.option(() => PrivilegedCreateTokenParams),
+            groups: sts.array(() => sts.bigint()),
+            ephemeralExpiration: sts.option(() => sts.number()),
+            isLendable: sts.boolean(),
+            mintRateLimit: sts.option(() => MintRateLimit),
+        }),
+        Mint: sts.enumStruct({
+            tokenId: sts.bigint(),
+            amount: sts.bigint(),
+        }),
+    }
+})
+
 export const MultiAddress: sts.Type<MultiAddress> = sts.closedEnum(() => {
     return {
         Address20: sts.bytes(),
@@ -20719,6 +21126,44 @@ export const MultiAddress: sts.Type<MultiAddress> = sts.closedEnum(() => {
         Raw: sts.bytes(),
     }
 })
+
+export const DefaultCollectionDescriptor: sts.Type<DefaultCollectionDescriptor> = sts.struct(() => {
+    return {
+        policy: DefaultCollectionPolicyDescriptor,
+        explicitRoyaltyCurrencies: sts.array(() => AssetId),
+        attributes: sts.array(() => AttributeKeyValuePair),
+    }
+})
+
+export const DefaultCollectionPolicyDescriptor: sts.Type<DefaultCollectionPolicyDescriptor> = sts.struct(() => {
+    return {
+        mint: DefaultMintPolicyDescriptor,
+        market: DefaultMarketPolicyDescriptor,
+    }
+})
+
+export const DefaultMarketPolicyDescriptor: sts.Type<DefaultMarketPolicyDescriptor> = sts.struct(() => {
+    return {
+        royalty: sts.option(() => DefaultRoyalty),
+    }
+})
+
+export const DefaultMintPolicyDescriptor: sts.Type<DefaultMintPolicyDescriptor> = sts.struct(() => {
+    return {
+        maxTokenCount: sts.option(() => sts.bigint()),
+        maxTokenSupply: sts.option(() => sts.bigint()),
+        forceCollapsingSupply: sts.boolean(),
+    }
+})
+
+export const SessionKeys: sts.Type<SessionKeys> = sts.struct(() => {
+    return {
+        aura: Public,
+        offchainWorker: sts.bytes(),
+    }
+})
+
+export const Public = sts.bytes()
 
 export const Timepoint: sts.Type<Timepoint> = sts.struct(() => {
     return {
@@ -20992,15 +21437,6 @@ export const SessionCall: sts.Type<SessionCall> = sts.closedEnum(() => {
     }
 })
 
-export const SessionKeys: sts.Type<SessionKeys> = sts.struct(() => {
-    return {
-        aura: Public,
-        offchainWorker: sts.bytes(),
-    }
-})
-
-export const Public = sts.bytes()
-
 /**
  * Contains a variant per dispatchable extrinsic that this pallet has.
  */
@@ -21118,13 +21554,6 @@ export const ReferendaCall: sts.Type<ReferendaCall> = sts.closedEnum(() => {
             proposal: Bounded,
             enactmentMoment: DispatchTime,
         }),
-    }
-})
-
-export const DispatchTime: sts.Type<DispatchTime> = sts.closedEnum(() => {
-    return {
-        After: sts.number(),
-        At: sts.number(),
     }
 })
 
@@ -22239,100 +22668,6 @@ export const ParachainSystemCall: sts.Type<ParachainSystemCall> = sts.closedEnum
     }
 })
 
-export const InboundMessagesData: sts.Type<InboundMessagesData> = sts.struct(() => {
-    return {
-        downwardMessages: AbridgedInboundMessagesCollection,
-        horizontalMessages: Type_350,
-    }
-})
-
-export const Type_350: sts.Type<Type_350> = sts.struct(() => {
-    return {
-        fullMessages: sts.array(() => sts.tuple(() => [Id, InboundHrmpMessage])),
-        hashedMessages: sts.array(() => sts.tuple(() => [Id, HashedMessage])),
-    }
-})
-
-export const HashedMessage: sts.Type<HashedMessage> = sts.struct(() => {
-    return {
-        sentAt: sts.number(),
-        msgHash: H256,
-    }
-})
-
-export const InboundHrmpMessage: sts.Type<InboundHrmpMessage> = sts.struct(() => {
-    return {
-        sentAt: sts.number(),
-        data: sts.bytes(),
-    }
-})
-
-export const AbridgedInboundMessagesCollection: sts.Type<AbridgedInboundMessagesCollection> = sts.struct(() => {
-    return {
-        fullMessages: sts.array(() => InboundDownwardMessage),
-        hashedMessages: sts.array(() => HashedMessage),
-    }
-})
-
-export const InboundDownwardMessage: sts.Type<InboundDownwardMessage> = sts.struct(() => {
-    return {
-        sentAt: sts.number(),
-        msg: sts.bytes(),
-    }
-})
-
-export const BasicParachainInherentData: sts.Type<BasicParachainInherentData> = sts.struct(() => {
-    return {
-        validationData: V9PersistedValidationData,
-        relayChainState: StorageProof,
-        relayParentDescendants: sts.array(() => Header),
-        collatorPeerId: sts.option(() => sts.bytes()),
-    }
-})
-
-export const Header: sts.Type<Header> = sts.struct(() => {
-    return {
-        parentHash: H256,
-        number: sts.number(),
-        stateRoot: H256,
-        extrinsicsRoot: H256,
-        digest: Digest,
-    }
-})
-
-export const Digest: sts.Type<Digest> = sts.struct(() => {
-    return {
-        logs: sts.array(() => DigestItem),
-    }
-})
-
-export const DigestItem: sts.Type<DigestItem> = sts.closedEnum(() => {
-    return {
-        Consensus: sts.tuple(() => [sts.bytes(), sts.bytes()]),
-        Other: sts.bytes(),
-        PreRuntime: sts.tuple(() => [sts.bytes(), sts.bytes()]),
-        RuntimeEnvironmentUpdated: sts.unit(),
-        Seal: sts.tuple(() => [sts.bytes(), sts.bytes()]),
-    }
-})
-
-export const StorageProof: sts.Type<StorageProof> = sts.struct(() => {
-    return {
-        trieNodes: sts.array(() => sts.bytes()),
-    }
-})
-
-export const V9PersistedValidationData: sts.Type<V9PersistedValidationData> = sts.struct(() => {
-    return {
-        parentHead: HeadData,
-        relayParentNumber: sts.number(),
-        relayParentStorageRoot: H256,
-        maxPovSize: sts.number(),
-    }
-})
-
-export const HeadData = sts.bytes()
-
 /**
  * Contains a variant per dispatchable extrinsic that this pallet has.
  */
@@ -22695,55 +23030,6 @@ export const MultiTokensCall: sts.Type<MultiTokensCall> = sts.closedEnum(() => {
     }
 })
 
-export const DefaultMintParams: sts.Type<DefaultMintParams> = sts.closedEnum(() => {
-    return {
-        CreateToken: sts.enumStruct({
-            tokenId: sts.bigint(),
-            initialSupply: sts.bigint(),
-            accountDepositCount: sts.option(() => sts.number()),
-            cap: sts.option(() => TokenCap),
-            behavior: sts.option(() => TokenMarketBehavior),
-            listingForbidden: sts.boolean(),
-            freezeState: sts.option(() => FreezeState),
-            attributes: sts.array(() => AttributeKeyValuePair),
-            infusion: sts.bigint(),
-            anyoneCanInfuse: sts.boolean(),
-            metadata: CreateTokenMetadata,
-            privilegedParams: sts.option(() => PrivilegedCreateTokenParams),
-            groups: sts.array(() => sts.bigint()),
-            ephemeralExpiration: sts.option(() => sts.number()),
-            isLendable: sts.boolean(),
-            mintRateLimit: sts.option(() => MintRateLimit),
-        }),
-        Mint: sts.enumStruct({
-            tokenId: sts.bigint(),
-            amount: sts.bigint(),
-        }),
-    }
-})
-
-export const PrivilegedCreateTokenParams: sts.Type<PrivilegedCreateTokenParams> = sts.struct(() => {
-    return {
-        requiresDeposit: sts.boolean(),
-        foreignParams: sts.option(() => ForeignTokenCreationParams),
-    }
-})
-
-export const ForeignTokenCreationParams: sts.Type<ForeignTokenCreationParams> = sts.struct(() => {
-    return {
-        location: sts.option(() => V5Location),
-        unitsPerSecond: sts.option(() => sts.bigint()),
-    }
-})
-
-export const CreateTokenMetadata: sts.Type<CreateTokenMetadata> = sts.struct(() => {
-    return {
-        name: BoundedString,
-        symbol: sts.bytes(),
-        decimalCount: sts.number(),
-    }
-})
-
 export const DefaultTransferParams: sts.Type<DefaultTransferParams> = sts.closedEnum(() => {
     return {
         Operator: sts.enumStruct({
@@ -22759,75 +23045,6 @@ export const DefaultTransferParams: sts.Type<DefaultTransferParams> = sts.closed
     }
 })
 
-export const Attribute: sts.Type<Attribute> = sts.struct(() => {
-    return {
-        value: sts.bytes(),
-        deposit: sts.bigint(),
-        depositor: sts.option(() => AccountId32),
-        frozen: sts.boolean(),
-    }
-})
-
-export const FlexibleMintParams: sts.Type<FlexibleMintParams> = sts.closedEnum(() => {
-    return {
-        CreateOrMint: CreateTokenParams,
-        Mint: sts.enumStruct({
-            tokenId: sts.bigint(),
-            amount: sts.bigint(),
-        }),
-    }
-})
-
-export const CreateTokenParams: sts.Type<CreateTokenParams> = sts.struct(() => {
-    return {
-        tokenId: sts.bigint(),
-        amount: sts.bigint(),
-        accountDepositCount: sts.option(() => sts.number()),
-        cap: sts.option(() => TokenCap),
-        behavior: sts.option(() => TokenMarketBehavior),
-        listingForbidden: sts.boolean(),
-        freezeState: sts.option(() => FreezeState),
-        attributes: sts.array(() => AttributeKeyValuePair),
-        infusion: sts.bigint(),
-        anyoneCanInfuse: sts.boolean(),
-        metadata: CreateTokenMetadata,
-        privilegedParams: sts.option(() => PrivilegedCreateTokenParams),
-        groups: sts.array(() => sts.bigint()),
-        ephemeralExpiration: sts.option(() => sts.number()),
-        isLendable: sts.boolean(),
-        mintRateLimit: sts.option(() => MintRateLimit),
-    }
-})
-
-export const DefaultCollectionDescriptor: sts.Type<DefaultCollectionDescriptor> = sts.struct(() => {
-    return {
-        policy: DefaultCollectionPolicyDescriptor,
-        explicitRoyaltyCurrencies: sts.array(() => AssetId),
-        attributes: sts.array(() => AttributeKeyValuePair),
-    }
-})
-
-export const DefaultCollectionPolicyDescriptor: sts.Type<DefaultCollectionPolicyDescriptor> = sts.struct(() => {
-    return {
-        mint: DefaultMintPolicyDescriptor,
-        market: DefaultMarketPolicyDescriptor,
-    }
-})
-
-export const DefaultMarketPolicyDescriptor: sts.Type<DefaultMarketPolicyDescriptor> = sts.struct(() => {
-    return {
-        royalty: sts.option(() => DefaultRoyalty),
-    }
-})
-
-export const DefaultMintPolicyDescriptor: sts.Type<DefaultMintPolicyDescriptor> = sts.struct(() => {
-    return {
-        maxTokenCount: sts.option(() => sts.bigint()),
-        maxTokenSupply: sts.option(() => sts.bigint()),
-        forceCollapsingSupply: sts.boolean(),
-    }
-})
-
 export const DefaultBurnParams: sts.Type<DefaultBurnParams> = sts.struct(() => {
     return {
         tokenId: sts.bigint(),
@@ -22840,21 +23057,6 @@ export const Recipient: sts.Type<Recipient> = sts.struct(() => {
     return {
         accountId: AccountId32,
         params: DefaultTransferParams,
-    }
-})
-
-export const AttributeKeyValuePair: sts.Type<AttributeKeyValuePair> = sts.struct(() => {
-    return {
-        key: sts.bytes(),
-        value: sts.bytes(),
-        frozen: sts.boolean(),
-    }
-})
-
-export const Type_451: sts.Type<Type_451> = sts.struct(() => {
-    return {
-        accountId: AccountId32,
-        params: DefaultMintParams,
     }
 })
 
@@ -22991,25 +23193,6 @@ export const MarketplaceCall: sts.Type<MarketplaceCall> = sts.closedEnum(() => {
     }
 })
 
-export const OrderDescriptor: sts.Type<OrderDescriptor> = sts.struct(() => {
-    return {
-        makeAssetId: AssetId,
-        takeAssetId: AssetId,
-        amount: sts.bigint(),
-        price: sts.bigint(),
-        startBlock: sts.option(() => sts.number()),
-        salt: sts.bytes(),
-        data: OrderData,
-    }
-})
-
-export const OrderData: sts.Type<OrderData> = sts.closedEnum(() => {
-    return {
-        Ask: sts.unit(),
-        Bid: OfferData,
-    }
-})
-
 export const ListingDescriptor: sts.Type<ListingDescriptor> = sts.struct(() => {
     return {
         makeAssetId: AssetId,
@@ -23020,6 +23203,20 @@ export const ListingDescriptor: sts.Type<ListingDescriptor> = sts.struct(() => {
         salt: sts.bytes(),
         usesWhitelist: sts.boolean(),
         data: ListingData,
+    }
+})
+
+export const ListingData: sts.Type<ListingData> = sts.closedEnum(() => {
+    return {
+        Auction: AuctionData,
+        FixedPrice: sts.unit(),
+        Offer: OfferData,
+    }
+})
+
+export const AuctionData: sts.Type<AuctionData> = sts.struct(() => {
+    return {
+        endBlock: sts.number(),
     }
 })
 
@@ -23111,15 +23308,6 @@ export const IdentityCall: sts.Type<IdentityCall> = sts.closedEnum(() => {
         unbind_username: sts.enumStruct({
             username: sts.bytes(),
         }),
-    }
-})
-
-export const MultiSignature: sts.Type<MultiSignature> = sts.closedEnum(() => {
-    return {
-        Ecdsa: sts.bytes(),
-        Ed25519: sts.bytes(),
-        Eth: sts.bytes(),
-        Sr25519: sts.bytes(),
     }
 })
 
@@ -23280,24 +23468,6 @@ export const FuelTanksCall: sts.Type<FuelTanksCall> = sts.closedEnum(() => {
     }
 })
 
-export const RemoveExpiredAccountPayload: sts.Type<RemoveExpiredAccountPayload> = sts.struct(() => {
-    return {
-        tankId: AccountId32,
-        userId: AccountId32,
-        validatorId: AccountId32,
-        public: MultiSigner,
-    }
-})
-
-export const MultiSigner: sts.Type<MultiSigner> = sts.closedEnum(() => {
-    return {
-        Ecdsa: sts.bytes(),
-        Ed25519: sts.bytes(),
-        Eth: sts.bytes(),
-        Sr25519: sts.bytes(),
-    }
-})
-
 /**
  * Contains a variant per dispatchable extrinsic that this pallet has.
  */
@@ -23423,18 +23593,6 @@ export const ConvictionVotingCall: sts.Type<ConvictionVotingCall> = sts.closedEn
             pollIndex: sts.number(),
             vote: AccountVote,
         }),
-    }
-})
-
-export const Conviction: sts.Type<Conviction> = sts.closedEnum(() => {
-    return {
-        Locked1x: sts.unit(),
-        Locked2x: sts.unit(),
-        Locked3x: sts.unit(),
-        Locked4x: sts.unit(),
-        Locked5x: sts.unit(),
-        Locked6x: sts.unit(),
-        None: sts.unit(),
     }
 })
 
@@ -23650,4 +23808,650 @@ export const AssetConversionCall: sts.Type<AssetConversionCall> = sts.closedEnum
     }
 })
 
+export const InboundMessagesData: sts.Type<InboundMessagesData> = sts.struct(() => {
+    return {
+        downwardMessages: AbridgedInboundMessagesCollection,
+        horizontalMessages: Type_350,
+    }
+})
+
+export const Type_350: sts.Type<Type_350> = sts.struct(() => {
+    return {
+        fullMessages: sts.array(() => sts.tuple(() => [Id, InboundHrmpMessage])),
+        hashedMessages: sts.array(() => sts.tuple(() => [Id, HashedMessage])),
+    }
+})
+
+export const HashedMessage: sts.Type<HashedMessage> = sts.struct(() => {
+    return {
+        sentAt: sts.number(),
+        msgHash: H256,
+    }
+})
+
+export const InboundHrmpMessage: sts.Type<InboundHrmpMessage> = sts.struct(() => {
+    return {
+        sentAt: sts.number(),
+        data: sts.bytes(),
+    }
+})
+
+export const AbridgedInboundMessagesCollection: sts.Type<AbridgedInboundMessagesCollection> = sts.struct(() => {
+    return {
+        fullMessages: sts.array(() => InboundDownwardMessage),
+        hashedMessages: sts.array(() => HashedMessage),
+    }
+})
+
+export const InboundDownwardMessage: sts.Type<InboundDownwardMessage> = sts.struct(() => {
+    return {
+        sentAt: sts.number(),
+        msg: sts.bytes(),
+    }
+})
+
+export const BasicParachainInherentData: sts.Type<BasicParachainInherentData> = sts.struct(() => {
+    return {
+        validationData: V9PersistedValidationData,
+        relayChainState: StorageProof,
+        relayParentDescendants: sts.array(() => Header),
+        collatorPeerId: sts.option(() => sts.bytes()),
+    }
+})
+
+export const Header: sts.Type<Header> = sts.struct(() => {
+    return {
+        parentHash: H256,
+        number: sts.number(),
+        stateRoot: H256,
+        extrinsicsRoot: H256,
+        digest: Digest,
+    }
+})
+
+export const Digest: sts.Type<Digest> = sts.struct(() => {
+    return {
+        logs: sts.array(() => DigestItem),
+    }
+})
+
+export const DigestItem: sts.Type<DigestItem> = sts.closedEnum(() => {
+    return {
+        Consensus: sts.tuple(() => [sts.bytes(), sts.bytes()]),
+        Other: sts.bytes(),
+        PreRuntime: sts.tuple(() => [sts.bytes(), sts.bytes()]),
+        RuntimeEnvironmentUpdated: sts.unit(),
+        Seal: sts.tuple(() => [sts.bytes(), sts.bytes()]),
+    }
+})
+
+export const StorageProof: sts.Type<StorageProof> = sts.struct(() => {
+    return {
+        trieNodes: sts.array(() => sts.bytes()),
+    }
+})
+
+export const V9PersistedValidationData: sts.Type<V9PersistedValidationData> = sts.struct(() => {
+    return {
+        parentHead: HeadData,
+        relayParentNumber: sts.number(),
+        relayParentStorageRoot: H256,
+        maxPovSize: sts.number(),
+    }
+})
+
+export const HeadData = sts.bytes()
+
+export const Type_598: sts.Type<Type_598> = sts.struct(() => {
+    return {
+        bareAyes: sts.number(),
+        ayes: sts.number(),
+        nays: sts.number(),
+    }
+})
+
+export const VoteRecord: sts.Type<VoteRecord> = sts.closedEnum(() => {
+    return {
+        Aye: sts.number(),
+        Nay: sts.number(),
+    }
+})
+
+export const DispatchErrorWithPostInfo: sts.Type<DispatchErrorWithPostInfo> = sts.struct(() => {
+    return {
+        postInfo: PostDispatchInfo,
+        error: DispatchError,
+    }
+})
+
+export const PostDispatchInfo: sts.Type<PostDispatchInfo> = sts.struct(() => {
+    return {
+        actualWeight: sts.option(() => Weight),
+        paysFee: Pays,
+    }
+})
+
+export const Tally: sts.Type<Tally> = sts.struct(() => {
+    return {
+        ayes: sts.bigint(),
+        nays: sts.bigint(),
+        support: sts.bigint(),
+    }
+})
+
+export const Bounded: sts.Type<Bounded> = sts.closedEnum(() => {
+    return {
+        Inline: sts.bytes(),
+        Legacy: sts.enumStruct({
+            hash: H256,
+        }),
+        Lookup: sts.enumStruct({
+            hash: H256,
+            len: sts.number(),
+        }),
+    }
+})
+
+export const AccountVote: sts.Type<AccountVote> = sts.closedEnum(() => {
+    return {
+        Split: sts.enumStruct({
+            aye: sts.bigint(),
+            nay: sts.bigint(),
+        }),
+        SplitAbstain: sts.enumStruct({
+            aye: sts.bigint(),
+            nay: sts.bigint(),
+            abstain: sts.bigint(),
+        }),
+        Standard: sts.enumStruct({
+            vote: Vote,
+            balance: sts.bigint(),
+        }),
+    }
+})
+
+export const Vote = sts.number()
+
+export const Permill = sts.number()
+
+export const LpTokenId: sts.Type<LpTokenId> = sts.struct(() => {
+    return {
+        collectionId: sts.bigint(),
+        tokenId: sts.bigint(),
+    }
+})
+
+export const ProxyType: sts.Type<ProxyType> = sts.closedEnum(() => {
+    return {
+        Any: sts.unit(),
+        Governance: sts.unit(),
+        MultiTokensTransfer: sts.unit(),
+        Staking: sts.unit(),
+        Tokens: sts.unit(),
+    }
+})
+
+export const H160 = sts.bytes()
+
+export const Bid: sts.Type<Bid> = sts.struct(() => {
+    return {
+        bidder: AccountId32,
+        price: sts.bigint(),
+        blockNumber: sts.number(),
+    }
+})
+
+export const OrderSide: sts.Type<OrderSide> = sts.closedEnum(() => {
+    return {
+        Ask: sts.unit(),
+        Bid: sts.unit(),
+    }
+})
+
+export const AssetId: sts.Type<AssetId> = sts.struct(() => {
+    return {
+        collectionId: sts.bigint(),
+        tokenId: sts.bigint(),
+    }
+})
+
+export const Listing: sts.Type<Listing> = sts.struct(() => {
+    return {
+        creator: AccountId32,
+        makeAssetId: AssetId,
+        takeAssetId: AssetId,
+        amount: sts.bigint(),
+        price: sts.bigint(),
+        minReceived: sts.bigint(),
+        feeSide: FeeSide,
+        creationBlock: sts.number(),
+        startBlock: sts.option(() => sts.number()),
+        whitelistedAccountCount: sts.option(() => sts.number()),
+        deposit: Deposit,
+        salt: sts.bytes(),
+        data: ListingData,
+        state: ListingState,
+    }
+})
+
+export const ListingState: sts.Type<ListingState> = sts.closedEnum(() => {
+    return {
+        Auction: AuctionState,
+        FixedPrice: sts.enumStruct({
+            amountFilled: sts.bigint(),
+        }),
+        Offer: OfferState,
+    }
+})
+
+export const OfferState: sts.Type<OfferState> = sts.struct(() => {
+    return {
+        amountFilled: sts.bigint(),
+    }
+})
+
+export const AuctionState: sts.Type<AuctionState> = sts.struct(() => {
+    return {
+        highBid: sts.option(() => Bid),
+    }
+})
+
+export const Deposit: sts.Type<Deposit> = sts.struct(() => {
+    return {
+        depositor: AccountId32,
+        amount: sts.bigint(),
+    }
+})
+
+export const FeeSide: sts.Type<FeeSide> = sts.closedEnum(() => {
+    return {
+        Make: sts.unit(),
+        NoFee: sts.unit(),
+        Take: sts.unit(),
+    }
+})
+
+export const MintRateLimit: sts.Type<MintRateLimit> = sts.struct(() => {
+    return {
+        period: sts.number(),
+        max: sts.bigint(),
+    }
+})
+
+export const TokenAccount: sts.Type<TokenAccount> = sts.struct(() => {
+    return {
+        balance: sts.bigint(),
+        reservedBalance: sts.bigint(),
+        lockedBalance: sts.bigint(),
+        holds: sts.array(() => TokenAccountReserve),
+        locks: sts.array(() => sts.tuple(() => [sts.bytes(), sts.bigint()])),
+        approvals: sts.array(() => sts.tuple(() => [AccountId32, Approval])),
+        isFrozen: sts.boolean(),
+        deposit: sts.option(() => Deposit),
+        storageVersion: sts.number(),
+    }
+})
+
+export const Approval: sts.Type<Approval> = sts.struct(() => {
+    return {
+        amount: sts.bigint(),
+        expiration: sts.option(() => sts.number()),
+    }
+})
+
+export const TokenAccountReserve: sts.Type<TokenAccountReserve> = sts.struct(() => {
+    return {
+        reason: RuntimeHoldReason,
+        balance: sts.bigint(),
+    }
+})
+
+export const Token: sts.Type<Token> = sts.struct(() => {
+    return {
+        supply: sts.bigint(),
+        cap: sts.option(() => TokenCap),
+        freezeState: sts.option(() => FreezeState),
+        requiresDeposit: sts.boolean(),
+        creationDeposit: AmbiguousDeposit,
+        ownerDeposit: sts.bigint(),
+        totalTokenAccountDeposit: sts.bigint(),
+        attributeCount: sts.number(),
+        accountCount: sts.number(),
+        marketBehavior: sts.option(() => TokenMarketBehavior),
+        listingForbidden: sts.boolean(),
+        metadata: DefaultTokenMetadata,
+        infusion: sts.bigint(),
+        anyoneCanInfuse: sts.boolean(),
+        groups: sts.array(() => sts.bigint()),
+        ephemeralExpiration: sts.option(() => sts.number()),
+        isLendable: sts.boolean(),
+        lending: sts.option(() => LendingInfo),
+        mintRateLimit: sts.option(() => MintRateLimitState),
+        creationBlock: sts.number(),
+    }
+})
+
+export const MintRateLimitState: sts.Type<MintRateLimitState> = sts.struct(() => {
+    return {
+        limit: MintRateLimit,
+        window: MintRateWindow,
+        pending: sts.option(() => PendingMintRateLimitChange),
+    }
+})
+
+export const PendingMintRateLimitChange: sts.Type<PendingMintRateLimitChange> = sts.struct(() => {
+    return {
+        newLimit: sts.option(() => MintRateLimit),
+        effectiveBlock: sts.number(),
+    }
+})
+
+export const MintRateWindow: sts.Type<MintRateWindow> = sts.struct(() => {
+    return {
+        lastSlot: sts.number(),
+        buckets: sts.array(() => sts.bigint()),
+    }
+})
+
+export const LendingInfo: sts.Type<LendingInfo> = sts.struct(() => {
+    return {
+        lender: AccountId32,
+        expiration: sts.number(),
+    }
+})
+
+export const DefaultTokenMetadata: sts.Type<DefaultTokenMetadata> = sts.struct(() => {
+    return {
+        decimalCount: sts.number(),
+        name: BoundedString,
+        symbol: sts.bytes(),
+        foreign: sts.option(() => DefaultForeignTokenMetadata),
+    }
+})
+
+export const DefaultForeignTokenMetadata: sts.Type<DefaultForeignTokenMetadata> = sts.struct(() => {
+    return {
+        location: sts.option(() => V5Location),
+        unitsPerSecond: sts.option(() => sts.bigint()),
+    }
+})
+
+export const AmbiguousDeposit: sts.Type<AmbiguousDeposit> = sts.struct(() => {
+    return {
+        depositor: sts.option(() => AccountId32),
+        amount: sts.bigint(),
+    }
+})
+
+export const Collection: sts.Type<Collection> = sts.struct(() => {
+    return {
+        owner: AccountId32,
+        policy: DefaultCollectionPolicy,
+        tokenCount: sts.bigint(),
+        attributeCount: sts.number(),
+        creationDeposit: Deposit,
+        totalDeposit: sts.bigint(),
+        explicitRoyaltyCurrencies: sts.array(() => sts.tuple(() => [AssetId, sts.unit()])),
+        totalInfusion: sts.bigint(),
+        tokenGroupCount: sts.number(),
+        mintRateLimit: sts.option(() => MintRateLimitState),
+    }
+})
+
+export const DefaultCollectionPolicy: sts.Type<DefaultCollectionPolicy> = sts.struct(() => {
+    return {
+        mint: DefaultMintPolicy,
+        transfer: DefaultTransferPolicy,
+        market: DefaultMarketPolicy,
+    }
+})
+
+export const DefaultMarketPolicy: sts.Type<DefaultMarketPolicy> = sts.struct(() => {
+    return {
+        royalty: sts.option(() => DefaultRoyalty),
+    }
+})
+
+export const DefaultTransferPolicy: sts.Type<DefaultTransferPolicy> = sts.struct(() => {
+    return {
+        isFrozen: sts.boolean(),
+    }
+})
+
+export const DefaultMintPolicy: sts.Type<DefaultMintPolicy> = sts.struct(() => {
+    return {
+        maxTokenCount: sts.option(() => sts.bigint()),
+        maxTokenSupply: sts.option(() => sts.bigint()),
+        forceCollapsingSupply: sts.boolean(),
+    }
+})
+
+export const Thaw: sts.Type<Thaw> = sts.struct(() => {
+    return {
+        collectionId: sts.bigint(),
+        thawType: ThawType,
+    }
+})
+
+export const ThawType: sts.Type<ThawType> = sts.closedEnum(() => {
+    return {
+        Collection: sts.unit(),
+        CollectionAccount: AccountId32,
+        Token: sts.enumStruct({
+            tokenId: sts.bigint(),
+        }),
+        TokenAccount: sts.enumStruct({
+            tokenId: sts.bigint(),
+            accountId: AccountId32,
+        }),
+    }
+})
+
+export const Freeze: sts.Type<Freeze> = sts.struct(() => {
+    return {
+        collectionId: sts.bigint(),
+        freezeType: FreezeType,
+    }
+})
+
+export const FreezeType: sts.Type<FreezeType> = sts.closedEnum(() => {
+    return {
+        Attribute: sts.enumStruct({
+            tokenId: sts.option(() => sts.bigint()),
+            key: sts.bytes(),
+        }),
+        Collection: sts.unit(),
+        CollectionAccount: AccountId32,
+        Token: sts.enumStruct({
+            tokenId: sts.bigint(),
+            freezeState: FreezeState,
+        }),
+        TokenAccount: sts.enumStruct({
+            tokenId: sts.bigint(),
+            accountId: AccountId32,
+        }),
+        TokenGroupAttribute: sts.enumStruct({
+            tokenGroupId: sts.bigint(),
+            key: sts.bytes(),
+        }),
+    }
+})
+
+export const DefaultTokenMutation: sts.Type<DefaultTokenMutation> = sts.struct(() => {
+    return {
+        behavior: Type_175,
+        listingForbidden: Type_178,
+        isLendable: Type_178,
+        anyoneCanInfuse: Type_178,
+        name: Type_179,
+    }
+})
+
+export const Type_179: sts.Type<Type_179> = sts.closedEnum(() => {
+    return {
+        NoMutation: sts.unit(),
+        SomeMutation: BoundedString,
+    }
+})
+
+export const Type_178: sts.Type<Type_178> = sts.closedEnum(() => {
+    return {
+        NoMutation: sts.unit(),
+        SomeMutation: sts.boolean(),
+    }
+})
+
+export const Type_175: sts.Type<Type_175> = sts.closedEnum(() => {
+    return {
+        NoMutation: sts.unit(),
+        SomeMutation: sts.option(() => TokenMarketBehavior),
+    }
+})
+
+export const DispatchError: sts.Type<DispatchError> = sts.closedEnum(() => {
+    return {
+        Arithmetic: ArithmeticError,
+        BadOrigin: sts.unit(),
+        CannotLookup: sts.unit(),
+        ConsumerRemaining: sts.unit(),
+        Corruption: sts.unit(),
+        Exhausted: sts.unit(),
+        Module: ModuleError,
+        NoProviders: sts.unit(),
+        Other: sts.unit(),
+        RootNotAllowed: sts.unit(),
+        Token: TokenError,
+        TooManyConsumers: sts.unit(),
+        Transactional: TransactionalError,
+        Trie: TrieError,
+        Unavailable: sts.unit(),
+    }
+})
+
+export const TrieError: sts.Type<TrieError> = sts.closedEnum(() => {
+    return {
+        DecodeError: sts.unit(),
+        DecoderError: sts.unit(),
+        DuplicateKey: sts.unit(),
+        ExtraneousHashReference: sts.unit(),
+        ExtraneousNode: sts.unit(),
+        ExtraneousValue: sts.unit(),
+        IncompleteDatabase: sts.unit(),
+        IncompleteProof: sts.unit(),
+        InvalidChildReference: sts.unit(),
+        InvalidHash: sts.unit(),
+        InvalidStateRoot: sts.unit(),
+        RootMismatch: sts.unit(),
+        ValueAtIncompleteKey: sts.unit(),
+        ValueMismatch: sts.unit(),
+    }
+})
+
+export const TransactionalError: sts.Type<TransactionalError> = sts.closedEnum(() => {
+    return {
+        LimitReached: sts.unit(),
+        NoLayer: sts.unit(),
+    }
+})
+
+export const TokenError: sts.Type<TokenError> = sts.closedEnum(() => {
+    return {
+        BelowMinimum: sts.unit(),
+        Blocked: sts.unit(),
+        CannotCreate: sts.unit(),
+        CannotCreateHold: sts.unit(),
+        Frozen: sts.unit(),
+        FundsUnavailable: sts.unit(),
+        NotExpendable: sts.unit(),
+        OnlyProvider: sts.unit(),
+        UnknownAsset: sts.unit(),
+        Unsupported: sts.unit(),
+    }
+})
+
+export const ModuleError: sts.Type<ModuleError> = sts.struct(() => {
+    return {
+        index: sts.number(),
+        error: sts.bytes(),
+    }
+})
+
+export const ArithmeticError: sts.Type<ArithmeticError> = sts.closedEnum(() => {
+    return {
+        DivisionByZero: sts.unit(),
+        Overflow: sts.unit(),
+        Underflow: sts.unit(),
+    }
+})
+
+export const UnexpectedKind: sts.Type<UnexpectedKind> = sts.closedEnum(() => {
+    return {
+        BalanceUpdated: sts.unit(),
+        FailedToMutateAccount: sts.unit(),
+    }
+})
+
 export const AccountId32 = sts.bytes()
+
+export const RuntimeHoldReason: sts.Type<RuntimeHoldReason> = sts.closedEnum(() => {
+    return {
+        CollatorStaking: Type_44,
+        FuelTanks: Type_49,
+        Marketplace: Type_48,
+        MultiTokens: Type_47,
+        PolkadotXcm: Type_46,
+        Preimage: HoldReason,
+        SafeMode: Type_50,
+        Session: Type_45,
+    }
+})
+
+export const Type_45: sts.Type<Type_45> = sts.closedEnum(() => {
+    return {
+        Keys: sts.unit(),
+    }
+})
+
+export const Type_50: sts.Type<Type_50> = sts.closedEnum(() => {
+    return {
+        EnterOrExtend: sts.unit(),
+    }
+})
+
+export const HoldReason: sts.Type<HoldReason> = sts.closedEnum(() => {
+    return {
+        Preimage: sts.unit(),
+    }
+})
+
+export const Type_46: sts.Type<Type_46> = sts.closedEnum(() => {
+    return {
+        AuthorizeAlias: sts.unit(),
+    }
+})
+
+export const Type_47: sts.Type<Type_47> = sts.closedEnum(() => {
+    return {
+        MultiTokens: sts.unit(),
+    }
+})
+
+export const Type_48: sts.Type<Type_48> = sts.closedEnum(() => {
+    return {
+        Marketplace: sts.unit(),
+    }
+})
+
+export const Type_49: sts.Type<Type_49> = sts.closedEnum(() => {
+    return {
+        FuelTanks: sts.unit(),
+    }
+})
+
+export const Type_44: sts.Type<Type_44> = sts.closedEnum(() => {
+    return {
+        CollatorStaking: sts.unit(),
+    }
+})
+
+export const H256 = sts.bytes()

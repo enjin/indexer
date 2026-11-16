@@ -5,19 +5,19 @@ export const totalIssuance = {
      *  The relay chain's total issuance at the relay parent of the last block whose relay chain
      *  state proof carried it.
      */
-    matrixEnjinV1042: new StorageType(
+    matrixEnjinV1043: new StorageType(
         'RelayIssuance.TotalIssuance',
         'Default',
         [],
         sts.bigint()
-    ) as TotalIssuanceMatrixEnjinV1042,
+    ) as TotalIssuanceMatrixEnjinV1043,
 }
 
 /**
  *  The relay chain's total issuance at the relay parent of the last block whose relay chain
  *  state proof carried it.
  */
-export interface TotalIssuanceMatrixEnjinV1042 {
+export interface TotalIssuanceMatrixEnjinV1043 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): bigint
     get(block: Block): Promise<bigint | undefined>

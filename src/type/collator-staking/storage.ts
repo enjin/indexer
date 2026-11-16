@@ -2,7 +2,7 @@ import { sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx } from '../s
 import * as matrixV500 from '../matrixV500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV1040 from '../matrixV1040'
-import * as matrixEnjinV1041 from '../matrixEnjinV1041'
+import * as matrixEnjinV1043 from '../matrixEnjinV1043'
 
 export const collators = {
     /**
@@ -17,12 +17,12 @@ export const collators = {
     /**
      *  The current set of collators
      */
-    matrixEnjinV1041: new StorageType(
+    matrixEnjinV1043: new StorageType(
         'CollatorStaking.Collators',
         'Default',
         [],
-        sts.array(() => matrixEnjinV1041.Collator)
-    ) as CollatorsMatrixEnjinV1041,
+        sts.array(() => matrixEnjinV1043.Collator)
+    ) as CollatorsMatrixEnjinV1043,
     /**
      *  The current set of collators
      */
@@ -55,10 +55,10 @@ export interface CollatorsMatrixEnjinV603 {
 /**
  *  The current set of collators
  */
-export interface CollatorsMatrixEnjinV1041 {
+export interface CollatorsMatrixEnjinV1043 {
     is(block: RuntimeCtx): boolean
-    getDefault(block: Block): matrixEnjinV1041.Collator[]
-    get(block: Block): Promise<matrixEnjinV1041.Collator[] | undefined>
+    getDefault(block: Block): matrixEnjinV1043.Collator[]
+    get(block: Block): Promise<matrixEnjinV1043.Collator[] | undefined>
 }
 
 /**
@@ -98,12 +98,12 @@ export const invulnerables = {
      *  This is the list of collators who are invulnerable to being ejected from collation
      *  either by unbonding or by having less stake.
      */
-    matrixEnjinV1041: new StorageType(
+    matrixEnjinV1043: new StorageType(
         'CollatorStaking.Invulnerables',
         'Default',
         [],
-        sts.array(() => matrixEnjinV1041.Collator)
-    ) as InvulnerablesMatrixEnjinV1041,
+        sts.array(() => matrixEnjinV1043.Collator)
+    ) as InvulnerablesMatrixEnjinV1043,
     /**
      *  The invulnerable collators
      *
@@ -148,10 +148,10 @@ export interface InvulnerablesMatrixEnjinV603 {
  *  This is the list of collators who are invulnerable to being ejected from collation
  *  either by unbonding or by having less stake.
  */
-export interface InvulnerablesMatrixEnjinV1041 {
+export interface InvulnerablesMatrixEnjinV1043 {
     is(block: RuntimeCtx): boolean
-    getDefault(block: Block): matrixEnjinV1041.Collator[]
-    get(block: Block): Promise<matrixEnjinV1041.Collator[] | undefined>
+    getDefault(block: Block): matrixEnjinV1043.Collator[]
+    get(block: Block): Promise<matrixEnjinV1043.Collator[] | undefined>
 }
 
 /**
@@ -191,12 +191,12 @@ export const candidates = {
     /**
      *  The current set of candidates for collation.
      */
-    matrixEnjinV1041: new StorageType(
+    matrixEnjinV1043: new StorageType(
         'CollatorStaking.Candidates',
         'Default',
         [],
-        sts.array(() => matrixEnjinV1041.Collator)
-    ) as CandidatesMatrixEnjinV1041,
+        sts.array(() => matrixEnjinV1043.Collator)
+    ) as CandidatesMatrixEnjinV1043,
     /**
      *  The current set of candidates for collation.
      */
@@ -229,10 +229,10 @@ export interface CandidatesMatrixEnjinV603 {
 /**
  *  The current set of candidates for collation.
  */
-export interface CandidatesMatrixEnjinV1041 {
+export interface CandidatesMatrixEnjinV1043 {
     is(block: RuntimeCtx): boolean
-    getDefault(block: Block): matrixEnjinV1041.Collator[]
-    get(block: Block): Promise<matrixEnjinV1041.Collator[] | undefined>
+    getDefault(block: Block): matrixEnjinV1043.Collator[]
+    get(block: Block): Promise<matrixEnjinV1043.Collator[] | undefined>
 }
 
 /**
@@ -291,12 +291,12 @@ export const nominators = {
      *
      *  Each nominator is allowed to nominate one collator.
      */
-    matrixEnjinV1041: new StorageType(
+    matrixEnjinV1043: new StorageType(
         'CollatorStaking.Nominators',
         'Optional',
-        [matrixEnjinV1041.AccountId32],
-        matrixEnjinV1041.Nomination
-    ) as NominatorsMatrixEnjinV1041,
+        [matrixEnjinV1043.AccountId32],
+        matrixEnjinV1043.Nomination
+    ) as NominatorsMatrixEnjinV1043,
     /**
      *  The current set of nominators.
      *
@@ -359,32 +359,32 @@ export interface NominatorsMatrixEnjinV603 {
  *
  *  Each nominator is allowed to nominate one collator.
  */
-export interface NominatorsMatrixEnjinV1041 {
+export interface NominatorsMatrixEnjinV1043 {
     is(block: RuntimeCtx): boolean
-    get(block: Block, key: matrixEnjinV1041.AccountId32): Promise<matrixEnjinV1041.Nomination | undefined>
-    getMany(block: Block, keys: matrixEnjinV1041.AccountId32[]): Promise<(matrixEnjinV1041.Nomination | undefined)[]>
-    getKeys(block: Block): Promise<matrixEnjinV1041.AccountId32[]>
-    getKeys(block: Block, key: matrixEnjinV1041.AccountId32): Promise<matrixEnjinV1041.AccountId32[]>
-    getKeysPaged(pageSize: number, block: Block): AsyncIterable<matrixEnjinV1041.AccountId32[]>
+    get(block: Block, key: matrixEnjinV1043.AccountId32): Promise<matrixEnjinV1043.Nomination | undefined>
+    getMany(block: Block, keys: matrixEnjinV1043.AccountId32[]): Promise<(matrixEnjinV1043.Nomination | undefined)[]>
+    getKeys(block: Block): Promise<matrixEnjinV1043.AccountId32[]>
+    getKeys(block: Block, key: matrixEnjinV1043.AccountId32): Promise<matrixEnjinV1043.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<matrixEnjinV1043.AccountId32[]>
     getKeysPaged(
         pageSize: number,
         block: Block,
-        key: matrixEnjinV1041.AccountId32
-    ): AsyncIterable<matrixEnjinV1041.AccountId32[]>
-    getPairs(block: Block): Promise<[k: matrixEnjinV1041.AccountId32, v: matrixEnjinV1041.Nomination | undefined][]>
+        key: matrixEnjinV1043.AccountId32
+    ): AsyncIterable<matrixEnjinV1043.AccountId32[]>
+    getPairs(block: Block): Promise<[k: matrixEnjinV1043.AccountId32, v: matrixEnjinV1043.Nomination | undefined][]>
     getPairs(
         block: Block,
-        key: matrixEnjinV1041.AccountId32
-    ): Promise<[k: matrixEnjinV1041.AccountId32, v: matrixEnjinV1041.Nomination | undefined][]>
+        key: matrixEnjinV1043.AccountId32
+    ): Promise<[k: matrixEnjinV1043.AccountId32, v: matrixEnjinV1043.Nomination | undefined][]>
     getPairsPaged(
         pageSize: number,
         block: Block
-    ): AsyncIterable<[k: matrixEnjinV1041.AccountId32, v: matrixEnjinV1041.Nomination | undefined][]>
+    ): AsyncIterable<[k: matrixEnjinV1043.AccountId32, v: matrixEnjinV1043.Nomination | undefined][]>
     getPairsPaged(
         pageSize: number,
         block: Block,
-        key: matrixEnjinV1041.AccountId32
-    ): AsyncIterable<[k: matrixEnjinV1041.AccountId32, v: matrixEnjinV1041.Nomination | undefined][]>
+        key: matrixEnjinV1043.AccountId32
+    ): AsyncIterable<[k: matrixEnjinV1043.AccountId32, v: matrixEnjinV1043.Nomination | undefined][]>
 }
 
 /**
@@ -458,12 +458,12 @@ export const currentRound = {
     /**
      *  The current round information.
      */
-    matrixEnjinV1041: new StorageType(
+    matrixEnjinV1043: new StorageType(
         'CollatorStaking.CurrentRound',
         'Default',
         [],
-        matrixEnjinV1041.Round
-    ) as CurrentRoundMatrixEnjinV1041,
+        matrixEnjinV1043.Round
+    ) as CurrentRoundMatrixEnjinV1043,
     /**
      *  The current round information.
      */
@@ -496,10 +496,10 @@ export interface CurrentRoundMatrixEnjinV603 {
 /**
  *  The current round information.
  */
-export interface CurrentRoundMatrixEnjinV1041 {
+export interface CurrentRoundMatrixEnjinV1043 {
     is(block: RuntimeCtx): boolean
-    getDefault(block: Block): matrixEnjinV1041.Round
-    get(block: Block): Promise<matrixEnjinV1041.Round | undefined>
+    getDefault(block: Block): matrixEnjinV1043.Round
+    get(block: Block): Promise<matrixEnjinV1043.Round | undefined>
 }
 
 /**
@@ -668,12 +668,12 @@ export const exitCursor = {
      *  because a cursor pointing at an entry that has since been removed is still a valid resume
      *  point — `iter_from` needs the key's position in hash order, not its presence.
      */
-    matrixEnjinV1041: new StorageType(
+    matrixEnjinV1043: new StorageType(
         'CollatorStaking.ExitCursor',
         'Optional',
         [],
-        matrixEnjinV1041.AccountId32
-    ) as ExitCursorMatrixEnjinV1041,
+        matrixEnjinV1043.AccountId32
+    ) as ExitCursorMatrixEnjinV1043,
 }
 
 /**
@@ -684,9 +684,9 @@ export const exitCursor = {
  *  because a cursor pointing at an entry that has since been removed is still a valid resume
  *  point — `iter_from` needs the key's position in hash order, not its presence.
  */
-export interface ExitCursorMatrixEnjinV1041 {
+export interface ExitCursorMatrixEnjinV1043 {
     is(block: RuntimeCtx): boolean
-    get(block: Block): Promise<matrixEnjinV1041.AccountId32 | undefined>
+    get(block: Block): Promise<matrixEnjinV1043.AccountId32 | undefined>
 }
 
 export const sessionInfoPruneCursor = {
@@ -696,12 +696,12 @@ export const sessionInfoPruneCursor = {
      *  `None` means the next sweep starts from the beginning of the map. The sweep wraps around
      *  continuously, so this is a position rather than a completion marker.
      */
-    matrixEnjinV1041: new StorageType(
+    matrixEnjinV1043: new StorageType(
         'CollatorStaking.SessionInfoPruneCursor',
         'Optional',
         [],
-        sts.tuple(() => [matrixEnjinV1041.AccountId32, sts.number()])
-    ) as SessionInfoPruneCursorMatrixEnjinV1041,
+        sts.tuple(() => [matrixEnjinV1043.AccountId32, sts.number()])
+    ) as SessionInfoPruneCursorMatrixEnjinV1043,
 }
 
 /**
@@ -710,7 +710,7 @@ export const sessionInfoPruneCursor = {
  *  `None` means the next sweep starts from the beginning of the map. The sweep wraps around
  *  continuously, so this is a position rather than a completion marker.
  */
-export interface SessionInfoPruneCursorMatrixEnjinV1041 {
+export interface SessionInfoPruneCursorMatrixEnjinV1043 {
     is(block: RuntimeCtx): boolean
-    get(block: Block): Promise<[matrixEnjinV1041.AccountId32, number] | undefined>
+    get(block: Block): Promise<[matrixEnjinV1043.AccountId32, number] | undefined>
 }

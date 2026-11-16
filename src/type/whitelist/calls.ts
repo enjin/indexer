@@ -25,9 +25,7 @@ import * as v1031 from '../v1031'
 import * as enjinV1032 from '../enjinV1032'
 import * as v1032 from '../v1032'
 import * as matrixV1040 from '../matrixV1040'
-import * as matrixEnjinV1041 from '../matrixEnjinV1041'
 import * as matrixV1041 from '../matrixV1041'
-import * as matrixEnjinV1042 from '../matrixEnjinV1042'
 import * as matrixV1042 from '../matrixV1042'
 import * as matrixEnjinV1043 from '../matrixEnjinV1043'
 import * as matrixV1043 from '../matrixV1043'
@@ -42,50 +40,38 @@ import * as v1080 from '../v1080'
 
 export const whitelistCall = {
     name: 'Whitelist.whitelist_call',
-    matrixEnjinV1041: new CallType(
+    matrixEnjinV1043: new CallType(
         'Whitelist.whitelist_call',
         sts.struct({
-            callHash: matrixEnjinV1041.H256,
+            callHash: matrixEnjinV1043.H256,
         })
     ),
 }
 
 export const removeWhitelistedCall = {
     name: 'Whitelist.remove_whitelisted_call',
-    matrixEnjinV1041: new CallType(
+    matrixEnjinV1043: new CallType(
         'Whitelist.remove_whitelisted_call',
         sts.struct({
-            callHash: matrixEnjinV1041.H256,
+            callHash: matrixEnjinV1043.H256,
         })
     ),
 }
 
 export const dispatchWhitelistedCall = {
     name: 'Whitelist.dispatch_whitelisted_call',
-    matrixEnjinV1041: new CallType(
+    matrixEnjinV1043: new CallType(
         'Whitelist.dispatch_whitelisted_call',
         sts.struct({
-            callHash: matrixEnjinV1041.H256,
+            callHash: matrixEnjinV1043.H256,
             callEncodedLen: sts.number(),
-            callWeightWitness: matrixEnjinV1041.Weight,
+            callWeightWitness: matrixEnjinV1043.Weight,
         })
     ),
 }
 
 export const dispatchWhitelistedCallWithPreimage = {
     name: 'Whitelist.dispatch_whitelisted_call_with_preimage',
-    matrixEnjinV1041: new CallType(
-        'Whitelist.dispatch_whitelisted_call_with_preimage',
-        sts.struct({
-            call: matrixEnjinV1041.Call,
-        })
-    ),
-    matrixEnjinV1042: new CallType(
-        'Whitelist.dispatch_whitelisted_call_with_preimage',
-        sts.struct({
-            call: matrixEnjinV1042.Call,
-        })
-    ),
     matrixEnjinV1043: new CallType(
         'Whitelist.dispatch_whitelisted_call_with_preimage',
         sts.struct({

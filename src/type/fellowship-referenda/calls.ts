@@ -6,8 +6,8 @@ import * as v105 from '../v105'
 import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
 import * as matrixV1040 from '../matrixV1040'
-import * as matrixEnjinV1041 from '../matrixEnjinV1041'
 import * as matrixV1041 from '../matrixV1041'
+import * as matrixEnjinV1043 from '../matrixEnjinV1043'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
 import * as enjinV1070 from '../enjinV1070'
@@ -28,12 +28,12 @@ export const submit = {
      *
      * Emits `Submitted`.
      */
-    matrixEnjinV1041: new CallType(
+    matrixEnjinV1043: new CallType(
         'FellowshipReferenda.submit',
         sts.struct({
-            proposalOrigin: matrixEnjinV1041.OriginCaller,
-            proposal: matrixEnjinV1041.Bounded,
-            enactmentMoment: matrixEnjinV1041.DispatchTime,
+            proposalOrigin: matrixEnjinV1043.OriginCaller,
+            proposal: matrixEnjinV1043.Bounded,
+            enactmentMoment: matrixEnjinV1043.DispatchTime,
         })
     ),
     /**
@@ -316,7 +316,7 @@ export const placeDecisionDeposit = {
      *
      * Emits `DecisionDepositPlaced`.
      */
-    matrixEnjinV1041: new CallType(
+    matrixEnjinV1043: new CallType(
         'FellowshipReferenda.place_decision_deposit',
         sts.struct({
             index: sts.number(),
@@ -335,7 +335,7 @@ export const refundDecisionDeposit = {
      *
      * Emits `DecisionDepositRefunded`.
      */
-    matrixEnjinV1041: new CallType(
+    matrixEnjinV1043: new CallType(
         'FellowshipReferenda.refund_decision_deposit',
         sts.struct({
             index: sts.number(),
@@ -353,7 +353,7 @@ export const cancel = {
      *
      * Emits `Cancelled`.
      */
-    matrixEnjinV1041: new CallType(
+    matrixEnjinV1043: new CallType(
         'FellowshipReferenda.cancel',
         sts.struct({
             index: sts.number(),
@@ -371,7 +371,7 @@ export const kill = {
      *
      * Emits `Killed` and `DepositSlashed`.
      */
-    matrixEnjinV1041: new CallType(
+    matrixEnjinV1043: new CallType(
         'FellowshipReferenda.kill',
         sts.struct({
             index: sts.number(),
@@ -387,7 +387,7 @@ export const nudgeReferendum = {
      * - `origin`: must be `Root`.
      * - `index`: the referendum to be advanced.
      */
-    matrixEnjinV1041: new CallType(
+    matrixEnjinV1043: new CallType(
         'FellowshipReferenda.nudge_referendum',
         sts.struct({
             index: sts.number(),
@@ -408,7 +408,7 @@ export const oneFewerDeciding = {
      * - begin deciding another referendum (and leave `DecidingCount` alone); or
      * - decrement `DecidingCount`.
      */
-    matrixEnjinV1041: new CallType(
+    matrixEnjinV1043: new CallType(
         'FellowshipReferenda.one_fewer_deciding',
         sts.struct({
             track: sts.number(),
@@ -427,7 +427,7 @@ export const refundSubmissionDeposit = {
      *
      * Emits `SubmissionDepositRefunded`.
      */
-    matrixEnjinV1041: new CallType(
+    matrixEnjinV1043: new CallType(
         'FellowshipReferenda.refund_submission_deposit',
         sts.struct({
             index: sts.number(),
@@ -446,11 +446,11 @@ export const setMetadata = {
      * - `index`:  The index of a referendum to set or clear metadata for.
      * - `maybe_hash`: The hash of an on-chain stored preimage. `None` to clear a metadata.
      */
-    matrixEnjinV1041: new CallType(
+    matrixEnjinV1043: new CallType(
         'FellowshipReferenda.set_metadata',
         sts.struct({
             index: sts.number(),
-            maybeHash: sts.option(() => matrixEnjinV1041.H256),
+            maybeHash: sts.option(() => matrixEnjinV1043.H256),
         })
     ),
 }

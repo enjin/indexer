@@ -16,8 +16,8 @@ import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 import * as v1031 from '../v1031'
 import * as enjinV1032 from '../enjinV1032'
 import * as matrixV1040 from '../matrixV1040'
-import * as matrixEnjinV1041 from '../matrixEnjinV1041'
 import * as matrixV1041 from '../matrixV1041'
+import * as matrixEnjinV1043 from '../matrixEnjinV1043'
 import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 import * as v1060 from '../v1060'
@@ -738,6 +738,10 @@ export const fillListing = {
     ),
     /**
      * Fills a fixed price listing. This will execute immediately.
+     *
+     * A listing whose token was created again under its id after the listing was made is
+     * cancelled instead, refunding its creator, with [`Event::ListingCancelled`].
+     *
      * # Parameters
      *
      * - `listing_id`: The id for the listing to buy from
@@ -758,10 +762,10 @@ export const fillListing = {
      * The weight is charged for the maximum royalty beneficiary count and refunded down to
      * the listing's actual count.
      */
-    matrixEnjinV1041: new CallType(
+    matrixEnjinV1043: new CallType(
         'Marketplace.fill_listing',
         sts.struct({
-            listingId: matrixEnjinV1041.H256,
+            listingId: matrixEnjinV1043.H256,
             amount: sts.bigint(),
         })
     ),
@@ -1013,6 +1017,9 @@ export const finalizeAuction = {
      * Finalize the auction with id: `listing_id`. This will end the auction and transfer
      * funds. It fails if the auction is not over. It can be called by anyone.
      *
+     * An auction whose token was created again under its id after it was listed is cancelled
+     * instead, returning the item, the bid and the deposit, with [`Event::ListingCancelled`].
+     *
      * # Parameters
      *
      * - `listing_id`: The ID for the listing to finalize
@@ -1029,10 +1036,10 @@ export const finalizeAuction = {
      * The weight is charged for the maximum royalty beneficiary count and refunded down to
      * the listing's actual count.
      */
-    matrixEnjinV1041: new CallType(
+    matrixEnjinV1043: new CallType(
         'Marketplace.finalize_auction',
         sts.struct({
-            listingId: matrixEnjinV1041.H256,
+            listingId: matrixEnjinV1043.H256,
         })
     ),
     /**
@@ -2083,10 +2090,10 @@ export const resolveAbandonedListing = {
      *   only obstacle, which they can lift themselves (a *freeze* on those funds releases
      *   instead, since only the asset's owner can lift one)
      */
-    matrixEnjinV1041: new CallType(
+    matrixEnjinV1043: new CallType(
         'Marketplace.resolve_abandoned_listing',
         sts.struct({
-            listingId: matrixEnjinV1041.H256,
+            listingId: matrixEnjinV1043.H256,
         })
     ),
 }
@@ -2101,6 +2108,14 @@ export const createListingAndMatch = {
      *
      * Resting listings that have not reached their start block are passed over: they are not
      * examined and do not count against `match_limit`.
+     *
+     * A resting listing that no taker can fill for a reason of its own is removed, refunding
+     * its creator, instead of being left to fail every later taker: one whose make side is
+     * frozen or locked, whose token is gone or expired, whose remainder is worth nothing once
+     * the fee and royalties are taken, or an offer past its expiration. Each emits
+     * [`Event::ListingCancelled`] or [`Event::ExpiredListingRemoved`]. Up to `match_limit`
+     * such removals, and those of listings the fill itself cancels, do not count against
+     * `match_limit`.
      *
      * The [`OrderDescriptor`] can express only what the book holds: a fixed price ask or an
      * offer bid, never an auction or a whitelisted listing. Create those with
@@ -2117,9 +2132,10 @@ export const createListingAndMatch = {
      *   descriptor minus the whitelist flag, with `data` narrowed to an ask or a bid.
      * - `match_limit`: Max number of resting listings to examine before the remainder rests.
      *   Resting listings that are skipped (e.g. your own) or fail to fill also count; ones
-     *   that are not active yet do not. Zero skips matching, so the order simply rests. `None`
-     *   uses [`MaxMatchLimit`](Config::MaxMatchLimit). The weight is charged up front for the
-     *   worst case and refunded down to the work actually performed.
+     *   that are not active yet do not, nor, up to `match_limit` of them, ones removed without
+     *   a fill. Zero skips matching, so the order simply rests. `None` uses
+     *   [`MaxMatchLimit`](Config::MaxMatchLimit). The weight is charged up front for the worst
+     *   case and refunded down to the work actually performed.
      *
      * # Errors
      *
@@ -2127,10 +2143,10 @@ export const createListingAndMatch = {
      * - Same as [`Self::create_listing`] for the resting remainder, except the book-capacity
      *   errors, which drop the remainder instead of failing
      */
-    matrixEnjinV1041: new CallType(
+    matrixEnjinV1043: new CallType(
         'Marketplace.create_listing_and_match',
         sts.struct({
-            descriptor: matrixEnjinV1041.OrderDescriptor,
+            descriptor: matrixEnjinV1043.OrderDescriptor,
             matchLimit: sts.option(() => sts.number()),
         })
     ),
@@ -2259,10 +2275,10 @@ export const migrate = {
      *   call is charged in that case, which is what keeps the `Pays::No` path from being free
      *   block space once the migration is done.
      */
-    matrixEnjinV1041: new CallType(
+    matrixEnjinV1043: new CallType(
         'Marketplace.migrate',
         sts.struct({
-            weightLimit: matrixEnjinV1041.Weight,
+            weightLimit: matrixEnjinV1043.Weight,
         })
     ),
 }

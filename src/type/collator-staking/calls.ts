@@ -56,7 +56,7 @@ export const joinCandidates = {
      * - [`Error::TooManyCandidates`] if the number of candidates is already at the maximum.
      * - [`Error::AlreadyInvulnerable`] if `AccountId` is already an invulnerable.
      */
-    matrixEnjinV1041: new CallType(
+    matrixEnjinV1043: new CallType(
         'CollatorStaking.join_candidates',
         sts.struct({
             amount: sts.bigint(),

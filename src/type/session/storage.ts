@@ -6,7 +6,7 @@ import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV1030 from '../matrixV1030'
 import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 import * as matrixV1040 from '../matrixV1040'
-import * as matrixEnjinV1041 from '../matrixEnjinV1041'
+import * as matrixEnjinV1043 from '../matrixEnjinV1043'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
 import * as enjinV1070 from '../enjinV1070'
@@ -104,12 +104,12 @@ export const queuedKeys = {
      *  The queued keys for the next session. When the next session begins, these keys
      *  will be used to determine the validator's session keys.
      */
-    matrixEnjinV1041: new StorageType(
+    matrixEnjinV1043: new StorageType(
         'Session.QueuedKeys',
         'Default',
         [],
-        sts.array(() => sts.tuple(() => [matrixEnjinV1041.AccountId32, matrixEnjinV1041.SessionKeys]))
-    ) as QueuedKeysMatrixEnjinV1041,
+        sts.array(() => sts.tuple(() => [matrixEnjinV1043.AccountId32, matrixEnjinV1043.SessionKeys]))
+    ) as QueuedKeysMatrixEnjinV1043,
     /**
      *  The queued keys for the next session. When the next session begins, these keys
      *  will be used to determine the validator's session keys.
@@ -246,10 +246,10 @@ export interface QueuedKeysMatrixEnjinV1031 {
  *  The queued keys for the next session. When the next session begins, these keys
  *  will be used to determine the validator's session keys.
  */
-export interface QueuedKeysMatrixEnjinV1041 {
+export interface QueuedKeysMatrixEnjinV1043 {
     is(block: RuntimeCtx): boolean
-    getDefault(block: Block): [matrixEnjinV1041.AccountId32, matrixEnjinV1041.SessionKeys][]
-    get(block: Block): Promise<[matrixEnjinV1041.AccountId32, matrixEnjinV1041.SessionKeys][] | undefined>
+    getDefault(block: Block): [matrixEnjinV1043.AccountId32, matrixEnjinV1043.SessionKeys][]
+    get(block: Block): Promise<[matrixEnjinV1043.AccountId32, matrixEnjinV1043.SessionKeys][] | undefined>
 }
 
 /**
@@ -595,12 +595,12 @@ export const nextKeys = {
     /**
      *  The next session keys for a validator.
      */
-    matrixEnjinV1041: new StorageType(
+    matrixEnjinV1043: new StorageType(
         'Session.NextKeys',
         'Optional',
-        [matrixEnjinV1041.AccountId32],
-        matrixEnjinV1041.SessionKeys
-    ) as NextKeysMatrixEnjinV1041,
+        [matrixEnjinV1043.AccountId32],
+        matrixEnjinV1043.SessionKeys
+    ) as NextKeysMatrixEnjinV1043,
     /**
      *  The next session keys for a validator.
      */
@@ -747,32 +747,32 @@ export interface NextKeysMatrixEnjinV1031 {
 /**
  *  The next session keys for a validator.
  */
-export interface NextKeysMatrixEnjinV1041 {
+export interface NextKeysMatrixEnjinV1043 {
     is(block: RuntimeCtx): boolean
-    get(block: Block, key: matrixEnjinV1041.AccountId32): Promise<matrixEnjinV1041.SessionKeys | undefined>
-    getMany(block: Block, keys: matrixEnjinV1041.AccountId32[]): Promise<(matrixEnjinV1041.SessionKeys | undefined)[]>
-    getKeys(block: Block): Promise<matrixEnjinV1041.AccountId32[]>
-    getKeys(block: Block, key: matrixEnjinV1041.AccountId32): Promise<matrixEnjinV1041.AccountId32[]>
-    getKeysPaged(pageSize: number, block: Block): AsyncIterable<matrixEnjinV1041.AccountId32[]>
+    get(block: Block, key: matrixEnjinV1043.AccountId32): Promise<matrixEnjinV1043.SessionKeys | undefined>
+    getMany(block: Block, keys: matrixEnjinV1043.AccountId32[]): Promise<(matrixEnjinV1043.SessionKeys | undefined)[]>
+    getKeys(block: Block): Promise<matrixEnjinV1043.AccountId32[]>
+    getKeys(block: Block, key: matrixEnjinV1043.AccountId32): Promise<matrixEnjinV1043.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<matrixEnjinV1043.AccountId32[]>
     getKeysPaged(
         pageSize: number,
         block: Block,
-        key: matrixEnjinV1041.AccountId32
-    ): AsyncIterable<matrixEnjinV1041.AccountId32[]>
-    getPairs(block: Block): Promise<[k: matrixEnjinV1041.AccountId32, v: matrixEnjinV1041.SessionKeys | undefined][]>
+        key: matrixEnjinV1043.AccountId32
+    ): AsyncIterable<matrixEnjinV1043.AccountId32[]>
+    getPairs(block: Block): Promise<[k: matrixEnjinV1043.AccountId32, v: matrixEnjinV1043.SessionKeys | undefined][]>
     getPairs(
         block: Block,
-        key: matrixEnjinV1041.AccountId32
-    ): Promise<[k: matrixEnjinV1041.AccountId32, v: matrixEnjinV1041.SessionKeys | undefined][]>
+        key: matrixEnjinV1043.AccountId32
+    ): Promise<[k: matrixEnjinV1043.AccountId32, v: matrixEnjinV1043.SessionKeys | undefined][]>
     getPairsPaged(
         pageSize: number,
         block: Block
-    ): AsyncIterable<[k: matrixEnjinV1041.AccountId32, v: matrixEnjinV1041.SessionKeys | undefined][]>
+    ): AsyncIterable<[k: matrixEnjinV1043.AccountId32, v: matrixEnjinV1043.SessionKeys | undefined][]>
     getPairsPaged(
         pageSize: number,
         block: Block,
-        key: matrixEnjinV1041.AccountId32
-    ): AsyncIterable<[k: matrixEnjinV1041.AccountId32, v: matrixEnjinV1041.SessionKeys | undefined][]>
+        key: matrixEnjinV1043.AccountId32
+    ): AsyncIterable<[k: matrixEnjinV1043.AccountId32, v: matrixEnjinV1043.SessionKeys | undefined][]>
 }
 
 /**
@@ -1115,12 +1115,12 @@ export const externallySetKeys = {
      *  only decrements consumers for accounts that were registered through the local
      *  session pallet.
      */
-    matrixEnjinV1041: new StorageType(
+    matrixEnjinV1043: new StorageType(
         'Session.ExternallySetKeys',
         'Optional',
-        [matrixEnjinV1041.AccountId32],
+        [matrixEnjinV1043.AccountId32],
         sts.unit()
-    ) as ExternallySetKeysMatrixEnjinV1041,
+    ) as ExternallySetKeysMatrixEnjinV1043,
 }
 
 /**
@@ -1129,30 +1129,30 @@ export const externallySetKeys = {
  *  only decrements consumers for accounts that were registered through the local
  *  session pallet.
  */
-export interface ExternallySetKeysMatrixEnjinV1041 {
+export interface ExternallySetKeysMatrixEnjinV1043 {
     is(block: RuntimeCtx): boolean
-    get(block: Block, key: matrixEnjinV1041.AccountId32): Promise<null | undefined>
-    getMany(block: Block, keys: matrixEnjinV1041.AccountId32[]): Promise<(null | undefined)[]>
-    getKeys(block: Block): Promise<matrixEnjinV1041.AccountId32[]>
-    getKeys(block: Block, key: matrixEnjinV1041.AccountId32): Promise<matrixEnjinV1041.AccountId32[]>
-    getKeysPaged(pageSize: number, block: Block): AsyncIterable<matrixEnjinV1041.AccountId32[]>
+    get(block: Block, key: matrixEnjinV1043.AccountId32): Promise<null | undefined>
+    getMany(block: Block, keys: matrixEnjinV1043.AccountId32[]): Promise<(null | undefined)[]>
+    getKeys(block: Block): Promise<matrixEnjinV1043.AccountId32[]>
+    getKeys(block: Block, key: matrixEnjinV1043.AccountId32): Promise<matrixEnjinV1043.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<matrixEnjinV1043.AccountId32[]>
     getKeysPaged(
         pageSize: number,
         block: Block,
-        key: matrixEnjinV1041.AccountId32
-    ): AsyncIterable<matrixEnjinV1041.AccountId32[]>
-    getPairs(block: Block): Promise<[k: matrixEnjinV1041.AccountId32, v: null | undefined][]>
+        key: matrixEnjinV1043.AccountId32
+    ): AsyncIterable<matrixEnjinV1043.AccountId32[]>
+    getPairs(block: Block): Promise<[k: matrixEnjinV1043.AccountId32, v: null | undefined][]>
     getPairs(
         block: Block,
-        key: matrixEnjinV1041.AccountId32
-    ): Promise<[k: matrixEnjinV1041.AccountId32, v: null | undefined][]>
+        key: matrixEnjinV1043.AccountId32
+    ): Promise<[k: matrixEnjinV1043.AccountId32, v: null | undefined][]>
     getPairsPaged(
         pageSize: number,
         block: Block
-    ): AsyncIterable<[k: matrixEnjinV1041.AccountId32, v: null | undefined][]>
+    ): AsyncIterable<[k: matrixEnjinV1043.AccountId32, v: null | undefined][]>
     getPairsPaged(
         pageSize: number,
         block: Block,
-        key: matrixEnjinV1041.AccountId32
-    ): AsyncIterable<[k: matrixEnjinV1041.AccountId32, v: null | undefined][]>
+        key: matrixEnjinV1043.AccountId32
+    ): AsyncIterable<[k: matrixEnjinV1043.AccountId32, v: null | undefined][]>
 }
