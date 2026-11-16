@@ -345,6 +345,14 @@ void test('TokenUpdated and TokenAccountDepositUpdated are no longer ignored', (
     }
 })
 
+void test('infusion pot bookkeeping events are ignored instead of logged as unsupported', () => {
+    const source = fs.readFileSync(path.resolve(__dirname, '../src/processor.config.ts'), 'utf8')
+    const ignored = source.slice(source.indexOf('const ignoreEvents'), source.indexOf('const eventItems'))
+    for (const name of ['infusionMovedToPot', 'infusionHeldByOwner', 'infusionPayoutSkipped']) {
+        assert.ok(ignored.includes(`multiTokens.${name}.name`), `${name} is not ignored`)
+    }
+})
+
 function storedToken(overrides: Record<string, unknown> = {}) {
     return {
         supply: 1n,
