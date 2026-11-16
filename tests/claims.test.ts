@@ -93,7 +93,7 @@ const parentHash = '0x01'
 
 /** `parentClaims` lists the addresses holding a `Claims` entry in the parent block's state. */
 async function fixture(height: number, rows: Row[] = [], parentClaims: string[] = []) {
-    const base = await getRuntimeCached('enjin-matrixchain', 1041)
+    const base = await getRuntimeCached('enjin-matrixchain', 1043)
     const storage: Record<string, unknown> = {
         'Claims.DelayClaimsPeriod': delay,
         'Claims.TotalUnclaimedAmount': 0n,

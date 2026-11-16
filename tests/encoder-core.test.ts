@@ -26,7 +26,7 @@ void test('encode rejects a request with neither call nor calls', async () => {
     await assert.rejects(encode({}), { message: 'Invalid request: no call or calls provided' })
 })
 
-void test('encode uses the enjin-matrixchain 1041 metadata ahead of the enjin upgrade', async () => {
+void test('encode uses the requested Canary Matrixchain metadata for earlier Fuel Tanks dispatches', async () => {
     const tankId = `0x${'11'.repeat(32)}`
     const call = {
         pallet: 'FuelTanks',
@@ -40,38 +40,17 @@ void test('encode uses the enjin-matrixchain 1041 metadata ahead of the enjin up
     }
 
     // Since 1040 `rule_set_id` is an Option, so omitting it encodes None.
-    assert.deepEqual(await encode({ call, network: 'enjin-matrixchain', spec_version: 1041 }), {
-        encoded: `0x360500${'11'.repeat(32)}0000000c6b657900`,
-        network: 'enjin-matrixchain',
-        spec_version: 1041,
-    })
+    for (const spec_version of [1041, 1042]) {
+        assert.deepEqual(await encode({ call, network: 'canary-matrixchain', spec_version }), {
+            encoded: `0x360500${'11'.repeat(32)}0000000c6b657900`,
+            network: 'canary-matrixchain',
+            spec_version,
+        })
+    }
     await assert.rejects(encode({ call, network: 'enjin-matrixchain', spec_version: 1031 }), /Invalid U32/)
 })
 
-void test('encode uses the enjin-matrixchain 1042 metadata ahead of the enjin upgrade', async () => {
-    const tankId = `0x${'11'.repeat(32)}`
-    const call = {
-        pallet: 'FuelTanks',
-        name: 'dispatch',
-        args: {
-            tankId: { __kind: 'Id', value: tankId },
-            ruleSetId: undefined,
-            call: { __kind: 'System', value: { __kind: 'remark', remark: '0x6b6579' } },
-            settings: undefined,
-        },
-    }
-    const expected = `0x360500${'11'.repeat(32)}0000000c6b657900`
-
-    assert.deepEqual(await encode({ call, network: 'enjin-matrixchain', spec_version: 1042 }), {
-        encoded: expected,
-        network: 'enjin-matrixchain',
-        spec_version: 1042,
-    })
-    // Enjin and canary matrix 1042 share every call shape; only chain constants and the Sudo pallet differ.
-    assert.equal((await encode({ call, network: 'canary-matrixchain', spec_version: 1042 })).encoded, expected)
-})
-
-void test('encode uses the matrixchain 1043 metadata on enjin and canary ahead of the upgrade', async () => {
+void test('encode uses the Matrixchain 1043 metadata on Enjin and Canary', async () => {
     const tankId = `0x${'11'.repeat(32)}`
     const call = {
         pallet: 'FuelTanks',

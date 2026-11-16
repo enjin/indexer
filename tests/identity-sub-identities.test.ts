@@ -141,7 +141,7 @@ void test('signedOrigin reads the dispatching account of a system Signed origin 
 })
 
 void test('SubIdentitiesSet makes the stored SubsOf list the complete set of subs, names from SuperOf', async () => {
-    const { block, store, ctx, set, event } = await fixture(1041)
+    const { block, store, ctx, set, event } = await fixture(1043)
     const ownIdentity = new Registration({ id: subB, display: 'Bee', legal: null })
     store.rows.push(
         sub(subA, 'gone'),
@@ -166,7 +166,7 @@ void test('SubIdentitiesSet makes the stored SubsOf list the complete set of sub
 })
 
 void test('set_subs is left to SubIdentitiesSet on runtimes that emit it', async () => {
-    const { block, store, ctx, call } = await fixture(1041)
+    const { block, store, ctx, call } = await fixture(1043)
 
     await setSubs(
         ctx,
@@ -199,7 +199,7 @@ void test('set_subs on older runtimes attaches the subs to the call origin, not 
 })
 
 void test('SubIdentityRenamed takes the name from SuperOf and creates a missing sub', async () => {
-    const { block, store, ctx, set, event } = await fixture(1041)
+    const { block, store, ctx, set, event } = await fixture(1043)
     store.rows.push(sub(subA, 'old'))
     set('Identity.SuperOf', [subA], [main, raw('new')])
     set('Identity.SuperOf', [subD], [main, raw('dee')])
@@ -234,7 +234,7 @@ void test('rename_sub on older runtimes skips an unindexed sub instead of crashi
 })
 
 void test('a plain sub moved to another main takes its registration, so clearing the old main cannot orphan it', async () => {
-    const { block, store, ctx, set, event } = await fixture(1041)
+    const { block, store, ctx, set, event } = await fixture(1043)
     const other = `0x${'cc'.repeat(32)}`
     const otherInfo = new Registration({ id: other })
     const ownInfo = new Registration({ id: subB })

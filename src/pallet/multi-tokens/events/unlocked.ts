@@ -8,8 +8,8 @@ export function unlocked(event: EventItem): Unlocked {
     return match(event)
         .returnType<Unlocked>()
         .when(
-            () => multiTokens.unlocked.matrixEnjinV1041.is(event),
-            () => multiTokens.unlocked.matrixEnjinV1041.decode(event)
+            () => multiTokens.unlocked.matrixEnjinV1043.is(event),
+            () => multiTokens.unlocked.matrixEnjinV1043.decode(event)
         )
         .otherwise(() => {
             throw new UnsupportedEventError(event)

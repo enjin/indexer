@@ -20,8 +20,8 @@ export function reserved(event: EventItem): Reserved {
             () => multiTokens.reserved.matrixEnjinV603.decode(event)
         )
         .when(
-            () => multiTokens.reserved.matrixEnjinV1041.is(event),
-            () => multiTokens.reserved.matrixEnjinV1041.decode(event)
+            () => multiTokens.reserved.matrixEnjinV1043.is(event),
+            () => multiTokens.reserved.matrixEnjinV1043.decode(event)
         )
         .when(
             () => multiTokens.reserved.matrixV1040.is(event),

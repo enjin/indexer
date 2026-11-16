@@ -17,20 +17,12 @@ export const forceCreateFuelTank = withDispatchCheck((call: CallItem): ForceCrea
             () => calls.fuelTanks.forceCreateFuelTank.matrixV1043.decode(call)
         )
         .when(
-            () => calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1042.is(call),
-            () => calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1042.decode(call)
-        )
-        .when(
             () => calls.fuelTanks.forceCreateFuelTank.matrixV1042.is(call),
             () => calls.fuelTanks.forceCreateFuelTank.matrixV1042.decode(call)
         )
         .when(
             () => calls.fuelTanks.forceCreateFuelTank.matrixV1041.is(call),
             () => calls.fuelTanks.forceCreateFuelTank.matrixV1041.decode(call)
-        )
-        .when(
-            () => calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1041.is(call),
-            () => calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1041.decode(call)
         )
         .when(
             () => calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1022.is(call),

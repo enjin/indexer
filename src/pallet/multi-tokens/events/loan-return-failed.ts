@@ -6,8 +6,8 @@ import { readableDispatchError } from '~/util/dispatch-error'
 import { UnsupportedEventError } from '~/util/errors'
 
 export function loanReturnFailed(event: EventItem): LoanReturnFailed {
-    if (multiTokens.loanReturnFailed.matrixEnjinV1041.is(event)) {
-        return multiTokens.loanReturnFailed.matrixEnjinV1041.decode(event)
+    if (multiTokens.loanReturnFailed.matrixEnjinV1043.is(event)) {
+        return multiTokens.loanReturnFailed.matrixEnjinV1043.decode(event)
     }
 
     throw new UnsupportedEventError(event)

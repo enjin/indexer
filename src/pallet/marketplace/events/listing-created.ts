@@ -39,8 +39,8 @@ export function listingCreated(event: EventItem): ListingCreated {
             () => marketplace.listingCreated.matrixEnjinV603.decode(event)
         )
         .when(
-            () => marketplace.listingCreated.matrixEnjinV1041.is(event),
-            () => marketplace.listingCreated.matrixEnjinV1041.decode(event)
+            () => marketplace.listingCreated.matrixEnjinV1043.is(event),
+            () => marketplace.listingCreated.matrixEnjinV1043.decode(event)
         )
         .when(
             () => marketplace.listingCreated.matrixV1040.is(event),

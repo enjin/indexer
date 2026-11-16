@@ -15,8 +15,8 @@ import { marketplace } from '~/type/events'
 import { UnsupportedEventError } from '~/util/errors'
 
 export function orderMatched(event: EventItem): OrderMatched {
-    if (!marketplace.orderMatched.matrixEnjinV1041.is(event)) throw new UnsupportedEventError(event)
-    return marketplace.orderMatched.matrixEnjinV1041.decode(event)
+    if (!marketplace.orderMatched.matrixEnjinV1043.is(event)) throw new UnsupportedEventError(event)
+    return marketplace.orderMatched.matrixEnjinV1043.decode(event)
 }
 
 export function assetId(asset: OrderMatched['assetId']): string {

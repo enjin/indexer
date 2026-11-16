@@ -57,8 +57,8 @@ export const forceCreateCollection = withDispatchCheck((call: CallItem): ForceCr
             () => calls.multiTokens.forceCreateCollection.matrixEnjinV1031.decode(call)
         )
         .when(
-            () => calls.multiTokens.forceCreateCollection.matrixEnjinV1041.is(call),
-            () => calls.multiTokens.forceCreateCollection.matrixEnjinV1041.decode(call)
+            () => calls.multiTokens.forceCreateCollection.matrixEnjinV1043.is(call),
+            () => calls.multiTokens.forceCreateCollection.matrixEnjinV1043.decode(call)
         )
         .when(
             () => calls.multiTokens.forceCreateCollection.matrixV1030.is(call),

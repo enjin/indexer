@@ -20,8 +20,8 @@ export function reserveRepatriated(event: EventItem): ReserveRepatriated {
             () => multiTokens.reserveRepatriated.matrixEnjinV1031.decode(event)
         )
         .when(
-            () => multiTokens.reserveRepatriated.matrixEnjinV1041.is(event),
-            () => multiTokens.reserveRepatriated.matrixEnjinV1041.decode(event)
+            () => multiTokens.reserveRepatriated.matrixEnjinV1043.is(event),
+            () => multiTokens.reserveRepatriated.matrixEnjinV1043.decode(event)
         )
         .when(
             () => multiTokens.reserveRepatriated.matrixV500.is(event),
