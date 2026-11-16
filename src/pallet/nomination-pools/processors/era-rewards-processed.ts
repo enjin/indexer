@@ -1,49 +1,271 @@
 import Big from 'big.js'
 import * as Sentry from '@sentry/node'
-import { BonusCycle, CommissionPayment, Era, EraReward, PoolMember, PoolMemberRewards } from '~/model'
+import { BonusCycle, CommissionPayment, Era, EraReward, NominationPool, PoolMember, PoolMemberRewards } from '~/model'
 import { updatePool } from '~/pallet/nomination-pools/processors/pool'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { SnsEvent } from '~/util/sns'
 import processorConfig from '~/util/config'
 import * as mappings from '~/pallet/index'
 import { TokenAccount } from '~/pallet/multi-tokens/storage/types'
+import { EraRewardsProcessed } from '~/pallet/nomination-pools/events/types'
 import { needEarlyBirdMerge } from '~/util/earlyBird'
 import { In } from 'typeorm'
 import { EventHandlerResult } from '~/processor.handler'
-import { memberEraReward } from '~/pallet/nomination-pools/processors/reward-math'
+import { memberEraReward, poolRateChange } from '~/pallet/nomination-pools/processors/reward-math'
 
+/** Pool shares are tokens of collection 1; the token id is the pool id. */
+const POOL_COLLECTION_ID = 1n
+/** Only the newest 30 era rewards are read: enough for the rate change and the 15-era APY average. */
+const ERA_HISTORY = 30
+
+type TokenAccountPair = [k: [bigint, bigint, string], v: TokenAccount | undefined]
+
+function isPoolShareAccount([[collectionId, tokenId, accountId]]: TokenAccountPair, poolId: bigint): boolean {
+    return !!accountId && tokenId == poolId && collectionId == POOL_COLLECTION_ID
+}
+
+/** Pool points per member account, read from the pool-share token accounts. */
 async function getMembersBalance(block: Block, poolId: number): Promise<Record<string, bigint>> {
-    type StorageEntry = [k: [bigint, bigint, string], v: TokenAccount | undefined]
-
-    const result = await mappings.multiTokens.storage.tokenAccounts(block, {
-        collectionId: 1n,
-        tokenId: BigInt(poolId),
-    })
+    const tokenId = BigInt(poolId)
+    // With a collection and token id this is `StorageType.getPairs`, which always resolves to an array.
+    const pairs = (await mappings.multiTokens.storage.tokenAccounts(block, {
+        collectionId: POOL_COLLECTION_ID,
+        tokenId,
+    })) as TokenAccountPair[]
 
     const accountMap: Record<string, bigint> = {}
-
-    // Check if a result exists and is an array or iterable
-    // Check if result is an async generator
-    if (Symbol.asyncIterator in result) {
-        for await (const batch of result as AsyncIterable<StorageEntry[]>) {
-            for (const storageEntry of batch) {
-                if (storageEntry[0][2] && storageEntry[0][1] == BigInt(poolId) && storageEntry[0][0] == 1n) {
-                    const [[, , accountId], tokenAccount] = storageEntry
-                    accountMap[accountId] = BigInt(tokenAccount?.balance || 0)
-                }
-            }
-        }
-    } else if (Symbol.iterator in result) {
-        // Check if a result exists and is a sync iterable
-        for (const storageEntry of result as StorageEntry[]) {
-            if (storageEntry[0][2] && storageEntry[0][1] == BigInt(poolId) && storageEntry[0][0] == 1n) {
-                const [[, , accountId], tokenAccount] = storageEntry
-                accountMap[accountId] = BigInt(tokenAccount?.balance || 0)
-            }
+    for (const pair of pairs) {
+        if (isPoolShareAccount(pair, tokenId)) {
+            const [[, , accountId], tokenAccount] = pair
+            accountMap[accountId] = BigInt(tokenAccount?.balance || 0)
         }
     }
 
     return accountMap
+}
+
+function commissionPayment(data: EraRewardsProcessed): CommissionPayment | null {
+    return data.commission
+        ? new CommissionPayment({ beneficiary: data.commission.beneficiary, amount: data.commission.amount })
+        : null
+}
+
+/**
+ * This event was removed in v1060 (enjinV1062), so it only fires for historical blocks — the period when the bonus
+ * mechanism was still live. Faithfully record what the chain reports (bonusCycle from storage, EraReward.bonus from
+ * the event) so a full resync reconstructs the real historical bonus data. See reward-math.ts.
+ */
+async function recordEndedBonusCycle(
+    ctx: CommonContext,
+    block: Block,
+    data: EraRewardsProcessed,
+    pool: NominationPool
+) {
+    if (!data.bonusCycleEnded) return
+
+    const poolInfo = await mappings.nominationPools.storage.bondedPools(block, data.poolId)
+    if (!poolInfo) throw new Error('Pool info not found')
+    if (poolInfo.bonusCycle === undefined) return
+
+    pool.bonusCycle = new BonusCycle({
+        start: poolInfo.bonusCycle.start,
+        end: poolInfo.bonusCycle.end,
+        previousStart: poolInfo.bonusCycle.previousStart,
+        pendingDuration: poolInfo.bonusCycle.pendingDuration,
+    })
+    await ctx.store.save(pool)
+}
+
+/** A replayed event refreshes the stored era reward from the event; member rewards are left as they are. */
+async function refreshEraReward(
+    ctx: CommonContext,
+    reward: EraReward,
+    data: EraRewardsProcessed,
+    pool: NominationPool
+) {
+    reward.bonus = data.bonus
+    reward.commission = commissionPayment(data)
+    reward.reinvested = data.reinvested
+    reward.rate = pool.rate
+
+    await ctx.store.save(reward)
+    if (data.commission) {
+        await ctx.store.save(pool)
+    }
+}
+
+async function createEra(ctx: CommonContext, block: Block, index: number) {
+    await ctx.store.save(
+        new Era({
+            id: index.toString(),
+            index,
+            startAt: new Date(block.timestamp ?? 0),
+            startBlock: block.height,
+            nodeCount: 0,
+        })
+    )
+}
+
+/** Newest first. Read BEFORE inserting the new reward, so it never contains the era being processed. */
+function previousEraRewards(ctx: CommonContext, pool: NominationPool): Promise<EraReward[]> {
+    return ctx.store.find(EraReward, {
+        where: { pool: { id: pool.id } },
+        relations: { era: true },
+        order: { era: { index: 'desc' } },
+        take: ERA_HISTORY,
+    })
+}
+
+function newEraReward(data: EraRewardsProcessed, pool: NominationPool, history: EraReward[]): EraReward {
+    const id = `${data.poolId}-${data.era}`
+    return new EraReward({
+        id,
+        era: new Era({ id: data.era.toString() }),
+        bonus: data.bonus, // historical path only (event removed in v1060) — real chain value
+        rate: pool.rate,
+        commission: commissionPayment(data),
+        pool,
+        apy: 0,
+        averageApy: 0,
+        active: pool.balance.active,
+        // Current rate minus the previous era's rate; the first era is measured against the 1e18 starting rate.
+        changeInRate: poolRateChange(pool.rate, id, history),
+        reinvested: data.reinvested,
+    })
+}
+
+/** `(ratio ^ erasPerYear - 1) * 100`: a per-era growth ratio compounded over a year, as a percentage. */
+function annualise(ratio: Big): Big {
+    return ratio.pow(processorConfig.erasPerYear).sub(1).mul(100)
+}
+
+/**
+ * Sets the reward's own APY and returns the pool APY. The first era is priced from the rate itself; later eras
+ * from the active balance growth since the previous era, averaged with the history by `computeEraApy`.
+ */
+function eraApy(reward: EraReward, history: EraReward[], poolApy: number): Big {
+    if (history.length === 0) {
+        const apy = annualise(Big(reward.rate.toString()).div(Big(10).pow(18)))
+        reward.apy = apy.toNumber()
+        return apy
+    }
+
+    const previousBalance = Big(history[0].active.toString())
+    const newBalance = Big(reward.reinvested.toString()).plus(previousBalance)
+    reward.apy = annualise(newBalance.div(previousBalance)).toNumber()
+
+    return computeEraApy([reward, ...history], poolApy)
+}
+
+function isSuspiciousApy(apy: Big, previousApy: number): boolean {
+    const value = apy.toNumber()
+    if (value < 0 || value > 200) return true
+
+    return previousApy > 1 && apy.minus(previousApy).times(2).div(apy.plus(previousApy)).times(100).abs().gt(50)
+}
+
+function applyApy(pool: NominationPool, reward: EraReward, apy: Big) {
+    if (isSuspiciousApy(apy, pool.apy)) {
+        Sentry.captureMessage(`Pool ${pool.id} has apy: ${apy.toNumber()}%, previous: ${pool.apy}%`, 'warning')
+    }
+
+    pool.apy = Math.max(apy.toNumber(), 0)
+    reward.averageApy = apy.toNumber()
+}
+
+function accumulateCommission(pool: NominationPool, data: EraRewardsProcessed) {
+    if (data.commission) {
+        pool.accumulatedCommission = (pool.accumulatedCommission ?? 0n) + data.commission.amount
+    }
+}
+
+function findMembers(ctx: CommonContext, pool: NominationPool, memberBalances: Record<string, bigint>) {
+    const memberIds = Object.keys(memberBalances).map((accountId) => `${pool.id}-${accountId}`)
+    return ctx.store.find(PoolMember, {
+        relations: {
+            account: true,
+        },
+        where: {
+            id: In(memberIds), // NOTE: This is a workaround to include all accounts with balances, as some accounts may not be returned by isActive.
+        },
+    })
+}
+
+type MemberRewards = { inserts: PoolMemberRewards[]; updates: PoolMemberRewards[] }
+
+/**
+ * Credits each member with its share of what compounded into the pool rate (points * changeInRate / 1e18), which
+ * matches the member's real value growth and Subscan; see reward-math.ts. When an early-bird mint already created
+ * the member's row for this era, the era reward is added to it instead of inserting a new row.
+ */
+async function rewardMembers(
+    ctx: CommonContext,
+    era: number,
+    pool: NominationPool,
+    reward: EraReward,
+    members: PoolMember[],
+    memberBalances: Record<string, bigint>
+): Promise<MemberRewards> {
+    const earlyBirdMergeNeeded = await needEarlyBirdMerge(ctx, era)
+    // Inserts are faster than saves, so new rows are inserted and only merged rows are saved.
+    const result: MemberRewards = { inserts: [], updates: [] }
+
+    for (const member of members) {
+        const points = memberBalances[member.account.id] ?? 0n
+        const rewards = memberEraReward(points, reward.changeInRate)
+        const accumulatedRewards = (member.accumulatedRewards || 0n) + rewards
+        member.accumulatedRewards = accumulatedRewards
+
+        const id = `${member.id}-${era}`
+        const minted = earlyBirdMergeNeeded ? await ctx.store.findOneBy(PoolMemberRewards, { id }) : undefined
+        if (minted) {
+            minted.reward = reward
+            minted.points = points
+            minted.rewards += rewards // the mint stored the early-bird amount; add the era reward to it
+            minted.accumulatedRewards = accumulatedRewards
+            result.updates.push(minted)
+        } else {
+            result.inserts.push(
+                new PoolMemberRewards({ id, pool, member, reward, points, rewards, accumulatedRewards })
+            )
+        }
+    }
+
+    return result
+}
+
+async function saveEraRewards(
+    ctx: CommonContext,
+    reward: EraReward,
+    pool: NominationPool,
+    members: PoolMember[],
+    { inserts, updates }: MemberRewards
+) {
+    // The era reward must exist before the member rewards that reference it.
+    await ctx.store.insert(reward)
+
+    await Promise.all([
+        ctx.store.save(pool),
+        ctx.store.save(members),
+        inserts.length && ctx.store.insert(inserts),
+        updates.length && ctx.store.save(updates),
+    ])
+}
+
+function eraRewardsSnsEvent(item: EventItem, extrinsicId: string, data: EraRewardsProcessed, pool: NominationPool) {
+    const snsEvent: SnsEvent = {
+        id: item.id,
+        name: item.name,
+        body: {
+            pool: data.poolId.toString(),
+            era: data.era,
+            rate: pool.rate,
+            extrinsic: extrinsicId,
+            name: pool.name,
+            tokenId: `2-${pool.tokenId}`,
+        },
+    }
+    return snsEvent
 }
 
 export async function eraRewardsProcessed(
@@ -62,208 +284,29 @@ export async function eraRewardsProcessed(
     ])
     const pool = await updatePool(ctx, block, data.poolId.toString())
 
-    // This event was removed in v1060 (enjinV1062), so it only fires for historical blocks —
-    // the period when the bonus mechanism was still live. Faithfully record what the chain
-    // reports (bonusCycle from storage, EraReward.bonus from the event) so a full resync
-    // reconstructs the real historical bonus data. See reward-math.ts.
-    if ('bonusCycleEnded' in data && data.bonusCycleEnded) {
-        const poolInfo = await mappings.nominationPools.storage.bondedPools(block, data.poolId)
-        if (!poolInfo) throw new Error('Pool info not found')
-        if (poolInfo.bonusCycle !== undefined) {
-            pool.bonusCycle = new BonusCycle({
-                start: poolInfo.bonusCycle.start,
-                end: poolInfo.bonusCycle.end,
-                previousStart: poolInfo.bonusCycle.previousStart,
-                pendingDuration: poolInfo.bonusCycle.pendingDuration,
-            })
-            await ctx.store.save(pool)
-        }
-    }
+    await recordEndedBonusCycle(ctx, block, data, pool)
 
     if (existReward) {
-        existReward.bonus = data.bonus
-        existReward.commission = data.commission
-            ? new CommissionPayment({
-                  beneficiary: data.commission.beneficiary,
-                  amount: data.commission.amount,
-              })
-            : null
-        existReward.reinvested = data.reinvested
-        existReward.rate = pool.rate
-
-        await ctx.store.save(existReward)
-        if (data.commission) {
-            await ctx.store.save(pool)
-        }
+        await refreshEraReward(ctx, existReward, data, pool)
         return undefined
     }
 
-    if (!era) {
-        await ctx.store.save(
-            new Era({
-                id: data.era.toString(),
-                index: data.era,
-                startAt: new Date(block.timestamp ?? 0),
-                startBlock: block.height,
-                nodeCount: 0,
-            })
-        )
-    }
+    if (!era) await createEra(ctx, block, data.era)
 
-    if (pool.isDestroying()) {
-        return undefined
-    }
+    if (pool.isDestroying()) return undefined
 
-    // Query for previous era rewards BEFORE inserting the new one to avoid race condition
-    const eraRewards = await ctx.store.find(EraReward, {
-        where: { pool: { id: pool.id } },
-        relations: {
-            era: true,
-        },
-        order: { era: { index: 'desc' } },
-        take: 30,
-    })
+    const history = await previousEraRewards(ctx, pool)
+    const reward = newEraReward(data, pool, history)
+    applyApy(pool, reward, eraApy(reward, history, pool.apy))
+    accumulateCommission(pool, data)
 
-    // Calculate changeInRate consistently: current rate - previous rate
-    // For first era, use 1 as baseline (no previous rate to compare against)
-    const changeInRate =
-        eraRewards.length > 0
-            ? Big(pool.rate.toString()).minus(Big(eraRewards[0].rate.toString()))
-            : Big(pool.rate.toString()).minus(10 ** 18)
-
-    const reward = new EraReward({
-        id: `${data.poolId}-${data.era}`,
-        era: new Era({ id: data.era.toString() }),
-        bonus: data.bonus, // historical path only (event removed in v1060) — real chain value
-        rate: pool.rate,
-        commission: data.commission
-            ? new CommissionPayment({
-                  beneficiary: data.commission.beneficiary,
-                  amount: data.commission.amount,
-              })
-            : null,
-        pool,
-        apy: 0,
-        averageApy: 0,
-        active: pool.balance.active,
-        changeInRate: BigInt(changeInRate.toString()),
-        reinvested: data.reinvested,
-    })
-
-    let apy: Big.Big
-
-    if (eraRewards.length === 0) {
-        // First era for this pool
-        const rate = Big(pool.rate.toString())
-        const decimals = Big(10).pow(18)
-        apy = rate.div(decimals).pow(processorConfig.erasPerYear).sub(1).mul(100)
-        reward.apy = apy.toNumber()
-    } else {
-        // Calculate APY based on balance change from previous era
-        const previousBalance = Big(eraRewards[0].active.toString())
-        const newBalance = Big(reward.reinvested.toString()).plus(previousBalance)
-
-        const currentApy = newBalance.div(previousBalance).pow(processorConfig.erasPerYear).sub(1).mul(100)
-        reward.apy = currentApy.toNumber()
-
-        eraRewards.unshift(reward)
-        apy = computeEraApy(eraRewards, pool.apy)
-    }
-
-    if (
-        apy.toNumber() < 0 ||
-        apy.toNumber() > 200 ||
-        (pool.apy > 1 && Big(apy).minus(pool.apy).times(2).div(Big(apy).plus(pool.apy)).times(100).abs().gt(50))
-        // && block.height > processorConfig.lastBlockHeight
-    ) {
-        Sentry.captureMessage(`Pool ${pool.id} has apy: ${apy.toNumber()}%, previous: ${pool.apy}%`, 'warning')
-    }
-
-    pool.apy = Math.max(apy.toNumber(), 0)
-    reward.averageApy = apy.toNumber()
-
-    if (data.commission) {
-        pool.accumulatedCommission = (pool.accumulatedCommission ?? 0n) + data.commission.amount
-    }
-
-    const memberIds = Object.keys(memberBalances).map((accountId) => `${pool.id}-${accountId}`)
-    const members = await ctx.store.find(PoolMember, {
-        relations: {
-            account: true,
-        },
-        where: {
-            id: In(memberIds), // NOTE: This is a workaround to include all accounts with balances, as some accounts may not be returned by isActive.
-        },
-    })
-
-    // Check if we need to merge with early bird rewards
-    const earlyBirdMergeNeeded = await needEarlyBirdMerge(ctx, data.era)
-
-    // Use inserts and updates as inserts is faster than saves
-    const inserts: PoolMemberRewards[] = []
-    const updates: PoolMemberRewards[] = []
-
-    for (const member of members) {
-        const points = memberBalances[member.account.id] ?? 0n
-        // Share of what actually compounded into the pool rate (points * changeInRate / 1e18);
-        // matches the member's real value growth and Subscan. See reward-math.ts.
-        const eraRewards = memberEraReward(points, reward.changeInRate)
-        const newAccumulated = (member.accumulatedRewards || 0n) + eraRewards
-
-        member.accumulatedRewards = newAccumulated
-
-        const pmrId = `${member.id}-${data.era}`
-        const pmrData = {
-            id: pmrId,
-            pool,
-            member,
-            reward,
-            points,
-            rewards: eraRewards,
-            accumulatedRewards: newAccumulated,
-        }
-
-        if (earlyBirdMergeNeeded) {
-            const existing = await ctx.store.findOneBy(PoolMemberRewards, { id: pmrId })
-            if (existing) {
-                // update existing record as it was created with empty values
-                existing.reward = reward
-                existing.points = points
-                existing.rewards += eraRewards // it was set in the minted so we increment with the era rewards now
-                existing.accumulatedRewards = newAccumulated
-                updates.push(existing)
-                continue
-            }
-        }
-        inserts.push(new PoolMemberRewards(pmrData))
-    }
-
-    // Save the reward first is necessary for pmr
-    await ctx.store.insert(reward)
-
-    await Promise.all([
-        ctx.store.save(pool),
-        ctx.store.save(members),
-        inserts.length && ctx.store.insert(inserts),
-        updates.length && ctx.store.save(updates),
-    ])
-
-    const snsEvent: SnsEvent = {
-        id: item.id,
-        name: item.name,
-        body: {
-            pool: data.poolId.toString(),
-            era: data.era,
-            rate: pool.rate,
-            extrinsic: item.extrinsic.id,
-            name: pool.name,
-            tokenId: `2-${pool.tokenId}`,
-        },
-    }
+    const members = await findMembers(ctx, pool, memberBalances)
+    const memberRewards = await rewardMembers(ctx, data.era, pool, reward, members, memberBalances)
+    await saveEraRewards(ctx, reward, pool, members, memberRewards)
 
     return [
         mappings.nominationPools.events.eraRewardsProcessedEventModel(item, data, pool.rate, pool.tokenId),
-        snsEvent,
+        eraRewardsSnsEvent(item, item.extrinsic.id, data, pool),
     ]
 }
 
