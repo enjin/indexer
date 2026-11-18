@@ -3,6 +3,7 @@ import { createRequire, Module } from 'node:module'
 import test, { after } from 'node:test'
 import type { Block, CallItem, CommonContext, EventItem } from '~/contexts'
 import { getRuntimeCached } from '~/decoder/metadata'
+import type { Network } from '~/decoder/types'
 import { Identity, Registration } from '~/model'
 
 // The processors pull in the pallet mappings, which open the job queue; stub it so the run exits.
@@ -20,6 +21,9 @@ const { setSubs, signedOrigin, subIdentitiesSet } = testRequire(
 const { identityCleared } = testRequire(
     '~/pallet/identity/processors/identity-cleared'
 ) as typeof import('~/pallet/identity/processors/identity-cleared')
+const { identitySet } = testRequire(
+    '~/pallet/identity/processors/identity-set'
+) as typeof import('~/pallet/identity/processors/identity-set')
 const { renameSub, subIdentityRenamed } = testRequire(
     '~/pallet/identity/processors/rename-sub'
 ) as typeof import('~/pallet/identity/processors/rename-sub')
@@ -92,8 +96,8 @@ const subD = `0x${'04'.repeat(32)}`
 const raw = (text: string) => ({ __kind: `Raw${text.length}`, value: `0x${Buffer.from(text).toString('hex')}` })
 const json = (value: unknown) => JSON.stringify(value)
 
-async function fixture(specVersion: number) {
-    const real = await getRuntimeCached('enjin-matrixchain', specVersion)
+async function fixture(specVersion: number, network: Network = 'enjin-matrixchain') {
+    const real = await getRuntimeCached(network, specVersion)
     const chain = new Map<string, unknown>()
     const runtime = Object.create(real) as typeof real & Record<string, unknown>
     runtime.getStorage = (_hash: string, name: string, ...key: unknown[]) =>
@@ -101,7 +105,14 @@ async function fixture(specVersion: number) {
     runtime.queryStorage = (_hash: string, name: string, keys: unknown[]) =>
         Promise.resolve(keys.map((key) => chain.get(`${name}|${json(Array.isArray(key) ? key : [key])}`)))
 
-    const block = { _runtime: runtime, height: 10, hash: '0x10', timestamp: 0 } as unknown as Block
+    const block = {
+        _runtime: runtime,
+        height: 10,
+        hash: '0x10',
+        timestamp: 0,
+        specVersion,
+        specName: network,
+    } as unknown as Block
     const set = (name: string, key: unknown[], value: unknown) => chain.set(`${name}|${json(key)}`, value)
 
     const store = new MemoryStore()
@@ -138,6 +149,77 @@ void test('signedOrigin reads the dispatching account of a system Signed origin 
     assert.equal(signedOrigin({ __kind: 'system', value: { __kind: 'Root' } }), null)
     assert.equal(signedOrigin({ __kind: 'FuelTanks', value: { __kind: 'Signed', value: main } }), null)
     assert.equal(signedOrigin(undefined), null)
+})
+
+const noData = { __kind: 'None' }
+const identityInfo = {
+    display: raw('Enjin'),
+    legal: noData,
+    web: noData,
+    email: noData,
+    image: noData,
+    twitter: noData,
+}
+
+void test('IdentitySet preserves the legacy registration fields', async () => {
+    const { block, store, ctx, event, call } = await fixture(1080, 'canary-relaychain')
+    const info = {
+        ...identityInfo,
+        riot: raw('@legacy:matrix.org'),
+        additional: [[raw('label'), raw('value')]],
+    }
+
+    await identitySet(ctx, block, {
+        ...event('Identity.IdentitySet', { who: main }),
+        call: call('Identity.set_identity', { info }, undefined),
+    })
+
+    assert.equal(store.identity(main)?.name, 'Enjin')
+    assert.equal(store.identity(main)?.info.riot, '@legacy:matrix.org')
+    assert.deepEqual(store.identity(main)?.info.additional, [{ key: 'label', value: 'value' }])
+})
+
+void test('Canary Relaychain 1082 IdentitySet persists Matrix, GitHub, and Discord', async () => {
+    const { block, store, ctx, event, call } = await fixture(1082, 'canary-relaychain')
+    const info = {
+        ...identityInfo,
+        matrix: raw('@canary:matrix.org'),
+        github: raw('enjin'),
+        discord: raw('canary'),
+    }
+
+    await identitySet(ctx, block, {
+        ...event('Identity.IdentitySet', { who: main }),
+        call: call('Identity.set_identity', { info }, undefined),
+    })
+
+    assert.equal(store.identity(main)?.name, 'Enjin')
+    assert.equal(store.identity(main)?.info.riot, '@canary:matrix.org')
+    assert.deepEqual(store.identity(main)?.info.additional, [
+        { key: 'github', value: 'enjin' },
+        { key: 'discord', value: 'canary' },
+    ])
+})
+
+void test('Canary Relaychain 1082 IdentitySet handles a FuelTanks inner call', async () => {
+    const { block, store, ctx, event, call } = await fixture(1082, 'canary-relaychain')
+    const info = { ...identityInfo, matrix: noData, github: noData, discord: raw('canary') }
+
+    await identitySet(ctx, block, {
+        ...event('Identity.IdentitySet', { who: main }),
+        call: call(
+            'FuelTanks.dispatch',
+            {
+                tankId: { __kind: 'Id', value: signer },
+                ruleSetId: 0,
+                call: { __kind: 'Identity', value: { __kind: 'set_identity', info } },
+            },
+            undefined
+        ),
+    })
+
+    assert.equal(store.identity(main)?.info.riot, null)
+    assert.deepEqual(store.identity(main)?.info.additional, [{ key: 'discord', value: 'canary' }])
 })
 
 void test('SubIdentitiesSet makes the stored SubsOf list the complete set of subs, names from SuperOf', async () => {

@@ -12,6 +12,7 @@ import * as enjinV1026 from '../enjinV1026'
 import * as v1026 from '../v1026'
 import * as enjinV1033 from '../enjinV1033'
 import * as v1033 from '../v1033'
+import * as v1082 from '../v1082'
 
 export const offerCreated = {
     name: 'StakeExchange.OfferCreated',
@@ -469,6 +470,22 @@ export const offerCompleted = {
              * ID of the offer
              */
             offerId: sts.bigint(),
+        })
+    ),
+}
+
+export const liquidityConfigRemoved = {
+    name: 'StakeExchange.LiquidityConfigRemoved',
+    /**
+     * A liquidity config was removed and its deposit released
+     */
+    v1082: new EventType(
+        'StakeExchange.LiquidityConfigRemoved',
+        sts.struct({
+            /**
+             * ID of the account
+             */
+            who: v1082.AccountId32,
         })
     ),
 }

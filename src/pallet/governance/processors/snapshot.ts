@@ -89,14 +89,16 @@ async function snapshotConvictionVoting(ctx: GovernanceContext, block: Block) {
                 if (!Array.isArray(value.votes)) throw new Error('Invalid ConvictionVoting casting votes')
                 for (const entry of value.votes) {
                     if (!Array.isArray(entry)) throw new Error('Invalid ConvictionVoting casting vote')
-                    const referendumIndex = index(entry[0])
+                    const [pollIndex, storedVote] = entry
+                    const referendumIndex = index(pollIndex)
                     const referendumId = `Referenda:${referendumIndex}`
+                    const castVote = storedRecord(storedVote)
                     const row = new GovernanceVote({
                         id: `${referendumId}:${voter}:${voteCurrency}`,
                         referendumId,
                         accountId: voter,
                         currency: voteCurrency,
-                        vote: jsonValue(entry[1]),
+                        vote: jsonValue('counted' in castVote ? castVote.vote : storedVote),
                         active: true,
                         updatedAtBlock: block.height,
                     })

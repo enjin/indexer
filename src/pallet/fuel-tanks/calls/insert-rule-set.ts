@@ -45,6 +45,10 @@ export const insertRuleSet = withDispatchCheck((call: CallItem): InsertRuleSet =
             () => calls.fuelTanks.forceInsertRuleSet.enjinV1080.decode(call)
         )
         .when(
+            () => calls.fuelTanks.forceInsertRuleSet.v1082.is(call),
+            () => calls.fuelTanks.forceInsertRuleSet.v1082.decode(call)
+        )
+        .when(
             () => calls.fuelTanks.forceInsertRuleSet.v1080.is(call),
             () => calls.fuelTanks.forceInsertRuleSet.v1080.decode(call)
         )
@@ -75,6 +79,10 @@ export const insertRuleSet = withDispatchCheck((call: CallItem): InsertRuleSet =
         .when(
             () => calls.fuelTanks.forceInsertRuleSet.v1060.is(call),
             () => calls.fuelTanks.forceInsertRuleSet.v1060.decode(call)
+        )
+        .when(
+            () => calls.fuelTanks.insertRuleSet.v1082.is(call),
+            () => calls.fuelTanks.insertRuleSet.v1082.decode(call)
         )
         .when(
             () => calls.fuelTanks.insertRuleSet.v1080.is(call),

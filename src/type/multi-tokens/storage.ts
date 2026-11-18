@@ -32,6 +32,7 @@ import * as enjinV1070 from '../enjinV1070'
 import * as v1070 from '../v1070'
 import * as enjinV1080 from '../enjinV1080'
 import * as v1080 from '../v1080'
+import * as v1082 from '../v1082'
 
 export const tokenAccounts = {
     /**
@@ -2775,6 +2776,16 @@ export const tokens = {
      *  the [`Tokens`] migrating wrapper instead so pre-v6 values decode correctly.
      */
     v1080: new StorageType('MultiTokens.Tokens', 'Optional', [sts.bigint(), sts.bigint()], v1080.Token) as TokensV1080,
+    /**
+     *  Tokens storage. Do not access directly while the v7 lazy migration is live — go through
+     *  the [`Tokens`] migrating wrapper instead so pre-v7 values decode correctly.
+     *
+     *  FRAME's try-runtime decode check is disabled because it would reject every value the lazy
+     *  migration has not rewritten yet. `do_try_state` checks each value whole instead, in the
+     *  current encoding or an older one. [`MigrateV6ToV7`](migrations::MigrateV6ToV7) runs it after
+     *  the upgrade, because try-runtime runs `try_state` only for `--checks all` or `try-state`.
+     */
+    v1082: new StorageType('MultiTokens.Tokens', 'Optional', [sts.bigint(), sts.bigint()], v1082.Token) as TokensV1082,
 }
 
 /**
@@ -3595,6 +3606,42 @@ export interface TokensV1080 {
         key1: bigint,
         key2: bigint
     ): AsyncIterable<[k: [bigint, bigint], v: v1080.Token | undefined][]>
+}
+
+/**
+ *  Tokens storage. Do not access directly while the v7 lazy migration is live — go through
+ *  the [`Tokens`] migrating wrapper instead so pre-v7 values decode correctly.
+ *
+ *  FRAME's try-runtime decode check is disabled because it would reject every value the lazy
+ *  migration has not rewritten yet. `do_try_state` checks each value whole instead, in the
+ *  current encoding or an older one. [`MigrateV6ToV7`](migrations::MigrateV6ToV7) runs it after
+ *  the upgrade, because try-runtime runs `try_state` only for `--checks all` or `try-state`.
+ */
+export interface TokensV1082 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key1: bigint, key2: bigint): Promise<v1082.Token | undefined>
+    getMany(block: Block, keys: [bigint, bigint][]): Promise<(v1082.Token | undefined)[]>
+    getKeys(block: Block): Promise<[bigint, bigint][]>
+    getKeys(block: Block, key1: bigint): Promise<[bigint, bigint][]>
+    getKeys(block: Block, key1: bigint, key2: bigint): Promise<[bigint, bigint][]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[bigint, bigint][]>
+    getKeysPaged(pageSize: number, block: Block, key1: bigint): AsyncIterable<[bigint, bigint][]>
+    getKeysPaged(pageSize: number, block: Block, key1: bigint, key2: bigint): AsyncIterable<[bigint, bigint][]>
+    getPairs(block: Block): Promise<[k: [bigint, bigint], v: v1082.Token | undefined][]>
+    getPairs(block: Block, key1: bigint): Promise<[k: [bigint, bigint], v: v1082.Token | undefined][]>
+    getPairs(block: Block, key1: bigint, key2: bigint): Promise<[k: [bigint, bigint], v: v1082.Token | undefined][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: [bigint, bigint], v: v1082.Token | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint
+    ): AsyncIterable<[k: [bigint, bigint], v: v1082.Token | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: bigint,
+        key2: bigint
+    ): AsyncIterable<[k: [bigint, bigint], v: v1082.Token | undefined][]>
 }
 
 export const nextCollectionId = {

@@ -26,7 +26,7 @@ export const DEFAULT_NETWORK: Network = 'enjin-matrixchain'
 export const LATEST_SPEC_VERSIONS: Record<Network, number> = {
     'enjin-relaychain': 1080,
     'enjin-matrixchain': 1043,
-    'canary-relaychain': 1080,
+    'canary-relaychain': 1082,
     'canary-matrixchain': 1043,
 }
 

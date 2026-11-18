@@ -27,3 +27,10 @@ export const buyDustThreshold = {
      */
     enjinV1062: new ConstantType('StakeExchange.BuyDustThreshold', sts.bigint()),
 }
+
+export const liquidityConfigDeposit = {
+    /**
+     *  The deposit held from a liquidity provider while its liquidity config is stored
+     */
+    v1082: new ConstantType('StakeExchange.LiquidityConfigDeposit', sts.bigint()),
+}
