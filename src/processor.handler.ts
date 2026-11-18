@@ -346,6 +346,7 @@ export async function eventHandler(
             .with(staking.eraPaid.name, () => p.staking.processors.eraPaid(ctx, block, item))
             .with(staking.validatorPrefsSet.name, () => p.staking.processors.validatorPrefsSet(ctx, block, item))
             .with(staking.chilled.name, () => p.staking.processors.chilled(ctx, block, item))
+            .with(staking.kicked.name, () => p.staking.processors.kicked(ctx, block, item))
             .with(xcmPallet.attempted.name, () => p.xcmPallet.processors.attempted(ctx, block, item))
             .with(imOnline.someOffline.name, () => p.imOnline.processors.someOffline(ctx, block, item))
             .with(utility.batchCompletedWithErrors.name, () => p.utility.processors.batchCompletedWithErrors(item))

@@ -3,6 +3,7 @@ import { Era, Identity, JudgementType, Registration, ScoreGrade, Validator } fro
 import { connectionManager } from '~/contexts'
 import { Job } from 'bullmq'
 import Rpc from '~/util/rpc'
+import { syncPoolValidators, toChainNominations } from '~/worker/jobs/validators/sync-pool-validators'
 
 function getJudgement(identity: Identity | null | undefined): JudgementType {
     if (identity === undefined || identity === null) return JudgementType.Unknown
@@ -15,6 +16,21 @@ export async function computeValidators(job: Job) {
     const { api } = await Rpc.getInstance()
 
     await job.updateProgress(5)
+
+    const rpcNominators = await api.query.staking.nominators.entries()
+    const nominatorsCount = new Map<string, number>()
+
+    // Before loading validators: the sync may delete Validator rows created for pool bonded accounts.
+    try {
+        const result = await syncPoolValidators(
+            em,
+            api.consts.nominationPools.palletId.toHex(),
+            toChainNominations(rpcNominators)
+        )
+        await job.log(`Pool validators synced: ${JSON.stringify(result)}`)
+    } catch (error) {
+        await job.log(`Error syncing pool validators: ${error}`)
+    }
 
     const validators = await em
         .getRepository(Validator)
@@ -41,11 +57,6 @@ export async function computeValidators(job: Job) {
     const era = await em.getRepository(Era).createQueryBuilder('era').addOrderBy('index', 'DESC').getOneOrFail()
     era.nodeCount = nodeCount
     await em.save<Era>(era)
-
-    await job.updateProgress(40)
-
-    const rpcNominators = await api.query.staking.nominators.entries()
-    const nominatorsCount = new Map<string, number>()
 
     await job.updateProgress(50)
 
