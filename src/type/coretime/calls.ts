@@ -1,5 +1,6 @@
 import { sts, Block, Bytes, Option, Result, CallType, RuntimeCtx } from '../support'
 import * as enjinV1062 from '../enjinV1062'
+import * as v1082 from '../v1082'
 
 export const requestCoreCount = {
     name: 'Coretime.request_core_count',
@@ -66,6 +67,23 @@ export const assignCore = {
             begin: sts.number(),
             assignment: sts.array(() => sts.tuple(() => [enjinV1062.CoreAssignment, enjinV1062.PartsOf57600])),
             endHint: sts.option(() => sts.number()),
+        })
+    ),
+}
+
+export const queueOnDemandBatch = {
+    name: 'Coretime.queue_on_demand_batch',
+    /**
+     * Receive on-demand coretime orders from the `ExternalBrokerOrigin`.
+     *
+     * Parameters:
+     * -`origin`: The `ExternalBrokerOrigin`, assumed to be the coretime chain.
+     * -`batch`: The batch of on-demand orders.
+     */
+    v1082: new CallType(
+        'Coretime.queue_on_demand_batch',
+        sts.struct({
+            batch: sts.array(() => sts.tuple(() => [v1082.Id, sts.number()])),
         })
     ),
 }

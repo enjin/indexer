@@ -337,6 +337,9 @@ export async function eventHandler(
             .with(stakeExchange.liquidityConfigUpdated.name, () =>
                 p.stakeExchange.processors.liquidityConfigUpdated(ctx, block, item)
             )
+            .with(stakeExchange.liquidityConfigRemoved.name, () =>
+                p.stakeExchange.processors.liquidityConfigRemoved(ctx, item)
+            )
             .with(stakeExchange.liquidityWithdrawn.name, () =>
                 p.stakeExchange.processors.liquidityWithdrawn(ctx, block, item)
             )

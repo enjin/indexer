@@ -63,6 +63,7 @@ import * as enjinV1070 from '../enjinV1070'
 import * as v1070 from '../v1070'
 import * as enjinV1080 from '../enjinV1080'
 import * as v1080 from '../v1080'
+import * as v1082 from '../v1082'
 
 export const account = {
     /**
@@ -1379,6 +1380,21 @@ export const events = {
         [],
         sts.array(() => v1080.EventRecord)
     ) as EventsV1080,
+    /**
+     *  Events deposited for the current block.
+     *
+     *  NOTE: The item is unbound and should therefore never be read on chain.
+     *  It could otherwise inflate the PoV size of a block.
+     *
+     *  Events have a large in-memory size. Box the events to not go out-of-memory
+     *  just in case someone still reads them from within the runtime.
+     */
+    v1082: new StorageType(
+        'System.Events',
+        'Default',
+        [],
+        sts.array(() => v1082.EventRecord)
+    ) as EventsV1082,
 }
 
 /**
@@ -2339,6 +2355,21 @@ export interface EventsV1080 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): v1080.EventRecord[]
     get(block: Block): Promise<v1080.EventRecord[] | undefined>
+}
+
+/**
+ *  Events deposited for the current block.
+ *
+ *  NOTE: The item is unbound and should therefore never be read on chain.
+ *  It could otherwise inflate the PoV size of a block.
+ *
+ *  Events have a large in-memory size. Box the events to not go out-of-memory
+ *  just in case someone still reads them from within the runtime.
+ */
+export interface EventsV1082 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): v1082.EventRecord[]
+    get(block: Block): Promise<v1082.EventRecord[] | undefined>
 }
 
 export const eventCount = {

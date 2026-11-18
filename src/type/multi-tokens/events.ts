@@ -33,6 +33,7 @@ import * as enjinV1070 from '../enjinV1070'
 import * as v1070 from '../v1070'
 import * as enjinV1080 from '../enjinV1080'
 import * as v1080 from '../v1080'
+import * as v1082 from '../v1082'
 
 export const collectionCreated = {
     name: 'MultiTokens.CollectionCreated',
@@ -3907,6 +3908,26 @@ export const tokenUpdated = {
              * new value of Token storage
              */
             value: sts.option(() => v1080.Token),
+        })
+    ),
+    /**
+     * Token storage was set to `value`
+     */
+    v1082: new EventType(
+        'MultiTokens.TokenUpdated',
+        sts.struct({
+            /**
+             * The collection id for which the value is set
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token id for which the value is set
+             */
+            tokenId: sts.bigint(),
+            /**
+             * new value of Token storage
+             */
+            value: sts.option(() => v1082.Token),
         })
     ),
 }

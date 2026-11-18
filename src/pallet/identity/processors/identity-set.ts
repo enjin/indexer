@@ -19,32 +19,30 @@ export async function identitySet(ctx: CommonContext, block: Block, item: EventI
     if (!item.call) throw new CallNotDefinedError()
 
     const event = mappings.identity.events.identitySet(item)
-    const call = mappings.identity.calls.setIdentity(item.call)
+    const { info } = mappings.identity.calls.setIdentity(item.call)
 
     const account = await getOrCreateAccount(ctx, event.who)
 
-    let additional: { key: string | null; value: string | null }[] = []
-    if (call.info.additional.length) {
-        additional = call.info.additional.map((i) => {
-            return {
-                key: dataToValue(i[0]),
-                value: dataToValue(i[1]),
-            }
-        })
-    }
+    const isLegacy = 'additional' in info
+    const additional = isLegacy
+        ? info.additional.map(([key, value]) => ({ key: dataToValue(key), value: dataToValue(value) }))
+        : [
+              { key: 'github', value: dataToValue(info.github) },
+              { key: 'discord', value: dataToValue(info.discord) },
+          ].filter(({ value }) => value !== null)
 
     const registration = new Registration({
         id: account.id,
         account,
         additional,
-        display: dataToValue(call.info.display),
-        legal: dataToValue(call.info.legal),
-        web: dataToValue(call.info.web),
-        riot: dataToValue(call.info.riot),
-        email: dataToValue(call.info.email),
-        twitter: dataToValue(call.info.twitter),
-        image: dataToValue(call.info.image),
-        pgpFingerprint: call.info.pgpFingerprint,
+        display: dataToValue(info.display),
+        legal: dataToValue(info.legal),
+        web: dataToValue(info.web),
+        riot: dataToValue(isLegacy ? info.riot : info.matrix),
+        email: dataToValue(info.email),
+        twitter: dataToValue(info.twitter),
+        image: dataToValue(info.image),
+        pgpFingerprint: info.pgpFingerprint,
         currentJudgement: JudgementType.Unknown,
         judgements: [],
         deposit: 0n,
@@ -55,7 +53,7 @@ export async function identitySet(ctx: CommonContext, block: Block, item: EventI
         id: account.id,
         account,
         isSub: false,
-        name: dataToValue(call.info.display) || dataToValue(call.info.legal),
+        name: registration.display || registration.legal,
         info: registration,
         createdAt: new Date(block.timestamp ?? 0),
     })

@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
+import { decode } from '~/decoder/core'
 import { encode } from '~/encoder/core'
 
 const calls = [
@@ -96,4 +97,14 @@ void test('encode uses the enjin-relaychain 1080 metadata ahead of the relay upg
     // Enjin and canary relay 1080 share every call shape; only chain constants differ.
     assert.equal((await encode({ call, network: 'canary-relaychain', spec_version: 1080 })).encoded, expected)
     await assert.rejects(encode({ call, network: 'enjin-relaychain', spec_version: 1070 }), /Invalid U32/)
+})
+
+void test('Canary Relaychain uses 1082 for encoding and decoding by default', async () => {
+    const network = 'canary-relaychain'
+    const call = { pallet: 'StakeExchange', name: 'remove_liquidity_config' }
+
+    assert.deepEqual(await encode({ call, network }), { encoded: '0x1306', network, spec_version: 1082 })
+    assert.deepEqual(await decode({ call: '0x1306', network }), {
+        calls: { StakeExchange: { remove_liquidity_config: {} } },
+    })
 })

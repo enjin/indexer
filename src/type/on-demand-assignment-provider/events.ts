@@ -1,5 +1,6 @@
 import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
 import * as enjinV1062 from '../enjinV1062'
+import * as v1082 from '../v1082'
 
 export const onDemandOrderPlaced = {
     name: 'OnDemandAssignmentProvider.OnDemandOrderPlaced',
@@ -39,6 +40,34 @@ export const accountCredited = {
         sts.struct({
             who: enjinV1062.AccountId32,
             amount: sts.bigint(),
+        })
+    ),
+}
+
+export const unexpectedQueueFull = {
+    name: 'OnDemandAssignmentProvider.UnexpectedQueueFull',
+    /**
+     * The order queue was unexpectedly full - this indicates a problem with the configuration
+     * of the on-demand pallet on the Coretime chain. `dropped` indicates how many orders were
+     * dropped because they couldn't be queued.
+     */
+    v1082: new EventType(
+        'OnDemandAssignmentProvider.UnexpectedQueueFull',
+        sts.struct({
+            dropped: sts.number(),
+        })
+    ),
+}
+
+export const batchQueued = {
+    name: 'OnDemandAssignmentProvider.BatchQueued',
+    /**
+     * A batch of on-demand orders from the broker chain has been queued.
+     */
+    v1082: new EventType(
+        'OnDemandAssignmentProvider.BatchQueued',
+        sts.struct({
+            batch: sts.array(() => sts.tuple(() => [v1082.Id, sts.number()])),
         })
     ),
 }
