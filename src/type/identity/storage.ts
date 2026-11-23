@@ -8,6 +8,7 @@ import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 import * as enjinV1032 from '../enjinV1032'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
+import * as v1082 from '../v1082'
 
 export const identityOf = {
     /**
@@ -117,6 +118,18 @@ export const identityOf = {
         [v1060.AccountId32],
         v1060.Registration
     ) as IdentityOfV1060,
+    /**
+     *  Information that is pertinent to identify the entity behind an account. First item is the
+     *  registration, second is the account's primary username.
+     *
+     *  TWOX-NOTE: OK ― `AccountId` is a secure hash.
+     */
+    v1082: new StorageType(
+        'Identity.IdentityOf',
+        'Optional',
+        [v1082.AccountId32],
+        v1082.Registration
+    ) as IdentityOfV1082,
 }
 
 /**
@@ -417,6 +430,33 @@ export interface IdentityOfV1060 {
         block: Block,
         key: v1060.AccountId32
     ): AsyncIterable<[k: v1060.AccountId32, v: v1060.Registration | undefined][]>
+}
+
+/**
+ *  Information that is pertinent to identify the entity behind an account. First item is the
+ *  registration, second is the account's primary username.
+ *
+ *  TWOX-NOTE: OK ― `AccountId` is a secure hash.
+ */
+export interface IdentityOfV1082 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: v1082.AccountId32): Promise<v1082.Registration | undefined>
+    getMany(block: Block, keys: v1082.AccountId32[]): Promise<(v1082.Registration | undefined)[]>
+    getKeys(block: Block): Promise<v1082.AccountId32[]>
+    getKeys(block: Block, key: v1082.AccountId32): Promise<v1082.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v1082.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block, key: v1082.AccountId32): AsyncIterable<v1082.AccountId32[]>
+    getPairs(block: Block): Promise<[k: v1082.AccountId32, v: v1082.Registration | undefined][]>
+    getPairs(block: Block, key: v1082.AccountId32): Promise<[k: v1082.AccountId32, v: v1082.Registration | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: v1082.AccountId32, v: v1082.Registration | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: v1082.AccountId32
+    ): AsyncIterable<[k: v1082.AccountId32, v: v1082.Registration | undefined][]>
 }
 
 export const superOf = {

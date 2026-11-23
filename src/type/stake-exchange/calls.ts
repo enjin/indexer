@@ -235,3 +235,15 @@ export const buy = {
         })
     ),
 }
+
+export const removeLiquidityConfig = {
+    name: 'StakeExchange.remove_liquidity_config',
+    /**
+     * Remove the caller's liquidity config and release the deposit held for it. Its offers
+     * then accept every token their own filters allow.
+     *
+     * # Errors
+     * - [`Error::LiquidityConfigNotFound`] if the caller has no liquidity config
+     */
+    v1082: new CallType('StakeExchange.remove_liquidity_config', sts.unit()),
+}

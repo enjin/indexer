@@ -14,8 +14,11 @@ import {
     PoolMember,
     PoolState,
     StakeExchangeLiquidityAdded,
+    StakeExchangeLiquidityConfigUpdated,
     StakeExchangeOffer,
     StakeExchangeOfferState,
+    StakeExchangeTokenFilter,
+    StakeExchangeTokenFilterType,
     Token,
     TokenAccount,
     UnbondingEras,
@@ -39,6 +42,7 @@ const stakeExchange = testRequire(
 const nominationPools = testRequire(
     '~/pallet/nomination-pools/processors'
 ) as typeof import('~/pallet/nomination-pools/processors')
+const { eventHandler } = testRequire('~/processor.handler') as typeof import('~/processor.handler')
 
 after(() => {
     testRequire.cache[queueModulePath] = originalQueueModule
@@ -108,13 +112,16 @@ const tankId = `0x${'11'.repeat(32)}`
 
 let blockCounter = 0
 
-async function fixture(rows: Row[] = []) {
-    const runtime = await getRuntimeCached('enjin-relaychain', 1080)
+async function fixture(rows: Row[] = [], runtime?: Block['_runtime']) {
+    runtime ??= await getRuntimeCached('enjin-relaychain', 1080)
     blockCounter += 1
     const block = { _runtime: runtime, height: 500, hash: `0x${blockCounter}`, timestamp: 0 } as unknown as Block
     const store = new MemoryStore(rows)
     const warnings: string[] = []
-    const ctx = { store, log: { warn: (message: string) => warnings.push(message) } } as unknown as CommonContext
+    const ctx = {
+        store,
+        log: { warn: (message: string) => warnings.push(message), error: (message: string) => warnings.push(message) },
+    } as unknown as CommonContext
     const call = (name: string, args: unknown, id = '500-0'): CallItem =>
         ({ id, name, args, success: true, block, events: [] }) as unknown as CallItem
     const event = (name: string, args: unknown, emitter?: CallItem, id = '500-1'): EventItem => {
@@ -178,6 +185,38 @@ function poolRow(extra: Partial<NominationPool> = {}) {
 const addLiquidity = (offerId: number, amount: string) => ({
     __kind: 'StakeExchange',
     value: { __kind: 'add_liquidity', offerId, amount },
+})
+
+void test('Canary Relaychain 1082 liquidity config removal clears the account filter and retains its history', async () => {
+    const account = new Account({ id: creatorId })
+    const offer = offerRow({ account })
+    const offerFilter = new StakeExchangeTokenFilter({ id: offer.id, offer, type: StakeExchangeTokenFilterType.All })
+    const { ctx, block, store, event } = await fixture(
+        [account, offer, offerFilter],
+        await getRuntimeCached('canary-relaychain', 1082)
+    )
+    const updated = await eventHandler(
+        ctx,
+        block,
+        event('StakeExchange.LiquidityConfigUpdated', {
+            who: account.id,
+            config: { tokenFilter: { __kind: 'Whitelist', value: ['7'] } },
+        })
+    )
+    assert(Array.isArray(updated))
+    const updateData = updated[0].data
+    assert(updateData instanceof StakeExchangeLiquidityConfigUpdated)
+
+    const removed = event('StakeExchange.LiquidityConfigRemoved', { who: account.id }, undefined, '500-2')
+    await eventHandler(ctx, block, removed)
+    await eventHandler(ctx, block, removed)
+    await eventHandler(ctx, block, event('StakeExchange.LiquidityConfigRemoved', { who: sellerId }))
+
+    assert.equal(await store.findOneBy(StakeExchangeTokenFilter, { account: { id: account.id } }), undefined)
+    const historicalFilter = await store.findOneBy(StakeExchangeTokenFilter, { id: updateData.tokenFilter })
+    assert(historicalFilter instanceof StakeExchangeTokenFilter)
+    assert.deepEqual(historicalFilter.value, ['7'])
+    assert.equal(await store.findOneBy(StakeExchangeTokenFilter, { offer: { id: offer.id } }), offerFilter)
 })
 
 void test('LiquidityAdded under a batch reads the amount from its own call, not the top-level wrapper', async () => {

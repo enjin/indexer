@@ -3,6 +3,7 @@ import fs from 'node:fs'
 import test from 'node:test'
 import { Runtime } from '@subsquid/substrate-runtime'
 import { Block, CommonContext } from '~/contexts'
+import { getRuntimeCached } from '~/decoder/metadata'
 import {
     GovernanceDelegation,
     GovernanceFellowshipMember,
@@ -86,7 +87,7 @@ function fixture(relay: boolean) {
     const ctx = { store } as unknown as CommonContext
     const get = <T>(model: new (...args: never[]) => T, id: string): T | undefined =>
         rows.get(`${model.name}:${id}`) as T | undefined
-    return { ctx, block, rows, get, relay }
+    return { ctx, block, rows, get, relay, state }
 }
 
 void test('manual governance state import validates the configured chain', () => {
@@ -152,9 +153,38 @@ void test('Matrixchain snapshot imports current RPC governance storage without c
     assert.equal(get(GovernanceReferendum, 'Referenda:7')?.status, 'Confirming')
     assert.equal(get(GovernanceReferendum, 'Referenda:7')?.metadataHash, whitelisted)
     assert.equal(get(GovernanceVote, `Referenda:7:${voter}:SEnj:42`)?.active, true)
+    assert.deepEqual(get(GovernanceVote, `Referenda:7:${voter}:SEnj:42`)?.vote, {
+        __kind: 'Standard',
+        vote: '10',
+    })
     assert.equal(get(GovernanceDelegation, `${member}:1:Enj`)?.balance, 100n)
     assert.equal(get(GovernanceFellowshipMember, member)?.rank, 3)
     assert.equal(get(GovernanceWhitelistedCall, whitelisted)?.active, true)
+})
+
+void test('Canary Relaychain 1082 snapshots retain the native vote in the existing API shape', async () => {
+    const { ctx, block, get, state } = fixture(true)
+    const runtime = await getRuntimeCached('canary-relaychain', 1082)
+    const storageType = runtime.description.storage.ConvictionVoting.items.VotingFor.value
+    const vote = { __kind: 'Standard', vote: 128, balance: 42n }
+    const encoded = runtime.scaleCodec.encodeToHex(storageType, {
+        __kind: 'Casting',
+        value: {
+            votes: [[7, { vote, counted: { ...vote, balance: 17n } }]],
+            delegations: { votes: 0n, capital: 0n },
+            prior: [0, 0n],
+        },
+    })
+    state.set('ConvictionVoting.VotingFor', [
+        [
+            [voter, 1, { __kind: 'SEnj', tokenId: 42n }],
+            runtime.decodeStorageValue('ConvictionVoting.VotingFor', encoded),
+        ],
+    ])
+
+    await snapshotGovernance(ctx, block, true)
+
+    assert.deepEqual(get(GovernanceVote, `Referenda:7:${voter}:SEnj:42`)?.vote, { ...vote, balance: '42' })
 })
 
 void test('snapshot preserves state indexed from a newer block', async () => {

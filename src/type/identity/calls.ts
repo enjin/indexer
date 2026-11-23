@@ -12,6 +12,7 @@ import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
 import * as enjinV1070 from '../enjinV1070'
 import * as v1070 from '../v1070'
+import * as v1082 from '../v1082'
 
 export const addRegistrar = {
     name: 'Identity.add_registrar',
@@ -58,6 +59,24 @@ export const setIdentity = {
         'Identity.set_identity',
         sts.struct({
             info: matrixEnjinV1000.IdentityInfo,
+        })
+    ),
+    /**
+     * Set an account's identity information and reserve the appropriate deposit.
+     *
+     * If the account already has identity information, the deposit is taken as part payment
+     * for the new deposit.
+     *
+     * The dispatch origin for this call must be _Signed_.
+     *
+     * - `info`: The identity information.
+     *
+     * Emits `IdentitySet` if successful.
+     */
+    v1082: new CallType(
+        'Identity.set_identity',
+        sts.struct({
+            info: v1082.IdentityInfo,
         })
     ),
 }

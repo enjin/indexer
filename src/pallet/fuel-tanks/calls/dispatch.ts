@@ -28,6 +28,10 @@ export function dispatch(call: CallItem): Dispatch {
             () => calls.fuelTanks.dispatch.matrixV1041.decode(call)
         )
         .when(
+            () => calls.fuelTanks.dispatch.v1082.is(call),
+            () => calls.fuelTanks.dispatch.v1082.decode(call)
+        )
+        .when(
             () => calls.fuelTanks.dispatch.v1080.is(call),
             () => calls.fuelTanks.dispatch.v1080.decode(call)
         )

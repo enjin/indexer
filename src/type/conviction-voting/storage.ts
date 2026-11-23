@@ -3,6 +3,7 @@ import * as v100 from '../v100'
 import * as matrixEnjinV1043 from '../matrixEnjinV1043'
 import * as enjinV1070 from '../enjinV1070'
 import * as v1070 from '../v1070'
+import * as v1082 from '../v1082'
 
 export const votingFor = {
     /**
@@ -45,6 +46,16 @@ export const votingFor = {
         [v1070.AccountId32, sts.number(), v1070.VoteCurrency],
         v1070.Voting
     ) as VotingForV1070,
+    /**
+     *  All voting for a particular voter in a particular voting class. We store the balance for the
+     *  number of votes that we have recorded.
+     */
+    v1082: new StorageType(
+        'ConvictionVoting.VotingFor',
+        'Default',
+        [v1082.AccountId32, sts.number(), v1082.VoteCurrency],
+        v1082.Voting
+    ) as VotingForV1082,
 }
 
 /**
@@ -338,6 +349,95 @@ export interface VotingForV1070 {
         key2: number,
         key3: v1070.VoteCurrency
     ): AsyncIterable<[k: [v1070.AccountId32, number, v1070.VoteCurrency], v: v1070.Voting | undefined][]>
+}
+
+/**
+ *  All voting for a particular voter in a particular voting class. We store the balance for the
+ *  number of votes that we have recorded.
+ */
+export interface VotingForV1082 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): v1082.Voting
+    get(
+        block: Block,
+        key1: v1082.AccountId32,
+        key2: number,
+        key3: v1082.VoteCurrency
+    ): Promise<v1082.Voting | undefined>
+    getMany(
+        block: Block,
+        keys: [v1082.AccountId32, number, v1082.VoteCurrency][]
+    ): Promise<(v1082.Voting | undefined)[]>
+    getKeys(block: Block): Promise<[v1082.AccountId32, number, v1082.VoteCurrency][]>
+    getKeys(block: Block, key1: v1082.AccountId32): Promise<[v1082.AccountId32, number, v1082.VoteCurrency][]>
+    getKeys(
+        block: Block,
+        key1: v1082.AccountId32,
+        key2: number
+    ): Promise<[v1082.AccountId32, number, v1082.VoteCurrency][]>
+    getKeys(
+        block: Block,
+        key1: v1082.AccountId32,
+        key2: number,
+        key3: v1082.VoteCurrency
+    ): Promise<[v1082.AccountId32, number, v1082.VoteCurrency][]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[v1082.AccountId32, number, v1082.VoteCurrency][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: v1082.AccountId32
+    ): AsyncIterable<[v1082.AccountId32, number, v1082.VoteCurrency][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: v1082.AccountId32,
+        key2: number
+    ): AsyncIterable<[v1082.AccountId32, number, v1082.VoteCurrency][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: v1082.AccountId32,
+        key2: number,
+        key3: v1082.VoteCurrency
+    ): AsyncIterable<[v1082.AccountId32, number, v1082.VoteCurrency][]>
+    getPairs(block: Block): Promise<[k: [v1082.AccountId32, number, v1082.VoteCurrency], v: v1082.Voting | undefined][]>
+    getPairs(
+        block: Block,
+        key1: v1082.AccountId32
+    ): Promise<[k: [v1082.AccountId32, number, v1082.VoteCurrency], v: v1082.Voting | undefined][]>
+    getPairs(
+        block: Block,
+        key1: v1082.AccountId32,
+        key2: number
+    ): Promise<[k: [v1082.AccountId32, number, v1082.VoteCurrency], v: v1082.Voting | undefined][]>
+    getPairs(
+        block: Block,
+        key1: v1082.AccountId32,
+        key2: number,
+        key3: v1082.VoteCurrency
+    ): Promise<[k: [v1082.AccountId32, number, v1082.VoteCurrency], v: v1082.Voting | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: [v1082.AccountId32, number, v1082.VoteCurrency], v: v1082.Voting | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: v1082.AccountId32
+    ): AsyncIterable<[k: [v1082.AccountId32, number, v1082.VoteCurrency], v: v1082.Voting | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: v1082.AccountId32,
+        key2: number
+    ): AsyncIterable<[k: [v1082.AccountId32, number, v1082.VoteCurrency], v: v1082.Voting | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: v1082.AccountId32,
+        key2: number,
+        key3: v1082.VoteCurrency
+    ): AsyncIterable<[k: [v1082.AccountId32, number, v1082.VoteCurrency], v: v1082.Voting | undefined][]>
 }
 
 export const classLocksFor = {
