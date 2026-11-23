@@ -14,7 +14,7 @@ jobs:
     steps:
       - name: Check if user is a maintainer
         id: check
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const maintainers = ['zlayine', 'tallesborges'];
@@ -50,7 +50,7 @@ jobs:
     steps:
       - name: Get PR details
         id: pr
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const pr = await github.rest.pulls.get({
@@ -63,7 +63,7 @@ jobs:
             core.setOutput('ref', pr.data.head.ref);
 
       - name: React to comment
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             github.rest.reactions.createForIssueComment({
@@ -75,7 +75,7 @@ jobs:
 
       - name: Trigger ECR build workflow
         id: trigger
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         env:
           PR_REF: ${{ steps.pr.outputs.ref }}
         with:
@@ -91,7 +91,7 @@ jobs:
             core.setOutput('workflow-url', workflowUrl);
 
       - name: Post build started comment
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         env:
           WORKFLOW_URL: ${{ steps.trigger.outputs.workflow-url }}
           PR_NUMBER: ${{ steps.pr.outputs.number }}
