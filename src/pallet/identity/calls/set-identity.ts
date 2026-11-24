@@ -9,12 +9,20 @@ export const setIdentity = withDispatchCheck((call: CallItem): SetIdentity => {
     return match(call)
         .returnType<SetIdentity>()
         .when(
+            () => calls.identity.setIdentity.enjinV1082.is(call),
+            () => calls.identity.setIdentity.enjinV1082.decode(call)
+        )
+        .when(
             () => calls.identity.setIdentity.v1082.is(call),
             () => calls.identity.setIdentity.v1082.decode(call)
         )
         .when(
             () => calls.identity.setIdentity.matrixEnjinV1000.is(call),
             () => calls.identity.setIdentity.matrixEnjinV1000.decode(call)
+        )
+        .when(
+            () => calls.identity.setIdentity.v110.is(call),
+            () => calls.identity.setIdentity.v110.decode(call)
         )
         .otherwise(() => {
             throw new UnsupportedCallError(call)

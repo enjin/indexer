@@ -137,36 +137,38 @@ void test('Matrixchain 1043 events and storage match the mainnet and Canary code
     }
 })
 
-void test('Canary Relaychain 1082 decodes TokenUpdated with the token creation block', () => {
-    const block = { _runtime: runtimeFor('canary-relaychain', 1082) } as Block
-    const value = {
-        supply: '1',
-        requiresDeposit: false,
-        creationDeposit: { amount: '0' },
-        ownerDeposit: '0',
-        totalTokenAccountDeposit: '0',
-        attributeCount: 0,
-        accountCount: 1,
-        listingForbidden: false,
-        metadata: { decimalCount: 0, name: '0x', symbol: '0x' },
-        infusion: '0',
-        anyoneCanInfuse: false,
-        groups: [],
-        isLendable: false,
-        creationBlock: 18628461,
-    }
-    const item = {
-        block,
-        name: 'MultiTokens.TokenUpdated',
-        args: { collectionId: '2000', tokenId: '9007199254740993', value },
-    } as EventItem
+for (const network of ['enjin-relaychain', 'canary-relaychain'] as const) {
+    void test(`${network} 1082 decodes TokenUpdated with the token creation block`, () => {
+        const block = { _runtime: runtimeFor(network, 1082) } as Block
+        const value = {
+            supply: '1',
+            requiresDeposit: false,
+            creationDeposit: { amount: '0' },
+            ownerDeposit: '0',
+            totalTokenAccountDeposit: '0',
+            attributeCount: 0,
+            accountCount: 1,
+            listingForbidden: false,
+            metadata: { decimalCount: 0, name: '0x', symbol: '0x' },
+            infusion: '0',
+            anyoneCanInfuse: false,
+            groups: [],
+            isLendable: false,
+            creationBlock: 18628461,
+        }
+        const item = {
+            block,
+            name: 'MultiTokens.TokenUpdated',
+            args: { collectionId: '2000', tokenId: '9007199254740993', value },
+        } as EventItem
 
-    const decoded = tokenUpdated(item)
-    assert.equal(decoded.collectionId, 2000n)
-    assert.equal(decoded.tokenId, 9007199254740993n)
-    assert.ok(decoded.value && typeof decoded.value === 'object' && 'creationBlock' in decoded.value)
-    assert.equal(decoded.value.creationBlock, value.creationBlock)
-})
+        const decoded = tokenUpdated(item)
+        assert.equal(decoded.collectionId, 2000n)
+        assert.equal(decoded.tokenId, 9007199254740993n)
+        assert.ok(decoded.value && typeof decoded.value === 'object' && 'creationBlock' in decoded.value)
+        assert.equal(decoded.value.creationBlock, value.creationBlock)
+    })
+}
 
 for (const network of ['enjin-matrixchain', 'canary-matrixchain'] as const) {
     void test(`batch and fuel tank dispatch unwrap marketplace and multi-tokens calls on ${network} v1043`, () => {
@@ -253,6 +255,7 @@ for (const network of ['enjin-matrixchain', 'canary-matrixchain'] as const) {
 }
 
 for (const [network, version] of [
+    ['enjin-relaychain', 1082],
     ['enjin-relaychain', 1080],
     ['enjin-relaychain', 1070],
     ['canary-relaychain', 1080],

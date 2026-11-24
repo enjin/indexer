@@ -179,48 +179,50 @@ void test('IdentitySet preserves the legacy registration fields', async () => {
     assert.deepEqual(store.identity(main)?.info.additional, [{ key: 'label', value: 'value' }])
 })
 
-void test('Canary Relaychain 1082 IdentitySet persists Matrix, GitHub, and Discord', async () => {
-    const { block, store, ctx, event, call } = await fixture(1082, 'canary-relaychain')
-    const info = {
-        ...identityInfo,
-        matrix: raw('@canary:matrix.org'),
-        github: raw('enjin'),
-        discord: raw('canary'),
-    }
+for (const network of ['enjin-relaychain', 'canary-relaychain'] as const) {
+    void test(`${network} 1082 IdentitySet persists Matrix, GitHub, and Discord`, async () => {
+        const { block, store, ctx, event, call } = await fixture(1082, network)
+        const info = {
+            ...identityInfo,
+            matrix: raw('@canary:matrix.org'),
+            github: raw('enjin'),
+            discord: raw('canary'),
+        }
 
-    await identitySet(ctx, block, {
-        ...event('Identity.IdentitySet', { who: main }),
-        call: call('Identity.set_identity', { info }, undefined),
+        await identitySet(ctx, block, {
+            ...event('Identity.IdentitySet', { who: main }),
+            call: call('Identity.set_identity', { info }, undefined),
+        })
+
+        assert.equal(store.identity(main)?.name, 'Enjin')
+        assert.equal(store.identity(main)?.info.riot, '@canary:matrix.org')
+        assert.deepEqual(store.identity(main)?.info.additional, [
+            { key: 'github', value: 'enjin' },
+            { key: 'discord', value: 'canary' },
+        ])
     })
 
-    assert.equal(store.identity(main)?.name, 'Enjin')
-    assert.equal(store.identity(main)?.info.riot, '@canary:matrix.org')
-    assert.deepEqual(store.identity(main)?.info.additional, [
-        { key: 'github', value: 'enjin' },
-        { key: 'discord', value: 'canary' },
-    ])
-})
+    void test(`${network} 1082 IdentitySet handles a FuelTanks inner call`, async () => {
+        const { block, store, ctx, event, call } = await fixture(1082, network)
+        const info = { ...identityInfo, matrix: noData, github: noData, discord: raw('canary') }
 
-void test('Canary Relaychain 1082 IdentitySet handles a FuelTanks inner call', async () => {
-    const { block, store, ctx, event, call } = await fixture(1082, 'canary-relaychain')
-    const info = { ...identityInfo, matrix: noData, github: noData, discord: raw('canary') }
+        await identitySet(ctx, block, {
+            ...event('Identity.IdentitySet', { who: main }),
+            call: call(
+                'FuelTanks.dispatch',
+                {
+                    tankId: { __kind: 'Id', value: signer },
+                    ruleSetId: 0,
+                    call: { __kind: 'Identity', value: { __kind: 'set_identity', info } },
+                },
+                undefined
+            ),
+        })
 
-    await identitySet(ctx, block, {
-        ...event('Identity.IdentitySet', { who: main }),
-        call: call(
-            'FuelTanks.dispatch',
-            {
-                tankId: { __kind: 'Id', value: signer },
-                ruleSetId: 0,
-                call: { __kind: 'Identity', value: { __kind: 'set_identity', info } },
-            },
-            undefined
-        ),
+        assert.equal(store.identity(main)?.info.riot, null)
+        assert.deepEqual(store.identity(main)?.info.additional, [{ key: 'discord', value: 'canary' }])
     })
-
-    assert.equal(store.identity(main)?.info.riot, null)
-    assert.deepEqual(store.identity(main)?.info.additional, [{ key: 'discord', value: 'canary' }])
-})
+}
 
 void test('SubIdentitiesSet makes the stored SubsOf list the complete set of subs, names from SuperOf', async () => {
     const { block, store, ctx, set, event } = await fixture(1043)

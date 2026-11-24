@@ -37,6 +37,7 @@ import * as enjinV1070 from '../enjinV1070'
 import * as v1070 from '../v1070'
 import * as enjinV1080 from '../enjinV1080'
 import * as v1080 from '../v1080'
+import * as enjinV1082 from '../enjinV1082'
 import * as v1082 from '../v1082'
 
 export const whitelistCall = {
@@ -182,6 +183,12 @@ export const dispatchWhitelistedCallWithPreimage = {
         'Whitelist.dispatch_whitelisted_call_with_preimage',
         sts.struct({
             call: enjinV1080.Call,
+        })
+    ),
+    enjinV1082: new CallType(
+        'Whitelist.dispatch_whitelisted_call_with_preimage',
+        sts.struct({
+            call: enjinV1082.Call,
         })
     ),
     v100: new CallType(

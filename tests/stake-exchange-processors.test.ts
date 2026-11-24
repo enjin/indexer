@@ -187,37 +187,43 @@ const addLiquidity = (offerId: number, amount: string) => ({
     value: { __kind: 'add_liquidity', offerId, amount },
 })
 
-void test('Canary Relaychain 1082 liquidity config removal clears the account filter and retains its history', async () => {
-    const account = new Account({ id: creatorId })
-    const offer = offerRow({ account })
-    const offerFilter = new StakeExchangeTokenFilter({ id: offer.id, offer, type: StakeExchangeTokenFilterType.All })
-    const { ctx, block, store, event } = await fixture(
-        [account, offer, offerFilter],
-        await getRuntimeCached('canary-relaychain', 1082)
-    )
-    const updated = await eventHandler(
-        ctx,
-        block,
-        event('StakeExchange.LiquidityConfigUpdated', {
-            who: account.id,
-            config: { tokenFilter: { __kind: 'Whitelist', value: ['7'] } },
+for (const network of ['enjin-relaychain', 'canary-relaychain'] as const) {
+    void test(`${network} 1082 liquidity config removal clears the account filter and retains its history`, async () => {
+        const account = new Account({ id: creatorId })
+        const offer = offerRow({ account })
+        const offerFilter = new StakeExchangeTokenFilter({
+            id: offer.id,
+            offer,
+            type: StakeExchangeTokenFilterType.All,
         })
-    )
-    assert(Array.isArray(updated))
-    const updateData = updated[0].data
-    assert(updateData instanceof StakeExchangeLiquidityConfigUpdated)
+        const { ctx, block, store, event } = await fixture(
+            [account, offer, offerFilter],
+            await getRuntimeCached(network, 1082)
+        )
+        const updated = await eventHandler(
+            ctx,
+            block,
+            event('StakeExchange.LiquidityConfigUpdated', {
+                who: account.id,
+                config: { tokenFilter: { __kind: 'Whitelist', value: ['7'] } },
+            })
+        )
+        assert(Array.isArray(updated))
+        const updateData = updated[0].data
+        assert(updateData instanceof StakeExchangeLiquidityConfigUpdated)
 
-    const removed = event('StakeExchange.LiquidityConfigRemoved', { who: account.id }, undefined, '500-2')
-    await eventHandler(ctx, block, removed)
-    await eventHandler(ctx, block, removed)
-    await eventHandler(ctx, block, event('StakeExchange.LiquidityConfigRemoved', { who: sellerId }))
+        const removed = event('StakeExchange.LiquidityConfigRemoved', { who: account.id }, undefined, '500-2')
+        await eventHandler(ctx, block, removed)
+        await eventHandler(ctx, block, removed)
+        await eventHandler(ctx, block, event('StakeExchange.LiquidityConfigRemoved', { who: sellerId }))
 
-    assert.equal(await store.findOneBy(StakeExchangeTokenFilter, { account: { id: account.id } }), undefined)
-    const historicalFilter = await store.findOneBy(StakeExchangeTokenFilter, { id: updateData.tokenFilter })
-    assert(historicalFilter instanceof StakeExchangeTokenFilter)
-    assert.deepEqual(historicalFilter.value, ['7'])
-    assert.equal(await store.findOneBy(StakeExchangeTokenFilter, { offer: { id: offer.id } }), offerFilter)
-})
+        assert.equal(await store.findOneBy(StakeExchangeTokenFilter, { account: { id: account.id } }), undefined)
+        const historicalFilter = await store.findOneBy(StakeExchangeTokenFilter, { id: updateData.tokenFilter })
+        assert(historicalFilter instanceof StakeExchangeTokenFilter)
+        assert.deepEqual(historicalFilter.value, ['7'])
+        assert.equal(await store.findOneBy(StakeExchangeTokenFilter, { offer: { id: offer.id } }), offerFilter)
+    })
+}
 
 void test('LiquidityAdded under a batch reads the amount from its own call, not the top-level wrapper', async () => {
     const { store, ctx, call, event } = await fixture([offerRow()])

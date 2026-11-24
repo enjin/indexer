@@ -3,7 +3,7 @@ import { StakeExchangeTokenFilter } from '~/model'
 import { stakeExchange } from '~/type/events'
 
 export async function liquidityConfigRemoved(ctx: CommonContext, item: EventItem): Promise<undefined> {
-    const { who } = stakeExchange.liquidityConfigRemoved.v1082.decode(item)
+    const { who } = stakeExchange.liquidityConfigRemoved.enjinV1082.decode(item)
     const filter = await ctx.store.findOneBy(StakeExchangeTokenFilter, { account: { id: who } })
     if (!filter) return undefined
 

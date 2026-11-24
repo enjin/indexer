@@ -32,5 +32,5 @@ export const liquidityConfigDeposit = {
     /**
      *  The deposit held from a liquidity provider while its liquidity config is stored
      */
-    v1082: new ConstantType('StakeExchange.LiquidityConfigDeposit', sts.bigint()),
+    enjinV1082: new ConstantType('StakeExchange.LiquidityConfigDeposit', sts.bigint()),
 }

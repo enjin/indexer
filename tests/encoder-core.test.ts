@@ -99,12 +99,13 @@ void test('encode uses the enjin-relaychain 1080 metadata ahead of the relay upg
     await assert.rejects(encode({ call, network: 'enjin-relaychain', spec_version: 1070 }), /Invalid U32/)
 })
 
-void test('Canary Relaychain uses 1082 for encoding and decoding by default', async () => {
-    const network = 'canary-relaychain'
-    const call = { pallet: 'StakeExchange', name: 'remove_liquidity_config' }
+for (const network of ['enjin-relaychain', 'canary-relaychain'] as const) {
+    void test(`${network} uses 1082 for encoding and decoding by default`, async () => {
+        const call = { pallet: 'StakeExchange', name: 'remove_liquidity_config' }
 
-    assert.deepEqual(await encode({ call, network }), { encoded: '0x1306', network, spec_version: 1082 })
-    assert.deepEqual(await decode({ call: '0x1306', network }), {
-        calls: { StakeExchange: { remove_liquidity_config: {} } },
+        assert.deepEqual(await encode({ call, network }), { encoded: '0x1306', network, spec_version: 1082 })
+        assert.deepEqual(await decode({ call: '0x1306', network }), {
+            calls: { StakeExchange: { remove_liquidity_config: {} } },
+        })
     })
-})
+}

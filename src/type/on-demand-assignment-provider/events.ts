@@ -1,6 +1,6 @@
 import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
 import * as enjinV1062 from '../enjinV1062'
-import * as v1082 from '../v1082'
+import * as enjinV1082 from '../enjinV1082'
 
 export const onDemandOrderPlaced = {
     name: 'OnDemandAssignmentProvider.OnDemandOrderPlaced',
@@ -51,7 +51,7 @@ export const unexpectedQueueFull = {
      * of the on-demand pallet on the Coretime chain. `dropped` indicates how many orders were
      * dropped because they couldn't be queued.
      */
-    v1082: new EventType(
+    enjinV1082: new EventType(
         'OnDemandAssignmentProvider.UnexpectedQueueFull',
         sts.struct({
             dropped: sts.number(),
@@ -64,10 +64,10 @@ export const batchQueued = {
     /**
      * A batch of on-demand orders from the broker chain has been queued.
      */
-    v1082: new EventType(
+    enjinV1082: new EventType(
         'OnDemandAssignmentProvider.BatchQueued',
         sts.struct({
-            batch: sts.array(() => sts.tuple(() => [v1082.Id, sts.number()])),
+            batch: sts.array(() => sts.tuple(() => [enjinV1082.Id, sts.number()])),
         })
     ),
 }

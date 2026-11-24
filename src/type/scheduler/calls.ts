@@ -61,6 +61,7 @@ import * as enjinV1070 from '../enjinV1070'
 import * as v1070 from '../v1070'
 import * as enjinV1080 from '../enjinV1080'
 import * as v1080 from '../v1080'
+import * as enjinV1082 from '../enjinV1082'
 import * as v1082 from '../v1082'
 
 export const schedule = {
@@ -567,6 +568,18 @@ export const schedule = {
             maybePeriodic: sts.option(() => sts.tuple(() => [sts.number(), sts.number()])),
             priority: sts.number(),
             call: enjinV1080.Call,
+        })
+    ),
+    /**
+     * Anonymously schedule a task.
+     */
+    enjinV1082: new CallType(
+        'Scheduler.schedule',
+        sts.struct({
+            when: sts.number(),
+            maybePeriodic: sts.option(() => sts.tuple(() => [sts.number(), sts.number()])),
+            priority: sts.number(),
+            call: enjinV1082.Call,
         })
     ),
     /**
@@ -1388,6 +1401,19 @@ export const scheduleNamed = {
     /**
      * Schedule a named task.
      */
+    enjinV1082: new CallType(
+        'Scheduler.schedule_named',
+        sts.struct({
+            id: sts.bytes(),
+            when: sts.number(),
+            maybePeriodic: sts.option(() => sts.tuple(() => [sts.number(), sts.number()])),
+            priority: sts.number(),
+            call: enjinV1082.Call,
+        })
+    ),
+    /**
+     * Schedule a named task.
+     */
     v100: new CallType(
         'Scheduler.schedule_named',
         sts.struct({
@@ -2189,6 +2215,18 @@ export const scheduleAfter = {
             maybePeriodic: sts.option(() => sts.tuple(() => [sts.number(), sts.number()])),
             priority: sts.number(),
             call: enjinV1080.Call,
+        })
+    ),
+    /**
+     * Anonymously schedule a task after a delay.
+     */
+    enjinV1082: new CallType(
+        'Scheduler.schedule_after',
+        sts.struct({
+            after: sts.number(),
+            maybePeriodic: sts.option(() => sts.tuple(() => [sts.number(), sts.number()])),
+            priority: sts.number(),
+            call: enjinV1082.Call,
         })
     ),
     /**
@@ -3019,6 +3057,19 @@ export const scheduleNamedAfter = {
             maybePeriodic: sts.option(() => sts.tuple(() => [sts.number(), sts.number()])),
             priority: sts.number(),
             call: enjinV1080.Call,
+        })
+    ),
+    /**
+     * Schedule a named task after a delay.
+     */
+    enjinV1082: new CallType(
+        'Scheduler.schedule_named_after',
+        sts.struct({
+            id: sts.bytes(),
+            after: sts.number(),
+            maybePeriodic: sts.option(() => sts.tuple(() => [sts.number(), sts.number()])),
+            priority: sts.number(),
+            call: enjinV1082.Call,
         })
     ),
     /**

@@ -26,6 +26,7 @@ import * as enjinV1070 from '../enjinV1070'
 import * as v1070 from '../v1070'
 import * as enjinV1080 from '../enjinV1080'
 import * as v1080 from '../v1080'
+import * as enjinV1082 from '../enjinV1082'
 import * as v1082 from '../v1082'
 
 export const proxy = {
@@ -408,6 +409,25 @@ export const proxy = {
             real: enjinV1080.MultiAddress,
             forceProxyType: sts.option(() => enjinV1080.ProxyType),
             call: enjinV1080.Call,
+        })
+    ),
+    /**
+     * Dispatch the given `call` from an account that the sender is authorised for through
+     * `add_proxy`.
+     *
+     * The dispatch origin for this call must be _Signed_.
+     *
+     * Parameters:
+     * - `real`: The account that the proxy will make a call on behalf of.
+     * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
+     * - `call`: The call to be made by the `real` account.
+     */
+    enjinV1082: new CallType(
+        'Proxy.proxy',
+        sts.struct({
+            real: enjinV1082.MultiAddress,
+            forceProxyType: sts.option(() => enjinV1082.ProxyType),
+            call: enjinV1082.Call,
         })
     ),
     /**
@@ -1843,6 +1863,28 @@ export const proxyAnnounced = {
             real: enjinV1080.MultiAddress,
             forceProxyType: sts.option(() => enjinV1080.ProxyType),
             call: enjinV1080.Call,
+        })
+    ),
+    /**
+     * Dispatch the given `call` from an account that the sender is authorized for through
+     * `add_proxy`.
+     *
+     * Removes any corresponding announcement(s).
+     *
+     * The dispatch origin for this call must be _Signed_.
+     *
+     * Parameters:
+     * - `real`: The account that the proxy will make a call on behalf of.
+     * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
+     * - `call`: The call to be made by the `real` account.
+     */
+    enjinV1082: new CallType(
+        'Proxy.proxy_announced',
+        sts.struct({
+            delegate: enjinV1082.MultiAddress,
+            real: enjinV1082.MultiAddress,
+            forceProxyType: sts.option(() => enjinV1082.ProxyType),
+            call: enjinV1082.Call,
         })
     ),
     /**

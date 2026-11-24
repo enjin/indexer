@@ -11346,6 +11346,8 @@ export const SlotsEvent: sts.Type<SlotsEvent> = sts.closedEnum(() => {
     }
 })
 
+export const Id = sts.number()
+
 /**
  * The `Event` enum of this pallet
  */
@@ -30288,8 +30290,6 @@ export const SlotLeasePeriodStart: sts.Type<SlotLeasePeriodStart> = sts.closedEn
         Next: sts.unit(),
     }
 })
-
-export const Id = sts.number()
 
 export const AccountVote: sts.Type<AccountVote> = sts.closedEnum(() => {
     return {

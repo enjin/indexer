@@ -59,6 +59,7 @@ import * as enjinV1070 from '../enjinV1070'
 import * as v1070 from '../v1070'
 import * as enjinV1080 from '../enjinV1080'
 import * as v1080 from '../v1080'
+import * as enjinV1082 from '../enjinV1082'
 import * as v1082 from '../v1082'
 
 export const pauseExtrinsic = {
@@ -850,6 +851,26 @@ export const pauseExtrinsic = {
         'ExtrinsicPause.pause_extrinsic',
         sts.struct({
             call: enjinV1080.Call,
+            pauseOnlyExtrinsic: sts.boolean(),
+        })
+    ),
+    /**
+     * Pause execution of extrinsic(s)
+     *
+     * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
+     * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
+     * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
+     * is paused, else the entire pallet is paused.
+     *
+     * # Errors
+     *
+     * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
+     * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
+     */
+    enjinV1082: new CallType(
+        'ExtrinsicPause.pause_extrinsic',
+        sts.struct({
+            call: enjinV1082.Call,
             pauseOnlyExtrinsic: sts.boolean(),
         })
     ),
@@ -1977,6 +1998,25 @@ export const resumeExtrinsic = {
         'ExtrinsicPause.resume_extrinsic',
         sts.struct({
             call: enjinV1080.Call,
+            resumeOnlyExtrinsic: sts.boolean(),
+        })
+    ),
+    /**
+     * Resume execution of extrinsic(s)
+     *
+     * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
+     * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
+     * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
+     * is resumed, else the entire pallet is resumed.
+     *
+     * # Errors
+     *
+     * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
+     */
+    enjinV1082: new CallType(
+        'ExtrinsicPause.resume_extrinsic',
+        sts.struct({
+            call: enjinV1082.Call,
             resumeOnlyExtrinsic: sts.boolean(),
         })
     ),

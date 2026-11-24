@@ -1,4 +1,5 @@
 import { sts, Block, Bytes, Option, Result, CallType, RuntimeCtx } from '../support'
+import * as v110 from '../v110'
 import * as matrixEnjinV1000 from '../matrixEnjinV1000'
 import * as matrixV1010 from '../matrixV1010'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
@@ -12,6 +13,7 @@ import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
 import * as enjinV1070 from '../enjinV1070'
 import * as v1070 from '../v1070'
+import * as enjinV1082 from '../enjinV1082'
 import * as v1082 from '../v1082'
 
 export const addRegistrar = {
@@ -59,6 +61,47 @@ export const setIdentity = {
         'Identity.set_identity',
         sts.struct({
             info: matrixEnjinV1000.IdentityInfo,
+        })
+    ),
+    /**
+     * Set an account's identity information and reserve the appropriate deposit.
+     *
+     * If the account already has identity information, the deposit is taken as part payment
+     * for the new deposit.
+     *
+     * The dispatch origin for this call must be _Signed_.
+     *
+     * - `info`: The identity information.
+     *
+     * Emits `IdentitySet` if successful.
+     */
+    enjinV1082: new CallType(
+        'Identity.set_identity',
+        sts.struct({
+            info: enjinV1082.IdentityInfo,
+        })
+    ),
+    /**
+     * Set an account's identity information and reserve the appropriate deposit.
+     *
+     * If the account already has identity information, the deposit is taken as part payment
+     * for the new deposit.
+     *
+     * The dispatch origin for this call must be _Signed_.
+     *
+     * - `info`: The identity information.
+     *
+     * Emits `IdentitySet` if successful.
+     *
+     * ## Complexity
+     * - `O(X + X' + R)`
+     *   - where `X` additional-field-count (deposit-bounded and code-bounded)
+     *   - where `R` judgements-count (registrar-count-bounded)
+     */
+    v110: new CallType(
+        'Identity.set_identity',
+        sts.struct({
+            info: v110.IdentityInfo,
         })
     ),
     /**
