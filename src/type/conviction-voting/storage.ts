@@ -3,6 +3,7 @@ import * as v100 from '../v100'
 import * as matrixEnjinV1043 from '../matrixEnjinV1043'
 import * as enjinV1070 from '../enjinV1070'
 import * as v1070 from '../v1070'
+import * as enjinV1082 from '../enjinV1082'
 import * as v1082 from '../v1082'
 
 export const votingFor = {
@@ -26,6 +27,16 @@ export const votingFor = {
         [enjinV1070.AccountId32, sts.number(), enjinV1070.VoteCurrency],
         enjinV1070.Voting
     ) as VotingForEnjinV1070,
+    /**
+     *  All voting for a particular voter in a particular voting class. We store the balance for the
+     *  number of votes that we have recorded.
+     */
+    enjinV1082: new StorageType(
+        'ConvictionVoting.VotingFor',
+        'Default',
+        [enjinV1082.AccountId32, sts.number(), enjinV1082.VoteCurrency],
+        enjinV1082.Voting
+    ) as VotingForEnjinV1082,
     /**
      *  All voting for a particular voter in a particular voting class. We store the balance for the
      *  number of votes that we have recorded.
@@ -213,6 +224,103 @@ export interface VotingForEnjinV1070 {
         key2: number,
         key3: enjinV1070.VoteCurrency
     ): AsyncIterable<[k: [enjinV1070.AccountId32, number, enjinV1070.VoteCurrency], v: enjinV1070.Voting | undefined][]>
+}
+
+/**
+ *  All voting for a particular voter in a particular voting class. We store the balance for the
+ *  number of votes that we have recorded.
+ */
+export interface VotingForEnjinV1082 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): enjinV1082.Voting
+    get(
+        block: Block,
+        key1: enjinV1082.AccountId32,
+        key2: number,
+        key3: enjinV1082.VoteCurrency
+    ): Promise<enjinV1082.Voting | undefined>
+    getMany(
+        block: Block,
+        keys: [enjinV1082.AccountId32, number, enjinV1082.VoteCurrency][]
+    ): Promise<(enjinV1082.Voting | undefined)[]>
+    getKeys(block: Block): Promise<[enjinV1082.AccountId32, number, enjinV1082.VoteCurrency][]>
+    getKeys(
+        block: Block,
+        key1: enjinV1082.AccountId32
+    ): Promise<[enjinV1082.AccountId32, number, enjinV1082.VoteCurrency][]>
+    getKeys(
+        block: Block,
+        key1: enjinV1082.AccountId32,
+        key2: number
+    ): Promise<[enjinV1082.AccountId32, number, enjinV1082.VoteCurrency][]>
+    getKeys(
+        block: Block,
+        key1: enjinV1082.AccountId32,
+        key2: number,
+        key3: enjinV1082.VoteCurrency
+    ): Promise<[enjinV1082.AccountId32, number, enjinV1082.VoteCurrency][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[enjinV1082.AccountId32, number, enjinV1082.VoteCurrency][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: enjinV1082.AccountId32
+    ): AsyncIterable<[enjinV1082.AccountId32, number, enjinV1082.VoteCurrency][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: enjinV1082.AccountId32,
+        key2: number
+    ): AsyncIterable<[enjinV1082.AccountId32, number, enjinV1082.VoteCurrency][]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key1: enjinV1082.AccountId32,
+        key2: number,
+        key3: enjinV1082.VoteCurrency
+    ): AsyncIterable<[enjinV1082.AccountId32, number, enjinV1082.VoteCurrency][]>
+    getPairs(
+        block: Block
+    ): Promise<[k: [enjinV1082.AccountId32, number, enjinV1082.VoteCurrency], v: enjinV1082.Voting | undefined][]>
+    getPairs(
+        block: Block,
+        key1: enjinV1082.AccountId32
+    ): Promise<[k: [enjinV1082.AccountId32, number, enjinV1082.VoteCurrency], v: enjinV1082.Voting | undefined][]>
+    getPairs(
+        block: Block,
+        key1: enjinV1082.AccountId32,
+        key2: number
+    ): Promise<[k: [enjinV1082.AccountId32, number, enjinV1082.VoteCurrency], v: enjinV1082.Voting | undefined][]>
+    getPairs(
+        block: Block,
+        key1: enjinV1082.AccountId32,
+        key2: number,
+        key3: enjinV1082.VoteCurrency
+    ): Promise<[k: [enjinV1082.AccountId32, number, enjinV1082.VoteCurrency], v: enjinV1082.Voting | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: [enjinV1082.AccountId32, number, enjinV1082.VoteCurrency], v: enjinV1082.Voting | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: enjinV1082.AccountId32
+    ): AsyncIterable<[k: [enjinV1082.AccountId32, number, enjinV1082.VoteCurrency], v: enjinV1082.Voting | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: enjinV1082.AccountId32,
+        key2: number
+    ): AsyncIterable<[k: [enjinV1082.AccountId32, number, enjinV1082.VoteCurrency], v: enjinV1082.Voting | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key1: enjinV1082.AccountId32,
+        key2: number,
+        key3: enjinV1082.VoteCurrency
+    ): AsyncIterable<[k: [enjinV1082.AccountId32, number, enjinV1082.VoteCurrency], v: enjinV1082.Voting | undefined][]>
 }
 
 /**

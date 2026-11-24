@@ -8,6 +8,7 @@ import * as v1060 from '../v1060'
 import * as enjinV1070 from '../enjinV1070'
 import * as v1070 from '../v1070'
 import * as enjinV1080 from '../enjinV1080'
+import * as enjinV1082 from '../enjinV1082'
 import * as v1082 from '../v1082'
 
 export const delegated = {
@@ -33,6 +34,22 @@ export const delegated = {
             target: enjinV1070.AccountId32,
             class: sts.number(),
             currency: enjinV1070.VoteCurrency,
+        })
+    ),
+    /**
+     * An account has delegated their vote to another account.
+     */
+    enjinV1082: new EventType(
+        'ConvictionVoting.Delegated',
+        sts.struct({
+            who: enjinV1082.AccountId32,
+            target: enjinV1082.AccountId32,
+            class: sts.number(),
+            currency: enjinV1082.VoteCurrency,
+            /**
+             * The ENJ value the delegated balance counts for, before conviction.
+             */
+            counted: sts.bigint(),
         })
     ),
     /**
@@ -91,6 +108,21 @@ export const undelegated = {
             who: enjinV1070.AccountId32,
             class: sts.number(),
             currency: enjinV1070.VoteCurrency,
+        })
+    ),
+    /**
+     * An account has canceled a previous delegation operation.
+     */
+    enjinV1082: new EventType(
+        'ConvictionVoting.Undelegated',
+        sts.struct({
+            who: enjinV1082.AccountId32,
+            class: sts.number(),
+            currency: enjinV1082.VoteCurrency,
+            /**
+             * The ENJ value the delegation counted for, before conviction.
+             */
+            counted: sts.bigint(),
         })
     ),
     /**
@@ -158,6 +190,22 @@ export const voted = {
             vote: enjinV1070.AccountVote,
             pollIndex: sts.number(),
             currency: enjinV1070.VoteCurrency,
+        })
+    ),
+    /**
+     * An account has voted
+     */
+    enjinV1082: new EventType(
+        'ConvictionVoting.Voted',
+        sts.struct({
+            who: enjinV1082.AccountId32,
+            vote: enjinV1082.AccountVote,
+            pollIndex: sts.number(),
+            currency: enjinV1082.VoteCurrency,
+            /**
+             * The vote as added to the tally, in ENJ and before conviction.
+             */
+            counted: enjinV1082.AccountVote,
         })
     ),
     /**
@@ -233,6 +281,22 @@ export const voteRemoved = {
             vote: enjinV1070.AccountVote,
             pollIndex: sts.number(),
             currency: enjinV1070.VoteCurrency,
+        })
+    ),
+    /**
+     * A vote has been removed
+     */
+    enjinV1082: new EventType(
+        'ConvictionVoting.VoteRemoved',
+        sts.struct({
+            who: enjinV1082.AccountId32,
+            vote: enjinV1082.AccountVote,
+            pollIndex: sts.number(),
+            currency: enjinV1082.VoteCurrency,
+            /**
+             * The vote as taken out of the tally, in ENJ and before conviction.
+             */
+            counted: enjinV1082.AccountVote,
         })
     ),
     /**

@@ -57,6 +57,7 @@ import { Call as CallMatrixEnjinV1031 } from 'src/type/matrixEnjinV1031'
 import { Call as CallEnjinV1070 } from 'src/type/enjinV1070'
 import { Call as CallV1080 } from '~/type/v1080'
 import { Call as CallV1082 } from '~/type/v1082'
+import { Call as CallEnjinV1082 } from '~/type/enjinV1082'
 
 type Call =
     | CallEnjinV100
@@ -118,6 +119,7 @@ type Call =
     | CallV1060
     | CallV1080
     | CallV1082
+    | CallEnjinV1082
 
 export type Batch = {
     calls: Call[]

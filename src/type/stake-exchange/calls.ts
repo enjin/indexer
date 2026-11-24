@@ -245,5 +245,5 @@ export const removeLiquidityConfig = {
      * # Errors
      * - [`Error::LiquidityConfigNotFound`] if the caller has no liquidity config
      */
-    v1082: new CallType('StakeExchange.remove_liquidity_config', sts.unit()),
+    enjinV1082: new CallType('StakeExchange.remove_liquidity_config', sts.unit()),
 }

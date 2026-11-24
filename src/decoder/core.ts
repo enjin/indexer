@@ -24,7 +24,7 @@ export function bigIntReplacer(_key: string, value: unknown): unknown {
 export const DEFAULT_NETWORK: Network = 'enjin-matrixchain'
 
 export const LATEST_SPEC_VERSIONS: Record<Network, number> = {
-    'enjin-relaychain': 1080,
+    'enjin-relaychain': 1082,
     'enjin-matrixchain': 1043,
     'canary-relaychain': 1082,
     'canary-matrixchain': 1043,

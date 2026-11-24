@@ -8,7 +8,7 @@ import * as enjinV1021 from '../enjinV1021'
 import * as v1021 from '../v1021'
 import * as enjinV1023 from '../enjinV1023'
 import * as v1023 from '../v1023'
-import * as v1082 from '../v1082'
+import * as enjinV1082 from '../enjinV1082'
 
 export const liquidityConfigs = {
     /**
@@ -289,12 +289,12 @@ export const liquidityConfigDeposits = {
      *  config releases. A config stored before deposits were introduced has no entry and holds
      *  nothing until its next update.
      */
-    v1082: new StorageType(
+    enjinV1082: new StorageType(
         'StakeExchange.LiquidityConfigDeposits',
         'Default',
-        [v1082.AccountId32],
+        [enjinV1082.AccountId32],
         sts.bigint()
-    ) as LiquidityConfigDepositsV1082,
+    ) as LiquidityConfigDepositsEnjinV1082,
 }
 
 /**
@@ -302,21 +302,21 @@ export const liquidityConfigDeposits = {
  *  config releases. A config stored before deposits were introduced has no entry and holds
  *  nothing until its next update.
  */
-export interface LiquidityConfigDepositsV1082 {
+export interface LiquidityConfigDepositsEnjinV1082 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): bigint
-    get(block: Block, key: v1082.AccountId32): Promise<bigint | undefined>
-    getMany(block: Block, keys: v1082.AccountId32[]): Promise<(bigint | undefined)[]>
-    getKeys(block: Block): Promise<v1082.AccountId32[]>
-    getKeys(block: Block, key: v1082.AccountId32): Promise<v1082.AccountId32[]>
-    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v1082.AccountId32[]>
-    getKeysPaged(pageSize: number, block: Block, key: v1082.AccountId32): AsyncIterable<v1082.AccountId32[]>
-    getPairs(block: Block): Promise<[k: v1082.AccountId32, v: bigint | undefined][]>
-    getPairs(block: Block, key: v1082.AccountId32): Promise<[k: v1082.AccountId32, v: bigint | undefined][]>
-    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: v1082.AccountId32, v: bigint | undefined][]>
+    get(block: Block, key: enjinV1082.AccountId32): Promise<bigint | undefined>
+    getMany(block: Block, keys: enjinV1082.AccountId32[]): Promise<(bigint | undefined)[]>
+    getKeys(block: Block): Promise<enjinV1082.AccountId32[]>
+    getKeys(block: Block, key: enjinV1082.AccountId32): Promise<enjinV1082.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<enjinV1082.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block, key: enjinV1082.AccountId32): AsyncIterable<enjinV1082.AccountId32[]>
+    getPairs(block: Block): Promise<[k: enjinV1082.AccountId32, v: bigint | undefined][]>
+    getPairs(block: Block, key: enjinV1082.AccountId32): Promise<[k: enjinV1082.AccountId32, v: bigint | undefined][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: enjinV1082.AccountId32, v: bigint | undefined][]>
     getPairsPaged(
         pageSize: number,
         block: Block,
-        key: v1082.AccountId32
-    ): AsyncIterable<[k: v1082.AccountId32, v: bigint | undefined][]>
+        key: enjinV1082.AccountId32
+    ): AsyncIterable<[k: enjinV1082.AccountId32, v: bigint | undefined][]>
 }

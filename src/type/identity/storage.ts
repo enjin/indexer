@@ -1,4 +1,5 @@
 import { sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx } from '../support'
+import * as v110 from '../v110'
 import * as matrixEnjinV1000 from '../matrixEnjinV1000'
 import * as matrixV1010 from '../matrixV1010'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
@@ -8,6 +9,7 @@ import * as matrixEnjinV1031 from '../matrixEnjinV1031'
 import * as enjinV1032 from '../enjinV1032'
 import * as v1060 from '../v1060'
 import * as enjinV1062 from '../enjinV1062'
+import * as enjinV1082 from '../enjinV1082'
 import * as v1082 from '../v1082'
 
 export const identityOf = {
@@ -94,6 +96,24 @@ export const identityOf = {
         [enjinV1062.AccountId32],
         enjinV1062.Registration
     ) as IdentityOfEnjinV1062,
+    /**
+     *  Information that is pertinent to identify the entity behind an account. First item is the
+     *  registration, second is the account's primary username.
+     *
+     *  TWOX-NOTE: OK ― `AccountId` is a secure hash.
+     */
+    enjinV1082: new StorageType(
+        'Identity.IdentityOf',
+        'Optional',
+        [enjinV1082.AccountId32],
+        enjinV1082.Registration
+    ) as IdentityOfEnjinV1082,
+    /**
+     *  Information that is pertinent to identify the entity behind an account.
+     *
+     *  TWOX-NOTE: OK ― `AccountId` is a secure hash.
+     */
+    v110: new StorageType('Identity.IdentityOf', 'Optional', [v110.AccountId32], v110.Registration) as IdentityOfV110,
     /**
      *  Information that is pertinent to identify the entity behind an account. First item is the
      *  registration, second is the account's primary username.
@@ -373,6 +393,62 @@ export interface IdentityOfEnjinV1062 {
         block: Block,
         key: enjinV1062.AccountId32
     ): AsyncIterable<[k: enjinV1062.AccountId32, v: enjinV1062.Registration | undefined][]>
+}
+
+/**
+ *  Information that is pertinent to identify the entity behind an account. First item is the
+ *  registration, second is the account's primary username.
+ *
+ *  TWOX-NOTE: OK ― `AccountId` is a secure hash.
+ */
+export interface IdentityOfEnjinV1082 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: enjinV1082.AccountId32): Promise<enjinV1082.Registration | undefined>
+    getMany(block: Block, keys: enjinV1082.AccountId32[]): Promise<(enjinV1082.Registration | undefined)[]>
+    getKeys(block: Block): Promise<enjinV1082.AccountId32[]>
+    getKeys(block: Block, key: enjinV1082.AccountId32): Promise<enjinV1082.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<enjinV1082.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block, key: enjinV1082.AccountId32): AsyncIterable<enjinV1082.AccountId32[]>
+    getPairs(block: Block): Promise<[k: enjinV1082.AccountId32, v: enjinV1082.Registration | undefined][]>
+    getPairs(
+        block: Block,
+        key: enjinV1082.AccountId32
+    ): Promise<[k: enjinV1082.AccountId32, v: enjinV1082.Registration | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: enjinV1082.AccountId32, v: enjinV1082.Registration | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: enjinV1082.AccountId32
+    ): AsyncIterable<[k: enjinV1082.AccountId32, v: enjinV1082.Registration | undefined][]>
+}
+
+/**
+ *  Information that is pertinent to identify the entity behind an account.
+ *
+ *  TWOX-NOTE: OK ― `AccountId` is a secure hash.
+ */
+export interface IdentityOfV110 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: v110.AccountId32): Promise<v110.Registration | undefined>
+    getMany(block: Block, keys: v110.AccountId32[]): Promise<(v110.Registration | undefined)[]>
+    getKeys(block: Block): Promise<v110.AccountId32[]>
+    getKeys(block: Block, key: v110.AccountId32): Promise<v110.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v110.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block, key: v110.AccountId32): AsyncIterable<v110.AccountId32[]>
+    getPairs(block: Block): Promise<[k: v110.AccountId32, v: v110.Registration | undefined][]>
+    getPairs(block: Block, key: v110.AccountId32): Promise<[k: v110.AccountId32, v: v110.Registration | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: v110.AccountId32, v: v110.Registration | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: v110.AccountId32
+    ): AsyncIterable<[k: v110.AccountId32, v: v110.Registration | undefined][]>
 }
 
 /**

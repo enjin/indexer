@@ -150,20 +150,26 @@ void test('token layout check accepts the v6 and v7 trailing fields', async () =
     assert.equal(hasV6TokenLayout(current), true)
 })
 
-void test('Canary Matrixchain 1042 metadata decodes current and lazily unmigrated tokens', async () => {
-    const current = await getRuntimeCached('canary-matrixchain', 1042)
-    const previous = await getRuntimeCached('canary-matrixchain', 1041)
-    const currentType = current.description.storage.MultiTokens.items.Tokens.value
-    const previousType = previous.description.storage.MultiTokens.items.Tokens.value
+for (const [network, version, previousVersion] of [
+    ['canary-matrixchain', 1042, 1041],
+    ['enjin-relaychain', 1082, 1080],
+    ['canary-relaychain', 1082, 1080],
+] as const) {
+    void test(`${network} ${version} decodes current and lazily unmigrated tokens`, async () => {
+        const current = await getRuntimeCached(network, version)
+        const previous = await getRuntimeCached(network, previousVersion)
+        const currentType = current.description.storage.MultiTokens.items.Tokens.value
+        const previousType = previous.description.storage.MultiTokens.items.Tokens.value
 
-    assert.equal(tokenLayout(current), 'v7')
-    assert.equal(tokenLayout(previous), 'v6')
+        assert.equal(tokenLayout(current), 'v7')
+        assert.equal(tokenLayout(previous), 'v6')
 
-    const v7 = current.scaleCodec.encodeToHex(currentType, { ...tokenValue(), creationBlock: 13376712 })
-    const v6 = previous.scaleCodec.encodeToHex(previousType, tokenValue())
-    assert.equal(decodeTokenStorageValue(current, v7).creationBlock, 13376712n)
-    assert.equal(decodeTokenStorageValue(current, v6).creationBlock, undefined)
-})
+        const v7 = current.scaleCodec.encodeToHex(currentType, { ...tokenValue(), creationBlock: 13376712 })
+        const v6 = previous.scaleCodec.encodeToHex(previousType, tokenValue())
+        assert.equal(decodeTokenStorageValue(current, v7).creationBlock, 13376712n)
+        assert.equal(decodeTokenStorageValue(current, v6).creationBlock, undefined)
+    })
+}
 
 for (const network of ['enjin-matrixchain', 'canary-matrixchain'] as const) {
     void test(`${network} 1043 matches the v7 token layout from Canary Matrixchain 1042`, async () => {

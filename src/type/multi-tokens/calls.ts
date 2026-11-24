@@ -39,6 +39,7 @@ import * as enjinV1070 from '../enjinV1070'
 import * as v1070 from '../v1070'
 import * as enjinV1080 from '../enjinV1080'
 import * as v1080 from '../v1080'
+import * as enjinV1082 from '../enjinV1082'
 import * as v1082 from '../v1082'
 
 export const createCollection = {
@@ -5444,6 +5445,30 @@ export const forceSetToken = {
             collectionId: sts.bigint(),
             tokenId: sts.bigint(),
             value: sts.option(() => enjinV1080.Token),
+        })
+    ),
+    /**
+     * Set the Tokens storage to the given `value`, origin must be root
+     *
+     * The value is stored as given, `creation_block` and the metadata's `foreign` included:
+     * this is the one call that can still write foreign metadata, which nothing reads any
+     * more. Creating a token this way does
+     * not record the current block: a caller that sets a token where none exists, or replaces
+     * one, chooses the creation block that later readers compare against.
+     *
+     * # Errors
+     *
+     * - [`Error::PendingAttributeCleanup`] if `value` is set while the attributes or accounts
+     *   of a destroyed token under this id still wait for the sweep, which would remove the
+     *   new token's accounts, balances included. Running
+     *   [`cleanup_orphaned_attributes`](Self::cleanup_orphaned_attributes) first clears it.
+     */
+    enjinV1082: new CallType(
+        'MultiTokens.force_set_token',
+        sts.struct({
+            collectionId: sts.bigint(),
+            tokenId: sts.bigint(),
+            value: sts.option(() => enjinV1082.Token),
         })
     ),
     /**
