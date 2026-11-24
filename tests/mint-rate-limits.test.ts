@@ -4,6 +4,7 @@ import { createRequire, Module } from 'node:module'
 import test, { after } from 'node:test'
 import { Codec, Type, TypeKind } from '@subsquid/scale-codec'
 import { Runtime } from '@subsquid/substrate-runtime'
+import type { Job } from 'bullmq'
 import { buildSchemaSync } from 'type-graphql'
 import { Block, EventItem } from '~/contexts'
 import {
@@ -24,9 +25,9 @@ import {
 import { decodeCollectionStorageValue, getMixedCollection } from '~/pallet/multi-tokens/storage/collection-values'
 import { normalizeMintRateLimitState } from '~/pallet/multi-tokens/storage/mint-rate-limit'
 import { decodeTokenStorageValue } from '~/pallet/multi-tokens/storage/token-values'
-import { completeMintRateLimitRemovals } from '~/pallet/multi-tokens/processors/complete-mint-rate-limit-removals'
 import { EffectiveMintRateLimitResolver, mintRateLimitAtBlock } from '~/server-extension/effective-mint-rate-limit'
 import { calls, events, storage } from '~/type'
+import { completeMintRateLimitRemovals } from '~/worker/jobs/tokens/complete-mint-rate-limit-removals'
 
 const testRequire = createRequire(__filename)
 const queueModulePath = testRequire.resolve('~/queue')
@@ -130,39 +131,37 @@ void test('effective rate limit switches exactly at the scheduled block without 
     assert.deepEqual(mintRateLimitAtBlock(null, 201n), { limit: null, pending: null })
 })
 
-void test('an indexed block clears due token and collection removals without a new chain event', async () => {
-    const token = new Token({ id: '101706-455', mintRateLimit: storedRateLimit(null) })
-    const collection = new Collection({ id: '101706', mintRateLimit: storedRateLimit(null) })
-    const saved: string[] = []
-    const ctx = {
-        store: {
-            find: (model: typeof Token | typeof Collection, options: { where: { mintRateLimit: object } }) => {
-                const condition = options.where.mintRateLimit as {
-                    objectLiteralParameters: { effectiveHeight: number }
-                }
-                const record = model === Token ? token : collection
-                return Promise.resolve(
-                    condition.objectLiteralParameters.effectiveHeight === 200 ? [{ id: record.id }] : []
-                )
-            },
-            findOne: (model: typeof Token | typeof Collection, options: { where: { id: string } }) => {
-                const record = model === Token ? token : collection
-                assert.equal(options.where.id, record.id)
-                return Promise.resolve(record.mintRateLimit ? record : undefined)
-            },
-            save: (record: Token | Collection) => {
-                assert.equal(record.mintRateLimit, null)
-                saved.push(record.id)
-                return Promise.resolve()
-            },
-        },
-    } as never
-    const runtime = runtime1040()
-    await completeMintRateLimitRemovals(ctx, { _runtime: runtime, height: 199 } as Block)
-    assert.deepEqual(saved, [])
-    await completeMintRateLimitRemovals(ctx, { _runtime: runtime, height: 200 } as Block)
-    await completeMintRateLimitRemovals(ctx, { _runtime: runtime, height: 200 } as Block)
-    assert.deepEqual(saved, [token.id, collection.id])
+void test('the mint rate removal job waits for an indexed finalized block', async (t) => {
+    const query = t.mock.fn(<T>(sql: string): Promise<T> => {
+        assert.match(sql, /squid_processor\.status/)
+        return Promise.resolve([{ height: -1 }] as T)
+    })
+    await completeMintRateLimitRemovals({} as Job, { query })
+    assert.equal(query.mock.callCount(), 1)
+})
+
+void test('the mint rate removal job drains both scopes in batches at the finalized height', async (t) => {
+    const batchCounts = [1000, 12, 3]
+    const query = t.mock.fn(<T>(sql: string, parameters?: number[]): Promise<T> => {
+        const results = parameters ? [{ count: batchCounts.shift() }] : [{ height: 200 }]
+        if (!parameters) assert.match(sql, /squid_processor\.status/)
+        return Promise.resolve(results as T)
+    })
+    const job = { log: () => Promise.resolve(1) } as Job
+
+    await completeMintRateLimitRemovals(job, { query })
+
+    const [, ...updates] = query.mock.calls
+    assert.deepEqual(
+        updates.map(({ arguments: args }) => args[1]),
+        [
+            [200, 1000],
+            [200, 1000],
+            [200, 1000],
+        ]
+    )
+    assert.match(updates[0].arguments[0], /UPDATE "token"/)
+    assert.match(updates[2].arguments[0], /UPDATE "collection"/)
 })
 
 void test('effective rate limit resolver uses the indexed block for token and collection scope', async () => {
