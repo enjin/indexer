@@ -83,7 +83,7 @@ export async function tokens(ctx: CommonContext, block: Block) {
                 anyoneCanInfuse: data.anyoneCanInfuse ?? false,
                 ephemeralExpiration: data.ephemeralExpiration ?? null,
                 isLendable: data.isLendable,
-                mintRateLimit: toMintRateLimitStateModel(data.mintRateLimit),
+                mintRateLimit: toMintRateLimitStateModel(data.mintRateLimit, block.height),
                 nativeMetadata: null,
                 tokenGroupTokens: [],
                 infusion: data.infusion,

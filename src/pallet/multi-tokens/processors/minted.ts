@@ -41,7 +41,7 @@ export async function refreshMintRateLimits(
     ])
 
     if (chainToken) {
-        token.mintRateLimit = toMintRateLimitStateModel(chainToken.mintRateLimit)
+        token.mintRateLimit = toMintRateLimitStateModel(chainToken.mintRateLimit, block.height)
     } else {
         ctx.log.warn(`[Minted] Token ${token.id} was absent while refreshing its mint rate limit`)
     }
@@ -51,7 +51,7 @@ export async function refreshMintRateLimits(
         return false
     }
 
-    token.collection.mintRateLimit = toMintRateLimitStateModel(chainCollection.mintRateLimit)
+    token.collection.mintRateLimit = toMintRateLimitStateModel(chainCollection.mintRateLimit, block.height)
     return true
 }
 

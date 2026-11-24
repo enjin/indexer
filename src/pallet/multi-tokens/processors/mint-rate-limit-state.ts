@@ -13,8 +13,13 @@ export function toMintRateLimitModel(limit: MintRateLimit): MintRateLimitModel {
     })
 }
 
-export function toMintRateLimitStateModel(state?: MintRateLimitState): MintRateLimitStateModel | null {
-    if (!state) return null
+export function toMintRateLimitStateModel(
+    state: MintRateLimitState | undefined,
+    indexedHeight: number
+): MintRateLimitStateModel | null {
+    if (!state || (state.pending && !state.pending.newLimit && state.pending.effectiveBlock <= BigInt(indexedHeight))) {
+        return null
+    }
 
     return new MintRateLimitStateModel({
         limit: toMintRateLimitModel(state.limit),

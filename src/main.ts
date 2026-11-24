@@ -39,6 +39,7 @@ import { isSnsEvent, Sns, SnsEvent } from '~/util/sns'
 import { rememberBlockEvents } from '~/util/sns-cause'
 import { queueMissingBlocks } from '~/migration/queue-missing-blocks'
 import { initializeCrashReporting, reportCrash } from '~/util/crash-report'
+import { completeMintRateLimitRemovals } from '~/pallet/multi-tokens/processors/complete-mint-rate-limit-removals'
 
 const logger = new Logger('sqd:processor', config.logLevel)
 
@@ -182,6 +183,8 @@ async function bootstrap() {
                 }
 
                 const lastBlock = ctx.blocks[ctx.blocks.length - 1].header
+
+                await completeMintRateLimitRemovals(ctx, lastBlock)
 
                 // Book state only: promotion has no event, so it is resolved once per batch at its last height.
                 await p.marketplace.processors.promoteActivatedListings(ctx, lastBlock)
