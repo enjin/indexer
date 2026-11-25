@@ -16,7 +16,6 @@ import {
     syncTokens,
 } from '~/worker/jobs'
 import { JobHandler, JobRouterProcessor } from '~/worker/processors/job-router.processor'
-import { publishMintRateLimitNotification } from '~/worker/jobs/tokens/publish-mint-rate-limit-notification'
 
 export class TokensProcessor extends JobRouterProcessor {
     protected readonly completedMessage = 'Finished computing tokens'
@@ -27,7 +26,6 @@ export class TokensProcessor extends JobRouterProcessor {
         [JobsEnum.COMPUTE_TOKEN_BEST_LISTING, (job) => computeTokenBestListing(job, job.data.id)],
         [JobsEnum.COMPUTE_TOKEN_INFUSION, (job) => computeTokenInfusion(job, job.data.id)],
         [JobsEnum.APPLY_PENDING_MINT_RATE_LIMIT_CHANGES, (job) => applyPendingMintRateLimitChanges(job)],
-        [JobsEnum.PUBLISH_MINT_RATE_LIMIT_NOTIFICATION, publishMintRateLimitNotification],
         [JobsEnum.SYNC_TOKEN_GROUP_POSITIONS, (job) => syncTokenGroupPositions(job)],
         [JobsEnum.COMPUTE_TOKEN_CREATION_SUPPLY, (job) => computeTokenCreationSupply(job, job.data.id)],
         [JobsEnum.COMPUTE_TOKEN_NATIVE_METADATA, (job) => computeTokenNativeMetadata(job, job.data.id)],

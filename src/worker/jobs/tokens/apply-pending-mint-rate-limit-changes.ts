@@ -6,6 +6,7 @@ import { toMintRateLimitStateModel } from '~/pallet/multi-tokens/processors/mint
 import { queueMintRateLimitChanges } from '~/queue/mint-rate-limit-notifications'
 import { finalizedIndexedHeight } from '~/util/finalized-indexed-height'
 import { logDebug } from '~/worker/utils'
+import { publishMintRateLimitNotifications } from './publish-mint-rate-limit-notifications'
 
 const BATCH_SIZE = 1000
 
@@ -38,8 +39,8 @@ async function applyBatch(manager: ChangeManager, table: 'token' | 'collection',
             [JSON.stringify(rows.map(({ id, state }) => ({ id, state })))]
         )
 
-        // Enqueue before committing so a queue error leaves the policy eligible for retry.
-        // The notification job waits until it can read the applied policy.
+        // Buffer before committing so a Redis error leaves the policy eligible for retry.
+        // The publisher waits until it can read the applied policy.
         for (const { id, before, state } of rows) {
             const [collectionId, tokenId] = id.split('-')
             await queueMintRateLimitChanges({ collectionId, tokenId }, before, state, BigInt(height))
@@ -63,4 +64,5 @@ export async function applyPendingMintRateLimitChanges(job: Job, manager?: Chang
         }
         if (applied) logDebug(`Applied ${applied} mint rate limit changes to ${table} through block ${height}`, job)
     }
+    await publishMintRateLimitNotifications(height)
 }

@@ -1,5 +1,5 @@
-import { JobsEnum } from '~/queue/constants'
 import config from '~/util/config'
+import type { IRedisClient } from 'bullmq'
 import { safeJsonObject, isRelay } from '~/util/tools'
 import type { SnsEvent } from '~/util/sns'
 import type { MintRateLimitState } from '~/model'
@@ -11,31 +11,66 @@ import {
     mintRateLimitSlotLength,
 } from '~/pallet/multi-tokens/mint-rate-limit-notifications'
 
-export interface MintRateLimitNotificationJob {
+export interface PendingMintRateLimitNotification {
     event: SnsEvent
     blockNumber: string
     source?: { id: string; block: number }
     availabilityFrom?: string
 }
 
+interface NotificationRedisClient extends IRedisClient {
+    zadd(key: string, block: string, payload: string): Promise<number>
+    zrangebyscore(
+        key: string,
+        min: string,
+        max: number,
+        limit: 'LIMIT',
+        offset: number,
+        count: number
+    ): Promise<string[]>
+    zrem(key: string, payload: string): Promise<number>
+}
+
+function supportsSortedSets(client: IRedisClient): client is NotificationRedisClient {
+    return (
+        'zadd' in client &&
+        typeof client.zadd === 'function' &&
+        'zrangebyscore' in client &&
+        typeof client.zrangebyscore === 'function' &&
+        'zrem' in client &&
+        typeof client.zrem === 'function'
+    )
+}
+
+export function mintRateLimitNotificationsEnabled(): boolean {
+    return !!config.amazonSns.topicArn && !isRelay()
+}
+
+export async function mintRateLimitNotificationsRedis() {
+    const { TokensQueue } = await import('~/queue')
+    const client = await TokensQueue.client
+    // BullMQ's ioredis adapter forwards native methods beyond its public interface.
+    if (!supportsSortedSets(client)) throw new Error('The Tokens Redis client must support sorted-set commands')
+    return { client, key: TokensQueue.toKey(`mint-rate-limit-notifications:${config.chainName}`) }
+}
+
 export async function queueMintRateLimitNotification(
     event: SnsEvent,
     block: bigint,
-    source?: MintRateLimitNotificationJob['source'],
+    source?: PendingMintRateLimitNotification['source'],
     availabilityFrom?: bigint
 ): Promise<void> {
-    if (!config.amazonSns.topicArn || isRelay()) return
+    if (!mintRateLimitNotificationsEnabled()) return
 
-    const { TokensQueue } = await import('~/queue')
-    const job: MintRateLimitNotificationJob = {
+    const notification: PendingMintRateLimitNotification = {
         event: { ...event, body: safeJsonObject(event.body) },
         blockNumber: block.toString(),
         source,
         availabilityFrom: availabilityFrom?.toString(),
     }
-    await TokensQueue.add(JobsEnum.PUBLISH_MINT_RATE_LIMIT_NOTIFICATION, job, {
-        jobId: `mint-rate-${event.id}${source ? `-${source.id}` : ''}${availabilityFrom === undefined ? '' : '-check'}`,
-    })
+    const { client, key } = await mintRateLimitNotificationsRedis()
+    const finalizedBlock = source && BigInt(source.block) > block ? BigInt(source.block) : block
+    await client.zadd(key, finalizedBlock.toString(), JSON.stringify(notification))
 }
 
 export async function queueMintRateLimitChanges(
@@ -43,9 +78,9 @@ export async function queueMintRateLimitChanges(
     before: MintRateLimitState | null | undefined,
     after: MintRateLimitState | null | undefined,
     height: bigint,
-    source?: MintRateLimitNotificationJob['source']
+    source?: PendingMintRateLimitNotification['source']
 ): Promise<void> {
-    if (!config.amazonSns.topicArn || isRelay() || (!before && !after)) return
+    if (!mintRateLimitNotificationsEnabled() || (!before && !after)) return
 
     const pending = before?.pending
     let transitionBlock = height
