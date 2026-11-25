@@ -2,7 +2,6 @@ import { Job } from 'bullmq'
 import { JobsEnum } from '~/queue/constants'
 import { ProcessorDef } from '~/worker/processors/processor.def'
 import { logDebug, logError } from '~/worker/utils'
-import { workerJobOverrides } from '~/worker/worker.extensions'
 
 export type JobHandler = (job: Job) => Promise<unknown>
 
@@ -15,7 +14,7 @@ export abstract class JobRouterProcessor implements ProcessorDef {
     protected abstract readonly completedMessage: string
 
     readonly handle = async (job: Job): Promise<void> => {
-        const route = workerJobOverrides.get(job.queueName)?.get(job.name) ?? this.routes.get(job.name as JobsEnum)
+        const route = this.routes.get(job.name as JobsEnum)
         if (!route) {
             throw new Error(`${job.name} is not a valid job for this processor`)
         }
