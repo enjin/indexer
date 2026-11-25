@@ -60,6 +60,20 @@ export class Sns {
             return
         }
 
+        try {
+            await this.publish(message, blockNumber)
+        } catch (error) {
+            console.error('Error sending SNS message', error)
+        }
+    }
+
+    public async sendFinalized(message: SnsEvent, blockNumber: bigint): Promise<boolean> {
+        if (!Sns.client) return false
+        await this.publish(message, blockNumber)
+        return true
+    }
+
+    private async publish(message: SnsEvent, blockNumber: number | bigint): Promise<void> {
         const toString = (value: unknown): string => {
             if (typeof value === 'string') {
                 return value
@@ -92,10 +106,6 @@ export class Sns {
             MessageDeduplicationId: message.id,
         })
 
-        try {
-            await Sns.getClient().send(command)
-        } catch (error) {
-            console.error('Error sending SNS message', error)
-        }
+        await Sns.getClient().send(command)
     }
 }

@@ -1,10 +1,10 @@
 const targets = [
-    ['token', 'token_pending_mint_rate_removal_idx'],
-    ['collection', 'collection_pending_mint_rate_removal_idx'],
+    ['token', 'token_pending_mint_rate_limit_idx'],
+    ['collection', 'collection_pending_mint_rate_limit_idx'],
 ]
 
-module.exports = class MintRateLimitRemovalIndexes1795528800000 {
-    name = 'MintRateLimitRemovalIndexes1795528800000'
+module.exports = class PendingMintRateLimitIndexes1795528800000 {
+    name = 'PendingMintRateLimitIndexes1795528800000'
     transaction = false
 
     async up(db) {
@@ -28,8 +28,7 @@ module.exports = class MintRateLimitRemovalIndexes1795528800000 {
                     `CREATE INDEX CONCURRENTLY "${name}" ON "${table}"
                      ((("mint_rate_limit" #>> '{pending,effectiveBlock}')::bigint))
                      INCLUDE ("id")
-                     WHERE ("mint_rate_limit" #>> '{pending,effectiveBlock}') IS NOT NULL
-                     AND COALESCE("mint_rate_limit" #> '{pending,newLimit}', 'null'::jsonb) = 'null'::jsonb`
+                     WHERE ("mint_rate_limit" #>> '{pending,effectiveBlock}') IS NOT NULL`
                 )
             }
         } finally {

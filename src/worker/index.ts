@@ -17,7 +17,7 @@ import { EventEmitter } from 'events'
 import { JobsEnum } from '~/queue/constants'
 import { initializeWorkers } from './worker.factory'
 
-const MINT_RATE_LIMIT_REMOVAL_INTERVAL_MS = 60_000
+const MINT_RATE_LIMIT_CHANGE_INTERVAL_MS = 60_000
 
 // Increase max listeners to avoid warnings
 EventEmitter.defaultMaxListeners = 30
@@ -66,10 +66,10 @@ server.listen(9090, () => {
     setImmediate(() => {
         try {
             initializeWorkers()
-            void TokensQueue.upsertJobScheduler(JobsEnum.COMPLETE_MINT_RATE_LIMIT_REMOVALS, {
-                every: MINT_RATE_LIMIT_REMOVAL_INTERVAL_MS,
+            void TokensQueue.upsertJobScheduler(JobsEnum.APPLY_PENDING_MINT_RATE_LIMIT_CHANGES, {
+                every: MINT_RATE_LIMIT_CHANGE_INTERVAL_MS,
             }).catch((err: unknown) => {
-                console.error('Failed to schedule mint rate limit removals', err)
+                console.error('Failed to schedule pending mint rate limit changes', err)
             })
         } catch (err) {
             console.error('Failed to initialize workers', err)

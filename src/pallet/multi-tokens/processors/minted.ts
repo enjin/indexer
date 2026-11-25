@@ -15,6 +15,7 @@ import { SnsEvent } from '~/util/sns'
 import * as mappings from '~/pallet/index'
 import { isNonFungible } from '~/util/helpers'
 import { QueueUtils } from '~/queue'
+import { queueMintRateLimitChanges } from '~/queue/mint-rate-limit-notifications'
 import { calls } from '~/type'
 import { getOrCreatePoolMemberRewards } from '~/util/earlyBird'
 import { EventHandlerResult } from '~/processor.handler'
@@ -167,6 +168,8 @@ export async function minted(
 
     token.supply += data.amount
     token.nonFungible = isNonFungible(token)
+    const previousTokenLimit = token.mintRateLimit
+    const previousCollectionLimit = token.collection.mintRateLimit
     const collectionMintRateLimitUpdated = await refreshMintRateLimits(
         ctx,
         block,
@@ -260,6 +263,25 @@ export async function minted(
     await QueueUtils.dispatchComputeMetadata({ id: token.id, type: 'token', force: true, traits: true, delay: 10000 })
     await QueueUtils.dispatchComputeStats(data.collectionId.toString())
     await QueueUtils.dispatchComputeAccountStats(recipient.id)
+
+    const subject = { collectionId: data.collectionId.toString() }
+    const source = { id: item.id, block: block.height }
+    await queueMintRateLimitChanges(
+        { ...subject, tokenId: data.tokenId.toString() },
+        previousTokenLimit,
+        token.mintRateLimit,
+        BigInt(block.height),
+        source
+    )
+    if (collectionMintRateLimitUpdated) {
+        await queueMintRateLimitChanges(
+            subject,
+            previousCollectionLimit,
+            token.collection.mintRateLimit,
+            BigInt(block.height),
+            source
+        )
+    }
 
     return [
         ...mappings.multiTokens.events.mintedEventModel(item.id, data, {

@@ -3,6 +3,9 @@ import { Collection, Token } from '~/model'
 import * as mappings from '~/pallet/index'
 import { EventHandlerResult } from '~/processor.handler'
 import { SnsEvent } from '~/util/sns'
+import { isRelay } from '~/util/tools'
+import config from '~/util/config'
+import { queueMintRateLimitChanges, queueMintRateLimitNotification } from '~/queue/mint-rate-limit-notifications'
 import { toMintRateLimitStateModel } from './mint-rate-limit-state'
 
 function snsEvent(item: EventItem, body: Record<string, unknown>): SnsEvent {
@@ -19,9 +22,12 @@ function snsEvent(item: EventItem, body: Record<string, unknown>): SnsEvent {
 async function updateMintRateLimit(
     ctx: CommonContext,
     block: Block,
+    item: EventItem,
     collectionId: bigint,
     tokenId?: bigint
 ): Promise<void> {
+    const subject = { collectionId: collectionId.toString(), tokenId: tokenId?.toString() }
+    const source = { id: item.id, block: block.height }
     if (tokenId === undefined) {
         const [collection, chainCollection] = await Promise.all([
             ctx.store.findOneBy(Collection, { id: collectionId.toString() }),
@@ -37,8 +43,10 @@ async function updateMintRateLimit(
             )
         }
 
+        const before = collection.mintRateLimit
         collection.mintRateLimit = toMintRateLimitStateModel(chainCollection.mintRateLimit, block.height)
         await ctx.store.save(collection)
+        await queueMintRateLimitChanges(subject, before, collection.mintRateLimit, BigInt(block.height), source)
         return
     }
 
@@ -57,8 +65,10 @@ async function updateMintRateLimit(
         )
     }
 
+    const before = token.mintRateLimit
     token.mintRateLimit = toMintRateLimitStateModel(chainToken.mintRateLimit, block.height)
     await ctx.store.save(token)
+    await queueMintRateLimitChanges(subject, before, token.mintRateLimit, BigInt(block.height), source)
 }
 
 export async function mintRateLimitUpdated(
@@ -70,7 +80,7 @@ export async function mintRateLimitUpdated(
     const data = mappings.multiTokens.events.mintRateLimitUpdated(item)
     const event = mappings.multiTokens.events.mintRateLimitUpdatedEventModel(item, data)
     if (skipSave) return event
-    await updateMintRateLimit(ctx, block, data.collectionId, data.tokenId)
+    await updateMintRateLimit(ctx, block, item, data.collectionId, data.tokenId)
     return [
         event,
         snsEvent(item, {
@@ -90,16 +100,16 @@ export async function mintRateLimitChangeScheduled(
     const data = mappings.multiTokens.events.mintRateLimitChangeScheduled(item)
     const event = mappings.multiTokens.events.mintRateLimitChangeScheduledEventModel(item, data)
     if (skipSave) return event
-    await updateMintRateLimit(ctx, block, data.collectionId, data.tokenId)
-    return [
-        event,
-        snsEvent(item, {
-            collectionId: data.collectionId,
-            tokenId: data.tokenId,
-            newLimit: data.newLimit,
-            effectiveBlock: data.effectiveBlock,
-        }),
-    ]
+    await updateMintRateLimit(ctx, block, item, data.collectionId, data.tokenId)
+    const message = snsEvent(item, {
+        collectionId: data.collectionId,
+        tokenId: data.tokenId,
+        newLimit: data.newLimit,
+        effectiveBlock: data.effectiveBlock,
+    })
+    if (isRelay() || !config.amazonSns.topicArn) return [event, message]
+    await queueMintRateLimitNotification(message, BigInt(block.height), { id: item.id, block: block.height })
+    return event
 }
 
 export async function mintRateLimitChangeCancelled(
@@ -111,7 +121,7 @@ export async function mintRateLimitChangeCancelled(
     const data = mappings.multiTokens.events.mintRateLimitChangeCancelled(item)
     const event = mappings.multiTokens.events.mintRateLimitChangeCancelledEventModel(item, data)
     if (skipSave) return event
-    await updateMintRateLimit(ctx, block, data.collectionId, data.tokenId)
+    await updateMintRateLimit(ctx, block, item, data.collectionId, data.tokenId)
     return [
         event,
         snsEvent(item, {
