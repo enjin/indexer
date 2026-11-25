@@ -20,7 +20,6 @@ import {
     RefreshListingsResolver,
     CollectionInventoryResolver,
     ChainStatsResolver,
-    EffectiveMintRateLimitResolver,
 } from '~/server-extension'
 
 export {
@@ -45,5 +44,6 @@ export {
     RefreshListingsResolver,
     CollectionInventoryResolver,
     ChainStatsResolver,
-    EffectiveMintRateLimitResolver,
 }
+
+export { EffectiveMintRateLimitResolver } from '~/server-extension/effective-mint-rate-limit'

@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import { createRequire, Module } from 'node:module'
 import test, { beforeEach } from 'node:test'
 import type { Job } from 'bullmq'
+import type { JobHandler } from '~/worker/processors/job-router.processor'
 import type { ProcessorDef } from '~/worker/processors/processor.def'
 
 type Call = { fn: string; args: unknown[] }
@@ -39,6 +40,8 @@ stub('~/worker/jobs', recordingJobs)
 stub('~/worker/jobs/collections/compute-extras', recordingJobs)
 stub('~/worker/jobs/collections/sync-collections', recordingJobs)
 stub('~/worker/jobs/validators/sync-active-validators', recordingJobs)
+const metadataOverrides = new Map<string, JobHandler>()
+stub('~/worker/worker.extensions', { workerJobOverrides: new Map([['METADATA', metadataOverrides]]) })
 stub('~/worker/utils', {
     logError: (error: Error, job?: unknown) => logs.push({ level: 'error', message: error.message, job }),
     logInfo: (message: string, job?: unknown) => logs.push({ level: 'info', message, job }),
@@ -190,8 +193,12 @@ const expectations: Expectation[] = [
 
 const allJobNames = expectations.flatMap((e) => e.routes.map(([name]) => name))
 
-function fakeJob(name: string): Job {
-    return { name, data: { id: 'id-1', ids: ['a', 'b'], fromBlock: 10, toBlock: 20, blockNumber: 15 } } as Job
+function fakeJob(name: string, queueName?: string): Job {
+    return {
+        name,
+        queueName,
+        data: { id: 'id-1', ids: ['a', 'b'], fromBlock: 10, toBlock: 20, blockNumber: 15 },
+    } as Job
 }
 
 function load(expectation: Expectation): { instance: ProcessorDef; slaveHandle: ProcessorDef['handle'] } {
@@ -205,6 +212,7 @@ beforeEach(() => {
     calls.length = 0
     logs.length = 0
     jobFailure = undefined
+    metadataOverrides.clear()
 })
 
 for (const expectation of expectations) {
@@ -259,3 +267,30 @@ for (const expectation of expectations) {
         ])
     })
 }
+
+void test('the metadata sandbox uses private job overrides and falls back to public handlers', async () => {
+    const handler: JobHandler = (job) => {
+        calls.push({ fn: 'privateMetadataHandler', args: [job] })
+        return Promise.resolve()
+    }
+    metadataOverrides.set('COMPUTE_METADATA', handler)
+    metadataOverrides.set('INTERNAL_METADATA_TEST_JOB', handler)
+
+    const { default: handle } = testRequire('~/worker/processors/slaves/metadata.slave') as {
+        default: ProcessorDef['handle']
+    }
+    const overriddenJob = fakeJob('COMPUTE_METADATA', 'METADATA')
+    const privateJob = fakeJob('INTERNAL_METADATA_TEST_JOB', 'METADATA')
+    const publicJob = fakeJob('SYNC_METADATA', 'METADATA')
+    await handle(overriddenJob)
+    await handle(privateJob)
+    await handle(publicJob)
+    await assert.rejects(handle(fakeJob('INTERNAL_METADATA_TEST_JOB', 'TOKENS')), {
+        message: 'INTERNAL_METADATA_TEST_JOB is not a valid job for this processor',
+    })
+    assert.deepEqual(calls, [
+        { fn: 'privateMetadataHandler', args: [overriddenJob] },
+        { fn: 'privateMetadataHandler', args: [privateJob] },
+        { fn: 'syncMetadata', args: [publicJob] },
+    ])
+})

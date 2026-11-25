@@ -1,5 +1,6 @@
 import { BaseWorker, WorkerOptions } from '~/worker/base-worker.class'
-import { QueuesEnum } from '~/queue/constants'
+import { JobsEnum, QueuesEnum } from '~/queue/constants'
+import TokensQueue from '~/queue/tokens/tokens.queue'
 import { ProcessorDef } from '~/worker/processors/processor.def'
 import {
     AccountsProcessor,
@@ -12,6 +13,8 @@ import {
     ValidatorsProcessor,
     NominationPoolsProcessor,
 } from '~/worker/processors'
+
+const MINT_RATE_LIMIT_REMOVAL_INTERVAL_MS = 60_000
 
 const processors: Map<QueuesEnum, { processor: ProcessorDef; options?: WorkerOptions }> = new Map([
     [QueuesEnum.ACCOUNTS, { processor: new AccountsProcessor(), options: { concurrency: 1 } }],
@@ -45,5 +48,11 @@ export function initializeWorkers(): void {
     // "Missing lock for job X. moveToFinished" errors.
     processors.forEach((processor, queueType) => {
         createWorker(queueType, processor.options)
+    })
+
+    void TokensQueue.upsertJobScheduler(JobsEnum.COMPLETE_MINT_RATE_LIMIT_REMOVALS, {
+        every: MINT_RATE_LIMIT_REMOVAL_INTERVAL_MS,
+    }).catch((err: unknown) => {
+        console.error('Failed to schedule mint rate limit removals', err)
     })
 }
