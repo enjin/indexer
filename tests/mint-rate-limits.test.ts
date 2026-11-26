@@ -162,7 +162,7 @@ void test('the mint rate limit job applies due replacements and removals in both
     assert.deepEqual(JSON.parse(String(updates[1].arguments[1]?.[0])), [{ id: '2', state: null }])
 })
 
-void test('the Tokens job sends only effective-block SNS and retries it with a stable id', async (t) => {
+void test('the Tokens job sends effective-block SNS and retries it with a stable id', async (t) => {
     const originalTopic = config.amazonSns.topicArn
     config.amazonSns.topicArn = 'test-topic'
     t.after(() => {
@@ -173,7 +173,13 @@ void test('the Tokens job sends only effective-block SNS and retries it with a s
     let failOnce = true
     const query = <T>(sql: string, parameters?: unknown[]): Promise<T> => {
         if (sql.includes('squid_processor.status')) return Promise.resolve([{ height }] as T)
-        if (sql.includes('FOR UPDATE SKIP LOCKED') && sql.includes('FROM "collection"') && pending && height >= 200) {
+        if (
+            sql.includes('{pending,effectiveBlock}') &&
+            sql.includes('FOR UPDATE SKIP LOCKED') &&
+            sql.includes('FROM "collection"') &&
+            pending &&
+            height >= 200
+        ) {
             const state = {
                 limit: { max: '1', period: '144' },
                 window: { lastSlot: '11', buckets: ['0', '0', '1', '0', '0', '0', '0', '0', '0'] },
@@ -659,4 +665,59 @@ void test('Minted returns one SNS body with null or the observed mint rate statu
             limit: { max: largeMaximum.toString(), period: '64' },
         },
     ])
+})
+
+void test('the existing Tokens job publishes and retries quiet reopenings at finalized height', async (t) => {
+    const originalTopic = config.amazonSns.topicArn
+    config.amazonSns.topicArn = 'test-topic'
+    t.after(() => {
+        config.amazonSns.topicArn = originalTopic
+    })
+    let height = 199
+    let waiting = true
+    let failOnce = true
+    const quietToken = {
+        id: '124650-3',
+        state: {
+            limit: { max: '1', period: '8' },
+            window: { lastSlot: '191', buckets: ['0', '0', '1', '0', '0', '0', '0', '0', '0'] },
+            mintBlockedUntil: '200',
+        },
+    }
+    const query = <T>(sql: string, params?: unknown[]): Promise<T> => {
+        if (sql.includes('squid_processor.status')) return Promise.resolve([{ height }] as T)
+        if (sql.includes('mintBlockedUntil') && sql.startsWith('SELECT') && sql.includes('FROM "token"')) {
+            assert.equal(params?.[0], height)
+            return Promise.resolve((waiting && height >= 200 ? [quietToken] : []) as T)
+        }
+        if (sql.startsWith('UPDATE "token"') && sql.includes("- 'mintBlockedUntil'")) {
+            assert.deepEqual(params, [['124650-3']])
+            waiting = false
+        }
+        return Promise.resolve([] as T)
+    }
+    const transaction = <T>(run: (manager: { query: typeof query }) => Promise<T>) => run({ query })
+    const send = t.mock.fn((event: SnsEvent, block: bigint) => {
+        assert.equal(event.name, 'MultiTokens.MintRateLimitAvailable')
+        assert.equal(block, 200n)
+        if (failOnce) {
+            failOnce = false
+            return Promise.reject(new Error('temporary SNS failure'))
+        }
+        return Promise.resolve(true)
+    })
+    t.mock.method(Sns, 'getInstance', () => ({ sendFinalized: send }))
+    const job = { log: () => Promise.resolve(1) } as Job
+
+    await applyPendingMintRateLimitChanges(job, { query, transaction })
+    assert.equal(send.mock.callCount(), 0)
+    height = 202
+    await assert.rejects(applyPendingMintRateLimitChanges(job, { query, transaction }), /temporary SNS failure/)
+    assert.equal(waiting, true)
+    await applyPendingMintRateLimitChanges(job, { query, transaction })
+    await applyPendingMintRateLimitChanges(job, { query, transaction })
+    const [first, retry] = send.mock.calls.map(({ arguments: [event] }) => event)
+    assert.equal(send.mock.callCount(), 2)
+    assert.equal(first.id, retry.id)
+    assert.equal(waiting, false)
 })
