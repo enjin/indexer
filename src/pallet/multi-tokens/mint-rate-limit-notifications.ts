@@ -101,18 +101,15 @@ export function mintRateLimitStatuses(
     const wasBlocked = mintRateLimitBlocked(before, block)
     const blocked = mintRateLimitBlocked(after, block)
 
-    // A later mint can observe a window that reopened without a chain event.
-    if (before && after && !wasBlocked && after.window.lastSlot > before.window.lastSlot) {
-        const previousSlot = before.window.lastSlot * mintRateLimitSlotLength(before.limit.period)
-        const available = mintRateLimitQuietReopening(before, previousSlot)
-        if (available !== undefined && available <= block) {
-            statuses.push({
-                scope,
-                status: 'available',
-                effectiveBlock: available.toString(),
-                limit: limitPayload(before.limit),
-            })
-        }
+    // Report a due reopening only when minting stays available and the refresh leaves no deadline for the worker.
+    const reopening = before?.mintBlockedUntil
+    if (after && !wasBlocked && !blocked && reopening != null && reopening <= block && after.mintBlockedUntil == null) {
+        statuses.push({
+            scope,
+            status: 'available',
+            effectiveBlock: reopening.toString(),
+            limit: limitPayload(after.limit),
+        })
     }
 
     if (wasBlocked !== blocked) {
