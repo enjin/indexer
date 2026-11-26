@@ -11,11 +11,12 @@ import {
 } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
-import { SnsEvent } from '~/util/sns'
+import { Sns, SnsEvent } from '~/util/sns'
+import { isRelay } from '~/util/tools'
 import * as mappings from '~/pallet/index'
 import { isNonFungible } from '~/util/helpers'
 import { QueueUtils } from '~/queue'
-import { queueMintRateLimitChanges } from '~/queue/mint-rate-limit-notifications'
+import { mintRateLimitStatusNotifications } from '~/pallet/multi-tokens/mint-rate-limit-notifications'
 import { calls } from '~/type'
 import { getOrCreatePoolMemberRewards } from '~/util/earlyBird'
 import { EventHandlerResult } from '~/processor.handler'
@@ -264,23 +265,26 @@ export async function minted(
     await QueueUtils.dispatchComputeStats(data.collectionId.toString())
     await QueueUtils.dispatchComputeAccountStats(recipient.id)
 
-    const subject = { collectionId: data.collectionId.toString() }
-    const source = { id: item.id, block: block.height }
-    await queueMintRateLimitChanges(
-        { ...subject, tokenId: data.tokenId.toString() },
-        previousTokenLimit,
-        token.mintRateLimit,
-        BigInt(block.height),
-        source
-    )
-    if (collectionMintRateLimitUpdated) {
-        await queueMintRateLimitChanges(
-            subject,
-            previousCollectionLimit,
-            token.collection.mintRateLimit,
-            BigInt(block.height),
-            source
+    if (!isRelay()) {
+        const subject = { collectionId: data.collectionId.toString() }
+        const height = BigInt(block.height)
+        const notifications = mintRateLimitStatusNotifications(
+            { ...subject, tokenId: data.tokenId.toString() },
+            previousTokenLimit,
+            token.mintRateLimit,
+            height
         )
+        if (collectionMintRateLimitUpdated) {
+            notifications.push(
+                ...mintRateLimitStatusNotifications(
+                    subject,
+                    previousCollectionLimit,
+                    token.collection.mintRateLimit,
+                    height
+                )
+            )
+        }
+        for (const notification of notifications) await Sns.getInstance().send(notification, block.height)
     }
 
     return [

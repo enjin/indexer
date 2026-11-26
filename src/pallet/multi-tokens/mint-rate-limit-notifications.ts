@@ -3,6 +3,7 @@ import type { MintRateLimit, MintRateWindow } from '~/pallet/common/types'
 import { MINT_RATE_BUCKETS } from '~/pallet/multi-tokens/storage/mint-rate-limit'
 import config from '~/util/config'
 import type { SnsEvent } from '~/util/sns'
+import type { MintRateLimitState } from '~/model'
 
 const BUCKETS = BigInt(MINT_RATE_BUCKETS)
 const MAX_BLOCK = 0xffff_ffffn
@@ -58,4 +59,31 @@ export function mintRateLimitNotification(
             limit: limit ? { max: limit.max.toString(), period: limit.period.toString() } : null,
         },
     }
+}
+
+export function mintRateLimitStatusNotifications(
+    subject: MintRateLimitSubject,
+    before: MintRateLimitState | null | undefined,
+    after: MintRateLimitState | null | undefined,
+    block: bigint
+): SnsEvent[] {
+    const notifications: SnsEvent[] = []
+    const wasBlocked = mintRateLimitBlocked(before, block)
+    const blocked = mintRateLimitBlocked(after, block)
+
+    // A later mint can observe a window that reopened without a chain event.
+    if (before && after && !wasBlocked && !before.pending && after.window.lastSlot > before.window.lastSlot) {
+        const previousSlot = before.window.lastSlot * mintRateLimitSlotLength(before.limit.period)
+        const available = mintRateLimitAvailableAt(before, previousSlot)
+        if (available !== undefined && available <= block) {
+            notifications.push(mintRateLimitNotification('Available', subject, available, before.limit))
+        }
+    }
+
+    if (wasBlocked !== blocked) {
+        notifications.push(
+            mintRateLimitNotification(blocked ? 'Reached' : 'Available', subject, block, after?.limit ?? null)
+        )
+    }
+    return notifications
 }

@@ -19,6 +19,8 @@ import { decodeCollectionStorageValue, getMixedCollection } from '~/pallet/multi
 import { normalizeMintRateLimitState } from '~/pallet/multi-tokens/storage/mint-rate-limit'
 import { decodeTokenStorageValue } from '~/pallet/multi-tokens/storage/token-values'
 import { calls, events, storage } from '~/type'
+import config from '~/util/config'
+import { Sns, type SnsEvent } from '~/util/sns'
 import { applyPendingMintRateLimitChanges } from '~/worker/jobs/tokens/apply-pending-mint-rate-limit-changes'
 
 const testRequire = createRequire(__filename)
@@ -27,7 +29,24 @@ const originalQueueModule = testRequire.cache[queueModulePath]
 assert.equal(originalQueueModule, undefined, 'queue module loaded before the test stub was installed')
 const queueModule = new Module(queueModulePath)
 queueModule.loaded = true
+const appliedPayloads = new Map<string, string>()
 queueModule.exports = {
+    TokensQueue: {
+        toKey: (key: string) => key,
+        client: Promise.resolve({
+            hset: (_key: string, payloads: Record<string, string>) => {
+                assert(_key.startsWith('mint-rate-limit-applied:'))
+                for (const [id, payload] of Object.entries(payloads)) appliedPayloads.set(id, payload)
+                return Promise.resolve(Object.keys(payloads).length)
+            },
+            hgetall: () => Promise.resolve(Object.fromEntries(appliedPayloads)),
+            hdel: (_key: string, eventId: string) => {
+                assert(_key.startsWith('mint-rate-limit-applied:'))
+                appliedPayloads.delete(eventId)
+                return Promise.resolve(1)
+            },
+        }),
+    },
     QueueUtils: {
         dispatchComputeAccountStats: () => Promise.resolve(),
         dispatchComputeStats: () => Promise.resolve(),
@@ -140,6 +159,62 @@ void test('the mint rate limit job applies due replacements and removals in both
         },
     })
     assert.deepEqual(JSON.parse(String(updates[1].arguments[1]?.[0])), [{ id: '2', state: null }])
+})
+
+void test('the Tokens job sends only effective-block SNS and retries it with a stable id', async (t) => {
+    const originalTopic = config.amazonSns.topicArn
+    config.amazonSns.topicArn = 'test-topic'
+    t.after(() => {
+        config.amazonSns.topicArn = originalTopic
+    })
+    let height = 199
+    let pending = true
+    let failOnce = true
+    const query = <T>(sql: string, parameters?: unknown[]): Promise<T> => {
+        if (sql.includes('squid_processor.status')) return Promise.resolve([{ height }] as T)
+        if (sql.includes('FOR UPDATE SKIP LOCKED') && sql.includes('FROM "collection"') && pending && height >= 200) {
+            const state = {
+                limit: { max: '1', period: '144' },
+                window: { lastSlot: '11', buckets: ['0', '0', '1', '0', '0', '0', '0', '0', '0'] },
+                pending: { effectiveBlock: '200' },
+            }
+            return Promise.resolve([{ id: '124745', state }] as T)
+        }
+        if (sql.startsWith('UPDATE')) {
+            assert.deepEqual(JSON.parse(String(parameters?.[0])), [{ id: '124745', state: null }])
+            pending = false
+        }
+        if (sql.includes('AS pending')) return Promise.resolve([{ pending: pending ? '200' : null }] as T)
+        return Promise.resolve([] as T)
+    }
+    const transaction = <T>(run: (manager: { query: typeof query }) => Promise<T>): Promise<T> => run({ query })
+    const send = t.mock.fn((event: SnsEvent, block: bigint) => {
+        assert.equal(pending, false)
+        assert.equal(block, 200n)
+        assert.equal(event.name, 'MultiTokens.MintRateLimitChangeApplied')
+        if (failOnce) {
+            failOnce = false
+            return Promise.reject(new Error('SNS unavailable'))
+        }
+        return Promise.resolve(true)
+    })
+    t.mock.method(Sns, 'getInstance', () => ({ sendFinalized: send }))
+    const job = { log: () => Promise.resolve(1) } as Job
+
+    await applyPendingMintRateLimitChanges(job, { query, transaction })
+    assert.equal(send.mock.callCount(), 0)
+    assert.equal(appliedPayloads.size, 0)
+
+    height = 203
+    await assert.rejects(applyPendingMintRateLimitChanges(job, { query, transaction }), /SNS unavailable/)
+    assert.equal(appliedPayloads.size, 1)
+    await applyPendingMintRateLimitChanges(job, { query, transaction })
+    await applyPendingMintRateLimitChanges(job, { query, transaction })
+    assert.equal(send.mock.callCount(), 2)
+    const [first, retry] = send.mock.calls.map(({ arguments: [event] }) => event)
+    assert.equal(first.id, retry.id)
+    assert.deepEqual(first.body, { collectionId: '124745', tokenId: null, effectiveBlock: '200', limit: null })
+    assert.equal(appliedPayloads.size, 0)
 })
 
 function rateState(pendingRemoval = false) {
@@ -380,7 +455,7 @@ void test('lifecycle event models preserve scope, large limits, scheduled remova
     assert.equal(scheduledModel.data.effectiveBlock, 200n)
 })
 
-void test('all live mint rate limit event processors persist their scoped state from pinned storage', async () => {
+void test('live mint rate limit processors persist pinned state and return SNS with SNS configured', async (t) => {
     const collectionBytes = encodeCurrentAndLegacy('Collections', collectionValue(rateState())).current
     const tokenBytes = encodeCurrentAndLegacy('Tokens', tokenValue(rateState(true))).current
     let storageQueries = 0
@@ -427,10 +502,26 @@ void test('all live mint rate limit event processors persist their scoped state 
     })
 
     const block = { _runtime: runtime, height: 190, hash: '0xblock' }
-    await processMintRateLimitUpdated(ctx, block, collectionEvent, false)
-    await processMintRateLimitUpdated(ctx, block, tokenEvent, false)
-    await processMintRateLimitChangeScheduled(ctx, block, scheduledEvent, false)
-    await processMintRateLimitChangeCancelled(ctx, block, cancelledEvent, false)
+    const originalTopic = config.amazonSns.topicArn
+    config.amazonSns.topicArn = 'test-topic'
+    t.after(() => {
+        config.amazonSns.topicArn = originalTopic
+    })
+
+    for (const [handler, item] of [
+        [processMintRateLimitUpdated, collectionEvent],
+        [processMintRateLimitUpdated, tokenEvent],
+        [processMintRateLimitChangeScheduled, scheduledEvent],
+        [processMintRateLimitChangeCancelled, cancelledEvent],
+    ] as const) {
+        const result = await handler(ctx, block, item, false)
+        assert(Array.isArray(result))
+        const message = result[1]
+        assert(message && 'body' in message)
+        assert.equal(message.id, item.id)
+        assert.equal(message.name, item.name)
+        if (item === scheduledEvent) assert.equal(message.body.effectiveBlock, 200n)
+    }
 
     assert.equal(storageQueries, 4)
     assert.equal(saved.length, 4)
