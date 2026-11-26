@@ -2,7 +2,7 @@ import type { IRedisClient, Job } from 'bullmq'
 import type { EntityManager } from 'typeorm'
 import { connectionManager } from '~/contexts'
 import { MintRateLimitState } from '~/model'
-import { mintRateLimitNotification } from '~/pallet/multi-tokens/mint-rate-limit-notifications'
+import { mintRateLimitChangeApplied } from '~/pallet/multi-tokens/mint-rate-limit-notifications'
 import { toMintRateLimitStateModel } from '~/pallet/multi-tokens/processors/mint-rate-limit-state'
 import config from '~/util/config'
 import { finalizedIndexedHeight } from '~/util/finalized-indexed-height'
@@ -60,8 +60,7 @@ async function applyBatch(
                 const [collectionId, tokenId] = id.split('-')
                 const pending = before.pending
                 if (!pending) continue
-                const event = mintRateLimitNotification(
-                    'ChangeApplied',
+                const event = mintRateLimitChangeApplied(
                     { collectionId, tokenId },
                     pending.effectiveBlock,
                     pending.newLimit ?? null

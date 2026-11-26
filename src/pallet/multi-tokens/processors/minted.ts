@@ -11,12 +11,12 @@ import {
 } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
-import { Sns, SnsEvent } from '~/util/sns'
+import type { SnsEvent } from '~/util/sns'
 import { isRelay } from '~/util/tools'
 import * as mappings from '~/pallet/index'
 import { isNonFungible } from '~/util/helpers'
 import { QueueUtils } from '~/queue'
-import { mintRateLimitStatusNotifications } from '~/pallet/multi-tokens/mint-rate-limit-notifications'
+import { mintRateLimitStatuses } from '~/pallet/multi-tokens/mint-rate-limit-notifications'
 import { calls } from '~/type'
 import { getOrCreatePoolMemberRewards } from '~/util/earlyBird'
 import { EventHandlerResult } from '~/processor.handler'
@@ -244,6 +244,14 @@ export async function minted(
         }
     }
 
+    const height = BigInt(block.height)
+    const statuses = isRelay() ? [] : mintRateLimitStatuses('token', previousTokenLimit, token.mintRateLimit, height)
+    if (!isRelay() && collectionMintRateLimitUpdated) {
+        statuses.push(
+            ...mintRateLimitStatuses('collection', previousCollectionLimit, token.collection.mintRateLimit, height)
+        )
+    }
+
     const snsEvent: SnsEvent = {
         id: item.id,
         name: item.name,
@@ -258,34 +266,13 @@ export async function minted(
                 .toNumber(),
             decimalCount: token.nativeMetadata?.decimalCount,
             extrinsic: item.extrinsic?.id,
+            mintRateLimitStatus: statuses.length > 0 ? statuses : null,
         },
     }
 
     await QueueUtils.dispatchComputeMetadata({ id: token.id, type: 'token', force: true, traits: true, delay: 10000 })
     await QueueUtils.dispatchComputeStats(data.collectionId.toString())
     await QueueUtils.dispatchComputeAccountStats(recipient.id)
-
-    if (!isRelay()) {
-        const subject = { collectionId: data.collectionId.toString() }
-        const height = BigInt(block.height)
-        const notifications = mintRateLimitStatusNotifications(
-            { ...subject, tokenId: data.tokenId.toString() },
-            previousTokenLimit,
-            token.mintRateLimit,
-            height
-        )
-        if (collectionMintRateLimitUpdated) {
-            notifications.push(
-                ...mintRateLimitStatusNotifications(
-                    subject,
-                    previousCollectionLimit,
-                    token.collection.mintRateLimit,
-                    height
-                )
-            )
-        }
-        for (const notification of notifications) await Sns.getInstance().send(notification, block.height)
-    }
 
     return [
         ...mappings.multiTokens.events.mintedEventModel(item.id, data, {

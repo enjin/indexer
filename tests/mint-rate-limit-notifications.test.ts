@@ -1,11 +1,12 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { MintRateLimitState } from '~/model'
+import { getSnsEventHash } from '~/util/tools'
 import {
-    mintRateLimitNotification,
+    mintRateLimitChangeApplied,
     mintRateLimitAvailableAt,
     mintRateLimitBlocked,
-    mintRateLimitStatusNotifications,
+    mintRateLimitStatuses,
 } from '~/pallet/multi-tokens/mint-rate-limit-notifications'
 
 void test('the Canary mint reaches the one-unit limit and reopens at the exact quiet block', () => {
@@ -16,48 +17,45 @@ void test('the Canary mint reaches the one-unit limit and reopens at the exact q
     assert.equal(mintRateLimitBlocked(state, 13878479n), true)
     assert.equal(mintRateLimitAvailableAt(state, 13878479n), 13878630n)
     assert.equal(mintRateLimitBlocked(state, 13878630n), false)
-    const event = mintRateLimitNotification('Reached', { collectionId: '124650', tokenId: '3' }, 13878479n, state.limit)
-    assert.equal(event.name, 'MultiTokens.MintRateLimitReached')
-    assert.deepEqual(event.body, {
-        collectionId: '124650',
-        tokenId: '3',
-        effectiveBlock: '13878479',
-        limit: { max: '1', period: '144' },
-    })
-    assert.equal(
-        mintRateLimitNotification('Reached', { collectionId: '124650', tokenId: '3' }, 13878479n, state.limit).id,
-        event.id
-    )
 })
 
 void test('a removal sends a null limit and a collection event has no token id', () => {
-    const event = mintRateLimitNotification('ChangeApplied', { collectionId: '124745' }, 200n, null)
+    const event = mintRateLimitChangeApplied({ collectionId: '124745' }, 200n, null)
     assert.equal(event.name, 'MultiTokens.MintRateLimitChangeApplied')
     assert.deepEqual(event.body, { collectionId: '124745', tokenId: null, effectiveBlock: '200', limit: null })
 })
 
-void test('a mint can publish a reached alert and a previous reopening without scheduling a job', () => {
+void test('the mint body can describe a reached limit and a previous reopening', () => {
     const initial = new MintRateLimitState({
         limit: { max: 1n, period: 144n },
         window: { lastSlot: 771026n, buckets: [0n, 0n, 0n, 0n, 0n, 1n, 0n, 0n, 0n] },
     })
-    const subject = { collectionId: '124650', tokenId: '3' }
-    const events = mintRateLimitStatusNotifications(subject, null, initial, 13878479n)
-    assert.deepEqual(
-        events.map(({ name }) => name),
-        ['MultiTokens.MintRateLimitReached']
-    )
+    const statuses = mintRateLimitStatuses('token', null, initial, 13878479n)
+    assert.deepEqual(statuses, [
+        { scope: 'token', status: 'reached', effectiveBlock: '13878479', limit: { max: '1', period: '144' } },
+    ])
+    assert.deepEqual(mintRateLimitStatuses('token', null, null, 13878479n), [])
 
     const next = new MintRateLimitState({
         limit: initial.limit,
         window: { lastSlot: 771035n, buckets: [0n, 0n, 0n, 0n, 0n, 1n, 0n, 0n, 0n] },
     })
-    const later = mintRateLimitStatusNotifications(subject, initial, next, 13878630n)
+    const later = mintRateLimitStatuses('collection', initial, next, 13878630n)
     assert.deepEqual(
-        later.map(({ name, body }) => [name, body.effectiveBlock]),
+        later.map(({ scope, status, effectiveBlock }) => [scope, status, effectiveBlock]),
         [
-            ['MultiTokens.MintRateLimitAvailable', '13878630'],
-            ['MultiTokens.MintRateLimitReached', '13878630'],
+            ['collection', 'available', '13878630'],
+            ['collection', 'reached', '13878630'],
         ]
     )
+})
+
+void test('a mint rate status does not change the existing mint SNS reorganization identity', () => {
+    const body = { collectionId: 124650n, tokenId: 3n, amount: 1 }
+    const plain = getSnsEventHash('MultiTokens.Minted', { ...body, mintRateLimitStatus: null })
+    const reached = getSnsEventHash('MultiTokens.Minted', {
+        ...body,
+        mintRateLimitStatus: [{ scope: 'token', status: 'reached', effectiveBlock: '13878479' }],
+    })
+    assert.equal(reached, plain)
 })

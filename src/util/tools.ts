@@ -52,6 +52,7 @@ export function safeJsonString(data: Record<string, unknown>): string {
 export function getSnsEventHash(name: string, body: Record<string, unknown>): string {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { extrinsic: _extrinsic, ...bodyWithoutExtrinsic } = body
+    if (name === 'MultiTokens.Minted') delete bodyWithoutExtrinsic.mintRateLimitStatus
     const content = JSON.stringify({ name, body: bodyWithoutExtrinsic }, (_key, value) =>
         typeof value === 'bigint' ? value.toString() : value
     )

@@ -6,7 +6,7 @@ import { Codec, Type, TypeKind } from '@subsquid/scale-codec'
 import { Runtime } from '@subsquid/substrate-runtime'
 import type { Job } from 'bullmq'
 import { Block, EventItem } from '~/contexts'
-import { Collection, Token } from '~/model'
+import { Account, Collection, Token, TokenAccount } from '~/model'
 import { normalizeDefaultMintParams, normalizeFlexibleMintParams } from '~/pallet/multi-tokens/calls/mint-rate-limit'
 import {
     mintRateLimitChangeScheduled,
@@ -48,6 +48,7 @@ queueModule.exports = {
         }),
     },
     QueueUtils: {
+        dispatchComputeMetadata: () => Promise.resolve(),
         dispatchComputeAccountStats: () => Promise.resolve(),
         dispatchComputeStats: () => Promise.resolve(),
         dispatchComputeTokenNativeMetadata: () => Promise.resolve(),
@@ -62,7 +63,7 @@ const {
 } = testRequire(
     '~/pallet/multi-tokens/processors/mint-rate-limit'
 ) as typeof import('~/pallet/multi-tokens/processors/mint-rate-limit')
-const { refreshMintRateLimits } = testRequire(
+const { minted: processMinted, refreshMintRateLimits } = testRequire(
     '~/pallet/multi-tokens/processors/minted'
 ) as typeof import('~/pallet/multi-tokens/processors/minted')
 
@@ -605,4 +606,57 @@ void test('mint refreshes both token and collection rate limit windows from pinn
 
     await refreshMintRateLimits(ctx, { _runtime: runtime, height: 200, hash: '0xmint' } as Block, token, 0n, 0n)
     assert.equal(token.mintRateLimit, null)
+})
+
+void test('Minted returns one SNS body with null or the observed mint rate status', async () => {
+    const collectionBytes = encodeCurrentAndLegacy('Collections', collectionValue(undefined)).current
+    let tokenBytes = encodeCurrentAndLegacy('Tokens', tokenValue(undefined)).current
+    const runtime = runtime1040((_method, params) => {
+        const collectionKey = runtime.encodeStorageKey('MultiTokens.Collections', 2n)
+        const tokenKey = runtime.encodeStorageKey('MultiTokens.Tokens', 2n, 0n)
+        return Promise.resolve(
+            params?.[0] === collectionKey ? collectionBytes : params?.[0] === tokenKey ? tokenBytes : null
+        )
+    })
+    const collection = new Collection({ id: '2', collectionId: 2n })
+    const token = new Token({ id: '2-0', tokenId: 0n, collection, supply: 0n, infusion: 0n })
+    const account = new Account({ id: owner })
+    const tokenAccount = new TokenAccount({ balance: 0n, totalBalance: 0n })
+    const ctx = {
+        store: {
+            findOneBy: () => Promise.resolve(account),
+            findOne: (entity: unknown) => Promise.resolve(entity === Token ? token : tokenAccount),
+            save: () => Promise.resolve(),
+        },
+    } as never
+    const item = eventItem(runtime, 'MultiTokens.Minted', {
+        collectionId: '2',
+        tokenId: '0',
+        issuer: { __kind: 'Signed', value: owner },
+        recipient: owner,
+        amount: '1',
+    })
+    const block = { _runtime: runtime, height: 100, hash: '0xmint' } as Block
+    const ordinary = await processMinted(ctx, block, item, false)
+    assert(Array.isArray(ordinary))
+    const ordinarySns = ordinary[2]
+    assert(ordinarySns)
+    assert.equal(ordinarySns.name, item.name)
+    assert.equal(ordinarySns.body.mintRateLimitStatus, null)
+
+    tokenBytes = encodeCurrentAndLegacy('Tokens', tokenValue(rateState())).current
+    const limited = await processMinted(ctx, block, item, false)
+    assert(Array.isArray(limited))
+    const limitedSns = limited[2]
+    assert(limitedSns)
+    assert.equal(limitedSns.id, item.id)
+    assert.equal(limitedSns.name, item.name)
+    assert.deepEqual(limitedSns.body.mintRateLimitStatus, [
+        {
+            scope: 'token',
+            status: 'reached',
+            effectiveBlock: '100',
+            limit: { max: largeMaximum.toString(), period: '64' },
+        },
+    ])
 })

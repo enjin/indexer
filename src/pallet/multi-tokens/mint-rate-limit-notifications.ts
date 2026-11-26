@@ -10,6 +10,18 @@ const MAX_BLOCK = 0xffff_ffffn
 
 export type MintRateLimitSubject = { collectionId: string; tokenId?: string | null }
 type MintRateLimitSnapshot = { limit: MintRateLimit; window: MintRateWindow } | null | undefined
+type MintRateLimitPayload = { max: string; period: string } | null
+
+export interface MintRateLimitStatus {
+    scope: 'token' | 'collection'
+    status: 'reached' | 'available'
+    effectiveBlock: string
+    limit: MintRateLimitPayload
+}
+
+function limitPayload(limit: MintRateLimit | null): MintRateLimitPayload {
+    return limit ? { max: limit.max.toString(), period: limit.period.toString() } : null
+}
 
 export function mintRateLimitSlotLength(period: bigint): bigint {
     // The runtime rounds up using saturating arithmetic on its u32 block number.
@@ -40,8 +52,7 @@ export function mintRateLimitAvailableAt(state: MintRateLimitSnapshot, block: bi
     }
 }
 
-export function mintRateLimitNotification(
-    type: 'ChangeApplied' | 'Reached' | 'Available',
+export function mintRateLimitChangeApplied(
     { collectionId, tokenId }: MintRateLimitSubject,
     block: bigint,
     limit: MintRateLimit | null
@@ -49,25 +60,25 @@ export function mintRateLimitNotification(
     const subject = tokenId == null ? `collection:${collectionId}` : `token:${collectionId}-${tokenId}`
     return {
         id: createHash('sha256')
-            .update(`${config.chainName}:mint-rate-limit:${subject}:${type}:${block}`)
+            .update(`${config.chainName}:mint-rate-limit:${subject}:ChangeApplied:${block}`)
             .digest('hex'),
-        name: `MultiTokens.MintRateLimit${type}`,
+        name: 'MultiTokens.MintRateLimitChangeApplied',
         body: {
             collectionId,
             tokenId: tokenId ?? null,
             effectiveBlock: block.toString(),
-            limit: limit ? { max: limit.max.toString(), period: limit.period.toString() } : null,
+            limit: limitPayload(limit),
         },
     }
 }
 
-export function mintRateLimitStatusNotifications(
-    subject: MintRateLimitSubject,
+export function mintRateLimitStatuses(
+    scope: MintRateLimitStatus['scope'],
     before: MintRateLimitState | null | undefined,
     after: MintRateLimitState | null | undefined,
     block: bigint
-): SnsEvent[] {
-    const notifications: SnsEvent[] = []
+): MintRateLimitStatus[] {
+    const statuses: MintRateLimitStatus[] = []
     const wasBlocked = mintRateLimitBlocked(before, block)
     const blocked = mintRateLimitBlocked(after, block)
 
@@ -76,14 +87,22 @@ export function mintRateLimitStatusNotifications(
         const previousSlot = before.window.lastSlot * mintRateLimitSlotLength(before.limit.period)
         const available = mintRateLimitAvailableAt(before, previousSlot)
         if (available !== undefined && available <= block) {
-            notifications.push(mintRateLimitNotification('Available', subject, available, before.limit))
+            statuses.push({
+                scope,
+                status: 'available',
+                effectiveBlock: available.toString(),
+                limit: limitPayload(before.limit),
+            })
         }
     }
 
     if (wasBlocked !== blocked) {
-        notifications.push(
-            mintRateLimitNotification(blocked ? 'Reached' : 'Available', subject, block, after?.limit ?? null)
-        )
+        statuses.push({
+            scope,
+            status: blocked ? 'reached' : 'available',
+            effectiveBlock: block.toString(),
+            limit: limitPayload(after?.limit ?? null),
+        })
     }
-    return notifications
+    return statuses
 }
