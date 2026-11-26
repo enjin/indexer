@@ -145,6 +145,7 @@ const expectations: Expectation[] = [
             ['COMPUTE_TOKEN_SUPPLY', 'computeTokenSupply', ['id']],
             ['COMPUTE_TOKEN_BEST_LISTING', 'computeTokenBestListing', ['id']],
             ['COMPUTE_TOKEN_INFUSION', 'computeTokenInfusion', ['id']],
+            ['APPLY_PENDING_MINT_RATE_LIMIT_CHANGES', 'applyPendingMintRateLimitChanges', []],
             ['SYNC_TOKEN_GROUP_POSITIONS', 'syncTokenGroupPositions', []],
             ['COMPUTE_TOKEN_CREATION_SUPPLY', 'computeTokenCreationSupply', ['id']],
             ['COMPUTE_TOKEN_NATIVE_METADATA', 'computeTokenNativeMetadata', ['id']],

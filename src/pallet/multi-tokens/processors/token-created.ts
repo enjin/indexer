@@ -191,7 +191,7 @@ async function tokenFromCall(
             tokenId: event.tokenId,
         })
         token.isLendable = storedToken?.isLendable ?? token.isLendable
-        token.mintRateLimit = toMintRateLimitStateModel(storedToken?.mintRateLimit)
+        token.mintRateLimit = toMintRateLimitStateModel(storedToken?.mintRateLimit, block.height)
     }
 
     await checkMetadataInheritance(token)

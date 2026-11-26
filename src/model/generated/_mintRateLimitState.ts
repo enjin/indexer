@@ -8,6 +8,7 @@ export class MintRateLimitState {
     private _limit!: MintRateLimit
     private _window!: MintRateWindow
     private _pending!: PendingMintRateLimitChange | undefined | null
+    private _mintBlockedUntil!: bigint | undefined | null
 
     constructor(props?: Partial<Omit<MintRateLimitState, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
@@ -15,6 +16,7 @@ export class MintRateLimitState {
             this._limit = new MintRateLimit(undefined, marshal.nonNull(json.limit))
             this._window = new MintRateWindow(undefined, marshal.nonNull(json.window))
             this._pending = json.pending == null ? undefined : new PendingMintRateLimitChange(undefined, json.pending)
+            this._mintBlockedUntil = json.mintBlockedUntil == null ? undefined : marshal.bigint.fromJSON(json.mintBlockedUntil)
         }
     }
 
@@ -44,11 +46,20 @@ export class MintRateLimitState {
         this._pending = value
     }
 
+    get mintBlockedUntil(): bigint | undefined | null {
+        return this._mintBlockedUntil
+    }
+
+    set mintBlockedUntil(value: bigint | undefined | null) {
+        this._mintBlockedUntil = value
+    }
+
     toJSON(): object {
         return {
             limit: this.limit.toJSON(),
             window: this.window.toJSON(),
             pending: this.pending == null ? undefined : this.pending.toJSON(),
+            mintBlockedUntil: this.mintBlockedUntil == null ? undefined : marshal.bigint.toJSON(this.mintBlockedUntil),
         }
     }
 }

@@ -11,10 +11,12 @@ import {
 } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
-import { SnsEvent } from '~/util/sns'
+import type { SnsEvent } from '~/util/sns'
+import { isRelay } from '~/util/tools'
 import * as mappings from '~/pallet/index'
 import { isNonFungible } from '~/util/helpers'
 import { QueueUtils } from '~/queue'
+import { mintRateLimitStatuses } from '~/pallet/multi-tokens/mint-rate-limit-notifications'
 import { calls } from '~/type'
 import { getOrCreatePoolMemberRewards } from '~/util/earlyBird'
 import { EventHandlerResult } from '~/processor.handler'
@@ -41,7 +43,11 @@ export async function refreshMintRateLimits(
     ])
 
     if (chainToken) {
-        token.mintRateLimit = toMintRateLimitStateModel(chainToken.mintRateLimit)
+        token.mintRateLimit = toMintRateLimitStateModel(
+            chainToken.mintRateLimit,
+            block.height,
+            token.mintRateLimit?.mintBlockedUntil
+        )
     } else {
         ctx.log.warn(`[Minted] Token ${token.id} was absent while refreshing its mint rate limit`)
     }
@@ -51,7 +57,11 @@ export async function refreshMintRateLimits(
         return false
     }
 
-    token.collection.mintRateLimit = toMintRateLimitStateModel(chainCollection.mintRateLimit)
+    token.collection.mintRateLimit = toMintRateLimitStateModel(
+        chainCollection.mintRateLimit,
+        block.height,
+        token.collection.mintRateLimit?.mintBlockedUntil
+    )
     return true
 }
 
@@ -167,6 +177,8 @@ export async function minted(
 
     token.supply += data.amount
     token.nonFungible = isNonFungible(token)
+    const previousTokenLimit = token.mintRateLimit
+    const previousCollectionLimit = token.collection.mintRateLimit
     const collectionMintRateLimitUpdated = await refreshMintRateLimits(
         ctx,
         block,
@@ -240,6 +252,14 @@ export async function minted(
         }
     }
 
+    const height = BigInt(block.height)
+    const statuses = isRelay() ? [] : mintRateLimitStatuses('token', previousTokenLimit, token.mintRateLimit, height)
+    if (!isRelay() && collectionMintRateLimitUpdated) {
+        statuses.push(
+            ...mintRateLimitStatuses('collection', previousCollectionLimit, token.collection.mintRateLimit, height)
+        )
+    }
+
     const snsEvent: SnsEvent = {
         id: item.id,
         name: item.name,
@@ -254,6 +274,7 @@ export async function minted(
                 .toNumber(),
             decimalCount: token.nativeMetadata?.decimalCount,
             extrinsic: item.extrinsic?.id,
+            mintRateLimitStatus: statuses.length > 0 ? statuses : null,
         },
     }
 

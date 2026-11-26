@@ -37,7 +37,11 @@ async function updateMintRateLimit(
             )
         }
 
-        collection.mintRateLimit = toMintRateLimitStateModel(chainCollection.mintRateLimit)
+        collection.mintRateLimit = toMintRateLimitStateModel(
+            chainCollection.mintRateLimit,
+            block.height,
+            collection.mintRateLimit?.mintBlockedUntil
+        )
         await ctx.store.save(collection)
         return
     }
@@ -57,7 +61,11 @@ async function updateMintRateLimit(
         )
     }
 
-    token.mintRateLimit = toMintRateLimitStateModel(chainToken.mintRateLimit)
+    token.mintRateLimit = toMintRateLimitStateModel(
+        chainToken.mintRateLimit,
+        block.height,
+        token.mintRateLimit?.mintBlockedUntil
+    )
     await ctx.store.save(token)
 }
 

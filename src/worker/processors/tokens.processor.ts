@@ -2,6 +2,7 @@ import { JobsEnum } from '~/queue/constants'
 import {
     backfillEphemeralTokens,
     backfillLoanExtensionActivity,
+    applyPendingMintRateLimitChanges,
     computeRarity,
     computeTokenBestListing,
     computeTokenCreationSupply,
@@ -24,6 +25,7 @@ export class TokensProcessor extends JobRouterProcessor {
         [JobsEnum.COMPUTE_TOKEN_SUPPLY, (job) => computeTokenSupply(job, job.data.id)],
         [JobsEnum.COMPUTE_TOKEN_BEST_LISTING, (job) => computeTokenBestListing(job, job.data.id)],
         [JobsEnum.COMPUTE_TOKEN_INFUSION, (job) => computeTokenInfusion(job, job.data.id)],
+        [JobsEnum.APPLY_PENDING_MINT_RATE_LIMIT_CHANGES, (job) => applyPendingMintRateLimitChanges(job)],
         [JobsEnum.SYNC_TOKEN_GROUP_POSITIONS, (job) => syncTokenGroupPositions(job)],
         [JobsEnum.COMPUTE_TOKEN_CREATION_SUPPLY, (job) => computeTokenCreationSupply(job, job.data.id)],
         [JobsEnum.COMPUTE_TOKEN_NATIVE_METADATA, (job) => computeTokenNativeMetadata(job, job.data.id)],
