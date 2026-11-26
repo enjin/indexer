@@ -5,7 +5,11 @@ import {
     PendingMintRateLimitChange as PendingMintRateLimitChangeModel,
 } from '~/model'
 import { MintRateLimit, MintRateLimitState, MintRateWindow } from '~/pallet/common/types'
-import { mintRateLimitSlotLength, mintRateLimitUsageAtBlock } from '~/pallet/multi-tokens/mint-rate-limit-notifications'
+import {
+    mintRateLimitQuietReopening,
+    mintRateLimitSlotLength,
+    mintRateLimitUsageAtBlock,
+} from '~/pallet/multi-tokens/mint-rate-limit-notifications'
 import { MINT_RATE_BUCKETS } from '~/pallet/multi-tokens/storage/mint-rate-limit'
 
 const BUCKETS = BigInt(MINT_RATE_BUCKETS)
@@ -27,29 +31,21 @@ export function toMintRateLimitModel(limit: MintRateLimit): MintRateLimitModel {
 
 export function toMintRateLimitStateModel(
     state: MintRateLimitState | MintRateLimitStateModel | undefined,
-    indexedHeight: number
+    indexedHeight: number,
+    previousBlockedUntil?: bigint | null
 ): MintRateLimitStateModel | null {
     if (!state) return null
 
     const height = BigInt(indexedHeight)
-    const { pending } = state
-    if (pending && pending.effectiveBlock <= height) {
-        if (!pending.newLimit) return null
-        return new MintRateLimitStateModel({
-            limit: toMintRateLimitModel(pending.newLimit),
-            window: new MintRateWindowModel(
-                carryWindow(state.window, state.limit.period, pending.newLimit.period, height)
-            ),
-            pending: null,
-        })
-    }
+    const settled = state.pending && state.pending.effectiveBlock <= height ? state.pending : null
+    const limit = settled ? settled.newLimit : state.limit
+    if (!limit) return null
 
-    return new MintRateLimitStateModel({
-        limit: toMintRateLimitModel(state.limit),
-        window: new MintRateWindowModel({
-            lastSlot: state.window.lastSlot,
-            buckets: state.window.buckets,
-        }),
+    const pending = settled ? null : state.pending
+    const window = settled ? carryWindow(state.window, state.limit.period, limit.period, height) : state.window
+    const indexed = new MintRateLimitStateModel({
+        limit: toMintRateLimitModel(limit),
+        window: new MintRateWindowModel({ lastSlot: window.lastSlot, buckets: window.buckets }),
         pending: pending
             ? new PendingMintRateLimitChangeModel({
                   newLimit: pending.newLimit ? toMintRateLimitModel(pending.newLimit) : null,
@@ -57,4 +53,14 @@ export function toMintRateLimitStateModel(
               })
             : null,
     })
+    if (
+        previousBlockedUntil != null &&
+        previousBlockedUntil <= height &&
+        mintRateLimitQuietReopening(indexed, previousBlockedUntil - 1n) === previousBlockedUntil
+    ) {
+        indexed.mintBlockedUntil = previousBlockedUntil
+    } else {
+        indexed.mintBlockedUntil = mintRateLimitQuietReopening(indexed, height)
+    }
+    return indexed
 }

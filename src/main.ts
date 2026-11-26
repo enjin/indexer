@@ -1,5 +1,4 @@
 import { setEventBlock } from '~/util/event-block'
-import { TypeormDatabase } from '@subsquid/typeorm-store'
 import _ from 'lodash'
 import { IsNull } from 'typeorm'
 import config from '~/util/config'
@@ -21,6 +20,7 @@ import { getOrCreateAccount, unwrapAccount, unwrapSigner } from '~/util/entities
 import { Block, CallItem, CommonContext, EventItem, ExtrinsicItem } from '~/contexts'
 import { updateClaimDetails } from '~/pallet/claims/processors/common'
 import { processorConfig } from '~/processor.config'
+import { MintRateLimitAvailabilityDatabase } from '~/pallet/multi-tokens/publish-mint-rate-limit-availability'
 import { Json } from '@subsquid/substrate-processor'
 import { hexStripPrefix } from '@polkadot/util'
 import { syncState } from '~/synchronize'
@@ -61,9 +61,8 @@ async function bootstrap() {
     let snsEventsCache: Map<string, { eventId: string; blockHash: string; expiresAt: number }> = new Map()
 
     processorConfig.run(
-        new TypeormDatabase({
-            isolationLevel: 'READ COMMITTED',
-            supportHotBlocks: true,
+        new MintRateLimitAvailabilityDatabase({ isolationLevel: 'READ COMMITTED', supportHotBlocks: true }, (error) => {
+            logger.warn(`Mint rate limit availability publish failed: ${String(error)}`)
         }),
         async (ctx) => {
             try {

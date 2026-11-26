@@ -9,7 +9,8 @@ const BUCKETS = BigInt(MINT_RATE_BUCKETS)
 const MAX_BLOCK = 0xffff_ffffn
 
 export type MintRateLimitSubject = { collectionId: string; tokenId?: string | null }
-type MintRateLimitSnapshot = { limit: MintRateLimit; window: MintRateWindow } | null | undefined
+type MintRateLimitSnapshot =
+    { limit: MintRateLimit; window: MintRateWindow; pending?: MintRateLimitState['pending'] } | null | undefined
 type MintRateLimitPayload = { max: string; period: string } | null
 
 export interface MintRateLimitStatus {
@@ -53,6 +54,19 @@ export function mintRateLimitAvailableAt(state: MintRateLimitSnapshot, block: bi
 }
 
 export function mintRateLimitChangeApplied(
+    subject: MintRateLimitSubject,
+    block: bigint,
+    limit: MintRateLimit | null
+): SnsEvent {
+    return mintRateLimitSns('ChangeApplied', subject, block, limit)
+}
+
+export function mintRateLimitAvailable(subject: MintRateLimitSubject, block: bigint, limit: MintRateLimit): SnsEvent {
+    return mintRateLimitSns('Available', subject, block, limit)
+}
+
+function mintRateLimitSns(
+    type: 'ChangeApplied' | 'Available',
     { collectionId, tokenId }: MintRateLimitSubject,
     block: bigint,
     limit: MintRateLimit | null
@@ -60,9 +74,9 @@ export function mintRateLimitChangeApplied(
     const subject = tokenId == null ? `collection:${collectionId}` : `token:${collectionId}-${tokenId}`
     return {
         id: createHash('sha256')
-            .update(`${config.chainName}:mint-rate-limit:${subject}:ChangeApplied:${block}`)
+            .update(`${config.chainName}:mint-rate-limit:${subject}:${type}:${block}`)
             .digest('hex'),
-        name: 'MultiTokens.MintRateLimitChangeApplied',
+        name: `MultiTokens.MintRateLimit${type}`,
         body: {
             collectionId,
             tokenId: tokenId ?? null,
@@ -70,6 +84,11 @@ export function mintRateLimitChangeApplied(
             limit: limitPayload(limit),
         },
     }
+}
+
+export function mintRateLimitQuietReopening(state: MintRateLimitSnapshot, block: bigint): bigint | undefined {
+    const reopening = mintRateLimitAvailableAt(state, block)
+    if (reopening !== undefined && (!state?.pending || state.pending.effectiveBlock > reopening)) return reopening
 }
 
 export function mintRateLimitStatuses(
@@ -83,9 +102,9 @@ export function mintRateLimitStatuses(
     const blocked = mintRateLimitBlocked(after, block)
 
     // A later mint can observe a window that reopened without a chain event.
-    if (before && after && !wasBlocked && !before.pending && after.window.lastSlot > before.window.lastSlot) {
+    if (before && after && !wasBlocked && after.window.lastSlot > before.window.lastSlot) {
         const previousSlot = before.window.lastSlot * mintRateLimitSlotLength(before.limit.period)
-        const available = mintRateLimitAvailableAt(before, previousSlot)
+        const available = mintRateLimitQuietReopening(before, previousSlot)
         if (available !== undefined && available <= block) {
             statuses.push({
                 scope,

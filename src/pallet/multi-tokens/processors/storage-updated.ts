@@ -96,7 +96,11 @@ export async function collectionUpdated(
             : new MarketPolicy({ beneficiaries: await royaltyBeneficiaries(ctx, market.royalty) })
     collection.attributeCount = stored.attributeCount
     collection.totalDeposit = stored.totalDeposit
-    collection.mintRateLimit = toMintRateLimitStateModel(stored.mintRateLimit, block.height)
+    collection.mintRateLimit = toMintRateLimitStateModel(
+        stored.mintRateLimit,
+        block.height,
+        collection.mintRateLimit?.mintBlockedUntil
+    )
     await ctx.store.save(collection)
 
     const missing = await replaceRoyaltyCurrencies(
@@ -144,7 +148,11 @@ export async function tokenUpdated(
     if (stored.infusion !== undefined) token.infusion = stored.infusion
     token.isLendable = stored.isLendable
     token.ephemeralExpiration = stored.ephemeralExpiration ?? null
-    token.mintRateLimit = toMintRateLimitStateModel(stored.mintRateLimit, block.height)
+    token.mintRateLimit = toMintRateLimitStateModel(
+        stored.mintRateLimit,
+        block.height,
+        token.mintRateLimit?.mintBlockedUntil
+    )
     token.nativeMetadata = toNativeTokenMetadata(stored.metadata)
     if (stored.requiresDeposit === false) {
         // The pallet rejects an account deposit count on tokens that do not require deposits.

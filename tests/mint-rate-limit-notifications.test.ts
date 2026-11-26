@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { MintRateLimitState } from '~/model'
+import { toMintRateLimitStateModel } from '~/pallet/multi-tokens/processors/mint-rate-limit-state'
 import { getSnsEventHash } from '~/util/tools'
 import {
     mintRateLimitChangeApplied,
@@ -58,4 +59,23 @@ void test('a mint rate status does not change the existing mint SNS reorganizati
         mintRateLimitStatus: [{ scope: 'token', status: 'reached', effectiveBlock: '13878479' }],
     })
     assert.equal(reached, plain)
+})
+
+void test('Indexing an exhausted mint window stores the exact quiet reopening block', () => {
+    const state = {
+        limit: { max: 1n, period: 144n },
+        window: { lastSlot: 771026n, buckets: [0n, 0n, 0n, 0n, 0n, 1n, 0n, 0n, 0n] },
+    }
+    assert.equal(toMintRateLimitStateModel(state, 13878479)?.mintBlockedUntil, 13878630n)
+    const observed = toMintRateLimitStateModel(state, 13878479)
+    assert.equal(toMintRateLimitStateModel(state, 13878630, observed?.mintBlockedUntil)?.mintBlockedUntil, 13878630n)
+    assert.equal(toMintRateLimitStateModel(state, 13878630)?.mintBlockedUntil, undefined)
+    assert.equal(
+        toMintRateLimitStateModel({ ...state, pending: { effectiveBlock: 13878629n } }, 13878479)?.mintBlockedUntil,
+        undefined
+    )
+    assert.equal(
+        toMintRateLimitStateModel({ ...state, pending: { effectiveBlock: 13878631n } }, 13878479)?.mintBlockedUntil,
+        13878630n
+    )
 })

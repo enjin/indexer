@@ -571,6 +571,7 @@ type MintRateLimitState {
   limit: MintRateLimit!
   window: MintRateWindow!
   pending: PendingMintRateLimitChange
+  mintBlockedUntil: BigInt
 }
 
 type MultiTokensMintRateLimitUpdated {
