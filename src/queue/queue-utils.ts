@@ -17,6 +17,7 @@ import { addRefreshJob } from '~/queue/refresh-job'
 import { QueueType } from '~/queue/types'
 import { Logger } from '~/util/logger'
 import type { BackfillEphemeralTokensData } from '~/worker/jobs/tokens/backfill-ephemeral-tokens'
+import type { BackfillEphemeralExpiryActivityData } from '~/worker/jobs/tokens/backfill-ephemeral-expiry-activity'
 import type { BackfillCancellationListingIdsData } from '~/worker/jobs/listings/backfill-cancellation-listing-ids'
 import type { BackfillGovernanceData } from '~/worker/jobs/validators/backfill-governance'
 import type { ImportGovernanceStateData } from '~/worker/jobs/validators/import-governance-state'
@@ -416,6 +417,17 @@ export async function dispatchBackfillLoanExtensionActivity(
         JobsEnum.BACKFILL_LOAN_EXTENSION_ACTIVITY,
         data,
         'tokens.backfill-loan-extension-activity'
+    )
+}
+
+export async function dispatchBackfillEphemeralExpiryActivity(
+    data: BackfillEphemeralExpiryActivityData
+): Promise<void> {
+    await addDeduplicatedJob(
+        TokensQueue,
+        JobsEnum.BACKFILL_EPHEMERAL_EXPIRY_ACTIVITY,
+        data,
+        `tokens.backfill-ephemeral-expiry-activity.${data.fromBlock}-${data.toBlock}.${data.dryRun === false ? 'write' : 'dry-run'}`
     )
 }
 

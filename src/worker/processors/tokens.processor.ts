@@ -1,5 +1,6 @@
 import { JobsEnum } from '~/queue/constants'
 import {
+    backfillEphemeralExpiryActivity,
     backfillEphemeralTokens,
     backfillLoanExtensionActivity,
     applyPendingMintRateLimitChanges,
@@ -33,6 +34,7 @@ export class TokensProcessor extends JobRouterProcessor {
         [JobsEnum.SYNC_COLLECTION_TOKENS_NATIVE, (job) => syncCollectionTokensNative(job)],
         [JobsEnum.EXPLAIN_QUERY, (job) => explainQuery(job)],
         [JobsEnum.BACKFILL_EPHEMERAL_TOKENS, (job) => backfillEphemeralTokens(job)],
+        [JobsEnum.BACKFILL_EPHEMERAL_EXPIRY_ACTIVITY, (job) => backfillEphemeralExpiryActivity(job)],
         [JobsEnum.BACKFILL_LOAN_EXTENSION_ACTIVITY, (job) => backfillLoanExtensionActivity(job)],
     ])
 }
