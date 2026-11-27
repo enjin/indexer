@@ -38,6 +38,7 @@ import {
     ephemeralCleanupFailedEventModel,
 } from '~/pallet/multi-tokens/events/ephemeral-cleanup-failed'
 import { listingCancelledEventModel } from '~/pallet/marketplace/events/listing-cancelled'
+import { readableDispatchError } from '~/util/dispatch-error'
 import { FinalizedTokenStorageReader } from '~/worker/jobs/tokens/token-storage-reader'
 
 const testRequire = createRequire(__filename)
@@ -65,6 +66,9 @@ const { forceMint } = testRequire(
 const { tokenDestroyed } = testRequire(
     '~/pallet/multi-tokens/processors/token-destroyed'
 ) as typeof import('~/pallet/multi-tokens/processors/token-destroyed')
+const { ephemeralCleanupFailed: processEphemeralCleanupFailed } = testRequire(
+    '~/pallet/multi-tokens/processors/ephemeral-cleanup-failed'
+) as typeof import('~/pallet/multi-tokens/processors/ephemeral-cleanup-failed')
 const { tokenCreated } = testRequire(
     '~/pallet/multi-tokens/processors/token-created'
 ) as typeof import('~/pallet/multi-tokens/processors/token-created')
@@ -417,8 +421,8 @@ void test('ephemeral events retain scalar identity and support hook events witho
     const destroyedModel = ephemeralTokenDestroyedEventModel(destroyedItem, destroyed)
     const failedModel = ephemeralCleanupFailedEventModel(
         failureItem,
-        { _runtime: runtime, height: 80 } as Block,
-        failed
+        failed,
+        readableDispatchError(failed.error, runtime)
     )
 
     assert.equal(destroyedModel.extrinsic, null)
@@ -426,6 +430,64 @@ void test('ephemeral events retain scalar identity and support hook events witho
     assert.equal(destroyedModel.data.expirationBlock, 77n)
     assert.equal(failedModel.extrinsic, null)
     assert.equal(failedModel.data.error, 'BadOrigin')
+})
+
+void test('cleanup failure stays on the matching live token until destruction and keeps its historical event', async () => {
+    const runtime = matrixV1040Runtime()
+    const token = new Token({ id: '7-9', ephemeralExpiration: 77n })
+    const tokens = new Map([[token.id, token]])
+    const ctx = {
+        log: { warn: () => undefined },
+        store: {
+            findOneBy: (entity: unknown, where: { id: string }) =>
+                Promise.resolve(entity === Token ? tokens.get(where.id) : undefined),
+            find: () => Promise.resolve([]),
+            save: (entity: unknown) => {
+                if (entity instanceof Token) tokens.set(entity.id, entity)
+                return Promise.resolve()
+            },
+            remove: (entity: unknown) => {
+                if (entity instanceof Token) tokens.delete(entity.id)
+                return Promise.resolve()
+            },
+        },
+    } as unknown as Parameters<typeof processEphemeralCleanupFailed>[0]
+    const block = { _runtime: runtime, height: 80 } as Block
+    const failure = eventItem(runtime, 'MultiTokens.EphemeralCleanupFailed', {
+        collectionId: '7',
+        tokenId: '9',
+        expiration: 77,
+        error: { __kind: 'BadOrigin' },
+    })
+
+    const historical = await processEphemeralCleanupFailed(ctx, block, failure, true)
+    assert.equal(tokens.get(token.id)?.ephemeralCleanupFailure ?? null, null)
+    assert(historical && !Array.isArray(historical))
+    assert.equal(historical.data.error, 'BadOrigin')
+
+    const staleFailure = eventItem(runtime, 'MultiTokens.EphemeralCleanupFailed', {
+        collectionId: '7',
+        tokenId: '9',
+        expiration: 76,
+        error: { __kind: 'BadOrigin' },
+    })
+    await processEphemeralCleanupFailed(ctx, block, staleFailure, false)
+    assert.equal(tokens.get(token.id)?.ephemeralCleanupFailure ?? null, null)
+
+    const event = await processEphemeralCleanupFailed(ctx, block, failure, false)
+    assert(event && !Array.isArray(event))
+    assert.equal(event.data.expirationBlock, 77n)
+    assert.equal(tokens.get(token.id)?.ephemeralCleanupFailure?.expirationBlock, 77n)
+    assert.equal(tokens.get(token.id)?.ephemeralCleanupFailure?.error, 'BadOrigin')
+
+    const recovered = eventItem(runtime, 'MultiTokens.TokenDestroyed', {
+        collectionId: '7',
+        tokenId: '9',
+        caller: `0x${'33'.repeat(32)}`,
+    })
+    await tokenDestroyed(ctx, block, recovered, false)
+    assert.equal(tokens.has(token.id), false)
+    assert.equal(event.data.error, 'BadOrigin')
 })
 
 void test('missing marketplace cancellation preserves listing identity without guessing an offer', () => {

@@ -1,8 +1,7 @@
-import { Block, EventItem } from '~/contexts'
+import { EventItem } from '~/contexts'
 import { Event as EventModel, Extrinsic, MultiTokensEphemeralCleanupFailed } from '~/model'
 import { EphemeralCleanupFailed } from '~/pallet/multi-tokens/events/types'
 import { multiTokens } from '~/type/events'
-import { readableDispatchError } from '~/util/dispatch-error'
 import { UnsupportedEventError } from '~/util/errors'
 
 export function ephemeralCleanupFailed(event: EventItem): EphemeralCleanupFailed {
@@ -15,8 +14,8 @@ export function ephemeralCleanupFailed(event: EventItem): EphemeralCleanupFailed
 
 export function ephemeralCleanupFailedEventModel(
     item: EventItem,
-    block: Block,
-    data: EphemeralCleanupFailed
+    data: EphemeralCleanupFailed,
+    error: string | null
 ): EventModel {
     return new EventModel({
         id: item.id,
@@ -28,7 +27,7 @@ export function ephemeralCleanupFailedEventModel(
             collectionId: data.collectionId,
             tokenId: data.tokenId,
             expirationBlock: BigInt(data.expiration),
-            error: readableDispatchError(data.error, block._runtime),
+            error,
         }),
     })
 }

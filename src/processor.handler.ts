@@ -106,7 +106,7 @@ export async function eventHandler(
                 p.multiTokens.processors.ephemeralTokenDestroyed(ctx, block, item)
             )
             .with(multiTokens.ephemeralCleanupFailed.name, () =>
-                p.multiTokens.processors.ephemeralCleanupFailed(ctx, block, item)
+                p.multiTokens.processors.ephemeralCleanupFailed(ctx, block, item, skipSave)
             )
             .with(multiTokens.tokenLent.name, () => p.multiTokens.processors.tokenLent(ctx, block, item, skipSave))
             .with(multiTokens.loanExtended.name, () =>

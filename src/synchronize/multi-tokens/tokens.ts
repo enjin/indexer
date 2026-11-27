@@ -2,6 +2,7 @@ import { Block, CommonContext } from '~/contexts'
 import { multiTokens } from '~/pallet'
 import {
     Collection,
+    EphemeralCleanupFailure,
     FreezeState,
     RoyaltyBeneficiary,
     Token,
@@ -15,11 +16,21 @@ import { isNonFungible } from '~/util/helpers'
 import { BATCH_SIZE, getCapType, getFreezeState, isTokenFrozen } from '~/synchronize/common'
 import { In } from 'typeorm'
 import { toMintRateLimitStateModel } from '~/pallet/multi-tokens/processors/mint-rate-limit-state'
+import { multiTokens as runtimeMultiTokens } from '~/type/storage'
 
 export async function tokens(ctx: CommonContext, block: Block) {
     ctx.log.info('Syncing tokens...')
 
     const iterable = (await multiTokens.storage.tokens(block, { batchSize: BATCH_SIZE })) ?? []
+    const cleanupFailures = runtimeMultiTokens.failedEphemeralCleanups.matrixEnjinV1043
+    const parkedExpirations = new Map<string, bigint>()
+    if (cleanupFailures.is(block)) {
+        for await (const failures of cleanupFailures.getPairsPaged(BATCH_SIZE, block)) {
+            for (const [[collectionId, tokenId], expiration] of failures) {
+                if (expiration !== undefined) parkedExpirations.set(`${collectionId}-${tokenId}`, BigInt(expiration))
+            }
+        }
+    }
 
     for await (const tokenPairs of iterable) {
         const tokens = []
@@ -63,8 +74,10 @@ export async function tokens(ctx: CommonContext, block: Block) {
                 minBalance = BigInt(Math.max(1, Number(10n ** 16n / unitPrice)))
             }
 
+            const id = `${collectionId}-${tokenId}`
+            const parkedExpiration = parkedExpirations.get(id)
             const token = new Token({
-                id: `${collectionId}-${tokenId}`,
+                id,
                 tokenId: BigInt(tokenId),
                 supply: data.supply,
                 cap: data.cap ? getCapType(data.cap) : null,
@@ -82,6 +95,10 @@ export async function tokens(ctx: CommonContext, block: Block) {
                 accountDepositCount: 0,
                 anyoneCanInfuse: data.anyoneCanInfuse ?? false,
                 ephemeralExpiration: data.ephemeralExpiration ?? null,
+                ephemeralCleanupFailure:
+                    parkedExpiration !== undefined && parkedExpiration === data.ephemeralExpiration
+                        ? new EphemeralCleanupFailure({ expirationBlock: parkedExpiration, error: null })
+                        : null,
                 isLendable: data.isLendable,
                 mintRateLimit: toMintRateLimitStateModel(data.mintRateLimit, block.height),
                 nativeMetadata: null,

@@ -109,6 +109,7 @@ async function tokenFromCall(
         accountDepositCount: 0,
         anyoneCanInfuse: false,
         ephemeralExpiration: null,
+        ephemeralCleanupFailure: null,
         isLendable: false,
         mintRateLimit: null,
         nativeMetadata: null,

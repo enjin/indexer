@@ -148,6 +148,9 @@ export async function tokenUpdated(
     if (stored.infusion !== undefined) token.infusion = stored.infusion
     token.isLendable = stored.isLendable
     token.ephemeralExpiration = stored.ephemeralExpiration ?? null
+    if (token.ephemeralCleanupFailure && token.ephemeralCleanupFailure.expirationBlock !== token.ephemeralExpiration) {
+        token.ephemeralCleanupFailure = null
+    }
     token.mintRateLimit = toMintRateLimitStateModel(
         stored.mintRateLimit,
         block.height,

@@ -4,6 +4,7 @@ import {FreezeState} from "./_freezeState"
 import {TokenCap, fromJsonTokenCap} from "./_tokenCap"
 import {TokenBehavior, fromJsonTokenBehavior} from "./_tokenBehavior"
 import {NativeTokenMetadata} from "./_nativeTokenMetadata"
+import {EphemeralCleanupFailure} from "./_ephemeralCleanupFailure"
 import {MintRateLimitState} from "./_mintRateLimitState"
 import {Collection} from "./collection.model"
 import {TokenAccount} from "./tokenAccount.model"
@@ -82,6 +83,9 @@ export class Token {
     @Index_()
     @BigIntColumn_({nullable: true})
     ephemeralExpiration!: bigint | undefined | null
+
+    @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new EphemeralCleanupFailure(undefined, obj)}, nullable: true})
+    ephemeralCleanupFailure!: EphemeralCleanupFailure | undefined | null
 
     @Index_()
     @BooleanColumn_({nullable: false})

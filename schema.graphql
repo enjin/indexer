@@ -1031,6 +1031,11 @@ type NativeTokenMetadata {
   decimalCount: Int!
 }
 
+type EphemeralCleanupFailure {
+  expirationBlock: BigInt!
+  error: String
+}
+
 type Token @entity {
   id: ID!
 
@@ -1055,6 +1060,8 @@ type Token @entity {
   bestListingPrice: BigInt
   creationSupply: BigInt
   ephemeralExpiration: BigInt @index
+  # Present while expired token destruction is parked for retry.
+  ephemeralCleanupFailure: EphemeralCleanupFailure
   isLendable: Boolean! @index
   mintRateLimit: MintRateLimitState
 
