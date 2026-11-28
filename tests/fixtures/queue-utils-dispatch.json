@@ -1069,6 +1069,58 @@
             }
         }
     ],
+    "dispatchBackfillEphemeralExpiryActivity": [
+        {
+            "enqueued": [
+                {
+                    "via": "queue.add",
+                    "queue": "tokens",
+                    "name": "BACKFILL_EPHEMERAL_EXPIRY_ACTIVITY",
+                    "data": {
+                        "fromBlock": 1,
+                        "toBlock": 9
+                    },
+                    "options": {
+                        "jobId": "tokens.backfill-ephemeral-expiry-activity.1-9.dry-run.<uuid>",
+                        "deduplication": {
+                            "id": "tokens.backfill-ephemeral-expiry-activity.1-9.dry-run"
+                        }
+                    }
+                }
+            ],
+            "logged": [],
+            "whenEnqueueFails": {
+                "logged": [],
+                "rejected": "redis unavailable"
+            }
+        },
+        {
+            "enqueued": [
+                {
+                    "via": "queue.add",
+                    "queue": "tokens",
+                    "name": "BACKFILL_EPHEMERAL_EXPIRY_ACTIVITY",
+                    "data": {
+                        "fromBlock": 1,
+                        "toBlock": 9,
+                        "batchSize": 50,
+                        "dryRun": false
+                    },
+                    "options": {
+                        "jobId": "tokens.backfill-ephemeral-expiry-activity.1-9.write.<uuid>",
+                        "deduplication": {
+                            "id": "tokens.backfill-ephemeral-expiry-activity.1-9.write"
+                        }
+                    }
+                }
+            ],
+            "logged": [],
+            "whenEnqueueFails": {
+                "logged": [],
+                "rejected": "redis unavailable"
+            }
+        }
+    ],
     "dispatchBackfillEventTimestamps": [
         {
             "enqueued": [
