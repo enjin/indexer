@@ -117,6 +117,10 @@ const invocations: Record<string, unknown[][]> = {
     dispatchBackfillExtrinsicBlockRelation: [[], [{ fromBlock: 1, toBlock: 9, batchSize: 3 }], [{ fromBlock: 1 }]],
     dispatchBackfillEventPosition: [[], [{ batchSize: 50 }]],
     dispatchBackfillLoanExtensionActivity: [[], [{ batchSize: 50 }]],
+    dispatchBackfillEphemeralExpiryActivity: [
+        [{ fromBlock: 1, toBlock: 9 }],
+        [{ fromBlock: 1, toBlock: 9, batchSize: 50, dryRun: false }],
+    ],
     dispatchBackfillEventTimestamps: [[{ fromBlock: 1, toBlock: 9, batchSize: 3 }]],
     dispatchBackfillChainFinality: [[], [{ fromBlock: 1, toBlock: 9 }]],
     dispatchBackfillGovernance: [
