@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import type { Block, EventItem } from '~/contexts'
-import { findPairedFollowingEvent, findSiblingEvent, rememberBlockEvents, SnsCause } from '~/util/sns-cause'
+import { findPairedEvent, findSiblingEvent, rememberBlockEvents, SnsCause } from '~/util/sns-cause'
 
 type Fake = EventItem & { data: { token: string } }
 
@@ -101,7 +101,7 @@ void test('paired events consume each nearest preceding candidate only once', ()
     rememberBlockEvents(block.hash, [first, nearest, firstLoan, secondLoan])
 
     const paired = (item: EventItem) =>
-        findPairedFollowingEvent(
+        findPairedEvent(
             block,
             item,
             'MultiTokens.TokenLent',
@@ -127,7 +127,7 @@ void test('ordinary transfer batches without a same-extrinsic loan are not decod
     }
 
     assert.equal(
-        findPairedFollowingEvent(block, transfer, 'MultiTokens.TokenLent', throwing, throwing, () => true),
+        findPairedEvent(block, transfer, 'MultiTokens.TokenLent', throwing, throwing, () => true),
         undefined
     )
 })
