@@ -50,6 +50,7 @@ export async function tokenLent(
             lender: data.lender,
             borrower: data.borrower,
             expiration: data.expiration,
+            ...(block.timestamp !== undefined ? { blockTimestamp: new Date(block.timestamp).toISOString() } : {}),
             extrinsic: item.extrinsic?.id,
         },
     }
