@@ -3,7 +3,7 @@ import { CollectionAccount, Token, TokenAccount } from '~/model'
 import { Block, CommonContext, EventItem } from '~/contexts'
 import { getOrCreateAccount } from '~/util/entities'
 import { SnsEvent } from '~/util/sns'
-import { findPairedFollowingEvent, findSiblingEvent, SnsCause } from '~/util/sns-cause'
+import { findPairedEvent, SnsCause } from '~/util/sns-cause'
 import { multiTokens } from '~/type/events'
 import * as mappings from '~/pallet/index'
 import { QueueUtils } from '~/queue'
@@ -103,7 +103,7 @@ export async function transferred(
     const loanStart =
         data.amount !== 1n
             ? undefined
-            : findPairedFollowingEvent(
+            : findPairedEvent(
                   block,
                   item,
                   multiTokens.tokenLent.name,
@@ -116,17 +116,23 @@ export async function transferred(
                       transfer.from === loan.lender &&
                       transfer.to === loan.borrower
               )
-    // A proven loan-start pair must not be mistaken for another loan's return elsewhere in the block. Other
-    // transfers retain the existing return lookup, including automatic returns without an extrinsic.
-    const loanReturn = loanStart
-        ? undefined
-        : findSiblingEvent(
-              block,
-              item,
-              multiTokens.tokenReturned.name,
-              mappings.multiTokens.events.tokenReturned,
-              (e) => e.collectionId === data.collectionId && e.tokenId === data.tokenId && e.borrower === data.from
-          )
+    const loanReturn =
+        loanStart || data.amount !== 1n
+            ? undefined
+            : findPairedEvent(
+                  block,
+                  item,
+                  multiTokens.tokenReturned.name,
+                  mappings.multiTokens.events.transferred,
+                  mappings.multiTokens.events.tokenReturned,
+                  (transfer, loan) =>
+                      transfer.amount === 1n &&
+                      transfer.collectionId === loan.collectionId &&
+                      transfer.tokenId === loan.tokenId &&
+                      transfer.from === loan.borrower &&
+                      transfer.to === loan.lender,
+                  'preceding'
+              )
     const loan = loanStart ?? loanReturn
 
     const snsEvent: SnsEvent = {

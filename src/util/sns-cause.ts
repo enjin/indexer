@@ -67,27 +67,31 @@ export function findSiblingEvent<T>(
 }
 
 /**
- * Pair each sibling with its nearest preceding, unmatched item of the same name as `item`. Only events in the
- * same non-empty extrinsic qualify. Unlike a broad sibling match, this identifies the specific transfer emitted by
- * a loan when an extrinsic also transfers the same token between the same accounts in other calls.
+ * Pair each sibling with its nearest unmatched item in the specified direction. Match within the same extrinsic,
+ * or between hook events for a preceding sibling such as TokenReturned. This identifies the specific transfer
+ * emitted by a loan when the same token moves between the same accounts more than once.
  * Matching is recomputed from chain order, so repeated processing never consumes a different pair.
  */
-export function findPairedFollowingEvent<T, S>(
+export function findPairedEvent<T, S>(
     block: Pick<Block, 'hash'>,
     item: EventItem,
     name: string,
     decodeItem: (event: EventItem) => T,
     decodeSibling: (event: EventItem) => S,
-    matches: (itemData: T, siblingData: S) => boolean
+    matches: (itemData: T, siblingData: S) => boolean,
+    siblingPosition: 'following' | 'preceding' = 'following'
 ): S | undefined {
-    if (!item.extrinsic?.id || current?.hash !== block.hash) return undefined
-    if (!current.events.some((event) => event.name === name && event.extrinsic?.id === item.extrinsic?.id)) {
-        return undefined
-    }
+    const extrinsicId = item.extrinsic?.id
+    if (!extrinsicId && (item.extrinsic || siblingPosition === 'following')) return undefined
+
+    const blockEvents = rememberedBlockEvents(block)
+    const sameScope = (event: EventItem) => (extrinsicId ? event.extrinsic?.id === extrinsicId : !event.extrinsic)
+    if (!blockEvents.some((event) => event.name === name && sameScope(event))) return undefined
+    const events = siblingPosition === 'following' ? blockEvents : [...blockEvents].reverse()
 
     const unmatched: { event: EventItem; data: T }[] = []
-    for (const event of current.events) {
-        if (event.extrinsic?.id !== item.extrinsic.id) continue
+    for (const event of events) {
+        if (!sameScope(event)) continue
         if (event.name === item.name) {
             unmatched.push({ event, data: decodeItem(event) })
             continue

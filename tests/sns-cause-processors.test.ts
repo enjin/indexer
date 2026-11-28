@@ -234,6 +234,22 @@ void test('a transfer with no return in its block is published with cause transf
     assert.equal(sns.body.borrower, undefined)
 })
 
+void test('an automatic return does not tag a transfer to another recipient or in another phase', async () => {
+    const returned = eventItem('500-1', 'MultiTokens.TokenReturned', {
+        ...returnedArgs,
+        lender: `0x${'33'.repeat(32)}`,
+    })
+    const otherPhase = eventItem('500-2', 'MultiTokens.TokenReturned', returnedArgs, '500-0')
+    const transfer = eventItem('500-3', 'MultiTokens.Transferred', transferArgs)
+    rememberBlockEvents(block.hash, [returned, otherPhase, transfer])
+
+    const { ctx } = fixtures()
+    const sns = snsOf(await transferred(ctx, block, transfer, false))
+    assert(sns)
+    assert.equal(sns.body.cause, 'transfer')
+    assert.equal(sns.body.lender, undefined)
+})
+
 const loanStartArgs = { collectionId: '10', tokenId: '20', lender: holder, borrower: lender, expiration: 600 }
 
 void test('the exact transfer for a loan start carries loanStart across nested calls without changing balances or history', async () => {
@@ -383,6 +399,7 @@ void test('multiple loans in one extrinsic each tag their own preceding transfer
         [ordinary, 'transfer'],
         [firstTransfer, 'loanStart'],
         [returnTransfer, 'loanReturn'],
+        [ordinaryBack, 'transfer'],
     ] as const) {
         const { ctx } = fixtures()
         const sns = snsOf(await transferred(ctx, block, item, false))
