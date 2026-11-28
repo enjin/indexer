@@ -216,6 +216,7 @@ void test('loan processors update current state and emit account history without
             lender: lender.id,
             borrower: borrower.id,
             expiration: 88,
+            blockTimestamp: '1970-01-01T00:00:01.000Z',
             extrinsic: undefined,
         },
     })
